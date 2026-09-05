@@ -38,14 +38,25 @@ export const SAFETY = {
   /**
    * `GET /api/safety/reports/queue/?organization=<id>&status=` — paginada
    * (`docs/SEGURIDAD_Y_MODERACION.md` §4). El Inicio de la entidad solo
-   * usa `.count` (reportes pendientes) sin listar filas.
+   * usa `.count` (reportes pendientes) sin listar filas; `reportes/page.tsx`
+   * (tarea W4a) sí lista.
    */
   REPORTS_QUEUE: () => "/api/safety/reports/queue/",
+  /** `GET /api/safety/reports/{id}/` (§4): detalle con `target`. */
+  REPORT_DETAIL: (id: string) => `/api/safety/reports/${id}/`,
+  /** `POST /api/safety/reports/{id}/assign/` (§4). */
+  REPORT_ASSIGN: (id: string) => `/api/safety/reports/${id}/assign/`,
+  /** `POST /api/safety/reports/{id}/resolve/ {resolution, note?}` (§4). */
+  REPORT_RESOLVE: (id: string) => `/api/safety/reports/${id}/resolve/`,
+  /** `POST /api/safety/reports/{id}/escalate/ {note?}` (§4). */
+  REPORT_ESCALATE: (id: string) => `/api/safety/reports/${id}/escalate/`,
   /**
    * `GET /api/safety/help-requests/pending/?organization=<id>` — paginada
    * (`docs/SEGURIDAD_Y_MODERACION.md` §5).
    */
   HELP_REQUESTS_PENDING: () => "/api/safety/help-requests/pending/",
+  /** `POST /api/safety/help-requests/{id}/acknowledge/` (§5): «He contactado». */
+  HELP_REQUEST_ACKNOWLEDGE: (id: string) => `/api/safety/help-requests/${id}/acknowledge/`,
 } as const;
 
 export const ORGANIZATIONS = {
@@ -56,6 +67,49 @@ export const ORGANIZATIONS = {
    * (`docs/SEGURIDAD_Y_MODERACION.md` §8): persona ↔ referente.
    */
   REFERENCES: (id: number | string) => `/api/organizations/${id}/references/`,
+  /**
+   * `GET`/`POST`/`DELETE /api/organizations/{id}/members/` (§8): equipo
+   * de la entidad (solo `titular`, permiso `equipo`).
+   */
+  MEMBERS: (id: number | string) => `/api/organizations/${id}/members/`,
+  /**
+   * `POST /api/organizations/{id}/scope/ {places}|{province}|{comarca}`
+   * (§8): amplía el ámbito INE de la entidad.
+   */
+  SCOPE: (id: number | string) => `/api/organizations/${id}/scope/`,
+} as const;
+
+/**
+ * `docs/SEGURIDAD_Y_MODERACION.md` §8 (comunidades ya existía para móvil,
+ * el panel de entidad la reutiliza en la tarea W4a): API de `communities`,
+ * no de `panel`. `docs/schema.yaml` documenta mal la forma de la mayoría
+ * de estas respuestas (dice `Community` completa); la real es
+ * `CommunityMemberSerializer` — ver `lib/api/types.ts::CommunityMember`.
+ */
+export const COMMUNITIES = {
+  /**
+   * `GET /api/communities/?search=&page=` — paginada, sin filtro por
+   * entidad en el backend: `hooks/useEntityCommunities.ts` recorre las
+   * páginas y filtra por `owner.id` en el cliente (ver el hueco
+   * documentado en `lib/api/types.ts::EntityCommunityRow`).
+   */
+  LIST: () => "/api/communities/",
+  /** `GET /api/communities/{id}/members/` — miembros activos. */
+  MEMBERS: (id: string) => `/api/communities/${id}/members/`,
+  /** `GET /api/communities/{id}/pending-requests/` — solicitudes pendientes. */
+  PENDING_REQUESTS: (id: string) => `/api/communities/${id}/pending-requests/`,
+  /** `POST /api/communities/{id}/members/{memberId}/approve/`. */
+  APPROVE_MEMBER: (id: string, memberId: string) =>
+    `/api/communities/${id}/members/${memberId}/approve/`,
+  /** `POST /api/communities/{id}/members/{memberId}/reject/`. */
+  REJECT_MEMBER: (id: string, memberId: string) =>
+    `/api/communities/${id}/members/${memberId}/reject/`,
+  /** `POST /api/communities/{id}/members/{memberId}/kick/`. */
+  KICK_MEMBER: (id: string, memberId: string) =>
+    `/api/communities/${id}/members/${memberId}/kick/`,
+  /** `PATCH /api/communities/{id}/members/{memberId}/role/ {role}`. */
+  MEMBER_ROLE: (id: string, memberId: string) =>
+    `/api/communities/${id}/members/${memberId}/role/`,
 } as const;
 
 /**

@@ -226,3 +226,115 @@ rol `referente` en la entidad, 400 si no), pero es incómodo: quien
 gestiona el panel tendría que saber de memoria el id de cada referente.
 **Pregunta:** ¿se añade `ORGANIZATIONS.MEMBERS` al contrato de una tarea
 posterior para poder ofrecer un selector de verdad?
+
+# Preguntas de diseño abiertas — Task W4a
+
+## 14. Comunidades de la entidad: no existe `GET /api/communities/?owner_org=` (hueco de backend, no solo de contrato)
+
+El brief pedía «lista de las comunidades de la entidad» consumiendo «la
+API existente de comunidades», pero `communities/unified_viewset.py::
+CommunityViewSet.get_queryset` no admite filtrar por `owner_org` (solo
+`place`/`category`/`search`, sin `filterset_fields` de verdad pese a que
+`DjangoFilterBackend` esté en `DEFAULT_FILTER_BACKENDS` — sin
+`filterset_fields`/`filterset_class` declarados, el backend no filtra
+nada). `hooks/useEntityCommunities.ts` recorre todas las páginas visibles
+de `GET /api/communities/` y filtra en el cliente por
+`owner.type === 'organization' && owner.id === orgId` — funciona para
+demos pequeñas, pero es O(comunidades totales de la plataforma), no
+O(comunidades de la entidad).
+
+Más grave: `communities/services/visibility.py::_visibles_para` excluye
+las comunidades `private` de quien no sea ya miembro activo, **incluido
+el propio `titular`/`moderador` de la entidad propietaria** si no está
+personalmente dentro. Una comunidad privada de la entidad de la que
+quien mira no sea miembro simplemente no aparece en «Comunidades» — ni
+como fila, ni como opción para ver sus solicitudes pendientes. No hay
+manera de detectarlo desde el panel (no hay ni un `count` total por
+separado).
+
+**Pregunta para backend:** ¿tiene sentido una ruta propia (p. ej.
+`GET /api/organizations/{id}/communities/`, o un `?owner_org=` real en
+`CommunityViewSet` que además ignore `_visibles_para` para quien
+`puede(user, org, 'moderar')`) para que el panel de entidad vea de
+verdad **todas** sus comunidades, privadas incluidas?
+
+## 15. Equipo, referencias y guardia: solo ids numéricos, sin buscador de personas
+
+`GET /api/organizations/{id}/members/` (equipo) y
+`GET/POST /api/organizations/{id}/references/` (referencias) devuelven y
+esperan ids de usuario desnudos (`OrgMembership.user`,
+`ReferenceRequest.user`/`referent_user`), sin nombre ni forma de
+buscarlos: `GET /api/users/users/` (`users/unified_viewset.py::
+list_users`) es `permission_classes=[permissions.IsAdminUser]`, así que
+ni siquiera un `titular` puede usarlo para localizar el id de la persona
+que quiere dar de alta. Fijar la guardia (`on_call_user` en
+`PATCH /api/organizations/{id}/`) tiene el mismo problema. Implementado
+tal cual (formularios con un campo numérico «id de usuario»,
+`components/entidad/ConfiguracionPanel.tsx`/`GuardiaPanel.tsx`) —
+funciona pero es incómodo de verdad para uso diario (ya apuntado en la
+pregunta 13 de W3 para «Asignar referente», que sigue sin resolverse
+aquí). **Pregunta:** ¿se abre un endpoint de búsqueda de personas
+accesible a `titular`/`moderador` de su propia entidad (p. ej.
+`GET /api/organizations/{id}/members/search/?q=` limitado a quienes ya
+tienen alguna relación con la entidad, o ampliar el permiso de
+`list_users` para ese caso concreto)?
+
+## 16. Logo de la entidad: el contrato de escritura espera fichero, no URL
+
+`OrganizationRequest.logo` es `Format: binary` (multipart), no una URL
+de texto — subir un logo nuevo exige un `<input type="file">` con
+`FormData`, un `Content-Type` distinto del JSON que usa siempre
+`apiFetch` (`lib/api/client.ts`), y probablemente su propio manejo del
+401 (un solo intento, sin el reintento-con-refresco que si tiene
+`apiFetch`). Configuración (`ConfiguracionPanel.tsx`) hoy solo **muestra**
+el logo actual (si lo hay) y explica que subir uno nuevo no está
+disponible todavía — no se ha construido el flujo de subida por el
+volumen de trabajo ya cubierto en esta tarea. **Pregunta:** ¿se prioriza
+esto para W4b, o se deja para una tarea de «marca blanca» más amplia
+(Fase 6 ya prevé tematización completa)?
+
+## 17. `post_event_survey_enabled` no está en la lista blanca de `PATCH /api/organizations/{id}/`
+
+El campo existe en `entities/models.py::Organization` y se usa de verdad
+(`panel/services/surveys.py`), pero ni `OrganizationSerializer` ni
+`OrganizationRequest` (`docs/schema.yaml`) lo exponen — la lista blanca
+real es `description, contact_email, contact_phone, help_phone, website,
+logo, primary_color, secondary_color, on_call_user`. Se omite en
+`ConfiguracionPanel.tsx` tal y como permitía el brief («skip» si el campo
+no existe en el esquema). **Pregunta:** ¿se añade a la lista blanca en
+una tarea de backend, ya que Encuestas (W4b) necesitará un interruptor
+para activar/desactivar la encuesta post-actividad automática?
+
+## 18. «Informes» de entidad: la página no existe (404 para quien la vea en el menú)
+
+`lib/auth/entidadMenu.ts` incluye «informes» para
+`titular`/`moderador`/`dinamizador`/`analista` (este último la ve como
+**única** sección operativa, según el checklist del brief: «analista solo
+ve Informes y métricas»), pero no existe
+`app/entidad/[slug]/informes/page.tsx` — ni esta tarea ni ninguna
+anterior (W1-W3) la construyó; la «vista del financiador» de W2 solo
+cubre `/paraguas` y `/plataforma`. Hoy cualquiera de esos cuatro roles
+que pinche en «Informes» del menú de entidad recibe un 404 real de
+Next.js. Fuera del alcance explícito de esta tarea (el brief de W4
+enumera Comunidades/Comunicaciones/Encuestas/Recursos/Familias/
+Reportes/Guardia/Configuración, nunca Informes), pero se deja constancia
+porque es el gap más visible para `analista`, el rol que menos secciones
+tiene. **Pregunta:** ¿en qué tarea se construye `entidad/[slug]/informes`
+(reutilizando `components/metrics/*` de W2, con `METRICS.ENTIDAD`/
+`EXPORT.ENTIDAD`, que ya existen en `lib/api/endpoints.ts` sin consumir
+desde ninguna página de entidad)?
+
+## 19. Secciones W4b ocultas para `dinamizador`: Encuestas/Recursos/Familias dejan de vérsele
+
+Antes de esta tarea, `dinamizador` veía Encuestas/Recursos/Familias en su
+menú (solo Configuración/Reportes/Comunicaciones estaban en
+`DINAMIZADOR_HIDDEN`). Como sus páginas reales llegan en W4b, esta tarea
+las oculta también para `dinamizador` (`PENDING_SECTIONS` en
+`lib/auth/entidadMenu.ts`) para que no le lleven a un 404 — mismo criterio
+que ya aplicaba a `analista`/`referente`, que nunca las tuvieron. Es un
+cambio de comportamiento temporal: cuando W4b construya esas páginas de
+verdad, habrá que sacarlas de `DINAMIZADOR_HIDDEN` si el rol debe
+recuperarlas (la instrucción de esta tarea no fija qué verá `dinamizador`
+en Encuestas/Recursos/Familias una vez existan, solo qué ve mientras no
+existen). **Pregunta:** ¿`dinamizador` debe recuperar esas tres secciones
+en W4b, o se quedan fuera de su matriz de forma permanente?

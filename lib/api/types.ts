@@ -149,3 +149,122 @@ export interface PaginatedReferenceList {
 export interface PaginatedCount {
   count: number;
 }
+
+/**
+ * `GET /api/safety/reports/queue/?organization=<id>` (§4): paginada de
+ * verdad, filas `Report` (sin `target`, a diferencia del detalle).
+ */
+export type ReportRow = components["schemas"]["Report"];
+export interface PaginatedReportList {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: ReportRow[];
+}
+
+/** `GET /api/safety/reports/{id}/` (§4): añade `target` sobre `Report`. */
+export type ReportDetail = components["schemas"]["ReportDetail"];
+export type ReportTarget = components["schemas"]["ReportTarget"];
+export type ReportResolution = components["schemas"]["ReportResolveResolutionEnum"];
+/** Cuerpo de `POST /api/safety/reports/{id}/resolve/`. */
+export type ReportResolveRequest = components["schemas"]["ReportResolveRequest"];
+/** Cuerpo de `POST /api/safety/reports/{id}/escalate/`. */
+export type ReportEscalateRequest = components["schemas"]["ReportEscalateRequest"];
+
+/**
+ * `GET /api/safety/help-requests/pending/?organization=<id>` (§5): sin
+ * paginar de verdad (`Response(HelpRequestSerializer(qs, many=True).data)`
+ * en `safety/viewsets.py`), pese a que `docs/schema.yaml` la marca (mal)
+ * como `PaginatedHelpRequestList` — mismo patrón que `Attendee` en W3.
+ */
+export type HelpRequestRow = components["schemas"]["HelpRequest"];
+
+/**
+ * `GET /api/communities/{id}/members/`, `.../pending-requests/` y las
+ * respuestas de `approve`/`reject`/`role` (`CommunityMemberSerializer`,
+ * `communities/serializers.py`). `docs/schema.yaml` documenta mal estas
+ * rutas: las marca como si devolvieran `Community` completa (o un array
+ * de ella); en realidad son esto, uno o en lista. Tipo manual: no existe
+ * en `types.generated.ts`.
+ */
+export interface CommunityMember {
+  id: string;
+  user_id: string;
+  username: string;
+  full_name: string;
+  profile_picture: string | null;
+  /** `owner` nunca sale de `members`/`pending-requests` con este rol salvo el propietario. */
+  role: "owner" | "moderator" | "member";
+  status: "active" | "pending" | "rejected" | "left";
+  accepted_conduct_at: string | null;
+  is_online: boolean;
+  joined_at: string;
+}
+
+/** Cuerpo de `PATCH /api/communities/{id}/members/{member_id}/role/`. */
+export interface CommunityMemberRoleRequest {
+  role: "moderator" | "member";
+}
+
+/**
+ * `owner` de `CommunityList`/`Community` (`Community.owner_display()`,
+ * `communities/models.py`): `types.generated.ts` lo deja como
+ * `{[key: string]: unknown}` porque el esquema no tipa el diccionario.
+ */
+export interface CommunityOwnerRef {
+  type: "organization" | "profile";
+  id: number | string;
+  name: string;
+  verified: boolean;
+  logo?: string | null;
+}
+
+/**
+ * `GET /api/communities/?...` (`CommunityListSerializer`): fila de la
+ * lista general, paginada (`PageNumberPagination` estándar). El panel la
+ * usa para «Comunidades» de la entidad filtrando `owner` en el cliente —
+ * ver el hueco documentado en el informe de esta tarea: no existe un
+ * `?owner_org=` en el backend, así que una comunidad `private` de la
+ * entidad que quien mira no integre no aparece (regla de
+ * `communities/services/visibility.py::_visibles_para`).
+ */
+export type EntityCommunityRow = Omit<components["schemas"]["CommunityList"], "owner"> & {
+  owner: CommunityOwnerRef;
+};
+export interface PaginatedCommunityList {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: EntityCommunityRow[];
+}
+
+/**
+ * `GET`/`POST`/`DELETE /api/organizations/{id}/members/` (§8): equipo
+ * completo de la entidad, sin paginar de verdad
+ * (`Response(OrgMembershipSerializer(qs, many=True).data)` en
+ * `entities/viewsets.py`) pese a que el esquema generado lleve
+ * `PaginatedOrgMembershipList` — mismo patrón que `references` y
+ * `Attendee`.
+ */
+export type OrgMembershipFull = components["schemas"]["OrgMembership"];
+/** Cuerpo de `POST /api/organizations/{id}/members/`. */
+export type OrgMembershipCreateRequest = components["schemas"]["OrgMembershipRequest"];
+
+/**
+ * `GET /api/organizations/{id}/references/`: mismo patrón — array plano
+ * de verdad (`entities/viewsets.py::OrganizationViewSet.references`),
+ * aunque exista un `PaginatedReferenceList` (arriba) pensado para una
+ * paginación que esta ruta no aplica hoy.
+ */
+export type ReferenceList = Reference[];
+
+/** Cuerpo de `POST /api/organizations/{id}/scope/`. */
+export type OrgScopeRequest =
+  | { places: string[] }
+  | { province: string }
+  | { comarca: string };
+/** Respuesta de `POST /api/organizations/{id}/scope/`: `{added, total}`. */
+export interface OrgScopeResponse {
+  added: number;
+  total: number;
+}

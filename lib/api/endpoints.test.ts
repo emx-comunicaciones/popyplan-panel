@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { AUTH, EVENTS, EXPORT, METRICS, ORGANIZATIONS, PANEL, SAFETY, USERS } from "./endpoints";
+import { AUTH, COMMUNITIES, EVENTS, EXPORT, METRICS, ORGANIZATIONS, PANEL, SAFETY, USERS } from "./endpoints";
 
 describe("endpoints", () => {
   it("AUTH.LOGIN apunta a /api/auth/login/", () => {
@@ -86,5 +86,61 @@ describe("endpoints", () => {
 
   it("EXPORT.PLATAFORMA() apunta a /api/panel/plataforma/export/", () => {
     expect(EXPORT.PLATAFORMA()).toBe("/api/panel/plataforma/export/");
+  });
+
+  it("SAFETY.REPORT_DETAIL(id) apunta a /api/safety/reports/{id}/", () => {
+    expect(SAFETY.REPORT_DETAIL("r1")).toBe("/api/safety/reports/r1/");
+  });
+
+  it("SAFETY.REPORT_ASSIGN(id) apunta a /api/safety/reports/{id}/assign/", () => {
+    expect(SAFETY.REPORT_ASSIGN("r1")).toBe("/api/safety/reports/r1/assign/");
+  });
+
+  it("SAFETY.REPORT_RESOLVE(id) apunta a /api/safety/reports/{id}/resolve/", () => {
+    expect(SAFETY.REPORT_RESOLVE("r1")).toBe("/api/safety/reports/r1/resolve/");
+  });
+
+  it("SAFETY.REPORT_ESCALATE(id) apunta a /api/safety/reports/{id}/escalate/", () => {
+    expect(SAFETY.REPORT_ESCALATE("r1")).toBe("/api/safety/reports/r1/escalate/");
+  });
+
+  it("SAFETY.HELP_REQUEST_ACKNOWLEDGE(id) apunta a /api/safety/help-requests/{id}/acknowledge/", () => {
+    expect(SAFETY.HELP_REQUEST_ACKNOWLEDGE("hr1")).toBe("/api/safety/help-requests/hr1/acknowledge/");
+  });
+
+  it("ORGANIZATIONS.MEMBERS(id) apunta a /api/organizations/{id}/members/", () => {
+    expect(ORGANIZATIONS.MEMBERS(7)).toBe("/api/organizations/7/members/");
+  });
+
+  it("ORGANIZATIONS.SCOPE(id) apunta a /api/organizations/{id}/scope/", () => {
+    expect(ORGANIZATIONS.SCOPE(7)).toBe("/api/organizations/7/scope/");
+  });
+
+  it("COMMUNITIES.LIST() apunta a /api/communities/", () => {
+    expect(COMMUNITIES.LIST()).toBe("/api/communities/");
+  });
+
+  it("COMMUNITIES.MEMBERS(id) apunta a /api/communities/{id}/members/", () => {
+    expect(COMMUNITIES.MEMBERS("c1")).toBe("/api/communities/c1/members/");
+  });
+
+  it("COMMUNITIES.PENDING_REQUESTS(id) apunta a /api/communities/{id}/pending-requests/", () => {
+    expect(COMMUNITIES.PENDING_REQUESTS("c1")).toBe("/api/communities/c1/pending-requests/");
+  });
+
+  it("COMMUNITIES.APPROVE_MEMBER(id, memberId) apunta a .../members/{memberId}/approve/", () => {
+    expect(COMMUNITIES.APPROVE_MEMBER("c1", "m1")).toBe("/api/communities/c1/members/m1/approve/");
+  });
+
+  it("COMMUNITIES.REJECT_MEMBER(id, memberId) apunta a .../members/{memberId}/reject/", () => {
+    expect(COMMUNITIES.REJECT_MEMBER("c1", "m1")).toBe("/api/communities/c1/members/m1/reject/");
+  });
+
+  it("COMMUNITIES.KICK_MEMBER(id, memberId) apunta a .../members/{memberId}/kick/", () => {
+    expect(COMMUNITIES.KICK_MEMBER("c1", "m1")).toBe("/api/communities/c1/members/m1/kick/");
+  });
+
+  it("COMMUNITIES.MEMBER_ROLE(id, memberId) apunta a .../members/{memberId}/role/", () => {
+    expect(COMMUNITIES.MEMBER_ROLE("c1", "m1")).toBe("/api/communities/c1/members/m1/role/");
   });
 });

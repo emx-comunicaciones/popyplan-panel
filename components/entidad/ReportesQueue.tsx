@@ -1,0 +1,142 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { useReportsQueue, type ReportsQueueFilters } from "@/hooks/useReportsQueue";
+
+export interface ReportesQueueProps {
+  orgId: number | string;
+  slug: string;
+}
+
+const REASON_LABELS: Record<string, string> = {
+  harassment: "Acoso",
+  hate: "Odio",
+  spam: "Spam",
+  scam: "Estafa",
+  underage: "Menor de edad",
+  self_harm_risk: "Riesgo de autolesión",
+  drugs_sale: "Venta de sustancias",
+  other: "Otro",
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  pending: "Pendiente",
+  in_review: "En revisión",
+  resolved: "Resuelto",
+};
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("es-ES");
+}
+
+/**
+ * Cola de reportes de la entidad (tarea W4a,
+ * `docs/SEGURIDAD_Y_MODERACION.md` §4). Un reporte contra la propia
+ * entidad nunca aparece aquí (va siempre a la cola de plataforma): el
+ * backend ya lo filtra, esta tabla solo pinta lo que llega.
+ */
+export function ReportesQueue({ orgId, slug }: ReportesQueueProps) {
+  const [status, setStatus] = useState<ReportsQueueFilters["status"] | "">("pending");
+  const [page, setPage] = useState(1);
+
+  const reports = useReportsQueue(orgId, { status: status || undefined, page });
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div>
+        <label htmlFor="reportes-status" className="mb-1 block text-sm font-medium text-text-form">
+          Estado
+        </label>
+        <select
+          id="reportes-status"
+          value={status}
+          onChange={(event) => {
+            setStatus(event.target.value as ReportsQueueFilters["status"] | "");
+            setPage(1);
+          }}
+          className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+        >
+          <option value="">Todos</option>
+          <option value="pending">Pendiente</option>
+          <option value="in_review">En revisión</option>
+          <option value="resolved">Resuelto</option>
+        </select>
+      </div>
+
+      {reports.isError ? (
+        <ErrorState title="No se pudo cargar la cola de reportes" description={reports.error.message} />
+      ) : !reports.data ? (
+        <p className="text-sm text-text-secondary">Cargando reportes…</p>
+      ) : reports.data.results.length === 0 ? (
+        <EmptyState title="Sin reportes con este filtro" />
+      ) : (
+        <>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <caption className="sr-only">Reportes de la entidad</caption>
+              <thead>
+                <tr className="border-b border-border text-text-secondary">
+                  <th scope="col" className="px-3 py-2 font-semibold">Motivo</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">Objetivo</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">Estado</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">Fecha</th>
+                  <th scope="col" className="px-3 py-2 font-semibold" />
+                </tr>
+              </thead>
+              <tbody>
+                {reports.data.results.map((report) => (
+                  <tr key={report.id} className="border-b border-border-light">
+                    <td className="px-3 py-2 text-text-base">
+                      <Badge tone={report.reason === "self_harm_risk" ? "error" : "neutral"}>
+                        {REASON_LABELS[report.reason] ?? report.reason}
+                      </Badge>
+                    </td>
+                    <td className="px-3 py-2 text-text-base">{report.target_type}</td>
+                    <td className="px-3 py-2 text-text-base">
+                      {STATUS_LABELS[report.status] ?? report.status}
+                    </td>
+                    <td className="px-3 py-2 text-text-base">{formatDate(report.created_at)}</td>
+                    <td className="px-3 py-2 text-text-base">
+                      <Link
+                        href={`/entidad/${slug}/reportes/${report.id}`}
+                        className="font-medium text-primary underline"
+                      >
+                        Ver detalle
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={!reports.data.previous}
+              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+            >
+              Anterior
+            </Button>
+            <span className="text-sm text-text-secondary">{reports.data.count} reportes</span>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={!reports.data.next}
+              onClick={() => setPage((prev) => prev + 1)}
+            >
+              Siguiente
+            </Button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}

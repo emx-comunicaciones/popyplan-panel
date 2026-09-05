@@ -7,6 +7,13 @@
  * - `dinamizador`: todo salvo Configuración, Reportes y Comunicaciones.
  * - `analista`: solo Inicio e Informes (nunca lista nominal).
  * - `referente`: solo Inicio, Personas y Actividades (sus personas asignadas).
+ *
+ * Tarea W4a: Comunicaciones, Encuestas, Recursos y Familias todavía no
+ * tienen página real (llegan en W4b) — para que no den 404, se ocultan
+ * también del menú de `dinamizador` (que si no las vería, igual que
+ * `analista`/`referente` ya las excluían) y sus `page.tsx` de
+ * `titular`/`moderador` (que sí las conservan en el menú) pintan un aviso
+ * «Próximamente» en vez de la función real.
  */
 import type { EntidadPanelRole } from "./area";
 
@@ -44,7 +51,23 @@ export const ENTIDAD_MENU_LABELS: Record<EntidadMenuItem, string> = {
   configuracion: "Configuración",
 };
 
-const DINAMIZADOR_HIDDEN: readonly EntidadMenuItem[] = ["configuracion", "reportes", "comunicaciones"];
+/**
+ * Secciones sin página real todavía (W4b): se ocultan igual que
+ * Configuración/Reportes/Comunicaciones para `dinamizador`, que si no
+ * llegaría a una de estas cuatro por el menú.
+ */
+export const PENDING_SECTIONS: readonly EntidadMenuItem[] = [
+  "comunicaciones",
+  "encuestas",
+  "recursos",
+  "familias",
+];
+
+const DINAMIZADOR_HIDDEN: readonly EntidadMenuItem[] = [
+  "configuracion",
+  "reportes",
+  ...PENDING_SECTIONS,
+];
 const ANALISTA_VISIBLE: readonly EntidadMenuItem[] = ["inicio", "informes"];
 const REFERENTE_VISIBLE: readonly EntidadMenuItem[] = ["inicio", "personas", "actividades"];
 
