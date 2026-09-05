@@ -63,7 +63,7 @@ describe("EntidadLayout", () => {
     expect(screen.queryByRole("link", { name: "Configuración" })).not.toBeInTheDocument();
   });
 
-  it("dinamizador no ve Configuración, Reportes ni Comunicaciones", async () => {
+  it("dinamizador no ve Configuración, Reportes, Comunicaciones ni Informes (no puede exportar)", async () => {
     getServerSessionMock.mockResolvedValue(session("dinamizador"));
     serverFetchMock.mockResolvedValue({ ok: true, status: 200, data: buildOrganization() });
 
@@ -76,7 +76,7 @@ describe("EntidadLayout", () => {
     expect(screen.queryByRole("link", { name: "Configuración" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Reportes" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Comunicaciones" })).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Informes" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Informes" })).not.toBeInTheDocument();
   });
 
   it("referente ve Inicio, Personas y Actividades, nada más", async () => {

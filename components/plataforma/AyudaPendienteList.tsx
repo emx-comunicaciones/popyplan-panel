@@ -1,13 +1,9 @@
 "use client";
 
 /**
- * «Ayuda» de plataforma (tarea W5): avisos de «hoy lo llevo mal»
- * pendientes de todas las entidades. Ver el docstring de
- * `hooks/usePlatformPendingHelpRequests.ts` para el hueco de contrato:
- * el backend no tiene una ruta agregada, así que esto recorre las
- * entidades y tolera 403 por cada una — en la práctica, para quien solo
- * tiene rol de plataforma sin `OrgMembership` en ninguna entidad, la
- * lista quedará vacía casi siempre.
+ * «Ayuda» de plataforma: avisos de «hoy lo llevo mal» pendientes de
+ * todas las entidades a la vez (`usePlatformPendingHelpRequests`, ruta
+ * agregada del backend desde la tarea P7, `docs/PANEL.md` §10.1).
  */
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -72,7 +68,7 @@ export function AyudaPendienteList() {
     return (
       <EmptyState
         title="Sin avisos pendientes"
-        description="Ninguna entidad de la que seas guardia, titular o moderador tiene avisos sin atender."
+        description="Ninguna entidad tiene avisos de ayuda sin atender."
       />
     );
   }

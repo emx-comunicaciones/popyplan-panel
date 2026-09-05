@@ -4,9 +4,10 @@
  * `GET`/`POST`/`DELETE /api/organizations/{id}/members/`
  * (`docs/SEGURIDAD_Y_MODERACION.md` §8): equipo de la entidad, solo
  * `titular` (permiso `equipo`). Sin paginar de verdad (ver
- * `lib/api/types.ts::OrgMembershipFull`). `OrgMembership` no trae nombre
- * ni email de la persona (invariante 1/9): la tabla del equipo solo puede
- * mostrar el id de usuario — ver «Desviaciones» del informe.
+ * `lib/api/types.ts::OrgMembershipFull`). Desde la tarea backend P7,
+ * `OrgMembership` lleva `public_name`/`photo` (solo lectura) de `user`
+ * (`docs/PANEL.md` §10.3, carry-over cerrado en la tarea W6): la tabla
+ * del equipo y los selects de referente pintan el nombre, nunca el id.
  */
 import { useMutation, useQuery, useQueryClient, type UseMutationResult, type UseQueryResult } from "@tanstack/react-query";
 

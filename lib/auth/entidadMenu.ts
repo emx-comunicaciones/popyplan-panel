@@ -22,6 +22,15 @@
  * — coincide además con el contrato: `POST` solo admite titular/moderador,
  * y `dinamizador` no tiene otra acción que hacer en esa página. Familias
  * se queda en `PENDING_SECTIONS` (sin página real todavía).
+ *
+ * Tarea W6 (carry-over): Informes ya tiene página real
+ * (`app/entidad/[slug]/informes/page.tsx`), pero solo exporta quien
+ * puede exportar informes en el backend (`PuedeEnEntidad
+ * ('exportar_informes')`, `docs/PANEL.md` §2.1): `titular`, `moderador`
+ * y `analista` — nunca `dinamizador` ni `referente`. `dinamizador`
+ * pasaba por `ENTIDAD_MENU_ITEMS` sin excluirla (no estaba construida
+ * todavía); se añade a `DINAMIZADOR_HIDDEN` para que no ofrezca una
+ * sección que el backend le rechazaría con 403.
  */
 import type { EntidadPanelRole } from "./area";
 
@@ -70,6 +79,7 @@ const DINAMIZADOR_HIDDEN: readonly EntidadMenuItem[] = [
   "configuracion",
   "reportes",
   "comunicaciones",
+  "informes",
   ...PENDING_SECTIONS,
 ];
 const ANALISTA_VISIBLE: readonly EntidadMenuItem[] = ["inicio", "informes"];

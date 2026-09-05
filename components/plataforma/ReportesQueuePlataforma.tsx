@@ -5,15 +5,16 @@
  * §4): `GET /api/safety/reports/queue/?status=` sin `organization` — todo
  * lo global más lo escalado por una entidad (`safety/services/
  * reports.py::queue`). Reutiliza `useReportsQueue` (ya soporta `orgId`
- * opcional desde esta tarea) en vez de duplicar la lógica de paginación
- * del panel de entidad (`ReportesQueue.tsx`), con una columna «Entidad» y
- * una insignia «Escalado» que esa vista no necesita.
+ * opcional desde esta tarea) en vez de duplicar la lógica del panel de
+ * entidad (`ReportesQueue.tsx`), con una columna «Entidad» y una
+ * insignia «Escalado» que esa vista no necesita. Sin paginación (fix
+ * de carry-over W6): la ruta nunca pagina de verdad, ver
+ * `hooks/useReportsQueue.ts`.
  */
 import Link from "next/link";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Table } from "@/components/ui/Table";
@@ -43,9 +44,8 @@ function formatDate(iso: string): string {
 
 export function ReportesQueuePlataforma() {
   const [status, setStatus] = useState<ReportsQueueFilters["status"] | "">("pending");
-  const [page, setPage] = useState(1);
 
-  const reports = useReportsQueue(undefined, { status: status || undefined, page });
+  const reports = useReportsQueue(undefined, { status: status || undefined });
 
   return (
     <div className="flex flex-col gap-4">
@@ -58,7 +58,6 @@ export function ReportesQueuePlataforma() {
           value={status}
           onChange={(event) => {
             setStatus(event.target.value as ReportsQueueFilters["status"] | "");
-            setPage(1);
           }}
           className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
         >
@@ -77,13 +76,13 @@ export function ReportesQueuePlataforma() {
         )
       ) : !reports.data ? (
         <p className="text-sm text-text-secondary">Cargando reportes…</p>
-      ) : reports.data.results.length === 0 ? (
+      ) : reports.data.length === 0 ? (
         <EmptyState title="Sin reportes con este filtro" />
       ) : (
         <>
           <Table<ReportRow>
             caption="Reportes de plataforma"
-            rows={reports.data.results}
+            rows={reports.data}
             getRowKey={(report) => report.id}
             columns={[
               {
@@ -99,7 +98,7 @@ export function ReportesQueuePlataforma() {
               {
                 key: "organization",
                 header: "Entidad",
-                render: (report) => (report.organization ? `Entidad #${report.organization}` : "Global"),
+                render: (report) => report.organization_display?.name ?? "Global",
               },
               {
                 key: "status",
@@ -124,25 +123,7 @@ export function ReportesQueuePlataforma() {
             ]}
           />
 
-          <div className="flex items-center justify-between">
-            <Button
-              type="button"
-              variant="secondary"
-              disabled={!reports.data.previous}
-              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-            >
-              Anterior
-            </Button>
-            <span className="text-sm text-text-secondary">{reports.data.count} reportes</span>
-            <Button
-              type="button"
-              variant="secondary"
-              disabled={!reports.data.next}
-              onClick={() => setPage((prev) => prev + 1)}
-            >
-              Siguiente
-            </Button>
-          </div>
+          <p className="text-sm text-text-secondary">{reports.data.length} reportes</p>
         </>
       )}
     </div>

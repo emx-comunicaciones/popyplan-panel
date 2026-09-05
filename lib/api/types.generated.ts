@@ -3283,6 +3283,34 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/panel/entidad/{org_id}/audit/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/entidad/{org_id}/audit/`.
+         *
+         *     Auditoría de la propia entidad: entradas cuyo `organization` (Fase 5,
+         *     tarea P6, `AuditLog.organization`, rellenado por `audit()` best-effort)
+         *     es esta entidad — incluye tanto las acciones sobre la propia entidad
+         *     como sobre sus objetos (comunidades, actividades, invitaciones…).
+         *     Solo `titular` (`PuedeEnEntidad('equipo')`, igual que `organization
+         *     -members`): nunca lleva `ip` (esa la ve únicamente `superadmin` en
+         *     `GET /api/safety/audit/`). Sin paginar, igual que `EntidadEventsView`
+         *     (no crece tan rápido como para necesitarlo en esta tarea).
+         */
+        get: operations["panel_entidad_audit_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/panel/entidad/{org_id}/events/": {
         parameters: {
             query?: never;
@@ -3330,6 +3358,33 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/panel/entidad/{org_id}/families/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/entidad/{org_id}/families/`.
+         *
+         *     Resumen del espacio POP Familias de la entidad: sus comunidades
+         *     `space='families'`, cuánta gente hay en ellas, próximas actividades y
+         *     últimos anuncios/recursos dirigidos a ese espacio. Mismo permiso que el
+         *     resto de vistas de resumen del panel (`ver_panel`): titular, moderador,
+         *     dinamizador, analista y referente. No es nominal (solo cuenta
+         *     comunidades y actividades, nunca lista personas), así que no hace
+         *     falta acotar por rol como en `EntidadPeopleView`.
+         */
+        get: operations["panel_entidad_families_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/panel/entidad/{org_id}/metrics/": {
         parameters: {
             query?: never;
@@ -3362,7 +3417,7 @@ export interface paths {
          *     20. Ver el módulo `panel.services.people` para el criterio exacto y
          *     el docstring de este fichero para la restricción de rol.
          */
-        get: operations["panel_entidad_people_list"];
+        get: operations["panel_entidad_people_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3384,7 +3439,7 @@ export interface paths {
          *     Ficha operativa: nunca email/teléfono/documentos/notas (invariante 9).
          *     Cada acceso audita `panel.person_viewed`.
          */
-        get: operations["panel_entidad_people_retrieve"];
+        get: operations["panel_entidad_people_retrieve_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4038,6 +4093,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/safety/audit/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/safety/audit/` — lectura de toda la auditoría de la
+         *     plataforma (Fase 5, tarea P6). Solo `superadmin`: es el único rol que
+         *     ve la IP de quien actuó (`AuditLogSerializer`, `show_ip` en el
+         *     contexto). La lectura acotada a una entidad vive en
+         *     `panel.viewsets.EntidadAuditView` (`GET
+         *     /api/panel/entidad/{id}/audit/`), sin IP, solo su propia entidad.
+         */
+        get: operations["safety_audit_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/safety/blocks/": {
         parameters: {
             query?: never;
@@ -4216,6 +4295,12 @@ export interface paths {
         /**
          * @description `?organization=<id>` — avisos aún sin atender de esa entidad,
          *     para su guardia, titular o moderadores.
+         *
+         *     Carry-over de la tarea P7 (Fase 5): sin `organization`, un rol de
+         *     plataforma (`superadmin`/`moderator`/`support`) recibe el agregado
+         *     de TODAS las entidades (misma forma de fila) — la cola global de
+         *     avisos que usa el área de plataforma. Cualquier otra cuenta sigue
+         *     recibiendo el 400 de siempre (falta el parámetro obligatorio).
          */
         get: operations["safety_help_requests_pending_list"];
         put?: never;
@@ -5586,6 +5671,14 @@ export interface components {
             rate: number | null;
             suppressed: boolean;
         };
+        /**
+         * @description Respuesta de `POST {id}/attendance/`: solo documentación de esquema
+         *     (Fase 5, tarea P6: la vista ya devolvía esta forma; faltaba declararla).
+         */
+        AttendanceResponse: {
+            user_id: number;
+            status: string;
+        };
         /** @description Fila de la lista nominal de asistentes (solo para quien organiza). */
         Attendee: {
             readonly user: components["schemas"]["UserProfile"];
@@ -5624,6 +5717,30 @@ export interface components {
          * @enum {string}
          */
         Audience749Enum: "anyone" | "community" | "organization";
+        /** @description Ficha mínima de quien hizo la acción: nunca más que su alias público. */
+        AuditActor: {
+            id: number;
+            public_name: string;
+        };
+        /**
+         * @description `GET /api/safety/audit/` y `GET /api/panel/entidad/{id}/audit/`.
+         *
+         *     `ip` no forma parte de la forma fija (`{id, actor, action, target_type,
+         *     target_id, metadata, created_at}`): solo se añade cuando el contexto
+         *     trae `show_ip=True` (`audit-list`, exclusivo de `superadmin`) — la
+         *     entidad nunca ve la IP de quien actuó.
+         */
+        AuditLog: {
+            /** Format: uuid */
+            id: string;
+            readonly actor: components["schemas"]["AuditActor"];
+            action: string;
+            target_type: string;
+            target_id: string;
+            metadata: unknown;
+            /** Format: date-time */
+            created_at: string;
+        };
         /** @description Un bloqueo mío. El preventivo no dice de qué teléfono es. */
         Block: {
             /** Format: uuid */
@@ -5819,6 +5936,11 @@ export interface components {
             /** Format: uuid */
             token: string;
         };
+        /** @description Respuesta de `POST {id}/checkin/`: solo documentación de esquema. */
+        CheckinResponse: {
+            status: string;
+            already: boolean;
+        };
         CommunitiesMetrics: {
             active: number;
             members: number | null;
@@ -5842,6 +5964,19 @@ export interface components {
             visibility?: components["schemas"]["VisibilityEnum"];
             /** Orientación declarada del espacio */
             orientation?: string;
+            /**
+             * Espacio
+             * @description POP Familias (Fase 5, tarea P6): solo las comunidades con owner_org pueden marcarse families (validado en el servicio y en el serializer, no aquí).
+             *
+             *     * `members` - Miembros
+             *     * `families` - Familias
+             */
+            space?: components["schemas"]["SpaceEnum"];
+            /**
+             * Permite cruce de espacio
+             * @description Si es True, esta comunidad se ve también desde el otro espacio (members/families) de la misma entidad.
+             */
+            allow_cross_space?: boolean;
             readonly place: components["schemas"]["PlaceRef"];
             /** Radio de referencia (km) */
             radius_km?: number;
@@ -5942,6 +6077,19 @@ export interface components {
             readonly visibility: components["schemas"]["VisibilityEnum"];
             /** Orientación declarada del espacio */
             readonly orientation: string;
+            /**
+             * Espacio
+             * @description POP Familias (Fase 5, tarea P6): solo las comunidades con owner_org pueden marcarse families (validado en el servicio y en el serializer, no aquí).
+             *
+             *     * `members` - Miembros
+             *     * `families` - Familias
+             */
+            readonly space: components["schemas"]["SpaceEnum"];
+            /**
+             * Permite cruce de espacio
+             * @description Si es True, esta comunidad se ve también desde el otro espacio (members/families) de la misma entidad.
+             */
+            readonly allow_cross_space: boolean;
             readonly place: components["schemas"]["PlaceRef"];
             /** Radio de referencia (km) */
             readonly radius_km: number;
@@ -6012,7 +6160,7 @@ export interface components {
             image?: string | null;
             is_active?: boolean;
         };
-        /** @description La comunidad del aviso, con lo justo para pintar la lista. */
+        /** @description La comunidad del aviso/reporte, con lo justo para pintar la lista. */
         CommunityRef: {
             /** Format: uuid */
             id: string;
@@ -6032,6 +6180,19 @@ export interface components {
             visibility?: components["schemas"]["VisibilityEnum"];
             /** Orientación declarada del espacio */
             orientation?: string;
+            /**
+             * Espacio
+             * @description POP Familias (Fase 5, tarea P6): solo las comunidades con owner_org pueden marcarse families (validado en el servicio y en el serializer, no aquí).
+             *
+             *     * `members` - Miembros
+             *     * `families` - Familias
+             */
+            space?: components["schemas"]["SpaceEnum"];
+            /**
+             * Permite cruce de espacio
+             * @description Si es True, esta comunidad se ve también desde el otro espacio (members/families) de la misma entidad.
+             */
+            allow_cross_space?: boolean;
             /** Radio de referencia (km) */
             radius_km?: number;
             /** Código de conducta */
@@ -6767,6 +6928,47 @@ export interface components {
             by_audience: components["schemas"]["EventsByAudience"];
         };
         /**
+         * @description `GET /api/panel/entidad/{id}/families/` — resumen del espacio POP
+         *     Familias (Fase 5, tarea P6): comunidades `space='families'` de la
+         *     entidad, cuánta gente hay en ellas, sus próximas actividades y sus
+         *     últimos anuncios/recursos dirigidos a ese espacio.
+         */
+        FamiliesSummary: {
+            communities: components["schemas"]["FamilyCommunityRow"][];
+            members_count: number;
+            upcoming_events: components["schemas"]["FamilyUpcomingEvent"][];
+            announcements: components["schemas"]["FamilyAnnouncementRow"][];
+            resources: components["schemas"]["FamilyResourceRow"][];
+        };
+        FamilyAnnouncementRow: {
+            id: number;
+            title: string;
+            /** Format: date-time */
+            sent_at: string;
+            recipients_count: number;
+        };
+        FamilyCommunityRow: {
+            id: string;
+            name: string;
+            members_count: number;
+            allow_cross_space: boolean;
+        };
+        FamilyResourceRow: {
+            id: number;
+            title: string;
+            kind: string;
+            is_featured: boolean;
+            /** Format: date-time */
+            created_at: string;
+        };
+        FamilyUpcomingEvent: {
+            id: string;
+            title: string;
+            /** Format: date-time */
+            starts_at: string;
+            community: components["schemas"]["EntityEventCommunityRef"];
+        };
+        /**
          * @description Un aviso de ayuda tal y como lo lee quien lo atiende (`pending`) o
          *     la propia persona que lo pidió.
          *
@@ -7045,6 +7247,15 @@ export interface components {
             by_weekday_hour: components["schemas"]["ByWeekdayHourRow"][];
             series: components["schemas"]["SeriesRow"][];
         };
+        /**
+         * @description Respuesta de `GET {id}/my-checkin/`: solo documentación de esquema,
+         *     la vista construye la respuesta directamente.
+         */
+        MyCheckinResponse: {
+            /** Format: uuid */
+            token: string;
+            qr_payload: string;
+        };
         NextEventRef: {
             id: string;
             title: string;
@@ -7157,6 +7368,10 @@ export interface components {
          *
          *     `organization` la fija la vista a partir de la URL: no viaja en el
          *     cuerpo. El rol inválido lo rechaza el propio `ChoiceField` (400).
+         *
+         *     Carry-over de la tarea P7 (Fase 5): `public_name`/`photo` de `user`
+         *     (solo lectura), para que el panel pinte selectores de equipo sin una
+         *     petición aparte por persona.
          */
         OrgMembership: {
             readonly id: number;
@@ -7168,6 +7383,8 @@ export interface components {
             role: components["schemas"]["OrgMembershipRoleEnum"];
             /** Format: date-time */
             readonly created_at: string;
+            readonly public_name: string;
+            readonly photo: string;
         };
         /**
          * @description Entidad a la que pertenece la cuenta, con su rol (invariante 3).
@@ -7188,6 +7405,10 @@ export interface components {
          *
          *     `organization` la fija la vista a partir de la URL: no viaja en el
          *     cuerpo. El rol inválido lo rechaza el propio `ChoiceField` (400).
+         *
+         *     Carry-over de la tarea P7 (Fase 5): `public_name`/`photo` de `user`
+         *     (solo lectura), para que el panel pinte selectores de equipo sin una
+         *     petición aparte por persona.
          */
         OrgMembershipRequest: {
             /** Cuenta */
@@ -7254,6 +7475,8 @@ export interface components {
              * @description Debe tener OrgMembership en esta entidad (se valida en la API).
              */
             on_call_user?: number | null;
+            /** Encuesta post-actividad activa */
+            post_event_survey_enabled?: boolean;
         };
         /**
          * @description `POST /api/organizations/` — alta de entidad (verificador/superadmin).
@@ -7315,8 +7538,10 @@ export interface components {
              * @description Debe tener OrgMembership en esta entidad (se valida en la API).
              */
             on_call_user?: number | null;
+            /** Encuesta post-actividad activa */
+            post_event_survey_enabled?: boolean;
         };
-        PaginatedAttendeeList: {
+        PaginatedAuditLogList: {
             /** @example 123 */
             count?: number;
             /**
@@ -7329,7 +7554,7 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["Attendee"][];
+            results?: components["schemas"]["AuditLog"][];
         };
         PaginatedBlockAdminList: {
             /** @example 123 */
@@ -7526,21 +7751,6 @@ export interface components {
             previous?: string | null;
             results?: components["schemas"]["NotificationTemplate"][];
         };
-        PaginatedOrgMembershipList: {
-            /** @example 123 */
-            count?: number;
-            /**
-             * Format: uri
-             * @example http://api.example.org/accounts/?page=4
-             */
-            next?: string | null;
-            /**
-             * Format: uri
-             * @example http://api.example.org/accounts/?page=2
-             */
-            previous?: string | null;
-            results?: components["schemas"]["OrgMembership"][];
-        };
         PaginatedOrganizationList: {
             /** @example 123 */
             count?: number;
@@ -7585,21 +7795,6 @@ export interface components {
              */
             previous?: string | null;
             results?: components["schemas"]["PlanSubCategory"][];
-        };
-        PaginatedReferenceList: {
-            /** @example 123 */
-            count?: number;
-            /**
-             * Format: uri
-             * @example http://api.example.org/accounts/?page=4
-             */
-            next?: string | null;
-            /**
-             * Format: uri
-             * @example http://api.example.org/accounts/?page=2
-             */
-            previous?: string | null;
-            results?: components["schemas"]["Reference"][];
         };
         PaginatedReportList: {
             /** @example 123 */
@@ -7693,6 +7888,19 @@ export interface components {
             visibility?: components["schemas"]["VisibilityEnum"];
             /** Orientación declarada del espacio */
             orientation?: string;
+            /**
+             * Espacio
+             * @description POP Familias (Fase 5, tarea P6): solo las comunidades con owner_org pueden marcarse families (validado en el servicio y en el serializer, no aquí).
+             *
+             *     * `members` - Miembros
+             *     * `families` - Familias
+             */
+            space?: components["schemas"]["SpaceEnum"];
+            /**
+             * Permite cruce de espacio
+             * @description Si es True, esta comunidad se ve también desde el otro espacio (members/families) de la misma entidad.
+             */
+            allow_cross_space?: boolean;
             /** Radio de referencia (km) */
             radius_km?: number;
             /** Código de conducta */
@@ -7912,6 +8120,8 @@ export interface components {
              * @description Debe tener OrgMembership en esta entidad (se valida en la API).
              */
             on_call_user?: number | null;
+            /** Encuesta post-actividad activa */
+            post_event_survey_enabled?: boolean;
         };
         /**
          * @description Categoría de actividad, con sus subcategorías activas anidadas.
@@ -8092,6 +8302,19 @@ export interface components {
             attended_period: number;
             referent: components["schemas"]["ReferentRef"] | null;
             next_event: components["schemas"]["NextEventRef"] | null;
+        };
+        /**
+         * @description Sobre de paginación real de `GET /api/panel/entidad/{id}/people/`
+         *     (`PageNumberPagination`, 20 por página): la vista no devuelve un array
+         *     plano de `PersonRowSerializer`, sino `{count, next, previous, results}`
+         *     — declarado aparte porque `EntidadPeopleView` es un `APIView` plano
+         *     (drf-spectacular no infiere la paginación sin un `GenericAPIView`).
+         */
+        PersonRowPage: {
+            count: number;
+            next: string | null;
+            previous: string | null;
+            results: components["schemas"]["PersonRow"][];
         };
         /** @description Serializer para verificar código de teléfono */
         PhoneVerificationCodeRequest: {
@@ -8360,6 +8583,10 @@ export interface components {
          *     El cuerpo de alta es `{"user": <id>, "referent_user": <id>}`:
          *     `referent_user` se resuelve a la `OrgMembership` con rol `referente` de
          *     esa persona en la entidad (400 si no la tiene).
+         *
+         *     Carry-over de la tarea P7 (Fase 5): `public_name`/`photo` de `user` (la
+         *     persona con referente asignado, no el propio referente), mismo criterio
+         *     que `OrgMembershipSerializer`.
          */
         Reference: {
             readonly id: number;
@@ -8374,6 +8601,8 @@ export interface components {
             user: number;
             /** Format: date-time */
             readonly created_at: string;
+            readonly public_name: string;
+            readonly photo: string;
         };
         /**
          * @description `GET`/`POST`/`DELETE /api/organizations/{id}/references/`.
@@ -8381,6 +8610,10 @@ export interface components {
          *     El cuerpo de alta es `{"user": <id>, "referent_user": <id>}`:
          *     `referent_user` se resuelve a la `OrgMembership` con rol `referente` de
          *     esa persona en la entidad (400 si no la tiene).
+         *
+         *     Carry-over de la tarea P7 (Fase 5): `public_name`/`photo` de `user` (la
+         *     persona con referente asignado, no el propio referente), mismo criterio
+         *     que `OrgMembershipSerializer`.
          */
         ReferenceRequest: {
             /** Persona */
@@ -8423,6 +8656,11 @@ export interface components {
         /**
          * @description Un reporte tal y como lo lee la cola: sin el contenido del objetivo
          *     (eso solo se sirve en el detalle, `ReportDetailSerializer`).
+         *
+         *     Carry-over de la tarea P7 (Fase 5): `organization_display`/
+         *     `community_display` llevan `{id, name}` (o `None`) para pintar la cola y
+         *     el detalle sin una petición aparte por fila, igual criterio que
+         *     `HelpRequestSerializer` en este mismo módulo.
          */
         Report: {
             /** Format: uuid */
@@ -8471,6 +8709,8 @@ export interface components {
              * Format: date-time
              */
             readonly created_at: string;
+            readonly organization_display: components["schemas"]["OrganizationRef"] | null;
+            readonly community_display: components["schemas"]["CommunityRef"] | null;
         };
         /** @description Cuerpo de un reporte: reportar en dos toques. */
         ReportCreateRequest: {
@@ -8534,6 +8774,8 @@ export interface components {
              * Format: date-time
              */
             readonly created_at: string;
+            readonly organization_display: components["schemas"]["OrganizationRef"] | null;
+            readonly community_display: components["schemas"]["CommunityRef"] | null;
             readonly target: components["schemas"]["ReportTarget"];
         };
         /** @description Cuerpo del escalado: una nota opcional para quien lo reciba. */
@@ -8648,6 +8890,12 @@ export interface components {
             people: number | null;
             suppressed: boolean;
         };
+        /**
+         * @description * `members` - Miembros
+         *     * `families` - Familias
+         * @enum {string}
+         */
+        SpaceEnum: "members" | "families";
         /**
          * @description * `scheduled` - Programada
          *     * `cancelled` - Cancelada
@@ -14100,8 +14348,22 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["EventDetail"];
+                    "application/json": components["schemas"]["AttendanceResponse"];
                 };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -14110,8 +14372,6 @@ export interface operations {
             query?: {
                 /** @description Which field to use when ordering the results. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
-                page?: number;
                 /** @description A search term. */
                 search?: string;
             };
@@ -14129,7 +14389,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedAttendeeList"];
+                    "application/json": components["schemas"]["Attendee"][];
                 };
             };
         };
@@ -14179,8 +14439,29 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["EventDetail"];
+                    "application/json": components["schemas"]["CheckinResponse"];
                 };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -14223,8 +14504,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["EventDetail"];
+                    "application/json": components["schemas"]["MyCheckinResponse"];
                 };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -15909,8 +16197,6 @@ export interface operations {
             query?: {
                 /** @description Which field to use when ordering the results. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
-                page?: number;
                 /** @description A search term. */
                 search?: string;
             };
@@ -15928,7 +16214,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedOrgMembershipList"];
+                    "application/json": components["schemas"]["OrgMembership"][];
                 };
             };
             201: {
@@ -15974,8 +16260,6 @@ export interface operations {
             query?: {
                 /** @description Which field to use when ordering the results. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
-                page?: number;
                 /** @description A search term. */
                 search?: string;
             };
@@ -15999,7 +16283,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedOrgMembershipList"];
+                    "application/json": components["schemas"]["OrgMembership"][];
                 };
             };
             201: {
@@ -16045,8 +16329,6 @@ export interface operations {
             query?: {
                 /** @description Which field to use when ordering the results. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
-                page?: number;
                 /** @description A search term. */
                 search?: string;
             };
@@ -16064,7 +16346,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedOrgMembershipList"];
+                    "application/json": components["schemas"]["OrgMembership"][];
                 };
             };
             201: {
@@ -16110,8 +16392,6 @@ export interface operations {
             query?: {
                 /** @description Which field to use when ordering the results. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
-                page?: number;
                 /** @description A search term. */
                 search?: string;
             };
@@ -16129,7 +16409,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedReferenceList"];
+                    "application/json": components["schemas"]["Reference"][];
                 };
             };
             201: {
@@ -16175,8 +16455,6 @@ export interface operations {
             query?: {
                 /** @description Which field to use when ordering the results. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
-                page?: number;
                 /** @description A search term. */
                 search?: string;
             };
@@ -16200,7 +16478,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedReferenceList"];
+                    "application/json": components["schemas"]["Reference"][];
                 };
             };
             201: {
@@ -16246,8 +16524,6 @@ export interface operations {
             query?: {
                 /** @description Which field to use when ordering the results. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
-                page?: number;
                 /** @description A search term. */
                 search?: string;
             };
@@ -16265,7 +16541,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedReferenceList"];
+                    "application/json": components["schemas"]["Reference"][];
                 };
             };
             201: {
@@ -16439,6 +16715,43 @@ export interface operations {
             };
         };
     };
+    panel_entidad_audit_list: {
+        parameters: {
+            query?: {
+                /** @description Nombre exacto de la acción. */
+                action?: string;
+                /** @description Id de quien hizo la acción. */
+                actor?: number;
+                /** @description Fecha ISO de inicio (inclusive). */
+                since?: string;
+                /** @description Fecha ISO de fin (inclusive). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditLog"][];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     panel_entidad_events_list: {
         parameters: {
             query?: {
@@ -16531,6 +16844,34 @@ export interface operations {
             };
         };
     };
+    panel_entidad_families_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamiliesSummary"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     panel_entidad_metrics_retrieve: {
         parameters: {
             query?: {
@@ -16573,7 +16914,7 @@ export interface operations {
             };
         };
     };
-    panel_entidad_people_list: {
+    panel_entidad_people_retrieve: {
         parameters: {
             query?: {
                 /** @description Fecha ISO: solo personas con alta o participación desde entonces. */
@@ -16604,7 +16945,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PersonRow"][];
+                    "application/json": components["schemas"]["PersonRowPage"];
                 };
             };
             /** @description No response body */
@@ -16623,7 +16964,7 @@ export interface operations {
             };
         };
     };
-    panel_entidad_people_retrieve: {
+    panel_entidad_people_retrieve_2: {
         parameters: {
             query?: {
                 /** @description Fecha ISO de inicio del periodo (por defecto, hace 30 días). */
@@ -17798,6 +18139,51 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Review"];
                 };
+            };
+        };
+    };
+    safety_audit_list: {
+        parameters: {
+            query?: {
+                /** @description Nombre exacto de la acción (p. ej. "organization.created"). */
+                action?: string;
+                /** @description Id de quien hizo la acción. */
+                actor?: number;
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description A search term. */
+                search?: string;
+                /** @description Fecha ISO de inicio (inclusive). */
+                since?: string;
+                /** @description Id del objetivo. */
+                target_id?: string;
+                /** @description `app_label.model` del objetivo (p. ej. "entities.organization"). */
+                target_type?: string;
+                /** @description Fecha ISO de fin (inclusive). */
+                until?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedAuditLogList"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

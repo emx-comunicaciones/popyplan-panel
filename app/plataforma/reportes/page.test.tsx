@@ -24,12 +24,14 @@ afterEach(() => {
 
 describe("PlataformaReportesPage", () => {
   it("moderator ve la cola global con la columna de entidad y el escalado", async () => {
-    apiFetchMock.mockResolvedValueOnce({
-      count: 1,
-      next: null,
-      previous: null,
-      results: [buildReportRow({ organization: 7, escalated_at: "2026-09-01T00:00:00Z" })],
-    });
+    // Array plano de verdad (no `{count, ...}`, docs/SEGURIDAD_Y_MODERACION.md §4).
+    apiFetchMock.mockResolvedValueOnce([
+      buildReportRow({
+        organization: 7,
+        organization_display: { id: 7, name: "Asociación Demo" },
+        escalated_at: "2026-09-01T00:00:00Z",
+      }),
+    ]);
     getServerSessionMock.mockResolvedValue({
       token: "t",
       me: buildMe({ org_memberships: [] }),
@@ -40,7 +42,7 @@ describe("PlataformaReportesPage", () => {
     render(element);
 
     expect(screen.getByRole("heading", { name: "Reportes" })).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByText("Entidad #7")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("Asociación Demo")).toBeInTheDocument());
     expect(screen.getByText("Escalado")).toBeInTheDocument();
   });
 

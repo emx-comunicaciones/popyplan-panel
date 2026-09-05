@@ -121,7 +121,7 @@ describe("EntidadConfiguracionPage", () => {
   it("quitar del equipo llama a la mutación con el user id", async () => {
     setDefaultMocks();
     useOrgMembersMock.mockReturnValue({
-      data: [buildOrgMembershipFull({ user: 88 })],
+      data: [buildOrgMembershipFull({ user: 88, public_name: "Carla" })],
       isError: false,
       error: null,
     });
@@ -131,7 +131,7 @@ describe("EntidadConfiguracionPage", () => {
 
     await renderPage();
 
-    const equipoSection = screen.getByText("Usuario #88").closest("table") as HTMLElement;
+    const equipoSection = screen.getByText("Carla").closest("table") as HTMLElement;
     await user.click(within(equipoSection).getByRole("button", { name: "Quitar" }));
 
     expect(removeMutate).toHaveBeenCalledWith(88);
@@ -154,7 +154,15 @@ describe("EntidadConfiguracionPage", () => {
 
   it("lista referencias existentes y quitar llama a la mutación", async () => {
     setDefaultMocks();
-    const reference = { id: 1, organization: 7, referent: 9, user: 42, created_at: "2026-01-05T09:00:00Z" } as Reference;
+    const reference = {
+      id: 1,
+      organization: 7,
+      referent: 9,
+      user: 42,
+      created_at: "2026-01-05T09:00:00Z",
+      public_name: "Bea",
+      photo: "",
+    } as Reference;
     useOrgReferencesMock.mockReturnValue({ data: [reference], isError: false, error: null });
     const removeMutate = vi.fn();
     useRemoveOrgReferenceMock.mockReturnValue({ mutate: removeMutate, isPending: false, isError: false });
@@ -162,7 +170,7 @@ describe("EntidadConfiguracionPage", () => {
 
     await renderPage();
 
-    expect(screen.getByText("Persona #42 — referente #9")).toBeInTheDocument();
+    expect(screen.getByText("Bea — referente #9")).toBeInTheDocument();
     const referenciasCard = screen.getByText("Referencias").parentElement as HTMLElement;
     await user.click(within(referenciasCard).getByRole("button", { name: "Quitar" }));
 

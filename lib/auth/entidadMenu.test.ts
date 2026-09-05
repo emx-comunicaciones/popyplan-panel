@@ -11,12 +11,13 @@ describe("entidadMenuFor", () => {
     expect(entidadMenuFor("moderador")).toEqual([...ENTIDAD_MENU_ITEMS]);
   });
 
-  it("dinamizador no ve Configuración, Reportes, Comunicaciones ni Familias (sin página real)", () => {
+  it("dinamizador no ve Configuración, Reportes, Comunicaciones, Informes ni Familias (sin permiso o sin página real)", () => {
     const menu = entidadMenuFor("dinamizador");
 
     expect(menu).not.toContain("configuracion");
     expect(menu).not.toContain("reportes");
     expect(menu).not.toContain("comunicaciones");
+    expect(menu).not.toContain("informes");
     expect(menu).not.toContain("familias");
     expect(menu).toContain("inicio");
     expect(menu).toContain("actividades");

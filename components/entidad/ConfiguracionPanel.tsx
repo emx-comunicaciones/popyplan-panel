@@ -238,7 +238,7 @@ function Equipo({ orgId }: { orgId: number | string }) {
             <tbody>
               {members.data.map((member) => (
                 <tr key={member.id} className="border-b border-border-light">
-                  <td className="px-3 py-2 text-text-base">Usuario #{member.user}</td>
+                  <td className="px-3 py-2 text-text-base">{member.public_name}</td>
                   <td className="px-3 py-2 text-text-base">{member.role}</td>
                   <td className="px-3 py-2 text-text-base">
                     <Button
@@ -328,7 +328,7 @@ function Referencias({ orgId }: { orgId: number | string }) {
           {references.data.map((reference) => (
             <li key={reference.id} className="flex items-center justify-between gap-2">
               <span>
-                Persona #{reference.user} — referente #{reference.referent}
+                {reference.public_name} — referente #{reference.referent}
               </span>
               <Button
                 type="button"

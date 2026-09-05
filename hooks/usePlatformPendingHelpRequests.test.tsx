@@ -9,8 +9,6 @@ vi.mock("@/lib/api/client", async () => {
   return { ...actual, apiFetch: apiFetchMock };
 });
 
-import { ApiError } from "@/lib/api/client";
-
 import { usePlatformPendingHelpRequests } from "./usePlatformPendingHelpRequests";
 
 afterEach(() => {
@@ -21,16 +19,6 @@ function wrapper({ children }: { children: ReactNode }) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }
-
-const ORGS_PAGE = {
-  count: 2,
-  next: null,
-  previous: null,
-  results: [
-    { id: 1, name: "Ayto", slug: "ayto", org_type: "administracion", is_verified: true },
-    { id: 2, name: "Asoc", slug: "asoc", org_type: "asociacion", is_verified: true },
-  ],
-};
 
 const HR = {
   id: 1,
@@ -47,28 +35,21 @@ const HR = {
 };
 
 describe("usePlatformPendingHelpRequests", () => {
-  it("recorre las entidades y agrega los avisos pendientes, tolerando 403 por entidad", async () => {
-    apiFetchMock
-      .mockResolvedValueOnce(ORGS_PAGE) // organizations page 1
-      .mockResolvedValueOnce([HR]) // pending org 1
-      .mockRejectedValueOnce(new ApiError(403, null)); // pending org 2: sin acceso
+  it("pide el agregado de plataforma (sin `organization`) en una sola llamada", async () => {
+    apiFetchMock.mockResolvedValueOnce([HR]);
 
     const { result } = renderHook(() => usePlatformPendingHelpRequests(), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toEqual([HR]);
-    expect(apiFetchMock).toHaveBeenCalledWith("/api/organizations/?page=1");
-    expect(apiFetchMock).toHaveBeenCalledWith("/api/safety/help-requests/pending/?organization=1");
-    expect(apiFetchMock).toHaveBeenCalledWith("/api/safety/help-requests/pending/?organization=2");
+    expect(apiFetchMock).toHaveBeenCalledTimes(1);
+    expect(apiFetchMock).toHaveBeenCalledWith("/api/safety/help-requests/pending/");
   });
 
-  it("ordena los avisos de varias entidades por fecha, más reciente primero", async () => {
+  it("ordena los avisos por fecha, más reciente primero", async () => {
     const older = { ...HR, id: 10, created_at: "2026-09-01T09:00:00Z" };
     const newer = { ...HR, id: 11, created_at: "2026-09-02T09:00:00Z" };
-    apiFetchMock
-      .mockResolvedValueOnce(ORGS_PAGE)
-      .mockResolvedValueOnce([older])
-      .mockResolvedValueOnce([newer]);
+    apiFetchMock.mockResolvedValueOnce([older, newer]);
 
     const { result } = renderHook(() => usePlatformPendingHelpRequests(), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -76,11 +57,8 @@ describe("usePlatformPendingHelpRequests", () => {
     expect(result.current.data).toEqual([newer, older]);
   });
 
-  it("lista vacía si nadie es guardia/titular/moderador de ninguna entidad", async () => {
-    apiFetchMock
-      .mockResolvedValueOnce(ORGS_PAGE)
-      .mockRejectedValueOnce(new ApiError(403, null))
-      .mockRejectedValueOnce(new ApiError(403, null));
+  it("lista vacía si no hay avisos pendientes en ninguna entidad", async () => {
+    apiFetchMock.mockResolvedValueOnce([]);
 
     const { result } = renderHook(() => usePlatformPendingHelpRequests(), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -88,7 +66,7 @@ describe("usePlatformPendingHelpRequests", () => {
     expect(result.current.data).toEqual([]);
   });
 
-  it("un fallo al listar entidades sí es un error de página", async () => {
+  it("un fallo de la petición es un error de página", async () => {
     apiFetchMock.mockRejectedValueOnce(new Error("caído"));
 
     const { result } = renderHook(() => usePlatformPendingHelpRequests(), { wrapper });

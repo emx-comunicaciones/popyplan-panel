@@ -18,6 +18,8 @@ export function buildEntityCommunityRow(
       subcategories: [],
     },
     owner: { type: "organization", id: 7, name: "Asociación Vecinal Alfaville", verified: true },
+    space: "members",
+    allow_cross_space: false,
     visibility: "open",
     orientation: "",
     place: { ine_code: "30001", name: "Alfaville", prov_name: "Murcia" },

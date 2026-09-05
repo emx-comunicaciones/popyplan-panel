@@ -13,7 +13,6 @@ import { render, screen, waitFor } from "@/test-utils/render";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildHelpRequest } from "@/test-utils/fixtures/helpRequest";
 import { buildMe } from "@/test-utils/fixtures/me";
-import { buildOrganization } from "@/test-utils/fixtures/organization";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 
 import PlataformaAyudaPage from "./page";
@@ -24,12 +23,9 @@ afterEach(() => {
 });
 
 describe("PlataformaAyudaPage", () => {
-  it("moderator ve los avisos agregados de las entidades donde tiene acceso", async () => {
+  it("moderator ve los avisos agregados de todas las entidades (ruta de plataforma sin `organization`)", async () => {
     apiFetchMock.mockImplementation(async (path: string) => {
-      if (path.startsWith("/api/organizations/?page=1")) {
-        return { count: 1, next: null, previous: null, results: [buildOrganization({ id: 7 })] };
-      }
-      if (path === "/api/safety/help-requests/pending/?organization=7") {
+      if (path === "/api/safety/help-requests/pending/") {
         return [buildHelpRequest()];
       }
       throw new Error(`sin mock para ${path}`);
@@ -46,6 +42,7 @@ describe("PlataformaAyudaPage", () => {
     expect(screen.getByRole("heading", { name: "Ayuda" })).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText("Marta L.")).toBeInTheDocument());
     expect(screen.getByRole("button", { name: "He contactado" })).toBeInTheDocument();
+    expect(apiFetchMock).toHaveBeenCalledWith("/api/safety/help-requests/pending/");
   });
 
   it("verifier ve «Sin acceso»", async () => {

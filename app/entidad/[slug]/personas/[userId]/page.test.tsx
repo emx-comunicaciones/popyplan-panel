@@ -1,5 +1,5 @@
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
@@ -8,9 +8,13 @@ import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 const usePersonMock = vi.hoisted(() => vi.fn());
 const useAssignReferentMock = vi.hoisted(() => vi.fn());
+const useOrgMembersMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("@/hooks/usePerson", () => ({ usePerson: usePersonMock }));
 vi.mock("@/hooks/useAssignReferent", () => ({ useAssignReferent: useAssignReferentMock }));
+vi.mock("@/hooks/useOrgMembers", () => ({ useOrgMembers: useOrgMembersMock }));
+
+import { buildOrgMembershipFull } from "@/test-utils/fixtures/orgMembershipFull";
 
 import EntidadPersonaPage from "./page";
 
@@ -29,10 +33,19 @@ const PERSON_DETAIL = {
   verification_level: 1,
 };
 
+beforeEach(() => {
+  useOrgMembersMock.mockReturnValue({
+    data: [buildOrgMembershipFull({ user: 9, role: "referente", public_name: "Coro" })],
+    isError: false,
+    error: null,
+  });
+});
+
 afterEach(() => {
   getServerSessionMock.mockReset();
   usePersonMock.mockReset();
   useAssignReferentMock.mockReset();
+  useOrgMembersMock.mockReset();
 });
 
 async function renderPage(role = "titular", slug = "alfaville", userId = "42") {
@@ -104,7 +117,7 @@ describe("EntidadPersonaPage", () => {
     const user = userEvent.setup();
 
     await renderPage("titular");
-    await user.type(screen.getByLabelText("Id de la persona referente"), "9");
+    await user.selectOptions(screen.getByLabelText("Persona referente"), "9");
     await user.click(screen.getByRole("button", { name: "Asignar referente" }));
 
     expect(mutate).toHaveBeenCalledWith({ userId: 42, referentUserId: 9 });

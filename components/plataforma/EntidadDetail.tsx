@@ -2,18 +2,18 @@
 
 /**
  * Ficha de una entidad desde plataforma (tarea W5): Datos, Paraguas,
- * Ámbito, Equipo, Métricas, Comunidades y actividades. A diferencia del
- * panel de la propia entidad (`ConfiguracionPanel.tsx`, tarea W4a), la
- * plataforma **no** es `titular` de la entidad que mira — varias
- * acciones que ahí funcionan aquí típicamente reciben 403
- * (`entities/permissions.py::puede` solo mira `OrgMembership`, sin
- * excepción para roles de plataforma): Equipo/Referencias (`equipo`,
- * solo titular) y Métricas (`ver_panel`, solo roles de `OrgMembership`)
- * son ejemplos documentados en el informe de esta tarea. Se muestran de
- * todos modos (honestidad de contrato: si algún día cambia, o si quien
- * mira además tiene una `OrgMembership` en esa entidad, funcionan solas)
- * pero con un aviso «Sin acceso» explícito en vez de fingir que
- * funcionan.
+ * Ámbito, Equipo, Métricas, Comunidades y actividades. Carry-over
+ * cerrado en la tarea W6: hasta la tarea backend P7, Equipo y Métricas
+ * daban 403 para la plataforma sin membresía real en la entidad
+ * (`entities/permissions.py::puede`/`PuedeEnEntidad('ver_panel')` no
+ * reconocían ningún rol de plataforma). Desde P7, `panel/permissions.py
+ * ::PuedeEnEntidad` tiene un atajo (`docs/PANEL.md` §10.2): `superadmin`
+ * y `moderator` pasan las cinco comprobaciones del panel (incluidas
+ * `equipo` y `ver_panel`) sin membresía real; `support` solo `ver_panel`
+ * (ve Métricas, no Equipo); `verifier` (o sin rol de plataforma) sigue
+ * dependiendo solo de su membresía real. Los errores «Sin acceso» de
+ * abajo, por tanto, solo deberían verse hoy con `verifier` o con una
+ * membresía real insuficiente — no es ya el caso general.
  */
 import { useState } from "react";
 
@@ -277,9 +277,9 @@ function EquipoTab({ orgId }: { orgId: number | string }) {
     <div className="flex flex-col gap-4">
       <p className="text-xs text-text-secondary">
         El equipo y las referencias los gestiona el titular de la entidad (permiso «equipo»,
-        `docs/SEGURIDAD_Y_MODERACION.md` §8): la plataforma no tiene ese permiso salvo que
-        además tenga una membresía propia en esta entidad — normalmente esto mostrará «sin
-        acceso».
+        `docs/SEGURIDAD_Y_MODERACION.md` §8). Desde la tarea backend P7, `superadmin` y
+        `moderator` de plataforma también pueden verlo y gestionarlo sin membresía propia
+        (`docs/PANEL.md` §10.2); `support` y `verifier` no.
       </p>
 
       <Card title="Equipo">
@@ -342,7 +342,7 @@ function EquipoTab({ orgId }: { orgId: number | string }) {
             {members.data.map((member) => (
               <li key={member.user} className="flex items-center justify-between gap-2">
                 <span>
-                  Usuario #{member.user} — {member.role}
+                  {member.public_name} — {member.role}
                 </span>
                 <Button
                   type="button"
@@ -419,7 +419,7 @@ function EquipoTab({ orgId }: { orgId: number | string }) {
             {references.data.map((reference) => (
               <li key={reference.id} className="flex items-center justify-between gap-2">
                 <span>
-                  Persona #{reference.user} — referente #{reference.referent}
+                  {reference.public_name} — referente #{reference.referent}
                 </span>
                 <Button
                   type="button"
@@ -447,7 +447,7 @@ function MetricasTab({ orgId }: { orgId: number | string }) {
       return (
         <EmptyState
           title="Sin acceso"
-          description="La plataforma no tiene rol en esta entidad. Usa el menú «Métricas» de plataforma, agrupado por entidad, para ver sus cifras agregadas."
+          description="Tu rol de plataforma no da acceso a las métricas de esta entidad (solo superadmin, moderator y support lo tienen, docs/PANEL.md §10.2). Usa el menú «Métricas» de plataforma, agrupado por entidad, para ver sus cifras agregadas."
         />
       );
     }

@@ -80,7 +80,7 @@ export function ReporteDetail({ reportId, readOnly = false }: ReporteDetailProps
           <dt className="text-text-secondary">Asignado a</dt>
           <dd className="text-text-base">{data.assigned_to ?? "Sin asignar"}</dd>
           <dt className="text-text-secondary">Entidad</dt>
-          <dd className="text-text-base">{data.organization ? `Entidad #${data.organization}` : "Global"}</dd>
+          <dd className="text-text-base">{data.organization_display?.name ?? "Global"}</dd>
           {data.escalated_at ? (
             <>
               <dt className="text-text-secondary">Escalado</dt>

@@ -28,7 +28,15 @@ function wrapper({ children }: { children: ReactNode }) {
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }
 
-const REFERENCE = { id: 1, organization: 7, referent: 9, user: 42, created_at: "2026-01-05T09:00:00Z" } as Reference;
+const REFERENCE = {
+  id: 1,
+  organization: 7,
+  referent: 9,
+  user: 42,
+  created_at: "2026-01-05T09:00:00Z",
+  public_name: "Bea",
+  photo: "",
+} as Reference;
 
 describe("useOrgReferences", () => {
   it("pide la lista de referencias", async () => {

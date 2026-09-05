@@ -11,13 +11,16 @@ describe("formatCount", () => {
     expect(formatCount(4)).toBe("4");
   });
 
-  it("suppressed → '<5', aunque el value no sea null", () => {
-    expect(formatCount(3, true)).toBe("<5");
+  it("value null + suppressed → '<5'", () => {
     expect(formatCount(null, true)).toBe("<5");
   });
 
-  it("value null sin suppressed → '—'", () => {
+  it("value null sin suppressed → '—' (sin dato, no suprimido)", () => {
     expect(formatCount(null)).toBe("—");
+  });
+
+  it("con value no nulo se pinta el valor real, aunque `suppressed` sea true (fix de carry-over W6: el `suppressed` es de toda la sección, no de esta celda — docs/PANEL.md §1.4/§1.5)", () => {
+    expect(formatCount(8, true)).toBe("8");
   });
 });
 
@@ -30,11 +33,15 @@ describe("formatPct", () => {
     expect(formatPct(0.7272727272727273)).toBe("72,7 %");
   });
 
-  it("suppressed → '<5'", () => {
+  it("value null + suppressed → '<5'", () => {
     expect(formatPct(null, true)).toBe("<5");
   });
 
   it("value null sin suppressed → '—' (denominador 0, docs/PANEL.md §1.4)", () => {
     expect(formatPct(null)).toBe("—");
+  });
+
+  it("con value no nulo se pinta el valor real, aunque `suppressed` sea true", () => {
+    expect(formatPct(0.75, true)).toBe("75,0 %");
   });
 });

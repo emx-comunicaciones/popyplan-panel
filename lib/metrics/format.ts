@@ -8,6 +8,21 @@
  * concentran esa regla en un solo sitio: los componentes de
  * `components/metrics/*` nunca deciden por sí mismos si algo está
  * suprimido, solo pintan la cadena que estas funciones ya han resuelto.
+ *
+ * **Fix de carry-over (tarea W6, hallazgo documentado por la tarea
+ * W3):** el esquema (`docs/PANEL.md` §1.5) lleva un único `suppressed`
+ * por *sección* (`people.suppressed`, `attendance.suppressed`…), no uno
+ * por celda — es el «o» de las celdas suprimibles de esa sección. Con
+ * una combinación real de celdas mixtas (p. ej. `attendance.attended: 8`
+ * visible junto a `attendance.registered: null` suprimido en la misma
+ * respuesta, ver el ejemplo de `docs/PANEL.md` §1.4), pasar el
+ * `suppressed` de la sección a **todas** sus celdas pintaba «<5» hasta
+ * en la que sí tenía valor. La regla correcta: una celda solo es «<5»
+ * cuando su **propio valor** llega `null` (nunca cuando solo `value` es
+ * `null` porque no hay denominador, como `attendance.rate` sin
+ * registros) *y* la sección está marcada `suppressed`; con `value` no
+ * nulo, se pinta el valor real sea cual sea el `suppressed` de la
+ * sección.
  */
 
 const INTEGER_FORMATTER = new Intl.NumberFormat("es-ES", {
@@ -19,16 +34,19 @@ const PERCENT_FORMATTER = new Intl.NumberFormat("es-ES", {
   maximumFractionDigits: 1,
 });
 
-/** `formatCount(1284) → '1.284'`; `formatCount(null, true) → '<5'`. */
+/**
+ * `formatCount(1284) → '1.284'`; `formatCount(null, true) → '<5'`;
+ * `formatCount(8, true) → '8'` (la propia celda no está suprimida,
+ * aunque la sección sí lo esté por otra celda hermana — ver el fix de
+ * arriba).
+ */
 export function formatCount(value: number | null, suppressed = false): string {
-  if (suppressed) return "<5";
-  if (value === null) return "—";
+  if (value === null) return suppressed ? "<5" : "—";
   return INTEGER_FORMATTER.format(value);
 }
 
 /** `formatPct(0.75) → '75,0 %'`; `formatPct(null, true) → '<5'`. */
 export function formatPct(value: number | null, suppressed = false): string {
-  if (suppressed) return "<5";
-  if (value === null) return "—";
+  if (value === null) return suppressed ? "<5" : "—";
   return `${PERCENT_FORMATTER.format(value * 100)} %`;
 }

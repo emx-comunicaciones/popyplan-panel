@@ -19,6 +19,8 @@ export function buildReportRow(overrides: Partial<ReportRow> = {}): ReportRow {
     resolved_at: null,
     escalated_at: null,
     created_at: "2026-09-01T10:00:00Z",
+    organization_display: { id: 7, name: "Asociación Demo" },
+    community_display: null,
     ...overrides,
   };
 }

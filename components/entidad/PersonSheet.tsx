@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useAssignReferent } from "@/hooks/useAssignReferent";
+import { useOrgMembers } from "@/hooks/useOrgMembers";
 import { usePerson } from "@/hooks/usePerson";
 import { presetPeriod } from "@/lib/metrics/period";
 
@@ -36,6 +37,15 @@ const ATTENDANCE_LABELS: Record<string, string> = {
   no_show: "No asistió",
 };
 
+/**
+ * Carry-over de la tarea W3 cerrado en W6 (pregunta 13 de
+ * `docs/preguntas-diseno.md`): antes pedía el id de usuario a mano
+ * porque no había forma de nombrar al equipo con rol `referente`; ahora
+ * `useOrgMembers` (`GET /api/organizations/{id}/members/`) lleva
+ * `public_name` (`docs/PANEL.md` §10.3, tarea backend P7), así que el
+ * formulario es un desplegable con nombre, igual que
+ * `components/people/AddPersonDialog.tsx`.
+ */
 function AssignReferentForm({
   orgId,
   userId,
@@ -44,7 +54,10 @@ function AssignReferentForm({
   userId: number | string;
 }) {
   const [referentUserId, setReferentUserId] = useState("");
+  const members = useOrgMembers(orgId);
   const assignReferent = useAssignReferent(orgId);
+
+  const referentes = (members.data ?? []).filter((member) => member.role === "referente");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -58,15 +71,21 @@ function AssignReferentForm({
       <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
         <div>
           <label htmlFor="referent-user-id" className="mb-1 block text-sm font-medium text-text-form">
-            Id de la persona referente
+            Persona referente
           </label>
-          <input
+          <select
             id="referent-user-id"
-            type="number"
             value={referentUserId}
             onChange={(event) => setReferentUserId(event.target.value)}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
-          />
+          >
+            <option value="">Selecciona una persona</option>
+            {referentes.map((member) => (
+              <option key={member.user} value={member.user}>
+                {member.public_name}
+              </option>
+            ))}
+          </select>
         </div>
         <Button type="submit" disabled={assignReferent.isPending}>
           {assignReferent.isPending ? "Asignando…" : "Asignar referente"}

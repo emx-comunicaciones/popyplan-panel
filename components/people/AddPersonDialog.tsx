@@ -9,8 +9,9 @@
  * miembros del equipo con rol `referente` (`useOrgMembers`, filtrado en
  * el cliente) — ninguno de los dos lleva nombre de persona
  * (`OrgMembership` no expone nombre de cuenta, invariante 1/9), así que
- * el referente se etiqueta por su id de usuario, igual que
- * `components/entidad/PersonSheet.tsx::AssignReferentForm`.
+ * ambos se etiquetan por `public_name` (carry-over de la tarea P7,
+ * `docs/PANEL.md` §10.3: `OrgMembership` ya lleva `public_name`/`photo`
+ * de `user`), igual que `components/entidad/PersonSheet.tsx::AssignReferentForm`.
  */
 import { useState, type FormEvent } from "react";
 
@@ -159,7 +160,7 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
             <option value="">Sin referente</option>
             {referentes.map((member) => (
               <option key={member.user} value={member.user}>
-                Persona n.º {member.user}
+                {member.public_name}
               </option>
             ))}
           </select>

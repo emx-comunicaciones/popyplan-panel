@@ -9,6 +9,8 @@ export function buildOrgMembershipFull(
     organization: 7,
     role: "titular",
     created_at: "2026-01-05T09:00:00Z",
+    public_name: "Ana",
+    photo: "",
     ...overrides,
   };
 }
