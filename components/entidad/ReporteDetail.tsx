@@ -13,6 +13,14 @@ import type { ReportResolution } from "@/lib/api/types";
 
 export interface ReporteDetailProps {
   reportId: string;
+  /**
+   * Tarea W5: `support` (plataforma) solo lee la cola/el detalle
+   * (`safety/services/reports.py::can_view` lo admite, `can_act` no) —
+   * con `readOnly`, se oculta asignarme/resolver/escalar y solo se pinta
+   * la ficha. El panel de entidad nunca lo pasa (`support` no llega a
+   * esa página), así que su comportamiento no cambia.
+   */
+  readOnly?: boolean;
 }
 
 const RESOLUTION_LABELS: Record<ReportResolution, string> = {
@@ -29,7 +37,7 @@ const RESOLUTION_LABELS: Record<ReportResolution, string> = {
  * entidad (`titular`/`moderador`) — `support` (plataforma) nunca llega a
  * esta página del panel de entidad.
  */
-export function ReporteDetail({ reportId }: ReporteDetailProps) {
+export function ReporteDetail({ reportId, readOnly = false }: ReporteDetailProps) {
   const report = useReport(reportId);
   const assign = useAssignReport();
   const resolve = useResolveReport();
@@ -71,10 +79,20 @@ export function ReporteDetail({ reportId }: ReporteDetailProps) {
           </dd>
           <dt className="text-text-secondary">Asignado a</dt>
           <dd className="text-text-base">{data.assigned_to ?? "Sin asignar"}</dd>
+          <dt className="text-text-secondary">Entidad</dt>
+          <dd className="text-text-base">{data.organization ? `Entidad #${data.organization}` : "Global"}</dd>
+          {data.escalated_at ? (
+            <>
+              <dt className="text-text-secondary">Escalado</dt>
+              <dd className="text-text-base">
+                <Badge tone="info">Escalado a plataforma</Badge>
+              </dd>
+            </>
+          ) : null}
         </dl>
       </Card>
 
-      {!data.assigned_to ? (
+      {readOnly ? null : !data.assigned_to ? (
         <div>
           <Button type="button" disabled={assign.isPending} onClick={() => assign.mutate(reportId)}>
             Asignarme
@@ -87,7 +105,7 @@ export function ReporteDetail({ reportId }: ReporteDetailProps) {
         </div>
       ) : null}
 
-      {!alreadyResolved ? (
+      {readOnly ? null : !alreadyResolved ? (
         <Card title="Resolver">
           <div className="flex flex-col gap-3">
             <div>
@@ -135,7 +153,7 @@ export function ReporteDetail({ reportId }: ReporteDetailProps) {
         </Card>
       ) : null}
 
-      {!alreadyResolved ? (
+      {readOnly ? null : !alreadyResolved ? (
         <Card title="Escalar a plataforma">
           <div className="flex flex-col gap-3">
             <div>

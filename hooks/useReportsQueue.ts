@@ -6,6 +6,13 @@
  * (`titular`/`moderador`; `dinamizador`/`analista` no llegan a esta
  * página — `entidadMenuFor` ya la excluye de su menú, y la propia página
  * comprueba el rol). Paginada de verdad (`PageNumberPagination`).
+ *
+ * Tarea W5 (panel de plataforma): `?organization=` es opcional en el
+ * backend — sin él, la cola es la de plataforma (moderador/superadmin/
+ * `support`, este último solo lectura desde la página que lo consume).
+ * `orgId` pasa a ser opcional aquí; los llamadores existentes (panel de
+ * entidad) siguen pasándolo siempre, así que su comportamiento no
+ * cambia.
  */
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
@@ -30,21 +37,22 @@ export interface ReportsQueueFilters {
   page?: number;
 }
 
-function buildQuery(orgId: number | string, filters: ReportsQueueFilters): string {
-  const params = new URLSearchParams({ organization: String(orgId) });
+function buildQuery(orgId: number | string | undefined, filters: ReportsQueueFilters): string {
+  const params = new URLSearchParams();
+  if (orgId !== undefined) params.set("organization", String(orgId));
   if (filters.status) params.set("status", filters.status);
   if (filters.page && filters.page > 1) params.set("page", String(filters.page));
   return params.toString();
 }
 
 export function useReportsQueue(
-  orgId: number | string,
+  orgId?: number | string,
   filters: ReportsQueueFilters = {},
 ): UseQueryResult<PaginatedReportList, ReportsQueueError> {
   const query = buildQuery(orgId, filters);
 
   return useQuery<PaginatedReportList, ReportsQueueError>({
-    queryKey: ["panel-reports-queue", orgId, query],
+    queryKey: ["panel-reports-queue", orgId ?? "plataforma", query],
     queryFn: async () => {
       try {
         return await apiFetch<PaginatedReportList>(`${SAFETY.REPORTS_QUEUE()}?${query}`);

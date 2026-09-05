@@ -1,0 +1,150 @@
+"use client";
+
+/**
+ * Cola global de reportes (tarea W5, `docs/SEGURIDAD_Y_MODERACION.md`
+ * §4): `GET /api/safety/reports/queue/?status=` sin `organization` — todo
+ * lo global más lo escalado por una entidad (`safety/services/
+ * reports.py::queue`). Reutiliza `useReportsQueue` (ya soporta `orgId`
+ * opcional desde esta tarea) en vez de duplicar la lógica de paginación
+ * del panel de entidad (`ReportesQueue.tsx`), con una columna «Entidad» y
+ * una insignia «Escalado» que esa vista no necesita.
+ */
+import Link from "next/link";
+import { useState } from "react";
+
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { Table } from "@/components/ui/Table";
+import { useReportsQueue, type ReportsQueueFilters } from "@/hooks/useReportsQueue";
+import type { ReportRow } from "@/lib/api/types";
+
+const REASON_LABELS: Record<string, string> = {
+  harassment: "Acoso",
+  hate: "Odio",
+  spam: "Spam",
+  scam: "Estafa",
+  underage: "Menor de edad",
+  self_harm_risk: "Riesgo de autolesión",
+  drugs_sale: "Venta de sustancias",
+  other: "Otro",
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  pending: "Pendiente",
+  in_review: "En revisión",
+  resolved: "Resuelto",
+};
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("es-ES");
+}
+
+export function ReportesQueuePlataforma() {
+  const [status, setStatus] = useState<ReportsQueueFilters["status"] | "">("pending");
+  const [page, setPage] = useState(1);
+
+  const reports = useReportsQueue(undefined, { status: status || undefined, page });
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div>
+        <label htmlFor="plataforma-reportes-status" className="mb-1 block text-sm font-medium text-text-form">
+          Estado
+        </label>
+        <select
+          id="plataforma-reportes-status"
+          value={status}
+          onChange={(event) => {
+            setStatus(event.target.value as ReportsQueueFilters["status"] | "");
+            setPage(1);
+          }}
+          className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+        >
+          <option value="">Todos</option>
+          <option value="pending">Pendiente</option>
+          <option value="in_review">En revisión</option>
+          <option value="resolved">Resuelto</option>
+        </select>
+      </div>
+
+      {reports.isError ? (
+        reports.error.kind === "sin_acceso" ? (
+          <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a la cola de reportes." />
+        ) : (
+          <ErrorState title="No se pudo cargar la cola de reportes" description={reports.error.message} />
+        )
+      ) : !reports.data ? (
+        <p className="text-sm text-text-secondary">Cargando reportes…</p>
+      ) : reports.data.results.length === 0 ? (
+        <EmptyState title="Sin reportes con este filtro" />
+      ) : (
+        <>
+          <Table<ReportRow>
+            caption="Reportes de plataforma"
+            rows={reports.data.results}
+            getRowKey={(report) => report.id}
+            columns={[
+              {
+                key: "reason",
+                header: "Motivo",
+                render: (report) => (
+                  <Badge tone={report.reason === "self_harm_risk" ? "error" : "neutral"}>
+                    {REASON_LABELS[report.reason] ?? report.reason}
+                  </Badge>
+                ),
+              },
+              { key: "target", header: "Objetivo", render: (report) => report.target_type },
+              {
+                key: "organization",
+                header: "Entidad",
+                render: (report) => (report.organization ? `Entidad #${report.organization}` : "Global"),
+              },
+              {
+                key: "status",
+                header: "Estado",
+                render: (report) => (
+                  <span className="flex items-center gap-1">
+                    {STATUS_LABELS[report.status] ?? report.status}
+                    {report.escalated_at ? <Badge tone="info">Escalado</Badge> : null}
+                  </span>
+                ),
+              },
+              { key: "created_at", header: "Fecha", render: (report) => formatDate(report.created_at) },
+              {
+                key: "detail",
+                header: "",
+                render: (report) => (
+                  <Link href={`/plataforma/reportes/${report.id}`} className="font-medium text-primary underline">
+                    Ver detalle
+                  </Link>
+                ),
+              },
+            ]}
+          />
+
+          <div className="flex items-center justify-between">
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={!reports.data.previous}
+              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+            >
+              Anterior
+            </Button>
+            <span className="text-sm text-text-secondary">{reports.data.count} reportes</span>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={!reports.data.next}
+              onClick={() => setPage((prev) => prev + 1)}
+            >
+              Siguiente
+            </Button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}

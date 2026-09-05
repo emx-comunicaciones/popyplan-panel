@@ -65,4 +65,15 @@ describe("useReportsQueue", () => {
 
     expect((result.current.error as ReportsQueueError).kind).toBe("desconocido");
   });
+
+  it("sin orgId pide la cola de plataforma, sin `organization`", async () => {
+    apiFetchMock.mockResolvedValueOnce(PAGE);
+
+    const { result } = renderHook(() => useReportsQueue(undefined, { status: "pending" }), {
+      wrapper,
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(apiFetchMock).toHaveBeenCalledWith("/api/safety/reports/queue/?status=pending");
+  });
 });
