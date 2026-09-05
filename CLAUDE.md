@@ -476,10 +476,10 @@ Ayuda/Métricas (`safety/services/reports.py::queue` y
   `null`; con un valor real lo pintan aunque la sección venga marcada
   `suppressed`. Ningún sitio de llamada cambió.
 
-### Dos bugs reales encontrados por el e2e contra el backend (no por unit tests)
+### Bugs reales encontrados por el e2e contra el backend (no por unit tests)
 
-Ninguno de los dos se veía en Vitest porque los tests mockeaban la
-forma de la respuesta, nunca la pedían de verdad:
+Ninguno se veía en Vitest porque los tests mockeaban la forma de la
+respuesta, nunca la pedían de verdad:
 
 1. **`GET /api/safety/reports/queue/` no pagina, nunca lo hizo**
    (`docs/SEGURIDAD_Y_MODERACION.md` §4: «200 lista»,
@@ -506,6 +506,19 @@ forma de la respuesta, nunca la pedían de verdad:
    directo de un `<h1>` de página (el caso más común), saltaba de nivel
    1 a 3 sin pasar por 2 (`heading-order` de `axe-core`). Pasa a
    `<h2>`, que nunca salta nivel venga de donde venga.
+4. **La descarga de informes nunca lleva el nombre de fichero real**
+   (`e2e/titular.spec.ts`, flujo de Informes): `pop/settings.py` no
+   declara `CORS_EXPOSE_HEADERS`, así que `Content-Disposition` — donde
+   viaja `popyplan-<slug>-<since>-<until>.csv` (`docs/PANEL.md` §2.2)
+   — no es una cabecera "segura" por defecto y el navegador se la
+   oculta a `fetch()` en una petición cross-origin (el panel en
+   `:3000`/`:3100` contra el backend en `:8001`); `useExport.ts
+   ::filenameFrom` cae siempre al nombre por defecto (`informe.csv`).
+   **No es solo del test: pasa igual en el panel real.** Arreglarlo
+   exige `CORS_EXPOSE_HEADERS = ['Content-Disposition']` en el repo
+   backend — fuera de alcance de esta tarea (solo repo del panel); el
+   test comprueba el comportamiento real (se descarga un `.csv`) y deja
+   la causa documentada aquí y en el propio `e2e/titular.spec.ts`.
 
 ### Accesibilidad
 

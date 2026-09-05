@@ -77,6 +77,10 @@ export async function apiLogin(
 export interface CheckinFixture {
   eventId: string;
   eventTitle: string;
+  /** ISO 8601. `mark_attendance` exige que la actividad ya haya
+   *  empezado — quien use esta fixture para «Marcar asistió» debe
+   *  esperar hasta (al menos) este instante antes de intentarlo. */
+  startsAt: string;
   /** Token de check-in (`GET .../my-checkin/`) de la persona ya inscrita. */
   token: string;
   /** Nombre visible de la segunda persona inscrita (para «Marcar asistió»). */
@@ -155,6 +159,7 @@ export async function createCheckinFixture(
   return {
     eventId: event.id,
     eventTitle,
+    startsAt,
     token: checkin.token,
     secondPersonName: person2Me.profile.public_name,
     cleanup: async () => {
@@ -163,14 +168,6 @@ export async function createCheckinFixture(
   };
 }
 
-/**
- * Un evento con al menos un asistente en `registered` (para el botón
- * «Marcar asistió», que exige la actividad ya empezada —
- * `mark_attendance`) dentro de la ventana `[since, until]` dada. Busca
- * entre las actividades ya devueltas por el panel de la entidad; ninguna
- * de las «pasadas» sembradas sirve para el check-in (su ventana ya
- * cerró hace tiempo), pero sirven de sobra para el paso manual.
- */
 /**
  * Escala el primer reporte `pending` de una entidad a la cola de
  * plataforma (`POST /api/safety/reports/{id}/escalate/`), para que el
@@ -200,38 +197,4 @@ export async function escalateFirstPendingReport(
     data: {},
   });
   return escalateResponse.ok();
-}
-
-export async function findEventWithRegisteredAttendee(
-  api: APIRequestContext,
-  titularToken: string,
-  orgId: number,
-): Promise<{ eventId: string; personName: string } | null> {
-  const now = new Date();
-  const since = new Date(now.getTime() - 100 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-  const until = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-
-  const eventsResponse = await api.get(
-    `/api/panel/entidad/${orgId}/events/?since=${since}&until=${until}&status=completed`,
-    { headers: authHeader(titularToken) },
-  );
-  if (!eventsResponse.ok()) return null;
-  const events = (await eventsResponse.json()) as Array<{ id: string; registered: number }>;
-
-  for (const event of events) {
-    if (event.registered < 1) continue;
-    const attendeesResponse = await api.get(`/api/events/${event.id}/attendees/`, {
-      headers: authHeader(titularToken),
-    });
-    if (!attendeesResponse.ok()) continue;
-    const attendees = (await attendeesResponse.json()) as Array<{
-      status: string;
-      public_name: string;
-    }>;
-    const registered = attendees.find((attendee) => attendee.status === "registered");
-    if (registered) {
-      return { eventId: event.id, personName: registered.public_name };
-    }
-  }
-  return null;
 }
