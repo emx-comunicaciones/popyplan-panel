@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { resolveArea } from "@/lib/auth/area";
 import { getServerSession } from "@/lib/auth/session";
+
+export const metadata: Metadata = { title: "Elige una entidad" };
 
 export default async function ElegirEntidadPage() {
   const session = await getServerSession();

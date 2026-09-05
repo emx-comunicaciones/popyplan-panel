@@ -55,7 +55,7 @@ export function ParaguasMetricsDashboard({ orgId, orgName }: ParaguasMetricsDash
         <p className="text-sm text-text-secondary">Cargando métricas de {orgName}…</p>
       ) : (
         <>
-          <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <StatCard
               label="Personas activas"
               value={formatCount(base.data.people.active, base.data.people.suppressed)}
@@ -84,7 +84,7 @@ export function ParaguasMetricsDashboard({ orgId, orgName }: ParaguasMetricsDash
               label="No-shows"
               value={formatCount(base.data.attendance.no_show, base.data.attendance.suppressed)}
             />
-          </dl>
+          </div>
 
           <section aria-labelledby="por-municipio-heading">
             <h2 id="por-municipio-heading" className="mb-2 text-lg font-semibold text-text-base">

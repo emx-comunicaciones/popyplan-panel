@@ -102,7 +102,7 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
         ) : !metrics.data ? (
           <p className="text-sm text-text-secondary">Cargando métricas…</p>
         ) : (
-          <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <StatCard
               label="Personas activas"
               value={formatCount(metrics.data.people.active, metrics.data.people.suppressed)}
@@ -135,7 +135,7 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
               label="Personas en comunidades"
               value={formatCount(metrics.data.communities.members, metrics.data.communities.suppressed)}
             />
-          </dl>
+          </div>
         )}
       </section>
     </div>

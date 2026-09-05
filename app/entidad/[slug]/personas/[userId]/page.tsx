@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { PersonSheet } from "@/components/entidad/PersonSheet";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { getServerSession } from "@/lib/auth/session";
+
+export const metadata: Metadata = { title: "Ficha de la persona" };
 
 /**
  * Ficha operativa de una persona de la entidad (`docs/PANEL.md` §3.3).

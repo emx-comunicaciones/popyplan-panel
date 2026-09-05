@@ -14,7 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Popyplan · Panel",
+  title: {
+    default: "Popyplan · Panel",
+    // Cada página pone su propio título (accesibilidad: cada ruta debe
+    // tener un `<title>` único, ver CLAUDE.md «Accesibilidad»); esta
+    // plantilla añade el sufijo común a todos.
+    template: "%s · Popyplan",
+  },
   description: "Panel web de entidades, paraguas y plataforma de Popyplan",
 };
 

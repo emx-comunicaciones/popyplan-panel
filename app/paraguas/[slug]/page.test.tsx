@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
+import { axe } from "@/test-utils/axe";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import {
   buildByOrganizationRows,
@@ -57,10 +58,23 @@ async function renderPage(slug = "diputacion-demo") {
   });
 
   const element = await ParaguasInicioPage({ params: Promise.resolve({ slug }) });
-  render(element);
+  return render(element);
 }
 
 describe("ParaguasInicioPage", () => {
+  it("no tiene violaciones de accesibilidad (axe)", async () => {
+    mockMetricsByGroup({
+      base: buildMetricsResponse(),
+      place: buildMetricsResponse({ by_place: buildByPlaceRows() }),
+      organization: buildMetricsResponse({ by_place: buildByOrganizationRows() }),
+      month: buildMetricsResponse({ series: buildSeriesRows() }),
+    });
+
+    const { container } = await renderPage();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("muestra las tarjetas con las cifras del ejemplo de docs/PANEL.md §1.4", async () => {
     mockMetricsByGroup({
       base: buildMetricsResponse(),

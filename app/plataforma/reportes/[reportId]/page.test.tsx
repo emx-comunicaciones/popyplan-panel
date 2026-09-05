@@ -10,6 +10,7 @@ const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
 import { render, screen, waitFor } from "@/test-utils/render";
+import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
@@ -23,6 +24,23 @@ afterEach(() => {
 });
 
 describe("PlataformaReporteDetailPage", () => {
+  it("no tiene violaciones de accesibilidad (axe)", async () => {
+    apiFetchMock.mockResolvedValueOnce(buildReportDetail());
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("moderator"),
+    });
+
+    const element = await PlataformaReporteDetailPage({
+      params: Promise.resolve({ reportId: "11111111-1111-1111-1111-111111111111" }),
+    });
+    const { container } = render(element);
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "Asignarme" })).toBeInTheDocument());
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("moderator ve las acciones de asignar/resolver/escalar", async () => {
     apiFetchMock.mockResolvedValueOnce(buildReportDetail());
     getServerSessionMock.mockResolvedValue({

@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { AttendanceView } from "@/components/entidad/AttendanceView";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { getServerSession } from "@/lib/auth/session";
+
+export const metadata: Metadata = { title: "Asistencia de la actividad" };
 
 /**
  * Asistencia de una actividad (`docs/PANEL.md` §4): marcar asistencia

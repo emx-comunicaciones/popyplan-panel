@@ -2,6 +2,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
+import { axe } from "@/test-utils/axe";
 import { routerMock } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
@@ -19,6 +20,12 @@ afterEach(() => {
 });
 
 describe("LoginPage", () => {
+  it("no tiene violaciones de accesibilidad (axe)", async () => {
+    const { container } = render(<LoginPage />);
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("envía usuario y contraseña y redirige según el área tras el éxito", async () => {
     const user = userEvent.setup();
     loginMock.mockResolvedValue({

@@ -22,7 +22,8 @@ function wrapper({ children }: { children: ReactNode }) {
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }
 
-const PAGE = { count: 0, next: null, previous: null, results: [] };
+// Array plano de verdad (no `{count, ...}`, docs/SEGURIDAD_Y_MODERACION.md §4).
+const PAGE: unknown[] = [];
 
 describe("useReportsQueue", () => {
   it("pide organization sin más filtros", async () => {
@@ -34,16 +35,16 @@ describe("useReportsQueue", () => {
     expect(apiFetchMock).toHaveBeenCalledWith("/api/safety/reports/queue/?organization=7");
   });
 
-  it("añade status y page", async () => {
+  it("añade status", async () => {
     apiFetchMock.mockResolvedValueOnce(PAGE);
 
-    const { result } = renderHook(() => useReportsQueue(7, { status: "pending", page: 2 }), {
+    const { result } = renderHook(() => useReportsQueue(7, { status: "pending" }), {
       wrapper,
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(apiFetchMock).toHaveBeenCalledWith(
-      "/api/safety/reports/queue/?organization=7&status=pending&page=2",
+      "/api/safety/reports/queue/?organization=7&status=pending",
     );
   });
 

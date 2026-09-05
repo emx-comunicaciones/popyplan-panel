@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { PlataformaHomeDashboard } from "@/components/plataforma/PlataformaHomeDashboard";
 import { getServerSession } from "@/lib/auth/session";
+
+export const metadata: Metadata = { title: "Inicio de plataforma" };
 
 export default async function PlataformaInicioPage() {
   const session = await getServerSession();

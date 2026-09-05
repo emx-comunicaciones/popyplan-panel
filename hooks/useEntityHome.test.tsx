@@ -51,11 +51,13 @@ function routedApiFetch(handlers: {
     }
     if (path.includes("/api/safety/reports/queue/")) {
       if (handlers.reportsError) return Promise.reject(handlers.reportsError);
-      return Promise.resolve(handlers.reports ?? { count: 2 });
+      // Array plano de verdad (no `{count, ...}`, docs/SEGURIDAD_Y_MODERACION.md
+      // §4): el conteo sale de `.length`, ver el fix de carry-over de W6.
+      return Promise.resolve(handlers.reports ?? [{}, {}]);
     }
     if (path.includes("/api/safety/help-requests/pending/")) {
       if (handlers.helpRequestsError) return Promise.reject(handlers.helpRequestsError);
-      return Promise.resolve(handlers.helpRequests ?? { count: 1 });
+      return Promise.resolve(handlers.helpRequests ?? [{}]);
     }
     if (path.startsWith("/api/panel/entidad/7/metrics/")) {
       return Promise.resolve(handlers.metrics ?? buildMetricsResponse());

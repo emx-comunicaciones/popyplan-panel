@@ -10,6 +10,7 @@ const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
 import { render, screen, waitFor } from "@/test-utils/render";
+import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
@@ -36,7 +37,8 @@ function mockApiFetch() {
       };
     }
     if (path.startsWith("/api/safety/reports/queue/")) {
-      return { count: 3, next: null, previous: null, results: [] };
+      // Array plano de verdad (no `{count, ...}`, docs/SEGURIDAD_Y_MODERACION.md §4).
+      return [{}, {}, {}];
     }
     if (path.startsWith("/api/organizations/?page=")) {
       return ORGS_PAGE(0);
@@ -57,6 +59,21 @@ afterEach(() => {
 });
 
 describe("PlataformaInicioPage", () => {
+  it("no tiene violaciones de accesibilidad (axe)", async () => {
+    mockApiFetch();
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const element = await PlataformaInicioPage();
+    const { container } = render(element);
+
+    await waitFor(() => expect(screen.getByText("42")).toBeInTheDocument());
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("superadmin ve todas las tarjetas con sus cifras", async () => {
     mockApiFetch();
     getServerSessionMock.mockResolvedValue({

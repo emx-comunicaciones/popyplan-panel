@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
+import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildMetricsResponse } from "@/test-utils/fixtures/metrics";
@@ -61,10 +62,18 @@ async function renderPage(slug = "alfaville", role = "titular") {
   });
 
   const element = await EntidadInicioPage({ params: Promise.resolve({ slug }) });
-  render(element);
+  return render(element);
 }
 
 describe("EntidadInicioPage", () => {
+  it("no tiene violaciones de accesibilidad (axe)", async () => {
+    useEntityHomeMock.mockReturnValue(homeState());
+
+    const { container } = await renderPage();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("muestra el nombre de la entidad, actividades de hoy y avisos pendientes", async () => {
     useEntityHomeMock.mockReturnValue(homeState());
 

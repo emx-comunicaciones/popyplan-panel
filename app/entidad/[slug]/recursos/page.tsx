@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { RecursosPanel } from "@/components/entidad/RecursosPanel";
@@ -5,6 +6,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { entidadMenuFor } from "@/lib/auth/entidadMenu";
 import { getServerSession } from "@/lib/auth/session";
+
+export const metadata: Metadata = { title: "Recursos" };
 
 export default async function EntidadRecursosPage({
   params,

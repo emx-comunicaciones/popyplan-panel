@@ -53,7 +53,7 @@ export function PlataformaMetricsDashboard() {
         <p className="text-sm text-text-secondary">Cargando métricas…</p>
       ) : (
         <>
-          <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <StatCard
               label="Personas activas"
               value={formatCount(base.data.people.active, base.data.people.suppressed)}
@@ -79,7 +79,7 @@ export function PlataformaMetricsDashboard() {
               label="No-shows"
               value={formatCount(base.data.attendance.no_show, base.data.attendance.suppressed)}
             />
-          </dl>
+          </div>
 
           <fieldset className="flex flex-wrap items-center gap-3">
             <legend className="text-sm font-medium text-text-form">Agrupar por</legend>

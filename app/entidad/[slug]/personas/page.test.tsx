@@ -2,6 +2,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen, within } from "@/test-utils/render";
+import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildEntityCommunityRow } from "@/test-utils/fixtures/community";
@@ -90,10 +91,33 @@ async function renderPage(role = "titular", slug = "alfaville") {
   });
 
   const element = await EntidadPersonasPage({ params: Promise.resolve({ slug }) });
-  render(element);
+  return render(element);
 }
 
 describe("EntidadPersonasPage", () => {
+  it("no tiene violaciones de accesibilidad (axe)", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+
+    const { container } = await renderPage();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("«Añadir persona» tampoco tiene violaciones (diálogo abierto, foco atrapado)", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({ data: [], isError: false, error: null });
+    useOrgMembersMock.mockReturnValue({ data: [], isError: false, error: null });
+    useInviteMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false, error: null, reset: vi.fn() });
+    const user = userEvent.setup();
+
+    const { container } = await renderPage();
+    await user.click(screen.getByRole("button", { name: "Añadir persona" }));
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("muestra la fila de Ana con sus datos y enlaza a la ficha", async () => {
     mockDefaults();
     usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });

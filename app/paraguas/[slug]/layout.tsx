@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { LogoutButton } from "@/components/LogoutButton";
+import { SkipLink } from "@/components/ui/SkipLink";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import { serverFetch } from "@/lib/api/serverFetch";
@@ -43,6 +44,7 @@ export default async function ParaguasLayout({
 
   return (
     <div className="min-h-screen bg-border-light">
+      <SkipLink />
       <header
         className="flex items-center justify-between gap-4 px-6 py-4 text-text-inverse"
         style={{ backgroundColor: headerColor }}
@@ -81,7 +83,9 @@ export default async function ParaguasLayout({
             ))}
           </ul>
         </nav>
-        <main className="flex-1 p-6">{children}</main>
+        <main id="main-content" tabIndex={-1} className="flex-1 p-6 focus:outline-none">
+          {children}
+        </main>
       </div>
     </div>
   );

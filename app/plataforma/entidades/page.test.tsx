@@ -10,6 +10,8 @@ const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
 import { render, screen, waitFor } from "@/test-utils/render";
+import userEvent from "@testing-library/user-event";
+import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildOrganization } from "@/test-utils/fixtures/organization";
@@ -23,6 +25,30 @@ afterEach(() => {
 });
 
 describe("PlataformaEntidadesPage", () => {
+  it("no tiene violaciones de accesibilidad (axe), tampoco con el diálogo «Nueva entidad» abierto", async () => {
+    apiFetchMock.mockResolvedValue({
+      count: 1,
+      next: null,
+      previous: null,
+      results: [buildOrganization({ id: 9, name: "Ayuntamiento de Irun" })],
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+    const user = userEvent.setup();
+
+    const element = await PlataformaEntidadesPage();
+    const { container } = render(element);
+    await waitFor(() => expect(screen.getByText("Ayuntamiento de Irun")).toBeInTheDocument());
+
+    expect(await axe(container)).toHaveNoViolations();
+
+    await user.click(screen.getByRole("button", { name: "Nueva entidad" }));
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("superadmin ve el listado y el botón de nueva entidad", async () => {
     apiFetchMock.mockResolvedValue({
       count: 1,

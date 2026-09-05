@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { ComunidadesPanel } from "@/components/entidad/ComunidadesPanel";
@@ -5,6 +6,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { entidadMenuFor } from "@/lib/auth/entidadMenu";
 import { getServerSession } from "@/lib/auth/session";
+
+export const metadata: Metadata = { title: "Comunidades" };
 
 export default async function EntidadComunidadesPage({
   params,

@@ -18,8 +18,9 @@ vi.mock("@/hooks/useReportsQueue", async () => {
 
 import EntidadReportesPage from "./page";
 
-function pageData(overrides: Record<string, unknown> = {}) {
-  return { count: 1, next: null, previous: null, results: [buildReportRow()], ...overrides };
+// Array plano de verdad (no `{count, ...}`, docs/SEGURIDAD_Y_MODERACION.md §4).
+function pageData() {
+  return [buildReportRow()];
 }
 
 afterEach(() => {
@@ -66,7 +67,7 @@ describe("EntidadReportesPage", () => {
   });
 
   it("sin reportes muestra el estado vacío", async () => {
-    useReportsQueueMock.mockReturnValue({ data: pageData({ count: 0, results: [] }), isError: false, error: null });
+    useReportsQueueMock.mockReturnValue({ data: [], isError: false, error: null });
 
     await renderPage();
 

@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { ExportPanel } from "@/components/metrics/ExportPanel";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { getServerSession } from "@/lib/auth/session";
+
+export const metadata: Metadata = { title: "Informes del paraguas" };
 
 export default async function ParaguasInformesPage({
   params,

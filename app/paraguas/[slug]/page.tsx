@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { ParaguasMetricsDashboard } from "@/components/metrics/ParaguasMetricsDashboard";
@@ -6,6 +7,8 @@ import { serverFetch } from "@/lib/api/serverFetch";
 import type { Organization } from "@/lib/api/types";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { getServerSession } from "@/lib/auth/session";
+
+export const metadata: Metadata = { title: "Inicio del paraguas" };
 
 export default async function ParaguasInicioPage({
   params,

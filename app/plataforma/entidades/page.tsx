@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { EntidadesTable } from "@/components/plataforma/EntidadesTable";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { plataformaMenuFor } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
+
+export const metadata: Metadata = { title: "Entidades" };
 
 export default async function PlataformaEntidadesPage() {
   const session = await getServerSession();

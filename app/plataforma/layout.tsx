@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { LogoutButton } from "@/components/LogoutButton";
+import { SkipLink } from "@/components/ui/SkipLink";
 import { PLATAFORMA_MENU_LABELS, plataformaMenuFor } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
@@ -18,6 +19,7 @@ export default async function PlataformaLayout({ children }: { children: React.R
 
   return (
     <div className="min-h-screen bg-border-light">
+      <SkipLink />
       <header className="flex items-center justify-between gap-4 bg-secondary-900 px-6 py-4 text-text-inverse">
         <span className="text-lg font-semibold">Popyplan · Plataforma</span>
         <LogoutButton />
@@ -37,7 +39,9 @@ export default async function PlataformaLayout({ children }: { children: React.R
             ))}
           </ul>
         </nav>
-        <main className="flex-1 p-6">{children}</main>
+        <main id="main-content" tabIndex={-1} className="flex-1 p-6 focus:outline-none">
+          {children}
+        </main>
       </div>
     </div>
   );

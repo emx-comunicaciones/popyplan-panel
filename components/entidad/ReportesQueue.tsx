@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useReportsQueue, type ReportsQueueFilters } from "@/hooks/useReportsQueue";
@@ -43,9 +42,8 @@ function formatDate(iso: string): string {
  */
 export function ReportesQueue({ orgId, slug }: ReportesQueueProps) {
   const [status, setStatus] = useState<ReportsQueueFilters["status"] | "">("pending");
-  const [page, setPage] = useState(1);
 
-  const reports = useReportsQueue(orgId, { status: status || undefined, page });
+  const reports = useReportsQueue(orgId, { status: status || undefined });
 
   return (
     <div className="flex flex-col gap-4">
@@ -58,7 +56,6 @@ export function ReportesQueue({ orgId, slug }: ReportesQueueProps) {
           value={status}
           onChange={(event) => {
             setStatus(event.target.value as ReportsQueueFilters["status"] | "");
-            setPage(1);
           }}
           className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
         >
@@ -73,7 +70,7 @@ export function ReportesQueue({ orgId, slug }: ReportesQueueProps) {
         <ErrorState title="No se pudo cargar la cola de reportes" description={reports.error.message} />
       ) : !reports.data ? (
         <p className="text-sm text-text-secondary">Cargando reportes…</p>
-      ) : reports.data.results.length === 0 ? (
+      ) : reports.data.length === 0 ? (
         <EmptyState title="Sin reportes con este filtro" />
       ) : (
         <>
@@ -90,7 +87,7 @@ export function ReportesQueue({ orgId, slug }: ReportesQueueProps) {
                 </tr>
               </thead>
               <tbody>
-                {reports.data.results.map((report) => (
+                {reports.data.map((report) => (
                   <tr key={report.id} className="border-b border-border-light">
                     <td className="px-3 py-2 text-text-base">
                       <Badge tone={report.reason === "self_harm_risk" ? "error" : "neutral"}>
@@ -116,25 +113,7 @@ export function ReportesQueue({ orgId, slug }: ReportesQueueProps) {
             </table>
           </div>
 
-          <div className="flex items-center justify-between">
-            <Button
-              type="button"
-              variant="secondary"
-              disabled={!reports.data.previous}
-              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-            >
-              Anterior
-            </Button>
-            <span className="text-sm text-text-secondary">{reports.data.count} reportes</span>
-            <Button
-              type="button"
-              variant="secondary"
-              disabled={!reports.data.next}
-              onClick={() => setPage((prev) => prev + 1)}
-            >
-              Siguiente
-            </Button>
-          </div>
+          <p className="text-sm text-text-secondary">{reports.data.length} reportes</p>
         </>
       )}
     </div>

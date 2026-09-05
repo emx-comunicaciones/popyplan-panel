@@ -2,6 +2,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
+import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 
@@ -42,10 +43,20 @@ async function renderPage(slug = "alfaville", eventId = "event-uuid-1") {
   });
 
   const element = await EntidadAsistenciaPage({ params: Promise.resolve({ slug, eventId }) });
-  render(element);
+  return render(element);
 }
 
 describe("EntidadAsistenciaPage", () => {
+  it("no tiene violaciones de accesibilidad (axe)", async () => {
+    useAttendeesMock.mockReturnValue({ data: [ATTENDEE], isError: false, error: null });
+    useMarkAttendanceMock.mockReturnValue({ mutate: vi.fn(), isPending: false, variables: undefined });
+    useCheckinMock.mockReturnValue({ mutate: vi.fn(), isPending: false });
+
+    const { container } = await renderPage();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("muestra la lista de asistentes con su estado y acompañantes", async () => {
     useAttendeesMock.mockReturnValue({ data: [ATTENDEE], isError: false, error: null });
     useMarkAttendanceMock.mockReturnValue({ mutate: vi.fn(), isPending: false, variables: undefined });

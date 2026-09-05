@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { VerificacionesQueue } from "@/components/plataforma/VerificacionesQueue";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { plataformaMenuFor } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
+
+export const metadata: Metadata = { title: "Verificaciones" };
 
 export default async function PlataformaVerificacionesPage() {
   const session = await getServerSession();

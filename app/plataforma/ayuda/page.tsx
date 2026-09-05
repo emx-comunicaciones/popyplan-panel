@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { AyudaPendienteList } from "@/components/plataforma/AyudaPendienteList";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { plataformaMenuFor } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
+
+export const metadata: Metadata = { title: "Ayuda" };
 
 export default async function PlataformaAyudaPage() {
   const session = await getServerSession();

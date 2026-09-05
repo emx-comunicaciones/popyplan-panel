@@ -6,10 +6,14 @@
  * contenido libre en vez de dos botones fijos — lo usan
  * `components/people/{AddPersonDialog,ImportPeopleDialog}.tsx`. `role`
  * es `"dialog"` (no `"alertdialog"`: no es una confirmación de una
- * acción ya decidida, es un formulario). No atrapa el foco (mismo
- * alcance que `ConfirmDialog`; Fase 6 audita accesibilidad formalmente).
+ * acción ya decidida, es un formulario). Carry-over de accesibilidad
+ * (tarea W6): atrapa el foco con `useFocusTrap` (foco inicial dentro
+ * del diálogo, `Tab`/`Shift+Tab` sin escapar, `Escape` cierra, el foco
+ * vuelve a donde estaba al cerrarse).
  */
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
+
+import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
 
 export interface DialogProps {
   open: boolean;
@@ -28,14 +32,19 @@ export function Dialog({
   children,
   widthClassName = "max-w-lg",
 }: DialogProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(containerRef, open, onClose);
+
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div
+        ref={containerRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        tabIndex={-1}
         className={`w-full ${widthClassName} rounded-lg bg-white p-6 shadow-lg`}
       >
         <div className="mb-4 flex items-center justify-between gap-4">

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
+import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildSurveyQuestionResult, buildSurveyResults } from "@/test-utils/fixtures/survey";
@@ -33,10 +34,18 @@ async function renderPage(role = "titular", slug = "alfaville", surveyId = "3") 
   });
 
   const element = await EntidadSurveyResultsPage({ params: Promise.resolve({ slug, surveyId }) });
-  render(element);
+  return render(element);
 }
 
 describe("EntidadSurveyResultsPage", () => {
+  it("no tiene violaciones de accesibilidad (axe)", async () => {
+    useSurveyResultsMock.mockReturnValue({ data: buildSurveyResults(), isError: false, error: null });
+
+    const { container } = await renderPage();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("muestra el banner de anonimato y los resultados agregados", async () => {
     useSurveyResultsMock.mockReturnValue({ data: buildSurveyResults(), isError: false, error: null });
 

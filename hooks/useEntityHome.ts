@@ -20,16 +20,25 @@ import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
 import { SAFETY } from "@/lib/api/endpoints";
-import type { EntityEventRow, MetricsResponse, PaginatedCount } from "@/lib/api/types";
+import type { EntityEventRow, MetricsResponse } from "@/lib/api/types";
 import { toIso, presetPeriod } from "@/lib/metrics/period";
 
 import { useEntityEvents, type EntityEventsError } from "./useEntityEvents";
 import { useMetrics, type MetricsError } from "./useMetrics";
 
+/**
+ * Carry-over de la tarea W6 (hallazgo del e2e contra el backend real):
+ * `reports/queue` y `help-requests/pending` responden un **array
+ * plano**, nunca `{count, ...}` (`lib/api/types.ts`, docstring encima de
+ * `ReportRow`/`HelpRequestRow`) — antes de esta tarea se leía
+ * `data.count` de un array, siempre `undefined`, así que estas dos
+ * tarjetas del Inicio nunca mostraron un recuento real. Se cuenta
+ * `.length` del array.
+ */
 async function fetchOptionalCount(path: string): Promise<number | null> {
   try {
-    const data = await apiFetch<PaginatedCount>(path);
-    return data.count;
+    const data = await apiFetch<unknown[]>(path);
+    return data.length;
   } catch (error) {
     if (error instanceof ApiError && error.status === 403) {
       return null;

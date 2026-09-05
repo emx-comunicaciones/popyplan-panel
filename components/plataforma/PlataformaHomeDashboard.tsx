@@ -60,7 +60,7 @@ export function PlataformaHomeDashboard({ role }: PlataformaHomeDashboardProps) 
       ) : null}
 
       {menu.includes("reportes") && reports.data ? (
-        <KpiCard label="Reportes pendientes" value={String(reports.data.count)} href="/plataforma/reportes" />
+        <KpiCard label="Reportes pendientes" value={String(reports.data.length)} href="/plataforma/reportes" />
       ) : null}
 
       {menu.includes("ayuda") && helpRequests.data ? (

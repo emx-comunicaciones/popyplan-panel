@@ -165,24 +165,28 @@ export interface PaginatedReferenceList {
 
 /**
  * `GET /api/safety/reports/queue/` y `GET /api/safety/help-requests/pending/`
- * (`docs/SEGURIDAD_Y_MODERACION.md` §4-§5): el Inicio de la entidad solo
- * necesita `count` de cada una, nunca las filas.
+ * (`docs/SEGURIDAD_Y_MODERACION.md` §4-§5): ninguna de las dos pagina de
+ * verdad (`ReportViewSet.queue`/`HelpRequestViewSet.pending` responden
+ * `Response(Serializer(qs, many=True).data)`, un array plano — nunca
+ * `{count, next, previous, results}`, pese a que `docs/schema.yaml` las
+ * marque mal como paginadas, mismo patrón que `Attendee`/`HelpRequestRow`
+ * más abajo). Corregido en la tarea W6 tras un fallo real en
+ * `e2e/plataforma.spec.ts` (`ReportesQueuePlataforma.tsx` leía
+ * `reports.data.results` de un array, `TypeError: Cannot read
+ * properties of undefined (reading 'length')`) y una revisión de
+ * `useEntityHome.ts::fetchOptionalCount`, que hacía lo mismo con
+ * `.count` para las dos tarjetas de guardia del Inicio de entidad — el
+ * Inicio nunca había mostrado un recuento real, solo `undefined`,
+ * porque ningún test lo ejercitaba contra el backend de verdad. El
+ * Inicio de entidad cuenta ahora `.length` del array.
  */
-export interface PaginatedCount {
-  count: number;
-}
 
 /**
- * `GET /api/safety/reports/queue/?organization=<id>` (§4): paginada de
- * verdad, filas `Report` (sin `target`, a diferencia del detalle).
+ * `GET /api/safety/reports/queue/?organization=<id>` (§4): array plano
+ * de `Report` (sin `target`, a diferencia del detalle) — nunca
+ * paginado, ver arriba.
  */
 export type ReportRow = components["schemas"]["Report"];
-export interface PaginatedReportList {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: ReportRow[];
-}
 
 /** `GET /api/safety/reports/{id}/` (§4): añade `target` sobre `Report`. */
 export type ReportDetail = components["schemas"]["ReportDetail"];

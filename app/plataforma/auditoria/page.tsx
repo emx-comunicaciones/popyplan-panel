@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { AuditoriaPanel } from "@/components/plataforma/AuditoriaPanel";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { plataformaMenuFor } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
+
+export const metadata: Metadata = { title: "Auditoría" };
 
 export default async function PlataformaAuditoriaPage() {
   const session = await getServerSession();

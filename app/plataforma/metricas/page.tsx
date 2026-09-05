@@ -1,4 +1,7 @@
+import type { Metadata } from "next";
 import { PlataformaMetricsDashboard } from "@/components/metrics/PlataformaMetricsDashboard";
+
+export const metadata: Metadata = { title: "Métricas de plataforma" };
 
 export default function PlataformaMetricasPage() {
   return (
