@@ -10,6 +10,12 @@
  * Solo titular/moderador pueden componer (`canCompose`); el resto de
  * roles con acceso a esta página (dinamizador, ver `entidadMenu.ts`) solo
  * ve el historial.
+ *
+ * **Ronda final de Fase 5** (P6 cerrado en el backend, `docs/PANEL.md`
+ * §5.2/§8.2): la opción «Familias» ya no va deshabilitada a fuego —
+ * `hasFamilies` (`useEntityCommunities`, filtrando `space === 'families'`)
+ * decide si se puede elegir. Sin ninguna comunidad de familias en la
+ * entidad, se queda deshabilitada con la misma pista de siempre.
  */
 import { useState, type FormEvent } from "react";
 
@@ -49,6 +55,7 @@ export function describeAudience(audience: string, communities: EntityCommunityR
 function ComposeForm({ orgId }: { orgId: number | string }) {
   const communities = useEntityCommunities(orgId);
   const sendAnnouncement = useSendAnnouncement(orgId);
+  const hasFamilies = (communities.data ?? []).some((community) => community.space === "families");
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -160,13 +167,24 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
                 ))}
               </select>
             ) : null}
-            <label className="flex items-center gap-2 text-sm text-text-secondary">
-              <input type="radio" name="audience-kind" value="families" disabled />
+            <label
+              className={`flex items-center gap-2 text-sm ${hasFamilies ? "text-text-base" : "text-text-secondary"}`}
+            >
+              <input
+                type="radio"
+                name="audience-kind"
+                value="families"
+                disabled={!hasFamilies}
+                checked={audienceKind === "families"}
+                onChange={() => setAudienceKind("families")}
+              />
               Familias
             </label>
-            <p className="ml-6 text-xs text-text-secondary">
-              Disponible cuando exista el espacio de familias.
-            </p>
+            {!hasFamilies ? (
+              <p className="ml-6 text-xs text-text-secondary">
+                Disponible cuando exista el espacio de familias.
+              </p>
+            ) : null}
           </div>
         </fieldset>
         <div>

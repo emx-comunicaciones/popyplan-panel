@@ -673,3 +673,76 @@ exactamente como se pedía: `Report`/`ReportDetail` llevan
 (`docs/PANEL.md` §10.3). `components/plataforma/ReportesQueuePlataforma.tsx`
 y `components/entidad/ReporteDetail.tsx` pintan ya el nombre de la
 entidad en vez de «Entidad #<id>».
+
+---
+
+## Ronda final de Fase 5: Familias (2026-09-05)
+
+### 30. `members_count` suprimido en `FamiliesSummary`: tipo ampliado a mano, sin contrato firmado todavía
+
+El encargo de esta tarea avisaba de un fix de backend «en paralelo» que
+suprime `members_count` (`null` + `suppressed: true`) en `GET
+/api/panel/entidad/{id}/families/` para quien no tiene
+`ver_lista_nominal` en la entidad. Al escribir esta tarea,
+`docs/schema.yaml` seguía documentando `FamiliesSummary.members_count` y
+`FamilyCommunityRow.members_count` como `number` a secas (sin
+`suppressed`, sin `null`) — no hubo forma de confirmar la forma exacta
+del fix (¿un `suppressed` por fila de comunidad, uno solo a nivel de
+`FamiliesSummary`, o los dos a la vez?). Se amplió `lib/api/types.ts`
+a mano (`FamiliesSummaryCommunityRow`/`FamiliesSummary`) para aceptar
+`number | null` con un `suppressed?` opcional en ambos niveles, y
+`FamiliasPanel.tsx::isSuppressed` trata cualquier `members_count: null`
+como suprimido (`<5`) exista o no el campo `suppressed` explícito —
+sin otra razón conocida para que ese conteo llegue `null` en este
+endpoint. **Pregunta:** al documentarse el fix en `docs/PANEL.md` §8.3 y
+regenerar `types.generated.ts`, ¿coincide la forma real con la asumida
+aquí (¿suppressed por comunidad y a nivel de resumen, o solo uno de los
+dos)? Si difiere, revisar `lib/api/types.ts` y
+`hooks/useFamiliesSummary.ts` antes de dar la tarea por cerrada del
+todo.
+
+### 31. `hasFamilies` (Comunicaciones/Recursos) hereda el hueco de `useEntityCommunities` con comunidades privadas
+
+Para habilitar la audiencia «Familias» en `ComunicacionesPanel.tsx` y
+`RecursosPanel.tsx` se reutilizó `useEntityCommunities` (ya existente
+desde W4a) filtrando `space === 'families'`. Ese hook no pasa
+`?owner_org=` a `GET /api/communities/` (recorre todas las páginas
+visibles y filtra `owner.id` en el cliente, hueco ya documentado en su
+día), así que **no** se beneficia del atajo de `docs/PANEL.md` §8.2
+(«el titular/moderador de la entidad ve TODAS las comunidades de la
+entidad, privadas incluidas, con `GET /api/communities/?owner_org=<id>`
+si tiene `moderar`»): si la única comunidad de familias de una entidad
+es `private` y quien mira no es personalmente miembro de ella, «Familias»
+seguirá deshabilitada en Comunicaciones/Recursos aunque el espacio de
+familias exista de verdad (el propio `FamiliasPanel.tsx` no tiene este
+problema, porque usa el endpoint de resumen dedicado
+`GET .../families/`, que no depende de la visibilidad de
+`/api/communities/`). **Pregunta:** ¿merece la pena que
+`ComunicacionesPanel`/`RecursosPanel` calculen `hasFamilies` a partir de
+`useFamiliesSummary(orgId).data.communities.length > 0` en vez de
+`useEntityCommunities`, para heredar la vista completa del resumen de
+Familias en vez del listado general de comunidades? Se dejó como está en
+esta tarea para no añadir una dependencia cruzada entre tres paneles que
+hoy no la tienen, pero es una simplificación real si el hueco de
+`useEntityCommunities` con comunidades privadas no se soluciona pronto
+en el backend.
+
+### 32. Familias en modo solo lectura para `dinamizador`: se gatea en el cliente, a diferencia de Comunidades
+
+El brief pedía seguir «la regla existente de Comunidades» para el modo
+de solo lectura de `dinamizador`, pero `ComunidadesPanel.tsx` no gatea
+ninguna acción de escritura en el cliente (aprobar/rechazar/expulsar
+están siempre visibles y es el 403 del backend quien corta). Para
+Familias se decidió lo contrario, siguiendo en cambio el patrón de
+`RecursosPanel`/`ComunicacionesPanel` (`canManage`, calculado en el
+Server Component): el interruptor de cruce de espacios y «Nueva
+comunidad de familias» se ocultan del todo para quien no es
+titular/moderador, en vez de mostrarse y dejar que el backend responda
+403. Motivo: activar/desactivar `allow_cross_space` es una acción de
+alto impacto (rompe o restaura la separación de espacios para todo el
+mundo, no solo para quien la activa) y crear una comunidad no es una
+acción de lectura como aprobar una solicitud — parecía más prudente
+ocultarla que dejarla visible y fallando. **Pregunta:** ¿es la decisión
+correcta, o debería Familias seguir el patrón literal de Comunidades
+(todo visible, el backend corta con 403) por consistencia entre
+secciones?

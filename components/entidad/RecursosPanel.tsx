@@ -9,6 +9,12 @@
  * fichero, `hooks/useCreateResource.ts`/`useUpdateResource.ts`) y borrar
  * con confirmación. Solo titular/moderador gestionan (`canManage`); el
  * resto de roles con acceso a esta página (dinamizador) solo ve la lista.
+ *
+ * **Ronda final de Fase 5** (P6 cerrado en el backend, `docs/PANEL.md`
+ * §7.2/§8.2): la opción «Familias» ya no va deshabilitada a fuego —
+ * `hasFamilies` (`useEntityCommunities`, filtrando `space === 'families'`)
+ * decide si se puede elegir. Sin ninguna comunidad de familias en la
+ * entidad, se queda deshabilitada con la misma pista de siempre.
  */
 import { useState, type FormEvent } from "react";
 
@@ -20,6 +26,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useCreateResource } from "@/hooks/useCreateResource";
 import { useDeleteResource } from "@/hooks/useDeleteResource";
+import { useEntityCommunities } from "@/hooks/useEntityCommunities";
 import { useResources } from "@/hooks/useResources";
 import { useUpdateResource } from "@/hooks/useUpdateResource";
 import type { EntityResource, ResourceAudience, ResourceCategory, ResourceKind } from "@/lib/api/types";
@@ -113,6 +120,8 @@ function ResourceForm({
 }) {
   const createResource = useCreateResource(orgId);
   const updateResource = useUpdateResource(orgId);
+  const communities = useEntityCommunities(orgId);
+  const hasFamilies = (communities.data ?? []).some((community) => community.space === "families");
   const [form, setForm] = useState<ResourceFormState>(
     editing === "new" ? emptyForm() : formFromResource(editing),
   );
@@ -287,11 +296,11 @@ function ResourceForm({
             >
               <option value="members">Miembros</option>
               <option value="public">Público</option>
-              <option value="families" disabled>
+              <option value="families" disabled={!hasFamilies}>
                 Familias
               </option>
             </select>
-            {form.audience !== "families" ? (
+            {!hasFamilies ? (
               <p className="mt-1 text-xs text-text-secondary">
                 «Familias» estará disponible cuando exista el espacio de familias.
               </p>

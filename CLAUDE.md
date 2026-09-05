@@ -245,16 +245,19 @@ está montado) — así no hay dos fuentes de verdad para las mismas filas.
 
 `docs/PANEL.md` §5 (comunicaciones oficiales), §6 (encuestas) y §7
 (biblioteca de recursos). Reemplaza los avisos «Próximamente» que dejó
-W4a para estas tres secciones — Familias sigue aparcada
-(`components/ui/ComingSoon.tsx`, `lib/auth/entidadMenu.ts::PENDING_SECTIONS`)
-hasta que el backend tenga el espacio de familias (P6).
+W4a para estas tres secciones — Familias siguió aparcada
+(`lib/auth/entidadMenu.ts::PENDING_SECTIONS`) hasta que el backend tuvo
+el espacio de familias (P6); ver «Familias» más abajo (ronda final de
+Fase 5) para su cierre — `components/ui/ComingSoon.tsx` ya no existe,
+retirado en esa misma tarea al quedarse sin ninguna sección que pintar.
 
 - **Comunicaciones** (`comunicaciones/page.tsx` → `ComunicacionesPanel`,
   hooks `useAnnouncements`/`useSendAnnouncement`): redactar un anuncio
   (título, cuerpo, audiencia `members`/`community:<uuid>`/`families`) e
-  historial con `recipients_count`. La opción «Familias» va deshabilitada
+  historial con `recipients_count`. La opción «Familias» iba deshabilitada
   con la pista «Disponible cuando exista el espacio de familias»
-  (`audience='families'` responde 400 en el backend hasta P6, §5.2). El
+  (`audience='families'` respondía 400 en el backend hasta P6, §5.2) —
+  ya habilitada condicionalmente, ver «Familias» más abajo. El
   backend no ofrece una vista previa del número de destinatarios antes de
   enviar (no hay endpoint para eso): el diálogo de confirmación
   (`components/ui/ConfirmDialog.tsx`, nuevo) describe la audiencia elegida
@@ -302,11 +305,11 @@ hasta que el backend tenga el espacio de familias (P6).
   backend: 20 MB, extensiones `pdf`/`mp4`/`mp3`/`docx`/`png`/`jpg`) — el
   backend valida otra vez de todos modos (nunca hay que confiar solo en
   el cliente), y su 400 se muestra igual si llega. La audiencia
-  «Familias» va deshabilitada en el formulario con la misma pista que
-  Comunicaciones (un recurso `audience='families'` hoy no es visible para
-  nadie salvo quien gestiona la entidad, §7.2 — marcador de posición hasta
-  P6). Solo `titular`/`moderador` gestionan (`canManage`); el resto de
-  roles con acceso solo ve la lista.
+  «Familias» iba deshabilitada en el formulario con la misma pista que
+  Comunicaciones (un recurso `audience='families'` no era visible para
+  nadie salvo quien gestiona la entidad, §7.2) — ya habilitada
+  condicionalmente, ver «Familias» más abajo. Solo `titular`/`moderador`
+  gestionan (`canManage`); el resto de roles con acceso solo ve la lista.
 
 **Subida de fichero (multipart)**: `hooks/useCreateResource.ts` y
 `useUpdateResource.ts` construyen el cuerpo con
@@ -329,7 +332,71 @@ ni Recursos, el parche de W4a las ocultaba solo para no dar 404).
 Comunicaciones sigue oculta para `dinamizador` porque esa matriz original
 sí la excluye explícitamente, y coincide con el contrato: `POST` solo
 admite `titular`/`moderador`, sin otra acción útil para ese rol en la
-página. Familias permanece oculta (sin página real todavía).
+página. Familias permaneció oculta hasta la ronda final de Fase 5
+(siguiente sección): `PENDING_SECTIONS` está vacía desde entonces.
+
+## Familias (ronda final de Fase 5, cierre de P6)
+
+`docs/PANEL.md` §8 («POP Familias»): espacio separado de la entidad, sin
+cuenta especial ni vínculo familiar↔persona en la base de datos
+(invariante 1 — nadie declara ser familiar de nadie). Reemplaza el
+«Próximamente» de W4a; sale de `PENDING_SECTIONS`
+(`lib/auth/entidadMenu.ts`), así que `dinamizador` la recupera igual que
+Encuestas/Recursos en W4b — visible a titular/moderador/dinamizador,
+oculta a analista/referente (no estaba en sus matrices y sigue sin
+estarlo, `docs/PANEL.md` §8.3 no distingue rol dentro de `ver_panel` pero
+el brief tampoco lo pedía para esos dos).
+
+- **Página** (`familias/page.tsx` → `FamiliasPanel`, hook
+  `useFamiliesSummary`, `GET /api/panel/entidad/{org_id}/families/`):
+  tarjetas de resumen (comunidades de familias, personas, próximas
+  actividades), listado de esas comunidades con badge de personas y de
+  cruce de espacios, próximas actividades, comunicaciones y recursos
+  recientes con enlace a sus propias secciones (`/comunicaciones`,
+  `/recursos`, `/actividades`). Banner explícito, misma cadena literal
+  que pide el brief: «Las comunidades de familias están separadas de las
+  de miembros; nadie declara ser familiar de nadie.» — se pinta siempre,
+  sea cual sea el estado de la consulta con datos.
+- **Regla de supresión de `members_count`**: un fix de backend que llegó
+  en paralelo a esta tarea puede suprimir el recuento de personas
+  (`null` + `suppressed: true`) para quien no tiene `ver_lista_nominal`
+  en la entidad — al escribir esta tarea `docs/schema.yaml` todavía
+  documentaba `FamiliesSummary.members_count`/`FamilyCommunityRow
+  .members_count` como `number` a secas, así que `lib/api/types.ts`
+  amplía ambos a mano a `number | null` con un `suppressed?` opcional
+  (mismo patrón que `PeopleMetrics`, sin esperar a regenerar
+  `types.generated.ts`). Se pinta con `formatCount` (`lib/metrics/format.ts`,
+  reutilizado tal cual): cualquier `members_count: null` se trata como
+  suprimido (`<5`) lleve o no el campo `suppressed` explícito, porque en
+  este endpoint no hay otra razón para que llegue `null`.
+- **Cruce de espacios** (`allow_cross_space`, §8.1): interruptor por
+  comunidad, solo titular/moderador (`canManage`, calculado en el Server
+  Component igual que en Recursos/Comunicaciones) — `dinamizador` ve el
+  estado (badge «Espacios separados»/«Cruce de espacios activado») sin el
+  control. Activarlo o desactivarlo pide confirmación
+  (`components/ui/ConfirmDialog.tsx`) que explica la regla de separación
+  antes de mandar `PATCH /api/communities/{id}/ {allow_cross_space}`
+  (`hooks/useToggleCrossSpace.ts`); invalida el resumen de Familias y el
+  listado general de comunidades de la entidad al tener éxito.
+- **«Nueva comunidad de familias»** (`hooks/useCreateFamiliesCommunity.ts`,
+  `POST /api/communities/ {name, description?, visibility?,
+  code_of_conduct?, space:'families', owner_org}`): mismo endpoint
+  general de comunidades que `ComunidadesPanel.tsx` (§8.1: solo una
+  comunidad con `owner_org` puede marcarse `families`, y el espacio no se
+  puede cambiar después de crearla). Solo titular/moderador; diálogo con
+  nombre, descripción, visibilidad (abierta/con solicitud/privada) y
+  código de conducta, mismo patrón de `Dialog.tsx` que
+  `AddPersonDialog.tsx`.
+- **Comunicaciones y Recursos, audiencia «Familias»** (`docs/PANEL.md`
+  §5.2/§7.2, ya operativa desde P6): `ComunicacionesPanel.tsx`/
+  `RecursosPanel.tsx` calculan `hasFamilies` a partir de
+  `useEntityCommunities` (`space === 'families'`) y solo entonces
+  habilitan la opción — sin ninguna comunidad de familias en la entidad,
+  se queda deshabilitada con la misma pista de siempre («Disponible
+  cuando exista el espacio de familias»/«estará disponible cuando exista
+  el espacio de familias»).
+- **`components/ui/ComingSoon.tsx` retirado**: Familias era la última
+  sección que lo usaba; se borró en vez de dejarlo como código muerto.
 
 ## Área de plataforma: Inicio, Entidades, Reportes, Ayuda, Verificaciones, Roles, Auditoría (tarea W5)
 
@@ -584,7 +651,8 @@ respuesta, nunca la pedían de verdad:
   (tabla + diálogo «Añadir persona» abierto, valida el foco atrapado),
   `entidad/[slug]/informes`, `entidad/[slug]/asistencia/[eventId]`
   (caja de check-in), `entidad/[slug]/encuestas/[surveyId]` (gráfico
-  `recharts`), `paraguas/[slug]` (Inicio), `plataforma` (Inicio),
+  `recharts`), `entidad/[slug]/familias` (resumen + lista de comunidades,
+  ronda final de Fase 5), `paraguas/[slug]` (Inicio), `plataforma` (Inicio),
   `plataforma/entidades` (tabla + diálogo «Nueva entidad» abierto),
   `plataforma/reportes/[reportId]`. **Excepción documentada**: el resto
   de páginas (`comunidades`, `actividades`, `reportes`, `guardia`,

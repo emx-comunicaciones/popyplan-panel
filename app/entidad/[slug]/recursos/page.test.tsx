@@ -5,17 +5,25 @@ import { render, screen, within } from "@/test-utils/render";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildEntityResource } from "@/test-utils/fixtures/resource";
+import { buildEntityCommunityRow } from "@/test-utils/fixtures/community";
 
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 const useResourcesMock = vi.hoisted(() => vi.fn());
 const useCreateResourceMock = vi.hoisted(() => vi.fn());
 const useUpdateResourceMock = vi.hoisted(() => vi.fn());
 const useDeleteResourceMock = vi.hoisted(() => vi.fn());
+const useEntityCommunitiesMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("@/hooks/useResources", async () => {
   const actual = await vi.importActual<typeof import("@/hooks/useResources")>("@/hooks/useResources");
   return { ...actual, useResources: useResourcesMock };
+});
+vi.mock("@/hooks/useEntityCommunities", async () => {
+  const actual = await vi.importActual<typeof import("@/hooks/useEntityCommunities")>(
+    "@/hooks/useEntityCommunities",
+  );
+  return { ...actual, useEntityCommunities: useEntityCommunitiesMock };
 });
 vi.mock("@/hooks/useCreateResource", async () => {
   const actual = await vi.importActual<typeof import("@/hooks/useCreateResource")>(
@@ -44,12 +52,14 @@ afterEach(() => {
   useCreateResourceMock.mockReset();
   useUpdateResourceMock.mockReset();
   useDeleteResourceMock.mockReset();
+  useEntityCommunitiesMock.mockReset();
 });
 
 function mockDefaults() {
   useCreateResourceMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false, error: null });
   useUpdateResourceMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false, error: null });
   useDeleteResourceMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false, error: null });
+  useEntityCommunitiesMock.mockReturnValue({ data: [], isError: false, error: null });
 }
 
 async function renderPage(role = "titular", slug = "alfaville") {
@@ -143,6 +153,35 @@ describe("EntidadRecursosPage", () => {
     const audienceSelect = screen.getByLabelText("Audiencia") as HTMLSelectElement;
     const familiesOption = Array.from(audienceSelect.options).find((o) => o.value === "families");
     expect(familiesOption?.disabled).toBe(true);
+  });
+
+  it("con una comunidad de familias, la audiencia 'Familias' está habilitada", async () => {
+    const mutate = vi.fn();
+    mockDefaults();
+    useCreateResourceMock.mockReturnValue({ mutate, isPending: false, isError: false, error: null });
+    useResourcesMock.mockReturnValue({ data: [], isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c-1", name: "Familias", space: "families" })],
+      isError: false,
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+    await user.click(screen.getByRole("button", { name: "Nuevo recurso" }));
+
+    const audienceSelect = screen.getByLabelText("Audiencia") as HTMLSelectElement;
+    const familiesOption = Array.from(audienceSelect.options).find((o) => o.value === "families");
+    expect(familiesOption?.disabled).toBe(false);
+
+    await user.type(screen.getByLabelText("Título"), "Guía familias");
+    await user.selectOptions(audienceSelect, "families");
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(mutate).toHaveBeenCalledWith(
+      expect.objectContaining({ title: "Guía familias", audience: "families" }),
+      expect.anything(),
+    );
   });
 
   it("editar un recurso precarga el formulario y guarda solo los cambios", async () => {

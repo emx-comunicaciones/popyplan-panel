@@ -31,6 +31,17 @@
  * pasaba por `ENTIDAD_MENU_ITEMS` sin excluirla (no estaba construida
  * todavía); se añade a `DINAMIZADOR_HIDDEN` para que no ofrezca una
  * sección que el backend le rechazaría con 403.
+ *
+ * Ronda final de Fase 5 (backend P6 cerrado): Familias ya tiene página
+ * real (`app/entidad/[slug]/familias/page.tsx`, `docs/PANEL.md` §8) —
+ * sale de `PENDING_SECTIONS` y `dinamizador` recupera su matriz original
+ * de arriba («todo salvo Configuración, Reportes y Comunicaciones»,
+ * que nunca excluía Familias). Igual que Comunidades, la página no gatea
+ * por rol en el cliente más allá de `canManage` (titular/moderador,
+ * comprobado por `FamiliasPanel` para el interruptor de cruce de
+ * espacios y «Nueva comunidad de familias»): `dinamizador` la ve en modo
+ * solo lectura, sin que el backend necesite un permiso de escritura
+ * específico para él (`PuedeEnEntidad('ver_panel')` ya lo cubre, §8.3).
  */
 import type { EntidadPanelRole } from "./area";
 
@@ -69,11 +80,13 @@ export const ENTIDAD_MENU_LABELS: Record<EntidadMenuItem, string> = {
 };
 
 /**
- * Secciones sin página real todavía: Familias (espacio separado, llega
- * con P6/backend). Se oculta también del menú de `dinamizador`, que si no
- * llegaría a una URL sin función real.
+ * Secciones sin página real todavía: ninguna (Familias, la última que
+ * quedaba, ya tiene página real desde el cierre de P6 en el backend —
+ * ver el docstring de arriba). Se mantiene la lista (vacía) en vez de
+ * borrarla para que quien añada una sección nueva sin página real
+ * todavía tenga un sitio obvio donde anotarla.
  */
-export const PENDING_SECTIONS: readonly EntidadMenuItem[] = ["familias"];
+export const PENDING_SECTIONS: readonly EntidadMenuItem[] = [];
 
 const DINAMIZADOR_HIDDEN: readonly EntidadMenuItem[] = [
   "configuracion",

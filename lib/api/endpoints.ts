@@ -183,6 +183,14 @@ export const COMMUNITIES = {
   /** `PATCH /api/communities/{id}/members/{memberId}/role/ {role}`. */
   MEMBER_ROLE: (id: string, memberId: string) =>
     `/api/communities/${id}/members/${memberId}/role/`,
+  /**
+   * `GET`/`PATCH /api/communities/{id}/` — ficha completa de la
+   * comunidad. El panel solo usa `PATCH` (`allow_cross_space`, POP
+   * Familias, `docs/PANEL.md` §8.1); `POST /api/communities/` (crear,
+   * `space:'families'` + `owner_org`) reutiliza `LIST` de arriba, mismo
+   * path.
+   */
+  DETAIL: (id: string) => `/api/communities/${id}/`,
 } as const;
 
 /**
@@ -213,6 +221,12 @@ export const PANEL = {
    */
   SURVEY_RESULTS: (orgId: number | string, surveyId: number | string) =>
     `/api/panel/entidad/${orgId}/surveys/${surveyId}/results/`,
+  /**
+   * `GET /api/panel/entidad/{org_id}/families/` (`docs/PANEL.md` §8.3):
+   * resumen del espacio POP Familias — sus comunidades, cuánta gente hay
+   * en ellas, próximas actividades y últimos anuncios/recursos.
+   */
+  FAMILIES: (orgId: number | string) => `/api/panel/entidad/${orgId}/families/`,
 } as const;
 
 /**

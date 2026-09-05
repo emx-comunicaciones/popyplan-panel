@@ -1,7 +1,9 @@
+import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
 import { buildAnnouncement } from "@/test-utils/fixtures/announcement";
+import { buildEntityCommunityRow } from "@/test-utils/fixtures/community";
 
 const useAnnouncementsMock = vi.hoisted(() => vi.fn());
 const useSendAnnouncementMock = vi.hoisted(() => vi.fn());
@@ -69,6 +71,48 @@ describe("ComunicacionesPanel", () => {
     render(<ComunicacionesPanel orgId={7} canCompose={false} />);
 
     expect(screen.getByRole("alert")).toHaveTextContent("No se pudieron cargar las comunicaciones");
+  });
+
+  it("sin comunidades de familias, 'Familias' está deshabilitada con la pista", () => {
+    useAnnouncementsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({ data: [], isError: false, error: null });
+    useSendAnnouncementMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false, error: null });
+
+    render(<ComunicacionesPanel orgId={7} canCompose />);
+
+    expect(screen.getByRole("radio", { name: "Familias" })).toBeDisabled();
+    expect(screen.getByText("Disponible cuando exista el espacio de familias.")).toBeInTheDocument();
+  });
+
+  it("con una comunidad de familias, 'Familias' se puede elegir y enviar audience: 'families'", async () => {
+    const user = userEvent.setup();
+    useAnnouncementsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c-1", name: "Familias", space: "families" })],
+      isError: false,
+      error: null,
+    });
+    const mutate = vi.fn();
+    useSendAnnouncementMock.mockReturnValue({ mutate, isPending: false, isError: false, error: null });
+
+    render(<ComunicacionesPanel orgId={7} canCompose />);
+
+    const familiasRadio = screen.getByRole("radio", { name: "Familias" });
+    expect(familiasRadio).toBeEnabled();
+    expect(
+      screen.queryByText("Disponible cuando exista el espacio de familias."),
+    ).not.toBeInTheDocument();
+
+    await user.type(screen.getByLabelText("Título"), "Aviso familias");
+    await user.type(screen.getByLabelText("Cuerpo"), "Contenido del aviso");
+    await user.click(familiasRadio);
+    await user.click(screen.getByRole("button", { name: "Enviar comunicación" }));
+    await user.click(screen.getByRole("button", { name: "Enviar" }));
+
+    expect(mutate).toHaveBeenCalledWith(
+      { title: "Aviso familias", body: "Contenido del aviso", audience: "families" },
+      expect.anything(),
+    );
   });
 });
 

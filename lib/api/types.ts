@@ -351,6 +351,65 @@ export type ResourceKind = components["schemas"]["Kind839Enum"];
 export type ResourceAudience = components["schemas"]["Audience743Enum"];
 
 /**
+ * `docs/PANEL.md` §8 («POP Familias», tarea P6): `GET /api/panel/entidad
+ * /{org_id}/families/` — resumen del espacio separado de la entidad.
+ * `Community.space`/`allow_cross_space` ya llegan en `EntityCommunityRow`
+ * (`CommunityList` los expone, §8.1) y no necesitan tipo propio.
+ *
+ * **Ampliación a mano de esta tarea**: el fix de backend que suprime
+ * `members_count` (`null` + `suppressed: true`) para quien no tiene
+ * `ver_lista_nominal` en la entidad llega en paralelo a este trabajo —
+ * `docs/schema.yaml` todavía documenta `FamiliesSummary.members_count` y
+ * `FamilyCommunityRow.members_count` como `number` a secas. Se amplían
+ * aquí a `number | null` con un `suppressed?` opcional (mismo patrón que
+ * `PeopleMetrics`), para que `useFamiliesSummary` funcione tanto contra
+ * el contrato documentado hoy como contra el que trae la supresión, sin
+ * esperar a regenerar `types.generated.ts`. `hooks/useFamiliesSummary.ts`
+ * normaliza cualquiera de las dos formas antes de que `formatCount`
+ * (`lib/metrics/format.ts`) decida qué pintar.
+ */
+export type FamiliesSummaryCommunityRow = Omit<
+  components["schemas"]["FamilyCommunityRow"],
+  "members_count"
+> & {
+  members_count: number | null;
+  suppressed?: boolean;
+};
+export type FamiliesSummary = Omit<
+  components["schemas"]["FamiliesSummary"],
+  "communities" | "members_count"
+> & {
+  communities: FamiliesSummaryCommunityRow[];
+  members_count: number | null;
+  suppressed?: boolean;
+};
+export type FamilyUpcomingEvent = components["schemas"]["FamilyUpcomingEvent"];
+export type FamilyAnnouncementRow = components["schemas"]["FamilyAnnouncementRow"];
+export type FamilyResourceRow = components["schemas"]["FamilyResourceRow"];
+
+/**
+ * Cuerpo de `POST /api/communities/` para crear una comunidad de
+ * familias (§8.1): `space: 'families'` y `owner_org` son obligatorios en
+ * la práctica (sin `owner_org` el backend da 400 — «solo una comunidad
+ * con `owner_org` puede ser `families`»), aunque `CommunityRequest` los
+ * deje opcionales en el esquema general (una comunidad normal de perfil
+ * no los lleva).
+ */
+export interface CreateFamiliesCommunityRequest {
+  name: string;
+  description?: string;
+  visibility?: components["schemas"]["VisibilityEnum"];
+  code_of_conduct?: string;
+  space: "families";
+  owner_org: number;
+}
+
+/** Cuerpo de `PATCH /api/communities/{id}/` para el cruce de espacios (§8.1). */
+export interface ToggleCrossSpaceRequest {
+  allow_cross_space: boolean;
+}
+
+/**
  * `docs/PANEL.md` §3b («Alta de personas: invitaciones e importación»,
  * tarea W3b): `GET`/`POST /api/organizations/{org_id}/invitations/`,
  * `.../invitations/{iid}/resend/` y `.../invitations/{iid}/` (`DELETE`).

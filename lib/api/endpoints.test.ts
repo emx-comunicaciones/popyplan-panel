@@ -172,6 +172,10 @@ describe("endpoints", () => {
     expect(COMMUNITIES.MEMBER_ROLE("c1", "m1")).toBe("/api/communities/c1/members/m1/role/");
   });
 
+  it("COMMUNITIES.DETAIL(id) apunta a /api/communities/{id}/", () => {
+    expect(COMMUNITIES.DETAIL("c1")).toBe("/api/communities/c1/");
+  });
+
   it("ORGANIZATIONS.RESOURCES(id) apunta a /api/organizations/{id}/resources/", () => {
     expect(ORGANIZATIONS.RESOURCES(7)).toBe("/api/organizations/7/resources/");
   });
@@ -190,6 +194,10 @@ describe("endpoints", () => {
 
   it("PANEL.SURVEY_RESULTS(orgId, surveyId) apunta a /api/panel/entidad/{orgId}/surveys/{surveyId}/results/", () => {
     expect(PANEL.SURVEY_RESULTS(7, 3)).toBe("/api/panel/entidad/7/surveys/3/results/");
+  });
+
+  it("PANEL.FAMILIES(orgId) apunta a /api/panel/entidad/{orgId}/families/", () => {
+    expect(PANEL.FAMILIES(7)).toBe("/api/panel/entidad/7/families/");
   });
 
   it("USERS.SEARCH() apunta a /api/users/users/", () => {
