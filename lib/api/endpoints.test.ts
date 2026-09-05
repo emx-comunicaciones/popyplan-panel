@@ -1,6 +1,18 @@
 import { describe, expect, it } from "vitest";
 
-import { AUTH, COMMUNITIES, EVENTS, EXPORT, METRICS, ORGANIZATIONS, PANEL, SAFETY, USERS } from "./endpoints";
+import {
+  AUTH,
+  COMMUNITIES,
+  DASHBOARD,
+  EVENTS,
+  EXPORT,
+  METRICS,
+  ORGANIZATIONS,
+  PANEL,
+  SAFETY,
+  USERS,
+  VERIFICATION,
+} from "./endpoints";
 
 describe("endpoints", () => {
   it("AUTH.LOGIN apunta a /api/auth/login/", () => {
@@ -178,5 +190,41 @@ describe("endpoints", () => {
 
   it("PANEL.SURVEY_RESULTS(orgId, surveyId) apunta a /api/panel/entidad/{orgId}/surveys/{surveyId}/results/", () => {
     expect(PANEL.SURVEY_RESULTS(7, 3)).toBe("/api/panel/entidad/7/surveys/3/results/");
+  });
+
+  it("USERS.SEARCH() apunta a /api/users/users/", () => {
+    expect(USERS.SEARCH()).toBe("/api/users/users/");
+  });
+
+  it("SAFETY.PLATFORM_ROLES() apunta a /api/safety/platform-roles/", () => {
+    expect(SAFETY.PLATFORM_ROLES()).toBe("/api/safety/platform-roles/");
+  });
+
+  it("SAFETY.PLATFORM_ROLE_DETAIL(userId) apunta a /api/safety/platform-roles/{userId}/", () => {
+    expect(SAFETY.PLATFORM_ROLE_DETAIL(9)).toBe("/api/safety/platform-roles/9/");
+  });
+
+  it("SAFETY.AUDIT() apunta a /api/safety/audit/", () => {
+    expect(SAFETY.AUDIT()).toBe("/api/safety/audit/");
+  });
+
+  it("ORGANIZATIONS.LIST() apunta a /api/organizations/", () => {
+    expect(ORGANIZATIONS.LIST()).toBe("/api/organizations/");
+  });
+
+  it("ORGANIZATIONS.VERIFY(id) apunta a /api/organizations/{id}/verify/", () => {
+    expect(ORGANIZATIONS.VERIFY(7)).toBe("/api/organizations/7/verify/");
+  });
+
+  it("VERIFICATION.REVIEWS_QUEUE() apunta a /api/users/verification/reviews/queue/", () => {
+    expect(VERIFICATION.REVIEWS_QUEUE()).toBe("/api/users/verification/reviews/queue/");
+  });
+
+  it("VERIFICATION.REVIEW_DECIDE(id) apunta a /api/users/verification/reviews/{id}/decide/", () => {
+    expect(VERIFICATION.REVIEW_DECIDE("r1")).toBe("/api/users/verification/reviews/r1/decide/");
+  });
+
+  it("DASHBOARD.STATS() apunta a /api/admin/dashboard-stats/", () => {
+    expect(DASHBOARD.STATS()).toBe("/api/admin/dashboard-stats/");
   });
 });

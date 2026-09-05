@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { LogoutButton } from "@/components/LogoutButton";
-import { PLATAFORMA_MENU_ITEMS, PLATAFORMA_MENU_LABELS } from "@/lib/auth/plataformaMenu";
+import { PLATAFORMA_MENU_LABELS, plataformaMenuFor } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export default async function PlataformaLayout({ children }: { children: React.ReactNode }) {
@@ -14,6 +14,8 @@ export default async function PlataformaLayout({ children }: { children: React.R
     redirect("/");
   }
 
+  const menu = plataformaMenuFor(session.platformRole.role);
+
   return (
     <div className="min-h-screen bg-border-light">
       <header className="flex items-center justify-between gap-4 bg-secondary-900 px-6 py-4 text-text-inverse">
@@ -23,7 +25,7 @@ export default async function PlataformaLayout({ children }: { children: React.R
       <div className="flex">
         <nav aria-label="Secciones de plataforma" className="w-56 shrink-0 border-r border-border bg-white p-4">
           <ul className="flex flex-col gap-1">
-            {PLATAFORMA_MENU_ITEMS.map((item) => (
+            {menu.map((item) => (
               <li key={item}>
                 <Link
                   href={item === "inicio" ? "/plataforma" : `/plataforma/${item}`}

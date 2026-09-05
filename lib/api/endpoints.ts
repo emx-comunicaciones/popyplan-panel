@@ -30,6 +30,16 @@ export const AUTH = {
 export const USERS = {
   /** `GET /api/users/users/me/`. */
   ME: "/api/users/users/me/",
+  /**
+   * `GET /api/users/users/?search=` (`users/unified_viewset.py::list_users`):
+   * listado de cuentas, `IsAdminUser` (solo `is_staff`, que hoy solo tiene
+   * `superadmin` — `docs/SEGURIDAD_Y_MODERACION.md` §1). Lo usa
+   * `roles/page.tsx` para buscar a quién conceder un rol de plataforma;
+   * un 403 (rol de plataforma sin `is_staff`, aunque hoy solo `superadmin`
+   * llega a esta página) se traduce a «sin buscador», cayendo al id a
+   * mano.
+   */
+  SEARCH: () => "/api/users/users/",
 } as const;
 
 export const SAFETY = {
@@ -57,11 +67,38 @@ export const SAFETY = {
   HELP_REQUESTS_PENDING: () => "/api/safety/help-requests/pending/",
   /** `POST /api/safety/help-requests/{id}/acknowledge/` (§5): «He contactado». */
   HELP_REQUEST_ACKNOWLEDGE: (id: string) => `/api/safety/help-requests/${id}/acknowledge/`,
+  /**
+   * `GET`/`POST /api/safety/platform-roles/` y
+   * `DELETE /api/safety/platform-roles/{user_id}/`
+   * (`docs/SEGURIDAD_Y_MODERACION.md` §1): roles de plataforma, solo
+   * `superadmin`.
+   */
+  PLATFORM_ROLES: () => "/api/safety/platform-roles/",
+  PLATFORM_ROLE_DETAIL: (userId: number | string) => `/api/safety/platform-roles/${userId}/`,
+  /**
+   * `GET /api/safety/audit/?actor=&action=&target_type=&target_id=&since=&until=`
+   * (tarea P6 del backend, en curso al escribir esta tarea de panel: no
+   * está todavía documentada en `docs/PANEL.md` — ver el informe de esta
+   * tarea). Solo `superadmin`.
+   */
+  AUDIT: () => "/api/safety/audit/",
 } as const;
 
 export const ORGANIZATIONS = {
+  /**
+   * `GET /api/organizations/?verified=&parent=&search=&page=`
+   * (`docs/SEGURIDAD_Y_MODERACION.md` §8): listado paginado de entidades,
+   * cualquier autenticado. `POST` (mismo path) da de alta una entidad
+   * (`verifier`/`superadmin`).
+   */
+  LIST: () => "/api/organizations/",
   /** `GET`/`PATCH /api/organizations/{id}/`. */
   DETAIL: (id: number | string) => `/api/organizations/${id}/`,
+  /**
+   * `POST /api/organizations/{id}/verify/` (§8): marca `is_verified=True`
+   * (`verifier`/`superadmin`).
+   */
+  VERIFY: (id: number | string) => `/api/organizations/${id}/verify/`,
   /**
    * `GET`/`POST`/`DELETE /api/organizations/{id}/references/`
    * (`docs/SEGURIDAD_Y_MODERACION.md` §8): persona ↔ referente.
@@ -213,4 +250,25 @@ export const EXPORT = {
   PARAGUAS: (orgId: number | string) => `/api/panel/paraguas/${orgId}/export/`,
   /** `GET /api/panel/plataforma/export/?format=csv|pdf&since&until&group_by`. */
   PLATAFORMA: () => `/api/panel/plataforma/export/`,
+} as const;
+
+/**
+ * `docs/SEGURIDAD_Y_MODERACION.md` §7: verificación por niveles, cola de
+ * revisión (`verifier`/`superadmin`).
+ */
+export const VERIFICATION = {
+  /** `GET /api/users/verification/reviews/queue/` — cola `pending`, paginada. */
+  REVIEWS_QUEUE: () => "/api/users/verification/reviews/queue/",
+  /** `POST /api/users/verification/reviews/{id}/decide/ {approved, note?}`. */
+  REVIEW_DECIDE: (id: string) => `/api/users/verification/reviews/${id}/decide/`,
+} as const;
+
+/**
+ * `GET /api/admin/dashboard-stats/` (`pop/dashboard_api.py::DashboardStatsView`):
+ * agregados generales para el Inicio de plataforma. `IsAdminUser`
+ * (`is_staff`, solo `superadmin` lo tiene hoy — ver `hooks/useDashboardStats.ts`,
+ * que trata un 403 como «sin esa tarjeta» en vez de romper la página).
+ */
+export const DASHBOARD = {
+  STATS: () => "/api/admin/dashboard-stats/",
 } as const;

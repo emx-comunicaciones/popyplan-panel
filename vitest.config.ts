@@ -17,7 +17,19 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./vitest.setup.ts"],
     include: ["**/*.test.{ts,tsx}"],
-    exclude: ["node_modules/**", "e2e/**", ".next/**"],
+    exclude: [
+      "node_modules/**",
+      "e2e/**",
+      ".next/**",
+      // `.worktrees/` (ignorado por git, `.git/info/exclude`) es el
+      // árbol de trabajo aparte del servidor de demo del propietario —
+      // sin esta exclusión, su propio `node_modules/**` anidado no
+      // encaja con el patrón de arriba y vitest intenta ejecutar los
+      // tests internos de sus dependencias (p. ej. `@redocly/openapi-core`).
+      // No afecta a CI (el checkout no trae `.worktrees/`); solo evita
+      // ruido al ejecutar la suite en local sobre este repo.
+      ".worktrees/**",
+    ],
     coverage: {
       provider: "v8",
       reporter: ["text", "html"],

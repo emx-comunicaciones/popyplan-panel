@@ -39,6 +39,40 @@ describe("PlataformaLayout", () => {
     }
   });
 
+  it("moderator solo ve inicio, reportes, ayuda y métricas", async () => {
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("moderator"),
+    });
+
+    const element = await PlataformaLayout({ children: <p>contenido</p> });
+    render(element);
+
+    for (const label of ["Inicio", "Reportes", "Ayuda", "Métricas"]) {
+      expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
+    }
+    for (const label of ["Entidades", "Verificaciones", "Roles", "Auditoría"]) {
+      expect(screen.queryByRole("link", { name: label })).not.toBeInTheDocument();
+    }
+  });
+
+  it("verifier solo ve inicio, entidades y verificaciones", async () => {
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("verifier"),
+    });
+
+    const element = await PlataformaLayout({ children: <p>contenido</p> });
+    render(element);
+
+    for (const label of ["Inicio", "Entidades", "Verificaciones"]) {
+      expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
+    }
+    expect(screen.queryByRole("link", { name: "Métricas" })).not.toBeInTheDocument();
+  });
+
   it("sin sesión redirige a /login", async () => {
     getServerSessionMock.mockResolvedValue(null);
 

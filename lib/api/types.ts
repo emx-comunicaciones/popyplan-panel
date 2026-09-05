@@ -378,3 +378,119 @@ export interface ImportPeopleResult {
   already_members: number;
   errors: ImportPeopleRowError[];
 }
+
+/**
+ * `docs/SEGURIDAD_Y_MODERACION.md` §8 (tarea W5, panel de plataforma):
+ * `GET /api/organizations/?verified=&parent=&search=&page=`, truly
+ * paginada (`PageNumberPagination` estándar, a diferencia de la mayoría
+ * de rutas de `panel/`, que no paginan de verdad — aquí sí, verificado
+ * contra `entities/viewsets.py::OrganizationViewSet` sin `pagination_class`
+ * propio, así que hereda el de DRF). `POST` (mismo path) da de alta una
+ * entidad.
+ */
+export type PaginatedOrganizationList = components["schemas"]["PaginatedOrganizationList"];
+/** Cuerpo de `POST /api/organizations/` (§8). */
+export type OrganizationCreateRequest = components["schemas"]["OrganizationCreateRequest"];
+
+/**
+ * `docs/SEGURIDAD_Y_MODERACION.md` §1: roles de plataforma
+ * (`safety.PlatformRole`), solo `superadmin`. `GET
+ * /api/safety/platform-roles/` no pagina de verdad (`Response(...,
+ * many=True)` sobre un queryset sin paginador, según el propio contrato:
+ * "lista sin paginar de roles vigentes").
+ */
+export type PlatformRole = components["schemas"]["PlatformRole"];
+export type PlatformRoleName = components["schemas"]["Role636Enum"];
+/** Cuerpo de `POST /api/safety/platform-roles/`. */
+export type PlatformRoleGrantRequest = components["schemas"]["PlatformRoleGrantRequest"];
+
+/**
+ * `docs/SEGURIDAD_Y_MODERACION.md` §7: cola de revisión de verificación
+ * (`verifier`/`superadmin`), `GET /api/users/verification/reviews/queue/`
+ * — paginada de verdad (`PaginatedVerificationReviewList`, coincide con
+ * el esquema).
+ */
+export type VerificationReview = components["schemas"]["VerificationReview"];
+export type PaginatedVerificationReviewList =
+  components["schemas"]["PaginatedVerificationReviewList"];
+/** Cuerpo de `POST /api/users/verification/reviews/{id}/decide/`. */
+export type VerificationReviewDecideRequest =
+  components["schemas"]["VerificationReviewDecideRequest"];
+
+/**
+ * `GET /api/users/users/?search=` (`users/unified_viewset.py::list_users`):
+ * el `@extend_schema` de la vista declara `UserListResponse` (envuelve
+ * `UserProfile`), pero el código real serializa con `MeSerializer` sobre
+ * la paginación estándar de DRF — mismo patrón de mismatch que el resto
+ * de esta fase. Tipo manual acotado a lo que usa el buscador de
+ * `roles/page.tsx`: id, usuario y correo, nada de perfil completo.
+ */
+export interface PlatformUserSearchRow {
+  id: number;
+  username: string;
+  email: string;
+}
+export interface PaginatedPlatformUserSearchList {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: PlatformUserSearchRow[];
+}
+
+/**
+ * `GET /api/admin/dashboard-stats/` (`pop/dashboard_api.py::DashboardStatsView`):
+ * sin serializer declarado (`drf-spectacular` no puede inferirlo, según
+ * el propio informe de la tarea P5), así que no hay tipo generado. Tipo
+ * manual tomado directamente del código de la vista.
+ */
+export interface DashboardStats {
+  totals: { users: number; events: number; chats: number; communities: number };
+  users: {
+    active: number;
+    blocked: number;
+    verified: number;
+    new_today: number;
+    new_week: number;
+    growth_pct: number;
+  };
+  events: {
+    scheduled: number;
+    growth_pct: number;
+    by_audience: { audience: string; count: number }[];
+  };
+  reports: { pending: number };
+  help_requests: { pending: number };
+  registrations_weekly: { date: string; count: number }[];
+}
+
+/**
+ * `GET /api/safety/audit/` y `GET /api/panel/entidad/{id}/audit/` (tarea
+ * P6 del backend, en curso al escribir esta tarea de panel — no
+ * documentada todavía en `docs/PANEL.md`; ver el informe de esta tarea
+ * para el porqué y para la forma confirmada leyendo
+ * `safety/serializers.py::AuditLogSerializer` directamente). Forma fija:
+ * `{id, actor, action, target_type, target_id, metadata, ip?, created_at}`
+ * — `ip` solo para `superadmin` vía `/api/safety/audit/` (nunca en la
+ * vista acotada a una entidad). Tipo manual: no existe en
+ * `types.generated.ts` porque el backend aún no ha regenerado el esquema.
+ */
+export interface AuditActor {
+  id: number;
+  public_name: string;
+}
+export interface AuditLogEntry {
+  id: string;
+  actor: AuditActor;
+  action: string;
+  target_type: string;
+  target_id: string;
+  metadata: Record<string, unknown>;
+  ip?: string | null;
+  created_at: string;
+}
+export interface PaginatedAuditLogList {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: AuditLogEntry[];
+}
