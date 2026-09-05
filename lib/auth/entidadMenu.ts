@@ -9,11 +9,19 @@
  * - `referente`: solo Inicio, Personas y Actividades (sus personas asignadas).
  *
  * Tarea W4a: Comunicaciones, Encuestas, Recursos y Familias todavía no
- * tienen página real (llegan en W4b) — para que no den 404, se ocultan
- * también del menú de `dinamizador` (que si no las vería, igual que
- * `analista`/`referente` ya las excluían) y sus `page.tsx` de
- * `titular`/`moderador` (que sí las conservan en el menú) pintan un aviso
- * «Próximamente» en vez de la función real.
+ * tenían página real — para que no dieran 404, se ocultaban también del
+ * menú de `dinamizador` (además de Configuración/Reportes) mientras sus
+ * `page.tsx` pintaban «Próximamente».
+ *
+ * Tarea W4b: Comunicaciones, Encuestas y Recursos ya tienen página real
+ * (Familias sigue aparcada hasta P6). Se restaura la matriz original de
+ * `dinamizador` de arriba: recupera Encuestas y Recursos en su menú (el
+ * docstring original nunca las excluía, solo el parche temporal de W4a lo
+ * hacía); Comunicaciones sigue oculta para `dinamizador` porque el
+ * docstring sí la excluye explícitamente («todo salvo... Comunicaciones»)
+ * — coincide además con el contrato: `POST` solo admite titular/moderador,
+ * y `dinamizador` no tiene otra acción que hacer en esa página. Familias
+ * se queda en `PENDING_SECTIONS` (sin página real todavía).
  */
 import type { EntidadPanelRole } from "./area";
 
@@ -52,20 +60,16 @@ export const ENTIDAD_MENU_LABELS: Record<EntidadMenuItem, string> = {
 };
 
 /**
- * Secciones sin página real todavía (W4b): se ocultan igual que
- * Configuración/Reportes/Comunicaciones para `dinamizador`, que si no
- * llegaría a una de estas cuatro por el menú.
+ * Secciones sin página real todavía: Familias (espacio separado, llega
+ * con P6/backend). Se oculta también del menú de `dinamizador`, que si no
+ * llegaría a una URL sin función real.
  */
-export const PENDING_SECTIONS: readonly EntidadMenuItem[] = [
-  "comunicaciones",
-  "encuestas",
-  "recursos",
-  "familias",
-];
+export const PENDING_SECTIONS: readonly EntidadMenuItem[] = ["familias"];
 
 const DINAMIZADOR_HIDDEN: readonly EntidadMenuItem[] = [
   "configuracion",
   "reportes",
+  "comunicaciones",
   ...PENDING_SECTIONS,
 ];
 const ANALISTA_VISIBLE: readonly EntidadMenuItem[] = ["inicio", "informes"];

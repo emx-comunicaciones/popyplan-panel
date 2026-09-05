@@ -338,3 +338,38 @@ recuperarlas (la instrucción de esta tarea no fija qué verá `dinamizador`
 en Encuestas/Recursos/Familias una vez existan, solo qué ve mientras no
 existen). **Pregunta:** ¿`dinamizador` debe recuperar esas tres secciones
 en W4b, o se quedan fuera de su matriz de forma permanente?
+
+**Resuelta en W4b (2026-09-05, decisión tomada sin bloquear la tarea):**
+Encuestas y Recursos ya tienen página real en esta tarea, así que
+`dinamizador` recupera ambas en su menú — la matriz original documentada
+en `lib/auth/entidadMenu.ts` («todo salvo Configuración, Reportes y
+Comunicaciones») nunca las excluía; solo el parche temporal de W4a lo
+hacía para no dar 404. Comunicaciones sigue oculta para `dinamizador`
+porque esa matriz original sí la excluye de forma explícita, y coincide
+con el contrato (`POST` solo admite `titular`/`moderador`). Familias
+sigue oculta (todavía sin página real, llega con P6).
+
+## 20. Comunicaciones: sin vista previa del número de destinatarios antes de enviar
+
+`docs/PANEL.md` §5 no ofrece un endpoint para calcular cuánta gente
+recibiría un anuncio antes de mandarlo (el `recipients_count` solo llega
+en la respuesta del `POST`, ya enviado). El diálogo de confirmación
+(`ComunicacionesPanel.tsx`) describe la audiencia elegida en texto
+(«¿Enviar esta comunicación a: Todos los miembros?») en vez de un
+recuento, y el recuento real se muestra recién after el envío. **Pregunta:**
+¿merece la pena un endpoint de vista previa (`GET .../announcements/preview/
+?audience=...` o similar) para que quien redacta sepa antes de confirmar
+a cuánta gente llega, sobre todo en la audiencia «Todos los miembros» de
+una entidad grande?
+
+## 21. Encuestas periódicas: el formulario del panel no ofrece dirigir a una comunidad
+
+`docs/PANEL.md` §6.2 admite un `community` opcional en
+`POST .../surveys/` (sin él, la encuesta es de toda la entidad). El brief
+de W4b solo pedía título, fechas y preguntas para el formulario de
+creación, así que `EncuestasPanel.tsx` no ofrece elegir una comunidad
+(a diferencia de Comunicaciones, que sí ofrece «Una comunidad» porque el
+brief lo pedía explícitamente para esa sección). **Pregunta:** ¿se añade
+un selector de comunidad al formulario de encuestas, igual que en
+Comunicaciones, o se deja fuera a propósito para simplificar (toda
+encuesta periódica es siempre de toda la entidad)?

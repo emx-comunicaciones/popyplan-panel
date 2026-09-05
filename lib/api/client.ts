@@ -57,6 +57,17 @@ export interface ApiFetchOptions extends Omit<RequestInit, "body"> {
   skipRefresh?: boolean;
 }
 
+/**
+ * Un recurso con fichero (`docs/PANEL.md` §7.3) manda `multipart/form-data`:
+ * si `body` ya es un `FormData` (construido por quien llama, p. ej.
+ * `hooks/useCreateResource.ts`), se envía tal cual, sin `JSON.stringify` ni
+ * forzar `Content-Type` (el navegador añade el `boundary` correcto solo si
+ * no se fija la cabecera a mano).
+ */
+function isFormData(value: unknown): value is FormData {
+  return typeof FormData !== "undefined" && value instanceof FormData;
+}
+
 async function rawRequest(
   path: string,
   token: string | null,
@@ -64,14 +75,15 @@ async function rawRequest(
 ): Promise<Response> {
   const { body, headers, ...rest } = options;
   delete rest.skipRefresh;
+  const formData = isFormData(body);
   return fetch(`${apiUrl()}${path}`, {
     ...rest,
     headers: {
-      "Content-Type": "application/json",
+      ...(formData ? {} : { "Content-Type": "application/json" }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: body === undefined ? undefined : formData ? (body as FormData) : JSON.stringify(body),
   });
 }
 

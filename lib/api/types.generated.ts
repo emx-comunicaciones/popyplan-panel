@@ -291,6 +291,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/announcements/mine/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/announcements/mine/` — para la app: mis comunicaciones. */
+        get: operations["announcements_mine_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/admin-login/": {
         parameters: {
             query?: never;
@@ -2630,6 +2647,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/invitations/accept/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description `POST /api/invitations/accept/ {"token"|"code"}` (app). */
+        post: operations["invitations_accept_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/invitations/mine/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/invitations/mine/` — mis invitaciones `pending` (app). */
+        get: operations["invitations_mine_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/notification-templates/": {
         parameters: {
             query?: never;
@@ -2974,6 +3025,129 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organizations/{org_id}/invitations/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET/POST /api/organizations/{org_id}/invitations/` (Fase 5, P4b).
+         *
+         *     `GET`: todas las invitaciones de la entidad (`?status=` filtra por
+         *     `pending`/`accepted`/`expired`/`revoked`); solo `email`/`display_name`
+         *     de las `pending` llevan dato (las demás lo tienen borrado por
+         *     minimización). `POST`: invitación manual, una persona.
+         */
+        get: operations["organizations_invitations_list"];
+        put?: never;
+        /**
+         * @description `GET/POST /api/organizations/{org_id}/invitations/` (Fase 5, P4b).
+         *
+         *     `GET`: todas las invitaciones de la entidad (`?status=` filtra por
+         *     `pending`/`accepted`/`expired`/`revoked`); solo `email`/`display_name`
+         *     de las `pending` llevan dato (las demás lo tienen borrado por
+         *     minimización). `POST`: invitación manual, una persona.
+         */
+        post: operations["organizations_invitations_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organizations/{org_id}/invitations/{iid}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description `DELETE /api/organizations/{org_id}/invitations/{iid}/` — revoca. */
+        delete: operations["organizations_invitations_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organizations/{org_id}/invitations/{iid}/resend/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description `POST /api/organizations/{org_id}/invitations/{iid}/resend/`. */
+        post: operations["organizations_invitations_resend_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organizations/{org_id}/invitations/import/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description `POST /api/organizations/{org_id}/invitations/import/` — multipart
+         *     `file` (`.csv`/`.xlsx`); `?dry_run=true` no crea nada, solo cuenta.
+         */
+        post: operations["organizations_invitations_import_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organizations/{org_id}/resources/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET/POST /api/organizations/{org_id}/resources/`. */
+        get: operations["organizations_resources_list"];
+        put?: never;
+        /** @description `GET/POST /api/organizations/{org_id}/resources/`. */
+        post: operations["organizations_resources_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organizations/{org_id}/resources/{rid}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET/PATCH/DELETE /api/organizations/{org_id}/resources/{rid}/`. */
+        get: operations["organizations_resources_retrieve"];
+        put?: never;
+        post?: never;
+        /** @description `GET/PATCH/DELETE /api/organizations/{org_id}/resources/{rid}/`. */
+        delete: operations["organizations_resources_destroy"];
+        options?: never;
+        head?: never;
+        /** @description `GET/PATCH/DELETE /api/organizations/{org_id}/resources/{rid}/`. */
+        patch: operations["organizations_resources_partial_update"];
+        trace?: never;
+    };
     "/api/organizations/{id}/": {
         parameters: {
             query?: never;
@@ -3091,6 +3265,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/panel/entidad/{org_id}/announcements/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET/POST /api/panel/entidad/{org_id}/announcements/`. */
+        get: operations["panel_entidad_announcements_list"];
+        put?: never;
+        /** @description `GET/POST /api/panel/entidad/{org_id}/announcements/`. */
+        post: operations["panel_entidad_announcements_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/panel/entidad/{org_id}/events/": {
         parameters: {
             query?: never;
@@ -3193,6 +3385,41 @@ export interface paths {
          *     Cada acceso audita `panel.person_viewed`.
          */
         get: operations["panel_entidad_people_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/entidad/{org_id}/surveys/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET/POST /api/panel/entidad/{org_id}/surveys/`. */
+        get: operations["panel_entidad_surveys_list"];
+        put?: never;
+        /** @description `GET/POST /api/panel/entidad/{org_id}/surveys/`. */
+        post: operations["panel_entidad_surveys_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/entidad/{org_id}/surveys/{sid}/results/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/panel/entidad/{org_id}/surveys/{sid}/results/`. */
+        get: operations["panel_entidad_surveys_results_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4293,6 +4520,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/surveys/{sid}/respond/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description `POST /api/surveys/{sid}/respond/ {"answers": {question_id: valor}}`. */
+        post: operations["surveys_respond_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/surveys/pending/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/surveys/pending/` — para la app: encuestas abiertas para mí
+         *     sin responder (según `respondent_hash`).
+         */
+        get: operations["surveys_pending_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/user-images/": {
         parameters: {
             query?: never;
@@ -5286,6 +5550,29 @@ export interface components {
             target: components["schemas"]["TargetEnum"];
             user_id?: number;
         };
+        /** @description Salida: una comunicación oficial ya enviada. */
+        Announcement: {
+            readonly id: number;
+            /** Título */
+            readonly title: string;
+            /** Cuerpo */
+            readonly body: string;
+            readonly audience: string;
+            /**
+             * Enviado el
+             * Format: date-time
+             */
+            readonly sent_at: string;
+            /** Destinatarios */
+            readonly recipients_count: number;
+        };
+        /** @description Entrada de `POST /api/panel/entidad/{id}/announcements/`. */
+        AnnouncementCreateRequest: {
+            title: string;
+            body: string;
+            /** @description 'members' | 'families' | 'community:<uuid>' */
+            audience: string;
+        };
         /** @description Cuerpo de `POST {id}/attendance/`. */
         AttendanceMarkRequest: {
             user_id: number;
@@ -5324,12 +5611,19 @@ export interface components {
          */
         AttendeeStatusEnum: "registered" | "waitlisted" | "cancelled" | "attended" | "no_show";
         /**
+         * @description * `members` - Miembros
+         *     * `families` - Familias
+         *     * `public` - Público
+         * @enum {string}
+         */
+        Audience743Enum: "members" | "families" | "public";
+        /**
          * @description * `anyone` - Cualquiera
          *     * `community` - Miembros de la comunidad
          *     * `organization` - Miembros de la entidad
          * @enum {string}
          */
-        AudienceEnum: "anyone" | "community" | "organization";
+        Audience749Enum: "anyone" | "community" | "organization";
         /** @description Un bloqueo mío. El preventivo no dice de qué teléfono es. */
         Block: {
             /** Format: uuid */
@@ -5393,6 +5687,16 @@ export interface components {
             people: number | null;
             suppressed: boolean;
         };
+        /**
+         * @description * `help` - Ayuda
+         *     * `training` - Formación
+         *     * `families` - Familias
+         *     * `habits` - Hábitos
+         *     * `activities` - Actividades
+         *     * `about` - Sobre la entidad
+         * @enum {string}
+         */
+        CategoryEnum: "help" | "training" | "families" | "habits" | "activities" | "about";
         /**
          * @description * `sports` - Deportivos
          *     * `cultural` - Culturales
@@ -5911,6 +6215,127 @@ export interface components {
             attended: number;
             no_show: number;
         };
+        /**
+         * @description `GET /api/organizations/{id}/invitations/` y respuesta del `POST`.
+         *
+         *     `email`/`display_name` viajan vacíos en cuanto la invitación deja de
+         *     estar `pending` (minimización de datos, ver `EntityInvitation`):
+         *     ninguna lógica aparte hace falta aquí, el propio dato ya está borrado.
+         */
+        EntityInvitation: {
+            readonly id: number;
+            /** Entidad */
+            readonly organization: number;
+            /**
+             * Correo
+             * Format: email
+             */
+            readonly email: string;
+            /** Nombre para mostrar */
+            readonly display_name: string;
+            /**
+             * Comunidad
+             * Format: uuid
+             * @description Comunidad de alta al aceptar. Sin ella, la "General" de la entidad.
+             */
+            readonly community: string | null;
+            /**
+             * Referente
+             * @description Debe tener rol referente en esta misma entidad (se valida en el servicio).
+             */
+            readonly referent: number | null;
+            /** Estado */
+            readonly status: components["schemas"]["EntityInvitationStatusEnum"];
+            /**
+             * Enviada el
+             * Format: date-time
+             */
+            readonly sent_at: string | null;
+            /**
+             * Aceptada el
+             * Format: date-time
+             */
+            readonly accepted_at: string | null;
+            /** Invitada por */
+            readonly invited_by: number | null;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /** @description `POST /api/organizations/{id}/invitations/` — invitación manual. */
+        EntityInvitationCreateRequest: {
+            /** Format: email */
+            email: string;
+            /** @default  */
+            display_name: string;
+            /** @default  */
+            phone: string;
+            /** Format: uuid */
+            community?: string | null;
+            referent_user?: number | null;
+        };
+        /**
+         * @description * `pending` - Pendiente
+         *     * `accepted` - Aceptada
+         *     * `expired` - Caducada
+         *     * `revoked` - Revocada
+         * @enum {string}
+         */
+        EntityInvitationStatusEnum: "pending" | "accepted" | "expired" | "revoked";
+        /** @description Salida de `GET /api/organizations/{id}/resources/`. */
+        EntityResource: {
+            readonly id: number;
+            /** Título */
+            title: string;
+            /** Categoría */
+            category: components["schemas"]["CategoryEnum"];
+            /** Tipo */
+            kind: components["schemas"]["Kind839Enum"];
+            /** Texto */
+            body?: string;
+            /**
+             * Fichero
+             * Format: uri
+             */
+            file?: string | null;
+            /**
+             * Enlace
+             * Format: uri
+             */
+            url?: string;
+            /** Destacado */
+            is_featured?: boolean;
+            /** Audiencia */
+            audience?: components["schemas"]["Audience743Enum"];
+            /** Creado por */
+            readonly created_by: number;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /** @description Entrada de `POST`/`PATCH` sobre un recurso. */
+        EntityResourceWriteRequest: {
+            /** Título */
+            title: string;
+            /** Categoría */
+            category: components["schemas"]["CategoryEnum"];
+            /** Tipo */
+            kind: components["schemas"]["Kind839Enum"];
+            /** Texto */
+            body?: string;
+            /**
+             * Fichero
+             * Format: binary
+             */
+            file?: string | null;
+            /**
+             * Enlace
+             * Format: uri
+             */
+            url?: string;
+            /** Destacado */
+            is_featured?: boolean;
+            /** Audiencia */
+            audience?: components["schemas"]["Audience743Enum"];
+        };
         /** @description Serializer para respuestas de error */
         ErrorResponse: {
             /** @description Mensaje de error */
@@ -5950,7 +6375,7 @@ export interface components {
              */
             address?: string;
             /** Quién se puede apuntar */
-            audience?: components["schemas"]["AudienceEnum"];
+            audience?: components["schemas"]["Audience749Enum"];
             /** Format: uuid */
             community?: string | null;
             owner_org?: number | null;
@@ -6016,7 +6441,7 @@ export interface components {
              */
             address?: string;
             /** Quién se puede apuntar */
-            audience?: components["schemas"]["AudienceEnum"];
+            audience?: components["schemas"]["Audience749Enum"];
             /** Format: uuid */
             community?: string | null;
             owner_org?: number | null;
@@ -6074,7 +6499,7 @@ export interface components {
              */
             readonly ends_at: string | null;
             /** Quién se puede apuntar */
-            readonly audience: components["schemas"]["AudienceEnum"];
+            readonly audience: components["schemas"]["Audience749Enum"];
             /** Estado */
             readonly status: components["schemas"]["Status5bbEnum"];
             readonly image: string | null;
@@ -6158,7 +6583,7 @@ export interface components {
              */
             readonly ends_at: string | null;
             /** Quién se puede apuntar */
-            readonly audience: components["schemas"]["AudienceEnum"];
+            readonly audience: components["schemas"]["Audience749Enum"];
             /** Estado */
             readonly status: components["schemas"]["Status5bbEnum"];
             readonly image: string | null;
@@ -6441,6 +6866,29 @@ export interface components {
             is_active?: boolean;
             category: number;
         };
+        /**
+         * @description * `post_event` - Post-actividad
+         *     * `periodic` - Periódica
+         * @enum {string}
+         */
+        Kind049Enum: "post_event" | "periodic";
+        /**
+         * @description * `text` - Texto
+         *     * `pdf` - PDF
+         *     * `video` - Vídeo
+         *     * `audio` - Audio
+         *     * `link` - Enlace
+         *     * `document` - Documento
+         * @enum {string}
+         */
+        Kind839Enum: "text" | "pdf" | "video" | "audio" | "link" | "document";
+        /**
+         * @description * `stars_1_5` - Estrellas (1-5)
+         *     * `scale_4` - Escala (1-4)
+         *     * `text_short` - Texto corto
+         * @enum {string}
+         */
+        KindFe1Enum: "stars_1_5" | "scale_4" | "text_short";
         Language: {
             readonly id: number;
             code: string;
@@ -6686,10 +7134,12 @@ export interface components {
          *     * `report_resolved` - Reporte revisado
          *     * `help_request` - Aviso de ayuda
          *     * `account_suspended` - Cuenta suspendida
+         *     * `announcement` - Comunicación oficial
+         *     * `survey` - Encuesta
          *     * `system` - Sistema
          * @enum {string}
          */
-        NotificationTypeEnum: "dm_request" | "message" | "plan_invitation" | "plan_update" | "plan_reminder" | "plan_cancelled" | "plan_completed" | "review_received" | "warning" | "report_resolved" | "help_request" | "account_suspended" | "system";
+        NotificationTypeEnum: "dm_request" | "message" | "plan_invitation" | "plan_update" | "plan_reminder" | "plan_cancelled" | "plan_completed" | "review_received" | "warning" | "report_resolved" | "help_request" | "account_suspended" | "announcement" | "survey" | "system";
         OptimizedPhotoListItem: {
             id: number;
             user: number;
@@ -7270,6 +7720,31 @@ export interface components {
         PatchedCustomLoginRequest: {
             username_or_email?: string;
             password?: string;
+        };
+        /** @description Entrada de `POST`/`PATCH` sobre un recurso. */
+        PatchedEntityResourceWriteRequest: {
+            /** Título */
+            title?: string;
+            /** Categoría */
+            category?: components["schemas"]["CategoryEnum"];
+            /** Tipo */
+            kind?: components["schemas"]["Kind839Enum"];
+            /** Texto */
+            body?: string;
+            /**
+             * Fichero
+             * Format: binary
+             */
+            file?: string | null;
+            /**
+             * Enlace
+             * Format: uri
+             */
+            url?: string;
+            /** Destacado */
+            is_featured?: boolean;
+            /** Audiencia */
+            audience?: components["schemas"]["Audience743Enum"];
         };
         /**
          * @description Edición: el espacio (`audience`, `community`, `owner_org`) no se mueve.
@@ -8191,6 +8666,106 @@ export interface components {
         SuccessResponse: {
             /** @description Mensaje de confirmación */
             detail: string;
+        };
+        /** @description Salida: una encuesta, con sus preguntas. */
+        Survey: {
+            readonly id: number;
+            /** Título */
+            readonly title: string;
+            /** Tipo */
+            readonly kind: components["schemas"]["Kind049Enum"];
+            /** Format: uuid */
+            readonly event: string | null;
+            /** Format: uuid */
+            readonly community: string | null;
+            /** Anónima */
+            readonly anonymous: boolean;
+            /**
+             * Abre el
+             * Format: date-time
+             */
+            readonly opens_at: string;
+            /**
+             * Cierra el
+             * Format: date-time
+             */
+            readonly closes_at: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+            readonly questions: components["schemas"]["SurveyQuestion"][];
+        };
+        /** @description Entrada de `POST /api/panel/entidad/{id}/surveys/`. */
+        SurveyCreateRequest: {
+            title: string;
+            kind: components["schemas"]["Kind049Enum"];
+            /** Format: uuid */
+            community?: string | null;
+            /** Format: date-time */
+            opens_at?: string;
+            /** Format: date-time */
+            closes_at?: string | null;
+            questions: components["schemas"]["SurveyQuestionInputRequest"][];
+        };
+        /** @description Salida de `GET /api/surveys/pending/`: encuesta abierta sin responder. */
+        SurveyPending: {
+            readonly id: number;
+            /** Título */
+            readonly title: string;
+            /** Tipo */
+            readonly kind: components["schemas"]["Kind049Enum"];
+            /**
+             * Abre el
+             * Format: date-time
+             */
+            readonly opens_at: string;
+            /**
+             * Cierra el
+             * Format: date-time
+             */
+            readonly closes_at: string | null;
+            readonly questions: components["schemas"]["SurveyQuestion"][];
+        };
+        SurveyQuestion: {
+            readonly id: number;
+            /** Tipo */
+            readonly kind: components["schemas"]["KindFe1Enum"];
+            /** Texto */
+            readonly text: string;
+            /** Orden */
+            readonly order: number;
+        };
+        /** @description Una pregunta al crear una encuesta. */
+        SurveyQuestionInputRequest: {
+            kind: components["schemas"]["KindFe1Enum"];
+            text: string;
+            /** @default 0 */
+            order: number;
+        };
+        /** @description Fila agregada de `GET .../surveys/{id}/results/`. */
+        SurveyQuestionResult: {
+            question_id: number;
+            kind: string;
+            text: string;
+            /** Format: double */
+            mean?: number | null;
+            distribution?: {
+                [key: string]: unknown;
+            } | null;
+            answers?: string[] | null;
+            suppressed: boolean;
+        };
+        /** @description Entrada de `POST /api/surveys/{id}/respond/`. */
+        SurveyRespondRequest: {
+            /** @description {"<question_id>": valor}. Entero (1-5 o 1-4) o texto según el tipo. */
+            answers: {
+                [key: string]: unknown;
+            };
+        };
+        /** @description Documenta el esquema fijo de `panel.services.surveys.results_for`. */
+        SurveyResults: {
+            survey_id: number;
+            responses_count: number;
+            questions: components["schemas"]["SurveyQuestionResult"][];
         };
         /**
          * @description * `all` - Todos
@@ -9177,6 +9752,25 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    announcements_mine_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Announcement"][];
+                };
             };
         };
     };
@@ -13835,6 +14429,65 @@ export interface operations {
             };
         };
     };
+    invitations_accept_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntityInvitation"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    invitations_mine_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntityInvitation"][];
+                };
+            };
+        };
+    };
     notification_templates_list: {
         parameters: {
             query?: {
@@ -14002,9 +14655,11 @@ export interface operations {
                  *     * `report_resolved` - Reporte revisado
                  *     * `help_request` - Aviso de ayuda
                  *     * `account_suspended` - Cuenta suspendida
+                 *     * `announcement` - Comunicación oficial
+                 *     * `survey` - Encuesta
                  *     * `system` - Sistema
                  */
-                notification_type?: "account_suspended" | "dm_request" | "help_request" | "message" | "plan_cancelled" | "plan_completed" | "plan_invitation" | "plan_reminder" | "plan_update" | "report_resolved" | "review_received" | "system" | "warning";
+                notification_type?: "account_suspended" | "announcement" | "dm_request" | "help_request" | "message" | "plan_cancelled" | "plan_completed" | "plan_invitation" | "plan_reminder" | "plan_update" | "report_resolved" | "review_received" | "survey" | "system" | "warning";
                 /** @description Which field to use when ordering the results. */
                 ordering?: string;
                 /** @description A page number within the paginated result set. */
@@ -14794,6 +15449,369 @@ export interface operations {
             };
         };
     };
+    organizations_invitations_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntityInvitation"][];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    organizations_invitations_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EntityInvitationCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["EntityInvitationCreateRequest"];
+                "multipart/form-data": components["schemas"]["EntityInvitationCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntityInvitation"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    organizations_invitations_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                iid: number;
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    organizations_invitations_resend_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                iid: number;
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntityInvitation"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    organizations_invitations_import_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    organizations_resources_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntityResource"][];
+                };
+            };
+        };
+    };
+    organizations_resources_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EntityResourceWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["EntityResourceWriteRequest"];
+                "multipart/form-data": components["schemas"]["EntityResourceWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntityResource"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    organizations_resources_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+                rid: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntityResource"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    organizations_resources_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+                rid: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    organizations_resources_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+                rid: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedEntityResourceWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedEntityResourceWriteRequest"];
+                "multipart/form-data": components["schemas"]["PatchedEntityResourceWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntityResource"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     organizations_retrieve: {
         parameters: {
             query?: never;
@@ -15352,6 +16370,75 @@ export interface operations {
             };
         };
     };
+    panel_entidad_announcements_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Announcement"][];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_announcements_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnnouncementCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AnnouncementCreateRequest"];
+                "multipart/form-data": components["schemas"]["AnnouncementCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Announcement"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     panel_entidad_events_list: {
         parameters: {
             query?: {
@@ -15559,6 +16646,111 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PersonDetail"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_surveys_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Survey"][];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_surveys_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SurveyCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SurveyCreateRequest"];
+                "multipart/form-data": components["schemas"]["SurveyCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Survey"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_surveys_results_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+                sid: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SurveyResults"];
                 };
             };
             /** @description No response body */
@@ -17584,6 +18776,72 @@ export interface operations {
                     "application/json": {
                         data?: Record<string, never>[];
                     };
+                };
+            };
+        };
+    };
+    surveys_respond_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sid: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SurveyRespondRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SurveyRespondRequest"];
+                "multipart/form-data": components["schemas"]["SurveyRespondRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    surveys_pending_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SurveyPending"][];
                 };
             };
         };

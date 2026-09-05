@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { ComingSoon } from "@/components/ui/ComingSoon";
+import { ComunicacionesPanel } from "@/components/entidad/ComunicacionesPanel";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { entidadMenuFor } from "@/lib/auth/entidadMenu";
@@ -28,10 +28,12 @@ export default async function EntidadComunicacionesPage({
     return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Comunicaciones." />;
   }
 
+  const canCompose = membership.role === "titular" || membership.role === "moderador";
+
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-semibold text-text-base">Comunicaciones</h1>
-      <ComingSoon section="Comunicaciones" />
+      <ComunicacionesPanel orgId={membership.organization_id} canCompose={canCompose} />
     </div>
   );
 }

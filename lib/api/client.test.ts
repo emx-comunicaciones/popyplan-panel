@@ -183,6 +183,20 @@ describe("apiFetch", () => {
     expect(data).toEqual({ id: 1 });
   });
 
+  it("un body FormData se manda tal cual, sin Content-Type forzado (subida de recurso)", async () => {
+    setAccessToken("token-vivo");
+    fetchMock.mockResolvedValueOnce(response({ id: 1 }, 200));
+
+    const formData = new FormData();
+    formData.append("title", "Guía");
+
+    await apiFetch("/api/organizations/7/resources/", { method: "POST", body: formData });
+
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(init.body).toBe(formData);
+    expect((init.headers as Record<string, string>)["Content-Type"]).toBeUndefined();
+  });
+
   it("refresco fallido avisa una vez a lib/auth/sessionEvents con el mensaje del contrato", async () => {
     setAccessToken("token-caducado");
     fetchMock

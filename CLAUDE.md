@@ -178,6 +178,96 @@ campo nuevo a la ficha o a la lista de asistentes debe comprobar primero
 que el tipo de `docs/schema.yaml` no los lleva, nunca confiar en que el
 componente los vaya a filtrar a mano.
 
+## Comunicaciones, encuestas y recursos (tarea W4b)
+
+`docs/PANEL.md` §5 (comunicaciones oficiales), §6 (encuestas) y §7
+(biblioteca de recursos). Reemplaza los avisos «Próximamente» que dejó
+W4a para estas tres secciones — Familias sigue aparcada
+(`components/ui/ComingSoon.tsx`, `lib/auth/entidadMenu.ts::PENDING_SECTIONS`)
+hasta que el backend tenga el espacio de familias (P6).
+
+- **Comunicaciones** (`comunicaciones/page.tsx` → `ComunicacionesPanel`,
+  hooks `useAnnouncements`/`useSendAnnouncement`): redactar un anuncio
+  (título, cuerpo, audiencia `members`/`community:<uuid>`/`families`) e
+  historial con `recipients_count`. La opción «Familias» va deshabilitada
+  con la pista «Disponible cuando exista el espacio de familias»
+  (`audience='families'` responde 400 en el backend hasta P6, §5.2). El
+  backend no ofrece una vista previa del número de destinatarios antes de
+  enviar (no hay endpoint para eso): el diálogo de confirmación
+  (`components/ui/ConfirmDialog.tsx`, nuevo) describe la audiencia elegida
+  en vez de un recuento, y tras el envío se pinta el `recipients_count`
+  real de la respuesta. Solo `titular`/`moderador` ven el formulario de
+  redacción (`canCompose`); el resto de roles con acceso a la página solo
+  ve el historial — hoy eso no llega a probarse a través del menú, porque
+  ningún rol que vea la sección en `entidadMenuFor` deja de poder
+  componer (ver más abajo), así que el camino de solo lectura del
+  componente tiene su propio test directo
+  (`components/entidad/ComunicacionesPanel.test.tsx`) en vez de uno a
+  través de la página.
+- **Encuestas** (`encuestas/page.tsx` → `EncuestasPanel`, hook
+  `useSurveys`/`useCreateSurvey`; `encuestas/[surveyId]/page.tsx` →
+  `SurveyResultsView`, hook `useSurveyResults`): lista (título, tipo
+  `Periódica`/`Post-actividad`, estado abierta/cerrada calculado en el
+  cliente con `isSurveyOpen` a partir de `opens_at`/`closes_at`, número de
+  preguntas) con enlace a resultados; crear encuesta periódica (título,
+  fechas, preguntas `stars_1_5`/`scale_4`/`text_short` con orden) — las
+  `post_event` las crea el backend solo al completar una actividad (§6.3),
+  esta página no ofrece crearlas a mano. Resultados: por pregunta media +
+  distribución (barras con `recharts`, mismo patrón que
+  `components/metrics/SeriesChart.tsx`) para `stars_1_5`/`scale_4`, lista
+  sin orden para `text_short`; con menos de `PANEL_MIN_GROUP_SIZE`
+  respuestas la pregunta llega `suppressed: true` y se pinta como «<5»
+  (nunca vacío). **Banner explícito de anonimato**: la cadena literal
+  «Las respuestas son anónimas y agregadas.» se pinta siempre al principio
+  de la página de resultados, sea cual sea el estado de la consulta
+  (cargando, error o con datos) — es la única fuente de esa cadena en el
+  código (`SurveyResultsView.tsx::ANONYMITY_BANNER`); quien toque esa
+  página no debe reformularla ni moverla a un lugar condicional. Solo
+  `titular`/`moderador` crean encuestas (`canCreate`); el resto de roles
+  con acceso (`dinamizador`, ver más abajo) solo ve la lista y los
+  resultados.
+- **Recursos** (`recursos/page.tsx` → `RecursosPanel`, hooks
+  `useResources`/`useCreateResource`/`useUpdateResource`/`useDeleteResource`):
+  lista agrupada por categoría (`help`, `training`, `families`, `habits`,
+  `activities`, `about`) conservando el orden que ya llega del backend
+  (`is_featured` descendente y luego `created_at` descendente) dentro de
+  cada grupo; crear/editar con campos según `kind` (`body` para `text`,
+  `url` para `link`, fichero para `pdf`/`video`/`audio`/`document`);
+  borrar con `ConfirmDialog`. Ficheros: validación en el cliente antes de
+  intentar la subida (`lib/resources/validateFile.ts::validateResourceFile`,
+  mismos límites que `panel.services.resources.validate_file` en el
+  backend: 20 MB, extensiones `pdf`/`mp4`/`mp3`/`docx`/`png`/`jpg`) — el
+  backend valida otra vez de todos modos (nunca hay que confiar solo en
+  el cliente), y su 400 se muestra igual si llega. La audiencia
+  «Familias» va deshabilitada en el formulario con la misma pista que
+  Comunicaciones (un recurso `audience='families'` hoy no es visible para
+  nadie salvo quien gestiona la entidad, §7.2 — marcador de posición hasta
+  P6). Solo `titular`/`moderador` gestionan (`canManage`); el resto de
+  roles con acceso solo ve la lista.
+
+**Subida de fichero (multipart)**: `hooks/useCreateResource.ts` y
+`useUpdateResource.ts` construyen el cuerpo con
+`lib/resources/resourceFormData.ts::buildResourcePayload` — si hay
+fichero, un `FormData`; si no, un objeto JSON plano (más fácil de
+testear, y el backend acepta ambos según `docs/schema.yaml`). Para que
+`lib/api/client.ts::apiFetch` pudiera mandar ese `FormData` tal cual (sin
+`JSON.stringify` ni forzar `Content-Type: application/json`, que rompería
+el `boundary` multipart que pone el navegador), se le añadió detección de
+`FormData` en `rawRequest` — cambio mínimo y compatible con todo lo que
+ya lo usaba (`lib/api/client.test.ts` tiene el caso nuevo).
+
+**Menú de `dinamizador` (decisión de esta tarea, pregunta 19 del informe
+de W4a)**: `lib/auth/entidadMenu.ts::PENDING_SECTIONS` pasa de
+`[comunicaciones, encuestas, recursos, familias]` a solo `[familias]` —
+Encuestas y Recursos ya tienen página real, así que `dinamizador`
+recupera su matriz original documentada en el propio fichero («todo
+salvo Configuración, Reportes y Comunicaciones»: nunca excluía Encuestas
+ni Recursos, el parche de W4a las ocultaba solo para no dar 404).
+Comunicaciones sigue oculta para `dinamizador` porque esa matriz original
+sí la excluye explícitamente, y coincide con el contrato: `POST` solo
+admite `titular`/`moderador`, sin otra acción útil para ese rol en la
+página. Familias permanece oculta (sin página real todavía).
+
 ## Diseño de sesión (refresh real desde la tarea W3)
 
 Access token en memoria (`lib/auth/tokenStore.ts`, nunca localStorage).

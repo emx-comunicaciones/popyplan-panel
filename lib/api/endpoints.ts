@@ -77,6 +77,18 @@ export const ORGANIZATIONS = {
    * (§8): amplía el ámbito INE de la entidad.
    */
   SCOPE: (id: number | string) => `/api/organizations/${id}/scope/`,
+  /**
+   * `GET`/`POST /api/organizations/{id}/resources/` (`docs/PANEL.md` §7):
+   * biblioteca de recursos de la entidad. `POST` acepta `multipart/form-data`
+   * cuando hay fichero.
+   */
+  RESOURCES: (id: number | string) => `/api/organizations/${id}/resources/`,
+  /**
+   * `GET`/`PATCH`/`DELETE /api/organizations/{id}/resources/{resource_id}/`
+   * (`docs/PANEL.md` §7): un recurso concreto.
+   */
+  RESOURCE: (id: number | string, resourceId: number | string) =>
+    `/api/organizations/${id}/resources/${resourceId}/`,
 } as const;
 
 /**
@@ -124,6 +136,22 @@ export const PANEL = {
     `/api/panel/entidad/${orgId}/people/${userId}/`,
   /** `GET /api/panel/entidad/{org_id}/events/`. */
   EVENTS: (orgId: number | string) => `/api/panel/entidad/${orgId}/events/`,
+  /**
+   * `GET`/`POST /api/panel/entidad/{org_id}/announcements/`
+   * (`docs/PANEL.md` §5): comunicaciones oficiales de la entidad.
+   */
+  ANNOUNCEMENTS: (orgId: number | string) => `/api/panel/entidad/${orgId}/announcements/`,
+  /**
+   * `GET`/`POST /api/panel/entidad/{org_id}/surveys/` (`docs/PANEL.md`
+   * §6): encuestas de la entidad.
+   */
+  SURVEYS: (orgId: number | string) => `/api/panel/entidad/${orgId}/surveys/`,
+  /**
+   * `GET /api/panel/entidad/{org_id}/surveys/{sid}/results/`
+   * (`docs/PANEL.md` §6.6): resultados agregados, con umbral.
+   */
+  SURVEY_RESULTS: (orgId: number | string, surveyId: number | string) =>
+    `/api/panel/entidad/${orgId}/surveys/${surveyId}/results/`,
 } as const;
 
 /**

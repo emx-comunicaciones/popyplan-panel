@@ -268,3 +268,58 @@ export interface OrgScopeResponse {
   added: number;
   total: number;
 }
+
+/**
+ * `docs/PANEL.md` §5 («Comunicaciones oficiales»):
+ * `GET`/`POST /api/panel/entidad/{org_id}/announcements/`. Array plano
+ * (`@extend_schema` de la vista no envuelve en paginador — verificado
+ * contra `panel/viewsets.py`, no solo el esquema).
+ */
+export type Announcement = components["schemas"]["Announcement"];
+/** Cuerpo de `POST /api/panel/entidad/{org_id}/announcements/`. */
+export type AnnouncementCreateRequest = components["schemas"]["AnnouncementCreateRequest"];
+/**
+ * `audience` real (`docs/PANEL.md` §5.2) es una de estas tres formas; el
+ * esquema generado la deja como `string` a secas (el backend reconstruye
+ * la forma de entrada/salida a mano, sin enum) — este tipo documenta las
+ * formas válidas para el formulario de composición, sin sustituir al tipo
+ * generado en las respuestas.
+ */
+export type AnnouncementAudienceInput = "members" | "families" | `community:${string}`;
+
+/**
+ * `docs/PANEL.md` §6 («Encuestas»): `GET`/`POST
+ * /api/panel/entidad/{org_id}/surveys/` y `.../surveys/{sid}/results/`.
+ * Listado sin paginar (mismo patrón que `Announcement`).
+ */
+export type Survey = components["schemas"]["Survey"];
+export type SurveyCreateRequest = components["schemas"]["SurveyCreateRequest"];
+export type SurveyQuestion = components["schemas"]["SurveyQuestion"];
+export type SurveyQuestionInput = components["schemas"]["SurveyQuestionInputRequest"];
+/** `kind` de una encuesta: `post_event` (automática) o `periodic` (creada desde el panel). */
+export type SurveyKind = components["schemas"]["Kind049Enum"];
+/** `kind` de una pregunta: `stars_1_5`, `scale_4` o `text_short`. */
+export type SurveyQuestionKind = components["schemas"]["KindFe1Enum"];
+/** Fila agregada de `GET .../surveys/{sid}/results/`. */
+export type SurveyQuestionResult = components["schemas"]["SurveyQuestionResult"];
+/** `GET /api/panel/entidad/{org_id}/surveys/{sid}/results/` (`docs/PANEL.md` §6.6). */
+export type SurveyResults = components["schemas"]["SurveyResults"];
+
+/**
+ * `docs/PANEL.md` §7 («Biblioteca de recursos»): `GET`/`POST
+ * /api/organizations/{org_id}/resources/` y `GET`/`PATCH`/`DELETE
+ * .../resources/{rid}/`. Listado sin paginar. `EntityResourceWriteRequest`
+ * admite `multipart/form-data` (fichero) además de JSON — ver
+ * `hooks/useCreateResource.ts`/`useUpdateResource.ts`, que construyen un
+ * `FormData` cuando hay fichero y JSON normal cuando no lo hay.
+ */
+export type EntityResource = components["schemas"]["EntityResource"];
+export type EntityResourceWriteRequest = components["schemas"]["EntityResourceWriteRequest"];
+export type PatchedEntityResourceWriteRequest =
+  components["schemas"]["PatchedEntityResourceWriteRequest"];
+/** `category` de un recurso (`docs/PANEL.md` §7.1). */
+export type ResourceCategory = components["schemas"]["CategoryEnum"];
+/** `kind` de un recurso (`docs/PANEL.md` §7.1). */
+export type ResourceKind = components["schemas"]["Kind839Enum"];
+/** `audience` de un recurso (`docs/PANEL.md` §7.2): `members`, `families` o `public`. */
+export type ResourceAudience = components["schemas"]["Audience743Enum"];

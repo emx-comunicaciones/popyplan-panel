@@ -1,9 +1,10 @@
 /**
  * Aviso «Próximamente» para las secciones del menú de entidad cuya
- * página real todavía no existe (tarea W4a: Comunicaciones, Encuestas,
- * Recursos y Familias, W4b). Solo lo ve `titular`/`moderador` — el resto
- * de roles las tiene ocultas del menú (`lib/auth/entidadMenu.ts`) y
- * recibe «Sin acceso» si navegan a la URL directamente.
+ * página real todavía no existe. Desde la tarea W4b solo queda Familias
+ * (Comunicaciones, Encuestas y Recursos ya tienen página real). Solo lo
+ * ve `titular`/`moderador` — el resto de roles la tiene oculta del menú
+ * (`lib/auth/entidadMenu.ts::PENDING_SECTIONS`) y recibe «Sin acceso» si
+ * navegan a la URL directamente.
  */
 export interface ComingSoonProps {
   section: string;

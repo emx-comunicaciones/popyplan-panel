@@ -143,4 +143,24 @@ describe("endpoints", () => {
   it("COMMUNITIES.MEMBER_ROLE(id, memberId) apunta a .../members/{memberId}/role/", () => {
     expect(COMMUNITIES.MEMBER_ROLE("c1", "m1")).toBe("/api/communities/c1/members/m1/role/");
   });
+
+  it("ORGANIZATIONS.RESOURCES(id) apunta a /api/organizations/{id}/resources/", () => {
+    expect(ORGANIZATIONS.RESOURCES(7)).toBe("/api/organizations/7/resources/");
+  });
+
+  it("ORGANIZATIONS.RESOURCE(id, resourceId) apunta a /api/organizations/{id}/resources/{resourceId}/", () => {
+    expect(ORGANIZATIONS.RESOURCE(7, 3)).toBe("/api/organizations/7/resources/3/");
+  });
+
+  it("PANEL.ANNOUNCEMENTS(orgId) apunta a /api/panel/entidad/{orgId}/announcements/", () => {
+    expect(PANEL.ANNOUNCEMENTS(7)).toBe("/api/panel/entidad/7/announcements/");
+  });
+
+  it("PANEL.SURVEYS(orgId) apunta a /api/panel/entidad/{orgId}/surveys/", () => {
+    expect(PANEL.SURVEYS(7)).toBe("/api/panel/entidad/7/surveys/");
+  });
+
+  it("PANEL.SURVEY_RESULTS(orgId, surveyId) apunta a /api/panel/entidad/{orgId}/surveys/{surveyId}/results/", () => {
+    expect(PANEL.SURVEY_RESULTS(7, 3)).toBe("/api/panel/entidad/7/surveys/3/results/");
+  });
 });
