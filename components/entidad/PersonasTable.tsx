@@ -3,15 +3,26 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { AddPersonDialog } from "@/components/people/AddPersonDialog";
+import { ImportPeopleDialog } from "@/components/people/ImportPeopleDialog";
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { useInvitations } from "@/hooks/useInvitations";
 import { usePeople } from "@/hooks/usePeople";
+import { useResendInvitation } from "@/hooks/useResendInvitation";
+import { useRevokeInvitation } from "@/hooks/useRevokeInvitation";
+import type { InvitedPersonRow } from "@/lib/api/types";
+import { isInvitedPersonRow } from "@/lib/people/invitedRow";
 import { presetPeriod } from "@/lib/metrics/period";
 
 export interface PersonasTableProps {
   orgId: number | string;
   slug: string;
+  /** Solo titular/moderador dan de alta personas (`docs/PANEL.md` §3b.1). */
+  canManage: boolean;
 }
 
 interface PersonasFilters {
@@ -36,14 +47,41 @@ function formatDate(iso: string | null): string {
 }
 
 /**
+ * Recuento de invitaciones `pending` junto al checkbox «Incluir
+ * invitadas» (tarea W3b): componente aparte para que `useInvitations`
+ * (`docs/PANEL.md` §3b.1) solo se llame mientras el checkbox está
+ * activo, igual que `ResourceForm` dentro de
+ * `components/entidad/RecursosPanel.tsx` solo llama a sus mutaciones
+ * mientras el formulario está montado.
+ */
+function PendingInvitationsHint({ orgId }: { orgId: number | string }) {
+  const invitations = useInvitations(orgId, "pending");
+  if (!invitations.data) return null;
+  const count = invitations.data.length;
+  return (
+    <span className="text-xs text-text-secondary">
+      {count} invitación{count === 1 ? "" : "es"} pendiente{count === 1 ? "" : "s"}
+    </span>
+  );
+}
+
+/**
  * Tabla de personas de la entidad (`docs/PANEL.md` §3.2): filtros
  * comunidad/referente/participación (`active_since`)/alta (`joined_since`)
  * más búsqueda, y paginación estándar de DRF. Cada fila enlaza a la ficha
- * operativa (`personas/[userId]`).
+ * operativa (`personas/[userId]`). Tarea W3b: botones «Añadir persona» e
+ * «Importar Excel/CSV» (solo `canManage`) y checkbox «Incluir invitadas»
+ * (`include_invited=true`, §3b.7) que mezcla filas `InvitedPersonRow`
+ * («Invitada (pendiente)») al final de la página, con «Reenviar»/
+ * «Revocar» (solo `canManage`).
  */
-export function PersonasTable({ orgId, slug }: PersonasTableProps) {
+export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
   const [filters, setFilters] = useState<PersonasFilters>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
+  const [includeInvited, setIncludeInvited] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [revoking, setRevoking] = useState<InvitedPersonRow | null>(null);
   const period = presetPeriod("mes");
 
   const people = usePeople(orgId, period, {
@@ -52,8 +90,12 @@ export function PersonasTable({ orgId, slug }: PersonasTableProps) {
     referent: filters.referent ? Number(filters.referent) : undefined,
     activeSince: filters.activeSince || undefined,
     joinedSince: filters.joinedSince || undefined,
+    includeInvited,
     page,
   });
+
+  const resendInvitation = useResendInvitation(orgId);
+  const revokeInvitation = useRevokeInvitation(orgId);
 
   function updateFilter<K extends keyof PersonasFilters>(key: K, value: string) {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -62,6 +104,17 @@ export function PersonasTable({ orgId, slug }: PersonasTableProps) {
 
   return (
     <div className="flex flex-col gap-4">
+      {canManage ? (
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" onClick={() => setAddOpen(true)}>
+            Añadir persona
+          </Button>
+          <Button type="button" variant="secondary" onClick={() => setImportOpen(true)}>
+            Importar Excel/CSV
+          </Button>
+        </div>
+      ) : null}
+
       <form aria-label="Filtros de personas" className="flex flex-wrap items-end gap-3">
         <div>
           <label htmlFor="personas-search" className="mb-1 block text-sm font-medium text-text-form">
@@ -123,7 +176,32 @@ export function PersonasTable({ orgId, slug }: PersonasTableProps) {
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
           />
         </div>
+        <div className="flex items-center gap-2 pb-2">
+          <label className="flex items-center gap-2 text-sm text-text-base">
+            <input
+              type="checkbox"
+              checked={includeInvited}
+              onChange={(event) => {
+                setIncludeInvited(event.target.checked);
+                setPage(1);
+              }}
+            />
+            Incluir invitadas
+          </label>
+          {includeInvited ? <PendingInvitationsHint orgId={orgId} /> : null}
+        </div>
       </form>
+
+      {resendInvitation.isError ? (
+        <p role="alert" className="text-sm text-error">
+          {resendInvitation.error.message}
+        </p>
+      ) : null}
+      {revokeInvitation.isError ? (
+        <p role="alert" className="text-sm text-error">
+          {revokeInvitation.error.message}
+        </p>
+      ) : null}
 
       {people.isError ? (
         <ErrorState title="No se pudieron cargar las personas" description={people.error.message} />
@@ -144,28 +222,72 @@ export function PersonasTable({ orgId, slug }: PersonasTableProps) {
                   <th scope="col" className="px-3 py-2 font-semibold">Asistió (periodo)</th>
                   <th scope="col" className="px-3 py-2 font-semibold">De alta</th>
                   <th scope="col" className="px-3 py-2 font-semibold">Referente</th>
+                  {canManage ? (
+                    <th scope="col" className="px-3 py-2 font-semibold">Acciones</th>
+                  ) : null}
                 </tr>
               </thead>
               <tbody>
-                {people.data.results.map((person) => (
-                  <tr key={person.user_id} className="border-b border-border-light">
-                    <td className="px-3 py-2 text-text-base">
-                      <Link
-                        href={`/entidad/${slug}/personas/${person.user_id}`}
-                        className="font-medium text-primary underline"
+                {people.data.results.map((row) => {
+                  if (isInvitedPersonRow(row)) {
+                    return (
+                      <tr
+                        key={`invitation-${row.invitation_id}`}
+                        className="border-b border-border-light bg-card-light/40"
                       >
-                        {person.public_name}
-                      </Link>
-                    </td>
-                    <td className="px-3 py-2 text-text-base">{person.communities_count}</td>
-                    <td className="px-3 py-2 text-text-base">{person.events_period}</td>
-                    <td className="px-3 py-2 text-text-base">{person.attended_period}</td>
-                    <td className="px-3 py-2 text-text-base">{formatDate(person.joined_at)}</td>
-                    <td className="px-3 py-2 text-text-base">
-                      {person.referent ? person.referent.public_name : "Sin referente"}
-                    </td>
-                  </tr>
-                ))}
+                        <td className="px-3 py-2 text-text-base">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge tone="info">Invitada (pendiente)</Badge>
+                            <span className="font-medium">{row.display_name}</span>
+                          </div>
+                        </td>
+                        <td className="px-3 py-2 text-text-secondary">—</td>
+                        <td className="px-3 py-2 text-text-secondary">—</td>
+                        <td className="px-3 py-2 text-text-secondary">—</td>
+                        <td className="px-3 py-2 text-text-base">{formatDate(row.invited_at)}</td>
+                        <td className="px-3 py-2 text-text-secondary">—</td>
+                        {canManage ? (
+                          <td className="px-3 py-2">
+                            <div className="flex gap-2">
+                              <Button
+                                type="button"
+                                variant="secondary"
+                                disabled={resendInvitation.isPending}
+                                onClick={() => resendInvitation.mutate(row.invitation_id)}
+                              >
+                                Reenviar
+                              </Button>
+                              <Button type="button" variant="danger" onClick={() => setRevoking(row)}>
+                                Revocar
+                              </Button>
+                            </div>
+                          </td>
+                        ) : null}
+                      </tr>
+                    );
+                  }
+
+                  return (
+                    <tr key={row.user_id} className="border-b border-border-light">
+                      <td className="px-3 py-2 text-text-base">
+                        <Link
+                          href={`/entidad/${slug}/personas/${row.user_id}`}
+                          className="font-medium text-primary underline"
+                        >
+                          {row.public_name}
+                        </Link>
+                      </td>
+                      <td className="px-3 py-2 text-text-base">{row.communities_count}</td>
+                      <td className="px-3 py-2 text-text-base">{row.events_period}</td>
+                      <td className="px-3 py-2 text-text-base">{row.attended_period}</td>
+                      <td className="px-3 py-2 text-text-base">{formatDate(row.joined_at)}</td>
+                      <td className="px-3 py-2 text-text-base">
+                        {row.referent ? row.referent.public_name : "Sin referente"}
+                      </td>
+                      {canManage ? <td className="px-3 py-2 text-text-secondary">—</td> : null}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -191,6 +313,26 @@ export function PersonasTable({ orgId, slug }: PersonasTableProps) {
           </div>
         </>
       )}
+
+      {addOpen ? <AddPersonDialog orgId={orgId} onClose={() => setAddOpen(false)} /> : null}
+      {importOpen ? <ImportPeopleDialog orgId={orgId} onClose={() => setImportOpen(false)} /> : null}
+
+      <ConfirmDialog
+        open={revoking !== null}
+        title="Revocar invitación"
+        description={
+          revoking
+            ? `¿Revocar la invitación a «${revoking.display_name}»? Esta acción no se puede deshacer.`
+            : ""
+        }
+        confirmLabel="Revocar"
+        pending={revokeInvitation.isPending}
+        onConfirm={() => {
+          if (!revoking) return;
+          revokeInvitation.mutate(revoking.invitation_id, { onSuccess: () => setRevoking(null) });
+        }}
+        onCancel={() => setRevoking(null)}
+      />
     </div>
   );
 }

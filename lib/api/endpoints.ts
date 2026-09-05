@@ -89,6 +89,30 @@ export const ORGANIZATIONS = {
    */
   RESOURCE: (id: number | string, resourceId: number | string) =>
     `/api/organizations/${id}/resources/${resourceId}/`,
+  /**
+   * `GET`/`POST /api/organizations/{id}/invitations/` (`docs/PANEL.md`
+   * §3b.1): alta de personas por invitación — listado (`?status=`
+   * opcional) y creación manual, una persona.
+   */
+  INVITATIONS: (id: number | string) => `/api/organizations/${id}/invitations/`,
+  /**
+   * `POST /api/organizations/{id}/invitations/import/?dry_run=`
+   * (`docs/PANEL.md` §3b.3): importación por `.csv`/`.xlsx`, multipart
+   * `file`. `dry_run=true` no escribe nada, solo cuenta.
+   */
+  INVITATIONS_IMPORT: (id: number | string) => `/api/organizations/${id}/invitations/import/`,
+  /**
+   * `DELETE /api/organizations/{id}/invitations/{iid}/` (`docs/PANEL.md`
+   * §3b.6): revoca una invitación `pending`.
+   */
+  INVITATION: (id: number | string, iid: number | string) =>
+    `/api/organizations/${id}/invitations/${iid}/`,
+  /**
+   * `POST /api/organizations/{id}/invitations/{iid}/resend/`
+   * (`docs/PANEL.md` §3b.6): reenvía el correo con el mismo token/código.
+   */
+  INVITATION_RESEND: (id: number | string, iid: number | string) =>
+    `/api/organizations/${id}/invitations/${iid}/resend/`,
 } as const;
 
 /**

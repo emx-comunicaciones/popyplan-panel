@@ -6,7 +6,9 @@
  * como un array plano — ver `lib/api/types.ts::PaginatedPersonRowList`
  * para el porqué. `referente` recibe una lista ya filtrada a sus personas
  * asignadas (o vacía, 200) por el propio backend: este hook no repite
- * ese filtro.
+ * ese filtro. `includeInvited` (`?include_invited=true`, tarea W3b,
+ * §3b.7) mezcla filas `InvitedPersonRow` al final de la página; el mismo
+ * recorte por rol se aplica en el backend, no aquí.
  */
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
@@ -22,6 +24,13 @@ export interface PeopleFilters {
   joinedSince?: string;
   search?: string;
   page?: number;
+  /**
+   * `?include_invited=true` (`docs/PANEL.md` §3b.7, tarea W3b): añade al
+   * final de la página una fila `InvitedPersonRow` por cada invitación
+   * `pending` de la entidad (recortada al mismo permiso que el resto del
+   * listado). Sin él (u omitido), el listado no cambia.
+   */
+  includeInvited?: boolean;
 }
 
 export type PeopleErrorKind = "periodo_invalido" | "sin_acceso" | "desconocido";
@@ -43,6 +52,7 @@ function buildQuery(period: Period, filters: PeopleFilters): string {
   if (filters.activeSince) params.set("active_since", filters.activeSince);
   if (filters.joinedSince) params.set("joined_since", filters.joinedSince);
   if (filters.search) params.set("search", filters.search);
+  if (filters.includeInvited) params.set("include_invited", "true");
   if (filters.page && filters.page > 1) params.set("page", String(filters.page));
   return params.toString();
 }

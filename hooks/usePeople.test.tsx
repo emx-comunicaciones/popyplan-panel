@@ -72,6 +72,28 @@ describe("usePeople", () => {
     );
   });
 
+  it("includeInvited añade include_invited=true al final de la query", async () => {
+    apiFetchMock.mockResolvedValueOnce(PAGE);
+
+    const { result } = renderHook(() => usePeople(7, PERIOD, { includeInvited: true }), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(apiFetchMock).toHaveBeenCalledWith(
+      "/api/panel/entidad/7/people/?since=2026-01-01&until=2026-01-31&include_invited=true",
+    );
+  });
+
+  it("includeInvited:false no añade nada (igual que omitido)", async () => {
+    apiFetchMock.mockResolvedValueOnce(PAGE);
+
+    const { result } = renderHook(() => usePeople(7, PERIOD, { includeInvited: false }), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(apiFetchMock).toHaveBeenCalledWith(
+      "/api/panel/entidad/7/people/?since=2026-01-01&until=2026-01-31",
+    );
+  });
+
   it("un 400 (filtro inválido) surge como PeopleError 'periodo_invalido'", async () => {
     apiFetchMock.mockRejectedValueOnce(new ApiError(400, { detail: "community inválido." }));
 

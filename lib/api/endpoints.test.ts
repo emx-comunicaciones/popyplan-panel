@@ -116,6 +116,22 @@ describe("endpoints", () => {
     expect(ORGANIZATIONS.SCOPE(7)).toBe("/api/organizations/7/scope/");
   });
 
+  it("ORGANIZATIONS.INVITATIONS(id) apunta a /api/organizations/{id}/invitations/", () => {
+    expect(ORGANIZATIONS.INVITATIONS(7)).toBe("/api/organizations/7/invitations/");
+  });
+
+  it("ORGANIZATIONS.INVITATIONS_IMPORT(id) apunta a /api/organizations/{id}/invitations/import/", () => {
+    expect(ORGANIZATIONS.INVITATIONS_IMPORT(7)).toBe("/api/organizations/7/invitations/import/");
+  });
+
+  it("ORGANIZATIONS.INVITATION(id, iid) apunta a /api/organizations/{id}/invitations/{iid}/", () => {
+    expect(ORGANIZATIONS.INVITATION(7, 3)).toBe("/api/organizations/7/invitations/3/");
+  });
+
+  it("ORGANIZATIONS.INVITATION_RESEND(id, iid) apunta a /api/organizations/{id}/invitations/{iid}/resend/", () => {
+    expect(ORGANIZATIONS.INVITATION_RESEND(7, 3)).toBe("/api/organizations/7/invitations/3/resend/");
+  });
+
   it("COMMUNITIES.LIST() apunta a /api/communities/", () => {
     expect(COMMUNITIES.LIST()).toBe("/api/communities/");
   });

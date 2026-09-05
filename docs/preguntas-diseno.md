@@ -373,3 +373,67 @@ brief lo pedía explícitamente para esa sección). **Pregunta:** ¿se añade
 un selector de comunidad al formulario de encuestas, igual que en
 Comunicaciones, o se deja fuera a propósito para simplificar (toda
 encuesta periódica es siempre de toda la entidad)?
+
+# Preguntas de diseño abiertas — Task W3b
+
+## 22. Selector de referente en «Añadir persona»: mismo hueco que la pregunta 13 de W3, ahora también en la invitación
+
+`ORGANIZATIONS.MEMBERS` (`GET /api/organizations/{id}/members/`) sigue
+sin nombre de cuenta (`OrgMembership` solo trae `user` numérico,
+invariante 1/9), así que el select «Referente» de
+`components/people/AddPersonDialog.tsx` etiqueta cada opción como
+«Persona n.º `<user_id>`» — el mismo hueco que la pregunta 13 de W3 para
+«Asignar referente» en la ficha de persona, ahora repetido en la
+invitación manual. Funciona (el backend valida `referent_user` igual
+que antes), pero sigue siendo incómodo: quien invita tendría que conocer
+de memoria el id de cada referente de su equipo. No se ha vuelto a abrir
+como pregunta nueva por separado porque es exactamente el mismo hueco de
+contrato que W3 ya dejó anotado; se deja constancia de que reaparece
+aquí. **Pregunta:** ¿se resuelve de una vez para ambos sitios (Asignar
+referente y Añadir persona) el día que exista un endpoint de búsqueda de
+personas con nombre?
+
+## 23. `useInvitations` (listado completo) no alimenta las filas «Invitada (pendiente)»: decisión de esta tarea, no del brief
+
+El brief pedía el hook `useInvitations` sin especificar para qué lo usa
+la página. `docs/PANEL.md` §3b.7 ya resuelve el listado de invitadas
+mezclándolas en `GET .../people/?include_invited=true` (mismo
+`usePeople` de siempre, con `PersonListRow` como unión
+`PersonRow | InvitedPersonRow`) — usar además `GET
+.../invitations/` para pintar las mismas filas habría creado dos fuentes
+de verdad para el mismo dato (con su propia paginación, sin relación
+con la página de `usePeople` que se esté mirando). Se decidió que
+`useInvitations` sirva solo para un recuento auxiliar («N invitaciones
+pendientes» junto al checkbox, `PersonasTable::PendingInvitationsHint`,
+montado solo mientras el checkbox está activo). **Pregunta:** ¿es el
+uso previsto por el brief, o `useInvitations` se pensó para una vista
+distinta (p. ej. una pestaña «Invitaciones» aparte de «Personas», con su
+propia paginación y filtro por `status`) que esta tarea no ha
+construido?
+
+## 24. «Reenviar» sin confirmación, «Revocar» con `ConfirmDialog`
+
+El brief agrupa ambas acciones bajo «(confirm dialog)» sin distinguir
+cuál la necesita. Se implementó con el mismo criterio que el resto del
+panel (`ConfirmDialog` solo para lo irreversible: borrar un recurso,
+ahora revocar una invitación): «Reenviar» dispara la mutación al
+instante (no es destructivo, solo reenvía el mismo correo) y «Revocar»
+pide confirmación porque borra los datos personales de la invitación y
+no se puede deshacer. **Pregunta:** ¿debería «Reenviar» pedir
+confirmación también (para evitar reenvíos accidentales a una persona
+que ya se ha quejado, por ejemplo), o el criterio «solo lo irreversible
+confirma» es el correcto también aquí?
+
+## 25. Comunidades privadas en el select de «Añadir persona»: mismo hueco que la pregunta 14 de W4a
+
+El select «Comunidad» de `AddPersonDialog` usa `useEntityCommunities`
+(mismo hook que Comunicaciones/W4a), que hereda el hueco ya documentado
+en la pregunta 14: una comunidad `private` de la propia entidad no
+aparece si quien invita no es personalmente miembro de ella. Un
+`titular`/`moderador` que quiera invitar a alguien directamente a una
+comunidad privada de su propia entidad de la que él mismo no forma
+parte no podrá elegirla en este formulario (tendrá que dejar «Sin
+comunidad» y mover a la persona después, si existe esa vía). No se abre
+como pregunta nueva de contrato porque es el mismo hueco que W4a ya
+señaló para `GET /api/communities/`; se deja constancia de que también
+afecta a la invitación.

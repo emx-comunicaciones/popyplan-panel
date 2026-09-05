@@ -22,10 +22,12 @@ export default async function EntidadPersonasPage({
     redirect("/");
   }
 
+  const canManage = membership.role === "titular" || membership.role === "moderador";
+
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-semibold text-text-base">Personas</h1>
-      <PersonasTable orgId={membership.organization_id} slug={slug} />
+      <PersonasTable orgId={membership.organization_id} slug={slug} canManage={canManage} />
     </div>
   );
 }

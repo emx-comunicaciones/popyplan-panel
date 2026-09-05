@@ -76,19 +76,41 @@ export type ReferentRef = components["schemas"]["ReferentRef"];
 export type NextEventRef = components["schemas"]["NextEventRef"];
 
 /**
+ * Fila «Invitada (pendiente)» que `GET .../people/?include_invited=true`
+ * añade al final de cada página (`docs/PANEL.md` §3b.7, tarea W3b): nunca
+ * lleva `user_id` ni el resto de campos de `PersonRow` — solo lo
+ * necesario para pintar la fila y actuar sobre la invitación
+ * (reenviar/revocar por `invitation_id`). `email` no viaja aquí (invariante
+ * 9/minimización): solo `display_name`, que también se borra si la
+ * invitación deja de estar `pending` (§3b.2), aunque en la práctica esta
+ * fila nunca aparece salvo para invitaciones `pending`.
+ */
+export interface InvitedPersonRow {
+  invitation_id: number;
+  display_name: string;
+  status: "invited";
+  invited_at: string | null;
+}
+
+/** Fila de `GET .../people/`: una persona ya miembro, o una invitación pendiente (§3b.7). */
+export type PersonListRow = PersonRow | InvitedPersonRow;
+
+/**
  * `GET /api/panel/entidad/{org_id}/people/` (`docs/PANEL.md` §3.2):
  * paginada (20 por página, `PageNumberPagination` estándar de DRF),
  * aunque `docs/schema.yaml` la documenta (mal) como un array plano —
  * `panel/viewsets.py::EntidadPeopleView.get` sí pagina de verdad
  * (`_PaginacionPersonas().get_paginated_response(...)`); el `@extend_schema`
  * de la vista no lo refleja. Tipo manual: no hay un `Paginated*List` para
- * esta ruta en `types.generated.ts`.
+ * esta ruta en `types.generated.ts`. Con `?include_invited=true`, algunas
+ * filas del final de la página son `InvitedPersonRow` en vez de
+ * `PersonRow` (§3b.7).
  */
 export interface PaginatedPersonRowList {
   count: number;
   next: string | null;
   previous: string | null;
-  results: PersonRow[];
+  results: PersonListRow[];
 }
 
 /** `GET /api/panel/entidad/{org_id}/events/` (`docs/PANEL.md` §3.4). Sin paginar. */
@@ -323,3 +345,36 @@ export type ResourceCategory = components["schemas"]["CategoryEnum"];
 export type ResourceKind = components["schemas"]["Kind839Enum"];
 /** `audience` de un recurso (`docs/PANEL.md` §7.2): `members`, `families` o `public`. */
 export type ResourceAudience = components["schemas"]["Audience743Enum"];
+
+/**
+ * `docs/PANEL.md` §3b («Alta de personas: invitaciones e importación»,
+ * tarea W3b): `GET`/`POST /api/organizations/{org_id}/invitations/`,
+ * `.../invitations/{iid}/resend/` y `.../invitations/{iid}/` (`DELETE`).
+ * `email`/`display_name` solo llevan dato mientras `status='pending'`
+ * (minimización de datos, §3b.2/§3b.4): al aceptarse, caducar o
+ * revocarse se borran y el listado los muestra vacíos sin dejar de
+ * listar la fila.
+ */
+export type EntityInvitation = components["schemas"]["EntityInvitation"];
+export type EntityInvitationStatus = components["schemas"]["EntityInvitationStatusEnum"];
+/** Cuerpo de `POST /api/organizations/{org_id}/invitations/` (§3b.2). */
+export type EntityInvitationCreateRequest = components["schemas"]["EntityInvitationCreateRequest"];
+
+/**
+ * `POST /api/organizations/{org_id}/invitations/import/?dry_run=`
+ * (`docs/PANEL.md` §3b.3): tipo manual — el esquema generado no declara
+ * el cuerpo de la respuesta 200 (`@extend_schema` de la vista no lleva
+ * `responses=`, mismo patrón que `AttendanceMarkResponse`/`CheckinResponse`
+ * en W3), así que se toma tal cual del contrato documentado.
+ */
+export interface ImportPeopleRowError {
+  row: number;
+  email: string;
+  error: string;
+}
+export interface ImportPeopleResult {
+  created: number;
+  resent: number;
+  already_members: number;
+  errors: ImportPeopleRowError[];
+}

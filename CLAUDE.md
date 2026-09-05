@@ -178,6 +178,68 @@ campo nuevo a la ficha o a la lista de asistentes debe comprobar primero
 que el tipo de `docs/schema.yaml` no los lleva, nunca confiar en que el
 componente los vaya a filtrar a mano.
 
+## Alta de personas: invitaciones e importación (tarea W3b)
+
+`docs/PANEL.md` §3b: la entidad añade personas **por invitación**, nunca
+creando la cuenta desde el panel (invariante 3). En Personas
+(`personas/page.tsx` → `PersonasTable`), solo `titular`/`moderador`
+(`canManage`, calculado en el Server Component igual que en
+`recursos/page.tsx`) ven los botones «Añadir persona»
+(`components/people/AddPersonDialog.tsx`, hook `useInvite`) e «Importar
+Excel/CSV» (`components/people/ImportPeopleDialog.tsx`, hook
+`useImportPeople`); el resto de roles con acceso a la página
+(`dinamizador`, `referente`) no los ve. `AddPersonDialog` pide nombre,
+email (obligatorio, validado con una expresión regular en el cliente —
+sin `required`/`pattern` nativos para no depender de la validación de
+restricciones del navegador, así el mensaje de error lo decide siempre
+el propio componente), teléfono, comunidad (select de
+`useEntityCommunities`) y referente (select de `useOrgMembers` filtrado
+a `role === 'referente'`, etiquetado «Persona n.º `<user_id>`» porque
+`OrgMembership` no lleva nombre de cuenta, invariante 1/9 — mismo
+criterio que `PersonSheet.tsx::AssignReferentForm`); un 409 del backend
+(correo ya miembro activo) se traduce literalmente a «Esta persona ya es
+miembro de la entidad»; el éxito deja un aviso «Invitación enviada a
+`<email>`.» dentro del propio diálogo (no hay componente de toast en el
+panel, mismo patrón que `lastSent` en `ComunicacionesPanel.tsx`).
+
+`ImportPeopleDialog` sube un `.csv`/`.xlsx` (límite propio de 5 MB antes
+de subir, `lib/people/validateImportFile.ts`, mismo patrón que
+`lib/resources/validateFile.ts`) con un enlace «Descargar plantilla»
+(`public/plantilla-personas.csv`, cabecera
+`nombre;email;telefono;comunidad;referente_email` y una fila de
+ejemplo). Flujo en dos pasos con `useImportPeople`
+(`POST .../invitations/import/?dry_run=`): primero `dry_run=true`
+(vista previa con creadas/reenviadas/ya-miembros y una tabla de errores
+por fila con `{row, email, error}`), luego, si la persona confirma,
+`dry_run=false` (import real) — dos llamadas a la mutación con el mismo
+fichero, distintas solo en `dryRun`. Errores en la vista previa **no**
+bloquean confirmar: el aviso lo dice explícitamente («las filas con
+error no se importarán; el resto de filas válidas se puede confirmar
+igual»).
+
+**`usePeople` con `include_invited`** (`docs/PANEL.md` §3b.7): el
+checkbox «Incluir invitadas» de `PersonasTable` pasa
+`includeInvited: true` a `usePeople`, que añade `?include_invited=true`
+a la query — el propio backend mezcla filas `InvitedPersonRow`
+(`{invitation_id, display_name, status: 'invited', invited_at}`) al
+final de cada página junto a las `PersonRow` normales; `PaginatedPersonRowList.results`
+es ahora `PersonListRow[]` (`PersonRow | InvitedPersonRow`,
+`lib/people/invitedRow.ts::isInvitedPersonRow` decide cuál es cuál por
+la presencia de `invitation_id`, el único campo que no comparten). Una
+fila invitada se pinta con una insignia «Invitada (pendiente)», su
+`display_name` y `invited_at` en la columna «De alta»; el resto de
+columnas (comunidades, actividades, referente) van con «—» porque no
+hay persona todavía. Solo `canManage` ve la columna «Acciones»
+(«Reenviar», `useResendInvitation`, sin confirmación por no ser
+destructiva; «Revocar», `useRevokeInvitation`, con `ConfirmDialog` por
+ser irreversible). **Decisión de esta tarea:** `useInvitations`
+(`GET .../invitations/`) no duplica ese listado — se usa solo para el
+recuento de invitaciones `pending` que se muestra junto al checkbox
+(`PersonasTable::PendingInvitationsHint`, montado solo mientras el
+checkbox está activo, igual que `ResourceForm` dentro de
+`RecursosPanel.tsx` solo llama a sus mutaciones mientras el formulario
+está montado) — así no hay dos fuentes de verdad para las mismas filas.
+
 ## Comunicaciones, encuestas y recursos (tarea W4b)
 
 `docs/PANEL.md` §5 (comunicaciones oficiales), §6 (encuestas) y §7
