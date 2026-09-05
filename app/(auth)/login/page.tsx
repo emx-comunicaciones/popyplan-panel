@@ -6,6 +6,7 @@ import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { ApiError } from "@/lib/api/client";
 import { resolveArea } from "@/lib/auth/area";
+import { consumeSessionExpiredMessage } from "@/lib/auth/sessionEvents";
 import { login } from "@/hooks/useAuth";
 
 function areaPath(area: ReturnType<typeof resolveArea>): string {
@@ -21,6 +22,9 @@ function errorMessage(error: unknown): string {
     if (error.status === 400 || error.status === 401) {
       return "Usuario o contraseña incorrectos.";
     }
+    if (error.status === 429) {
+      return "Demasiados intentos; espera un minuto.";
+    }
     return "No se pudo iniciar sesión. Inténtalo de nuevo.";
   }
   return "No se pudo iniciar sesión. Inténtalo de nuevo.";
@@ -30,7 +34,10 @@ export default function LoginPage() {
   const router = useRouter();
   const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  // Si venimos de un cierre de sesión forzado (`SessionExpiredHandler`,
+  // refresco fallido en `lib/api/client.ts`), pinta ese mensaje de entrada,
+  // igual que cualquier otro error de este formulario.
+  const [error, setError] = useState<string | null>(() => consumeSessionExpiredMessage());
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

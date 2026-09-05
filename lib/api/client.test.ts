@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { registerBootRestore, resetBootRestoreForTests } from "@/lib/auth/bootSession";
+import {
+  resetSessionEventsForTests,
+  SESSION_EXPIRED_MESSAGE,
+  subscribeSessionExpired,
+} from "@/lib/auth/sessionEvents";
 import { resetAccessTokenForTests, setAccessToken, getAccessToken } from "@/lib/auth/tokenStore";
 
 import { ApiError, apiFetch } from "./client";
@@ -16,6 +22,8 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
   resetAccessTokenForTests();
+  resetBootRestoreForTests();
+  resetSessionEventsForTests();
 });
 
 function response(body: unknown, status: number): Response {
@@ -117,5 +125,78 @@ describe("apiFetch", () => {
     const data = await apiFetch("/api/session/");
 
     expect(data).toBeUndefined();
+  });
+
+  it("bug crítico de demo: varios 401 concurrentes disparan un único refresco", async () => {
+    setAccessToken("token-caducado");
+    fetchMock.mockImplementation((url: string, options?: RequestInit) => {
+      if (url === "/api/session/refresh") {
+        return Promise.resolve(response({ accessToken: "token-nuevo" }, 200));
+      }
+      const headers = options?.headers as Record<string, string> | undefined;
+      if (headers?.Authorization === "Bearer token-nuevo") {
+        return Promise.resolve(response({ ok: true }, 200));
+      }
+      return Promise.resolve(response({ detail: "expirado" }, 401));
+    });
+
+    const [a, b, c] = await Promise.all([
+      apiFetch("/api/a/"),
+      apiFetch("/api/b/"),
+      apiFetch("/api/c/"),
+    ]);
+
+    const refreshCalls = fetchMock.mock.calls.filter(([url]) => url === "/api/session/refresh");
+    expect(refreshCalls).toHaveLength(1);
+    expect(a).toEqual({ ok: true });
+    expect(b).toEqual({ ok: true });
+    expect(c).toEqual({ ok: true });
+    expect(getAccessToken()).toBe("token-nuevo");
+  });
+
+  it("sin token en memoria, espera la restauración de arranque antes de disparar la petición", async () => {
+    resetAccessTokenForTests();
+    let resolveBoot: () => void = () => undefined;
+    const bootPromise = new Promise<void>((resolve) => {
+      resolveBoot = resolve;
+    });
+    registerBootRestore(bootPromise);
+
+    fetchMock.mockResolvedValueOnce(response({ id: 1 }, 200));
+
+    const pending = apiFetch("/api/organizations/7/");
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    setAccessToken("token-tras-arranque");
+    resolveBoot();
+
+    const data = await pending;
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://api.test/api/organizations/7/",
+      expect.objectContaining({
+        headers: expect.objectContaining({ Authorization: "Bearer token-tras-arranque" }),
+      }),
+    );
+    expect(data).toEqual({ id: 1 });
+  });
+
+  it("refresco fallido avisa una vez a lib/auth/sessionEvents con el mensaje del contrato", async () => {
+    setAccessToken("token-caducado");
+    fetchMock
+      .mockResolvedValueOnce(response({ detail: "expirado" }, 401))
+      .mockResolvedValueOnce(response({ detail: "sin sesión" }, 401));
+
+    const listener = vi.fn();
+    const unsubscribe = subscribeSessionExpired(listener);
+
+    const error = await apiFetch("/api/organizations/7/").catch((caught) => caught);
+
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(error).toBeInstanceOf(ApiError);
+    expect((error as ApiError).message).toBe(SESSION_EXPIRED_MESSAGE);
+    unsubscribe();
   });
 });

@@ -6,6 +6,7 @@ import { routerMock } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import { ApiError } from "@/lib/api/client";
+import { notifySessionExpired, resetSessionEventsForTests } from "@/lib/auth/sessionEvents";
 
 const loginMock = vi.hoisted(() => vi.fn());
 vi.mock("@/hooks/useAuth", () => ({ login: loginMock }));
@@ -14,6 +15,7 @@ import LoginPage from "./page";
 
 afterEach(() => {
   loginMock.mockReset();
+  resetSessionEventsForTests();
 });
 
 describe("LoginPage", () => {
@@ -141,5 +143,29 @@ describe("LoginPage", () => {
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Usuario o contraseña incorrectos.");
     expect(routerMock.replace).not.toHaveBeenCalled();
+  });
+
+  it("demasiados intentos (429) muestra el mensaje de espera y no redirige", async () => {
+    const user = userEvent.setup();
+    loginMock.mockRejectedValue(new ApiError(429, { detail: "throttled" }));
+
+    render(<LoginPage />);
+
+    await user.type(screen.getByLabelText("Usuario o email"), "titular@alfaville.test");
+    await user.type(screen.getByLabelText("Contraseña"), "correcta-1234");
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Demasiados intentos; espera un minuto.",
+    );
+    expect(routerMock.replace).not.toHaveBeenCalled();
+  });
+
+  it("con un aviso de sesión caducada pendiente, lo pinta de entrada", async () => {
+    notifySessionExpired();
+
+    render(<LoginPage />);
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Tu sesión ha caducado.");
   });
 });
