@@ -1,0 +1,145 @@
+import userEvent from "@testing-library/user-event";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { render, screen } from "@/test-utils/render";
+import { routerMock } from "@/test-utils/nextNavigationMock";
+import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
+import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
+import { ApiError } from "@/lib/api/client";
+
+const loginMock = vi.hoisted(() => vi.fn());
+vi.mock("@/hooks/useAuth", () => ({ login: loginMock }));
+
+import LoginPage from "./page";
+
+afterEach(() => {
+  loginMock.mockReset();
+});
+
+describe("LoginPage", () => {
+  it("envía usuario y contraseña y redirige según el área tras el éxito", async () => {
+    const user = userEvent.setup();
+    loginMock.mockResolvedValue({
+      accessToken: "token-1",
+      user: buildMe({ org_memberships: [buildOrgMembership({ role: "titular", organization_slug: "alfaville" })] }),
+      platformRole: buildPlatformRole(null),
+    });
+
+    render(<LoginPage />);
+
+    await user.type(screen.getByLabelText("Usuario o email"), "titular@alfaville.test");
+    await user.type(screen.getByLabelText("Contraseña"), "correcta-1234");
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(loginMock).toHaveBeenCalledWith("titular@alfaville.test", "correcta-1234");
+    expect(routerMock.replace).toHaveBeenCalledWith("/entidad/alfaville");
+  });
+
+  it("redirige a /plataforma cuando el área es plataforma", async () => {
+    const user = userEvent.setup();
+    loginMock.mockResolvedValue({
+      accessToken: "token-1",
+      user: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    render(<LoginPage />);
+
+    await user.type(screen.getByLabelText("Usuario o email"), "admin@popyplan.test");
+    await user.type(screen.getByLabelText("Contraseña"), "correcta-1234");
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(routerMock.replace).toHaveBeenCalledWith("/plataforma");
+  });
+
+  it("redirige a /paraguas/{slug} cuando el área es una entidad paraguas", async () => {
+    const user = userEvent.setup();
+    loginMock.mockResolvedValue({
+      accessToken: "token-1",
+      user: buildMe({
+        org_memberships: [
+          buildOrgMembership({
+            role: "analista",
+            organization_slug: "diputacion-demo",
+            org_type: "administracion",
+          }),
+        ],
+      }),
+      platformRole: buildPlatformRole(null),
+    });
+
+    render(<LoginPage />);
+
+    await user.type(screen.getByLabelText("Usuario o email"), "analista@diputacion.test");
+    await user.type(screen.getByLabelText("Contraseña"), "correcta-1234");
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(routerMock.replace).toHaveBeenCalledWith("/paraguas/diputacion-demo");
+  });
+
+  it("redirige a /elegir-entidad con varias entidades", async () => {
+    const user = userEvent.setup();
+    loginMock.mockResolvedValue({
+      accessToken: "token-1",
+      user: buildMe({
+        org_memberships: [
+          buildOrgMembership({ role: "titular", organization_slug: "alfaville" }),
+          buildOrgMembership({ role: "moderador", organization_slug: "betaville" }),
+        ],
+      }),
+      platformRole: buildPlatformRole(null),
+    });
+
+    render(<LoginPage />);
+
+    await user.type(screen.getByLabelText("Usuario o email"), "titular@varias.test");
+    await user.type(screen.getByLabelText("Contraseña"), "correcta-1234");
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(routerMock.replace).toHaveBeenCalledWith("/elegir-entidad");
+  });
+
+  it("un error de servidor (500) muestra el mensaje genérico", async () => {
+    const user = userEvent.setup();
+    loginMock.mockRejectedValue(new ApiError(500, { detail: "boom" }));
+
+    render(<LoginPage />);
+
+    await user.type(screen.getByLabelText("Usuario o email"), "titular@alfaville.test");
+    await user.type(screen.getByLabelText("Contraseña"), "algo");
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "No se pudo iniciar sesión. Inténtalo de nuevo.",
+    );
+  });
+
+  it("un error que no es de la API también muestra el mensaje genérico", async () => {
+    const user = userEvent.setup();
+    loginMock.mockRejectedValue(new Error("fallo de red"));
+
+    render(<LoginPage />);
+
+    await user.type(screen.getByLabelText("Usuario o email"), "titular@alfaville.test");
+    await user.type(screen.getByLabelText("Contraseña"), "algo");
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "No se pudo iniciar sesión. Inténtalo de nuevo.",
+    );
+  });
+
+  it("credenciales incorrectas (400) muestran un error y no redirige", async () => {
+    const user = userEvent.setup();
+    loginMock.mockRejectedValue(new ApiError(400, { detail: "Credenciales inválidas" }));
+
+    render(<LoginPage />);
+
+    await user.type(screen.getByLabelText("Usuario o email"), "titular@alfaville.test");
+    await user.type(screen.getByLabelText("Contraseña"), "mala");
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Usuario o contraseña incorrectos.");
+    expect(routerMock.replace).not.toHaveBeenCalled();
+  });
+});

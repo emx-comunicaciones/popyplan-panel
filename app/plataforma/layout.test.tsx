@@ -1,0 +1,61 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { render, screen } from "@/test-utils/render";
+import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
+import { buildMe } from "@/test-utils/fixtures/me";
+import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
+
+const getServerSessionMock = vi.hoisted(() => vi.fn());
+vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
+
+import PlataformaLayout from "./layout";
+
+afterEach(() => {
+  getServerSessionMock.mockReset();
+});
+
+describe("PlataformaLayout", () => {
+  it("pinta las 8 secciones del menú de plataforma", async () => {
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const element = await PlataformaLayout({ children: <p>contenido</p> });
+    render(element);
+
+    for (const label of [
+      "Inicio",
+      "Entidades",
+      "Reportes",
+      "Ayuda",
+      "Verificaciones",
+      "Roles",
+      "Auditoría",
+      "Métricas",
+    ]) {
+      expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
+    }
+  });
+
+  it("sin sesión redirige a /login", async () => {
+    getServerSessionMock.mockResolvedValue(null);
+
+    await expect(PlataformaLayout({ children: <p /> })).rejects.toEqual(
+      expect.objectContaining({ url: "/login" } satisfies Partial<NextRedirectSignal>),
+    );
+  });
+
+  it("sin rol de plataforma redirige a / (que decide el área real)", async () => {
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole(null),
+    });
+
+    await expect(PlataformaLayout({ children: <p /> })).rejects.toEqual(
+      expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>),
+    );
+  });
+});

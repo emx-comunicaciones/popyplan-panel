@@ -1,26 +1,77 @@
 @import "tailwindcss";
 
+/*
+ * Tokens de color: misma paleta que la app móvil
+ * (popyplan-mobile/app/_theme/colors.ts), sin lenguaje visual nuevo.
+ * La tematización completa (modo oscuro, personalización por entidad
+ * más allá de logo/colores de cabecera e informes) queda para Fase 6.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-primary: #1fb3ae;
+  --color-secondary: #72c9ee;
+  --color-secondary-900: #1a2c33;
+  --color-secondary-600: #5ca1bd;
+  --color-secondary-100: #d9f4fc;
+  --color-background: #ffffff;
+  --color-text-base: #0b0a0a;
+  --color-text-secondary: #030607;
+  --color-text-form: #45788e;
+  --color-text-form-secondary: #72c9ee;
+  --color-text-disabled: #bdbdbd;
+  --color-text-inverse: #ffffff;
+  --color-white: #ffffff;
+  --color-error: #be3846;
+  --color-success: #47785d;
+  --color-interest: #1fb3ae;
+  --color-border: #e4e4e4;
+  --color-border-light: #edf5fb;
+  --color-card-dark: #11121a;
+  --color-card-purple: #552bff;
+  --color-card-light: #f1f1f5;
+  --color-category-light: #d9f4fc;
+  --color-progress-inactive: #e2e8f0;
+  --color-placeholder: #e0e0e0;
+  --color-message-bubble: #e8d5ff;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-900: var(--color-secondary-900);
+  --color-secondary-600: var(--color-secondary-600);
+  --color-secondary-100: var(--color-secondary-100);
+  --color-background: var(--color-background);
+  --color-text-base: var(--color-text-base);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-form: var(--color-text-form);
+  --color-text-form-secondary: var(--color-text-form-secondary);
+  --color-text-disabled: var(--color-text-disabled);
+  --color-text-inverse: var(--color-text-inverse);
+  --color-white: var(--color-white);
+  --color-error: var(--color-error);
+  --color-success: var(--color-success);
+  --color-interest: var(--color-interest);
+  --color-border: var(--color-border);
+  --color-border-light: var(--color-border-light);
+  --color-card-dark: var(--color-card-dark);
+  --color-card-purple: var(--color-card-purple);
+  --color-card-light: var(--color-card-light);
+  --color-category-light: var(--color-category-light);
+  --color-progress-inactive: var(--color-progress-inactive);
+  --color-placeholder: var(--color-placeholder);
+  --color-message-bubble: var(--color-message-bubble);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background: var(--color-background);
+  color: var(--color-text-base);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Foco visible en todo elemento interactivo (accesibilidad desde el inicio). */
+:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
 }
