@@ -308,26 +308,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/admin-login/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Iniciar sesión (admin)
-         * @description Login para el panel admin. Solo cuentas con `is_staff=True` pueden iniciar sesión por este endpoint; en caso contrario devuelve 403.
-         */
-        post: operations["auth_admin_login"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/auth/admin-register/": {
         parameters: {
             query?: never;
@@ -3372,9 +3352,15 @@ export interface paths {
          *     `space='families'`, cuánta gente hay en ellas, próximas actividades y
          *     últimos anuncios/recursos dirigidos a ese espacio. Mismo permiso que el
          *     resto de vistas de resumen del panel (`ver_panel`): titular, moderador,
-         *     dinamizador, analista y referente. No es nominal (solo cuenta
-         *     comunidades y actividades, nunca lista personas), así que no hace
-         *     falta acotar por rol como en `EntidadPeopleView`.
+         *     dinamizador, analista y referente.
+         *
+         *     Umbral de agregación (ronda de cierre de Fase 5): los `members_count`
+         *     (por comunidad y el total) SÍ cuentan personas distintas, así que pasan
+         *     por `panel.services.metrics.suppress` con el mismo `nominal` que el
+         *     resto del panel — `puede(user, org, 'ver_lista_nominal')` — para que
+         *     `analista` no vea cifras exactas de grupos pequeños. El resto de
+         *     secciones (actividades, anuncios, recursos) no cuenta personas y nunca
+         *     se suprime.
          */
         get: operations["panel_entidad_families_retrieve"];
         put?: never;
@@ -6935,7 +6921,8 @@ export interface components {
          */
         FamiliesSummary: {
             communities: components["schemas"]["FamilyCommunityRow"][];
-            members_count: number;
+            members_count: number | null;
+            suppressed: boolean;
             upcoming_events: components["schemas"]["FamilyUpcomingEvent"][];
             announcements: components["schemas"]["FamilyAnnouncementRow"][];
             resources: components["schemas"]["FamilyResourceRow"][];
@@ -6950,8 +6937,9 @@ export interface components {
         FamilyCommunityRow: {
             id: string;
             name: string;
-            members_count: number;
+            members_count: number | null;
             allow_cross_space: boolean;
+            suppressed: boolean;
         };
         FamilyResourceRow: {
             id: number;
@@ -7391,11 +7379,18 @@ export interface components {
          *
          *     Solo lectura: la membresía se crea y se quita desde la propia entidad,
          *     nunca editando la cuenta.
+         *
+         *     `organization_type`/`parent_id` (ronda de cierre de Fase 5): el panel
+         *     necesita distinguir una entidad paraguas de una entidad "hoja" para
+         *     pintar el árbol/navegación sin una petición aparte por cada una.
+         *     `parent_id` es `null` si la entidad no tiene paraguas.
          */
         OrgMembershipRef: {
             readonly organization_id: number;
             readonly organization_name: string;
             readonly organization_slug: string;
+            readonly organization_type: string;
+            readonly parent_id: number | null;
             readonly is_verified: boolean;
             readonly logo: string | null;
             readonly role: string;
@@ -10018,55 +10013,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Announcement"][];
-                };
-            };
-        };
-    };
-    auth_admin_login: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CustomLoginRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["CustomLoginRequest"];
-                "multipart/form-data": components["schemas"]["CustomLoginRequest"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LoginResponse"];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };

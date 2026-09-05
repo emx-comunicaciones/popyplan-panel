@@ -14,6 +14,7 @@ export function buildFamiliesSummaryCommunityRow(
     name: "Familias",
     members_count: 12,
     allow_cross_space: false,
+    suppressed: false,
     ...overrides,
   };
 }
@@ -59,6 +60,7 @@ export function buildFamiliesSummary(overrides: Partial<FamiliesSummary> = {}): 
   return {
     communities: [buildFamiliesSummaryCommunityRow()],
     members_count: 12,
+    suppressed: false,
     upcoming_events: [buildFamilyUpcomingEvent()],
     announcements: [buildFamilyAnnouncementRow()],
     resources: [buildFamilyResourceRow()],

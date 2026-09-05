@@ -44,7 +44,7 @@ export interface FamiliasPanelProps {
 }
 
 function isSuppressed(row: { members_count: number | null; suppressed?: boolean }): boolean {
-  return row.suppressed ?? row.members_count === null;
+  return row.members_count === null || row.suppressed === true;
 }
 
 function formatDateTime(iso: string): string {

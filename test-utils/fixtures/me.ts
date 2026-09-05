@@ -7,6 +7,8 @@ export function buildOrgMembership(
     organization_id: 7,
     organization_name: "Asociación Vecinal Alfaville",
     organization_slug: "asociacion-alfaville",
+    organization_type: "ong",
+    parent_id: null,
     is_verified: true,
     logo: null,
     role: "titular",
