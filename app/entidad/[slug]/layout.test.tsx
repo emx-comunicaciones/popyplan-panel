@@ -143,6 +143,46 @@ describe("EntidadLayout", () => {
     expect(container.querySelector("img")).not.toBeNull();
   });
 
+  it("con un color de marca claro (#FFFF00), la cabecera usa texto oscuro legible", async () => {
+    getServerSessionMock.mockResolvedValue(session("titular"));
+    serverFetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: buildOrganization({ primary_color: "#FFFF00" }),
+    });
+
+    const element = await EntidadLayout({
+      children: <p>contenido</p>,
+      params: Promise.resolve({ slug: "alfaville" }),
+    });
+    const { container } = render(element);
+
+    const header = container.querySelector("header");
+    expect(header).not.toBeNull();
+    expect(header?.style.backgroundColor).toBe("rgb(255, 255, 0)");
+    expect(header?.style.color).toBe("rgb(26, 44, 51)");
+  });
+
+  it("con un color de marca oscuro (#123456), la cabecera usa texto blanco legible", async () => {
+    getServerSessionMock.mockResolvedValue(session("titular"));
+    serverFetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: buildOrganization({ primary_color: "#123456" }),
+    });
+
+    const element = await EntidadLayout({
+      children: <p>contenido</p>,
+      params: Promise.resolve({ slug: "alfaville" }),
+    });
+    const { container } = render(element);
+
+    const header = container.querySelector("header");
+    expect(header).not.toBeNull();
+    expect(header?.style.backgroundColor).toBe("rgb(18, 52, 86)");
+    expect(header?.style.color).toBe("rgb(255, 255, 255)");
+  });
+
   it("si falla la ficha de la entidad muestra un ErrorState pero no bloquea la página", async () => {
     getServerSessionMock.mockResolvedValue(session("titular"));
     serverFetchMock.mockResolvedValue({ ok: false, status: 500, body: null });

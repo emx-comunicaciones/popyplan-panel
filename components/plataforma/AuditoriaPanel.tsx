@@ -81,7 +81,7 @@ export function AuditoriaPanel() {
             id="audit-actor"
             type="number"
             onChange={(event) => updateFilter("actor", event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -93,7 +93,7 @@ export function AuditoriaPanel() {
             type="text"
             placeholder="organization.created"
             onChange={(event) => updateFilter("action", event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -105,7 +105,7 @@ export function AuditoriaPanel() {
             type="text"
             placeholder="entities.organization"
             onChange={(event) => updateFilter("target_type", event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -116,7 +116,7 @@ export function AuditoriaPanel() {
             id="audit-target-id"
             type="text"
             onChange={(event) => updateFilter("target_id", event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -127,7 +127,7 @@ export function AuditoriaPanel() {
             id="audit-since"
             type="date"
             onChange={(event) => updateFilter("since", event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -138,7 +138,7 @@ export function AuditoriaPanel() {
             id="audit-until"
             type="date"
             onChange={(event) => updateFilter("until", event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
       </div>

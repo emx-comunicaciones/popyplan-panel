@@ -70,7 +70,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
             id="config-description"
             value={data.description}
             onChange={(event) => setForm({ ...data, description: event.target.value })}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             rows={3}
           />
         </div>
@@ -84,7 +84,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
               type="email"
               value={data.contact_email}
               onChange={(event) => setForm({ ...data, contact_email: event.target.value })}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             />
           </div>
           <div>
@@ -96,7 +96,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
               type="tel"
               value={data.contact_phone}
               onChange={(event) => setForm({ ...data, contact_phone: event.target.value })}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             />
           </div>
           <div>
@@ -108,7 +108,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
               type="url"
               value={data.website}
               onChange={(event) => setForm({ ...data, website: event.target.value })}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             />
           </div>
         </div>
@@ -188,7 +188,7 @@ function Equipo({ orgId }: { orgId: number | string }) {
             type="number"
             value={userId}
             onChange={(event) => setUserId(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -199,7 +199,7 @@ function Equipo({ orgId }: { orgId: number | string }) {
             id="equipo-role"
             value={role}
             onChange={(event) => setRole(event.target.value as OrgMembershipRole)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
             {ROLE_OPTIONS.map((value) => (
               <option key={value} value={value}>
@@ -292,7 +292,7 @@ function Referencias({ orgId }: { orgId: number | string }) {
             type="number"
             value={userId}
             onChange={(event) => setUserId(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -304,7 +304,7 @@ function Referencias({ orgId }: { orgId: number | string }) {
             type="number"
             value={referentUserId}
             onChange={(event) => setReferentUserId(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <Button type="submit" disabled={createReference.isPending}>
@@ -374,7 +374,7 @@ function Ambito({ orgId }: { orgId: number | string }) {
             id="ambito-kind"
             value={kind}
             onChange={(event) => setKind(event.target.value as typeof kind)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
             <option value="places">Municipios (códigos INE)</option>
             <option value="comarca">Comarca</option>
@@ -390,7 +390,7 @@ function Ambito({ orgId }: { orgId: number | string }) {
             type="text"
             value={value}
             onChange={(event) => setValue(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <Button type="submit" disabled={scope.isPending}>

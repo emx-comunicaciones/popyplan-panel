@@ -73,7 +73,7 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
         {pendingHelpRequests.data !== null && pendingHelpRequests.data !== undefined ? (
           <Card title="Solicitudes de ayuda pendientes">
             <p className="text-2xl font-semibold text-text-base">{pendingHelpRequests.data}</p>
-            <Link href={`/entidad/${slug}/guardia`} className="text-sm font-medium text-primary underline">
+            <Link href={`/entidad/${slug}/guardia`} className="text-sm font-medium text-primary-700 underline">
               Ir a Guardia
             </Link>
           </Card>
@@ -84,7 +84,7 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
         {pendingReports.data !== null && pendingReports.data !== undefined ? (
           <Card title="Reportes pendientes">
             <p className="text-2xl font-semibold text-text-base">{pendingReports.data}</p>
-            <Link href={`/entidad/${slug}/reportes`} className="text-sm font-medium text-primary underline">
+            <Link href={`/entidad/${slug}/reportes`} className="text-sm font-medium text-primary-700 underline">
               Ir a Reportes
             </Link>
           </Card>

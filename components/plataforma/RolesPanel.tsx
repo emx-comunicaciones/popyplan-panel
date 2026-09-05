@@ -45,7 +45,7 @@ function GrantRoleForm() {
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+          className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
         />
         {results.data && results.data.length > 0 ? (
           <ul className="mt-1 flex flex-col gap-1 rounded-md border border-border p-2 text-sm">
@@ -53,7 +53,7 @@ function GrantRoleForm() {
               <li key={user.id}>
                 <button
                   type="button"
-                  className="text-left text-primary underline"
+                  className="text-left text-primary-700 underline"
                   onClick={() => setUserId(String(user.id))}
                 >
                   #{user.id} — {user.username} ({user.email})
@@ -89,7 +89,7 @@ function GrantRoleForm() {
             type="number"
             value={userId}
             onChange={(event) => setUserId(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -100,7 +100,7 @@ function GrantRoleForm() {
             id="roles-role"
             value={role}
             onChange={(event) => setRole(event.target.value as PlatformRoleName)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
             {ROLE_OPTIONS.map((value) => (
               <option key={value} value={value}>

@@ -746,3 +746,36 @@ ocultarla que dejarla visible y fallando. **Pregunta:** ¿es la decisión
 correcta, o debería Familias seguir el patrón literal de Comunidades
 (todo visible, el backend corta con 403) por consistencia entre
 secciones?
+
+## Fase 6 — Task W1
+
+### 33. Tono de marca legible: se introduce `primary-700`, no se toca `primary` (D1)
+
+La tabla de contraste de `CLAUDE.md` («Accesibilidad») documentaba
+desde el cierre de Fase 5 dos pares reales por debajo de AA:
+`text-inverse`/`primary` (botón primario, cabecera de entidad) y
+`primary`/`background` (enlaces en `text-primary`), los dos a 2,59:1 —
+`--color-primary` (`#1fb3ae`) es la marca de Popyplan, la misma paleta
+que `popyplan-mobile/app/_theme/colors.ts`, y esta fase pide «sin
+lenguaje visual nuevo».
+
+Decisión tomada (D1 del plan de esta fase, aplicada ya, no solo
+propuesta): se añade `--color-primary-700` (`#0e7c78`, 5,0:1 sobre
+blanco) como tono de texto/botón, y `--color-primary` queda
+exclusivamente para superficies decorativas sin texto (fondos, iconos,
+`fill`/`stroke` de gráficos). Sustitución completa de
+`text-primary`/`bg-primary`/`border-primary`/`outline-primary` por su
+variante `-700` en `app/` y `components/`; el foco visible global
+(`:focus-visible` en `app/globals.css`) también pasa a `primary-700`.
+La cabecera de `/entidad/[slug]` y `/paraguas/[slug]` no pinta texto
+directamente con el color de marca de la entidad: calcula el texto
+legible con `lib/a11y/contrast.ts::readableOn` (blanco o
+`--color-secondary-900`) y, si ni así llegara a 3:1 (caso defensivo),
+usa el tinte `--color-primary-100` con texto oscuro.
+
+**Pregunta para la diseñadora** (no bloqueante, ya aplicado): ¿`#0e7c78`
+es el tono aceptado para texto/botones de marca, o prefiere aclarar el
+propio `_theme/colors.ts` de la app móvil con otro tono? Si cambia el
+hex, es una sola constante que tocar (`--color-primary-700` en
+`app/globals.css`); el resto del sistema (tokens, test de contraste,
+cabecera de entidad) no depende del valor exacto.

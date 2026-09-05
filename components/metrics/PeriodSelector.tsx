@@ -82,7 +82,7 @@ export function PeriodSelector({ value, preset, onChange }: PeriodSelectorProps)
             type="date"
             value={customSince}
             onChange={(event) => setCustomSince(event.target.value)}
-            className="rounded-md border border-border px-2 py-1 text-sm text-text-base focus-visible:outline-primary"
+            className="rounded-md border border-border px-2 py-1 text-sm text-text-base focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -94,7 +94,7 @@ export function PeriodSelector({ value, preset, onChange }: PeriodSelectorProps)
             type="date"
             value={customUntil}
             onChange={(event) => setCustomUntil(event.target.value)}
-            className="rounded-md border border-border px-2 py-1 text-sm text-text-base focus-visible:outline-primary"
+            className="rounded-md border border-border px-2 py-1 text-sm text-text-base focus-visible:outline-primary-700"
           />
         </div>
         <Button

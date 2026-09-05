@@ -113,7 +113,7 @@ function NuevaComunidadDialog({
             type="text"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -125,7 +125,7 @@ function NuevaComunidadDialog({
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             rows={3}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -138,7 +138,7 @@ function NuevaComunidadDialog({
             onChange={(event) =>
               setVisibility(event.target.value as "open" | "on_request" | "private")
             }
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
             <option value="open">Abierta</option>
             <option value="on_request">Con solicitud</option>
@@ -154,7 +154,7 @@ function NuevaComunidadDialog({
             value={codeOfConduct}
             onChange={(event) => setCodeOfConduct(event.target.value)}
             rows={3}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div className="flex gap-2">
@@ -338,7 +338,7 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
         )}
         <Link
           href={`/entidad/${slug}/actividades`}
-          className="mt-2 inline-block text-sm font-medium text-primary underline"
+          className="mt-2 inline-block text-sm font-medium text-primary-700 underline"
         >
           Ver todas las actividades
         </Link>
@@ -367,7 +367,7 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
         )}
         <Link
           href={`/entidad/${slug}/comunicaciones`}
-          className="mt-2 inline-block text-sm font-medium text-primary underline"
+          className="mt-2 inline-block text-sm font-medium text-primary-700 underline"
         >
           Ir a Comunicaciones
         </Link>
@@ -395,7 +395,7 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
         )}
         <Link
           href={`/entidad/${slug}/recursos`}
-          className="mt-2 inline-block text-sm font-medium text-primary underline"
+          className="mt-2 inline-block text-sm font-medium text-primary-700 underline"
         >
           Ir a Recursos
         </Link>

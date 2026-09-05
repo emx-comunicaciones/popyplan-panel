@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/Button";
+import { Footer } from "@/components/layout/Footer";
 import { ApiError } from "@/lib/api/client";
 import { resolveArea } from "@/lib/auth/area";
 import { consumeSessionExpiredMessage } from "@/lib/auth/sessionEvents";
@@ -62,53 +63,56 @@ export function LoginForm() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-border-light p-4">
-      <div className="w-full max-w-sm rounded-lg border border-border bg-white p-6 shadow-sm">
-        <h1 className="mb-1 text-xl font-semibold text-text-base">Popyplan · Panel</h1>
-        <p className="mb-6 text-sm text-text-secondary">
-          Inicia sesión con tu cuenta de Popyplan.
-        </p>
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="mb-4">
-            <label htmlFor="username_or_email" className="mb-1 block text-sm font-medium text-text-form">
-              Usuario o email
-            </label>
-            <input
-              id="username_or_email"
-              name="username_or_email"
-              type="text"
-              autoComplete="username"
-              required
-              value={usernameOrEmail}
-              onChange={(event) => setUsernameOrEmail(event.target.value)}
-              className="w-full rounded-md border border-border px-3 py-2 text-sm text-text-base focus-visible:outline-primary"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="password" className="mb-1 block text-sm font-medium text-text-form">
-              Contraseña
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="w-full rounded-md border border-border px-3 py-2 text-sm text-text-base focus-visible:outline-primary"
-            />
-          </div>
-          {error ? (
-            <p role="alert" className="mb-4 text-sm text-error">
-              {error}
-            </p>
-          ) : null}
-          <Button type="submit" disabled={submitting} className="w-full">
-            {submitting ? "Entrando…" : "Entrar"}
-          </Button>
-        </form>
-      </div>
-    </main>
+    <div className="flex min-h-screen flex-col bg-border-light">
+      <main className="flex flex-1 items-center justify-center p-4">
+        <div className="w-full max-w-sm rounded-lg border border-border bg-white p-6 shadow-sm">
+          <h1 className="mb-1 text-xl font-semibold text-text-base">Popyplan · Panel</h1>
+          <p className="mb-6 text-sm text-text-secondary">
+            Inicia sesión con tu cuenta de Popyplan.
+          </p>
+          <form onSubmit={handleSubmit} noValidate>
+            <div className="mb-4">
+              <label htmlFor="username_or_email" className="mb-1 block text-sm font-medium text-text-form">
+                Usuario o email
+              </label>
+              <input
+                id="username_or_email"
+                name="username_or_email"
+                type="text"
+                autoComplete="username"
+                required
+                value={usernameOrEmail}
+                onChange={(event) => setUsernameOrEmail(event.target.value)}
+                className="w-full rounded-md border border-border px-3 py-2 text-sm text-text-base focus-visible:outline-primary-700"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="password" className="mb-1 block text-sm font-medium text-text-form">
+                Contraseña
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                className="w-full rounded-md border border-border px-3 py-2 text-sm text-text-base focus-visible:outline-primary-700"
+              />
+            </div>
+            {error ? (
+              <p role="alert" className="mb-4 text-sm text-error">
+                {error}
+              </p>
+            ) : null}
+            <Button type="submit" disabled={submitting} className="w-full">
+              {submitting ? "Entrando…" : "Entrar"}
+            </Button>
+          </form>
+        </div>
+      </main>
+      <Footer />
+    </div>
   );
 }

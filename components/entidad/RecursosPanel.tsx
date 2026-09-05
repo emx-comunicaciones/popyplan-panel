@@ -184,7 +184,7 @@ function ResourceForm({
             type="text"
             value={form.title}
             onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             required
           />
         </div>
@@ -199,7 +199,7 @@ function ResourceForm({
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, category: event.target.value as ResourceCategory }))
               }
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             >
               {CATEGORY_ORDER.map((category) => (
                 <option key={category} value={category}>
@@ -216,7 +216,7 @@ function ResourceForm({
               id="resource-kind"
               value={form.kind}
               onChange={(event) => setForm((prev) => ({ ...prev, kind: event.target.value as ResourceKind }))}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             >
               {(Object.keys(KIND_LABELS) as ResourceKind[]).map((kind) => (
                 <option key={kind} value={kind}>
@@ -237,7 +237,7 @@ function ResourceForm({
               value={form.body}
               onChange={(event) => setForm((prev) => ({ ...prev, body: event.target.value }))}
               rows={4}
-              className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+              className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             />
           </div>
         ) : null}
@@ -252,7 +252,7 @@ function ResourceForm({
               type="url"
               value={form.url}
               onChange={(event) => setForm((prev) => ({ ...prev, url: event.target.value }))}
-              className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+              className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             />
           </div>
         ) : null}
@@ -292,7 +292,7 @@ function ResourceForm({
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, audience: event.target.value as ResourceAudience }))
               }
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             >
               <option value="members">Miembros</option>
               <option value="public">Público</option>
@@ -363,7 +363,7 @@ function ResourceCard({
               href={resource.url}
               target="_blank"
               rel="noreferrer"
-              className="mt-2 inline-block text-sm text-primary underline-offset-2 hover:underline"
+              className="mt-2 inline-block text-sm text-primary-700 underline-offset-2 hover:underline"
             >
               Abrir enlace
             </a>
@@ -373,7 +373,7 @@ function ResourceCard({
               href={resource.file}
               target="_blank"
               rel="noreferrer"
-              className="mt-2 inline-block text-sm text-primary underline-offset-2 hover:underline"
+              className="mt-2 inline-block text-sm text-primary-700 underline-offset-2 hover:underline"
             >
               Descargar fichero
             </a>

@@ -127,7 +127,7 @@ function CheckinBox({ eventId }: { eventId: string }) {
             type="text"
             value={token}
             onChange={(event) => setToken(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <Button type="submit" disabled={checkin.isPending || !token}>

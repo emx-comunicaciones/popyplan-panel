@@ -37,7 +37,7 @@ function CommunityCard({
         onClick={onSelect}
         aria-pressed={selected}
         className={`w-full rounded-lg border p-4 text-left transition-colors ${
-          selected ? "border-primary bg-category-light" : "border-border bg-white hover:bg-border-light"
+          selected ? "border-primary-700 bg-category-light" : "border-border bg-white hover:bg-border-light"
         }`}
       >
         <p className="font-medium text-text-base">{community.name}</p>

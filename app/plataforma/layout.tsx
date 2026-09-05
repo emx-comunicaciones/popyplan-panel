@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { LogoutButton } from "@/components/LogoutButton";
 import { SkipLink } from "@/components/ui/SkipLink";
+import { Footer } from "@/components/layout/Footer";
 import { PLATAFORMA_MENU_LABELS, plataformaMenuFor } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
@@ -18,13 +19,13 @@ export default async function PlataformaLayout({ children }: { children: React.R
   const menu = plataformaMenuFor(session.platformRole.role);
 
   return (
-    <div className="min-h-screen bg-border-light">
+    <div className="flex min-h-screen flex-col bg-border-light">
       <SkipLink />
       <header className="flex items-center justify-between gap-4 bg-secondary-900 px-6 py-4 text-text-inverse">
         <span className="text-lg font-semibold">Popyplan · Plataforma</span>
         <LogoutButton />
       </header>
-      <div className="flex">
+      <div className="flex flex-1">
         <nav aria-label="Secciones de plataforma" className="w-56 shrink-0 border-r border-border bg-white p-4">
           <ul className="flex flex-col gap-1">
             {menu.map((item) => (
@@ -43,6 +44,7 @@ export default async function PlataformaLayout({ children }: { children: React.R
           {children}
         </main>
       </div>
+      <Footer />
     </div>
   );
 }

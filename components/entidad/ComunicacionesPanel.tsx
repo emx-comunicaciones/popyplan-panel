@@ -112,7 +112,7 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
             type="text"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             required
           />
         </div>
@@ -125,7 +125,7 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
             value={body}
             onChange={(event) => setBody(event.target.value)}
             rows={4}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             required
           />
         </div>
@@ -157,7 +157,7 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
                 aria-label="Comunidad"
                 value={communityId}
                 onChange={(event) => setCommunityId(event.target.value)}
-                className="ml-6 rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+                className="ml-6 rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
               >
                 <option value="">Elige una comunidad</option>
                 {(communities.data ?? []).map((community) => (

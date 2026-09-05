@@ -77,7 +77,7 @@ function AssignReferentForm({
             id="referent-user-id"
             value={referentUserId}
             onChange={(event) => setReferentUserId(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
             <option value="">Selecciona una persona</option>
             {referentes.map((member) => (

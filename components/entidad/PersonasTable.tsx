@@ -125,7 +125,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
             type="text"
             value={filters.search}
             onChange={(event) => updateFilter("search", event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -137,7 +137,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
             type="text"
             value={filters.community}
             onChange={(event) => updateFilter("community", event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -149,7 +149,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
             type="number"
             value={filters.referent}
             onChange={(event) => updateFilter("referent", event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -161,7 +161,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
             type="date"
             value={filters.activeSince}
             onChange={(event) => updateFilter("activeSince", event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -173,7 +173,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
             type="date"
             value={filters.joinedSince}
             onChange={(event) => updateFilter("joinedSince", event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div className="flex items-center gap-2 pb-2">
@@ -272,7 +272,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
                       <td className="px-3 py-2 text-text-base">
                         <Link
                           href={`/entidad/${slug}/personas/${row.user_id}`}
-                          className="font-medium text-primary underline"
+                          className="font-medium text-primary-700 underline"
                         >
                           {row.public_name}
                         </Link>

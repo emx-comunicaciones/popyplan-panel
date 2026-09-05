@@ -611,10 +611,30 @@ respuesta, nunca la pedían de verdad:
   compartida `components/ui/Table.tsx`, con `caption` como prop
   obligatoria — no hay manera de añadir una tabla nueva sin una.
 - Foco visible global: `:focus-visible { outline: 3px solid
-  var(--color-primary); }` en `app/globals.css`, desde W1.
-- **Contraste de los tokens de color** (`app/globals.css`), medido a
-  mano (WCAG 2.1, fórmula de contraste relativo) sobre los pares que de
-  verdad se usan como texto/fondo en el panel:
+  var(--color-primary-700); }` en `app/globals.css`, desde W1 (también
+  cada `focus-visible:outline-*` puntual de un control, ver más abajo).
+- **Marca legible (`primary-700`, tarea W1, Fase 6, decisión D1):**
+  `--color-primary` (`#1fb3ae`, la marca de Popyplan, misma paleta que
+  `popyplan-mobile/app/_theme/colors.ts`) queda **solo para superficies
+  decorativas sin texto** (fondos de tarjeta, iconos grandes, `fill`/
+  `stroke` de `recharts` en `SeriesChart.tsx`/`SurveyResultsView.tsx`).
+  Todo texto, enlace, botón, borde de control con texto o foco visible
+  usa `--color-primary-700` (`#0e7c78`, 5,0:1 sobre blanco) —
+  sustitución completa de `text-primary`/`bg-primary`/`border-primary`/
+  `outline-primary` por su variante `-700` en todo `app/` y
+  `components/` (`grep -rn "text-primary\b\|bg-primary\b" app
+  components` no debe encontrar nada). La cabecera de `/entidad/[slug]`
+  y `/paraguas/[slug]` calcula el texto legible sobre el color de marca
+  de la propia entidad con `lib/a11y/contrast.ts::readableOn` (blanco o
+  `--color-secondary-900`, el que dé más ratio) y, si aun así el par no
+  llegara a 3:1 (defensivo — no ocurre con esas dos opciones, ver el
+  docstring de `readableOn`), cae al tinte `--color-primary-100` con
+  texto `--color-text-base` y una franja de 6px del color de la entidad
+  de borde inferior.
+- **Contraste de los tokens de color** (`app/globals.css`), comprobado
+  con un test automático (`lib/a11y/tokens.test.ts`, sobre
+  `lib/a11y/contrast.ts::contrastRatio`) que lee el fichero real y falla
+  si algún par baja de su umbral — ya no es una comprobación a mano:
 
   | Par | Ratio | AA texto normal (4.5:1) | AA texto grande/UI (3:1) |
   |---|---|---|---|
@@ -625,29 +645,27 @@ respuesta, nunca la pedían de verdad:
   | `success` / `background` (texto de éxito) | 5,11:1 | ✅ | ✅ |
   | `text-inverse` / `secondary-900` (cabecera de plataforma) | 14,46:1 | ✅ | ✅ |
   | `text-base` / `border-light` (fondo de página) | 17,9:1 | ✅ | ✅ |
-  | **`text-inverse` / `primary`** (botón primario, cabecera de entidad con color de marca) | **2,59:1** | ❌ | ❌ |
-  | **`primary` / `background`** (enlaces «Ver detalle», texto en `text-primary`) | **2,59:1** | ❌ | ❌ |
-  | `text-form-secondary` / `background` | 1,86:1 | ❌ | ❌ (sin uso real como texto hoy) |
+  | `text-inverse` / `primary-700` (botón primario, cabecera de entidad con color de marca) | 5,03:1 | ✅ | ✅ |
+  | `primary-700` / `background` (enlaces, texto en `text-primary-700`) | 5,03:1 | ✅ | ✅ |
+  | `text-base` / `primary-100` (tinte claro de cabecera, caso defensivo) | 16,93:1 | ✅ | ✅ |
 
-  Los dos pares en rojo son un problema real y heredado: `--color-primary`
-  (`#1fb3ae`) es la marca de Popyplan, la misma paleta que
-  `popyplan-mobile/app/_theme/colors.ts` («sin lenguaje visual nuevo»,
-  restricción de esta fase) — **no se ha tocado** para no divergir de
-  la marca ni inventar un tono nuevo por cuenta propia. Queda
-  documentado aquí para que la auditoría formal de Fase 6 lo resuelva
-  (probablemente aclarando el tono de marca en el propio
-  `_theme/colors.ts` de la app, no solo en el panel). `text-form-secondary`
-  no se usa hoy como color de texto real (solo aparece en el token),
-  así que no es un problema en la práctica.
+  Los dos pares que fallaban AA antes de esta tarea (`text-inverse`/
+  `primary` y `primary`/`background`, 2,59:1 cada uno) se resolvieron
+  introduciendo `--color-primary-700` en vez de tocar `--color-primary`
+  (D1: no diverge de la marca, solo aclara qué tono usar para texto). El
+  token `--color-text-form-secondary` (1,86:1, sin uso real como texto)
+  se eliminó de `app/globals.css` al no tener ningún consumidor.
 - `axe-core` vía `vitest-axe` (`vitest.setup.ts` registra
   `toHaveNoViolations`; `test-utils/axe.ts` desactiva `region` —los
   tests de página renderizan solo el `page.tsx`, sin el `<nav>`/`<main>`
   del `layout.tsx`— y `color-contrast` —jsdom no calcula estilos
-  computados reales, el contraste se audita a mano, arriba). Cada
+  computados reales; el contraste real se audita con el test automático
+  de arriba, `lib/a11y/tokens.test.ts`, no con axe). Cada
   `page.test.tsx` cubierto tiene un test «no tiene violaciones de
   accesibilidad (axe)» como primer test del `describe`, con `render()`
   del propio `@/test-utils/render` para tener `container`:
-  `app/(auth)/login`, `entidad/[slug]` (Inicio), `entidad/[slug]/personas`
+  `app/(auth)/login`, `app/accesibilidad` (declaración pública, tarea
+  W1), `entidad/[slug]` (Inicio), `entidad/[slug]/personas`
   (tabla + diálogo «Añadir persona» abierto, valida el foco atrapado),
   `entidad/[slug]/informes`, `entidad/[slug]/asistencia/[eventId]`
   (caja de check-in), `entidad/[slug]/encuestas/[surveyId]` (gráfico
@@ -663,6 +681,15 @@ respuesta, nunca la pedían de verdad:
   áreas y de los patrones compartidos (tablas, diálogos con foco
   atrapado, gráficos, formularios), pero no exhaustiva; ampliarla es
   trabajo mecánico para quien retome accesibilidad en Fase 6.
+- **Declaración de accesibilidad** (tarea W1, Fase 6): página pública
+  `/accesibilidad` (`app/accesibilidad/page.tsx`, Server Component, sin
+  sesión), conforme al RD 1112/2018 — alcance, situación de
+  cumplimiento («parcialmente conforme» hasta cerrar la auditoría de
+  esta fase), contenido no accesible (la misma excepción documentada
+  arriba), preparación, contacto (`NEXT_PUBLIC_A11Y_CONTACT`, con
+  fallback `accesibilidad@popyplan.com`) y procedimiento de aplicación.
+  Enlazada desde `components/layout/Footer.tsx`, presente en el pie de
+  los tres layouts de área y del login.
 
 ### E2E contra el backend real (`e2e/`)
 

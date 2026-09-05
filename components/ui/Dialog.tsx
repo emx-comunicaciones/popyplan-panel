@@ -55,7 +55,7 @@ export function Dialog({
             type="button"
             onClick={onClose}
             aria-label="Cerrar"
-            className="text-lg leading-none text-text-secondary hover:text-text-base focus-visible:outline-primary"
+            className="text-lg leading-none text-text-secondary hover:text-text-base focus-visible:outline-primary-700"
           >
             ×
           </button>

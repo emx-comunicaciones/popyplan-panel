@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { LogoutButton } from "@/components/LogoutButton";
 import { SkipLink } from "@/components/ui/SkipLink";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { Footer } from "@/components/layout/Footer";
+import { contrastRatio, readableOn } from "@/lib/a11y/contrast";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import { serverFetch } from "@/lib/api/serverFetch";
 import type { Organization } from "@/lib/api/types";
@@ -44,14 +46,32 @@ export default async function EntidadLayout({
 
   const menu = entidadMenuFor(membership.role);
   const org = orgResult.ok ? orgResult.data : null;
-  const headerColor = org?.primary_color || "var(--color-primary)";
+  // Cabecera de entidad con color de marca (tarea W1, Fase 6): el color
+  // de la entidad no pinta texto directamente. `readableOn` calcula el
+  // texto legible (blanco o el oscuro de la app); si aun así el par no
+  // llega a 3:1 (defensivo: no ocurre con las dos opciones de
+  // `readableOn` hoy, ver su docstring, pero cubre un dato de marca
+  // fuera de lo esperado), la cabecera cae al tinte claro
+  // `--color-primary-100` con texto oscuro y una franja de 6px del
+  // color de la entidad de borde inferior, en vez de arriesgar texto
+  // ilegible.
+  const primaryColor = org?.primary_color || null;
+  const headerText = primaryColor ? readableOn(primaryColor) : "#FFFFFF";
+  const headerIsLegible = !primaryColor || contrastRatio(headerText, primaryColor) >= 3;
+  const headerBackground = headerIsLegible ? primaryColor || "var(--color-primary-700)" : "var(--color-primary-100)";
+  const headerForeground = headerIsLegible ? headerText : "var(--color-text-base)";
+  const headerAccent = headerIsLegible ? undefined : (primaryColor ?? undefined);
 
   return (
-    <div className="min-h-screen bg-border-light">
+    <div className="flex min-h-screen flex-col bg-border-light">
       <SkipLink />
       <header
-        className="flex items-center justify-between gap-4 px-6 py-4 text-text-inverse"
-        style={{ backgroundColor: headerColor }}
+        className="flex items-center justify-between gap-4 px-6 py-4"
+        style={{
+          backgroundColor: headerBackground,
+          color: headerForeground,
+          borderBottom: headerAccent ? `6px solid ${headerAccent}` : undefined,
+        }}
       >
         <div className="flex items-center gap-3">
           {org?.logo ? (
@@ -75,7 +95,7 @@ export default async function EntidadLayout({
           />
         </div>
       ) : null}
-      <div className="flex">
+      <div className="flex flex-1">
         <nav aria-label="Secciones de la entidad" className="w-56 shrink-0 border-r border-border bg-white p-4">
           <ul className="flex flex-col gap-1">
             {menu.map((item) => (
@@ -94,6 +114,7 @@ export default async function EntidadLayout({
           {children}
         </main>
       </div>
+      <Footer />
     </div>
   );
 }

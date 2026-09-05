@@ -116,7 +116,7 @@ export function ReporteDetail({ reportId, readOnly = false }: ReporteDetailProps
                 id="reporte-resolucion"
                 value={resolution}
                 onChange={(event) => setResolution(event.target.value as ReportResolution)}
-                className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+                className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
               >
                 {(Object.keys(RESOLUTION_LABELS) as ReportResolution[]).map((value) => (
                   <option key={value} value={value}>
@@ -133,7 +133,7 @@ export function ReporteDetail({ reportId, readOnly = false }: ReporteDetailProps
                 id="reporte-nota"
                 value={note}
                 onChange={(event) => setNote(event.target.value)}
-                className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+                className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
                 rows={3}
               />
             </div>
@@ -164,7 +164,7 @@ export function ReporteDetail({ reportId, readOnly = false }: ReporteDetailProps
                 id="reporte-nota-escalado"
                 value={escalateNote}
                 onChange={(event) => setEscalateNote(event.target.value)}
-                className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+                className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
                 rows={2}
               />
             </div>

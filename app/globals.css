@@ -8,6 +8,18 @@
  */
 :root {
   --color-primary: #1fb3ae;
+  /*
+   * Tono de marca legible (tarea W1, Fase 6, decisión D1): `--color-primary`
+   * (#1fb3ae) queda solo para superficies decorativas sin texto (fondos,
+   * iconos, gráficos) — contraste 2,59:1 sobre blanco, no llega a AA. Todo
+   * texto o control con texto usa `--color-primary-700` (5,0:1 sobre
+   * blanco). `--color-primary-100` es el tinte claro para fondos con
+   * texto oscuro encima (cabecera de entidad cuando el color de marca de
+   * la entidad no llega a 3:1 ni con blanco ni con `--color-secondary-900`,
+   * ver `lib/a11y/contrast.ts::readableOn`).
+   */
+  --color-primary-700: #0e7c78;
+  --color-primary-100: #d7f3f1;
   --color-secondary: #72c9ee;
   --color-secondary-900: #1a2c33;
   --color-secondary-600: #5ca1bd;
@@ -16,7 +28,6 @@
   --color-text-base: #0b0a0a;
   --color-text-secondary: #030607;
   --color-text-form: #45788e;
-  --color-text-form-secondary: #72c9ee;
   --color-text-disabled: #bdbdbd;
   --color-text-inverse: #ffffff;
   --color-white: #ffffff;
@@ -36,6 +47,8 @@
 
 @theme inline {
   --color-primary: var(--color-primary);
+  --color-primary-700: var(--color-primary-700);
+  --color-primary-100: var(--color-primary-100);
   --color-secondary: var(--color-secondary);
   --color-secondary-900: var(--color-secondary-900);
   --color-secondary-600: var(--color-secondary-600);
@@ -44,7 +57,6 @@
   --color-text-base: var(--color-text-base);
   --color-text-secondary: var(--color-text-secondary);
   --color-text-form: var(--color-text-form);
-  --color-text-form-secondary: var(--color-text-form-secondary);
   --color-text-disabled: var(--color-text-disabled);
   --color-text-inverse: var(--color-text-inverse);
   --color-white: var(--color-white);
@@ -72,6 +84,6 @@ body {
 
 /* Foco visible en todo elemento interactivo (accesibilidad desde el inicio). */
 :focus-visible {
-  outline: 3px solid var(--color-primary);
+  outline: 3px solid var(--color-primary-700);
   outline-offset: 2px;
 }

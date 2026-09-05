@@ -51,7 +51,7 @@ export function EntidadesTable({ canCreate }: EntidadesTableProps) {
                 setVerified(event.target.value as typeof verified);
                 setPage(1);
               }}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             >
               <option value="">Todas</option>
               <option value="true">Verificadas</option>
@@ -70,7 +70,7 @@ export function EntidadesTable({ canCreate }: EntidadesTableProps) {
                 setSearch(event.target.value);
                 setPage(1);
               }}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             />
           </div>
         </div>
@@ -94,7 +94,7 @@ export function EntidadesTable({ canCreate }: EntidadesTableProps) {
                 key: "name",
                 header: "Nombre",
                 render: (org) => (
-                  <Link href={`/plataforma/entidades/${org.id}`} className="font-medium text-primary underline">
+                  <Link href={`/plataforma/entidades/${org.id}`} className="font-medium text-primary-700 underline">
                     {org.name}
                   </Link>
                 ),

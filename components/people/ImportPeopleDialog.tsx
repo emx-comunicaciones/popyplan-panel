@@ -146,7 +146,7 @@ export function ImportPeopleDialog({ orgId, onClose }: ImportPeopleDialogProps) 
         <a
           href="/plantilla-personas.csv"
           download
-          className="text-sm text-primary underline underline-offset-2"
+          className="text-sm text-primary-700 underline underline-offset-2"
         >
           Descargar plantilla
         </a>

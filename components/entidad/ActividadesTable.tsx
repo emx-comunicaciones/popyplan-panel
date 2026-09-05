@@ -44,7 +44,7 @@ export function ActividadesTable({ orgId, slug }: ActividadesTableProps) {
           id="actividades-status"
           value={status}
           onChange={(event) => setStatus(event.target.value as EntityEventStatus | "")}
-          className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+          className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
         >
           <option value="">Todas</option>
           <option value="scheduled">Programada</option>
@@ -79,7 +79,7 @@ export function ActividadesTable({ orgId, slug }: ActividadesTableProps) {
                   <td className="px-3 py-2 text-text-base">
                     <Link
                       href={`/entidad/${slug}/asistencia/${event.id}`}
-                      className="font-medium text-primary underline"
+                      className="font-medium text-primary-700 underline"
                     >
                       {event.title}
                     </Link>

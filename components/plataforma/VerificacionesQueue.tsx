@@ -53,7 +53,7 @@ function ReviewCard({ review }: { review: VerificationReview }) {
             value={note}
             onChange={(event) => setNote(event.target.value)}
             rows={2}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
           <div className="flex gap-2">
             <Button

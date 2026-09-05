@@ -108,7 +108,7 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
             type="text"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             required
           />
         </div>
@@ -122,7 +122,7 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
               type="datetime-local"
               value={opensAt}
               onChange={(event) => setOpensAt(event.target.value)}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             />
           </div>
           <div>
@@ -134,7 +134,7 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
               type="datetime-local"
               value={closesAt}
               onChange={(event) => setClosesAt(event.target.value)}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary"
+              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             />
           </div>
         </div>
@@ -156,7 +156,7 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
                   onChange={(event) =>
                     updateQuestion(index, { kind: event.target.value as SurveyQuestionKind })
                   }
-                  className="rounded-md border border-border px-2 py-1 text-sm focus-visible:outline-primary"
+                  className="rounded-md border border-border px-2 py-1 text-sm focus-visible:outline-primary-700"
                 >
                   {(Object.keys(QUESTION_KIND_LABELS) as SurveyQuestionKind[]).map((kind) => (
                     <option key={kind} value={kind}>
@@ -177,7 +177,7 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
                   type="text"
                   value={question.text}
                   onChange={(event) => updateQuestion(index, { text: event.target.value })}
-                  className="w-full rounded-md border border-border px-2 py-1 text-sm focus-visible:outline-primary"
+                  className="w-full rounded-md border border-border px-2 py-1 text-sm focus-visible:outline-primary-700"
                   required
                 />
               </div>
@@ -247,7 +247,7 @@ function SurveyList({ orgId, slug }: { orgId: number | string; slug: string }) {
               </div>
               <Link
                 href={`/entidad/${slug}/encuestas/${survey.id}`}
-                className="text-sm font-medium text-primary underline-offset-2 hover:underline"
+                className="text-sm font-medium text-primary-700 underline-offset-2 hover:underline"
               >
                 Ver resultados
               </Link>
