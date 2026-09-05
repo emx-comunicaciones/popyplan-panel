@@ -30,5 +30,142 @@ jobs:
       - name: Build
         run: npm run build
 
-  # El job de e2e (Playwright + backend Django en servicio, migraciones y
-  # seed_panel_demo) llega en la tarea W6, cuando exista esa cuenta demo.
+  e2e:
+    name: Playwright e2e (backend real)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # No se usa `continue-on-error: true` a nivel de job (a diferencia del
+    # patrón de `popyplan-mobile/.github/workflows/e2e-live.yml`): si el
+    # secreto existe y el backend arranca, un fallo real de los tests SÍ
+    # tiene que tirar abajo el workflow. Lo único que se salta con
+    # gracia (steps condicionados a `check_token`) es la ausencia del
+    # secreto — el job entonces termina en verde sin haber corrido nada.
+    steps:
+      - name: Comprobar BACK_REPO_TOKEN
+        id: check_token
+        run: |
+          if [ -z "${{ secrets.BACK_REPO_TOKEN }}" ]; then
+            echo "::warning::BACK_REPO_TOKEN no configurado — se salta el job e2e. Crea un token de acceso personal (scope 'repo', o 'Contents: read' de un fine-grained token) con lectura sobre emx-comunicaciones/popyplan (repo privado) y guárdalo como secret 'BACK_REPO_TOKEN' en Settings → Secrets and variables → Actions de este repo. Ver README.md."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout panel
+        if: steps.check_token.outputs.skip != 'true'
+        uses: actions/checkout@v4
+        with:
+          path: popyplan-panel
+
+      - name: Checkout backend (emx-comunicaciones/popyplan @ main)
+        if: steps.check_token.outputs.skip != 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: emx-comunicaciones/popyplan
+          ref: main
+          path: popyplan
+          token: ${{ secrets.BACK_REPO_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        if: steps.check_token.outputs.skip != 'true'
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        if: steps.check_token.outputs.skip != 'true'
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: popyplan-panel/package-lock.json
+
+      - name: Librerías del sistema para WeasyPrint (informes PDF del panel)
+        if: steps.check_token.outputs.skip != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpango-1.0-0 libpangoft2-1.0-0 libcairo2 \
+            libgdk-pixbuf-2.0-0 libffi-dev shared-mime-info
+
+      - name: Instalar dependencias del backend (uv, fijadas por poetry.lock)
+        if: steps.check_token.outputs.skip != 'true'
+        working-directory: popyplan
+        run: |
+          python -m pip install --upgrade pip uv
+          python scripts/export_deps.py > /tmp/deps.txt
+          uv pip install --system -r /tmp/deps.txt
+          uv pip install --system pymysql
+
+      - name: Shim PyMySQL (por si algo importa MySQLdb; settings_e2e usa SQLite)
+        if: steps.check_token.outputs.skip != 'true'
+        run: |
+          python - <<'PY'
+          import pymysql, site, pathlib
+          sp = pathlib.Path(site.getsitepackages()[0]) / 'sitecustomize.py'
+          sp.write_text('import pymysql\npymysql.install_as_MySQLdb()\n')
+          PY
+
+      # `DJANGO_SETTINGS_MODULE=pop.settings_e2e` (no MariaDB de servicio,
+      # a diferencia de lo previsto en el brief de esta tarea — ver
+      # «Desviaciones» del informe de la tarea W6): ese módulo, ya
+      # existente en el backend y usado por
+      # `popyplan-mobile/.github/workflows/e2e-live.yml`, sustituye la
+      # base de datos por SQLite efímero (sin servicio que levantar) y,
+      # sobre todo, pone `RATE_LIMITING_ENABLED = False` — imprescindible
+      # aquí: el límite de login (5 intentos/60s) salta en cuanto dos
+      # specs de `e2e/*.spec.ts` inician sesión seguidas, y solo este
+      # módulo lo desactiva (comprobado a mano contra un backend con la
+      # configuración normal).
+      - name: Migrar y sembrar el backend (settings_e2e)
+        if: steps.check_token.outputs.skip != 'true'
+        working-directory: popyplan
+        env:
+          DJANGO_SETTINGS_MODULE: pop.settings_e2e
+        run: |
+          python manage.py migrate --noinput
+          python manage.py load_places
+          python manage.py seed_catalogs
+          python manage.py seed_panel_demo
+
+      - name: Arrancar el backend en segundo plano
+        if: steps.check_token.outputs.skip != 'true'
+        working-directory: popyplan
+        env:
+          DJANGO_SETTINGS_MODULE: pop.settings_e2e
+        run: |
+          nohup python manage.py runserver 0.0.0.0:8001 --noreload > /tmp/backend.log 2>&1 &
+          for i in $(seq 1 30); do
+            sleep 1
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8001/api/health/ || true)
+            if [ "$code" = "200" ] || [ "$code" = "401" ]; then
+              echo "backend listo (código $code)"; exit 0
+            fi
+          done
+          echo "el backend no arrancó a tiempo"; tail -100 /tmp/backend.log; exit 1
+
+      - name: Instalar dependencias del panel
+        if: steps.check_token.outputs.skip != 'true'
+        working-directory: popyplan-panel
+        run: npm ci
+
+      - name: Instalar navegadores de Playwright
+        if: steps.check_token.outputs.skip != 'true'
+        working-directory: popyplan-panel
+        run: npx playwright install --with-deps chromium
+
+      - name: Ejecutar e2e
+        if: steps.check_token.outputs.skip != 'true'
+        working-directory: popyplan-panel
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8001
+        run: npm run e2e
+
+      - name: Volcar el log del backend si el job falla
+        if: failure() && steps.check_token.outputs.skip != 'true'
+        run: tail -300 /tmp/backend.log || true
+
+      - name: Subir el reporte de Playwright si falla
+        if: failure() && steps.check_token.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: popyplan-panel/playwright-report/
+          retention-days: 7

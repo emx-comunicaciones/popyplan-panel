@@ -439,6 +439,244 @@ Ayuda/Métricas (`safety/services/reports.py::queue` y
   cambia al documentarse en `docs/PANEL.md`, revisar
   `hooks/useAuditLog.ts` y `lib/api/types.ts` primero.
 
+## Cierre del panel: accesibilidad, e2e contra el backend real y CI (tarea W6)
+
+### Carry-overs cerrados
+
+- **Informes de entidad** (`app/entidad/[slug]/informes/page.tsx`,
+  pregunta 18 de `docs/preguntas-diseno.md`): reutiliza
+  `components/metrics/ExportPanel.tsx` con `scope="entidad"` (mismo
+  componente que `paraguas/[slug]/informes`). Visible en el menú solo
+  para `titular`/`moderador`/`analista` (`docs/PANEL.md` §2.1,
+  `exportar_informes`); se encontró de paso que `dinamizador` la veía
+  sin poder exportar — añadido a `DINAMIZADOR_HIDDEN`.
+- **Columna «Entidad» de la cola de reportes con nombre**:
+  `ReporteDetail.tsx`/`ReportesQueuePlataforma.tsx` pintan ahora
+  `organization_display.name` (P7 lo añadió a `Report`/`ReportDetail`,
+  `docs/PANEL.md` §10.3) en vez de «Entidad #`<id>`».
+- **Ayuda de plataforma agregada de verdad**
+  (`hooks/usePlatformPendingHelpRequests.ts`): una sola llamada a
+  `GET /api/safety/help-requests/pending/` sin `organization` (P7,
+  `docs/PANEL.md` §10.1) en vez de recorrer todas las entidades
+  (N+1 peticiones, huella de la pregunta 26).
+- **Selects de referente con nombre**
+  (`components/people/AddPersonDialog.tsx`,
+  `components/entidad/PersonSheet.tsx::AssignReferentForm`): pintan
+  `public_name` de `useOrgMembers` (P7 lo añadió a `OrgMembership`,
+  `docs/PANEL.md` §10.3) en vez de «Persona n.º `<user_id>`» o un id a
+  mano — cierra las preguntas 13 y 22. Lo mismo en las tablas de Equipo
+  y Referencias (`ConfiguracionPanel.tsx`/`EntidadDetail.tsx`).
+- **Atajo de plataforma en Equipo/Métricas**
+  (`components/plataforma/EntidadDetail.tsx`): el aviso de «esto
+  normalmente da sin acceso» de W5 se corrigió — desde P7,
+  `superadmin`/`moderator` pasan de verdad (`docs/PANEL.md` §10.2,
+  cierra la pregunta 27).
+- **Supresión por celda, no por sección** (`lib/metrics/format.ts`,
+  pregunta 11): `formatCount`/`formatPct` miran primero si `value` es
+  `null`; con un valor real lo pintan aunque la sección venga marcada
+  `suppressed`. Ningún sitio de llamada cambió.
+
+### Dos bugs reales encontrados por el e2e contra el backend (no por unit tests)
+
+Ninguno de los dos se veía en Vitest porque los tests mockeaban la
+forma de la respuesta, nunca la pedían de verdad:
+
+1. **`GET /api/safety/reports/queue/` no pagina, nunca lo hizo**
+   (`docs/SEGURIDAD_Y_MODERACION.md` §4: «200 lista»,
+   `safety/viewsets.py::ReportViewSet.queue`, un array plano). El panel
+   llevaba desde W4a/W5 tratándola como `{count, next, previous,
+   results}` — `ReportesQueue.tsx`/`ReportesQueuePlataforma.tsx`
+   pintaban botones «Anterior»/«Siguiente» que nunca podían funcionar
+   (el `?page=` no hacía nada) y `useEntityHome.ts::fetchOptionalCount`
+   leía `.count` de un array (`undefined`, sin lanzar excepción: las dos
+   tarjetas de guardia del Inicio de entidad nunca mostraron un
+   recuento real). `e2e/plataforma.spec.ts` lo hizo saltar de verdad
+   (`TypeError: Cannot read properties of undefined (reading
+   'length')` al leer `.results` de un array). Arreglado en
+   `hooks/useReportsQueue.ts` (tipo `ReportRow[]`, sin `page`),
+   `fetchOptionalCount` (cuenta `.length`) y los dos componentes (sin
+   paginación, con el recuento real).
+2. **`<dl>` anidado en `EntityHomeDashboard.tsx`/`{Paraguas,Plataforma}
+   MetricsDashboard.tsx`**: agrupaban varias `StatCard` (cada una ya su
+   propio `<dl>`) dentro de otro `<dl>` — regla `definition-list` de
+   `axe-core`, hallada por el primer `expect(await axe(container))
+   .toHaveNoViolations()` que se escribió. El contenedor pasa a
+   `<div>`; cada `StatCard` sigue siendo su propia lista de definición.
+3. **`Card.tsx` pintaba su título en `<h3>`**: con un `Card` colgando
+   directo de un `<h1>` de página (el caso más común), saltaba de nivel
+   1 a 3 sin pasar por 2 (`heading-order` de `axe-core`). Pasa a
+   `<h2>`, que nunca salta nivel venga de donde venga.
+
+### Accesibilidad
+
+- `eslint-plugin-jsx-a11y` en `strict` desde W1 (`eslint.config.mjs`);
+  0 avisos al cerrar la fase.
+- `lang="es"` en `app/layout.tsx`; `<title>` único por página vía
+  `export const metadata` de Next (plantilla `"%s · Popyplan"` en el
+  layout raíz + un título propio por `page.tsx`, sacado de su `<h1>`
+  cuando no colisiona con otra área — p. ej. «Inicio de la entidad» vs.
+  «Inicio del paraguas» vs. «Inicio de plataforma»). El login
+  (`app/(auth)/login/page.tsx`) se partió en un Server Component (el
+  `<title>`) y `LoginForm.tsx` (cliente, `useState`/`useRouter`) porque
+  un Client Component no puede exportar `metadata`.
+- Enlace «Saltar al contenido» (`components/ui/SkipLink.tsx`,
+  invisible hasta que recibe el foco) en los tres layouts de área,
+  apuntando a `<main id="main-content" tabIndex={-1}>`.
+- Diálogos (`components/ui/{Dialog,ConfirmDialog}.tsx`) atrapan el foco
+  de verdad (`lib/a11y/useFocusTrap.ts`): foco inicial dentro del
+  diálogo, `Tab`/`Shift+Tab` sin escapar, `Escape` cierra/cancela, el
+  foco vuelve a donde estaba al cerrarse. Los dos ya llevaban
+  `aria-modal="true"` desde que se escribieron.
+- Tablas: todas con `<caption>` (casi siempre `sr-only`) o, la
+  compartida `components/ui/Table.tsx`, con `caption` como prop
+  obligatoria — no hay manera de añadir una tabla nueva sin una.
+- Foco visible global: `:focus-visible { outline: 3px solid
+  var(--color-primary); }` en `app/globals.css`, desde W1.
+- **Contraste de los tokens de color** (`app/globals.css`), medido a
+  mano (WCAG 2.1, fórmula de contraste relativo) sobre los pares que de
+  verdad se usan como texto/fondo en el panel:
+
+  | Par | Ratio | AA texto normal (4.5:1) | AA texto grande/UI (3:1) |
+  |---|---|---|---|
+  | `text-base` / `background` | 19,8:1 | ✅ | ✅ |
+  | `text-secondary` / `background` | 20,3:1 | ✅ | ✅ |
+  | `text-form` / `background` (etiquetas) | 4,85:1 | ✅ | ✅ |
+  | `error` / `background` (texto de error) | 5,46:1 | ✅ | ✅ |
+  | `success` / `background` (texto de éxito) | 5,11:1 | ✅ | ✅ |
+  | `text-inverse` / `secondary-900` (cabecera de plataforma) | 14,46:1 | ✅ | ✅ |
+  | `text-base` / `border-light` (fondo de página) | 17,9:1 | ✅ | ✅ |
+  | **`text-inverse` / `primary`** (botón primario, cabecera de entidad con color de marca) | **2,59:1** | ❌ | ❌ |
+  | **`primary` / `background`** (enlaces «Ver detalle», texto en `text-primary`) | **2,59:1** | ❌ | ❌ |
+  | `text-form-secondary` / `background` | 1,86:1 | ❌ | ❌ (sin uso real como texto hoy) |
+
+  Los dos pares en rojo son un problema real y heredado: `--color-primary`
+  (`#1fb3ae`) es la marca de Popyplan, la misma paleta que
+  `popyplan-mobile/app/_theme/colors.ts` («sin lenguaje visual nuevo»,
+  restricción de esta fase) — **no se ha tocado** para no divergir de
+  la marca ni inventar un tono nuevo por cuenta propia. Queda
+  documentado aquí para que la auditoría formal de Fase 6 lo resuelva
+  (probablemente aclarando el tono de marca en el propio
+  `_theme/colors.ts` de la app, no solo en el panel). `text-form-secondary`
+  no se usa hoy como color de texto real (solo aparece en el token),
+  así que no es un problema en la práctica.
+- `axe-core` vía `vitest-axe` (`vitest.setup.ts` registra
+  `toHaveNoViolations`; `test-utils/axe.ts` desactiva `region` —los
+  tests de página renderizan solo el `page.tsx`, sin el `<nav>`/`<main>`
+  del `layout.tsx`— y `color-contrast` —jsdom no calcula estilos
+  computados reales, el contraste se audita a mano, arriba). Cada
+  `page.test.tsx` cubierto tiene un test «no tiene violaciones de
+  accesibilidad (axe)» como primer test del `describe`, con `render()`
+  del propio `@/test-utils/render` para tener `container`:
+  `app/(auth)/login`, `entidad/[slug]` (Inicio), `entidad/[slug]/personas`
+  (tabla + diálogo «Añadir persona» abierto, valida el foco atrapado),
+  `entidad/[slug]/informes`, `entidad/[slug]/asistencia/[eventId]`
+  (caja de check-in), `entidad/[slug]/encuestas/[surveyId]` (gráfico
+  `recharts`), `paraguas/[slug]` (Inicio), `plataforma` (Inicio),
+  `plataforma/entidades` (tabla + diálogo «Nueva entidad» abierto),
+  `plataforma/reportes/[reportId]`. **Excepción documentada**: el resto
+  de páginas (`comunidades`, `actividades`, `reportes`, `guardia`,
+  `configuracion`, `comunicaciones`, `encuestas`, `recursos`,
+  `paraguas/[slug]/informes`, `plataforma/{auditoria,ayuda,verificaciones,
+  roles,reportes,metricas,entidades/[id]}`) no llevan todavía su propio
+  test de `axe` — la cobertura elegida es representativa de las tres
+  áreas y de los patrones compartidos (tablas, diálogos con foco
+  atrapado, gráficos, formularios), pero no exhaustiva; ampliarla es
+  trabajo mecánico para quien retome accesibilidad en Fase 6.
+
+### E2E contra el backend real (`e2e/`)
+
+`e2e/helpers.ts` centraliza login por API (`apiLogin`), resolución de
+id de entidad por slug (`resolveOrgId`) y dos fixtures que la demo
+sembrada no puede dar por sí sola porque sus fechas son relativas al
+momento en que se sembró, no al momento en que corren los tests:
+
+- `createCheckinFixture`: crea una actividad que empieza en 10 segundos
+  (válida para `EventCreateSerializer.validate_starts_at`, que exige
+  futuro) — su ventana de check-in (`starts_at - 2h`) ya está abierta
+  al crearla — e inscribe a dos personas de calle de la demo
+  (`panel-demo-asociacion-bidasoa-p01`/`p02@test.com`): una para el
+  check-in por QR (con su token real de `my-checkin`), otra para
+  «Marcar asistió» a mano.
+- `escalateFirstPendingReport`: escala por API el primer reporte
+  `pending` de una entidad — los reportes de la demo (Asociación
+  Bidasoa) nunca aparecen en la cola *global* de plataforma mientras no
+  estén escalados (`docs/SEGURIDAD_Y_MODERACION.md` §4), así que sin
+  esto `e2e/plataforma.spec.ts` no tendría nada que abrir.
+
+Specs: `login.spec.ts` (titular Bidasoa, y contraseña incorrecta →
+mensaje del contrato), `titular.spec.ts` (Inicio → Personas → ficha →
+Asistencia —marcar asistió + check-in por QR— → Informes, con
+comprobación del nombre de fichero `popyplan-<slug>-<since>-<until>.csv`),
+`analista.spec.ts` (métricas del paraguas + exportar PDF, con 503
+tratado como salto documentado si WeasyPrint no está disponible),
+`plataforma.spec.ts` (crear y verificar una entidad + abrir un reporte
+escalado de la cola).
+
+**Hueco de contrato re-confirmado en esta tarea** (pregunta 3 de
+`docs/preguntas-diseno.md`, sigue abierta): `org_type` sigue sin
+aparecer en `org_memberships`, así que el login de la analista de la
+diputación (`panel-analista-gfa@test.com`) aterriza en
+`/entidad/gipuzkoako-foru-aldundia`, no en `/paraguas/...`.
+`e2e/analista.spec.ts` navega a la vista de paraguas a propósito
+(`page.goto('/paraguas/gipuzkoako-foru-aldundia')`), que sí funciona
+para esa cuenta (el gate de la página solo mira membresía + rol, no
+`org_type`).
+
+**Límite de peticiones del login, imprescindible saberlo**: `POST
+/api/auth/login/` está limitado a **5 intentos por 60 segundos por
+IP** (`users/rate_limiting.py::RATE_LIMIT_CONFIGS`, clave
+`ip:<ip>:auth`, compartida entre todas las cuentas que inicien sesión
+desde la misma IP — no es por cuenta). La suite completa de `e2e/`
+hace más de 5 logins seguidos (fixtures por API + login de UI en cada
+spec), así que en local hay que darle margen entre specs o el backend
+responde 429. La escapatoria real: `pop.settings_e2e`
+(`RATE_LIMITING_ENABLED = False`, ya la usa
+`popyplan-mobile/.github/workflows/e2e-live.yml`) — el job `e2e` de
+este repo la usa siempre (ver «CI» más abajo), así que en CI nunca
+salta.
+
+**Arranque**: `playwright.config.ts` levanta `next dev --port 3100`
+(nunca 3000: ese puerto es el panel de demo del propietario en
+`.worktrees/demo/`, que no se toca) con
+`NEXT_PUBLIC_API_URL=http://localhost:8001`; `workers: 1` (las specs
+comparten el mismo backend y el mismo límite de login, en paralelo se
+pisarían). `PANEL_BASE_URL` (variable de entorno) apunta el runner a un
+servidor ya arrancado en vez de que Playwright levante el suyo — útil
+para iterar en local sin esperar a que compile cada vez.
+
+### CI (`.github/workflows/ci.yml`, job `e2e`)
+
+Cross-repo checkout de `emx-comunicaciones/popyplan` (privado) `@main`
+con un PAT propio, mismo patrón que
+`popyplan-mobile/.github/workflows/e2e-live.yml`: requiere el secret
+**`BACK_REPO_TOKEN`** (Settings → Secrets and variables → Actions de
+este repo; un token de acceso personal con lectura sobre ese repo). Sin
+él, un primer paso (`check_token`) deja `skip=true` y el resto de pasos
+(condicionados a `if: steps.check_token.outputs.skip != 'true'`) no
+corren — el job termina en verde sin haber hecho nada, con un
+`::warning::` explicando qué falta. **A diferencia del patrón del
+móvil, aquí no hay `continue-on-error: true` a nivel de job**: si el
+secreto existe y el backend arranca, un fallo real de los tests sí
+tira abajo el workflow.
+
+Backend: instala dependencias con `uv` (`scripts/export_deps.py`,
+fijadas por `poetry.lock`) + shim de PyMySQL (por si algo importa
+`MySQLdb`) + librerías del sistema de WeasyPrint (`apt-get`, igual que
+`popyplan/.github/workflows/ci.yml`). **Desviación deliberada del
+brief de esta tarea** (que pedía un servicio de MariaDB): el job usa
+`DJANGO_SETTINGS_MODULE=pop.settings_e2e` en vez de levantar
+MariaDB — ese módulo (ya existe en el backend, lo usa
+`popyplan-mobile`) sustituye la base de datos por SQLite efímero (sin
+servicio que levantar) y **desactiva el límite de login**
+(`RATE_LIMITING_ENABLED = False`), imprescindible: con el límite activo
+la suite entera de `e2e/` no puede correr seguida (ver arriba). Migra,
+siembra (`load_places`, `seed_catalogs`, `seed_panel_demo`) y arranca
+`runserver 0.0.0.0:8001` en segundo plano con una espera activa
+(`GET /api/health/` hasta 200/401). Luego `npx playwright install
+--with-deps chromium` y `npm run e2e` (`NEXT_PUBLIC_API_URL=http://
+localhost:8001`); si falla, sube el log del backend y el reporte de
+Playwright como artefactos.
+
 ## Diseño de sesión (refresh real desde la tarea W3)
 
 Access token en memoria (`lib/auth/tokenStore.ts`, nunca localStorage).
@@ -485,11 +723,14 @@ decide (`redirect('/login')`).
 - `npm run test` / `npm run test:coverage` (Vitest + Testing Library)
 - `npm run gen:types` — regenera `lib/api/types.generated.ts` desde
   `../popyplan/docs/schema.yaml` (`openapi-typescript`); se commitea.
-- `npm run e2e` (Playwright; ver `e2e/login.spec.ts`, en `test.skip`
-  hasta que exista `seed_panel_demo` en el backend)
+- `npm run e2e` (Playwright contra el backend real, `e2e/*.spec.ts` —
+  ver «Cierre del panel» más arriba para credenciales, límite de login
+  y el job `e2e` de CI)
 
 Verificación antes de cerrar cualquier tarea:
-`npm run typecheck && npm run lint && npm run test:coverage && npm run build`.
+`npm run typecheck && npm run lint && npm run test:coverage && npm run build`
+(`npm run e2e` también, cuando haya un backend local sembrado a mano —
+en CI lo gate el job `e2e`).
 
 ## Cobertura
 
@@ -511,7 +752,10 @@ Verificación antes de cerrar cualquier tarea:
   (`test-utils/fixtures/*.ts`).
 - `eslint-plugin-jsx-a11y` en `strict` desde el primer commit
   (accesibilidad: Fase 6 la audita formalmente, pero se cuida desde ya —
-  `lang="es"`, foco visible, etiquetas de formulario).
+  `lang="es"`, foco visible, etiquetas de formulario). Desde la tarea
+  W6, `axe-core` (`vitest-axe`) corre en un test dedicado de las páginas
+  representativas de cada área — ver «Cierre del panel» arriba para la
+  lista exacta y la excepción documentada.
 
 ## Convenciones
 

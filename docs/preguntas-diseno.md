@@ -3,6 +3,15 @@
 (Las preguntas de la tarea W2 están al final del fichero, después de la
 sección 5.)
 
+> **Cierre de Fase 5 (tarea W6, 2026-09-05):** las 29 preguntas de este
+> fichero llevan ya una nota «**Resolución**» al final de su enunciado.
+> La mayoría se resolvieron de verdad en tareas backend posteriores
+> (P4-P7, casi siempre visibles en `docs/PANEL.md`); las que siguen
+> «sin resolver» quedan documentadas como huecos conocidos para una
+> fase posterior, no como bloqueos de esta. Ninguna pregunta se ha
+> borrado ni reescrito: el fichero se cierra añadiendo, nunca editando
+> lo que ya dijeron las tareas anteriores.
+
 ## 1. No hay refresh token real (bloqueante para el diseño de sesión previsto)
 
 El plan preveía «access token en memoria + refresh token en cookie
@@ -32,6 +41,13 @@ significa "confirmar contra el backend que ese access token sigue vivo"
   (el resto del panel ya habla con `/api/session/*`, nunca con el
   backend de auth directamente).
 
+**Resolución (confirmada al cerrar W6):** resuelta desde la tarea W3 —
+el backend añadió `refresh` a `POST /api/auth/login/` y
+`POST /api/auth/token/refresh/` real (`docs/PANEL.md` §0); el diseño de
+sesión de esta tarea (access en memoria, cookie con el access) se
+sustituyó por el descrito en `CLAUDE.md` «Diseño de sesión» (cookie con
+el refresh, rotación real). Sigue en pie a fecha de cierre de Fase 5.
+
 ## 2. Menú de `dinamizador`: ¿oculta también "Informes"?
 
 El checklist de la tarea dice «dinamizador no ve Informes de
@@ -48,6 +64,13 @@ construya (W2+, filtrado por `exportar_informes` en el backend). Si la
 intención real era ocultar también «Informes» al dinamizador, es un
 cambio de una palabra en `DINAMIZADOR_HIDDEN`
 (`lib/auth/entidadMenu.ts`).
+
+**Resolución (tarea W6, cierre de Fase 5):** resuelta, en el sentido
+contrario al que quedó implementado aquí — `dinamizador` **no** puede
+exportar informes (`exportar_informes` solo admite
+`titular`/`moderador`/`analista`, `docs/PANEL.md` §2.1), así que W6 lo
+añadió a `DINAMIZADOR_HIDDEN` al construir la página de Informes
+(pregunta 18).
 
 ## 3. Detección de entidad paraguas: el backend no expone `org_type` en `org_memberships`
 
@@ -68,6 +91,15 @@ contrato. **Pregunta:** ¿se añade `org_type` a
 se prefiere que el panel pida `GET /api/organizations/{id}/` de cada
 membresía para saberlo (una llamada extra por entidad en el login)?
 
+**Resolución (tarea W6, cierre de Fase 5):** sigue sin resolver — se
+comprobó a mano contra el backend sembrado (`seed_panel_demo`,
+`GET /api/users/users/me/` para `panel-analista-gfa@test.com`) y
+`org_type` sigue sin aparecer en `org_memberships`. El flujo e2e de la
+analista de la diputación (`e2e/analista.spec.ts`) confirma el efecto
+práctico: el login aterriza en `/entidad/gipuzkoako-foru-aldundia`, no
+en `/paraguas/...` — el test navega a la vista de paraguas a propósito.
+Queda abierta para quien retome el contrato de plataforma.
+
 ## 4. Menú de "elegir varias entidades": forma de `resolveArea`
 
 El signature pedido en el brief es
@@ -81,6 +113,10 @@ de variantes llevan `kind` también (`{kind: 'entidad', slug}` en vez de
 TypeScript. Si se prefiere la forma literal del brief, es un cambio de
 forma en `Area` y en los tres sitios que hacen `if (area.kind === ...)`.
 
+**Resolución (confirmada al cerrar W6):** sin cambios — la forma con
+`kind` sigue en pie y no ha dado ningún problema en las tareas
+posteriores (W2-W6); se da por buena para el cierre de Fase 5.
+
 ## 5. Menú de `/plataforma`: ¿las 8 secciones para los 4 roles por igual?
 
 `safety.PlatformRole` tiene cuatro roles (`superadmin`, `verifier`,
@@ -91,6 +127,11 @@ menú igual para los cuatro roles (`lib/auth/plataformaMenu.ts`); filtrar
 qué rol puede *usar* cada sección (p. ej. "Roles" solo para
 `superadmin`) queda para las tareas P5-P7 que construyen esas páginas de
 verdad.
+
+**Resolución (tarea W5, confirmada al cerrar W6):** resuelta —
+`lib/auth/plataformaMenu.ts::plataformaMenuFor` (W5) ya filtra las 8
+secciones por rol real (ver la matriz en `CLAUDE.md` «Área de
+plataforma»).
 
 # Preguntas de diseño abiertas — Task W2
 
@@ -107,6 +148,11 @@ cambio de contrato en `panel/services/metrics.py::_place_rows` (o como
 se llame internamente) para añadir `attended`/`no_show` por fila, no
 solo algo que el panel pueda inventar con los datos que ya tiene.
 
+**Resolución (tarea W6, cierre de Fase 5):** sin resolver — `docs/PANEL.md`
+§1.4 sigue sin una tasa de asistencia por fila al cerrar la fase. Fuera
+de alcance de W6 (exigiría un cambio de contrato del backend); queda
+documentado para una fase posterior si se pide de verdad.
+
 ## 7. Menú de plataforma: el enlace «Métricas» es visible para `verifier`, que no tiene permiso
 
 `docs/PANEL.md` §1.1: `panel-plataforma-metrics` exige
@@ -122,6 +168,12 @@ ya el enlace «Métricas» para `verifier` en `lib/auth/plataformaMenu.ts`,
 o se deja así hasta que una tarea posterior (P5-P7) reordene todo el
 menú de plataforma por permisos reales?
 
+**Resolución (tarea W5, confirmada al cerrar W6):** resuelta —
+`lib/auth/plataformaMenu.ts::plataformaMenuFor` (W5) ya no pinta las 8
+secciones por igual: `verifier` no ve «Métricas» (`VERIFIER_VISIBLE`
+= `["inicio", "entidades", "verificaciones"]`), coincidiendo con el
+permiso real de `panel-plataforma-metrics`.
+
 ## 8. Export de plataforma/paraguas: sin selector de `group_by=comarca|province`
 
 `docs/PANEL.md` §2.1: el `group_by` del export admite `place` (defecto),
@@ -136,6 +188,10 @@ quiere ofrecer comarca/provincia desde el panel, es un cambio pequeño en
 `GROUP_BY_OPTIONS` de `PlataformaMetricsDashboard.tsx` (y decidir si el
 panel de paraguas necesita el mismo selector para exportar por
 comarca/provincia).
+
+**Resolución (tarea W6, cierre de Fase 5):** sin resolver — se deja
+como mejora de UX futura (no bloquea ningún flujo del brief de W6:
+titular, analista y plataforma exportan con el `group_by` por defecto).
 
 # Preguntas de diseño abiertas — Task W3
 
@@ -173,6 +229,12 @@ envoltorio de paginación de `attendees`, declarar `responses=` en
 `npm run gen:types` genere los tipos correctos sin que el panel tenga
 que mantenerlos a mano?
 
+**Resolución (confirmada al cerrar W6):** sin resolver — tras `npm run
+gen:types` contra el `docs/schema.yaml` final de P7, los cuatro casos
+siguen igual de mal anotados; los tipos manuales de `lib/api/types.ts`
+siguen siendo necesarios. Fuera del alcance de un repo de panel (es una
+tarea de limpieza del backend).
+
 ## 11. `StatCard`/`formatCount` con supresión a nivel de sección, no de celda (hallazgo en código ya existente de W2)
 
 Al escribir las tarjetas de métricas del mes del Inicio de entidad se
@@ -200,6 +262,18 @@ permite distinguir desde el JSON) o se deja así porque en la práctica
 (fixtures de test, escenarios reales) casi nunca se da la combinación
 exacta que lo expondría?
 
+**Resolución (tarea W6, cierre de Fase 5):** corregido — pero no con el
+cambio que proponía la propia pregunta (`formatCount(value, value ===
+null)` en cada sitio de llamada), que tiene el defecto que ya advertía:
+trataría `attendance.rate === null` por denominador cero como si
+estuviera suprimido. En su lugar, el arreglo vive dentro de
+`lib/metrics/format.ts::formatCount`/`formatPct`: ahora comprueban
+primero si `value === null` y solo entonces miran `suppressed` (`<5` si
+lo está, `—` si no); con `value` no nulo pintan el valor real **aunque
+`suppressed` de la sección sea `true`**, sin tocar ningún sitio de
+llamada. Test añadido (`lib/metrics/format.test.ts`): «con value no nulo
+se pinta el valor real, aunque `suppressed` sea true».
+
 ## 12. Personas/Actividades sin selector de periodo
 
 El brief no pedía un selector de periodo para `personas`/`actividades`
@@ -212,6 +286,9 @@ mes en curso no aparece. **Pregunta:** ¿hace falta un selector de
 periodo en estas dos páginas (como en la vista del financiador), o el
 mes en curso es la ventana operativa que de verdad usa el equipo de una
 asociación día a día?
+
+**Resolución (tarea W6, cierre de Fase 5):** sin resolver — no era
+carry-over de W6; se mantiene el mes en curso sin selector.
 
 ## 13. «Asignar referente»: id numérico a mano, sin selector de personas con rol `referente`
 
@@ -226,6 +303,13 @@ rol `referente` en la entidad, 400 si no), pero es incómodo: quien
 gestiona el panel tendría que saber de memoria el id de cada referente.
 **Pregunta:** ¿se añade `ORGANIZATIONS.MEMBERS` al contrato de una tarea
 posterior para poder ofrecer un selector de verdad?
+
+**Resolución (tarea W6, cierre de Fase 5):** resuelta — la tarea backend
+P7 añadió `public_name`/`photo` (solo lectura) a `OrgMembership`
+(`docs/PANEL.md` §10.3). `PersonSheet.tsx::AssignReferentForm` ahora es
+un `<select>` de verdad (`useOrgMembers` filtrado a `role === 'referente'`,
+etiquetado por `public_name`), igual patrón que
+`components/people/AddPersonDialog.tsx` (pregunta 22, misma resolución).
 
 # Preguntas de diseño abiertas — Task W4a
 
@@ -258,6 +342,11 @@ separado).
 `puede(user, org, 'moderar')`) para que el panel de entidad vea de
 verdad **todas** sus comunidades, privadas incluidas?
 
+**Resolución (tarea W6, cierre de Fase 5):** sin resolver — no era
+carry-over de W6 (el único carry-over de comunidades era la pregunta 25,
+tampoco resuelta). Queda para una fase posterior si de verdad hace
+falta operar sobre comunidades privadas ajenas desde el panel.
+
 ## 15. Equipo, referencias y guardia: solo ids numéricos, sin buscador de personas
 
 `GET /api/organizations/{id}/members/` (equipo) y
@@ -279,6 +368,14 @@ accesible a `titular`/`moderador` de su propia entidad (p. ej.
 tienen alguna relación con la entidad, o ampliar el permiso de
 `list_users` para ese caso concreto)?
 
+**Resolución (tarea W6, cierre de Fase 5):** parcialmente resuelta — el
+equipo (`ConfiguracionPanel.tsx`/`EntidadDetail.tsx`, tablas y selects de
+referente) ya pinta `public_name` en vez de solo el id (P7 añadió
+`public_name`/`photo` a `OrgMembership`/`Reference`, §10.3), pero **dar
+de alta** a alguien nuevo en el equipo sigue pidiendo su id de usuario a
+mano (no hay buscador de personas que aún no tengan ninguna relación con
+la entidad) — ese hueco concreto sigue abierto.
+
 ## 16. Logo de la entidad: el contrato de escritura espera fichero, no URL
 
 `OrganizationRequest.logo` es `Format: binary` (multipart), no una URL
@@ -293,6 +390,9 @@ volumen de trabajo ya cubierto en esta tarea. **Pregunta:** ¿se prioriza
 esto para W4b, o se deja para una tarea de «marca blanca» más amplia
 (Fase 6 ya prevé tematización completa)?
 
+**Resolución (tarea W6, cierre de Fase 5):** sin resolver — se deja para
+Fase 6 (tematización completa), tal y como apuntaba la propia pregunta.
+
 ## 17. `post_event_survey_enabled` no está en la lista blanca de `PATCH /api/organizations/{id}/`
 
 El campo existe en `entities/models.py::Organization` y se usa de verdad
@@ -304,6 +404,12 @@ logo, primary_color, secondary_color, on_call_user`. Se omite en
 no existe en el esquema). **Pregunta:** ¿se añade a la lista blanca en
 una tarea de backend, ya que Encuestas (W4b) necesitará un interruptor
 para activar/desactivar la encuesta post-actividad automática?
+
+**Resolución (confirmada al cerrar W6):** sin resolver — `post_event_survey_enabled`
+sigue fuera de la lista blanca de `PATCH /api/organizations/{id}/` al
+cerrar la fase (comprobado contra `docs/schema.yaml` final de P7); la
+encuesta post-actividad sigue activa por `default=True` sin interruptor
+en el panel.
 
 ## 18. «Informes» de entidad: la página no existe (404 para quien la vea en el menú)
 
@@ -323,6 +429,15 @@ tiene. **Pregunta:** ¿en qué tarea se construye `entidad/[slug]/informes`
 (reutilizando `components/metrics/*` de W2, con `METRICS.ENTIDAD`/
 `EXPORT.ENTIDAD`, que ya existen en `lib/api/endpoints.ts` sin consumir
 desde ninguna página de entidad)?
+
+**Resolución (tarea W6, cierre de Fase 5):** resuelta —
+`app/entidad/[slug]/informes/page.tsx` existe, reutiliza
+`components/metrics/ExportPanel.tsx` con `scope="entidad"` (mismo
+componente que `paraguas/[slug]/informes`). Visible en el menú solo para
+`titular`/`moderador`/`analista` (`lib/auth/entidadMenu.ts`): se
+descubrió de paso que `dinamizador` también la veía sin poder exportar
+de verdad (`exportar_informes` no lo admite, `docs/PANEL.md` §2.1) —
+añadido a `DINAMIZADOR_HIDDEN`.
 
 ## 19. Secciones W4b ocultas para `dinamizador`: Encuestas/Recursos/Familias dejan de vérsele
 
@@ -362,6 +477,10 @@ recuento, y el recuento real se muestra recién after el envío. **Pregunta:**
 a cuánta gente llega, sobre todo en la audiencia «Todos los miembros» de
 una entidad grande?
 
+**Resolución (tarea W6, cierre de Fase 5):** sin resolver — fuera del
+alcance de W6 (no era uno de los carry-overs de su brief). Queda como
+mejora de contrato para una fase posterior si se pide.
+
 ## 21. Encuestas periódicas: el formulario del panel no ofrece dirigir a una comunidad
 
 `docs/PANEL.md` §6.2 admite un `community` opcional en
@@ -373,6 +492,10 @@ brief lo pedía explícitamente para esa sección). **Pregunta:** ¿se añade
 un selector de comunidad al formulario de encuestas, igual que en
 Comunicaciones, o se deja fuera a propósito para simplificar (toda
 encuesta periódica es siempre de toda la entidad)?
+
+**Resolución (tarea W6, cierre de Fase 5):** sin resolver — se deja
+fuera a propósito, como ya permitía el brief original de W4b; no era
+carry-over de W6.
 
 # Preguntas de diseño abiertas — Task W3b
 
@@ -393,6 +516,14 @@ aquí. **Pregunta:** ¿se resuelve de una vez para ambos sitios (Asignar
 referente y Añadir persona) el día que exista un endpoint de búsqueda de
 personas con nombre?
 
+**Resolución (tarea W6, cierre de Fase 5):** resuelta — no hizo falta un
+endpoint nuevo de búsqueda: la tarea backend P7 añadió `public_name`/
+`photo` al propio `OrgMembership` (`docs/PANEL.md` §10.3), que es
+justo lo que devuelve `GET /api/organizations/{id}/members/` (el hook
+`useOrgMembers` ya existente). `AddPersonDialog.tsx` etiqueta ahora el
+select «Referente» con `public_name` en vez de «Persona n.º
+`<user_id>`», resuelto a la vez que la pregunta 13.
+
 ## 23. `useInvitations` (listado completo) no alimenta las filas «Invitada (pendiente)»: decisión de esta tarea, no del brief
 
 El brief pedía el hook `useInvitations` sin especificar para qué lo usa
@@ -411,6 +542,10 @@ distinta (p. ej. una pestaña «Invitaciones» aparte de «Personas», con su
 propia paginación y filtro por `status`) que esta tarea no ha
 construido?
 
+**Resolución (tarea W6, cierre de Fase 5):** sin resolver — la tarea W6
+no ha tocado `PersonasTable`/`useInvitations` (no era uno de sus
+carry-overs); la decisión de W3b se mantiene como estaba.
+
 ## 24. «Reenviar» sin confirmación, «Revocar» con `ConfirmDialog`
 
 El brief agrupa ambas acciones bajo «(confirm dialog)» sin distinguir
@@ -423,6 +558,10 @@ no se puede deshacer. **Pregunta:** ¿debería «Reenviar» pedir
 confirmación también (para evitar reenvíos accidentales a una persona
 que ya se ha quejado, por ejemplo), o el criterio «solo lo irreversible
 confirma» es el correcto también aquí?
+
+**Resolución (tarea W6, cierre de Fase 5):** sin resolver — se mantiene
+el criterio de W3b («solo lo irreversible confirma»); fuera del alcance
+de esta tarea.
 
 ## 25. Comunidades privadas en el select de «Añadir persona»: mismo hueco que la pregunta 14 de W4a
 
@@ -437,6 +576,10 @@ comunidad» y mover a la persona después, si existe esa vía). No se abre
 como pregunta nueva de contrato porque es el mismo hueco que W4a ya
 señaló para `GET /api/communities/`; se deja constancia de que también
 afecta a la invitación.
+
+**Resolución (tarea W6, cierre de Fase 5):** sin resolver — mismo hueco
+que la pregunta 14, sin tocar en esta tarea (no era uno de sus
+carry-overs).
 
 ## Task W5: panel de plataforma
 
@@ -459,6 +602,13 @@ cola de plataforma) — p. ej. `help-request-pending` sin `organization`
 para `moderator`/`superadmin`/`support`, con la misma semántica que la
 cola global de reportes?
 
+**Resolución (tarea backend P7, confirmada al cerrar W6):** resuelta —
+exactamente como se pedía: `GET /api/safety/help-requests/pending/` sin
+`?organization=` agrega ahora los avisos de todas las entidades para
+`superadmin`/`moderator`/`support` (`docs/PANEL.md` §10.1).
+`hooks/usePlatformPendingHelpRequests.ts` ya no recorre las entidades
+(N+1 peticiones): una sola llamada a la ruta agregada.
+
 ### 27. Equipo/Referencias/Métricas de una entidad, vistos desde plataforma: casi siempre «sin acceso»
 
 `entities/permissions.py::puede` y `panel/permissions.py::PuedeEnEntidad`
@@ -477,6 +627,15 @@ plataforma para las acciones de solo lectura (`ver_panel`, `equipo` en
 modo lectura), igual que ya existe para `scope` (que sí admite
 `superadmin` además del titular)?
 
+**Resolución (tarea backend P7, confirmada al cerrar W6):** resuelta —
+`panel/permissions.py::PuedeEnEntidad` tiene ahora el atajo pedido
+(`docs/PANEL.md` §10.2): `superadmin`/`moderator` pasan las cinco
+comprobaciones del panel (incluidas `equipo` y `ver_panel`) sin
+membresía real; `support` solo `ver_panel` (lee Métricas, no Equipo).
+`components/plataforma/EntidadDetail.tsx` ya no advierte que «esto
+normalmente da sin acceso» — el aviso se actualizó para reflejar el
+atajo real.
+
 ### 28. Auditoría (`/api/safety/audit/`): contrato aún no documentado en `docs/PANEL.md`
 
 Al escribir esta tarea, la ruta y `AuditLogViewSet` ya existían en el
@@ -487,6 +646,14 @@ la forma confirmada leyendo directamente el serializer del backend
 `hooks/useAuditLog.ts`/`lib/api/types.ts::AuditLogEntry`. **Pregunta:**
 al cerrar P6/P7 y documentar `docs/PANEL.md` §9, ¿coincide la forma final
 con la leída aquí, o hace falta un ajuste de contrato en el panel?
+
+**Resolución (tarea backend P7, confirmada al cerrar W6):** resuelta —
+`docs/PANEL.md` §9 documenta el contrato final de
+`/api/safety/audit/`/`/api/panel/entidad/{id}/audit/`; la forma leída a
+mano en su día coincide con la documentada (`AuditLogSerializer`:
+`{id, actor: {id, public_name}, action, target_type, target_id,
+metadata, ip?, created_at}`). No hizo falta tocar `hooks/useAuditLog.ts`
+ni `lib/api/types.ts::AuditLogEntry`.
 
 ### 29. Columna «Entidad» de la cola global de reportes, sin nombre
 
@@ -499,3 +666,10 @@ llevar también un `organization_display: {id, name}` igual que
 `HelpRequestSerializer`, para que la cola de plataforma (y la futura
 vista de auditoría por entidad) puedan pintar el nombre sin una
 petición aparte?
+
+**Resolución (tarea backend P7, confirmada al cerrar W6):** resuelta —
+exactamente como se pedía: `Report`/`ReportDetail` llevan
+`organization_display`/`community_display: {id, name} | null`
+(`docs/PANEL.md` §10.3). `components/plataforma/ReportesQueuePlataforma.tsx`
+y `components/entidad/ReporteDetail.tsx` pintan ya el nombre de la
+entidad en vez de «Entidad #<id>».
