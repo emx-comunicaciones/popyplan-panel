@@ -40,3 +40,19 @@ export type OrgTypeEnum = components["schemas"]["OrgTypeEnum"];
 
 /** Respuesta de `POST /api/auth/login/`. */
 export type LoginResponse = components["schemas"]["LoginResponse"];
+
+/**
+ * `GET /api/panel/{entidad,paraguas,plataforma}/*\/metrics/`
+ * (`docs/PANEL.md` §1.4, esquema fijo). `people`/`attendance`/
+ * `communities` llevan su propio `suppressed` de sección; cada fila de
+ * `by_place`/`by_weekday_hour`/`series` lleva el suyo en `people`.
+ */
+export type MetricsResponse = components["schemas"]["MetricsResponse"];
+export type PeopleMetrics = components["schemas"]["PeopleMetrics"];
+export type EventsMetrics = components["schemas"]["EventsMetrics"];
+export type EventsByAudience = components["schemas"]["EventsByAudience"];
+export type AttendanceMetrics = components["schemas"]["AttendanceMetrics"];
+export type CommunitiesMetrics = components["schemas"]["CommunitiesMetrics"];
+export type ByPlaceRow = components["schemas"]["ByPlaceRow"];
+export type ByWeekdayHourRow = components["schemas"]["ByWeekdayHourRow"];
+export type SeriesRow = components["schemas"]["SeriesRow"];

@@ -1,5 +1,8 @@
 # Preguntas de diseño abiertas — Task W1
 
+(Las preguntas de la tarea W2 están al final del fichero, después de la
+sección 5.)
+
 ## 1. No hay refresh token real (bloqueante para el diseño de sesión previsto)
 
 El plan preveía «access token en memoria + refresh token en cookie
@@ -88,3 +91,48 @@ menú igual para los cuatro roles (`lib/auth/plataformaMenu.ts`); filtrar
 qué rol puede *usar* cada sección (p. ej. "Roles" solo para
 `superadmin`) queda para las tareas P5-P7 que construyen esas páginas de
 verdad.
+
+# Preguntas de diseño abiertas — Task W2
+
+## 6. Tabla «Por municipio» sin columna de asistencia %
+
+El brief de W2 pedía que la tabla «Por municipio» del panel de paraguas
+llevara nombre, código INE, eventos, personas **y asistencia %**. El
+esquema fijo de `docs/PANEL.md` §1.4 (`ByPlaceRow`) solo tiene
+`key`/`label`/`events`/`people`/`suppressed` — no hay una tasa de
+asistencia por fila, solo la global (`attendance.rate`, en la sección
+base). Implementado sin esa columna (`components/metrics/MetricsTable.tsx`);
+si de verdad hace falta una asistencia por municipio/entidad, es un
+cambio de contrato en `panel/services/metrics.py::_place_rows` (o como
+se llame internamente) para añadir `attended`/`no_show` por fila, no
+solo algo que el panel pueda inventar con los datos que ya tiene.
+
+## 7. Menú de plataforma: el enlace «Métricas» es visible para `verifier`, que no tiene permiso
+
+`docs/PANEL.md` §1.1: `panel-plataforma-metrics` exige
+`HasPlatformRole('superadmin', 'moderator', 'support')` — **no**
+`verifier`. `lib/auth/plataformaMenu.ts` (W1) pinta las 8 secciones
+igual para los cuatro roles; esta tarea no lo ha tocado (la pregunta 5
+de W1 ya dejaba esto para cuando la página existiera de verdad, y ahora
+existe). Un `verifier` que entre en «Métricas» hoy ve un enlace que
+lleva a un 403 traducido como `ErrorState` («No tienes acceso a estas
+métricas.»), nunca datos con lista nominal ni una pantalla rota — pero
+la experiencia sería mejor ocultando el enlace. **Pregunta:** ¿se oculta
+ya el enlace «Métricas» para `verifier` en `lib/auth/plataformaMenu.ts`,
+o se deja así hasta que una tarea posterior (P5-P7) reordene todo el
+menú de plataforma por permisos reales?
+
+## 8. Export de plataforma/paraguas: sin selector de `group_by=comarca|province`
+
+`docs/PANEL.md` §2.1: el `group_by` del export admite `place` (defecto),
+`comarca`, `province`, `organization` (nunca `weekday_hour`/`month`, que
+se calcula aparte siempre). El panel de plataforma expone un selector
+de solo dos opciones (Territorio=`place`, Entidad=`organization`,
+`components/metrics/PlataformaMetricsDashboard.tsx`) que también decide
+el `group_by` de la exportación (`ExportPanel`); `comarca`/`province`
+quedan sin UI en esta tarea. El panel de paraguas exporta siempre con
+el `group_by` por defecto del backend (`place`), sin selector. Si se
+quiere ofrecer comarca/provincia desde el panel, es un cambio pequeño en
+`GROUP_BY_OPTIONS` de `PlataformaMetricsDashboard.tsx` (y decidir si el
+panel de paraguas necesita el mismo selector para exportar por
+comarca/provincia).

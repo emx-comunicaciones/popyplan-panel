@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { Card } from "@/components/ui/Card";
+import { ParaguasMetricsDashboard } from "@/components/metrics/ParaguasMetricsDashboard";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import { serverFetch } from "@/lib/api/serverFetch";
 import type { Organization } from "@/lib/api/types";
@@ -32,15 +32,9 @@ export default async function ParaguasInicioPage({
   const orgName = orgResult.ok ? orgResult.data.name : membership.organization_name;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold text-text-base">Inicio</h1>
-      <Card title="Entidad paraguas">
-        <p className="text-text-base">{orgName}</p>
-        <p className="mt-1 text-sm text-text-secondary">
-          Las métricas agregadas de {orgName} y sus entidades llegan en la siguiente
-          tarea de esta fase.
-        </p>
-      </Card>
+      <ParaguasMetricsDashboard orgId={membership.organization_id} orgName={orgName} />
     </div>
   );
 }

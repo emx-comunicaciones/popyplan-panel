@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { LogoutButton } from "@/components/LogoutButton";
@@ -7,6 +8,7 @@ import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import { serverFetch } from "@/lib/api/serverFetch";
 import type { Organization } from "@/lib/api/types";
 import { isEntidadPanelRole } from "@/lib/auth/area";
+import { PARAGUAS_MENU_ITEMS, PARAGUAS_MENU_LABELS } from "@/lib/auth/paraguasMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export default async function ParaguasLayout({
@@ -64,7 +66,23 @@ export default async function ParaguasLayout({
           <ErrorState title="No se pudo cargar la ficha de la entidad paraguas" />
         </div>
       ) : null}
-      <main className="p-6">{children}</main>
+      <div className="flex">
+        <nav aria-label="Secciones de la entidad paraguas" className="w-56 shrink-0 border-r border-border bg-white p-4">
+          <ul className="flex flex-col gap-1">
+            {PARAGUAS_MENU_ITEMS.map((item) => (
+              <li key={item}>
+                <Link
+                  href={item === "inicio" ? `/paraguas/${slug}` : `/paraguas/${slug}/${item}`}
+                  className="block rounded-md px-3 py-2 text-sm font-medium text-text-form hover:bg-border-light"
+                >
+                  {PARAGUAS_MENU_LABELS[item]}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <main className="flex-1 p-6">{children}</main>
+      </div>
     </div>
   );
 }

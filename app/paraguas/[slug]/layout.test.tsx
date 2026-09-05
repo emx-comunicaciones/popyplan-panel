@@ -46,6 +46,14 @@ describe("ParaguasLayout", () => {
     render(element);
 
     expect(screen.getByText("Diputación Demo")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute(
+      "href",
+      "/paraguas/diputacion-demo",
+    );
+    expect(screen.getByRole("link", { name: "Informes" })).toHaveAttribute(
+      "href",
+      "/paraguas/diputacion-demo/informes",
+    );
   });
 
   it("sin sesión redirige a /login", async () => {
