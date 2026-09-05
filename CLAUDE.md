@@ -40,17 +40,17 @@ falta tocar `resolveArea`.
 ## Contratos que consume (repo backend `~/Code/popyplan`)
 
 - `POST /api/auth/login/` (`users/auth_viewsets.py::AuthViewSet.login`):
-  `{username_or_email, password}` → `{key, user}`. **Ojo:** solo devuelve
-  el access token (`key`); el `refresh` que genera se descarta dentro de
-  la vista y no hay ninguna ruta `/api/*token/refresh*` en
-  `docs/schema.yaml`. Ver la desviación documentada en
-  `lib/auth/cookie.ts`.
+  `{username_or_email, password}` → `{key, refresh, user}` (`refresh`
+  desde la tarea W3, `docs/PANEL.md` §0).
+- `POST /api/auth/token/refresh/` (`docs/PANEL.md` §0): `{refresh}` →
+  `{access, refresh}` (rotado). Ver «Diseño de sesión» más abajo.
 - `GET /api/users/users/me/` — perfil propio + `org_memberships`.
 - `GET /api/safety/platform-roles/me/` — `{role: string|null}`.
 - `GET /api/organizations/{id}/` — ficha de la entidad (nombre, logo,
   `primary_color`/`secondary_color`) para la cabecera del panel.
-- `docs/SEGURIDAD_Y_MODERACION.md` (§1, §8) y `docs/PANEL.md` (§1
-  métricas, §2 exportación) documentan el resto.
+- `docs/SEGURIDAD_Y_MODERACION.md` (§1, §5, §8) y `docs/PANEL.md` (§1
+  métricas, §2 exportación, §3 personas/actividades, §4 check-in QR)
+  documentan el resto.
 
 ## Vista del financiador: métricas y exportación (tarea W2)
 
@@ -98,18 +98,121 @@ una tasa de asistencia por fila (solo `events`/`people`) — la tabla
 muestra Municipio, Código INE, Eventos y Personas; la asistencia global
 solo está en la tarjeta «Asistencia» de la sección base.
 
-## Diseño de sesión (y su desviación respecto al plan original)
+## Operativa de la entidad: Inicio, Personas, Actividades, Asistencia (tarea W3)
+
+`docs/PANEL.md` §3 (personas/actividades) y §4 (check-in por QR).
+Páginas bajo `app/entidad/[slug]/`, cada una Server Component (sesión +
+membresía + redirect) que delega en un componente cliente de
+`components/entidad/*.tsx` con los hooks:
+
+- **Inicio** (`page.tsx` → `EntityHomeDashboard`, hook `useEntityHome`):
+  compone actividades de hoy (`useEntityEvents` con `since=until=hoy`),
+  avisos de ayuda y reportes pendientes (solo `count`,
+  `GET /api/safety/{help-requests/pending,reports/queue}/?organization=`)
+  y las métricas del mes (`useMetrics`, igual hook que W2). Los dos
+  contadores de guardia son 403 para quien no modera/no es la guardia
+  (`analista`, `dinamizador`, `referente`): un 403 se traduce a
+  `count: null` y la tarjeta correspondiente se oculta (no es un error
+  de página), cualquier otro fallo sí queda como `isError`.
+- **Personas** (`personas/page.tsx` → `PersonasTable`, hook `usePeople`):
+  tabla paginada (20/página, DRF estándar) con filtros `comunidad`
+  (UUID), `referente` (id), «participación desde» (`active_since`), «de
+  alta desde» (`joined_since`) y búsqueda; cada fila enlaza a la ficha.
+  Periodo fijo al mes en curso (sin selector: el brief no lo pedía para
+  esta página).
+- **Ficha de persona** (`personas/[userId]/page.tsx` → `PersonSheet`,
+  hook `usePerson`): alias, foto, alta, referente, comunidades de la
+  entidad, actividades del periodo con `attendance_status` y próxima
+  actividad. **Nunca** email/teléfono/documentos/notas — no están en
+  `PersonDetail` (invariante 9), así que no hace falta ocultar nada a
+  mano, solo no inventarse un campo que el tipo no tiene. Botón
+  «Asignar referente» (`useAssignReferent`, `POST .../references/`)
+  solo si `membership.role` es `titular`/`moderador`. Un `referente` sin
+  `Reference` hacia esa persona recibe **404** del backend (no 403, ver
+  «Desviaciones» de la tarea): `usePerson` traduce 403 y 404 por igual a
+  `PersonError('sin_acceso', …)`, y la página pinta el estado «Sin
+  acceso» que pide la tarea sea cual sea el código real.
+- **Actividades** (`actividades/page.tsx` → `ActividadesTable`, hook
+  `useEntityEvents`): lista por periodo (mes en curso) con filtro de
+  estado, inscritos/asistió/no asistió y responsable (`null` si quien
+  mira no tiene `ver_lista_nominal` — el componente no rellena nada,
+  solo pinta «—»). Cada fila enlaza a `asistencia/{eventId}`.
+- **Asistencia** (`asistencia/page.tsx` reutiliza `ActividadesTable`
+  como selector de actividad; `asistencia/[eventId]/page.tsx` →
+  `AttendanceView`): lista nominal de asistentes (`useAttendees`, **array
+  plano** — ver mismatch más abajo) con «Marcar asistió»/«Marcar no
+  asistió» (`useMarkAttendance`, `POST .../attendance/ {user_id,
+  attended}`, exige que la actividad ya haya empezado) y una caja de
+  check-in por QR (`useCheckin`, `POST .../checkin/ {token}`): admite
+  pegar el token o el `qr_payload` completo (`popyplan://checkin/<token>`,
+  se extrae con una regex) y, si `window.BarcodeDetector` existe, un
+  botón «Escanear con la cámara» que abre `getUserMedia` y decodifica
+  fotograma a fotograma. Idempotente: `already: true` se pinta como
+  aviso, no como error; 409 (fuera de la ventana `-2h..+12h`) muestra el
+  mensaje del contrato tal cual.
+
+**Mismatches encontrados entre `docs/schema.yaml` y el comportamiento
+real** (verificados leyendo `panel/viewsets.py`/`events/viewsets.py` en
+el repo backend, no solo el esquema): `GET .../people/` es paginada de
+verdad (`_PaginacionPersonas`, `docs/PANEL.md` §3.2) aunque el esquema
+la marque como array plano (`@extend_schema` sin envoltorio de
+paginación) — `lib/api/types.ts::PaginatedPersonRowList` es un tipo
+manual. `GET .../attendees/` es un array plano de verdad
+(`Response(AttendeeSerializer(..., many=True).data)`, sin paginador)
+aunque el esquema la marque como `PaginatedAttendeeList` (spectacular
+envuelve por el `pagination_class` del `ViewSet`, sin mirar si la acción
+pagina de verdad). `POST .../attendance/` y `POST .../checkin/`
+responden `{user_id, status}` y `{status, already}` respectivamente
+(`docs/PANEL.md` §4.3), no `EventDetail` como dice el esquema (los
+`@extend_schema` de esas acciones no declaran `responses=`). Los tres
+tipos de respuesta reales están a mano en `lib/api/types.ts`
+(`AttendanceMarkResponse`, `CheckinResponse`) en vez de tomados de
+`types.generated.ts`.
+
+**Regla «sin datos de contacto» (invariante 9):** ninguna vista de
+`personas`/`asistencia` puede mostrar `email`, `phone`, `birth_date`,
+`document*` ni notas libres. Hoy se cumple porque ningún tipo del panel
+que representa a una persona de la entidad (`PersonRow`, `PersonDetail`,
+`Attendee.user` = `UserProfile`) tiene esos campos — quien añada un
+campo nuevo a la ficha o a la lista de asistentes debe comprobar primero
+que el tipo de `docs/schema.yaml` no los lleva, nunca confiar en que el
+componente los vaya a filtrar a mano.
+
+## Diseño de sesión (refresh real desde la tarea W3)
 
 Access token en memoria (`lib/auth/tokenStore.ts`, nunca localStorage).
-El plan preveía un refresh token en cookie `httpOnly`; como el backend no
-lo expone (ver arriba), la cookie `pp_session`
-(`app/api/session/route.ts`, `lib/auth/cookie.ts`) guarda el propio
-access token — sirve para restaurar la sesión tras recargar la página
-(`app/api/session/refresh/route.ts` valida contra el backend con
-`GET .../me/`) y para que los Server Components lean la sesión sin pasar
-por memoria de cliente (`lib/auth/session.ts`). `lib/api/client.ts`
-(cliente) reintenta una vez tras un 401 llamando a
-`/api/session/refresh`; si falla, limpia el token (logout).
+Desde W3 el backend expone un refresh token de verdad
+(`docs/PANEL.md` §0): la cookie httpOnly `pp_session`
+(`lib/auth/cookie.ts::SESSION_COOKIE_NAME`) guarda **el refresh**, nunca
+el access — 30 días de vida, `ROTATE_REFRESH_TOKENS=True` +
+`BLACKLIST_AFTER_ROTATION=True` (cada uso lo rota y deja el anterior en
+lista negra).
+
+- `POST /api/session` (login): pone el refresh en la cookie; el access
+  viaja en el cuerpo para que `hooks/useAuth.ts` lo guarde en memoria.
+- `POST /api/session/refresh`: cambia el refresh de la cookie por un
+  access nuevo llamando a `POST /api/auth/token/refresh/`, guarda el
+  refresh rotado y devuelve datos frescos (`GET .../me/` +
+  `.../platform-roles/me/`). Lo llama `lib/api/client.ts` tras un 401
+  (reintenta una vez; si falla, logout) y `hooks/useAuth.ts::restoreSession`
+  al arrancar la app.
+- `DELETE /api/session` (logout): invalida el refresh en el backend
+  (`POST /api/auth/logout/ {refresh}`, best-effort) y borra la cookie.
+
+**`middleware.ts` (pieza nueva de W3, imprescindible):** un Server
+Component (`lib/auth/session.ts::getServerSession`, usado por los tres
+layouts de área) no puede escribir cookies — si intentara refrescar él
+mismo, el refresh rotado se perdería y la sesión moriría en la
+siguiente petición (el anterior ya está en lista negra). El middleware
+(`matcher`: `/entidad/**`, `/paraguas/**`, `/plataforma/**`,
+`/elegir-entidad`) hace el refresco una vez por navegación, rota la
+cookie, y pasa el access token a la petición como cabecera interna
+(`ACCESS_TOKEN_HEADER = 'x-pp-access-token'`, nunca llega al navegador)
+que `getServerSession` lee con `headers()` de `next/headers`. Sin
+cookie, o si el backend rechaza el refresh, el middleware la borra y
+deja pasar sin cabecera — `getServerSession` devuelve `null` y el
+layout/página redirige a `/login`, igual que antes.
+
 `lib/api/serverFetch.ts` (servidor) no reintenta nunca — quien llama
 decide (`redirect('/login')`).
 
@@ -132,10 +235,11 @@ Verificación antes de cerrar cualquier tarea:
 - Vitest mide líneas sobre `lib/**`, `hooks/**` y `app/**/*.ts` (route
   handlers y helpers; nunca `.tsx` de páginas/layouts/componentes, que se
   prueban por comportamiento, no por cobertura —
-  `components/metrics/*.tsx` tampoco cuenta). Umbral con ratchet en
-  `vitest.config.ts` (`coverage.thresholds.lines`): **100 % al cerrar W1
-  y W2** (umbral fijado a 99.7, real menos 0.3); solo puede subir.
-  Objetivo final del plan de cobertura: ≥98 % (ya superado aquí).
+  `components/metrics/*.tsx` y `components/entidad/*.tsx` tampoco
+  cuentan). Umbral con ratchet en `vitest.config.ts`
+  (`coverage.thresholds.lines`): **100 % al cerrar W1, W2 y W3** (umbral
+  fijado a 99.7, real menos 0.3); solo puede subir. Objetivo final del
+  plan de cobertura: ≥98 % (ya superado aquí).
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la

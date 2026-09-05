@@ -136,3 +136,93 @@ quiere ofrecer comarca/provincia desde el panel, es un cambio pequeño en
 `GROUP_BY_OPTIONS` de `PlataformaMetricsDashboard.tsx` (y decidir si el
 panel de paraguas necesita el mismo selector para exportar por
 comarca/provincia).
+
+# Preguntas de diseño abiertas — Task W3
+
+## 9. Ficha de persona: el brief dice 403 para el referente sin asignación, el contrato real da 404
+
+El brief de W3 («403 → estado "Sin acceso" para referente en ficha
+ajena») no coincide con `docs/PANEL.md` §3.3 ni con el código real
+(`panel/viewsets.py::EntidadPersonView.get`): un `referente` sin
+`Reference` hacia esa persona recibe **404** («No existe esa persona en
+esta entidad»), a propósito — no confirma si la persona existe en la
+entidad a quien no tiene por qué verla. Implementado según el contrato
+real: `usePerson` traduce tanto 403 como 404 a
+`PersonError('sin_acceso', …)`, así que la página pinta el estado «Sin
+acceso» pedido por el brief sea cual sea el código HTTP real. **Sin
+pregunta pendiente de decisión** (el contrato manda), solo se deja
+constancia de la discrepancia entre el brief y `docs/PANEL.md` por si
+otro brief de esta fase repite la misma cifra equivocada.
+
+## 10. `docs/schema.yaml` con tres rutas mal anotadas (verificado contra el código, no solo el esquema)
+
+`GET /api/panel/entidad/{id}/people/` se documenta como array plano
+(debería ser `Paginated*List`); `GET /api/events/{id}/attendees/` se
+documenta como `PaginatedAttendeeList` (debería ser array plano);
+`POST /api/events/{id}/attendance/` y `POST /api/events/{id}/checkin/`
+se documentan con `EventDetail` como respuesta (deberían ser
+`{user_id, status}` y `{status, already}`). Los cuatro casos se
+verificaron leyendo el código real de `panel/viewsets.py` y
+`events/viewsets.py`, no solo `docs/schema.yaml`. Implementado según el
+comportamiento real (tipos manuales en `lib/api/types.ts`,
+documentados uno a uno). **Pregunta para el equipo backend:** ¿merece la
+pena una tarea de limpieza que corrija los `@extend_schema` de estas
+cuatro vistas (envolver `people` en el paginador real, quitar el
+envoltorio de paginación de `attendees`, declarar `responses=` en
+`attendance`/`checkin`) para que `docs/schema.yaml` dejen de mentir y
+`npm run gen:types` genere los tipos correctos sin que el panel tenga
+que mantenerlos a mano?
+
+## 11. `StatCard`/`formatCount` con supresión a nivel de sección, no de celda (hallazgo en código ya existente de W2)
+
+Al escribir las tarjetas de métricas del mes del Inicio de entidad se
+detectó que `ParaguasMetricsDashboard.tsx`/`PlataformaMetricsDashboard.tsx`
+(W2) pasan el `suppressed` de **toda la sección** (`people.suppressed`,
+p. ej.) a `formatCount` para **cada** campo de esa sección
+(`active`/`new`/`repeating`), en vez del `suppressed` real de cada
+celda. `docs/PANEL.md` §1.5 es explícito en que la supresión se aplica
+«de forma independiente a cada celda» y da un ejemplo donde
+`attendance.attended` (visible, valor real) convive con
+`attendance.registered`/`no_show` suprimidos en la **misma** respuesta
+— con el patrón actual, si alguna vez llega esa combinación real desde
+el backend, `attended` se pintaría como `<5` aunque su valor no esté
+suprimido, porque el JSON solo trae un `suppressed` por sección (no uno
+por celda: la única señal fiable de si una celda concreta está
+suprimida es que su `value` sea `null`). Esta tarea (W3) replica el
+mismo patrón en `EntityHomeDashboard.tsx` por consistencia con el código
+ya enviado, y no lo corrige (es un cambio en componentes de W2, fuera
+del alcance de esta tarea). **Pregunta:** ¿se corrige en una tarea de
+limpieza aparte (cambiar todos los `formatCount(value, section.suppressed)`
+por `formatCount(value, value === null)`, que es equivalente y correcto
+salvo para `attendance.rate`, cuyo `null` también puede significar
+«denominador cero» sin supresión — un caso que el contrato actual no
+permite distinguir desde el JSON) o se deja así porque en la práctica
+(fixtures de test, escenarios reales) casi nunca se da la combinación
+exacta que lo expondría?
+
+## 12. Personas/Actividades sin selector de periodo
+
+El brief no pedía un selector de periodo para `personas`/`actividades`
+(a diferencia de la vista del financiador, W2), así que ambas páginas
+fijan el periodo al mes en curso (`presetPeriod('mes')`) sin UI para
+cambiarlo. Afecta a los contadores `events_period`/`attended_period` de
+la lista de personas y al criterio de «persona de la entidad» por
+asistencia (`docs/PANEL.md` §3.1) — alguien que solo participó fuera del
+mes en curso no aparece. **Pregunta:** ¿hace falta un selector de
+periodo en estas dos páginas (como en la vista del financiador), o el
+mes en curso es la ventana operativa que de verdad usa el equipo de una
+asociación día a día?
+
+## 13. «Asignar referente»: id numérico a mano, sin selector de personas con rol `referente`
+
+El endpoint que lista el equipo de la entidad
+(`GET /api/organizations/{id}/members/`, solo `titular`, §8 de
+`SEGURIDAD_Y_MODERACION.md`) no estaba en el contrato que esta tarea
+tenía que consumir, así que el formulario «Asignar referente»
+(`PersonSheet.tsx`) pide el id numérico de la persona referente a mano
+en vez de ofrecer un desplegable con los miembros que ya tienen ese rol
+en la entidad. Funciona (el backend valida que `referent_user` tenga
+rol `referente` en la entidad, 400 si no), pero es incómodo: quien
+gestiona el panel tendría que saber de memoria el id de cada referente.
+**Pregunta:** ¿se añade `ORGANIZATIONS.MEMBERS` al contrato de una tarea
+posterior para poder ofrecer un selector de verdad?

@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { SESSION_COOKIE_MAX_AGE_SECONDS, SESSION_COOKIE_NAME, sessionCookieOptions } from "./cookie";
+import {
+  ACCESS_TOKEN_HEADER,
+  SESSION_COOKIE_MAX_AGE_SECONDS,
+  SESSION_COOKIE_NAME,
+  sessionCookieOptions,
+} from "./cookie";
 
 const ORIGINAL_ENV = process.env.NODE_ENV;
 
@@ -13,7 +18,9 @@ describe("sessionCookieOptions", () => {
     const options = sessionCookieOptions();
 
     expect(options.maxAge).toBe(SESSION_COOKIE_MAX_AGE_SECONDS);
+    expect(SESSION_COOKIE_MAX_AGE_SECONDS).toBe(60 * 60 * 24 * 30);
     expect(SESSION_COOKIE_NAME).toBe("pp_session");
+    expect(ACCESS_TOKEN_HEADER).toBe("x-pp-access-token");
     expect(options.httpOnly).toBe(true);
     expect(options.sameSite).toBe("strict");
     expect(options.path).toBe("/");

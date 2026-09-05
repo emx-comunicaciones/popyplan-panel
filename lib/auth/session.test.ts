@@ -4,29 +4,29 @@ import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 
 const serverFetchMock = vi.hoisted(() => vi.fn());
-const cookiesMock = vi.hoisted(() => vi.fn());
+const headersMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/api/serverFetch", () => ({ serverFetch: serverFetchMock }));
-vi.mock("next/headers", () => ({ cookies: cookiesMock }));
+vi.mock("next/headers", () => ({ headers: headersMock }));
 
 import { getServerSession } from "./session";
 
-function cookieJar(value: string | undefined) {
-  return { get: () => (value === undefined ? undefined : { value }) };
+function headerStore(value: string | undefined) {
+  return { get: () => value ?? null };
 }
 
 describe("getServerSession", () => {
-  it("sin cookie de sesión devuelve null", async () => {
-    cookiesMock.mockResolvedValue(cookieJar(undefined));
+  it("sin cabecera de acceso (middleware no la puso) devuelve null", async () => {
+    headersMock.mockResolvedValue(headerStore(undefined));
 
     expect(await getServerSession()).toBeNull();
     expect(serverFetchMock).not.toHaveBeenCalled();
   });
 
-  it("con cookie válida trae me y el rol de plataforma en paralelo", async () => {
+  it("con cabecera de acceso trae me y el rol de plataforma en paralelo", async () => {
     const me = buildMe();
     const platformRole = buildPlatformRole("superadmin");
-    cookiesMock.mockResolvedValue(cookieJar("token-123"));
+    headersMock.mockResolvedValue(headerStore("token-123"));
     serverFetchMock
       .mockResolvedValueOnce({ ok: true, status: 200, data: me })
       .mockResolvedValueOnce({ ok: true, status: 200, data: platformRole });
@@ -37,7 +37,7 @@ describe("getServerSession", () => {
   });
 
   it("si el backend rechaza el token (401) devuelve null", async () => {
-    cookiesMock.mockResolvedValue(cookieJar("token-caducado"));
+    headersMock.mockResolvedValue(headerStore("token-caducado"));
     serverFetchMock
       .mockResolvedValueOnce({ ok: false, status: 401, body: null })
       .mockResolvedValueOnce({ ok: true, status: 200, data: buildPlatformRole(null) });

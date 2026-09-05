@@ -39,37 +39,60 @@ function requestWithCookie(value: string | undefined) {
 }
 
 describe("POST /api/session/refresh", () => {
-  it("sin cookie responde 401", async () => {
+  it("sin cookie responde 401 sin llamar al backend", async () => {
     const res = await POST(requestWithCookie(undefined));
 
     expect(res.status).toBe(401);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("con cookie válida devuelve el mismo token y datos frescos", async () => {
+  it("con refresh válido: rota el token, guarda el refresh nuevo y trae datos frescos", async () => {
     const me = buildMe();
     const platformRole = buildPlatformRole(null);
     fetchMock
+      .mockResolvedValueOnce(response({ access: "access-nuevo", refresh: "refresh-nuevo" }, 200))
       .mockResolvedValueOnce(response(me, 200))
       .mockResolvedValueOnce(response(platformRole, 200));
 
-    const res = await POST(requestWithCookie("token-vivo"));
+    const res = await POST(requestWithCookie("refresh-viejo"));
     const data = await res.json();
 
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "http://api.test/api/auth/token/refresh/",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ refresh: "refresh-viejo" }),
+      }),
+    );
     expect(res.status).toBe(200);
-    expect(data).toEqual({ accessToken: "token-vivo", user: me, platformRole });
+    expect(data).toEqual({ accessToken: "access-nuevo", user: me, platformRole });
+    const cookie = res.cookies.get(SESSION_COOKIE_NAME);
+    expect(cookie?.value).toBe("refresh-nuevo");
   });
 
-  it("con cookie caducada (401 del backend) la borra y responde 401", async () => {
-    fetchMock
-      .mockResolvedValueOnce(response({ detail: "expirado" }, 401))
-      .mockResolvedValueOnce(response(buildPlatformRole(null), 200));
+  it("con refresh caducado o en lista negra (401 del backend), borra la cookie y responde 401", async () => {
+    fetchMock.mockResolvedValueOnce(
+      response({ detail: "Token is invalid or expired", code: "token_not_valid" }, 401),
+    );
 
-    const res = await POST(requestWithCookie("token-caducado"));
+    const res = await POST(requestWithCookie("refresh-caducado"));
 
     expect(res.status).toBe(401);
     const cookie = res.cookies.get(SESSION_COOKIE_NAME);
     expect(cookie?.value).toBe("");
     expect(cookie?.maxAge).toBe(0);
+  });
+
+  it("si el token se rota bien pero /me falla después, borra la cookie y responde 401", async () => {
+    fetchMock
+      .mockResolvedValueOnce(response({ access: "access-nuevo", refresh: "refresh-nuevo" }, 200))
+      .mockResolvedValueOnce(response({ detail: "error" }, 500))
+      .mockResolvedValueOnce(response(buildPlatformRole(null), 200));
+
+    const res = await POST(requestWithCookie("refresh-viejo"));
+
+    expect(res.status).toBe(401);
+    expect(res.cookies.get(SESSION_COOKIE_NAME)?.maxAge).toBe(0);
   });
 });

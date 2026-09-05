@@ -1,23 +1,32 @@
 /**
  * Cookie de sesión que guarda el route handler `app/api/session/route.ts`.
  *
- * Desviación documentada respecto al diseño previsto («refresh token en
- * cookie httpOnly»): `POST /api/auth/login/` (`users/auth_viewsets.py`,
- * `AuthViewSet.login`) solo devuelve `{key, user}` — el `refresh` que crea
- * (`RefreshToken.for_user(user)`) se usa una vez para sacar
- * `refresh.access_token` y se descarta; no hay `Set-Cookie` ni cuerpo con
- * un refresh token, y `docs/schema.yaml` no tiene ninguna ruta
- * `/api/*token/refresh*`. Mientras el backend no exponga un refresh token
- * real, esta cookie guarda el propio access token (el único credential
- * que da el login) para poder restaurar la sesión tras recargar la
- * página y para que los Server Components (`lib/auth/session.ts`) lo lean
- * sin pasar por memoria de cliente. Ver `docs/preguntas-diseno.md`.
+ * Tarea W3: `POST /api/auth/login/` ahora devuelve `refresh` (30 días,
+ * `docs/PANEL.md` §0) y existe `POST /api/auth/token/refresh/` de verdad
+ * (`rest_framework_simplejwt`, `ROTATE_REFRESH_TOKENS=True` +
+ * `BLACKLIST_AFTER_ROTATION=True`: cada uso rota el refresh y deja el
+ * anterior en lista negra). Esta cookie guarda **el refresh token**,
+ * nunca el access token — el access vive solo en memoria de cliente
+ * (`lib/auth/tokenStore.ts`) o, en el servidor, en la cabecera que pone
+ * `middleware.ts` en cada petición (ver su docstring: un Server Component
+ * no puede escribir cookies, así que la rotación del refresh se hace en
+ * middleware, no en `lib/auth/session.ts`).
  */
 
 export const SESSION_COOKIE_NAME = "pp_session";
 
-/** Vida máxima del access token hoy (`SIMPLE_JWT.ACCESS_TOKEN_LIFETIME`, `pop/settings.py`). */
-export const SESSION_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24;
+/** Vida máxima del refresh token (`SIMPLE_JWT.REFRESH_TOKEN_LIFETIME` = 30 días). */
+export const SESSION_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
+
+/**
+ * Cabecera que `middleware.ts` añade a la petición reenviada con el
+ * access token recién obtenido (nunca sale hacia el navegador: es
+ * comunicación interna middleware → Server Component dentro del mismo
+ * proceso de Next.js). `lib/auth/session.ts::getServerSession` la lee con
+ * `headers()` en vez de fiarse de la cookie, que ahora es un refresh
+ * token y no sirve para llamar directamente a la API.
+ */
+export const ACCESS_TOKEN_HEADER = "x-pp-access-token";
 
 export interface SessionCookieOptions {
   httpOnly: true;

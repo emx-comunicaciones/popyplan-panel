@@ -3,9 +3,13 @@
  * `POST /api/auth/login/` del backend, y si sale bien completa la sesión
  * con `GET /api/users/users/me/` y `GET /api/safety/platform-roles/me/`
  * (el `user` que devuelve el login no trae `org_memberships`, así que sin
- * esta segunda llamada el panel no podría decidir el área). Guarda el
- * access token en una cookie httpOnly — ver `lib/auth/cookie.ts` para la
- * desviación sobre el refresh token, que el backend no expone hoy.
+ * esta segunda llamada el panel no podría decidir el área).
+ *
+ * Tarea W3: el login ahora devuelve `refresh` (`docs/PANEL.md` §0) — la
+ * cookie httpOnly guarda ese refresh token (nunca el access, que solo
+ * viaja en la respuesta para que `hooks/useAuth.ts` lo ponga en memoria).
+ * Ver `lib/auth/cookie.ts` y `middleware.ts` para el resto del diseño de
+ * sesión.
  */
 import { NextRequest, NextResponse } from "next/server";
 
@@ -53,7 +57,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { key: accessToken } = loginData as LoginResponse;
+  const { key: accessToken, refresh } = loginData as LoginResponse;
 
   const [meResult, roleResult] = await Promise.all([
     serverFetch<MeForArea>(USERS.ME, accessToken),
@@ -72,11 +76,23 @@ export async function POST(request: NextRequest) {
     user: meResult.data,
     platformRole: roleResult.data,
   });
-  response.cookies.set(SESSION_COOKIE_NAME, accessToken, sessionCookieOptions());
+  response.cookies.set(SESSION_COOKIE_NAME, refresh, sessionCookieOptions());
   return response;
 }
 
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
+  const refresh = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+  if (refresh) {
+    // Best-effort: invalida el refresh token en el backend
+    // (`docs/PANEL.md` §0). Si falla (ya caducado, red caída…), se borra
+    // la cookie igualmente: el logout local no depende de esta llamada.
+    await fetch(`${apiUrl()}${AUTH.LOGOUT}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh }),
+    }).catch(() => undefined);
+  }
+
   const response = NextResponse.json({});
   response.cookies.set(SESSION_COOKIE_NAME, "", { ...sessionCookieOptions(), maxAge: 0 });
   return response;

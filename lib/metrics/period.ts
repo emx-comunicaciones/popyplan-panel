@@ -26,7 +26,8 @@ const MAX_DAYS = 366;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-function toIso(date: Date): string {
+/** También la usa `hooks/useEntityHome.ts` para «las actividades de hoy». */
+export function toIso(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");

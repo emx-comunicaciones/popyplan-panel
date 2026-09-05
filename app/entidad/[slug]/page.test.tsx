@@ -3,41 +3,144 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test-utils/render";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
+import { buildMetricsResponse } from "@/test-utils/fixtures/metrics";
 import { buildOrganization } from "@/test-utils/fixtures/organization";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 const serverFetchMock = vi.hoisted(() => vi.fn());
+const useEntityHomeMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("@/lib/api/serverFetch", () => ({ serverFetch: serverFetchMock }));
+vi.mock("@/hooks/useEntityHome", () => ({ useEntityHome: useEntityHomeMock }));
 
 import EntidadInicioPage from "./page";
+
+const TODAY_EVENT = {
+  id: "e1",
+  title: "Taller de costura",
+  starts_at: "2026-01-15T18:00:00.000Z",
+  status: "scheduled",
+  audience: "anyone",
+  community: null,
+  organizer: { user_id: 1, public_name: "Titular" },
+  capacity: 20,
+  registered: 5,
+  attended: 0,
+  no_show: 0,
+};
+
+function homeState(overrides: Record<string, unknown> = {}) {
+  return {
+    today: { data: [TODAY_EVENT], isError: false, error: null },
+    pendingReports: { data: 3, isError: false },
+    pendingHelpRequests: { data: 1, isError: false },
+    metrics: { data: buildMetricsResponse(), isError: false, error: null },
+    ...overrides,
+  };
+}
 
 afterEach(() => {
   getServerSessionMock.mockReset();
   serverFetchMock.mockReset();
+  useEntityHomeMock.mockReset();
 });
 
-describe("EntidadInicioPage", () => {
-  it("muestra el nombre de la entidad traído de GET /api/organizations/{id}/", async () => {
-    getServerSessionMock.mockResolvedValue({
-      token: "t",
-      me: buildMe({
-        org_memberships: [buildOrgMembership({ role: "titular", organization_slug: "alfaville" })],
-      }),
-      platformRole: buildPlatformRole(null),
-    });
-    serverFetchMock.mockResolvedValue({
-      ok: true,
-      status: 200,
-      data: buildOrganization({ name: "Asociación Vecinal Alfaville" }),
-    });
+async function renderPage(slug = "alfaville", role = "titular") {
+  getServerSessionMock.mockResolvedValue({
+    token: "t",
+    me: buildMe({
+      org_memberships: [buildOrgMembership({ role, organization_slug: slug, organization_id: 7 })],
+    }),
+    platformRole: buildPlatformRole(null),
+  });
+  serverFetchMock.mockResolvedValue({
+    ok: true,
+    status: 200,
+    data: buildOrganization({ name: "Asociación Vecinal Alfaville" }),
+  });
 
-    const element = await EntidadInicioPage({ params: Promise.resolve({ slug: "alfaville" }) });
-    render(element);
+  const element = await EntidadInicioPage({ params: Promise.resolve({ slug }) });
+  render(element);
+}
+
+describe("EntidadInicioPage", () => {
+  it("muestra el nombre de la entidad, actividades de hoy y avisos pendientes", async () => {
+    useEntityHomeMock.mockReturnValue(homeState());
+
+    await renderPage();
 
     expect(screen.getByRole("heading", { name: "Inicio" })).toBeInTheDocument();
-    expect(screen.getByText("Asociación Vecinal Alfaville")).toBeInTheDocument();
+    expect(screen.getByText("Panel de Asociación Vecinal Alfaville.")).toBeInTheDocument();
+    expect(screen.getByText("Taller de costura")).toBeInTheDocument();
+    expect(screen.getByText(/5 inscritos \/ 20 plazas/)).toBeInTheDocument();
+    expect(screen.getByText(/Titular/)).toBeInTheDocument();
+    expect(screen.getByText("Solicitudes de ayuda pendientes")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Ir a Guardia" })).toHaveAttribute(
+      "href",
+      "/entidad/alfaville/guardia",
+    );
+    const reportesCard = screen.getByText("Reportes pendientes").parentElement;
+    expect(reportesCard).toHaveTextContent("3");
+    expect(screen.getByRole("link", { name: "Ir a Reportes" })).toHaveAttribute(
+      "href",
+      "/entidad/alfaville/reportes",
+    );
+  });
+
+  it("pinta las tarjetas de métricas del mes con la regla <5", async () => {
+    useEntityHomeMock.mockReturnValue(
+      homeState({
+        metrics: {
+          data: buildMetricsResponse({
+            people: { active: null, new: null, repeating: null, suppressed: true },
+          }),
+          isError: false,
+          error: null,
+        },
+      }),
+    );
+
+    await renderPage();
+
+    expect(screen.getByText("Personas activas")).toBeInTheDocument();
+    expect(screen.getByText("Altas")).toBeInTheDocument();
+    expect(screen.getAllByText("<5").length).toBeGreaterThan(0);
+    expect(screen.getByText("Actividades celebradas")).toBeInTheDocument();
+  });
+
+  it("sin actividades hoy muestra el estado vacío", async () => {
+    useEntityHomeMock.mockReturnValue(homeState({ today: { data: [], isError: false, error: null } }));
+
+    await renderPage();
+
+    expect(screen.getByText("Sin actividades hoy")).toBeInTheDocument();
+  });
+
+  it("analista (sin ver_lista_nominal en avisos) no ve las tarjetas de ayuda/reportes (count null)", async () => {
+    useEntityHomeMock.mockReturnValue(
+      homeState({
+        pendingReports: { data: null, isError: false },
+        pendingHelpRequests: { data: null, isError: false },
+      }),
+    );
+
+    await renderPage("alfaville", "analista");
+
+    expect(screen.queryByText("Solicitudes de ayuda pendientes")).not.toBeInTheDocument();
+    expect(screen.queryByText("Reportes pendientes")).not.toBeInTheDocument();
+  });
+
+  it("error real cargando las actividades pinta un ErrorState", async () => {
+    useEntityHomeMock.mockReturnValue(
+      homeState({
+        today: { data: undefined, isError: true, error: new Error("No se pudieron cargar las actividades.") },
+      }),
+    );
+
+    await renderPage();
+
+    expect(screen.getByRole("alert")).toHaveTextContent("No se pudieron cargar las actividades de hoy");
   });
 
   it("sin sesión redirige a /login", async () => {
@@ -63,6 +166,7 @@ describe("EntidadInicioPage", () => {
   });
 
   it("si falla la ficha de la entidad, usa el nombre de la membresía", async () => {
+    useEntityHomeMock.mockReturnValue(homeState());
     getServerSessionMock.mockResolvedValue({
       token: "t",
       me: buildMe({
@@ -81,6 +185,6 @@ describe("EntidadInicioPage", () => {
     const element = await EntidadInicioPage({ params: Promise.resolve({ slug: "alfaville" }) });
     render(element);
 
-    expect(screen.getByText("Alfaville (membresía)")).toBeInTheDocument();
+    expect(screen.getByText("Panel de Alfaville (membresía).")).toBeInTheDocument();
   });
 });

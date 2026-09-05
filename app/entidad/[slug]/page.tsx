@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { Card } from "@/components/ui/Card";
+import { EntityHomeDashboard } from "@/components/entidad/EntityHomeDashboard";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import { serverFetch } from "@/lib/api/serverFetch";
 import type { Organization } from "@/lib/api/types";
@@ -34,13 +34,8 @@ export default async function EntidadInicioPage({
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-semibold text-text-base">Inicio</h1>
-      <Card title="Tu entidad">
-        <p className="text-text-base">{orgName}</p>
-        <p className="mt-1 text-sm text-text-secondary">
-          Panel de {orgName}. Las métricas de personas, asistencia y comunidades llegan
-          en la siguiente tarea de esta fase.
-        </p>
-      </Card>
+      <p className="text-sm text-text-secondary">Panel de {orgName}.</p>
+      <EntityHomeDashboard orgId={membership.organization_id} slug={slug} />
     </div>
   );
 }

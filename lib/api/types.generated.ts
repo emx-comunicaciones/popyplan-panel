@@ -471,6 +471,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/token/refresh/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Takes a refresh type JSON web token and returns an access type JSON web
+         *     token if the refresh token is valid.
+         */
+        post: operations["auth_token_refresh_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/user/": {
         parameters: {
             query?: never;
@@ -2392,6 +2412,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/events/{id}/checkin/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description `POST /api/events/{id}/checkin/ {"token"}` — el responsable da entrada.
+         *
+         *     Solo quien organiza (`Event.is_organizer`, vía `IsOrganizerOrReadOnly`
+         *     en `ACCIONES_DE_ORGANIZADOR`): un token de otra actividad o
+         *     desconocido da 404; fuera de la ventana `starts_at-2h..starts_at+12h`
+         *     da 409; ya usado responde 200 idempotente con `already: true`.
+         */
+        post: operations["events_checkin_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/events/{id}/complete/": {
         parameters: {
             query?: never;
@@ -2403,6 +2447,29 @@ export interface paths {
         put?: never;
         /** @description `POST /api/events/{id}/complete/` — solo tras la hora de inicio. */
         post: operations["events_complete_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/events/{id}/my-checkin/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/events/{id}/my-checkin/` — mi QR, si tengo plaza confirmada.
+         *
+         *     Solo para quien está `registered` en ESTA actividad (ni lista de
+         *     espera ni ya asistido/ausente): el resto recibe 403. El token
+         *     nunca sale en ningún otro listado o detalle.
+         */
+        get: operations["events_my_checkin_retrieve"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -3024,6 +3091,53 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/panel/entidad/{org_id}/events/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/entidad/{org_id}/events/?since&until&status`.
+         *
+         *     Actividades con sello directo o de una comunidad de la entidad. El
+         *     nombre del responsable solo viaja cuando quien mira tiene
+         *     `ver_lista_nominal` en la entidad.
+         */
+        get: operations["panel_entidad_events_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/entidad/{org_id}/export/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/entidad/{org_id}/export/?format=csv|pdf&since&until&group_by`.
+         *
+         *     Informe (CSV o PDF) de una sola entidad, con su logo y sus colores en
+         *     el PDF. Solo quien tiene `exportar_informes` en la entidad (titular,
+         *     moderador, analista — el dinamizador no). Nominal según
+         *     `ver_lista_nominal`, aunque el informe nunca lleva nombres.
+         */
+        get: operations["panel_entidad_export_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/panel/entidad/{org_id}/metrics/": {
         parameters: {
             query?: never;
@@ -3033,6 +3147,76 @@ export interface paths {
         };
         /** @description `GET /api/panel/entidad/{org_id}/metrics/`. */
         get: operations["panel_entidad_metrics_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/entidad/{org_id}/people/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/entidad/{org_id}/people/`.
+         *
+         *     Personas de la entidad (alta activa en una de sus comunidades, o
+         *     inscripción/asistencia a una de sus actividades), paginadas de 20 en
+         *     20. Ver el módulo `panel.services.people` para el criterio exacto y
+         *     el docstring de este fichero para la restricción de rol.
+         */
+        get: operations["panel_entidad_people_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/entidad/{org_id}/people/{user_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/entidad/{org_id}/people/{user_id}/`.
+         *
+         *     Ficha operativa: nunca email/teléfono/documentos/notas (invariante 9).
+         *     Cada acceso audita `panel.person_viewed`.
+         */
+        get: operations["panel_entidad_people_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/paraguas/{org_id}/export/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/paraguas/{org_id}/export/?format=csv|pdf&since&until&group_by`.
+         *
+         *     Informe agregado de la entidad paraguas y todas sus hijas recursivas,
+         *     con la marca de la propia paraguas en el PDF. Nunca nominal (agrega
+         *     personas de entidades distintas). Solo quien tiene `exportar_informes`
+         *     en la propia entidad paraguas.
+         */
+        get: operations["panel_paraguas_export_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3053,6 +3237,29 @@ export interface paths {
          *     todas sus hijas recursivas; nunca nominal.
          */
         get: operations["panel_paraguas_metrics_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/plataforma/export/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/plataforma/export/?format=csv|pdf&since&until&group_by`.
+         *
+         *     Informe de toda la plataforma, sin restricción por entidad ni
+         *     territorio, con la marca de Popyplan en el PDF (no hay una sola
+         *     entidad detrás). Solo roles de plataforma.
+         */
+        get: operations["panel_plataforma_export_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5303,6 +5510,11 @@ export interface components {
          * @enum {string}
          */
         ChatTypeEnum: "individual" | "group";
+        /** @description Cuerpo de `POST {id}/checkin/` (Fase 5, tarea P4). */
+        CheckinRequest: {
+            /** Format: uuid */
+            token: string;
+        };
         CommunitiesMetrics: {
             active: number;
             members: number | null;
@@ -5670,6 +5882,34 @@ export interface components {
         EmergencyAccessCreateRequest: {
             subject: number;
             reason: string;
+        };
+        EntityEventCommunityRef: {
+            id: string;
+            name: string;
+        };
+        EntityEventOrganizerRef: {
+            user_id: number;
+            public_name: string;
+        };
+        /**
+         * @description Fila de `GET /api/panel/entidad/{id}/events/`.
+         *
+         *     `organizer` viaja `null` para quien no tiene `ver_lista_nominal` en la
+         *     entidad (invariante «el analista nunca ve nombres»).
+         */
+        EntityEventRow: {
+            id: string;
+            title: string;
+            /** Format: date-time */
+            starts_at: string;
+            status: string;
+            audience: string;
+            community: components["schemas"]["EntityEventCommunityRef"] | null;
+            organizer: components["schemas"]["EntityEventOrganizerRef"] | null;
+            capacity: number | null;
+            registered: number;
+            attended: number;
+            no_show: number;
         };
         /** @description Serializer para respuestas de error */
         ErrorResponse: {
@@ -6225,8 +6465,10 @@ export interface components {
         LevelEnum: 1 | 2 | 3;
         /** @description Serializer para respuesta de login exitoso */
         LoginResponse: {
-            /** @description Token de autenticación */
+            /** @description Token de acceso (JWT) */
             key: string;
+            /** @description Token de refresco (Fase 5: lo usa el panel web en POST /api/auth/token/refresh/; la app móvil puede ignorarlo). */
+            refresh: string;
             /** @description Información del usuario autenticado */
             user: {
                 [key: string]: unknown;
@@ -6354,6 +6596,12 @@ export interface components {
             by_place: components["schemas"]["ByPlaceRow"][];
             by_weekday_hour: components["schemas"]["ByWeekdayHourRow"][];
             series: components["schemas"]["SeriesRow"][];
+        };
+        NextEventRef: {
+            id: string;
+            title: string;
+            /** Format: date-time */
+            starts_at: string;
         };
         /** @description Serializer para notificaciones */
         Notification: {
@@ -7315,6 +7563,61 @@ export interface components {
             repeating: number | null;
             suppressed: boolean;
         };
+        PersonCommunityRow: {
+            id: string;
+            name: string;
+            role: string;
+            /** Format: date-time */
+            joined_at: string;
+        };
+        /**
+         * @description `GET /api/panel/entidad/{id}/people/{user_id}/`.
+         *
+         *     **Nunca** `email`, `phone`, `birth_date`, `document*` ni `notes`
+         *     (invariante 9 y decisión del propietario): solo lo de arriba más las
+         *     comunidades y actividades del periodo, y `verification_level` (entero).
+         */
+        PersonDetail: {
+            user_id: number;
+            public_name: string;
+            photo: string | null;
+            /**
+             * Format: date-time
+             * @description Primera membresía en la entidad.
+             */
+            joined_at: string | null;
+            communities_count: number;
+            events_period: number;
+            attended_period: number;
+            referent: components["schemas"]["ReferentRef"] | null;
+            next_event: components["schemas"]["NextEventRef"] | null;
+            communities: components["schemas"]["PersonCommunityRow"][];
+            events: components["schemas"]["PersonEventRow"][];
+            verification_level: number;
+        };
+        PersonEventRow: {
+            id: string;
+            title: string;
+            /** Format: date-time */
+            starts_at: string;
+            attendance_status: string;
+        };
+        /** @description Fila del listado `GET /api/panel/entidad/{id}/people/`. */
+        PersonRow: {
+            user_id: number;
+            public_name: string;
+            photo: string | null;
+            /**
+             * Format: date-time
+             * @description Primera membresía en la entidad.
+             */
+            joined_at: string | null;
+            communities_count: number;
+            events_period: number;
+            attended_period: number;
+            referent: components["schemas"]["ReferentRef"] | null;
+            next_event: components["schemas"]["NextEventRef"] | null;
+        };
         /** @description Serializer para verificar código de teléfono */
         PhoneVerificationCodeRequest: {
             /**
@@ -7609,6 +7912,10 @@ export interface components {
             user: number;
             /** @description Persona con rol referente en esta entidad. */
             referent_user: number;
+        };
+        ReferentRef: {
+            user_id: number;
+            public_name: string;
         };
         /**
          * @description * `duplicate` - duplicate
@@ -7925,6 +8232,13 @@ export interface components {
         TeamListResponse: {
             results: components["schemas"]["Team"][];
             count: number;
+        };
+        TokenRefresh: {
+            readonly access: string;
+            refresh: string;
+        };
+        TokenRefreshRequest: {
+            refresh: string;
         };
         /**
          * @description * `app` - App Authenticator
@@ -9219,6 +9533,31 @@ export interface operations {
                         /** @example Código de verificación inválido o expirado */
                         message?: string;
                     };
+                };
+            };
+        };
+    };
+    auth_token_refresh_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TokenRefreshRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TokenRefreshRequest"];
+                "multipart/form-data": components["schemas"]["TokenRefreshRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenRefresh"];
                 };
             };
         };
@@ -13223,7 +13562,57 @@ export interface operations {
             };
         };
     };
+    events_checkin_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Actividad. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckinRequest"];
+                "multipart/form-data": components["schemas"]["CheckinRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CheckinRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventDetail"];
+                };
+            };
+        };
+    };
     events_complete_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Actividad. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventDetail"];
+                };
+            };
+        };
+    };
+    events_my_checkin_retrieve: {
         parameters: {
             query?: never;
             header?: never;
@@ -14963,6 +15352,98 @@ export interface operations {
             };
         };
     };
+    panel_entidad_events_list: {
+        parameters: {
+            query?: {
+                /** @description Fecha ISO de inicio (por defecto, hace 30 días). */
+                since?: string;
+                /** @description scheduled | cancelled | completed */
+                status?: string;
+                /** @description Fecha ISO de fin (por defecto, hoy). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntityEventRow"][];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_export_retrieve: {
+        parameters: {
+            query?: {
+                /** @description csv (por defecto) | pdf */
+                format?: string;
+                /** @description Desglose de la sección «Por municipio»: place (por defecto) | comarca | province | organization */
+                group_by?: string;
+                /** @description Fecha ISO de inicio (por defecto, hace 30 días). */
+                since?: string;
+                /** @description Fecha ISO de fin (por defecto, hoy). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     panel_entidad_metrics_retrieve: {
         parameters: {
             query?: {
@@ -15005,6 +15486,147 @@ export interface operations {
             };
         };
     };
+    panel_entidad_people_list: {
+        parameters: {
+            query?: {
+                /** @description Fecha ISO: solo personas con alta o participación desde entonces. */
+                active_since?: string;
+                /** @description Id de una comunidad de la entidad. */
+                community?: string;
+                /** @description Fecha ISO: solo personas con su primera alta en la entidad desde entonces. */
+                joined_since?: string;
+                /** @description Id de usuario del referente. */
+                referent?: number;
+                /** @description Busca en el alias público y en el usuario. */
+                search?: string;
+                /** @description Fecha ISO de inicio del periodo de los contadores (por defecto, hace 30 días). */
+                since?: string;
+                /** @description Fecha ISO de fin del periodo (por defecto, hoy). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonRow"][];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_people_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Fecha ISO de inicio del periodo (por defecto, hace 30 días). */
+                since?: string;
+                /** @description Fecha ISO de fin (por defecto, hoy). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                org_id: number;
+                user_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonDetail"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_paraguas_export_retrieve: {
+        parameters: {
+            query?: {
+                /** @description csv (por defecto) | pdf */
+                format?: string;
+                /** @description Desglose de la sección «Por municipio»: place (por defecto) | comarca | province | organization */
+                group_by?: string;
+                /** @description Fecha ISO de inicio (por defecto, hace 30 días). */
+                since?: string;
+                /** @description Fecha ISO de fin (por defecto, hoy). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     panel_paraguas_metrics_retrieve: {
         parameters: {
             query?: {
@@ -15040,6 +15662,54 @@ export interface operations {
             };
             /** @description No response body */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_plataforma_export_retrieve: {
+        parameters: {
+            query?: {
+                /** @description csv (por defecto) | pdf */
+                format?: string;
+                /** @description Desglose de la sección «Por municipio»: place (por defecto) | comarca | province | organization */
+                group_by?: string;
+                /** @description Fecha ISO de inicio (por defecto, hace 30 días). */
+                since?: string;
+                /** @description Fecha ISO de fin (por defecto, hoy). */
+                until?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
