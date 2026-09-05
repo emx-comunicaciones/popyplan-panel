@@ -437,3 +437,65 @@ comunidad» y mover a la persona después, si existe esa vía). No se abre
 como pregunta nueva de contrato porque es el mismo hueco que W4a ya
 señaló para `GET /api/communities/`; se deja constancia de que también
 afecta a la invitación.
+
+## Task W5: panel de plataforma
+
+### 26. Sin ruta agregada para «solicitudes de ayuda pendientes» de toda la plataforma
+
+`GET /api/safety/help-requests/pending/?organization=<id>` solo autoriza
+a la guardia de esa entidad o a su `titular`/`moderador`
+(`safety/viewsets.py::HelpRequestViewSet.pending`): ningún rol de
+`safety.PlatformRole` pasa esa comprobación por sí solo. «Ayuda» de
+plataforma (brief W5) pide precisamente lo contrario: una vista agregada
+de todas las entidades. Se implementó recorriendo `GET /api/organizations/`
+(todas las páginas) y pidiendo `pending` de cada una, tolerando 403 por
+entidad (`hooks/usePlatformPendingHelpRequests.ts`) — funciona, pero en
+la práctica la lista queda vacía para quien solo tiene rol de plataforma
+sin `OrgMembership` en ninguna entidad, y hace N+1 peticiones (una por
+entidad) en vez de una sola llamada agregada. **Pregunta:** ¿el backend
+debería añadir una variante de plataforma a `report-queue`
+(`GET /api/safety/reports/queue/` ya la tiene: sin `organization` es la
+cola de plataforma) — p. ej. `help-request-pending` sin `organization`
+para `moderator`/`superadmin`/`support`, con la misma semántica que la
+cola global de reportes?
+
+### 27. Equipo/Referencias/Métricas de una entidad, vistos desde plataforma: casi siempre «sin acceso»
+
+`entities/permissions.py::puede` y `panel/permissions.py::PuedeEnEntidad`
+solo miran `OrgMembership` de quien pregunta, sin ninguna excepción para
+`safety.PlatformRole`. Eso significa que, en la ficha de una entidad
+vista desde plataforma (`entidades/[id]/page.tsx`), las pestañas Equipo,
+Referencias y Métricas casi siempre van a mostrar «Sin acceso» salvo que
+quien mira además tenga una membresía personal en esa entidad concreta
+— algo que no pasa con `superadmin` salvo coincidencia. Se implementaron
+de todos modos (honestidad de contrato: si el backend cambia, o si hay
+membresía, funcionan solas) con un aviso explícito. **Pregunta:** ¿tiene
+sentido que la plataforma (al menos `superadmin`) pueda leer el equipo y
+las métricas de cualquier entidad sin necesitar una membresía propia —
+es decir, que `puede()`/`PuedeEnEntidad` reconozcan un bypass de
+plataforma para las acciones de solo lectura (`ver_panel`, `equipo` en
+modo lectura), igual que ya existe para `scope` (que sí admite
+`superadmin` además del titular)?
+
+### 28. Auditoría (`/api/safety/audit/`): contrato aún no documentado en `docs/PANEL.md`
+
+Al escribir esta tarea, la ruta y `AuditLogViewSet` ya existían en el
+árbol de trabajo del repo backend (tarea P6, en curso en paralelo) pero
+sin commitear y sin sección propia en `docs/PANEL.md`. Se integró contra
+la forma confirmada leyendo directamente el serializer del backend
+(`safety/serializers.py::AuditLogSerializer`), documentada en
+`hooks/useAuditLog.ts`/`lib/api/types.ts::AuditLogEntry`. **Pregunta:**
+al cerrar P6/P7 y documentar `docs/PANEL.md` §9, ¿coincide la forma final
+con la leída aquí, o hace falta un ajuste de contrato en el panel?
+
+### 29. Columna «Entidad» de la cola global de reportes, sin nombre
+
+`ReportRow.organization` es solo un id (no hay un `organization_display`
+como en `HelpRequestRow`). La cola global de plataforma pinta «Entidad
+#<id>» en vez de un nombre — resolver el nombre exigiría una petición
+por fila (o una lista completa de entidades cacheada de antemano) que
+esta tarea no ha añadido. **Pregunta:** ¿debería `ReportSerializer`
+llevar también un `organization_display: {id, name}` igual que
+`HelpRequestSerializer`, para que la cola de plataforma (y la futura
+vista de auditoría por entidad) puedan pintar el nombre sin una
+petición aparte?

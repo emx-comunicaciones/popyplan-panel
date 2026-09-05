@@ -19,9 +19,10 @@ Tres áreas por rol, cada una bajo su propia ruta:
   una diputación) sobre sus entidades hijas: Inicio (métricas) e
   Informes (exportación), ver «Vista del financiador» más abajo.
 - **`/plataforma`** — panel del equipo de Popyplan (`safety.PlatformRole`:
-  `superadmin`, `verifier`, `moderator`, `support`). `/plataforma/metricas`
-  ya está (ver más abajo); entidades, cola de reportes, verificaciones,
-  roles y auditoría llegan en tareas P5-P7.
+  `superadmin`, `verifier`, `moderator`, `support`). Menú de 8 secciones
+  (Inicio, Entidades, Reportes, Ayuda, Verificaciones, Roles, Auditoría,
+  Métricas), con visibilidad por rol (`lib/auth/plataformaMenu.ts`) —
+  ver «Área de plataforma» más abajo.
 
 `lib/auth/area.ts::resolveArea(me, platformRole)` decide el área: el rol
 de plataforma manda sobre cualquier rol de entidad; con varias entidades
@@ -329,6 +330,114 @@ Comunicaciones sigue oculta para `dinamizador` porque esa matriz original
 sí la excluye explícitamente, y coincide con el contrato: `POST` solo
 admite `titular`/`moderador`, sin otra acción útil para ese rol en la
 página. Familias permanece oculta (sin página real todavía).
+
+## Área de plataforma: Inicio, Entidades, Reportes, Ayuda, Verificaciones, Roles, Auditoría (tarea W5)
+
+`docs/SEGURIDAD_Y_MODERACION.md` (§1 roles de plataforma, §4 reportes,
+§5 ayuda, §7 verificación, §8 organizaciones) y `docs/PANEL.md` (§1
+métricas de plataforma, dashboard-stats). Páginas bajo `app/plataforma/`,
+Server Component con sesión + `plataformaMenuFor(role)` (redirect si no
+está en el menú de ese rol → `EmptyState` «Sin acceso»; el layout ya
+filtra el propio menú lateral con la misma función).
+
+**Matriz de visibilidad** (`lib/auth/plataformaMenu.ts::plataformaMenuFor`,
+sacada del permiso real de cada endpoint, no inventada): `superadmin` ve
+las 8 secciones; `verifier` solo Inicio/Entidades/Verificaciones
+(`organization-list/create/verify` y `verification-review-*` piden
+`verifier`/`superadmin`); `moderator` y `support` ven Inicio/Reportes/
+Ayuda/Métricas (`safety/services/reports.py::queue` y
+`PlataformaMetricsView` admiten `moderator`/`superadmin`/`support`, nunca
+`verifier`); Auditoría es solo `superadmin` en los cuatro roles.
+
+- **Inicio** (`page.tsx` → `PlataformaHomeDashboard`): tarjetas de `GET
+  /api/admin/dashboard-stats/` (usuarios activos, actividades
+  programadas — `IsAdminUser`/`is_staff`, que hoy solo tiene
+  `superadmin`; `hooks/useDashboardStats.ts` traduce un 403 a `null` y
+  la tarjeta se oculta, igual que el resto de contadores tolerantes del
+  panel), reportes pendientes (`useReportsQueue(undefined, {status:
+  'pending'})`, cola global) y solicitudes de ayuda pendientes
+  (`usePlatformPendingHelpRequests`, ver el hueco de contrato más abajo)
+  — ambas ocultas si esa sección no está en el menú del rol — y
+  entidades verificadas/pendientes (`useOrganizations`, abierto a
+  cualquier autenticado).
+- **Entidades** (`entidades/page.tsx` → `EntidadesTable` + «Nueva
+  entidad» → `NuevaEntidadDialog`, `hooks/useOrganizations.ts`): listado
+  paginado con filtros `verified`/`search` (`parent` no tiene selector en
+  la lista, solo se usa para «hijas» en la ficha); alta
+  (`POST /api/organizations/`, `verifier`/`superadmin`, nace sin
+  verificar). **Ficha** (`entidades/[id]/page.tsx` → `EntidadDetail`,
+  seis secciones con un simple selector de botones, mismo patrón que el
+  `group_by` de `PlataformaMetricsDashboard` — sin ARIA tabs, el panel no
+  tenía ese patrón todavía): Datos (lectura + «Verificar»,
+  `verifier`/`superadmin`), Paraguas (cambiar `parent`, solo
+  `superadmin`, más lista de hijas), Ámbito (ampliar `scope`, solo
+  `superadmin` desde plataforma — el titular lo hace desde su propia
+  entidad), Equipo (alta/baja de `OrgMembership` y referencias),
+  Métricas (`useMetrics('entidad', orgId, …)`) y Comunidades y
+  actividades (recuentos). **Límite de contrato documentado in situ**:
+  Equipo y Métricas normalmente devuelven 403 para la plataforma —
+  `entities/permissions.py::puede` y `PuedeEnEntidad('ver_panel')` solo
+  miran `OrgMembership`, sin excepción para roles de plataforma; se
+  muestran de todos modos (con un aviso «Sin acceso» explícito, nunca
+  fingiendo datos) por si la plataforma además tiene membresía propia en
+  esa entidad.
+- **Reportes** (`reportes/page.tsx` → `ReportesQueuePlataforma`,
+  `reportes/[reportId]/page.tsx` → `ReporteDetail` reutilizado del panel
+  de entidad con la prop nueva `readOnly`): cola global
+  (`useReportsQueue(undefined, filters)` — el hook ahora admite `orgId`
+  opcional, sin romper al panel de entidad, que siempre lo pasa),
+  columna «Entidad» (`Entidad #<id>`/`Global`, sin nombre — no hay
+  `GET /api/organizations/{id}/` en lote, y resolverlo uno a uno por
+  fila sería una petición por reporte listado; documentado como mejora
+  futura) y una insignia «Escalado» (`escalated_at`). El detalle admite
+  asignar/resolver/escalar igual que en la entidad, **ocultas** cuando
+  `readOnly` (`support`: `can_view` sin `can_act`,
+  `safety/services/reports.py`).
+- **Ayuda** (`ayuda/page.tsx` → `AyudaPendienteList`,
+  `hooks/usePlatformPendingHelpRequests.ts`): **hueco de contrato**
+  documentado en el propio hook — `GET
+  /api/safety/help-requests/pending/` exige `?organization=<id>` y solo
+  autoriza a la guardia de esa entidad o a su `titular`/`moderador`
+  (`safety/viewsets.py::HelpRequestViewSet.pending`); **ningún** rol de
+  `PlatformRole` pasa esa comprobación por sí solo. El hook recorre todas
+  las entidades (`useOrganizations`, todas las páginas) y pide `pending`
+  de cada una, tolerando 403/400 por entidad — en la práctica, para
+  quien solo tiene rol de plataforma sin `OrgMembership` en ninguna
+  entidad, la lista queda vacía casi siempre. Ver pregunta de diseño en
+  `docs/preguntas-diseno.md` (sección «Task W5»): falta una ruta
+  agregada de plataforma para esto, análoga a `report-queue` sin
+  `organization`.
+- **Verificaciones** (`verificaciones/page.tsx` → `VerificacionesQueue`,
+  `hooks/useVerificationReviewsQueue.ts`/`useDecideVerificationReview.ts`):
+  cola `pending` de `VerificationReview` con el recurso de la persona
+  (`appeal_text`) y el motivo del proveedor (`reason`); aprobar/rechazar
+  con nota (`verifier`/`superadmin`).
+- **Roles** (`roles/page.tsx` → `RolesPanel`, `hooks/usePlatformRoles.ts`):
+  lista de `PlatformRole` vigentes, conceder (buscador de cuentas por
+  email/usuario vía `GET /api/users/users/?search=` —
+  `hooks/useUserSearch.ts`, `IsAdminUser`, hoy solo `superadmin` la usa
+  y solo `superadmin` llega a esta página, así que en la práctica
+  siempre funciona; un 403 cae a lista vacía en vez de romper el
+  formulario, con el id de usuario como alternativa siempre disponible)
+  y revocar con `ConfirmDialog` (acción de alto impacto: quita acceso a
+  la plataforma).
+- **Auditoría** (`auditoria/page.tsx` → `AuditoriaPanel`,
+  `hooks/useAuditLog.ts`): filtros `actor`/`action`/`target_type`/
+  `target_id`/`since`/`until`, tabla con `metadata` legible (`clave=valor`
+  por entrada) y exportación CSV **del cliente** (la página actual, no
+  auditada por sí misma — una exportación auditada de todo el listado
+  es una ruta de backend aparte, fuera del alcance de esta tarea).
+  **Pendiente de backend al escribir esta tarea**: `GET
+  /api/safety/audit/` (`AuditLogViewSet`, tarea P6 del backend) existía
+  ya en el árbol de trabajo del backend pero sin commitear y sin
+  documentar en `docs/PANEL.md` — se integró contra la forma confirmada
+  leyendo directamente `safety/serializers.py::AuditLogSerializer`
+  (`{id, actor: {id, public_name}, action, target_type, target_id,
+  metadata, ip?, created_at}`, filtros `actor/action/target_type/
+  target_id/since/until`), con el hook y los tipos documentando esa
+  procedencia (`lib/api/types.ts::AuditLogEntry`). Si el contrato final
+  cambia al documentarse en `docs/PANEL.md`, revisar
+  `hooks/useAuditLog.ts` y `lib/api/types.ts` primero.
 
 ## Diseño de sesión (refresh real desde la tarea W3)
 
