@@ -1,4 +1,4 @@
-import type { ByPlaceRow, MetricsResponse, SeriesRow } from "@/lib/api/types";
+import type { ByPlaceRow, CompareResponse, MetricsResponse, SeriesRow } from "@/lib/api/types";
 
 /**
  * Fixture base: el ejemplo real de `docs/PANEL.md` §1.4 (entidad "hija"
@@ -47,4 +47,42 @@ export function buildByOrganizationRows(): ByPlaceRow[] {
 /** Serie mensual (`group_by=month`), ejemplo de `docs/PANEL.md` §1.4. */
 export function buildSeriesRows(): SeriesRow[] {
   return [{ month: "2026-01", events: 4, people: 8, suppressed: false }];
+}
+
+/** Serie anual (`group_by=year`, memoria plurianual, `docs/PANEL.md` §11.4). */
+export function buildYearSeriesRows(): SeriesRow[] {
+  return [
+    { year: "2025", events: 5, people: 13, suppressed: false },
+    { year: "2026", events: 6, people: 6, suppressed: false },
+  ];
+}
+
+/**
+ * Ejemplo real de `docs/PANEL.md` §11.3 (`compare_for`, tarea B2): una
+ * fila sin suprimir (comarca Bidasoa) y una suprimida (Donostialdea, por
+ * debajo del umbral en ambos periodos, `delta` también suprimido).
+ */
+export function buildCompareResponse(overrides: Partial<CompareResponse> = {}): CompareResponse {
+  return {
+    current: { since: "2026-04-01", until: "2026-06-30" },
+    previous: { since: "2025-12-31", until: "2026-03-31" },
+    group_by: "comarca",
+    rows: [
+      {
+        key: "C1",
+        label: "Bidasoa",
+        current: { events: 6, people: 6, attendance_rate: 1.0, suppressed: false },
+        previous: { events: 2, people: 6, attendance_rate: 1.0, suppressed: false },
+        delta: { events: 4, people: 0, attendance_rate: 0.0, suppressed: false },
+      },
+      {
+        key: "C2",
+        label: "Donostialdea",
+        current: { events: 1, people: null, attendance_rate: null, suppressed: true },
+        previous: { events: 1, people: null, attendance_rate: null, suppressed: true },
+        delta: { events: 0, people: null, attendance_rate: null, suppressed: true },
+      },
+    ],
+    ...overrides,
+  };
 }

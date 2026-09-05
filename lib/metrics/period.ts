@@ -11,9 +11,29 @@
  * backend, así que nunca hace falta un caso especial de años bisiestos
  * para que pase la validación). «Personalizado» son las fechas que
  * escribe quien usa el panel, validadas con la misma regla.
+ *
+ * **«Plurianual» (tarea B2, Fase 6, memoria plurianual)**: el brief pedía
+ * literalmente «últimos 3 años naturales completos + el actual», pero
+ * `panel/viewsets.py::_periodo` (backend) aplica el mismo tope duro de
+ * 366 días a `since`/`until` en **todas** las rutas (métricas, export,
+ * compare), sin ninguna excepción para `group_by=year` — confirmado
+ * leyendo el código real, no solo `docs/PANEL.md` §1.2/§11.1. Tocar 4
+ * años naturales distintos (los 3 anteriores + el actual) exige como
+ * mínimo pisar un día de cada uno, y el mínimo posible para eso son
+ * ~3 años completos (>1000 días): matemáticamente incompatible con el
+ * límite de 366 días de una sola petición. Dentro de esa cota, la
+ * ventana que más años naturales distintos puede rozar son 2 (un tramo
+ * que cruza un 1 de enero). `presetPeriod('plurianual')` usa por tanto
+ * la ventana más ancha que sigue pasando `validatePeriod` de este mismo
+ * módulo y el tope real del backend (365 días de calendario hasta hoy)
+ * en vez del literal del brief — la única forma de mostrar de verdad
+ * `group_by=year` con más de un año en una sola petición. Una memoria de
+ * 3+ años real exigiría varias peticiones fusionadas en el cliente,
+ * fuera del alcance de los ficheros que toca esta tarea (ver el informe
+ * de la tarea para más detalle).
  */
 
-export type PeriodPreset = "mes" | "trimestre" | "anio" | "personalizado";
+export type PeriodPreset = "mes" | "trimestre" | "anio" | "plurianual" | "personalizado";
 
 export interface Period {
   since: string;
@@ -55,6 +75,17 @@ export function presetPeriod(
       return { since: toIso(subtractMonths(today, 3)), until };
     case "anio":
       return { since: toIso(subtractMonths(today, 12)), until };
+    case "plurianual": {
+      // `MAX_DAYS` días exactos dispararía la validación de longitud de
+      // este mismo módulo (`validatePeriod` cuenta días inclusive,
+      // `MAX_DAYS + 1` en total): un día menos, en aritmética de días de
+      // calendario (nunca de meses, para no depender de si el tramo cruza
+      // un 29 de febrero), es la ventana más ancha que sigue pasando esa
+      // validación y el tope real del backend.
+      const start = new Date(today.getTime());
+      start.setDate(start.getDate() - (MAX_DAYS - 1));
+      return { since: toIso(start), until };
+    }
   }
 }
 

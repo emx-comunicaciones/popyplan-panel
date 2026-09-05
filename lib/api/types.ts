@@ -61,6 +61,22 @@ export type ByWeekdayHourRow = components["schemas"]["ByWeekdayHourRow"];
 export type SeriesRow = components["schemas"]["SeriesRow"];
 
 /**
+ * `GET /api/panel/{paraguas,plataforma}/compare/` (`docs/PANEL.md` §11,
+ * tarea B2): compara el periodo pedido con el inmediatamente anterior de
+ * igual longitud, desglosado por `group_by` (obligatorio en esta ruta,
+ * a diferencia de métricas). `current`/`previous` de cada fila comparten
+ * la forma de una celda suprimible (`people`/`attendance_rate` sujetos al
+ * umbral, `events` nunca); `delta` es la resta indicador a indicador,
+ * `null` + `suppressed: true` si cualquiera de los dos lados está
+ * suprimido (`delta.events` sí se calcula siempre).
+ */
+export type CompareResponse = components["schemas"]["CompareResponse"];
+export type CompareRow = components["schemas"]["CompareRow"];
+export type CompareCelda = components["schemas"]["CompareCelda"];
+export type CompareDelta = components["schemas"]["CompareDelta"];
+export type ComparePeriodo = components["schemas"]["ComparePeriodo"];
+
+/**
  * `docs/PANEL.md` §3 («Personas y actividades»). `PersonRow` es la fila
  * de `GET .../people/` y también la base de `PersonDetail`
  * (`GET .../people/{user_id}/`, que añade `communities`/`events`/

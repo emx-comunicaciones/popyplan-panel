@@ -30,7 +30,8 @@ export type MetricsGroupBy =
   | "province"
   | "organization"
   | "weekday_hour"
-  | "month";
+  | "month"
+  | "year";
 
 export type MetricsErrorKind = "periodo_invalido" | "sin_acceso" | "desconocido";
 

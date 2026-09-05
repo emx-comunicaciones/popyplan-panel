@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import userEvent from "@testing-library/user-event";
 
 import { render, screen } from "@/test-utils/render";
 import { axe } from "@/test-utils/axe";
@@ -6,6 +7,7 @@ import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import {
   buildByOrganizationRows,
   buildByPlaceRows,
+  buildCompareResponse,
   buildMetricsResponse,
   buildSeriesRows,
 } from "@/test-utils/fixtures/metrics";
@@ -17,11 +19,16 @@ import { MetricsError } from "@/hooks/useMetrics";
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 const serverFetchMock = vi.hoisted(() => vi.fn());
 const useMetricsMock = vi.hoisted(() => vi.fn());
+const useCompareMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("@/lib/api/serverFetch", () => ({ serverFetch: serverFetchMock }));
 vi.mock("@/hooks/useMetrics", async () => {
   const actual = await vi.importActual<typeof import("@/hooks/useMetrics")>("@/hooks/useMetrics");
   return { ...actual, useMetrics: useMetricsMock };
+});
+vi.mock("@/hooks/useCompare", async () => {
+  const actual = await vi.importActual<typeof import("@/hooks/useCompare")>("@/hooks/useCompare");
+  return { ...actual, useCompare: useCompareMock };
 });
 
 import ParaguasInicioPage from "./page";
@@ -37,10 +44,15 @@ function mockMetricsByGroup(
   );
 }
 
+function mockCompare(data: ReturnType<typeof buildCompareResponse> | undefined = buildCompareResponse()) {
+  useCompareMock.mockReturnValue({ data, isError: false, error: null });
+}
+
 afterEach(() => {
   getServerSessionMock.mockReset();
   serverFetchMock.mockReset();
   useMetricsMock.mockReset();
+  useCompareMock.mockReset();
 });
 
 async function renderPage(slug = "diputacion-demo") {
@@ -70,6 +82,7 @@ describe("ParaguasInicioPage", () => {
       month: buildMetricsResponse({ series: buildSeriesRows() }),
     });
 
+    mockCompare();
     const { container } = await renderPage();
 
     expect(await axe(container)).toHaveNoViolations();
@@ -83,6 +96,7 @@ describe("ParaguasInicioPage", () => {
       month: buildMetricsResponse({ series: buildSeriesRows() }),
     });
 
+    mockCompare();
     await renderPage();
 
     expect(screen.getByRole("heading", { name: "Inicio" })).toBeInTheDocument();
@@ -102,6 +116,7 @@ describe("ParaguasInicioPage", () => {
       month: buildMetricsResponse({ series: [] }),
     });
 
+    mockCompare();
     await renderPage();
 
     expect(screen.getByText("Por municipio")).toBeInTheDocument();
@@ -119,6 +134,7 @@ describe("ParaguasInicioPage", () => {
       month: buildMetricsResponse({ series: [] }),
     });
 
+    mockCompare();
     await renderPage();
 
     expect(screen.getByText("Por entidad")).toBeInTheDocument();
@@ -134,6 +150,7 @@ describe("ParaguasInicioPage", () => {
       month: buildMetricsResponse({ series: [] }),
     });
 
+    mockCompare();
     await renderPage();
 
     expect(screen.getByText("Sin municipios con datos en este periodo")).toBeInTheDocument();
@@ -152,11 +169,92 @@ describe("ParaguasInicioPage", () => {
       }
       return { data: buildMetricsResponse(), isError: false, error: null };
     });
-
+    mockCompare();
     await renderPage();
 
     expect(screen.getByRole("alert")).toHaveTextContent("No se pudieron cargar las métricas");
     expect(screen.getByText("No tienes acceso a estas métricas.")).toBeInTheDocument();
+  });
+
+  it("Comparativa: pinta la tabla con el desglose por defecto 'comarca'", async () => {
+    mockMetricsByGroup({
+      base: buildMetricsResponse(),
+      place: buildMetricsResponse({ by_place: [] }),
+      organization: buildMetricsResponse({ by_place: [] }),
+      month: buildMetricsResponse({ series: [] }),
+    });
+    mockCompare();
+
+    await renderPage();
+
+    expect(useCompareMock).toHaveBeenCalledWith(
+      "paraguas",
+      expect.anything(),
+      expect.anything(),
+      "comarca",
+    );
+    expect(screen.getByText("Comparativa")).toBeInTheDocument();
+    expect(screen.getByText("Bidasoa")).toBeInTheDocument();
+  });
+
+  it("Comparativa: cambiar el `<select>` a «Entidad» pide el desglose 'organization'", async () => {
+    mockMetricsByGroup({
+      base: buildMetricsResponse(),
+      place: buildMetricsResponse({ by_place: [] }),
+      organization: buildMetricsResponse({ by_place: [] }),
+      month: buildMetricsResponse({ series: [] }),
+    });
+    mockCompare();
+    const user = userEvent.setup();
+
+    await renderPage();
+    await user.selectOptions(screen.getByLabelText("Desglose de la comparativa"), "Entidad");
+
+    expect(useCompareMock).toHaveBeenLastCalledWith(
+      "paraguas",
+      expect.anything(),
+      expect.anything(),
+      "organization",
+    );
+  });
+
+  it("Comparativa: sin filas, pinta el aviso; en error, pinta ErrorState", async () => {
+    mockMetricsByGroup({
+      base: buildMetricsResponse(),
+      place: buildMetricsResponse({ by_place: [] }),
+      organization: buildMetricsResponse({ by_place: [] }),
+      month: buildMetricsResponse({ series: [] }),
+    });
+    mockCompare(buildCompareResponse({ rows: [] }));
+
+    await renderPage();
+
+    expect(screen.getByText("Sin datos para esta comparativa")).toBeInTheDocument();
+  });
+
+  it("plurianual: elegir el preset cambia la serie a anual y a group_by='year'", async () => {
+    mockMetricsByGroup({
+      base: buildMetricsResponse(),
+      place: buildMetricsResponse({ by_place: [] }),
+      organization: buildMetricsResponse({ by_place: [] }),
+      month: buildMetricsResponse({ series: [] }),
+      year: buildMetricsResponse({ series: [{ year: "2025", events: 5, people: 13, suppressed: false }] }),
+    });
+    mockCompare();
+    const user = userEvent.setup();
+
+    await renderPage();
+    expect(screen.getByText("Serie mensual")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Plurianual" }));
+
+    expect(screen.getByText("Serie anual")).toBeInTheDocument();
+    expect(useMetricsMock).toHaveBeenLastCalledWith(
+      "paraguas",
+      expect.anything(),
+      expect.anything(),
+      "year",
+    );
   });
 
   it("sin sesión redirige a /login", async () => {

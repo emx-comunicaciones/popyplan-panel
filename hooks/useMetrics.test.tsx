@@ -53,6 +53,18 @@ describe("useMetrics", () => {
     );
   });
 
+  it("acepta group_by='year' (memoria plurianual, tarea B2)", async () => {
+    apiFetchMock.mockResolvedValueOnce(buildMetricsResponse({ series: [{ year: "2025", events: 5, people: 13, suppressed: false }] }));
+
+    const { result } = renderHook(() => useMetrics("entidad", 7, PERIOD, "year"), { wrapper });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(apiFetchMock).toHaveBeenCalledWith(
+      "/api/panel/entidad/7/metrics/?since=2026-01-01&until=2026-01-31&group_by=year",
+    );
+  });
+
   it("plataforma: no lleva orgId en la ruta", async () => {
     apiFetchMock.mockResolvedValueOnce(buildMetricsResponse());
 

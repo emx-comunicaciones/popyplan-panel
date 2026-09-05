@@ -88,6 +88,14 @@ describe("endpoints", () => {
     expect(METRICS.PLATAFORMA()).toBe("/api/panel/plataforma/metrics/");
   });
 
+  it("METRICS.COMPARE_PARAGUAS(orgId) apunta a /api/panel/paraguas/{orgId}/compare/", () => {
+    expect(METRICS.COMPARE_PARAGUAS(3)).toBe("/api/panel/paraguas/3/compare/");
+  });
+
+  it("METRICS.COMPARE_PLATAFORMA() apunta a /api/panel/plataforma/compare/", () => {
+    expect(METRICS.COMPARE_PLATAFORMA()).toBe("/api/panel/plataforma/compare/");
+  });
+
   it("EXPORT.ENTIDAD(orgId) apunta a /api/panel/entidad/{orgId}/export/", () => {
     expect(EXPORT.ENTIDAD(7)).toBe("/api/panel/entidad/7/export/");
   });

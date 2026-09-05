@@ -5,6 +5,7 @@ import { render, screen } from "@/test-utils/render";
 import {
   buildByOrganizationRows,
   buildByPlaceRows,
+  buildCompareResponse,
   buildMetricsResponse,
   buildSeriesRows,
 } from "@/test-utils/fixtures/metrics";
@@ -13,6 +14,7 @@ import { MetricsError } from "@/hooks/useMetrics";
 
 const useMetricsMock = vi.hoisted(() => vi.fn());
 const useExportMock = vi.hoisted(() => vi.fn());
+const useCompareMock = vi.hoisted(() => vi.fn());
 vi.mock("@/hooks/useMetrics", async () => {
   const actual = await vi.importActual<typeof import("@/hooks/useMetrics")>("@/hooks/useMetrics");
   return { ...actual, useMetrics: useMetricsMock };
@@ -20,6 +22,10 @@ vi.mock("@/hooks/useMetrics", async () => {
 vi.mock("@/hooks/useExport", async () => {
   const actual = await vi.importActual<typeof import("@/hooks/useExport")>("@/hooks/useExport");
   return { ...actual, useExport: useExportMock };
+});
+vi.mock("@/hooks/useCompare", async () => {
+  const actual = await vi.importActual<typeof import("@/hooks/useCompare")>("@/hooks/useCompare");
+  return { ...actual, useCompare: useCompareMock };
 });
 
 import PlataformaMetricasPage from "./page";
@@ -35,9 +41,14 @@ function mockMetricsByGroup(
   );
 }
 
+function mockCompare(data: ReturnType<typeof buildCompareResponse> | undefined = buildCompareResponse()) {
+  useCompareMock.mockReturnValue({ data, isError: false, error: null });
+}
+
 afterEach(() => {
   useMetricsMock.mockReset();
   useExportMock.mockReset();
+  useCompareMock.mockReset();
 });
 
 describe("PlataformaMetricasPage", () => {
@@ -49,6 +60,7 @@ describe("PlataformaMetricasPage", () => {
       organization: buildMetricsResponse({ by_place: buildByOrganizationRows() }),
       month: buildMetricsResponse({ series: buildSeriesRows() }),
     });
+    mockCompare();
 
     render(<PlataformaMetricasPage />);
 
@@ -67,6 +79,7 @@ describe("PlataformaMetricasPage", () => {
       organization: buildMetricsResponse({ by_place: buildByOrganizationRows() }),
       month: buildMetricsResponse({ series: buildSeriesRows() }),
     });
+    mockCompare();
     const user = userEvent.setup();
 
     render(<PlataformaMetricasPage />);
@@ -89,6 +102,7 @@ describe("PlataformaMetricasPage", () => {
       organization: buildMetricsResponse({ by_place: [] }),
       month: buildMetricsResponse({ series: [] }),
     });
+    mockCompare();
     const user = userEvent.setup();
 
     render(<PlataformaMetricasPage />);
@@ -105,11 +119,13 @@ describe("PlataformaMetricasPage", () => {
       organization: buildMetricsResponse({ by_place: [] }),
       month: buildMetricsResponse({ series: [] }),
     });
+    mockCompare(buildCompareResponse({ rows: [] }));
 
     render(<PlataformaMetricasPage />);
 
     expect(screen.getByText("Sin datos para este periodo")).toBeInTheDocument();
     expect(screen.getByText("Sin datos suficientes para la serie mensual")).toBeInTheDocument();
+    expect(screen.getByText("Sin datos para esta comparativa")).toBeInTheDocument();
   });
 
   it("estado de error: useMetrics de la base en error pinta ErrorState", () => {
@@ -126,10 +142,78 @@ describe("PlataformaMetricasPage", () => {
         return { data: buildMetricsResponse(), isError: false, error: null };
       },
     );
+    mockCompare();
 
     render(<PlataformaMetricasPage />);
 
     expect(screen.getByRole("alert")).toHaveTextContent("No se pudieron cargar las métricas");
     expect(screen.getByText("No tienes acceso a estas métricas.")).toBeInTheDocument();
+  });
+
+  it("Comparativa: pinta la tabla con el desglose por defecto 'province'", () => {
+    useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
+    mockMetricsByGroup({
+      base: buildMetricsResponse(),
+      place: buildMetricsResponse({ by_place: [] }),
+      organization: buildMetricsResponse({ by_place: [] }),
+      month: buildMetricsResponse({ series: [] }),
+    });
+    mockCompare();
+
+    render(<PlataformaMetricasPage />);
+
+    expect(useCompareMock).toHaveBeenCalledWith(
+      "plataforma",
+      undefined,
+      expect.anything(),
+      "province",
+    );
+    expect(screen.getByText("Comparativa")).toBeInTheDocument();
+    expect(screen.getByText("Bidasoa")).toBeInTheDocument();
+  });
+
+  it("Comparativa: cambiar el `<select>` a «Comarca» pide el desglose 'comarca'", async () => {
+    useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
+    mockMetricsByGroup({
+      base: buildMetricsResponse(),
+      place: buildMetricsResponse({ by_place: [] }),
+      organization: buildMetricsResponse({ by_place: [] }),
+      month: buildMetricsResponse({ series: [] }),
+    });
+    mockCompare();
+    const user = userEvent.setup();
+
+    render(<PlataformaMetricasPage />);
+    await user.selectOptions(screen.getByLabelText("Desglose de la comparativa"), "Comarca");
+
+    expect(useCompareMock).toHaveBeenLastCalledWith(
+      "plataforma",
+      undefined,
+      expect.anything(),
+      "comarca",
+    );
+  });
+
+  it("plurianual: elegir el preset cambia la serie a anual y a group_by='year'", async () => {
+    useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
+    mockMetricsByGroup({
+      base: buildMetricsResponse(),
+      place: buildMetricsResponse({ by_place: [] }),
+      organization: buildMetricsResponse({ by_place: [] }),
+      month: buildMetricsResponse({ series: [] }),
+      year: buildMetricsResponse({ series: [{ year: "2025", events: 5, people: 13, suppressed: false }] }),
+    });
+    mockCompare();
+    const user = userEvent.setup();
+
+    render(<PlataformaMetricasPage />);
+    expect(screen.getByText("Serie mensual")).toBeInTheDocument();
+
+    // Dos `PeriodSelector` en la página (el del dashboard y el de
+    // `ExportPanel`, más abajo): el primero es el del dashboard.
+    await user.click(screen.getAllByRole("button", { name: "Plurianual" })[0]);
+
+    expect(screen.getByText("Serie anual")).toBeInTheDocument();
+    expect(useMetricsMock).toHaveBeenLastCalledWith("plataforma", undefined, expect.anything(), "year");
   });
 });

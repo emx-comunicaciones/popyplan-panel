@@ -785,6 +785,78 @@ siembra (`load_places`, `seed_catalogs`, `seed_panel_demo`) y arranca
 localhost:8001`); si falla, sube el log del backend y el reporte de
 Playwright como artefactos.
 
+## Comparativa entre ámbitos y memoria plurianual (tarea W2, Fase 6)
+
+`docs/PANEL.md` §11 (contrato del backend, tarea B2): `GET
+/api/panel/paraguas/{org_id}/compare/?since&until&group_by=comarca|
+organization|place` y `GET /api/panel/plataforma/compare/?since&until&
+group_by=comarca|province|organization` comparan el periodo pedido con
+el inmediatamente anterior de igual longitud. A diferencia de métricas,
+aquí `group_by` es **obligatorio** (400 con `{"group_by": "Desglose
+obligatorio: …"}` si falta o no es uno de los tres valores de esa ruta).
+
+- **`hooks/useCompare.ts`** (`useCompare(scope, orgId, period, groupBy)`,
+  mismo patrón que `useMetrics`): traduce 400/403 a `CompareError` con
+  `kind` (`periodo_invalido`/`sin_acceso`/`desconocido`).
+  `lib/api/endpoints.ts::METRICS.COMPARE_PARAGUAS(orgId)`/
+  `COMPARE_PLATAFORMA()`.
+- **`components/metrics/ComparativaTable.tsx`** (`<ComparativaTable
+  data={CompareResponse} />`): columnas Ámbito · Actividades (actual/
+  anterior/Δ) · Personas (actual/anterior/Δ) · % asistencia (actual/
+  anterior/Δ), con `<caption>` («Comparativa por `<desglose>`») y la
+  leyenda del periodo anterior («frente a 1 ene – 31 mar 2026»,
+  `lib/metrics/compare.ts::previousPeriodLabel`). `current`/`previous`
+  reutilizan `formatCount`/`formatPct` tal cual (misma «<5» que el resto
+  del panel); `delta` es propio de esta tarea
+  (`lib/metrics/compare.ts::formatDeltaCount`/`formatDeltaPct`, signo
+  `+`/`-`) — una diferencia suprimida (`delta.suppressed`, el «o» de los
+  dos periodos) se pinta «—» con `aria-label="No disponible por umbral de
+  agregación"`, **nunca** «<5» (no hay una cifra parcial que enseñar,
+  solo indisponibilidad; `delta.events` sí es siempre un número real, los
+  eventos nunca se suprimen).
+- **Dashboards** (`{Paraguas,Plataforma}MetricsDashboard.tsx`): bloque
+  «Comparativa» bajo las tarjetas/tabla existentes, con un `<select>`
+  (label visible «Desglose de la comparativa») para elegir el desglose —
+  por defecto `comarca` en paraguas, `province` en plataforma (la
+  diputación compara comarcas, la plataforma compara provincias).
+
+**Memoria plurianual (`group_by=year`, §11.4)**: añadido a
+`hooks/useMetrics.ts::MetricsGroupBy` y a `EXPORT_GROUP_BY_CHOICES` del
+backend — una fila por año (`SeriesRow.year`) en vez de por mes
+(`.month`) en `series`, tanto en métricas como en exportación (que además
+deja vacía «Por municipio» y renombra la sección a «Por año»).
+`components/metrics/SeriesChart.tsx` detecta solo mirando las propias
+filas (`row.year !== undefined` en todas) y cambia su `aria-label` a
+«Serie anual…»; `ExportPanel.tsx` gana un `<select>` propio («Desglose
+del informe») con la opción «Por año (memoria plurianual)», que
+**sustituye** (nunca combina) al `groupBy` que le pase el dashboard que
+lo envuelve — el backend nunca acepta los dos desgloses a la vez.
+
+**Desviación documentada de esta tarea — `PeriodPreset += "plurianual"`
+no es literal**: el brief pedía «últimos 3 años naturales completos + el
+actual» para el nuevo preset del selector de periodo
+(`lib/metrics/period.ts`), pero `panel/viewsets.py::_periodo` (backend,
+confirmado leyendo el código real, no solo `docs/PANEL.md` §1.2/§11.1)
+aplica el mismo tope duro de 366 días a `since`/`until` en **todas** las
+rutas — métricas, export y compare — sin ninguna excepción para
+`group_by=year`. Tocar los 3 años anteriores más el actual exige pisar al
+menos un día de cada uno de esos 4 años naturales, y el mínimo posible
+para eso son ~3 años completos (más de 1000 días): matemáticamente
+incompatible con una sola petición de ≤366 días. Dentro de esa cota, la
+ventana más ancha posible solo puede llegar a rozar **dos** años
+naturales distintos (un tramo que cruce un 1 de enero).
+`presetPeriod('plurianual')` usa por tanto los 365 días de calendario
+anteriores a hoy (`MAX_DAYS - 1`, aritmética de días, nunca de meses, así
+nunca depende de si el tramo cruza un 29 de febrero) — la ventana más
+ancha que sigue pasando la propia `validatePeriod` de este módulo y el
+tope real del backend, mostrando de verdad `group_by=year` con más de un
+año cuando el periodo cae a caballo entre dos. Una memoria de 3+ años de
+verdad exigiría varias peticiones fusionadas en el cliente (una por año,
+al estilo de las «cuatro llamadas por periodo» que ya hace
+`ParaguasMetricsDashboard`), fuera del alcance de los ficheros que toca
+esta tarea — pendiente si se retoma la memoria plurianual con más
+profundidad.
+
 ## Diseño de sesión (refresh real desde la tarea W3)
 
 Access token en memoria (`lib/auth/tokenStore.ts`, nunca localStorage).

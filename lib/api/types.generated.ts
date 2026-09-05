@@ -3469,6 +3469,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/panel/paraguas/{org_id}/compare/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/paraguas/{org_id}/compare/?since&until&group_by=
+         *     comarca|organization|place` (tarea B2). Periodo actual frente al
+         *     inmediatamente anterior (igual longitud), desglosado por comarca,
+         *     entidad o municipio. `group_by` es obligatorio (400 sin él). Nunca
+         *     nominal (agrega personas de entidades distintas). Audita siempre
+         *     `panel.compare_viewed`.
+         */
+        get: operations["panel_paraguas_compare_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/panel/paraguas/{org_id}/export/": {
         parameters: {
             query?: never;
@@ -3505,6 +3529,27 @@ export interface paths {
          *     todas sus hijas recursivas; nunca nominal.
          */
         get: operations["panel_paraguas_metrics_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/plataforma/compare/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/plataforma/compare/?since&until&group_by=comarca|
+         *     province|organization` (tarea B2). Igual que `ParaguasCompareView`,
+         *     para toda la plataforma.
+         */
+        get: operations["panel_plataforma_compare_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5636,6 +5681,7 @@ export interface components {
             readonly sent_at: string;
             /** Destinatarios */
             readonly recipients_count: number;
+            readonly organization: components["schemas"]["AnnouncementOrganization"];
         };
         /** @description Entrada de `POST /api/panel/entidad/{id}/announcements/`. */
         AnnouncementCreateRequest: {
@@ -5643,6 +5689,16 @@ export interface components {
             body: string;
             /** @description 'members' | 'families' | 'community:<uuid>' */
             audience: string;
+        };
+        /**
+         * @description Sello de la entidad autora (Fase 6, tarea B1): lo que el móvil pinta
+         *     en la comunicación.
+         */
+        AnnouncementOrganization: {
+            id: number;
+            name: string;
+            readonly logo: string | null;
+            primary_color: string;
         };
         /** @description Cuerpo de `POST {id}/attendance/`. */
         AttendanceMarkRequest: {
@@ -6209,6 +6265,43 @@ export interface components {
             /** Format: uuid */
             category: string;
             is_active?: boolean;
+        };
+        CompareCelda: {
+            events: number;
+            people: number | null;
+            /** Format: double */
+            attendance_rate: number | null;
+            suppressed: boolean;
+        };
+        CompareDelta: {
+            events: number;
+            people: number | null;
+            /** Format: double */
+            attendance_rate: number | null;
+            suppressed: boolean;
+        };
+        ComparePeriodo: {
+            /** @description "YYYY-MM-DD". */
+            since: string;
+            /** @description "YYYY-MM-DD". */
+            until: string;
+        };
+        /**
+         * @description Esquema fijo de respuesta de `panel-paraguas-compare` y
+         *     `panel-plataforma-compare`.
+         */
+        CompareResponse: {
+            current: components["schemas"]["ComparePeriodo"];
+            previous: components["schemas"]["ComparePeriodo"];
+            group_by: string;
+            rows: components["schemas"]["CompareRow"][];
+        };
+        CompareRow: {
+            key: string;
+            label: string;
+            current: components["schemas"]["CompareCelda"];
+            previous: components["schemas"]["CompareCelda"];
+            delta: components["schemas"]["CompareDelta"];
         };
         ConfirmPaymentRequest: {
             payment_intent_id: string;
@@ -8878,9 +8971,16 @@ export interface components {
          * @enum {string}
          */
         Role636Enum: "superadmin" | "verifier" | "moderator" | "support";
+        /**
+         * @description Con `group_by=month`, `month` ("YYYY-MM"); con `group_by=year`
+         *     (memoria plurianual, tarea B2), `year` ("YYYY") en su lugar — nunca los
+         *     dos a la vez.
+         */
         SeriesRow: {
-            /** @description "YYYY-MM". */
-            month: string;
+            /** @description "YYYY-MM" (con group_by=month). */
+            month?: string;
+            /** @description "YYYY" (con group_by=year). */
+            year?: string;
             events: number;
             people: number | null;
             suppressed: boolean;
@@ -16745,7 +16845,7 @@ export interface operations {
             query?: {
                 /** @description csv (por defecto) | pdf */
                 format?: string;
-                /** @description Desglose de la sección «Por municipio»: place (por defecto) | comarca | province | organization */
+                /** @description Desglose de «Por municipio», o "year" para memoria plurianual: place (por defecto) | comarca | province | organization | year */
                 group_by?: string;
                 /** @description Fecha ISO de inicio (por defecto, hace 30 días). */
                 since?: string;
@@ -16821,7 +16921,7 @@ export interface operations {
     panel_entidad_metrics_retrieve: {
         parameters: {
             query?: {
-                /** @description place | comarca | province | organization | weekday_hour | month */
+                /** @description place | comarca | province | organization | weekday_hour | month | year */
                 group_by?: string;
                 /** @description Fecha ISO de inicio (por defecto, hace 30 días). */
                 since?: string;
@@ -17056,12 +17156,54 @@ export interface operations {
             };
         };
     };
+    panel_paraguas_compare_retrieve: {
+        parameters: {
+            query: {
+                /** @description Desglose obligatorio de la comparativa. */
+                group_by: string;
+                /** @description Fecha ISO de inicio del periodo actual. */
+                since?: string;
+                /** @description Fecha ISO de fin del periodo actual. */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompareResponse"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     panel_paraguas_export_retrieve: {
         parameters: {
             query?: {
                 /** @description csv (por defecto) | pdf */
                 format?: string;
-                /** @description Desglose de la sección «Por municipio»: place (por defecto) | comarca | province | organization */
+                /** @description Desglose de «Por municipio», o "year" para memoria plurianual: place (por defecto) | comarca | province | organization | year */
                 group_by?: string;
                 /** @description Fecha ISO de inicio (por defecto, hace 30 días). */
                 since?: string;
@@ -17109,7 +17251,7 @@ export interface operations {
     panel_paraguas_metrics_retrieve: {
         parameters: {
             query?: {
-                /** @description place | comarca | province | organization | weekday_hour | month */
+                /** @description place | comarca | province | organization | weekday_hour | month | year */
                 group_by?: string;
                 /** @description Fecha ISO de inicio (por defecto, hace 30 días). */
                 since?: string;
@@ -17148,12 +17290,52 @@ export interface operations {
             };
         };
     };
+    panel_plataforma_compare_retrieve: {
+        parameters: {
+            query: {
+                /** @description Desglose obligatorio de la comparativa. */
+                group_by: string;
+                /** @description Fecha ISO de inicio del periodo actual. */
+                since?: string;
+                /** @description Fecha ISO de fin del periodo actual. */
+                until?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompareResponse"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     panel_plataforma_export_retrieve: {
         parameters: {
             query?: {
                 /** @description csv (por defecto) | pdf */
                 format?: string;
-                /** @description Desglose de la sección «Por municipio»: place (por defecto) | comarca | province | organization */
+                /** @description Desglose de «Por municipio», o "year" para memoria plurianual: place (por defecto) | comarca | province | organization | year */
                 group_by?: string;
                 /** @description Fecha ISO de inicio (por defecto, hace 30 días). */
                 since?: string;
@@ -17199,7 +17381,7 @@ export interface operations {
     panel_plataforma_metrics_retrieve: {
         parameters: {
             query?: {
-                /** @description place | comarca | province | organization | weekday_hour | month */
+                /** @description place | comarca | province | organization | weekday_hour | month | year */
                 group_by?: string;
                 /** @description Fecha ISO de inicio (por defecto, hace 30 días). */
                 since?: string;

@@ -23,6 +23,7 @@ const PRESET_LABELS: Record<FixedPreset, string> = {
   mes: "Este mes",
   trimestre: "Trimestre",
   anio: "Año",
+  plurianual: "Plurianual",
 };
 
 const FIXED_PRESETS = Object.keys(PRESET_LABELS) as FixedPreset[];

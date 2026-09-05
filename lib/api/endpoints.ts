@@ -254,6 +254,20 @@ export const METRICS = {
   PARAGUAS: (orgId: number | string) => `/api/panel/paraguas/${orgId}/metrics/`,
   /** `GET /api/panel/plataforma/metrics/`. */
   PLATAFORMA: () => `/api/panel/plataforma/metrics/`,
+  /**
+   * `GET /api/panel/paraguas/{org_id}/compare/?since&until&group_by=comarca|
+   * organization|place` (`docs/PANEL.md` §11, tarea B2): comparativa entre
+   * el periodo pedido y el anterior de igual longitud. `group_by` es
+   * obligatorio en esta ruta (400 con `{group_by: "Desglose obligatorio…"}`
+   * si falta o no es uno de los tres valores).
+   */
+  COMPARE_PARAGUAS: (orgId: number | string) => `/api/panel/paraguas/${orgId}/compare/`,
+  /**
+   * `GET /api/panel/plataforma/compare/?since&until&group_by=comarca|
+   * province|organization` (`docs/PANEL.md` §11). Igual que
+   * `COMPARE_PARAGUAS`, sin `org_id`.
+   */
+  COMPARE_PLATAFORMA: () => `/api/panel/plataforma/compare/`,
 } as const;
 
 /** Exportación de informes (CSV/PDF), `docs/PANEL.md` §2. */

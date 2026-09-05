@@ -18,10 +18,19 @@ describe("presetPeriod", () => {
   });
 
   it("cualquier preset produce un periodo de ≤ 366 días (nunca dispara la validación de longitud)", () => {
-    for (const preset of ["mes", "trimestre", "anio"] as const) {
+    for (const preset of ["mes", "trimestre", "anio", "plurianual"] as const) {
       const period = presetPeriod(preset, TODAY);
       expect(validatePeriod(period.since, period.until)).toBeNull();
     }
+  });
+
+  it("plurianual: la ventana más ancha que sigue validando (365 días de calendario) hasta hoy", () => {
+    expect(presetPeriod("plurianual", TODAY)).toEqual({ since: "2025-03-15", until: "2026-03-15" });
+  });
+
+  it("plurianual: toca dos años naturales distintos (para poder mostrar group_by=year con más de una fila)", () => {
+    const period = presetPeriod("plurianual", TODAY);
+    expect(period.since.slice(0, 4)).not.toBe(period.until.slice(0, 4));
   });
 });
 
