@@ -84,7 +84,11 @@ function invalidatePrograms(
 ): void {
   queryClient.invalidateQueries({ queryKey: ["panel-programs", orgId] });
   if (programId !== undefined) {
-    queryClient.invalidateQueries({ queryKey: ["panel-program", orgId, programId] });
+    // `String(programId)`: mismo normalizado que `useProgram.ts` — aquí
+    // `programId` llega como el `id` numérico de `Program` (activar/cerrar
+    // pasan `data.id`, editar pasa `editing.id`), pero la query original se
+    // guardó con el string del parámetro de ruta.
+    queryClient.invalidateQueries({ queryKey: ["panel-program", orgId, String(programId)] });
   }
 }
 

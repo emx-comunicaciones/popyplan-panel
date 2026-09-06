@@ -1,0 +1,56 @@
+import { expect, test, type Page } from "@playwright/test";
+
+/**
+ * Accesibilidad (tarea W5, Fase 6): dos flujos independientes, ninguno
+ * necesita sesión — no hay `beforeAll`/fixture por API aquí.
+ */
+
+/**
+ * Comprueba que `document.activeElement` lleva el anillo de foco global
+ * (`app/globals.css::focus-visible`, `outline: 3px solid
+ * var(--color-primary-700)`) — no basta con que el elemento correcto
+ * tenga el foco lógico (`toBeFocused()`), la declaración de
+ * accesibilidad promete que el foco además se ve.
+ */
+async function expectVisibleFocusRing(page: Page): Promise<void> {
+  const hasVisibleOutline = await page.evaluate(() => {
+    const el = document.activeElement;
+    if (!el) return false;
+    const style = getComputedStyle(el);
+    return style.outlineStyle !== "none" && parseFloat(style.outlineWidth) > 0;
+  });
+  expect(hasVisibleOutline).toBe(true);
+}
+
+test("la declaración de accesibilidad es pública, sin sesión", async ({ page }) => {
+  await page.goto("/accesibilidad");
+
+  // Sin sesión, `AccesibilidadPage` es un Server Component sin
+  // `getServerSession` — no debe redirigir a /login.
+  await expect(page).toHaveURL(/\/accesibilidad$/);
+  await expect(
+    page.getByRole("heading", { name: "Declaración de accesibilidad de Popyplan" }),
+  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Situación de cumplimiento" })).toBeVisible();
+});
+
+test("en /login, Tab recorre email → contraseña → botón, siempre con el foco visible", async ({
+  page,
+}) => {
+  await page.goto("/login");
+
+  // Sin `SkipLink` en esta página (solo la llevan los tres layouts de
+  // área): el primer Tab desde la carga de la página cae directo en el
+  // primer campo del formulario.
+  await page.keyboard.press("Tab");
+  await expect(page.getByLabel("Usuario o email")).toBeFocused();
+  await expectVisibleFocusRing(page);
+
+  await page.keyboard.press("Tab");
+  await expect(page.getByLabel("Contraseña")).toBeFocused();
+  await expectVisibleFocusRing(page);
+
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Entrar" })).toBeFocused();
+  await expectVisibleFocusRing(page);
+});

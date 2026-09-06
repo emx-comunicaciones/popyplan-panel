@@ -42,7 +42,13 @@ export function useProgram(
   programId: number | string,
 ): UseQueryResult<Program, ProgramError> {
   return useQuery<Program, ProgramError>({
-    queryKey: ["panel-program", orgId, programId],
+    // `String(programId)`: la página lo pasa como string (parámetro de
+    // ruta de Next.js), pero `invalidatePrograms` (`useProgramMutations.ts`)
+    // invalida con el `id` numérico que devuelve la API (`Program.id`) tras
+    // activar/cerrar/editar — sin normalizar, `1 !== "1"` para
+    // `invalidateQueries` y la ficha nunca se refresca sola tras esas
+    // acciones (hallazgo real del e2e `programas.spec.ts`, tarea W5).
+    queryKey: ["panel-program", orgId, String(programId)],
     queryFn: async () => {
       try {
         return await apiFetch<Program>(PROGRAMS.DETAIL(orgId, programId));
