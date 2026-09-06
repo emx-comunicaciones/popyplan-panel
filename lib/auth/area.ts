@@ -53,7 +53,7 @@ function hasPanelRole(membership: OrgMembershipForArea): boolean {
 }
 
 function isParaguas(membership: OrgMembershipForArea): boolean {
-  return (membership.organization_type ?? membership.org_type) === "administracion";
+  return membership.organization_type === "administracion" || membership.org_type === "administracion";
 }
 
 export function resolveArea(
