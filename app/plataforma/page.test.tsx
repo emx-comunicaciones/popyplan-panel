@@ -14,6 +14,7 @@ import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
+import { buildBillingSummary } from "@/test-utils/fixtures/billing";
 
 import PlataformaInicioPage from "./page";
 
@@ -48,6 +49,9 @@ function mockApiFetch() {
     }
     if (path.startsWith("/api/organizations/?verified=false")) {
       return ORGS_PAGE(2);
+    }
+    if (path === "/api/plataforma/billing/summary/") {
+      return buildBillingSummary({ active_contracts: 4, annual_value_cents: 480000, overdue_invoices: 1 });
     }
     throw new Error(`sin mock para ${path}`);
   });
@@ -91,6 +95,11 @@ describe("PlataformaInicioPage", () => {
     expect(screen.getByText("3")).toBeInTheDocument();
     expect(screen.getByText("5")).toBeInTheDocument();
     expect(screen.getByText("2")).toBeInTheDocument();
+
+    await waitFor(() => expect(screen.getByText("Contratos vigentes")).toBeInTheDocument());
+    expect(screen.getByText("4")).toBeInTheDocument();
+    expect(screen.getByText("4.800,00 €")).toBeInTheDocument();
+    expect(screen.getByText("Facturas vencidas")).toBeInTheDocument();
   });
 
   it("verifier no ve tarjetas de reportes/ayuda (sin acceso ni menú)", async () => {
@@ -101,6 +110,9 @@ describe("PlataformaInicioPage", () => {
       if (path.startsWith("/api/organizations/?page=")) return ORGS_PAGE(0);
       if (path.startsWith("/api/organizations/?verified=true")) return ORGS_PAGE(5);
       if (path.startsWith("/api/organizations/?verified=false")) return ORGS_PAGE(2);
+      if (path === "/api/plataforma/billing/summary/") {
+        throw Object.assign(new Error("403"), { status: 403 });
+      }
       throw new Error(`sin mock para ${path}`);
     });
     getServerSessionMock.mockResolvedValue({
@@ -115,6 +127,7 @@ describe("PlataformaInicioPage", () => {
     await waitFor(() => expect(screen.getByText("5")).toBeInTheDocument());
     expect(screen.queryByText("Reportes pendientes")).not.toBeInTheDocument();
     expect(screen.queryByText("Solicitudes de ayuda pendientes")).not.toBeInTheDocument();
+    expect(screen.queryByText("Contratos vigentes")).not.toBeInTheDocument();
   });
 
   it("sin sesión redirige a /login", async () => {

@@ -7,20 +7,25 @@
  * `hooks/useDashboardStats.ts`), reportes pendientes (cola global,
  * oculta para `verifier`, que no tiene acceso), solicitudes de ayuda
  * pendientes (agregado por entidad, ver el hueco de contrato en
- * `hooks/usePlatformPendingHelpRequests.ts`) y entidades verificadas/
+ * `hooks/usePlatformPendingHelpRequests.ts`), entidades verificadas/
  * pendientes (`GET /api/organizations/`, abierto a cualquier
- * autenticado). Qué tarjetas se muestran sigue la misma matriz que el
- * menú (`lib/auth/plataformaMenu.ts::plataformaMenuFor`), para no
- * enlazar a una sección que ese rol no puede abrir.
+ * autenticado) y, desde la tarea W4 (`docs/PANEL.md` §13), el resumen de
+ * contratación (`useBillingSummary`): contratos vigentes, valor anual y
+ * facturas vencidas. Qué tarjetas se muestran sigue la misma matriz que
+ * el menú (`lib/auth/plataformaMenu.ts::plataformaMenuFor`), para no
+ * enlazar a una sección que ese rol no puede abrir — las de facturación
+ * solo aparecen si el menú trae «contratos» (`superadmin`/`support`).
  */
 import Link from "next/link";
 
 import { Card } from "@/components/ui/Card";
+import { useBillingSummary } from "@/hooks/useBilling";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useOrganizations } from "@/hooks/useOrganizations";
 import { usePlatformPendingHelpRequests } from "@/hooks/usePlatformPendingHelpRequests";
 import { useReportsQueue } from "@/hooks/useReportsQueue";
 import { plataformaMenuFor } from "@/lib/auth/plataformaMenu";
+import { formatEuros } from "@/lib/programs/money";
 
 export interface PlataformaHomeDashboardProps {
   role: string | null;
@@ -49,6 +54,7 @@ export function PlataformaHomeDashboard({ role }: PlataformaHomeDashboardProps) 
   const helpRequests = usePlatformPendingHelpRequests();
   const verified = useOrganizations({ verified: true });
   const pending = useOrganizations({ verified: false });
+  const billing = useBillingSummary();
 
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -80,6 +86,26 @@ export function PlataformaHomeDashboard({ role }: PlataformaHomeDashboardProps) 
           value={String(pending.data.count)}
           href="/plataforma/entidades"
         />
+      ) : null}
+
+      {menu.includes("contratos") && billing.data ? (
+        <>
+          <KpiCard
+            label="Contratos vigentes"
+            value={String(billing.data.active_contracts)}
+            href="/plataforma/contratos"
+          />
+          <KpiCard
+            label="Valor anual contratado"
+            value={formatEuros(billing.data.annual_value_cents)}
+            href="/plataforma/contratos"
+          />
+          <KpiCard
+            label="Facturas vencidas"
+            value={String(billing.data.overdue_invoices)}
+            href="/plataforma/contratos"
+          />
+        </>
       ) : null}
     </div>
   );

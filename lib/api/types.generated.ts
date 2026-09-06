@@ -4147,6 +4147,163 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/plataforma/billing/contracts/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET/POST /api/plataforma/billing/contracts/?organization=&status=`. */
+        get: operations["plataforma_billing_contracts_list"];
+        put?: never;
+        /** @description `GET/POST /api/plataforma/billing/contracts/?organization=&status=`. */
+        post: operations["plataforma_billing_contracts_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/plataforma/billing/contracts/{contract_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET/PATCH /api/plataforma/billing/contracts/{contract_id}/`. */
+        get: operations["plataforma_billing_contracts_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description `GET/PATCH /api/plataforma/billing/contracts/{contract_id}/`. */
+        patch: operations["plataforma_billing_contracts_partial_update"];
+        trace?: never;
+    };
+    "/api/plataforma/billing/contracts/{contract_id}/activate/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description `POST /api/plataforma/billing/contracts/{contract_id}/activate/`. */
+        post: operations["plataforma_billing_contracts_activate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/plataforma/billing/contracts/{contract_id}/end/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description `POST /api/plataforma/billing/contracts/{contract_id}/end/`. */
+        post: operations["plataforma_billing_contracts_end_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/plataforma/billing/contracts/{contract_id}/invoices/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET/POST /api/plataforma/billing/contracts/{contract_id}/invoices/`. */
+        get: operations["plataforma_billing_contracts_invoices_list"];
+        put?: never;
+        /** @description `GET/POST /api/plataforma/billing/contracts/{contract_id}/invoices/`. */
+        post: operations["plataforma_billing_contracts_invoices_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/plataforma/billing/invoices/{invoice_id}/pay/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description `POST /api/plataforma/billing/invoices/{invoice_id}/pay/`. */
+        post: operations["plataforma_billing_invoices_pay_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/plataforma/billing/summary/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/plataforma/billing/summary/`: portada de plataforma. */
+        get: operations["plataforma_billing_summary_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/plataforma/billing/tiers/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET/POST /api/plataforma/billing/tiers/`. */
+        get: operations["plataforma_billing_tiers_list"];
+        put?: never;
+        /** @description `GET/POST /api/plataforma/billing/tiers/`. */
+        post: operations["plataforma_billing_tiers_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/plataforma/billing/tiers/{tier_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description `PATCH /api/plataforma/billing/tiers/{tier_id}/`. */
+        patch: operations["plataforma_billing_tiers_partial_update"];
+        trace?: never;
+    };
     "/api/reviews/": {
         parameters: {
             query?: never;
@@ -5881,6 +6038,12 @@ export interface components {
             /** Format: date-time */
             created_at: string;
         };
+        BillingSummary: {
+            active_contracts: number;
+            annual_value_cents: number;
+            overdue_invoices: number;
+            pending_amount_cents: number;
+        };
         /** @description Un bloqueo mío. El preventivo no dice de qué teléfono es. */
         Block: {
             /** Format: uuid */
@@ -6405,6 +6568,49 @@ export interface components {
             payment_intent_id: string;
             payment_method: string;
         };
+        /**
+         * @description Salida de un contrato, con la entidad y el tramo resumidos y dos
+         *     campos calculados de facturas (`invoices_count`, `pending_amount_cents`:
+         *     suma de facturas no pagadas, pendientes u vencidas).
+         */
+        Contract: {
+            readonly id: number;
+            organization: components["schemas"]["_OrganizationBrief"];
+            tier: components["schemas"]["_TierBrief"];
+            /**
+             * Inicio
+             * Format: date
+             */
+            readonly starts_on: string;
+            /**
+             * Fin
+             * Format: date
+             */
+            readonly ends_on: string;
+            readonly status: components["schemas"]["ContractStatusEnum"];
+            /** Notas */
+            readonly notes: string;
+            readonly invoices_count: number;
+            readonly pending_amount_cents: number;
+        };
+        /** @description Entrada de creación (`POST`): `organization` y `tier` por id. */
+        ContractInputRequest: {
+            /** Format: date */
+            starts_on: string;
+            /** Format: date */
+            ends_on: string;
+            /** @default  */
+            notes: string;
+            organization: number;
+            tier: number;
+        };
+        /**
+         * @description * `draft` - Borrador
+         *     * `active` - Vigente
+         *     * `ended` - Finalizado
+         * @enum {string}
+         */
+        ContractStatusEnum: "draft" | "active" | "ended";
         CreateCustomerRequest: {
             /** Format: email */
             email?: string;
@@ -7246,6 +7452,53 @@ export interface components {
             order?: number;
             is_active?: boolean;
             category: number;
+        };
+        Invoice: {
+            readonly id: number;
+            /** Contrato */
+            readonly contract: number;
+            /** Número */
+            number: string;
+            /**
+             * Importe (céntimos)
+             * Format: int64
+             */
+            amount_cents: number;
+            /**
+             * Emitida el
+             * Format: date
+             */
+            issued_on: string;
+            /**
+             * Vence el
+             * Format: date
+             */
+            due_on: string;
+            /**
+             * Pagada el
+             * Format: date
+             */
+            paid_on?: string | null;
+            readonly status: string;
+        };
+        /**
+         * @description Entrada de creación (`POST .../invoices/`). `number` es único: un
+         *     duplicado da 400 aquí, no un `IntegrityError` de la base de datos.
+         */
+        InvoiceInputRequest: {
+            number: string;
+            amount_cents: number;
+            /** Format: date */
+            issued_on: string;
+            /** Format: date */
+            due_on: string;
+            /** @default  */
+            notes: string;
+        };
+        /** @description Entrada de `POST .../invoices/{id}/pay/`. */
+        InvoicePayRequest: {
+            /** Format: date */
+            paid_on: string;
         };
         /**
          * @description * `post_event` - Post-actividad
@@ -8110,6 +8363,18 @@ export interface components {
             category?: string;
             is_active?: boolean;
         };
+        /**
+         * @description Entrada de edición (`PATCH`, `partial=True`): solo fechas y notas.
+         *     `organization`/`tier`/`status` no se tocan por aquí (`status` cambia
+         *     con `activate`/`end`).
+         */
+        PatchedContractUpdateRequest: {
+            /** Format: date */
+            starts_on?: string;
+            /** Format: date */
+            ends_on?: string;
+            notes?: string;
+        };
         /** @description Serializer personalizado para login que acepta username o email */
         PatchedCustomLoginRequest: {
             username_or_email?: string;
@@ -8333,6 +8598,16 @@ export interface components {
             name?: string;
             category?: number;
             is_active?: boolean;
+        };
+        /** @description Entrada de creación (`POST`) y edición (`PATCH`, `partial=True`). */
+        PatchedPricingTierInputRequest: {
+            name?: string;
+            /** @default 0 */
+            min_population: number;
+            max_population?: number | null;
+            annual_price_cents?: number;
+            /** @default true */
+            is_active: boolean;
         };
         /** @description Entrada de creación (`POST`) y edición (`PATCH`, `partial=True`). */
         PatchedProgramInputRequest: {
@@ -8640,6 +8915,39 @@ export interface components {
         /** @description Respuesta de `/me/`: el rol vigente de quien pregunta, o null. */
         PlatformRoleMe: {
             role: string | null;
+        };
+        PricingTier: {
+            readonly id: number;
+            /** Nombre */
+            name: string;
+            /**
+             * Población mínima
+             * Format: int64
+             */
+            min_population?: number;
+            /**
+             * Población máxima
+             * Format: int64
+             * @description En blanco = sin tope.
+             */
+            max_population?: number | null;
+            /**
+             * Precio anual (céntimos)
+             * Format: int64
+             */
+            annual_price_cents: number;
+            /** Activo */
+            is_active?: boolean;
+        };
+        /** @description Entrada de creación (`POST`) y edición (`PATCH`, `partial=True`). */
+        PricingTierInputRequest: {
+            name: string;
+            /** @default 0 */
+            min_population: number;
+            max_population?: number | null;
+            annual_price_cents: number;
+            /** @default true */
+            is_active: boolean;
         };
         /**
          * @description * `low` - Baja
@@ -9689,6 +9997,17 @@ export interface components {
         _Nombrado: {
             id: string;
             name: string;
+        };
+        _OrganizationBrief: {
+            id: number;
+            name: string;
+            slug: string;
+            org_type: string;
+        };
+        _TierBrief: {
+            id: number;
+            name: string;
+            annual_price_cents: number;
         };
     };
     responses: never;
@@ -18544,6 +18863,515 @@ export interface operations {
                         detail?: string;
                     };
                 };
+            };
+        };
+    };
+    plataforma_billing_contracts_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Contract"][];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    plataforma_billing_contracts_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContractInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ContractInputRequest"];
+                "multipart/form-data": components["schemas"]["ContractInputRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Contract"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    plataforma_billing_contracts_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                contract_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Contract"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    plataforma_billing_contracts_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                contract_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedContractUpdateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedContractUpdateRequest"];
+                "multipart/form-data": components["schemas"]["PatchedContractUpdateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Contract"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    plataforma_billing_contracts_activate_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                contract_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Contract"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    plataforma_billing_contracts_end_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                contract_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Contract"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    plataforma_billing_contracts_invoices_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                contract_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invoice"][];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    plataforma_billing_contracts_invoices_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                contract_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvoiceInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["InvoiceInputRequest"];
+                "multipart/form-data": components["schemas"]["InvoiceInputRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invoice"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    plataforma_billing_invoices_pay_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvoicePayRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["InvoicePayRequest"];
+                "multipart/form-data": components["schemas"]["InvoicePayRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invoice"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    plataforma_billing_summary_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BillingSummary"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    plataforma_billing_tiers_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PricingTier"][];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    plataforma_billing_tiers_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PricingTierInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PricingTierInputRequest"];
+                "multipart/form-data": components["schemas"]["PricingTierInputRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PricingTier"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    plataforma_billing_tiers_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tier_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedPricingTierInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedPricingTierInputRequest"];
+                "multipart/form-data": components["schemas"]["PatchedPricingTierInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PricingTier"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

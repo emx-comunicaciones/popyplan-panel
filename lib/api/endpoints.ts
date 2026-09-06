@@ -316,6 +316,44 @@ export const VERIFICATION = {
 } as const;
 
 /**
+ * `docs/PANEL.md` §13 («Contratos y facturación», tarea B4 backend / W4
+ * panel): tramos de precio, contratos y facturas — área exclusiva de
+ * plataforma, ninguna entidad la ve. Lectura `superadmin`/`support`
+ * (`HasPlatformRole`); escritura (crear/editar/activar/finalizar/pagar)
+ * solo `superadmin`, comprobada a mano dentro de cada vista (403 con
+ * `{"detail": "Esta acción es solo para superadmin de plataforma."}`).
+ */
+export const BILLING = {
+  /** `GET`/`POST /api/plataforma/billing/tiers/`. */
+  TIERS: () => "/api/plataforma/billing/tiers/",
+  /** `PATCH /api/plataforma/billing/tiers/{tier_id}/`. */
+  TIER: (tierId: number | string) => `/api/plataforma/billing/tiers/${tierId}/`,
+  /**
+   * `GET`/`POST /api/plataforma/billing/contracts/?organization=&status=`
+   * — los filtros los añade quien llama (`hooks/useBilling.ts`).
+   */
+  CONTRACTS: () => "/api/plataforma/billing/contracts/",
+  /** `GET`/`PATCH /api/plataforma/billing/contracts/{contract_id}/`. */
+  CONTRACT: (contractId: number | string) => `/api/plataforma/billing/contracts/${contractId}/`,
+  /** `POST .../contracts/{contract_id}/activate/`: `draft -> active`. */
+  CONTRACT_ACTIVATE: (contractId: number | string) =>
+    `/api/plataforma/billing/contracts/${contractId}/activate/`,
+  /** `POST .../contracts/{contract_id}/end/`: `active -> ended`. */
+  CONTRACT_END: (contractId: number | string) => `/api/plataforma/billing/contracts/${contractId}/end/`,
+  /** `GET`/`POST .../contracts/{contract_id}/invoices/`. */
+  CONTRACT_INVOICES: (contractId: number | string) =>
+    `/api/plataforma/billing/contracts/${contractId}/invoices/`,
+  /** `POST /api/plataforma/billing/invoices/{invoice_id}/pay/ {paid_on}`. */
+  INVOICE_PAY: (invoiceId: number | string) => `/api/plataforma/billing/invoices/${invoiceId}/pay/`,
+  /**
+   * `GET /api/plataforma/billing/summary/` (portada de plataforma):
+   * `{active_contracts, annual_value_cents, overdue_invoices,
+   * pending_amount_cents}`.
+   */
+  SUMMARY: () => "/api/plataforma/billing/summary/",
+} as const;
+
+/**
  * `GET /api/admin/dashboard-stats/` (`pop/dashboard_api.py::DashboardStatsView`):
  * agregados generales para el Inicio de plataforma. `IsAdminUser`
  * (`is_staff`, solo `superadmin` lo tiene hoy — ver `hooks/useDashboardStats.ts`,

@@ -29,10 +29,12 @@ import { useOrganizations, useSetOrganizationParent, useVerifyOrganization } fro
 import { useOrgScope } from "@/hooks/useOrgScope";
 import { useEntityCommunities } from "@/hooks/useEntityCommunities";
 import { useEntityEvents } from "@/hooks/useEntityEvents";
+import { useContracts, useInvoices } from "@/hooks/useBilling";
 import { useMetrics } from "@/hooks/useMetrics";
 import { formatCount, formatPct } from "@/lib/metrics/format";
 import { presetPeriod } from "@/lib/metrics/period";
-import type { OrgMembershipRole } from "@/lib/api/types";
+import { formatEuros } from "@/lib/programs/money";
+import type { InvoiceStatus, OrgMembershipRole } from "@/lib/api/types";
 
 export interface EntidadDetailProps {
   orgId: number | string;
@@ -47,6 +49,7 @@ const SECTIONS = [
   "equipo",
   "metricas",
   "comunidades",
+  "contrato",
 ] as const;
 type Section = (typeof SECTIONS)[number];
 
@@ -57,6 +60,19 @@ const SECTION_LABELS: Record<Section, string> = {
   equipo: "Equipo",
   metricas: "Métricas",
   comunidades: "Comunidades y actividades",
+  contrato: "Contrato",
+};
+
+const CONTRACT_STATUS_LABELS: Record<string, string> = {
+  draft: "Borrador",
+  active: "Vigente",
+  ended: "Finalizado",
+};
+
+const INVOICE_STATUS_LABELS: Record<InvoiceStatus, string> = {
+  paid: "Pagada",
+  pending: "Pendiente",
+  overdue: "Vencida",
 };
 
 const ROLE_OPTIONS: OrgMembershipRole[] = [
@@ -514,6 +530,89 @@ function ComunidadesTab({ orgId }: { orgId: number | string }) {
   );
 }
 
+function formatContractDate(iso: string): string {
+  return new Date(`${iso}T00:00:00`).toLocaleDateString("es-ES");
+}
+
+/**
+ * Bloque «Contrato» (tarea W4, `docs/PANEL.md` §13): tramo, vigencia y
+ * último estado de factura, de solo lectura (la gestión completa vive en
+ * `/plataforma/contratos`, `ContratosPanel.tsx`). Lectura acotada a
+ * `superadmin`/`support` (mismo permiso que el resto de `billing`): un
+ * `verifier` sin esa lectura ve «Sin acceso», igual que Equipo/Métricas
+ * más arriba en este mismo fichero para roles insuficientes. Con varios
+ * contratos históricos, prioriza el `active`; si no hay ninguno activo,
+ * el más reciente por `starts_on`.
+ */
+function ContratoTab({ orgId }: { orgId: number | string }) {
+  const contracts = useContracts({ organization: orgId });
+  const contract = contracts.data
+    ? [...contracts.data].sort((a, b) => {
+        if (a.status === "active" && b.status !== "active") return -1;
+        if (b.status === "active" && a.status !== "active") return 1;
+        return b.starts_on.localeCompare(a.starts_on);
+      })[0]
+    : undefined;
+  const invoices = useInvoices(contract?.id);
+  const lastInvoice = invoices.data
+    ? [...invoices.data].sort((a, b) => b.issued_on.localeCompare(a.issued_on))[0]
+    : undefined;
+
+  if (contracts.isError) {
+    if (contracts.error.kind === "sin_acceso") {
+      return (
+        <EmptyState
+          title="Sin acceso"
+          description="Tu rol de plataforma no da acceso a la facturación (solo superadmin y support, docs/PANEL.md §13.2)."
+        />
+      );
+    }
+    return <ErrorState title="No se pudo cargar el contrato" description={contracts.error.message} />;
+  }
+  if (!contracts.data) {
+    return <p className="text-sm text-text-secondary">Cargando…</p>;
+  }
+  if (!contract) {
+    return <EmptyState title="Sin contrato" description="Esta entidad no tiene ningún contrato registrado." />;
+  }
+
+  return (
+    <Card title="Contrato">
+      <dl className="grid grid-cols-2 gap-2 text-sm">
+        <dt className="text-text-secondary">Tramo</dt>
+        <dd className="text-text-base">{contract.tier.name}</dd>
+        <dt className="text-text-secondary">Vigencia</dt>
+        <dd className="text-text-base">
+          {formatContractDate(contract.starts_on)} – {formatContractDate(contract.ends_on)}
+        </dd>
+        <dt className="text-text-secondary">Estado</dt>
+        <dd className="text-text-base">
+          <Badge tone={contract.status === "active" ? "success" : contract.status === "ended" ? "info" : "neutral"}>
+            {CONTRACT_STATUS_LABELS[contract.status] ?? contract.status}
+          </Badge>
+        </dd>
+        <dt className="text-text-secondary">Última factura</dt>
+        <dd className="text-text-base">
+          {lastInvoice ? (
+            <>
+              {formatEuros(lastInvoice.amount_cents)} —{" "}
+              <Badge
+                tone={
+                  lastInvoice.status === "paid" ? "success" : lastInvoice.status === "overdue" ? "error" : "neutral"
+                }
+              >
+                {INVOICE_STATUS_LABELS[(lastInvoice.status as InvoiceStatus) ?? "pending"] ?? lastInvoice.status}
+              </Badge>
+            </>
+          ) : (
+            "Sin facturas"
+          )}
+        </dd>
+      </dl>
+    </Card>
+  );
+}
+
 export function EntidadDetail({ orgId, role }: EntidadDetailProps) {
   const [section, setSection] = useState<Section>("datos");
 
@@ -539,6 +638,7 @@ export function EntidadDetail({ orgId, role }: EntidadDetailProps) {
       {section === "equipo" ? <EquipoTab orgId={orgId} /> : null}
       {section === "metricas" ? <MetricasTab orgId={orgId} /> : null}
       {section === "comunidades" ? <ComunidadesTab orgId={orgId} /> : null}
+      {section === "contrato" ? <ContratoTab orgId={orgId} /> : null}
     </div>
   );
 }

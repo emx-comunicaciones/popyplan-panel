@@ -605,3 +605,70 @@ export interface PaginatedAuditLogList {
   previous: string | null;
   results: AuditLogEntry[];
 }
+
+/**
+ * `docs/PANEL.md` §13 («Contratos y facturación», tarea B4 backend / W4
+ * panel): tramos de precio, contratos y facturas de una entidad — área
+ * exclusiva de plataforma (ninguna entidad, ni siquiera su titular, la
+ * ve). Lectura `superadmin`/`support`; escritura (crear/editar/activar/
+ * finalizar/pagar) solo `superadmin`, comprobada a mano en cada vista
+ * (`hooks/useBilling.ts`). Invariante 7: un contrato `ended` no limita
+ * ninguna función de la entidad — este módulo solo lee/escribe
+ * `billing`, nunca condiciona otro permiso.
+ */
+export type PricingTier = components["schemas"]["PricingTier"];
+/** Entrada de `POST .../tiers/`. */
+export type PricingTierCreateRequest = components["schemas"]["PricingTierInputRequest"];
+/**
+ * Entrada de `PATCH .../tiers/{id}/` (`partial=True`). El esquema
+ * generado (`PatchedPricingTierInputRequest`) marca `min_population`/
+ * `is_active` como obligatorios pese al `partial=True` real del backend
+ * (`PricingTierInputSerializer(required=False, default=…)`) — mismo
+ * quirk de drf-spectacular con un campo `default` no de solo lectura ya
+ * documentado en `ProgramWriteFields` (más arriba en este fichero). Tipo manual con todo
+ * opcional, que es el comportamiento real de `PricingTierDetailView.patch`.
+ */
+export interface PricingTierUpdateRequest {
+  name?: string;
+  min_population?: number;
+  max_population?: number | null;
+  annual_price_cents?: number;
+  is_active?: boolean;
+}
+
+/**
+ * Salida de un contrato (`ContractSerializer`): entidad y tramo
+ * resumidos (`_OrganizationBrief`/`_TierBrief`) más `invoices_count`/
+ * `pending_amount_cents` calculados. El esquema generado marca
+ * `starts_on`/`ends_on`/`status`/`notes` como `readonly` porque son de
+ * solo lectura en *este* serializer de salida — la escritura real va por
+ * `ContractCreateRequest`/`ContractUpdateRequest`, no por `Contract`.
+ */
+export type Contract = components["schemas"]["Contract"];
+export type ContractStatus = components["schemas"]["ContractStatusEnum"];
+/** Entrada de `POST .../contracts/`: `organization`/`tier` por id. */
+export type ContractCreateRequest = components["schemas"]["ContractInputRequest"];
+/**
+ * Entrada de `PATCH .../contracts/{id}/` (`partial=True`): solo fechas y
+ * notas — `organization`/`tier`/`status` no se tocan por aquí (`status`
+ * cambia con `activate`/`end`, `docs/PANEL.md` §13.1).
+ */
+export type ContractUpdateRequest = components["schemas"]["PatchedContractUpdateRequest"];
+
+export type Invoice = components["schemas"]["Invoice"];
+/**
+ * `Invoice.status` (`docs/PANEL.md` §13.1: propiedad calculada, nunca
+ * persistida — `paid` si `paid_on`, si no `overdue`/`pending` según
+ * `due_on`) llega como `string` a secas en `types.generated.ts`
+ * (drf-spectacular no anota el `SerializerMethodField` con un literal).
+ * Tipo manual con los tres valores reales, para pintar el chip de estado
+ * sin un `string` suelto.
+ */
+export type InvoiceStatus = "paid" | "pending" | "overdue";
+/** Entrada de `POST .../contracts/{id}/invoices/`: `number` único (400 si se repite). */
+export type InvoiceCreateRequest = components["schemas"]["InvoiceInputRequest"];
+/** Entrada de `POST .../invoices/{id}/pay/`. */
+export type InvoicePayRequest = components["schemas"]["InvoicePayRequest"];
+
+/** `GET .../summary/` (portada de plataforma, `docs/PANEL.md` §13.2). */
+export type BillingSummary = components["schemas"]["BillingSummary"];

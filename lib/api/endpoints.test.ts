@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   AUTH,
+  BILLING,
   COMMUNITIES,
   DASHBOARD,
   EVENTS,
@@ -263,5 +264,41 @@ describe("endpoints", () => {
 
   it("PROGRAMS.REPORT(orgId, programId) apunta a .../programs/{programId}/report/", () => {
     expect(PROGRAMS.REPORT(7, 3)).toBe("/api/panel/entidad/7/programs/3/report/");
+  });
+
+  it("BILLING.TIERS() apunta a /api/plataforma/billing/tiers/", () => {
+    expect(BILLING.TIERS()).toBe("/api/plataforma/billing/tiers/");
+  });
+
+  it("BILLING.TIER(tierId) apunta a /api/plataforma/billing/tiers/{tierId}/", () => {
+    expect(BILLING.TIER(3)).toBe("/api/plataforma/billing/tiers/3/");
+  });
+
+  it("BILLING.CONTRACTS() apunta a /api/plataforma/billing/contracts/", () => {
+    expect(BILLING.CONTRACTS()).toBe("/api/plataforma/billing/contracts/");
+  });
+
+  it("BILLING.CONTRACT(contractId) apunta a /api/plataforma/billing/contracts/{contractId}/", () => {
+    expect(BILLING.CONTRACT(3)).toBe("/api/plataforma/billing/contracts/3/");
+  });
+
+  it("BILLING.CONTRACT_ACTIVATE(contractId) apunta a .../contracts/{contractId}/activate/", () => {
+    expect(BILLING.CONTRACT_ACTIVATE(3)).toBe("/api/plataforma/billing/contracts/3/activate/");
+  });
+
+  it("BILLING.CONTRACT_END(contractId) apunta a .../contracts/{contractId}/end/", () => {
+    expect(BILLING.CONTRACT_END(3)).toBe("/api/plataforma/billing/contracts/3/end/");
+  });
+
+  it("BILLING.CONTRACT_INVOICES(contractId) apunta a .../contracts/{contractId}/invoices/", () => {
+    expect(BILLING.CONTRACT_INVOICES(3)).toBe("/api/plataforma/billing/contracts/3/invoices/");
+  });
+
+  it("BILLING.INVOICE_PAY(invoiceId) apunta a /api/plataforma/billing/invoices/{invoiceId}/pay/", () => {
+    expect(BILLING.INVOICE_PAY(5)).toBe("/api/plataforma/billing/invoices/5/pay/");
+  });
+
+  it("BILLING.SUMMARY() apunta a /api/plataforma/billing/summary/", () => {
+    expect(BILLING.SUMMARY()).toBe("/api/plataforma/billing/summary/");
   });
 });

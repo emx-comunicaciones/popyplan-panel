@@ -27,6 +27,12 @@
  *   siempre queda vacía — el permiso de la página no depende de eso).
  *   También Métricas (mismo permiso que `moderator`). Nunca
  *   Entidades/Verificaciones/Roles/Auditoría.
+ *
+ * Tarea W4 (Fase 6, `docs/PANEL.md` §13): **Contratos** se añade para
+ * `superadmin` y `support` (`HasPlatformRole('superadmin', 'support')`
+ * en las ocho rutas de `billing`, lectura para los dos; la escritura la
+ * acota el propio `ContratosPanel.tsx`, no el menú). `moderator` y
+ * `verifier` no la ven: ninguno de los dos tiene lectura de facturación.
  */
 export const PLATAFORMA_MENU_ITEMS = [
   "inicio",
@@ -37,6 +43,7 @@ export const PLATAFORMA_MENU_ITEMS = [
   "roles",
   "auditoria",
   "metricas",
+  "contratos",
 ] as const;
 
 export type PlataformaMenuItem = (typeof PLATAFORMA_MENU_ITEMS)[number];
@@ -50,11 +57,18 @@ export const PLATAFORMA_MENU_LABELS: Record<PlataformaMenuItem, string> = {
   roles: "Roles",
   auditoria: "Auditoría",
   metricas: "Métricas",
+  contratos: "Contratos",
 };
 
 const VERIFIER_VISIBLE: readonly PlataformaMenuItem[] = ["inicio", "entidades", "verificaciones"];
 const MODERATOR_VISIBLE: readonly PlataformaMenuItem[] = ["inicio", "reportes", "ayuda", "metricas"];
-const SUPPORT_VISIBLE: readonly PlataformaMenuItem[] = ["inicio", "reportes", "ayuda", "metricas"];
+const SUPPORT_VISIBLE: readonly PlataformaMenuItem[] = [
+  "inicio",
+  "reportes",
+  "ayuda",
+  "metricas",
+  "contratos",
+];
 
 export function plataformaMenuFor(role: string | null | undefined): PlataformaMenuItem[] {
   switch (role) {

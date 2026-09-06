@@ -15,7 +15,7 @@ afterEach(() => {
 });
 
 describe("PlataformaLayout", () => {
-  it("pinta las 8 secciones del menú de plataforma", async () => {
+  it("pinta las 9 secciones del menú de plataforma", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",
       me: buildMe({ org_memberships: [] }),
@@ -34,6 +34,7 @@ describe("PlataformaLayout", () => {
       "Roles",
       "Auditoría",
       "Métricas",
+      "Contratos",
     ]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
@@ -50,6 +51,24 @@ describe("PlataformaLayout", () => {
     render(element);
 
     for (const label of ["Inicio", "Reportes", "Ayuda", "Métricas"]) {
+      expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
+    }
+    for (const label of ["Entidades", "Verificaciones", "Roles", "Auditoría", "Contratos"]) {
+      expect(screen.queryByRole("link", { name: label })).not.toBeInTheDocument();
+    }
+  });
+
+  it("support ve inicio, reportes, ayuda, métricas y contratos (W4: lectura de facturación)", async () => {
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("support"),
+    });
+
+    const element = await PlataformaLayout({ children: <p>contenido</p> });
+    render(element);
+
+    for (const label of ["Inicio", "Reportes", "Ayuda", "Métricas", "Contratos"]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
     for (const label of ["Entidades", "Verificaciones", "Roles", "Auditoría"]) {
