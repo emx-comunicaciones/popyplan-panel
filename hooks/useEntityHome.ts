@@ -20,11 +20,12 @@ import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
 import { SAFETY } from "@/lib/api/endpoints";
-import type { EntityEventRow, MetricsResponse } from "@/lib/api/types";
+import type { EntityEventRow, MetricsResponse, Program } from "@/lib/api/types";
 import { toIso, presetPeriod } from "@/lib/metrics/period";
 
 import { useEntityEvents, type EntityEventsError } from "./useEntityEvents";
 import { useMetrics, type MetricsError } from "./useMetrics";
+import { usePrograms, type ProgramsError } from "./usePrograms";
 
 /**
  * Carry-over de la tarea W6 (hallazgo del e2e contra el backend real):
@@ -52,6 +53,14 @@ export interface EntityHomeResult {
   pendingReports: UseQueryResult<number | null, Error>;
   pendingHelpRequests: UseQueryResult<number | null, Error>;
   metrics: UseQueryResult<MetricsResponse, MetricsError>;
+  /**
+   * Tarjeta «Programas en curso» (tarea W3, Fase 6, `docs/PANEL.md`
+   * §12): reutiliza `usePrograms` (mismo `ver_panel` que el resto de
+   * Inicio, sin 403 que traducir a `null` como los contadores de
+   * guardia) y cuenta `status === 'active'` en el cliente — no hay un
+   * endpoint de solo recuento para esto.
+   */
+  activePrograms: UseQueryResult<Program[], ProgramsError>;
 }
 
 export function useEntityHome(orgId: number | string): EntityHomeResult {
@@ -70,6 +79,7 @@ export function useEntityHome(orgId: number | string): EntityHomeResult {
   });
 
   const metrics = useMetrics("entidad", orgId, presetPeriod("mes"));
+  const activePrograms = usePrograms(orgId);
 
-  return { today: todayEvents, pendingReports, pendingHelpRequests, metrics };
+  return { today: todayEvents, pendingReports, pendingHelpRequests, metrics, activePrograms };
 }

@@ -3,11 +3,11 @@ import { describe, expect, it } from "vitest";
 import { ENTIDAD_MENU_ITEMS, entidadMenuFor } from "./entidadMenu";
 
 describe("entidadMenuFor", () => {
-  it("titular ve las 13 secciones", () => {
+  it("titular ve las 14 secciones", () => {
     expect(entidadMenuFor("titular")).toEqual([...ENTIDAD_MENU_ITEMS]);
   });
 
-  it("moderador ve las 13 secciones", () => {
+  it("moderador ve las 14 secciones", () => {
     expect(entidadMenuFor("moderador")).toEqual([...ENTIDAD_MENU_ITEMS]);
   });
 
@@ -35,12 +35,21 @@ describe("entidadMenuFor", () => {
     expect(entidadMenuFor("dinamizador")).toContain("familias");
   });
 
-  it("analista no ve Personas ni Configuración: solo Inicio e Informes", () => {
-    expect(entidadMenuFor("analista")).toEqual(["inicio", "informes"]);
+  it("dinamizador ve Programas (tarea W3, Fase 6)", () => {
+    expect(entidadMenuFor("dinamizador")).toContain("programas");
   });
 
-  it("referente ve Inicio, Personas y Actividades", () => {
-    expect(entidadMenuFor("referente")).toEqual(["inicio", "personas", "actividades"]);
+  it("analista no ve Personas ni Configuración: solo Inicio, Programas e Informes", () => {
+    expect(entidadMenuFor("analista")).toEqual(["inicio", "programas", "informes"]);
+  });
+
+  it("referente ve Inicio, Personas, Actividades y Programas", () => {
+    expect(entidadMenuFor("referente")).toEqual([
+      "inicio",
+      "personas",
+      "actividades",
+      "programas",
+    ]);
   });
 
   it("un rol desconocido no ve ninguna sección", () => {

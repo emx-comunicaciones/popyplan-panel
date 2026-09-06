@@ -3434,6 +3434,104 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/panel/entidad/{org_id}/programs/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET/POST /api/panel/entidad/{org_id}/programs/`. */
+        get: operations["panel_entidad_programs_list"];
+        put?: never;
+        /** @description `GET/POST /api/panel/entidad/{org_id}/programs/`. */
+        post: operations["panel_entidad_programs_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/entidad/{org_id}/programs/{program_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET/PATCH /api/panel/entidad/{org_id}/programs/{program_id}/`. */
+        get: operations["panel_entidad_programs_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description `GET/PATCH /api/panel/entidad/{org_id}/programs/{program_id}/`. */
+        patch: operations["panel_entidad_programs_partial_update"];
+        trace?: never;
+    };
+    "/api/panel/entidad/{org_id}/programs/{program_id}/activate/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description `POST /api/panel/entidad/{org_id}/programs/{program_id}/activate/`. */
+        post: operations["panel_entidad_programs_activate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/entidad/{org_id}/programs/{program_id}/close/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description `POST /api/panel/entidad/{org_id}/programs/{program_id}/close/
+         *     {"closing_notes": str}`.
+         */
+        post: operations["panel_entidad_programs_close_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/entidad/{org_id}/programs/{program_id}/report/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/entidad/{org_id}/programs/{program_id}/report/?format=csv|pdf`.
+         *
+         *     Informe final: `report_for` (métricas mensuales del periodo del
+         *     programa) más la cabecera del programa (nombre, financiador,
+         *     presupuesto) vía `panel.services.exports`. Siempre audita
+         *     `panel.export` con `program_id` (salvo un PDF que responde 503: no se
+         *     exportó nada, igual que el resto de exportaciones del panel).
+         */
+        get: operations["panel_entidad_programs_report_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/panel/entidad/{org_id}/surveys/": {
         parameters: {
             query?: never;
@@ -8236,6 +8334,19 @@ export interface components {
             category?: number;
             is_active?: boolean;
         };
+        /** @description Entrada de creación (`POST`) y edición (`PATCH`, `partial=True`). */
+        PatchedProgramInputRequest: {
+            name?: string;
+            /** @default  */
+            description: string;
+            /** @default  */
+            funder: string;
+            /** Format: date */
+            starts_on?: string;
+            /** Format: date */
+            ends_on?: string;
+            budget_cents?: number;
+        };
         /** @description Cuerpo de `POST`/`PATCH {id}/register/`. */
         PatchedRegisterRequest: {
             /** @default 0 */
@@ -8625,6 +8736,66 @@ export interface components {
              */
             hide_events_with_blocked?: boolean;
         };
+        /** @description Salida de la API: nunca lista personas (invariante 1). */
+        Program: {
+            readonly id: number;
+            /** Nombre */
+            readonly name: string;
+            /** Descripción */
+            readonly description: string;
+            /** Financiador */
+            readonly funder: string;
+            /**
+             * Inicio
+             * Format: date
+             */
+            readonly starts_on: string;
+            /**
+             * Fin
+             * Format: date
+             */
+            readonly ends_on: string;
+            /** Presupuesto (céntimos) */
+            readonly budget_cents: number;
+            readonly status: components["schemas"]["ProgramStatusEnum"];
+            /** Notas de cierre */
+            readonly closing_notes: string;
+            /**
+             * Creado el
+             * Format: date-time
+             */
+            readonly created_at: string;
+            /**
+             * Actualizado el
+             * Format: date-time
+             */
+            readonly updated_at: string;
+        };
+        /** @description Entrada de `POST .../close/`. */
+        ProgramCloseRequest: {
+            /** @default  */
+            closing_notes: string;
+        };
+        /** @description Entrada de creación (`POST`) y edición (`PATCH`, `partial=True`). */
+        ProgramInputRequest: {
+            name: string;
+            /** @default  */
+            description: string;
+            /** @default  */
+            funder: string;
+            /** Format: date */
+            starts_on: string;
+            /** Format: date */
+            ends_on: string;
+            budget_cents: number;
+        };
+        /**
+         * @description * `draft` - Borrador
+         *     * `active` - En curso
+         *     * `closed` - Cerrado
+         * @enum {string}
+         */
+        ProgramStatusEnum: "draft" | "active" | "closed";
         /**
          * @description Perfil de otra persona: alias, foto, bio, intereses, idiomas,
          *     municipio y nivel de verificación. Nada más (invariantes 1 y 9).
@@ -17044,6 +17215,304 @@ export interface operations {
             };
             /** @description No response body */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_programs_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Program"][];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_programs_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProgramInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ProgramInputRequest"];
+                "multipart/form-data": components["schemas"]["ProgramInputRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Program"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_programs_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+                program_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Program"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_programs_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+                program_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedProgramInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedProgramInputRequest"];
+                "multipart/form-data": components["schemas"]["PatchedProgramInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Program"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_programs_activate_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+                program_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Program"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_programs_close_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+                program_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ProgramCloseRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ProgramCloseRequest"];
+                "multipart/form-data": components["schemas"]["ProgramCloseRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Program"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_programs_report_retrieve: {
+        parameters: {
+            query?: {
+                /** @description csv (por defecto) | pdf */
+                format?: string;
+            };
+            header?: never;
+            path: {
+                org_id: number;
+                program_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

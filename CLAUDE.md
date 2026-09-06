@@ -11,10 +11,10 @@ Tres áreas por rol, cada una bajo su propia ruta:
 
 - **`/entidad/[slug]`** — panel de una asociación/ONG/administración con
   rol de `OrgMembership` (`titular`, `moderador`, `dinamizador`,
-  `analista`, `referente`). Menú de 13 secciones (Inicio, Personas,
+  `analista`, `referente`). Menú de 14 secciones (Inicio, Personas,
   Comunidades, Actividades, Asistencia, Comunicaciones, Encuestas,
-  Recursos, Familias, Reportes, Guardia, Informes, Configuración), con
-  visibilidad por rol (`lib/auth/entidadMenu.ts`).
+  Recursos, Familias, Programas, Reportes, Guardia, Informes,
+  Configuración), con visibilidad por rol (`lib/auth/entidadMenu.ts`).
 - **`/paraguas/[slug]`** — panel agregado de una entidad paraguas (p. ej.
   una diputación) sobre sus entidades hijas: Inicio (métricas) e
   Informes (exportación), ver «Vista del financiador» más abajo.
@@ -86,8 +86,9 @@ MetricsTable,SeriesChart,ExportButtons,ExportPanel}.tsx` (`SeriesChart`
 usa `recharts`; los tests mockean `ResponsiveContainer` en
 `vitest.setup.ts` porque jsdom no implementa `ResizeObserver`).
 `lib/metrics/period.ts` calcula los presets (mes en curso, últimos 3/12
-meses) y valida `since<=until` y ≤366 días (misma regla que el
-backend); `lib/metrics/format.ts` formatea. `hooks/useExport.ts` hace el
+meses, plurianual — ver «Comparativa entre ámbitos y memoria plurianual»
+más abajo) y valida `since<=until` y ≤1461 días (misma regla que el
+backend, `PERIODO_MAX_DIAS`); `lib/metrics/format.ts` formatea. `hooks/useExport.ts` hace el
 `fetch` del fichero a mano (no `lib/api/client.ts::apiFetch`, que
 siempre espera JSON) y dispara la descarga con un `<a download>`
 temporal; 503 (WeasyPrint no disponible, `docs/PANEL.md` §2.3) →
@@ -832,30 +833,103 @@ del informe») con la opción «Por año (memoria plurianual)», que
 **sustituye** (nunca combina) al `groupBy` que le pase el dashboard que
 lo envuelve — el backend nunca acepta los dos desgloses a la vez.
 
-**Desviación documentada de esta tarea — `PeriodPreset += "plurianual"`
-no es literal**: el brief pedía «últimos 3 años naturales completos + el
-actual» para el nuevo preset del selector de periodo
-(`lib/metrics/period.ts`), pero `panel/viewsets.py::_periodo` (backend,
-confirmado leyendo el código real, no solo `docs/PANEL.md` §1.2/§11.1)
-aplica el mismo tope duro de 366 días a `since`/`until` en **todas** las
-rutas — métricas, export y compare — sin ninguna excepción para
-`group_by=year`. Tocar los 3 años anteriores más el actual exige pisar al
-menos un día de cada uno de esos 4 años naturales, y el mínimo posible
-para eso son ~3 años completos (más de 1000 días): matemáticamente
-incompatible con una sola petición de ≤366 días. Dentro de esa cota, la
-ventana más ancha posible solo puede llegar a rozar **dos** años
-naturales distintos (un tramo que cruce un 1 de enero).
-`presetPeriod('plurianual')` usa por tanto los 365 días de calendario
-anteriores a hoy (`MAX_DAYS - 1`, aritmética de días, nunca de meses, así
-nunca depende de si el tramo cruza un 29 de febrero) — la ventana más
-ancha que sigue pasando la propia `validatePeriod` de este módulo y el
-tope real del backend, mostrando de verdad `group_by=year` con más de un
-año cuando el periodo cae a caballo entre dos. Una memoria de 3+ años de
-verdad exigiría varias peticiones fusionadas en el cliente (una por año,
-al estilo de las «cuatro llamadas por periodo» que ya hace
-`ParaguasMetricsDashboard`), fuera del alcance de los ficheros que toca
-esta tarea — pendiente si se retoma la memoria plurianual con más
-profundidad.
+**`PeriodPreset += "plurianual"` (actualizado en la tarea W2b, Fase 6)**:
+al escribir la tarea W2 original, `panel/viewsets.py::_periodo` (backend)
+aplicaba el mismo tope duro de 366 días a `since`/`until` en todas las
+rutas, así que el preset «últimos 3 años naturales completos + el
+actual» que pedía el brief literal era matemáticamente imposible en una
+sola petición (tocar 4 años naturales exige más de 1000 días) —
+`presetPeriod('plurianual')` se quedaba en los 365 días de calendario
+anteriores a hoy, rozando como mucho dos años naturales. La tarea B4
+(en paralelo a W2b) subió `PERIODO_MAX_DIAS` a **1461** (~4 años)
+precisamente para destrabar esto; W2b actualiza `MAX_DAYS` de
+`lib/metrics/period.ts` a 1461 y reescribe el preset de forma literal:
+desde el 1 de enero de hace 3 años hasta hoy (`presetPeriod('plurianual')`
+= `{since: 1-ene-(año actual − 3), until: hoy}`), que siempre cae dentro
+del nuevo tope (como mucho ~1461 días si hoy es 31 de diciembre). Ya no
+hace falta la petición fusionada por años que quedó pendiente en la
+versión anterior de esta nota.
+
+## Programas de la entidad (tarea W3, Fase 6)
+
+`docs/PANEL.md` §12 (contrato del backend, tarea B3): módulo programa —
+campaña con fechas cerradas, presupuesto declarado (`budget_cents`,
+céntimos) e informe final agregado, app `programs` separada de `panel`
+pero reutilizando `panel.services.metrics`/`panel.services.exports`.
+Invariante 1 extendida (docstring del propio backend): un programa nunca
+lista personas, ni siquiera para el titular.
+
+- **`lib/api/endpoints.ts::PROGRAMS`** — `LIST(orgId)`, `DETAIL(orgId,
+  id)`, `ACTIVATE(orgId, id)`, `CLOSE(orgId, id)`, `REPORT(orgId, id)`.
+  `lib/api/types.ts` añade `Program`/`ProgramStatus`/`ProgramCloseRequest`
+  (del esquema generado) y `ProgramWriteFields` a mano:
+  `PatchedProgramInputRequest` (generado) marca `description`/`funder`
+  como obligatorios pese al `partial=True` real del backend
+  (`ProgramInputSerializer(required=False, default='')`) — quirk de
+  drf-spectacular con un campo `default` no de solo lectura, mismo patrón
+  de mismatches ya documentado en ese fichero; `ProgramWriteFields` es el
+  tipo manual con todo opcional en `PATCH` que sí refleja el comportamiento
+  real.
+- **Hooks** (`hooks/use{Programs,Program,ProgramMutations,ProgramReport}.ts`):
+  `usePrograms`/`useProgram` (lectura, mismo patrón `ApiError`→`kind`
+  tipado que el resto del panel); `useProgramMutations.ts` agrupa
+  `useCreateProgram`/`useUpdateProgram`/`useActivateProgram`/
+  `useCloseProgram` — sus 400/409 traducen el mensaje **literal** del
+  backend cuando lo trae (`{"ends_on": [...]}` de `ProgramInputSerializer.
+  validate`, `{"detail": "Un programa cerrado no se modifica."}` de
+  `TransicionInvalida`) en vez de uno genérico, con un `detailOf` que
+  cubre las dos formas de error de DRF (campo por campo y `detail` suelto).
+  `useProgramReport.ts` reutiliza el patrón de `useExport.ts` (el informe
+  no es JSON: `fetch` a mano con el token en memoria y descarga por
+  `<a download>`) pero sin `since`/`until`/`group_by` — la ruta solo
+  acepta `format`, el periodo lo decide el propio programa en el backend.
+- **`lib/programs/{money,validation}.ts`**: `eurosToCents`/`formatEuros`
+  convierten entre el euro con decimales del formulario y `budget_cents`
+  (redondeando tras multiplicar por 100, para no arrastrar el error de
+  coma flotante de JS); `formatEuros` fuerza `useGrouping: "always"` igual
+  que `INTEGER_FORMATTER` de `lib/metrics/format.ts` — sin eso, la CLDR
+  reciente de `es-ES` no agrupa millares por debajo de 5 cifras
+  (`1234,56 €`, no `1.234,56 €`), inconsistente con el resto del panel.
+  `validateProgramDates` valida `fin >= inicio` en el cliente con el
+  mismo mensaje literal que el 400 del backend (§12.3).
+- **`components/entidad/{ProgramasPanel,ProgramaForm,ProgramaDetalle}.tsx`**:
+  `ProgramasPanel` (listado, «Nuevo programa» solo `canManage`) y
+  `ProgramaForm` (alta/edición, mismo patrón `editing: Program | "new"`
+  que `RecursosPanel.tsx::ResourceForm`) siguen los patrones ya
+  establecidos. `ProgramaDetalle` compone cabecera (estado en `Badge`,
+  presupuesto formateado, «Editar»/«Activar»/«Cerrar programa»/
+  «Descargar informe CSV»/«PDF» según estado y permiso) más
+  `ProgramaMetrics`, un componente hijo aparte que solo se monta una vez
+  `program.data` está cargado — así `useMetrics("entidad", orgId, {since:
+  starts_on, until: ends_on}, "month")` nunca se llama con un periodo
+  provisional mientras el programa aún carga (los hooks de React no
+  pueden ser condicionales dentro de un mismo componente). Con
+  `group_by=month`, `by_place` siempre llega vacío
+  (`panel/services/metrics.py::_by_place` solo rellena con
+  `place`/`comarca`/`province`/`organization`): `MetricsTable` se sigue
+  reutilizando tal cual (la sección solo se pinta si `by_place.length >
+  0`, mismo patrón condicional que `RecursosPanel` por categoría) para
+  quedar lista si el backend añadiera algún día un desglose combinado.
+  «Cerrar programa» pide notas de cierre en el propio `ConfirmDialog`
+  (`description` admite cualquier `ReactNode`, no solo texto).
+- **Menú** (`lib/auth/entidadMenu.ts`): Programas es la única sección
+  visible para los cinco roles de entidad (el backend solo pide
+  `ver_panel` para leer, igual que Inicio) — a diferencia de Informes,
+  que además exige `exportar_informes` y por eso queda fuera de
+  `analista`/`referente`. El menú pasa de 13 a **14** secciones;
+  `ANALISTA_VISIBLE`/`REFERENTE_VISIBLE` ganan `"programas"`, sin tocar
+  `DINAMIZADOR_HIDDEN` (no la excluye, así que `dinamizador` la ve por no
+  estar en esa lista). Gestionar (crear/editar/activar/cerrar) sigue
+  acotado a `titular`/`moderador` (`gestionar_programas`, comprobado en
+  el propio componente, `canManage`); descargar el informe usa
+  `canExport` (`titular`/`moderador`/`analista`, calculado en el Server
+  Component de la ficha igual que en Informes, `exportar_informes`).
+- **Inicio de la entidad**: `useEntityHome.ts` añade `activePrograms`
+  (reutiliza `usePrograms`, sin traducir un 403 a `null` como los
+  contadores de guardia — Programas no tiene ese hueco de permiso, es
+  `ver_panel` para todos); `EntityHomeDashboard.tsx` pinta una tarjeta
+  «Programas en curso» con el recuento de `status === 'active'` (no hay
+  endpoint de solo recuento) y un enlace a `/entidad/{slug}/programas`.
 
 ## Diseño de sesión (refresh real desde la tarea W3)
 

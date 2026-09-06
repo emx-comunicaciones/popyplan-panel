@@ -543,6 +543,38 @@ export interface DashboardStats {
 }
 
 /**
+ * `docs/PANEL.md` §12 («Programas», tarea B3 backend / W3 panel): módulo
+ * programa de la entidad — campaña con fechas cerradas, presupuesto
+ * declarado (`budget_cents`, céntimos) e informe final agregado.
+ * Invariante 1 extendida: la salida nunca lista personas.
+ */
+export type Program = components["schemas"]["Program"];
+export type ProgramStatus = components["schemas"]["ProgramStatusEnum"];
+/** Cuerpo de `POST .../programs/{id}/close/`. */
+export type ProgramCloseRequest = components["schemas"]["ProgramCloseRequest"];
+
+/**
+ * Campos editables de un programa (`ProgramInputSerializer`,
+ * `programs/serializers.py` en el backend): `name`/`starts_on`/`ends_on`/
+ * `budget_cents` obligatorios, `description`/`funder` opcionales
+ * (`required=False, default=''`). El esquema generado
+ * (`PatchedProgramInputRequest`) marca `description`/`funder` como
+ * obligatorios pese al `partial=True` real de `PATCH` — quirk de
+ * drf-spectacular con un campo `default=''` no de solo lectura, mismo
+ * patrón de mismatches ya documentado en este fichero (`Attendee`,
+ * `HelpRequestRow`…). Tipo manual con todos los campos opcionales, que es
+ * el comportamiento real de `ProgramDetailView.patch`.
+ */
+export interface ProgramWriteFields {
+  name: string;
+  description: string;
+  funder: string;
+  starts_on: string;
+  ends_on: string;
+  budget_cents: number;
+}
+
+/**
  * `GET /api/safety/audit/` y `GET /api/panel/entidad/{id}/audit/` (tarea
  * P6 del backend, en curso al escribir esta tarea de panel — no
  * documentada todavía en `docs/PANEL.md`; ver el informe de esta tarea

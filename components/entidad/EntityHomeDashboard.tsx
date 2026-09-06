@@ -27,7 +27,7 @@ function formatTime(iso: string): string {
  * financiador).
  */
 export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
-  const { today, pendingReports, pendingHelpRequests, metrics } = useEntityHome(orgId);
+  const { today, pendingReports, pendingHelpRequests, metrics, activePrograms } = useEntityHome(orgId);
 
   return (
     <div className="flex flex-col gap-6">
@@ -90,6 +90,27 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
           </Card>
         ) : pendingReports.isError ? (
           <p className="text-sm text-error">No se pudieron cargar los reportes.</p>
+        ) : null}
+      </section>
+
+      <section aria-labelledby="programas-heading">
+        <h2 id="programas-heading" className="sr-only">
+          Programas
+        </h2>
+        {activePrograms.data ? (
+          <Card title="Programas en curso">
+            <p className="text-2xl font-semibold text-text-base">
+              {activePrograms.data.filter((program) => program.status === "active").length}
+            </p>
+            <Link
+              href={`/entidad/${slug}/programas`}
+              className="text-sm font-medium text-primary-700 underline"
+            >
+              Ir a Programas
+            </Link>
+          </Card>
+        ) : activePrograms.isError ? (
+          <p className="text-sm text-error">No se pudieron cargar los programas.</p>
         ) : null}
       </section>
 

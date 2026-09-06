@@ -281,6 +281,30 @@ export const EXPORT = {
 } as const;
 
 /**
+ * `docs/PANEL.md` §12 («Programas», tarea B3 backend / W3 panel): módulo
+ * programa de la entidad — app `programs`, separada de `panel`. Listado y
+ * ficha piden `ver_panel`; crear, editar, activar y cerrar piden
+ * `gestionar_programas` (`titular`/`moderador`); el informe pide
+ * `exportar_informes`, igual que el resto de exportaciones del panel.
+ */
+export const PROGRAMS = {
+  /** `GET`/`POST /api/panel/entidad/{org_id}/programs/`. */
+  LIST: (orgId: number | string) => `/api/panel/entidad/${orgId}/programs/`,
+  /** `GET`/`PATCH /api/panel/entidad/{org_id}/programs/{program_id}/`. */
+  DETAIL: (orgId: number | string, programId: number | string) =>
+    `/api/panel/entidad/${orgId}/programs/${programId}/`,
+  /** `POST .../programs/{program_id}/activate/`: `draft -> active`. */
+  ACTIVATE: (orgId: number | string, programId: number | string) =>
+    `/api/panel/entidad/${orgId}/programs/${programId}/activate/`,
+  /** `POST .../programs/{program_id}/close/ {closing_notes}`: `active -> closed`. */
+  CLOSE: (orgId: number | string, programId: number | string) =>
+    `/api/panel/entidad/${orgId}/programs/${programId}/close/`,
+  /** `GET .../programs/{program_id}/report/?format=csv|pdf`: informe final agregado. */
+  REPORT: (orgId: number | string, programId: number | string) =>
+    `/api/panel/entidad/${orgId}/programs/${programId}/report/`,
+} as const;
+
+/**
  * `docs/SEGURIDAD_Y_MODERACION.md` §7: verificación por niveles, cola de
  * revisión (`verifier`/`superadmin`).
  */

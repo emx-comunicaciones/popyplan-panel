@@ -17,20 +17,29 @@ describe("presetPeriod", () => {
     expect(presetPeriod("anio", TODAY)).toEqual({ since: "2025-03-15", until: "2026-03-15" });
   });
 
-  it("cualquier preset produce un periodo de ≤ 366 días (nunca dispara la validación de longitud)", () => {
+  it("cualquier preset produce un periodo que sigue validando (nunca dispara la validación de longitud)", () => {
     for (const preset of ["mes", "trimestre", "anio", "plurianual"] as const) {
       const period = presetPeriod(preset, TODAY);
       expect(validatePeriod(period.since, period.until)).toBeNull();
     }
   });
 
-  it("plurianual: la ventana más ancha que sigue validando (365 días de calendario) hasta hoy", () => {
-    expect(presetPeriod("plurianual", TODAY)).toEqual({ since: "2025-03-15", until: "2026-03-15" });
+  it("plurianual: desde el 1 de enero de hace 3 años hasta hoy", () => {
+    expect(presetPeriod("plurianual", TODAY)).toEqual({ since: "2023-01-01", until: "2026-03-15" });
   });
 
-  it("plurianual: toca dos años naturales distintos (para poder mostrar group_by=year con más de una fila)", () => {
+  it("plurianual: toca los 3 años naturales completos anteriores más el actual (4 años distintos)", () => {
     const period = presetPeriod("plurianual", TODAY);
-    expect(period.since.slice(0, 4)).not.toBe(period.until.slice(0, 4));
+    const startYear = Number(period.since.slice(0, 4));
+    const endYear = Number(period.until.slice(0, 4));
+    expect(endYear - startYear).toBe(3);
+  });
+
+  it("plurianual: el 31 de diciembre no dispara la validación de longitud (peor caso, ~4 años completos)", () => {
+    const endOfYear = new Date("2026-12-31T12:00:00Z");
+    const period = presetPeriod("plurianual", endOfYear);
+    expect(period).toEqual({ since: "2023-01-01", until: "2026-12-31" });
+    expect(validatePeriod(period.since, period.until)).toBeNull();
   });
 });
 
@@ -43,12 +52,12 @@ describe("validatePeriod", () => {
     expect(validatePeriod("2026-02-01", "2026-01-01")).toBe("rango_invertido");
   });
 
-  it("rechaza un periodo de más de 366 días", () => {
-    expect(validatePeriod("2025-01-01", "2026-01-02")).toBe("periodo_demasiado_largo");
+  it("rechaza un periodo de más de 1461 días", () => {
+    expect(validatePeriod("2021-01-01", "2025-01-01")).toBe("periodo_demasiado_largo");
   });
 
-  it("acepta un periodo de exactamente 366 días", () => {
-    expect(validatePeriod("2025-01-01", "2026-01-01")).toBeNull();
+  it("acepta un periodo de exactamente 1461 días", () => {
+    expect(validatePeriod("2021-01-02", "2025-01-01")).toBeNull();
   });
 
   it("rechaza una fecha no parseable", () => {

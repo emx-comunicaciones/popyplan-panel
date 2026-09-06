@@ -31,7 +31,7 @@ function session(role: string) {
 }
 
 describe("EntidadLayout", () => {
-  it("titular ve las 13 secciones del menú", async () => {
+  it("titular ve las 14 secciones del menú", async () => {
     getServerSessionMock.mockResolvedValue(session("titular"));
     serverFetchMock.mockResolvedValue({ ok: true, status: 200, data: buildOrganization() });
 
@@ -41,7 +41,7 @@ describe("EntidadLayout", () => {
     });
     render(element);
 
-    for (const label of ["Inicio", "Personas", "Comunidades", "Actividades", "Configuración"]) {
+    for (const label of ["Inicio", "Personas", "Comunidades", "Actividades", "Programas", "Configuración"]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
     expect(screen.getByText("Asociación Vecinal Alfaville")).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe("EntidadLayout", () => {
     expect(screen.queryByRole("link", { name: "Informes" })).not.toBeInTheDocument();
   });
 
-  it("referente ve Inicio, Personas y Actividades, nada más", async () => {
+  it("referente ve Inicio, Personas, Actividades y Programas, nada más", async () => {
     getServerSessionMock.mockResolvedValue(session("referente"));
     serverFetchMock.mockResolvedValue({ ok: true, status: 200, data: buildOrganization() });
 
@@ -92,6 +92,7 @@ describe("EntidadLayout", () => {
     expect(screen.getByRole("link", { name: "Inicio" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Personas" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Actividades" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Programas" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Comunidades" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Informes" })).not.toBeInTheDocument();
   });

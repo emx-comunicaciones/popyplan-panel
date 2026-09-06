@@ -7,6 +7,7 @@ import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildMetricsResponse } from "@/test-utils/fixtures/metrics";
 import { buildOrganization } from "@/test-utils/fixtures/organization";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
+import { buildProgram } from "@/test-utils/fixtures/program";
 
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 const serverFetchMock = vi.hoisted(() => vi.fn());
@@ -37,6 +38,11 @@ function homeState(overrides: Record<string, unknown> = {}) {
     pendingReports: { data: 3, isError: false },
     pendingHelpRequests: { data: 1, isError: false },
     metrics: { data: buildMetricsResponse(), isError: false, error: null },
+    activePrograms: {
+      data: [buildProgram({ status: "active" }), buildProgram({ status: "draft" })],
+      isError: false,
+      error: null,
+    },
     ...overrides,
   };
 }
@@ -116,6 +122,30 @@ describe("EntidadInicioPage", () => {
     expect(screen.getByText("Altas")).toBeInTheDocument();
     expect(screen.getAllByText("<5").length).toBeGreaterThan(0);
     expect(screen.getByText("Actividades celebradas")).toBeInTheDocument();
+  });
+
+  it("pinta «Programas en curso» contando solo los activos, con enlace a Programas", async () => {
+    useEntityHomeMock.mockReturnValue(homeState());
+
+    await renderPage();
+
+    const card = screen.getByText("Programas en curso").parentElement;
+    expect(card).toHaveTextContent("1");
+    expect(screen.getByRole("link", { name: "Ir a Programas" })).toHaveAttribute(
+      "href",
+      "/entidad/alfaville/programas",
+    );
+  });
+
+  it("error cargando programas: pinta el aviso en vez de la tarjeta", async () => {
+    useEntityHomeMock.mockReturnValue(
+      homeState({ activePrograms: { data: undefined, isError: true, error: new Error("fallo") } }),
+    );
+
+    await renderPage();
+
+    expect(screen.queryByText("Programas en curso")).not.toBeInTheDocument();
+    expect(screen.getByText("No se pudieron cargar los programas.")).toBeInTheDocument();
   });
 
   it("sin actividades hoy muestra el estado vacío", async () => {

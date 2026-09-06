@@ -9,6 +9,7 @@ import {
   METRICS,
   ORGANIZATIONS,
   PANEL,
+  PROGRAMS,
   SAFETY,
   USERS,
   VERIFICATION,
@@ -242,5 +243,25 @@ describe("endpoints", () => {
 
   it("DASHBOARD.STATS() apunta a /api/admin/dashboard-stats/", () => {
     expect(DASHBOARD.STATS()).toBe("/api/admin/dashboard-stats/");
+  });
+
+  it("PROGRAMS.LIST(orgId) apunta a /api/panel/entidad/{orgId}/programs/", () => {
+    expect(PROGRAMS.LIST(7)).toBe("/api/panel/entidad/7/programs/");
+  });
+
+  it("PROGRAMS.DETAIL(orgId, programId) apunta a /api/panel/entidad/{orgId}/programs/{programId}/", () => {
+    expect(PROGRAMS.DETAIL(7, 3)).toBe("/api/panel/entidad/7/programs/3/");
+  });
+
+  it("PROGRAMS.ACTIVATE(orgId, programId) apunta a .../programs/{programId}/activate/", () => {
+    expect(PROGRAMS.ACTIVATE(7, 3)).toBe("/api/panel/entidad/7/programs/3/activate/");
+  });
+
+  it("PROGRAMS.CLOSE(orgId, programId) apunta a .../programs/{programId}/close/", () => {
+    expect(PROGRAMS.CLOSE(7, 3)).toBe("/api/panel/entidad/7/programs/3/close/");
+  });
+
+  it("PROGRAMS.REPORT(orgId, programId) apunta a .../programs/{programId}/report/", () => {
+    expect(PROGRAMS.REPORT(7, 3)).toBe("/api/panel/entidad/7/programs/3/report/");
   });
 });

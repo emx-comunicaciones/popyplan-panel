@@ -12,25 +12,17 @@
  * para que pase la validación). «Personalizado» son las fechas que
  * escribe quien usa el panel, validadas con la misma regla.
  *
- * **«Plurianual» (tarea B2, Fase 6, memoria plurianual)**: el brief pedía
- * literalmente «últimos 3 años naturales completos + el actual», pero
- * `panel/viewsets.py::_periodo` (backend) aplica el mismo tope duro de
- * 366 días a `since`/`until` en **todas** las rutas (métricas, export,
- * compare), sin ninguna excepción para `group_by=year` — confirmado
- * leyendo el código real, no solo `docs/PANEL.md` §1.2/§11.1. Tocar 4
- * años naturales distintos (los 3 anteriores + el actual) exige como
- * mínimo pisar un día de cada uno, y el mínimo posible para eso son
- * ~3 años completos (>1000 días): matemáticamente incompatible con el
- * límite de 366 días de una sola petición. Dentro de esa cota, la
- * ventana que más años naturales distintos puede rozar son 2 (un tramo
- * que cruza un 1 de enero). `presetPeriod('plurianual')` usa por tanto
- * la ventana más ancha que sigue pasando `validatePeriod` de este mismo
- * módulo y el tope real del backend (365 días de calendario hasta hoy)
- * en vez del literal del brief — la única forma de mostrar de verdad
- * `group_by=year` con más de un año en una sola petición. Una memoria de
- * 3+ años real exigiría varias peticiones fusionadas en el cliente,
- * fuera del alcance de los ficheros que toca esta tarea (ver el informe
- * de la tarea para más detalle).
+ * **«Plurianual» (tarea B4/W2b, Fase 6, memoria plurianual)**: el brief
+ * pide literalmente «los 3 años naturales completos anteriores + el año
+ * en curso» (desde el 1 de enero de hace 3 años hasta hoy).
+ * `panel/viewsets.py::_periodo` (backend) subió su tope de `since`/`until`
+ * de 366 a `PERIODO_MAX_DIAS = 1461` días (~4 años) precisamente para
+ * hacer esto posible en una sola petición — antes de esa subida, tocar 4
+ * años naturales distintos era matemáticamente incompatible con el
+ * límite de 366 días de una petición (como documentaba una versión
+ * anterior de este comentario), y `presetPeriod('plurianual')` se
+ * quedaba en una ventana de 365 días que como mucho rozaba 2 años.
+ * `MAX_DAYS` de este módulo replica el nuevo tope del backend.
  */
 
 export type PeriodPreset = "mes" | "trimestre" | "anio" | "plurianual" | "personalizado";
@@ -42,7 +34,7 @@ export interface Period {
 
 export type PeriodValidationError = "fecha_invalida" | "rango_invertido" | "periodo_demasiado_largo";
 
-const MAX_DAYS = 366;
+const MAX_DAYS = 1461;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -76,14 +68,14 @@ export function presetPeriod(
     case "anio":
       return { since: toIso(subtractMonths(today, 12)), until };
     case "plurianual": {
-      // `MAX_DAYS` días exactos dispararía la validación de longitud de
-      // este mismo módulo (`validatePeriod` cuenta días inclusive,
-      // `MAX_DAYS + 1` en total): un día menos, en aritmética de días de
-      // calendario (nunca de meses, para no depender de si el tramo cruza
-      // un 29 de febrero), es la ventana más ancha que sigue pasando esa
-      // validación y el tope real del backend.
-      const start = new Date(today.getTime());
-      start.setDate(start.getDate() - (MAX_DAYS - 1));
+      // Los 3 años naturales completos anteriores + el año en curso:
+      // desde el 1 de enero de hace 3 años hasta hoy. Con el tope de
+      // `MAX_DAYS = 1461` (~4 años) esto siempre valida: el tramo más
+      // ancho posible (1 de enero hasta el 31 de diciembre, 4 años
+      // completos) son como mucho 1462 días con un bisiesto de más —
+      // en la práctica, `until = hoy` siempre recorta por debajo del 31
+      // de diciembre del año en curso, así que nunca llega a ese máximo.
+      const start = new Date(today.getFullYear() - 3, 0, 1);
       return { since: toIso(start), until };
     }
   }

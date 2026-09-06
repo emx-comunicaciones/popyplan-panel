@@ -1,12 +1,13 @@
 /**
  * Menú lateral del panel de entidad y su visibilidad por rol (constraint
  * «Entorno panel web» y decisiones de la tarea W1). Las 13 secciones del
- * brief; qué ve cada rol sale de la matriz `entities/permissions.py` y de
- * las reglas explícitas de la tarea:
+ * brief original (14 desde que la tarea W3 de la Fase 6 añade Programas,
+ * ver más abajo); qué ve cada rol sale de la matriz `entities/permissions.py`
+ * y de las reglas explícitas de la tarea:
  * - `titular`/`moderador`: todo.
  * - `dinamizador`: todo salvo Configuración, Reportes y Comunicaciones.
- * - `analista`: solo Inicio e Informes (nunca lista nominal).
- * - `referente`: solo Inicio, Personas y Actividades (sus personas asignadas).
+ * - `analista`: solo Inicio, Programas e Informes (nunca lista nominal).
+ * - `referente`: solo Inicio, Personas, Actividades y Programas (sus personas asignadas).
  *
  * Tarea W4a: Comunicaciones, Encuestas, Recursos y Familias todavía no
  * tenían página real — para que no dieran 404, se ocultaban también del
@@ -42,6 +43,15 @@
  * espacios y «Nueva comunidad de familias»): `dinamizador` la ve en modo
  * solo lectura, sin que el backend necesite un permiso de escritura
  * específico para él (`PuedeEnEntidad('ver_panel')` ya lo cubre, §8.3).
+ *
+ * Tarea W3 de la Fase 6 (`docs/PANEL.md` §12, «Programas»): sección nueva,
+ * visible para los cinco roles de entidad (el backend solo pide
+ * `ver_panel` para leer, igual que Inicio) — a diferencia de Informes,
+ * que exige además `exportar_informes` y por eso queda fuera de
+ * `analista`/`referente`. Gestionar (crear/editar/activar/cerrar) sigue
+ * acotado a `titular`/`moderador` (`gestionar_programas`), comprobado por
+ * `ProgramasPanel`/`ProgramaDetalle` (`canManage`), igual patrón que
+ * Familias/Recursos/Comunicaciones.
  */
 import type { EntidadPanelRole } from "./area";
 
@@ -55,6 +65,7 @@ export const ENTIDAD_MENU_ITEMS = [
   "encuestas",
   "recursos",
   "familias",
+  "programas",
   "reportes",
   "guardia",
   "informes",
@@ -73,6 +84,7 @@ export const ENTIDAD_MENU_LABELS: Record<EntidadMenuItem, string> = {
   encuestas: "Encuestas",
   recursos: "Recursos",
   familias: "Familias",
+  programas: "Programas",
   reportes: "Reportes",
   guardia: "Guardia",
   informes: "Informes",
@@ -95,8 +107,13 @@ const DINAMIZADOR_HIDDEN: readonly EntidadMenuItem[] = [
   "informes",
   ...PENDING_SECTIONS,
 ];
-const ANALISTA_VISIBLE: readonly EntidadMenuItem[] = ["inicio", "informes"];
-const REFERENTE_VISIBLE: readonly EntidadMenuItem[] = ["inicio", "personas", "actividades"];
+const ANALISTA_VISIBLE: readonly EntidadMenuItem[] = ["inicio", "programas", "informes"];
+const REFERENTE_VISIBLE: readonly EntidadMenuItem[] = [
+  "inicio",
+  "personas",
+  "actividades",
+  "programas",
+];
 
 export function entidadMenuFor(role: EntidadPanelRole | string): EntidadMenuItem[] {
   switch (role) {

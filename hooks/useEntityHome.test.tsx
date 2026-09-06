@@ -42,6 +42,7 @@ function routedApiFetch(handlers: {
   reports?: unknown;
   helpRequests?: unknown;
   metrics?: unknown;
+  programs?: unknown;
   reportsError?: ApiError;
   helpRequestsError?: ApiError;
 }) {
@@ -58,6 +59,9 @@ function routedApiFetch(handlers: {
     if (path.includes("/api/safety/help-requests/pending/")) {
       if (handlers.helpRequestsError) return Promise.reject(handlers.helpRequestsError);
       return Promise.resolve(handlers.helpRequests ?? [{}]);
+    }
+    if (path === "/api/panel/entidad/7/programs/") {
+      return Promise.resolve(handlers.programs ?? []);
     }
     if (path.startsWith("/api/panel/entidad/7/metrics/")) {
       return Promise.resolve(handlers.metrics ?? buildMetricsResponse());
@@ -82,6 +86,7 @@ describe("useEntityHome", () => {
     await waitFor(() => expect(result.current.pendingReports.isSuccess).toBe(true));
     await waitFor(() => expect(result.current.pendingHelpRequests.isSuccess).toBe(true));
     await waitFor(() => expect(result.current.metrics.isSuccess).toBe(true));
+    await waitFor(() => expect(result.current.activePrograms.isSuccess).toBe(true));
 
     expect(apiFetchMock).toHaveBeenCalledWith(
       `/api/panel/entidad/7/events/?since=${TODAY}&until=${TODAY}`,
@@ -92,10 +97,12 @@ describe("useEntityHome", () => {
     expect(apiFetchMock).toHaveBeenCalledWith(
       "/api/safety/help-requests/pending/?organization=7",
     );
+    expect(apiFetchMock).toHaveBeenCalledWith("/api/panel/entidad/7/programs/");
     expect(result.current.today.data).toEqual(TODAY_EVENTS);
     expect(result.current.pendingReports.data).toBe(2);
     expect(result.current.pendingHelpRequests.data).toBe(1);
     expect(result.current.metrics.data).toEqual(buildMetricsResponse());
+    expect(result.current.activePrograms.data).toEqual([]);
   });
 
   it("un 403 en reportes/ayuda se traduce en count:null (la tarjeta no es para este rol), no en error", async () => {
