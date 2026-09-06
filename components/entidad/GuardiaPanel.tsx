@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -15,27 +16,60 @@ import type { HelpRequestRow } from "@/lib/api/types";
 
 export interface GuardiaPanelProps {
   orgId: number | string;
+  /** Slug de la entidad, para enlazar a la ficha de la persona cuando es miembro. */
+  slug: string;
 }
 
 function formatDateTime(iso: string): string {
   return new Date(iso).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
 }
 
+/**
+ * Aviso «no lo llevo mal» al día: no se puede saber si la persona
+ * pertenece a la entidad ni cómo contactarla solo con el nombre. Con
+ * `is_member`, el nombre enlaza a la ficha (`/entidad/{slug}/personas/
+ * {userId}`, invariante 9 — la ficha nunca lleva contacto); sin
+ * membresía, un badge explícito («No pertenece a la entidad») en vez de
+ * un enlace que daría 404/«Sin acceso». `referent` (si lo hay) se pinta
+ * aparte, tal cual llega (`{id, public_name}`, mismo patrón que
+ * `ReferentRef`).
+ */
 function HelpRequestCard({
   request,
   orgId,
+  slug,
 }: {
   request: HelpRequestRow;
   orgId: number | string;
+  slug: string;
 }) {
   const acknowledge = useAcknowledgeHelpRequest(orgId);
+  const { is_member: isMember, public_name: publicName, referent } = request.user_display;
 
   return (
     <li>
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="font-medium text-text-base">{request.user_display.public_name}</p>
+            <div className="flex flex-wrap items-center gap-2">
+              {isMember ? (
+                <Link
+                  href={`/entidad/${slug}/personas/${request.user_display.id}`}
+                  className="font-medium text-primary-700 hover:underline"
+                >
+                  {publicName}
+                </Link>
+              ) : (
+                <p className="font-medium text-text-base">{publicName}</p>
+              )}
+              {isMember ? null : <Badge tone="info">No pertenece a la entidad</Badge>}
+            </div>
+            {isMember ? null : (
+              <p className="text-sm text-text-secondary">Se apuntó a la actividad sin ser miembro.</p>
+            )}
+            {referent ? (
+              <p className="text-sm text-text-secondary">Referente: {referent.public_name}</p>
+            ) : null}
             <p className="text-sm text-text-secondary">
               {request.community_display ? request.community_display.name : "Sin comunidad"}
               {request.event_display ? ` · ${request.event_display.title}` : ""}
@@ -121,9 +155,12 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
  * (`PATCH .../organizations/{id}/ {help_phone}`). Fijar `on_call_user`
  * (persona de guardia) exige un id de usuario que hoy no hay forma de
  * buscar desde el panel (`GET /api/users/users/` es solo para
- * `IsAdminUser`) — ver «Desviaciones» del informe.
+ * `IsAdminUser`) — ver «Desviaciones» del informe. Cada aviso enlaza a la
+ * ficha de la persona (`/entidad/{slug}/personas/{userId}`) solo si
+ * `user_display.is_member`; si no, un badge «No pertenece a la entidad»
+ * (ver `HelpRequestCard`).
  */
-export function GuardiaPanel({ orgId }: GuardiaPanelProps) {
+export function GuardiaPanel({ orgId, slug }: GuardiaPanelProps) {
   const requests = usePendingHelpRequests(orgId);
 
   return (
@@ -147,10 +184,14 @@ export function GuardiaPanel({ orgId }: GuardiaPanelProps) {
         ) : (
           <ul className="flex flex-col gap-3">
             {requests.data.map((request) => (
-              <HelpRequestCard key={request.id} request={request} orgId={orgId} />
+              <HelpRequestCard key={request.id} request={request} orgId={orgId} slug={slug} />
             ))}
           </ul>
         )}
+        <p className="mt-3 text-sm text-text-secondary">
+          Popyplan no guarda teléfonos: contacta con la persona por el chat de la app o a través de su
+          referente.
+        </p>
       </section>
     </div>
   );

@@ -18,15 +18,30 @@ function formatDateTime(iso: string): string {
   return new Date(iso).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
 }
 
+/**
+ * Igual que `GuardiaPanel::HelpRequestCard` en cuanto a `is_member`/
+ * `referent`, pero sin enlace a la ficha: la plataforma no tiene una
+ * ruta de ficha de persona propia, solo la de la entidad
+ * (`/entidad/{slug}/personas/{userId}`) y aquí no se conoce el slug de
+ * cada fila sin una petición aparte por entidad — el badge «No pertenece
+ * a la entidad» sigue siendo útil sin el enlace.
+ */
 function HelpRequestCard({ request }: { request: HelpRequestRow }) {
   const acknowledge = useAcknowledgeHelpRequestGlobal();
+  const { is_member: isMember, public_name: publicName, referent } = request.user_display;
 
   return (
     <li>
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="font-medium text-text-base">{request.user_display.public_name}</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="font-medium text-text-base">{publicName}</p>
+              {isMember ? null : <Badge tone="info">No pertenece a la entidad</Badge>}
+            </div>
+            {referent ? (
+              <p className="text-sm text-text-secondary">Referente: {referent.public_name}</p>
+            ) : null}
             <p className="text-sm text-text-secondary">
               {request.organization_display ? request.organization_display.name : "Sin entidad"}
               {request.community_display ? ` · ${request.community_display.name}` : ""}

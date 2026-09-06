@@ -214,12 +214,30 @@ export type ReportResolveRequest = components["schemas"]["ReportResolveRequest"]
 export type ReportEscalateRequest = components["schemas"]["ReportEscalateRequest"];
 
 /**
+ * `HelpRequest.user_display` gana `is_member`/`referent` (tarea «ficha,
+ * pertenencia y referente en los avisos de ayuda»): si la persona tiene
+ * membresía en la entidad del aviso, y su referente ahí (`{id,
+ * public_name}`), si tiene uno asignado. Al escribir esta tarea el
+ * backend todavía no lo exponía en `docs/schema.yaml`/
+ * `types.generated.ts` (`UserDisplay` sin cambios) — tipo manual, mismo
+ * patrón que `OrgMembershipForArea`; si `npm run gen:types` ya trae estos
+ * campos en `UserDisplay`, esta extensión pasa a ser redundante y se
+ * puede simplificar a `components["schemas"]["UserDisplay"]` a secas.
+ */
+export type HelpRequestUserDisplay = components["schemas"]["UserDisplay"] & {
+  is_member: boolean;
+  referent: { id: number; public_name: string } | null;
+};
+
+/**
  * `GET /api/safety/help-requests/pending/?organization=<id>` (§5): sin
  * paginar de verdad (`Response(HelpRequestSerializer(qs, many=True).data)`
  * en `safety/viewsets.py`), pese a que `docs/schema.yaml` la marca (mal)
  * como `PaginatedHelpRequestList` — mismo patrón que `Attendee` en W3.
  */
-export type HelpRequestRow = components["schemas"]["HelpRequest"];
+export type HelpRequestRow = Omit<components["schemas"]["HelpRequest"], "user_display"> & {
+  user_display: HelpRequestUserDisplay;
+};
 
 /**
  * `GET /api/communities/{id}/members/`, `.../pending-requests/` y las

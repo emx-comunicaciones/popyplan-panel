@@ -1,4 +1,23 @@
-import type { HelpRequestRow } from "@/lib/api/types";
+import type { HelpRequestRow, HelpRequestUserDisplay } from "@/lib/api/types";
+
+/**
+ * `HelpRequest.user_display` (contrato ampliado, ver CLAUDE.md
+ * «Guardia»/«Ayuda»): por defecto una persona miembro de la entidad, sin
+ * referente asignado — los otros dos casos (sin membresía, con
+ * referente) se piden con `overrides`.
+ */
+export function buildHelpRequestUserDisplay(
+  overrides: Partial<HelpRequestUserDisplay> = {},
+): HelpRequestUserDisplay {
+  return {
+    id: 5,
+    public_name: "Marta L.",
+    photo: null,
+    is_member: true,
+    referent: null,
+    ...overrides,
+  };
+}
 
 export function buildHelpRequest(overrides: Partial<HelpRequestRow> = {}): HelpRequestRow {
   return {
@@ -6,7 +25,7 @@ export function buildHelpRequest(overrides: Partial<HelpRequestRow> = {}): HelpR
     user: 5,
     community: "44444444-4444-4444-4444-444444444444",
     organization: { id: 7, name: "Asociación Vecinal Alfaville" },
-    user_display: { id: 5, public_name: "Marta L.", photo: null },
+    user_display: buildHelpRequestUserDisplay(),
     community_display: { id: "44444444-4444-4444-4444-444444444444", name: "Paseos al atardecer" },
     event_display: null,
     organization_display: { id: 7, name: "Asociación Vecinal Alfaville" },

@@ -547,6 +547,20 @@ Ayuda/Métricas (`safety/services/reports.py::queue` y
   `GET /api/safety/help-requests/pending/` sin `organization` (P7,
   `docs/PANEL.md` §10.1) en vez de recorrer todas las entidades
   (N+1 peticiones, huella de la pregunta 26).
+- **Ficha, pertenencia y referente en los avisos de ayuda** (fix
+  posterior a W6): `HelpRequest.user_display` gana `is_member` y
+  `referent: {id, public_name} | null` (`lib/api/types.ts
+  ::HelpRequestUserDisplay`, tipo manual mientras el backend no lo trae
+  en `types.generated.ts`). `GuardiaPanel.tsx` enlaza el nombre a
+  `/entidad/{slug}/personas/{userId}` solo si `is_member`; si no, badge
+  «No pertenece a la entidad» y el texto «Se apuntó a la actividad sin
+  ser miembro.» — sin enlace, para no aterrizar en una ficha 404/«Sin
+  acceso» de alguien sin membresía. `AyudaPendienteList.tsx` pinta el
+  mismo badge (sin enlace: no conoce el slug de cada fila) y, en ambos,
+  «Referente: `<public_name>`» cuando lo hay. Los dos listan además una
+  línea fija bajo los avisos: «Popyplan no guarda teléfonos: contacta con
+  la persona por el chat de la app o a través de su referente.»
+  (invariante 9, sin contacto directo en el panel).
 - **Selects de referente con nombre**
   (`components/people/AddPersonDialog.tsx`,
   `components/entidad/PersonSheet.tsx::AssignReferentForm`): pintan
