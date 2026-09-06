@@ -7,7 +7,7 @@
  * Regla de paraguas (W1): `OrgMembershipRef`, tal y como lo sirve hoy
  * `users/profile_serializers.py::OrgMembershipRefSerializer`, no incluye
  * `org_type` — la instrucción de esta tarea es tratar una membresía como
- * paraguas **solo si** el payload lo expone (`org_type === 'administracion'`)
+ * paraguas **solo si** el payload lo expone (`organization_type === 'administracion'` (o `org_type` heredado))
  * y, si no, como entidad normal. Hoy nunca lo expone, así que toda
  * membresía resuelve a `entidad` salvo que el backend añada el campo más
  * adelante (entonces esta función ya sabe distinguirlo sin cambios).
@@ -53,7 +53,7 @@ function hasPanelRole(membership: OrgMembershipForArea): boolean {
 }
 
 function isParaguas(membership: OrgMembershipForArea): boolean {
-  return membership.org_type === "administracion";
+  return (membership.organization_type ?? membership.org_type) === "administracion";
 }
 
 export function resolveArea(

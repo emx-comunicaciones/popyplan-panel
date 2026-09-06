@@ -30,7 +30,7 @@ describe("resolveArea", () => {
         buildOrgMembership({
           role: "analista",
           organization_slug: "diputacion-demo",
-          org_type: "administracion",
+          organization_type: "administracion",
         }),
       ],
     });
