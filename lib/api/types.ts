@@ -218,16 +218,10 @@ export type ReportEscalateRequest = components["schemas"]["ReportEscalateRequest
  * pertenencia y referente en los avisos de ayuda»): si la persona tiene
  * membresía en la entidad del aviso, y su referente ahí (`{id,
  * public_name}`), si tiene uno asignado. Al escribir esta tarea el
- * backend todavía no lo exponía en `docs/schema.yaml`/
- * `types.generated.ts` (`UserDisplay` sin cambios) — tipo manual, mismo
- * patrón que `OrgMembershipForArea`; si `npm run gen:types` ya trae estos
- * campos en `UserDisplay`, esta extensión pasa a ser redundante y se
- * puede simplificar a `components["schemas"]["UserDisplay"]` a secas.
+ * backend lo expone en `docs/schema.yaml` como `HelpRequestUserDisplay`
+ * (commit 57f8e1d): alias directo del tipo generado.
  */
-export type HelpRequestUserDisplay = components["schemas"]["UserDisplay"] & {
-  is_member: boolean;
-  referent: { id: number; public_name: string } | null;
-};
+export type HelpRequestUserDisplay = components["schemas"]["HelpRequestUserDisplay"];
 
 /**
  * `GET /api/safety/help-requests/pending/?organization=<id>` (§5): sin

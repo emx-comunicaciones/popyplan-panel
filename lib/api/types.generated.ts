@@ -7361,6 +7361,16 @@ export interface components {
          *     `*_display` llevan lo necesario para pintar la lista sin una
          *     petición aparte por cada fila (de ahí el `select_related` del
          *     queryset en `HelpRequestViewSet`).
+         *
+         *     `user_display` añade `is_member` (si quien pide ayuda tiene
+         *     `entities.OrgMembership` en la entidad del aviso; `False` sin entidad)
+         *     y `referent` (su `entities.Reference` en esa entidad, `{id,
+         *     public_name}` del referente, o `None`). Para una lista, llamar antes
+         *     `attach_membership_and_referent` sobre el queryset (lo hace
+         *     `HelpRequestViewSet.pending`): precalcula ambos en dos consultas para
+         *     toda la lista en vez de una por fila; sin eso (p. ej. al serializar un
+         *     único `HelpRequest`, como en `create`/`acknowledge`), cae a una
+         *     consulta por campo sobre ese único objeto.
          */
         HelpRequest: {
             /** Format: uuid */
@@ -7373,7 +7383,7 @@ export interface components {
              */
             readonly community: string | null;
             readonly organization: components["schemas"]["OrganizationRef"] | null;
-            readonly user_display: components["schemas"]["UserDisplay"];
+            readonly user_display: components["schemas"]["HelpRequestUserDisplay"];
             readonly community_display: components["schemas"]["CommunityRef"] | null;
             readonly event_display: components["schemas"]["EventRef"] | null;
             readonly organization_display: components["schemas"]["OrganizationRef"] | null;
@@ -7402,6 +7412,19 @@ export interface components {
             community?: string | null;
             /** Format: uuid */
             event?: string | null;
+        };
+        /**
+         * @description `user_display` de `HelpRequestSerializer`: además de la identidad
+         *     pública mínima, si quien pide ayuda es miembro de la entidad del aviso
+         *     (`entities.OrgMembership`) y quién es su referente asignado en ella
+         *     (`entities.Reference`), si lo tiene. Solo para el esquema.
+         */
+        HelpRequestUserDisplay: {
+            id: number;
+            public_name: string;
+            photo: string | null;
+            is_member: boolean;
+            referent: components["schemas"]["ReferentDisplay"] | null;
         };
         /** @description Una entidad que he ocultado (regla 02: no se bloquea, se oculta). */
         HiddenOrganization: {
@@ -9188,6 +9211,15 @@ export interface components {
             /** @description Persona con rol referente en esta entidad. */
             referent_user: number;
         };
+        /**
+         * @description El referente de quien pide ayuda, con lo justo para pintarlo.
+         *     Solo para el esquema: `HelpRequestSerializer.get_user_display`
+         *     devuelve un dict con esta forma (o `None`).
+         */
+        ReferentDisplay: {
+            id: number;
+            public_name: string;
+        };
         ReferentRef: {
             user_id: number;
             public_name: string;
@@ -9739,16 +9771,6 @@ export interface components {
              * @description Fecha de registro
              */
             date_joined: string;
-        };
-        /**
-         * @description Identidad pública mínima: alias y foto, nunca más (invariante 1).
-         *     Solo para el esquema: los `get_*_display` de abajo devuelven dicts con
-         *     esta forma.
-         */
-        UserDisplay: {
-            id: number;
-            public_name: string;
-            photo: string | null;
         };
         /** @description Serializer para respuestas de error de usuarios */
         UserErrorResponse: {
