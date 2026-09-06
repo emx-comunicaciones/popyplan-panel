@@ -38,6 +38,26 @@ vez expone `org_type === 'administracion'` (campo opcional en
 membresía resuelve a `entidad`. Si el backend añade el campo, no hace
 falta tocar `resolveArea`.
 
+**Actualización (tarea W5, Fase 6): el campo sí llegó, pero con otro
+nombre.** `users/profile_serializers.py::OrgMembershipRefSerializer` ya
+expone `organization_type` (`source='organization.org_type'`) desde la
+«ronda de cierre de Fase 5» — confirmado contra el backend seedeado
+(`GET /api/users/users/me/` de `panel-analista-gfa@test.com` devuelve
+`"organization_type": "administracion"`) y contra `docs/schema.yaml`
+regenerado (`OrgMembershipRef.organization_type: string`, sin `org_type`).
+El párrafo de arriba (y `lib/auth/area.ts::isParaguas`/
+`lib/api/types.ts::OrgMembershipForArea`) siguen mirando `org_type`, un
+nombre de campo que el backend nunca ha usado — la condición nunca se ha
+cumplido ni se cumplirá tal cual está. **No se corrige en esta tarea**
+(fuera del alcance de W5, y cambiar `resolveArea` cambia a qué URL
+aterriza el login de cualquier `analista`/`titular` de una entidad
+paraguas, con eco en `lib/auth/area.test.ts` y en el propio
+`e2e/comparativa.spec.ts` de esta tarea, que sigue navegando a mano a
+`/paraguas/...` por si acaso): el fix real es de una línea
+(`membership.organization_type === "administracion"` en
+`isParaguas`, y renombrar el campo opcional de `OrgMembershipForArea`),
+documentado aquí para quien retome esta pantalla.
+
 ## Contratos que consume (repo backend `~/Code/popyplan`)
 
 - `POST /api/auth/login/` (`users/auth_viewsets.py::AuthViewSet.login`):
@@ -719,17 +739,32 @@ comprobación del nombre de fichero `popyplan-<slug>-<since>-<until>.csv`),
 `analista.spec.ts` (métricas del paraguas + exportar PDF, con 503
 tratado como salto documentado si WeasyPrint no está disponible),
 `plataforma.spec.ts` (crear y verificar una entidad + abrir un reporte
-escalado de la cola).
+escalado de la cola). Tarea W5 (Fase 6) añade cuatro specs más:
+`accesibilidad.spec.ts` (`/accesibilidad` sin sesión; en `/login`, `Tab`
+recorre email → contraseña → botón, con el foco siempre visible —
+`getComputedStyle(document.activeElement).outlineStyle`), `programas.spec.ts`
+(titular Bidasoa crea, activa y cierra un programa, y descarga su
+informe CSV), `comparativa.spec.ts` (analista GFA ve la comparativa por
+comarca del paraguas con alguna celda `<5`/`—` — el preset por defecto
+«Este mes» no tiene actividad suficiente para que `compare_for` devuelva
+ninguna fila en la demo sembrada, así que el spec cambia a «Año» antes
+de comprobarlo) y `contratos.spec.ts` (superadmin crea un tramo de
+precio y un contrato nuevo con él, para Asociación Bidasoa). Ninguno de
+los cuatro necesita las fixtures de `helpers.ts` de arriba (fechas
+fijas, sin ventana horaria que provocar).
 
-**Hueco de contrato re-confirmado en esta tarea** (pregunta 3 de
-`docs/preguntas-diseno.md`, sigue abierta): `org_type` sigue sin
-aparecer en `org_memberships`, así que el login de la analista de la
-diputación (`panel-analista-gfa@test.com`) aterriza en
-`/entidad/gipuzkoako-foru-aldundia`, no en `/paraguas/...`.
-`e2e/analista.spec.ts` navega a la vista de paraguas a propósito
-(`page.goto('/paraguas/gipuzkoako-foru-aldundia')`), que sí funciona
-para esa cuenta (el gate de la página solo mira membresía + rol, no
-`org_type`).
+**Hueco de contrato re-confirmado en esta tarea, con corrección**
+(pregunta 3 de `docs/preguntas-diseno.md`): el login de la analista de
+la diputación (`panel-analista-gfa@test.com`) sigue aterrizando en
+`/entidad/gipuzkoako-foru-aldundia`, no en `/paraguas/...` — pero **no**
+porque el backend no exponga el tipo de organización en
+`org_memberships` (como decía esta nota hasta ahora): sí lo expone, como
+`organization_type`, no como `org_type` (ver «Regla de paraguas» al
+principio de este fichero, actualización de la tarea W5). `e2e/analista.spec.ts`
+y `e2e/comparativa.spec.ts` (nuevo en esta tarea) navegan a la vista de
+paraguas a propósito (`page.goto('/paraguas/gipuzkoako-foru-aldundia')`),
+que sí funciona para esa cuenta (el gate de la página solo mira
+membresía + rol, no el tipo de organización).
 
 **Límite de peticiones del login, imprescindible saberlo**: `POST
 /api/auth/login/` está limitado a **5 intentos por 60 segundos por
@@ -931,6 +966,85 @@ lista personas, ni siquiera para el titular.
   «Programas en curso» con el recuento de `status === 'active'` (no hay
   endpoint de solo recuento) y un enlace a `/entidad/{slug}/programas`.
 
+**Bug real encontrado por `e2e/programas.spec.ts` (tarea W5, no por
+Vitest — los mocks de test nunca ejercitan la clave real de la query):
+la ficha de un programa no se refrescaba sola tras «Activar»/«Cerrar
+programa»/«Editar».** `useProgram(orgId, programId)` guarda su caché con
+`programId` tal cual llega de la página — un **string** (parámetro de
+ruta de Next.js) — pero `useActivateProgram`/`useCloseProgram`/
+`useUpdateProgram` (`hooks/useProgramMutations.ts`) invalidan con el
+`id` que devuelve la API tras la mutación (`data.id`/`editing.id`), un
+**number** (`Program.id`). Para `invalidateQueries`, `1 !== "1"`: la
+invalidación de `["panel-program", orgId, programId]` nunca coincidía
+con la entrada cacheada, así que el botón parecía no hacer nada — la
+mutación sí llegaba al backend (confirmado con la traza de Playwright:
+`POST .../activate/` respondía 200), solo la UI se quedaba con el
+estado viejo hasta recargar la página a mano. Arreglado normalizando a
+`String(programId)` en la clave, tanto en `useProgram.ts` como en
+`invalidatePrograms` (`useProgramMutations.ts`) — mismo patrón que
+evitaría el mismo fallo en cualquier hook futuro que mezcle un id de
+ruta (string) con un id de API (number) en la misma clave de caché.
+
+## Contratos y facturación de plataforma (tarea W4, Fase 6)
+
+`docs/PANEL.md` §13 (contrato del backend, tarea B4): app `billing`,
+exclusiva del área de plataforma — ninguna entidad la ve, ni siquiera su
+titular. Tres modelos: `PricingTier` (tramo de precio anual por rango de
+población), `Contract` (`draft -> active -> ended`, siempre hacia
+adelante) e `Invoice` (`status` calculado: `paid`/`pending`/`overdue`).
+Invariante 7 extendida (docstring del propio backend, `billing/models.py`):
+un contrato `ended` no condiciona ninguna función de la entidad, la
+plataforma solo lo ve en su lista para gestionar el cobro.
+
+- **`lib/api/endpoints.ts::BILLING`** — `TIERS`, `TIER`, `CONTRACTS`,
+  `CONTRACT`, `CONTRACT_ACTIVATE`, `CONTRACT_END`, `CONTRACT_INVOICES`,
+  `INVOICE_PAY`, `SUMMARY`. `lib/api/types.ts` toma `PricingTier`/
+  `Contract`/`ContractStatus`/`Invoice`/`BillingSummary` del esquema
+  generado sin discrepancias; dos tipos manuales:
+  `PricingTierUpdateRequest` (el generado `PatchedPricingTierInputRequest`
+  marca `min_population`/`is_active` como obligatorios pese al
+  `partial=True` real — mismo quirk de drf-spectacular ya documentado en
+  `ProgramWriteFields` para Programas, un campo con `default` no de solo
+  lectura sale como requerido) e `InvoiceStatus` (`Invoice.status` es una
+  propiedad calculada que el esquema tipa como `string` a secas).
+- **`hooks/useBilling.ts`**: un solo fichero para lectura y escritura
+  (`useBillingSummary`/`useTiers`/`useContracts(filters)`/
+  `useInvoices(contractId)`; `useCreateTier`/`useUpdateTier`/
+  `useCreateContract`/`useUpdateContract`/`useActivateContract`/
+  `useEndContract`/`useCreateInvoice`/`usePayInvoice`), mismo patrón
+  `detailOf`/`BillingError{kind}` que `useProgramMutations.ts`.
+- **`components/plataforma/ContratosPanel.tsx`**: tres pestañas con el
+  mismo selector de botones que `EntidadDetail.tsx` (sin ARIA tabs) —
+  **Contratos** (filtros entidad/estado, alta/edición/activar/finalizar),
+  **Tramos** (`TierForm`, componente local — no un fichero aparte, el
+  formulario es pequeño) y **Facturas** (selector de contrato, alta y
+  «Marcar pagada» con fecha embebida en un `ConfirmDialog`, mismo patrón
+  que «Cerrar programa» pide notas de cierre). `canManage = role ===
+  "superadmin"`: los botones de escritura se **ocultan** para `support`,
+  nunca se deshabilitan. `components/plataforma/{ContratoForm,
+  FacturaForm}.tsx` son los formularios de alta/edición de contrato y
+  alta de factura; `eurosToCents`/`formatEuros` se reutilizan tal cual de
+  `lib/programs/money.ts` (mismo formateador es-ES, sin duplicarlo en un
+  `lib/billing/money.ts` propio).
+- **Menú y visibilidad** (`lib/auth/plataformaMenu.ts`): «Contratos»
+  visible para `superadmin` y `support` (los dos roles con lectura real
+  de `billing`, `HasPlatformRole('superadmin', 'support')`); ni
+  `moderator` ni `verifier` la ven. El menú pasa de 8 a 9 secciones.
+- **Inicio de plataforma** (`PlataformaHomeDashboard.tsx`): tres tarjetas
+  del `summary` («Contratos vigentes», «Valor anual contratado» con
+  `Intl.NumberFormat("es-ES", {style:"currency", currency:"EUR"})`,
+  «Facturas vencidas»), visibles solo si el menú del rol trae
+  «contratos».
+- **Ficha de entidad de plataforma** (`EntidadDetail.tsx`): séptima
+  pestaña «Contrato» — tramo, vigencia y última factura (por
+  `issued_on`) de la entidad, de solo lectura; prioriza el contrato
+  `active` si hay varios (histórico); 403 (`verifier`) se traduce a «Sin
+  acceso», mismo patrón que Equipo/Métricas.
+- **Límite conocido**: el selector de entidad de `ContratoForm` usa
+  `useOrganizations()` sin filtro, solo la primera página — suficiente
+  para el volumen de entidades de esta fase; paginar el propio selector
+  queda para quien amplíe esta pantalla.
+
 ## Diseño de sesión (refresh real desde la tarea W3)
 
 Access token en memoria (`lib/auth/tokenStore.ts`, nunca localStorage).
@@ -995,7 +1109,11 @@ en CI lo gate el job `e2e`).
   cuentan). Umbral con ratchet en `vitest.config.ts`
   (`coverage.thresholds.lines`): **100 % al cerrar W1, W2 y W3** (umbral
   fijado a 99.7, real menos 0.3); solo puede subir. Objetivo final del
-  plan de cobertura: ≥98 % (ya superado aquí).
+  plan de cobertura: ≥98 % (ya superado aquí). Real al cerrar W4/W5:
+  **99,89 %** (1964/1966 líneas, sin cambios entre ambas tareas — W5 solo
+  añade specs de Playwright, que no cuentan para esta métrica); real
+  menos 0,3 (99,59) sigue por debajo del umbral ya fijado (99,7), así que
+  el ratchet no sube en esta tarea (mismo caso que W4).
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la

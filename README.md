@@ -102,10 +102,13 @@ npm run typecheck && npm run lint && npm run test:coverage && npm run build && n
 ```
 app/
   (auth)/login/          página (Server Component, <title>) + LoginForm.tsx (cliente)
+  accesibilidad/         declaración de accesibilidad (RD 1112/2018), pública, sin sesión
   api/session/           route handlers de sesión (login/logout/refresh)
-  entidad/[slug]/         panel de entidad (layout con menú por rol; 13 secciones)
-  paraguas/[slug]/        panel de entidad paraguas (Inicio + Informes)
-  plataforma/             panel de plataforma (8 secciones, matriz por rol)
+  entidad/[slug]/         panel de entidad (layout con menú por rol; 14 secciones, incluye
+                          entidad/[slug]/programas — programa por entidad, informe CSV/PDF)
+  paraguas/[slug]/        panel de entidad paraguas (Inicio, con comparativa por comarca, + Informes)
+  plataforma/             panel de plataforma (9 secciones, matriz por rol, incluye
+                          plataforma/contratos — tramos, contratos y facturas)
   elegir-entidad/         selector cuando hay varias entidades
 components/ui/           Button, Card, Table, Badge, Stat, Dialog, ConfirmDialog,
                           SkipLink, EmptyState, ErrorState (piezas compartidas)

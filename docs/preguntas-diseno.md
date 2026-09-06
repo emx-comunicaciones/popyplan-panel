@@ -100,6 +100,24 @@ práctico: el login aterriza en `/entidad/gipuzkoako-foru-aldundia`, no
 en `/paraguas/...` — el test navega a la vista de paraguas a propósito.
 Queda abierta para quien retome el contrato de plataforma.
 
+**Corrección (tarea W5, Fase 6):** la premisa de esta pregunta ya no es
+cierta — el backend sí expone el tipo de organización en
+`org_memberships` desde la «ronda de cierre de Fase 5»
+(`users/profile_serializers.py::OrgMembershipRefSerializer`), pero como
+`organization_type`, no como `org_type`. Comprobado contra el backend
+seedeado (`GET /api/users/users/me/` de `panel-analista-gfa@test.com` →
+`"organization_type": "administracion"`) y contra `docs/schema.yaml`
+regenerado (`npm run gen:types`, sin diferencias). `lib/auth/area.ts
+::isParaguas`/`lib/api/types.ts::OrgMembershipForArea` nunca se
+actualizaron a este nombre real, así que la detección sigue sin
+funcionar — no por falta de dato, sino por un nombre de campo
+equivocado en el propio panel. No se corrige en esta tarea (cambia a
+qué URL aterriza cualquier `analista`/`titular` de una entidad paraguas
+al iniciar sesión, con eco en varios tests); detalle completo en
+`CLAUDE.md` («Regla de paraguas»). El fix es de una línea
+(`membership.organization_type === "administracion"`) para quien
+retome esta pantalla.
+
 ## 4. Menú de "elegir varias entidades": forma de `resolveArea`
 
 El signature pedido en el brief es
@@ -779,3 +797,23 @@ propio `_theme/colors.ts` de la app móvil con otro tono? Si cambia el
 hex, es una sola constante que tocar (`--color-primary-700` en
 `app/globals.css`); el resto del sistema (tokens, test de contraste,
 cabecera de entidad) no depende del valor exacto.
+
+## Cierre de Fase 6 del panel (tarea W5)
+
+Ninguna tarea de panel entre W2 y W4 de esta fase (Comparativa,
+Programas, Contratos) abrió una pregunta de diseño nueva — Programas y
+Contratos siguen literalmente el contrato de backend (`docs/PANEL.md`
+§12-§13) sin ambigüedad visual, y la comparativa reutiliza los
+componentes de tabla/formateo ya resueltos en W1-W2. La única pregunta
+de esta fase que sigue en pie para la diseñadora es la **33** (D1, tono
+`primary-700`): no bloqueante, ya aplicado, pendiente solo de su visto
+bueno sobre el hex exacto. La tabla de contraste de `CLAUDE.md`
+(«Accesibilidad») está con todos los pares en verde desde que D1 se
+aplicó (tarea W1 de esta fase); W5 la revisó de nuevo al cerrar y no
+encontró ningún par nuevo por debajo de AA.
+
+La pregunta **3** (detección de entidad paraguas) sigue sin resolverse
+de verdad pese a la corrección de esta tarea (el dato ya existe en el
+backend, con otro nombre de campo) — no es una pregunta de diseño, es
+un fix de código pendiente, documentado en `CLAUDE.md` («Regla de
+paraguas») para quien retome esa pantalla.
