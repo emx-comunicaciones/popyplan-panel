@@ -4546,6 +4546,9 @@ export interface paths {
         /**
          * @description `{community, event}` (ambas opcionales). Devuelve siempre la
          *     tarjeta de recursos, aunque no haya entidad a la que avisar.
+         *
+         *     Decisión del propietario (2026-09-06): si el espacio tiene entidad,
+         *     solo puede pedir ayuda quien es persona de ella (403 si no).
          */
         post: operations["safety_help_requests_create"];
         delete?: never;
@@ -6309,6 +6312,7 @@ export interface components {
             } | null;
             /** Format: uuid */
             readonly chat_room_id: string;
+            readonly can_request_help: boolean;
             readonly recent_posts_count: number;
             readonly active_members_count: number;
             readonly upcoming_events_count: number;
@@ -7024,6 +7028,14 @@ export interface components {
          *
          *     `address` y `chat_room_id` viajan en `null` para quien no tiene plaza: la
          *     clave existe siempre (contrato estable para la app) pero el dato no.
+         *
+         *     `can_request_help` (decisión del propietario, 2026-09-06): solo `True`
+         *     si la actividad tiene entidad detrás (sello directo o de su comunidad)
+         *     y quien pregunta es persona de ella
+         *     (`entities.permissions.es_persona_de_la_entidad`); `False` en
+         *     cualquier otro caso, anónimo incluido. Nunca en el listado (una
+         *     consulta extra por fila): solo tiene sentido en la ficha, donde ya hay
+         *     un único objeto.
          */
         EventDetail: {
             /** Format: uuid */
@@ -7102,6 +7114,7 @@ export interface components {
             readonly series: string | null;
             /** Format: date-time */
             readonly created_at: string;
+            readonly can_request_help: boolean;
         };
         /**
          * @description Tarjeta de actividad: agenda, listado de comunidad y «mis actividades».
@@ -7362,15 +7375,18 @@ export interface components {
          *     petición aparte por cada fila (de ahí el `select_related` del
          *     queryset en `HelpRequestViewSet`).
          *
-         *     `user_display` añade `is_member` (si quien pide ayuda tiene
-         *     `entities.OrgMembership` en la entidad del aviso; `False` sin entidad)
-         *     y `referent` (su `entities.Reference` en esa entidad, `{id,
-         *     public_name}` del referente, o `None`). Para una lista, llamar antes
+         *     `user_display` añade `is_member` (si quien pide ayuda es persona de la
+         *     entidad del aviso: alta activa en alguna de sus comunidades o
+         *     `entities.OrgMembership` directo en ella — mismo criterio que
+         *     `panel.services.people`, salvo que aquí no cuenta la asistencia a
+         *     actividades; `False` sin entidad) y `referent` (su
+         *     `entities.Reference` en esa entidad, `{id, public_name}` del
+         *     referente, o `None`). Para una lista, llamar antes
          *     `attach_membership_and_referent` sobre el queryset (lo hace
-         *     `HelpRequestViewSet.pending`): precalcula ambos en dos consultas para
-         *     toda la lista en vez de una por fila; sin eso (p. ej. al serializar un
-         *     único `HelpRequest`, como en `create`/`acknowledge`), cae a una
-         *     consulta por campo sobre ese único objeto.
+         *     `HelpRequestViewSet.pending`): precalcula ambos en tres consultas
+         *     para toda la lista en vez de una por fila; sin eso (p. ej. al
+         *     serializar un único `HelpRequest`, como en `create`/`acknowledge`),
+         *     cae a una consulta por campo sobre ese único objeto.
          */
         HelpRequest: {
             /** Format: uuid */
@@ -7415,9 +7431,12 @@ export interface components {
         };
         /**
          * @description `user_display` de `HelpRequestSerializer`: además de la identidad
-         *     pública mínima, si quien pide ayuda es miembro de la entidad del aviso
-         *     (`entities.OrgMembership`) y quién es su referente asignado en ella
-         *     (`entities.Reference`), si lo tiene. Solo para el esquema.
+         *     pública mínima, si quien pide ayuda es persona de la entidad del aviso
+         *     (alta activa en alguna de sus comunidades, `communities.CommunityMember`
+         *     con `status='active'`, o `entities.OrgMembership` directo en ella — un
+         *     titular también cuenta aunque no esté en ninguna comunidad) y quién es
+         *     su referente asignado en ella (`entities.Reference`), si lo tiene. Solo
+         *     para el esquema.
          */
         HelpRequestUserDisplay: {
             id: number;
@@ -19935,6 +19954,13 @@ export interface operations {
         responses: {
             /** @description No response body */
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
