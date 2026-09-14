@@ -17,6 +17,37 @@ describe("presetPeriod", () => {
     expect(presetPeriod("anio", TODAY)).toEqual({ since: "2025-03-15", until: "2026-03-15" });
   });
 
+  it("trimestre: con hoy = 31 de mayo, el inicio clampa al último día de febrero (sin rebalsar a marzo)", () => {
+    // `setMonth` clásico saltaba al mes siguiente cuando el día no existe
+    // en destino: 31-may → 3-mar (perdía 2 días). El clamp cae al 28-feb.
+    expect(presetPeriod("trimestre", new Date(2026, 4, 31, 12))).toEqual({
+      since: "2026-02-28",
+      until: "2026-05-31",
+    });
+  });
+
+  it("trimestre: con hoy = 31 de julio, el inicio clampa al 30 de abril (sin rebalsar a mayo)", () => {
+    expect(presetPeriod("trimestre", new Date(2026, 6, 31, 12))).toEqual({
+      since: "2026-04-30",
+      until: "2026-07-31",
+    });
+  });
+
+  it("año: con hoy = 31 de diciembre, conserva el día 31 (existe en el destino)", () => {
+    expect(presetPeriod("anio", new Date(2026, 11, 31, 12))).toEqual({
+      since: "2025-12-31",
+      until: "2026-12-31",
+    });
+  });
+
+  it("año: con hoy = 29 de febrero (bisiesto), clampa al 28 de febrero del año anterior", () => {
+    // `setMonth` clásico rebalsaba al 1 de marzo; el clamp cae al 28-feb.
+    expect(presetPeriod("anio", new Date(2028, 1, 29, 12))).toEqual({
+      since: "2027-02-28",
+      until: "2028-02-29",
+    });
+  });
+
   it("cualquier preset produce un periodo que sigue validando (nunca dispara la validación de longitud)", () => {
     for (const preset of ["mes", "trimestre", "anio", "plurianual"] as const) {
       const period = presetPeriod(preset, TODAY);

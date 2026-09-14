@@ -31,7 +31,7 @@ const FIXED_PRESETS = Object.keys(PRESET_LABELS) as FixedPreset[];
 const ERROR_MESSAGES: Record<PeriodValidationError, string> = {
   fecha_invalida: "Introduce fechas válidas.",
   rango_invertido: "La fecha de inicio debe ser anterior o igual a la de fin.",
-  periodo_demasiado_largo: "El periodo no puede superar 366 días.",
+  periodo_demasiado_largo: "El periodo no puede superar 4 años (1461 días).",
 };
 
 /** Selector de periodo: mes/trimestre/año (presets) o rango personalizado. */

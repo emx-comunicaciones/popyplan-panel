@@ -17,15 +17,26 @@ vi.mock("next/navigation", () => ({
  * `recharts` (`components/metrics/SeriesChart.tsx`) mide el contenedor
  * con `ResizeObserver`, que jsdom no implementa: sin este mock,
  * `ResponsiveContainer` nunca pinta sus hijos y los tests no pueden ver
- * la serie mensual. Se sustituye por un `<div>` de tamaño fijo; el resto
- * de `recharts` (los propios `<Line>`/`<XAxis>`/…) se mantiene real.
+ * la serie mensual. Se sustituye por un `<div>` de tamaño fijo que
+ * inyecta `width`/`height` en su hijo (igual que el `ResponsiveContainer`
+ * real de recharts v3 con `cloneElement`), así el `<svg>` sí se pinta en
+ * jsdom; el resto de `recharts` (los propios `<Line>`/`<XAxis>`/…) se
+ * mantiene real.
  */
 vi.mock("recharts", async () => {
   const actual = await vi.importActual<typeof import("recharts")>("recharts");
   return {
     ...actual,
-    ResponsiveContainer: ({ children }: { children: React.ReactNode }) =>
-      React.createElement("div", { style: { width: 400, height: 280 } }, children),
+    ResponsiveContainer: ({
+      children,
+    }: {
+      children: React.ReactElement<{ width?: number; height?: number }>;
+    }) =>
+      React.createElement(
+        "div",
+        { style: { width: 400, height: 280 } },
+        React.cloneElement(children, { width: 400, height: 280 }),
+      ),
   };
 });
 

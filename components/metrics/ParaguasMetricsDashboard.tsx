@@ -117,7 +117,12 @@ export function ParaguasMetricsDashboard({ orgId, orgName }: ParaguasMetricsDash
             <h2 id="por-municipio-heading" className="mb-2 text-lg font-semibold text-text-base">
               Por municipio
             </h2>
-            {byMunicipio.data && byMunicipio.data.by_place.length > 0 ? (
+            {byMunicipio.isError ? (
+              <ErrorState
+                title="No se pudo cargar el desglose por municipio"
+                description={byMunicipio.error.message}
+              />
+            ) : byMunicipio.data && byMunicipio.data.by_place.length > 0 ? (
               <MetricsTable
                 caption="Métricas por municipio"
                 rows={byMunicipio.data.by_place}
@@ -133,7 +138,12 @@ export function ParaguasMetricsDashboard({ orgId, orgName }: ParaguasMetricsDash
             <h2 id="por-entidad-heading" className="mb-2 text-lg font-semibold text-text-base">
               Por entidad
             </h2>
-            {byEntidad.data && byEntidad.data.by_place.length > 0 ? (
+            {byEntidad.isError ? (
+              <ErrorState
+                title="No se pudo cargar el desglose por entidad"
+                description={byEntidad.error.message}
+              />
+            ) : byEntidad.data && byEntidad.data.by_place.length > 0 ? (
               <MetricsTable
                 caption="Métricas por entidad"
                 rows={byEntidad.data.by_place}
@@ -148,7 +158,12 @@ export function ParaguasMetricsDashboard({ orgId, orgName }: ParaguasMetricsDash
             <h2 id="serie-mensual-heading" className="mb-2 text-lg font-semibold text-text-base">
               {seriesHeading}
             </h2>
-            {series.data && series.data.series.length > 0 ? (
+            {series.isError ? (
+              <ErrorState
+                title="No se pudo cargar la serie"
+                description={series.error.message}
+              />
+            ) : series.data && series.data.series.length > 0 ? (
               <SeriesChart data={series.data.series} />
             ) : (
               <EmptyState title={seriesEmptyTitle} />

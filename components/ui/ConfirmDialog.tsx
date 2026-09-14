@@ -37,7 +37,12 @@ export function ConfirmDialog({
   onCancel,
 }: ConfirmDialogProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  useFocusTrap(containerRef, open, onCancel);
+  // Durante una mutación pendiente los botones ya están deshabilitados:
+  // Escape no debe cancelar (cerraría el diálogo con la acción en vuelo y
+  // ocultaría el posible error de la mutación).
+  useFocusTrap(containerRef, open, () => {
+    if (!pending) onCancel();
+  });
 
   if (!open) return null;
 

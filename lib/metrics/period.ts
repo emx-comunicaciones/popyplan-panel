@@ -1,15 +1,14 @@
 /**
  * Periodos del panel de métricas (`docs/PANEL.md` §1.2): `since`/`until`
  * ISO (`YYYY-MM-DD`), ambas inclusive. El backend rechaza con 400 un
- * `since > until` o un periodo de más de 366 días; este módulo valida lo
- * mismo en el cliente para no lanzar una petición que sabemos que va a
- * fallar y para dar el mensaje en español antes de tocar la red.
+ * `since > until` o un periodo de más de `PERIODO_MAX_DIAS = 1461` días
+ * (~4 años); este módulo valida lo mismo en el cliente para no lanzar
+ * una petición que sabemos que va a fallar y para dar el mensaje en
+ * español antes de tocar la red.
  *
  * Presets pedidos por la tarea W2: «este mes» (desde el día 1 del mes en
  * curso hasta hoy), «trimestre» (últimos 3 meses hasta hoy) y «año»
- * (últimos 12 meses hasta hoy — cae justo en el límite de 366 días del
- * backend, así que nunca hace falta un caso especial de años bisiestos
- * para que pase la validación). «Personalizado» son las fechas que
+ * (últimos 12 meses hasta hoy). «Personalizado» son las fechas que
  * escribe quien usa el panel, validadas con la misma regla.
  *
  * **«Plurianual» (tarea B4/W2b, Fase 6, memoria plurianual)**: el brief
@@ -47,9 +46,21 @@ export function toIso(date: Date): string {
 }
 
 function subtractMonths(date: Date, months: number): Date {
-  const result = new Date(date.getTime());
-  result.setMonth(result.getMonth() - months);
-  return result;
+  // Clamp al último día del mes destino: `setMonth` rebalsa al mes
+  // siguiente cuando el día de `date` no existe en destino (31-may →
+  // 3-mar, perdiendo 2 días; 29-feb con «año» → 1-mar). Mientras el día
+  // exista en destino se preserva (15-mar → 15-dic); si no, se clampa
+  // al último día del mes destino en vez de rebalsar (31-may → 28-feb).
+  const targetMonthLastDay = new Date(
+    date.getFullYear(),
+    date.getMonth() - months + 1,
+    0,
+  ).getDate();
+  return new Date(
+    date.getFullYear(),
+    date.getMonth() - months,
+    Math.min(date.getDate(), targetMonthLastDay),
+  );
 }
 
 /** Presets fijos (todo menos «personalizado», que no tiene una fórmula). */
@@ -87,7 +98,7 @@ function parseIsoDate(value: string): Date | null {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-/** Misma regla que `docs/PANEL.md` §1.2: fecha inválida, rango invertido o > 366 días. */
+/** Misma regla que `docs/PANEL.md` §1.2: fecha inválida, rango invertido o > 1461 días. */
 export function validatePeriod(since: string, until: string): PeriodValidationError | null {
   const sinceDate = parseIsoDate(since);
   const untilDate = parseIsoDate(until);

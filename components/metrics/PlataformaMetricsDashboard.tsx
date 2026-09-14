@@ -127,7 +127,12 @@ export function PlataformaMetricsDashboard() {
             <h2 id="metrics-table-heading" className="mb-2 text-lg font-semibold text-text-base">
               {groupBy === "place" ? "Por municipio" : "Por entidad"}
             </h2>
-            {grouped.data && grouped.data.by_place.length > 0 ? (
+            {grouped.isError ? (
+              <ErrorState
+                title="No se pudo cargar el desglose"
+                description={grouped.error.message}
+              />
+            ) : grouped.data && grouped.data.by_place.length > 0 ? (
               <MetricsTable
                 caption={groupBy === "place" ? "Métricas por municipio" : "Métricas por entidad"}
                 rows={grouped.data.by_place}
@@ -143,7 +148,12 @@ export function PlataformaMetricsDashboard() {
             <h2 id="serie-mensual-heading" className="mb-2 text-lg font-semibold text-text-base">
               {seriesHeading}
             </h2>
-            {series.data && series.data.series.length > 0 ? (
+            {series.isError ? (
+              <ErrorState
+                title="No se pudo cargar la serie"
+                description={series.error.message}
+              />
+            ) : series.data && series.data.series.length > 0 ? (
               <SeriesChart data={series.data.series} />
             ) : (
               <EmptyState title={seriesEmptyTitle} />

@@ -8,7 +8,7 @@
  * `by_weekday_hour`/`series` vacíos, útil para pedir solo `people`/
  * `events`/`attendance`/`communities`).
  *
- * Un 400 (periodo inválido: `since > until` o > 366 días) y un 403 (sin
+ * Un 400 (periodo inválido: `since > until` o > 1461 días) y un 403 (sin
  * permiso `ver_panel`, o entidad inexistente — el backend no distingue
  * las dos) se traducen a `MetricsError` con un `kind` tipado en vez de
  * dejar escapar el `ApiError` genérico: los componentes de

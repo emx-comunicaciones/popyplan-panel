@@ -27,6 +27,8 @@ interface ChartPoint {
   label: string;
   events: number;
   people: number | null;
+  /** `true` cuando `people` es `null` por supresión (grupo <5), no por falta de dato. */
+  suppressed: boolean;
 }
 
 /** `true` si esta serie viene de `group_by=year` (todas sus filas llevan `year`, ninguna `month`). */
@@ -39,7 +41,24 @@ function toChartData(rows: SeriesRow[]): ChartPoint[] {
     label: row.year ?? row.month ?? "",
     events: row.events,
     people: row.suppressed ? null : row.people,
+    suppressed: row.suppressed,
   }));
+}
+
+/**
+ * Formatea un valor del tooltip de la serie. `people: null` puede ser
+ * supresión (grupo <5 personas distintas → «<5») o sin dato («—»): solo
+ * el primer caso es «<5», con la misma regla que
+ * `lib/metrics/format.ts::formatCount`. Exportada para testear la
+ * distinción: recharts no pinta en el tooltip las entradas con valor
+ * `null`, así que en jsdom no hay hover que la ejercite.
+ */
+export function formatSeriesTooltipValue(
+  value: number | string | null | undefined,
+  point?: Pick<ChartPoint, "suppressed">,
+): string {
+  if (value === null || value === undefined) return point?.suppressed ? "<5" : "—";
+  return formatCount(typeof value === "number" ? value : Number(value), false);
 }
 
 /**
@@ -62,11 +81,14 @@ export function SeriesChart({ data }: SeriesChartProps) {
           <XAxis dataKey="label" stroke="var(--color-text-secondary)" />
           <YAxis stroke="var(--color-text-secondary)" />
           <Tooltip
-            formatter={(value) => {
-              if (value === null || value === undefined) return "<5";
-              const numeric = typeof value === "number" ? value : Number(value);
-              return formatCount(numeric, false);
-            }}
+            formatter={(value, _name, item) =>
+              // recharts tipa `ValueType` como `number | string | readonly
+              // (string | number)[]`; el formateador solo recibe escalares.
+              formatSeriesTooltipValue(
+                value as number | string | null | undefined,
+                item?.payload as ChartPoint | undefined,
+              )
+            }
           />
           <Line type="monotone" dataKey="events" name="Eventos" stroke="var(--color-primary)" />
           <Line
