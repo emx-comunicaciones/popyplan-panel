@@ -89,6 +89,18 @@ describe("serverFetch", () => {
     expect(result).toEqual({ ok: true, status: 200, data: undefined });
   });
 
+  it("una respuesta 200 con cuerpo no JSON no revienta: se trata como error", async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      text: async () => "<html>página de error del proxy</html>",
+    } as Response);
+
+    const result = await serverFetch("/api/users/users/me/", "token-123");
+
+    expect(result).toEqual({ ok: false, status: 200, body: null });
+  });
+
   it("sin NEXT_PUBLIC_API_URL cae al backend local por defecto", async () => {
     vi.unstubAllEnvs();
     delete process.env.NEXT_PUBLIC_API_URL;

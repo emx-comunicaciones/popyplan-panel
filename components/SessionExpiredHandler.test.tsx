@@ -27,7 +27,10 @@ describe("SessionExpiredHandler", () => {
 
     await waitFor(() => expect(routerMock.replace).toHaveBeenCalledWith("/login"));
     expect(getAccessToken()).toBeNull();
-    expect(fetchMock).toHaveBeenCalledWith("/api/session", { method: "DELETE" });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/session",
+      expect.objectContaining({ method: "DELETE", signal: expect.any(AbortSignal) }),
+    );
   });
 
   it("no pinta nada", () => {

@@ -84,15 +84,26 @@ describe("POST /api/session/refresh", () => {
     expect(cookie?.maxAge).toBe(0);
   });
 
-  it("si el token se rota bien pero /me falla después, borra la cookie y responde 401", async () => {
+  it("si el token se rota bien pero /me falla después, responde 503 PRESERVANDO la sesión (cookie con el refresh nuevo)", async () => {
     fetchMock
       .mockResolvedValueOnce(response({ access: "access-nuevo", refresh: "refresh-nuevo" }, 200))
-      .mockResolvedValueOnce(response({ detail: "error" }, 500))
+      .mockResolvedValueOnce(response({ detail: "error" }, 502))
       .mockResolvedValueOnce(response(buildPlatformRole(null), 200));
 
     const res = await POST(requestWithCookie("refresh-viejo"));
 
-    expect(res.status).toBe(401);
-    expect(res.cookies.get(SESSION_COOKIE_NAME)?.maxAge).toBe(0);
+    expect(res.status).toBe(503);
+    const cookie = res.cookies.get(SESSION_COOKIE_NAME);
+    expect(cookie?.value).toBe("refresh-nuevo");
+    expect(cookie?.maxAge).not.toBe(0);
+  });
+
+  it("error de red al refrescar: 503 SIN borrar la cookie (la sesión sigue válida)", async () => {
+    fetchMock.mockRejectedValueOnce(new Error("red caída"));
+
+    const res = await POST(requestWithCookie("refresh-viejo"));
+
+    expect(res.status).toBe(503);
+    expect(res.cookies.get(SESSION_COOKIE_NAME)).toBeUndefined();
   });
 });

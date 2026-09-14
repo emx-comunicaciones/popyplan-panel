@@ -27,8 +27,8 @@ function response(body: unknown, status: number): Response {
   } as Response;
 }
 
-function requestWithCookie(value: string | undefined) {
-  const req = new NextRequest("http://panel.test/entidad/alfaville");
+function requestWithCookie(value: string | undefined, headers?: Record<string, string>) {
+  const req = new NextRequest("http://panel.test/entidad/alfaville", { headers });
   if (value !== undefined) {
     req.cookies.set(SESSION_COOKIE_NAME, value);
   }
@@ -70,11 +70,51 @@ describe("middleware", () => {
     expect(res.cookies.get(SESSION_COOKIE_NAME)?.maxAge).toBe(0);
   });
 
-  it("si la llamada de refresco falla en red, deja pasar sin tocar la cookie", async () => {
+  it("401 en navegación de documento (sec-fetch-dest: document) borra la cookie", async () => {
+    fetchMock.mockResolvedValueOnce(response({ detail: "token_not_valid" }, 401));
+
+    const res = await middleware(
+      requestWithCookie("refresh-caducado", { "sec-fetch-dest": "document" }),
+    );
+
+    expect(res.cookies.get(SESSION_COOKIE_NAME)?.maxAge).toBe(0);
+  });
+
+  it("401 en prefetch/RSC (sec-fetch-dest distinto de document) NO toca la cookie", async () => {
+    fetchMock.mockResolvedValueOnce(response({ detail: "token_not_valid" }, 401));
+
+    const res = await middleware(requestWithCookie("refresh-caducado", { "sec-fetch-dest": "empty" }));
+
+    expect(res.cookies.get(SESSION_COOKIE_NAME)).toBeUndefined();
+  });
+
+  it("dos peticiones concurrentes con la misma cookie disparan UNA sola llamada al backend", async () => {
+    let resolveFetch: (value: Response) => void = () => undefined;
+    fetchMock.mockImplementation(
+      () =>
+        new Promise<Response>((resolve) => {
+          resolveFetch = resolve;
+        }),
+    );
+
+    const first = middleware(requestWithCookie("refresh-viejo"));
+    const second = middleware(requestWithCookie("refresh-viejo"));
+    await Promise.resolve();
+    resolveFetch(response({ access: "access-nuevo", refresh: "refresh-nuevo" }, 200));
+
+    const [resA, resB] = await Promise.all([first, second]);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(resA.cookies.get(SESSION_COOKIE_NAME)?.value).toBe("refresh-nuevo");
+    expect(resB.cookies.get(SESSION_COOKIE_NAME)?.value).toBe("refresh-nuevo");
+  });
+
+  it("si la llamada de refresco falla en red, responde 503 sin tocar la cookie", async () => {
     fetchMock.mockRejectedValueOnce(new Error("red caída"));
 
     const res = await middleware(requestWithCookie("refresh-viejo"));
 
+    expect(res.status).toBe(503);
     expect(res.cookies.get(SESSION_COOKIE_NAME)).toBeUndefined();
   });
 });

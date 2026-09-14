@@ -8,6 +8,27 @@
  * en memoria (logout), avisa a `lib/auth/sessionEvents.ts` y lanza
  * `ApiError`.
  *
+ * Dos variantes comparten la misma lógica (`requestWithAuth`):
+ *
+ * - `apiFetch`: parsea el cuerpo JSON y lo devuelve (lo usan casi todos
+ *   los hooks).
+ * - `fetchWithAuth`: devuelve el `Response` sin parsear — para descargas
+ *   de ficheros (`hooks/useExport.ts`, `hooks/useProgramReport.ts`), cuyo
+ *   cuerpo no es JSON.
+ *
+ * Reparto de responsabilidades en el refresco:
+ *
+ * - 401 del backend original → `refreshAccessToken()`; si el reintento
+ *   vuelve a dar 401 (el token recién rotado no sirve), limpia el token,
+ *   notifica sesión expirada y lanza `ApiError` 401.
+ * - 401 del route handler de refresco → la sesión caducó de verdad:
+ *   mismo camino de logout.
+ * - 5xx del route handler de refresco → `ApiError` con ese status,
+ *   **sin** logout: es un fallo transitorio del backend y TanStack Query
+ *   puede reintentarlo; cerrar sesión aquí destruiría una sesión sana.
+ * - Error de red en el refresco → se trata como refresco fallido (logout),
+ *   como antes.
+ *
  * **Bug crítico de demo (2026-09-05, ver `lib/auth/bootSession.ts`):** en
  * una demo en vivo, recargar `/entidad/<slug>/…` disparaba varias
  * peticiones en paralelo con el token en memoria vacío. Cada una recibía
@@ -87,19 +108,38 @@ async function rawRequest(
   });
 }
 
-/** Único refresco en vuelo compartido por todas las llamadas concurrentes. */
-let inFlightRefresh: Promise<string | null> | null = null;
-
-async function doRefreshAccessToken(): Promise<string | null> {
+async function parseBody(response: Response): Promise<unknown> {
   try {
-    const response = await fetch("/api/session/refresh", { method: "POST" });
-    if (!response.ok) return null;
-    const data = (await response.json()) as { accessToken?: unknown };
-    return typeof data.accessToken === "string" ? data.accessToken : null;
+    const text = await response.text();
+    return text ? JSON.parse(text) : null;
   } catch {
     return null;
   }
 }
+
+/**
+ * Refresco contra `/api/session/refresh`. Distinción de estados (ver
+ * docstring del módulo): 401 → `null` (la sesión caducó de verdad); 5xx →
+ * `ApiError` con ese status (fallo transitorio, reintentable, sin logout);
+ * error de red → `null` (como un refresco fallido).
+ */
+async function doRefreshAccessToken(): Promise<string | null> {
+  try {
+    const response = await fetch("/api/session/refresh", { method: "POST" });
+    if (response.status === 401) return null;
+    if (!response.ok) {
+      throw new ApiError(response.status, await parseBody(response));
+    }
+    const data = (await response.json()) as { accessToken?: unknown };
+    return typeof data.accessToken === "string" ? data.accessToken : null;
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    return null;
+  }
+}
+
+/** Único refresco en vuelo compartido por todas las llamadas concurrentes. */
+let inFlightRefresh: Promise<string | null> | null = null;
 
 /**
  * Llama al route handler propio, nunca directamente al backend. Si ya hay
@@ -115,19 +155,14 @@ function refreshAccessToken(): Promise<string | null> {
   return inFlightRefresh;
 }
 
-async function parseBody(response: Response): Promise<unknown> {
-  try {
-    const text = await response.text();
-    return text ? JSON.parse(text) : null;
-  } catch {
-    return null;
-  }
-}
-
-export async function apiFetch<T = unknown>(
-  path: string,
-  options: ApiFetchOptions = {},
-): Promise<T> {
+/**
+ * Núcleo compartido por `apiFetch` y `fetchWithAuth`: resuelve el token
+ * (esperando la restauración de arranque si la memoria está vacía),
+ * dispara la petición y, ante un 401, refresca (single-flight) y reintenta
+ * una vez. Devuelve el `Response` final ya verificado: en `!ok` lanza
+ * `ApiError` con el cuerpo parseado.
+ */
+async function requestWithAuth(path: string, options: ApiFetchOptions): Promise<Response> {
   let token = getAccessToken();
   if (!token) {
     // Sin token en memoria: puede ser que la app acabe de arrancar y
@@ -140,10 +175,26 @@ export async function apiFetch<T = unknown>(
   let response = await rawRequest(path, token, options);
 
   if (response.status === 401 && !options.skipRefresh) {
-    const newToken = await refreshAccessToken();
+    let newToken: string | null;
+    try {
+      newToken = await refreshAccessToken();
+    } catch (error) {
+      // 5xx del route handler de refresco: fallo transitorio, reintentable
+      // por TanStack — ni logout ni notificación de sesión expirada.
+      if (error instanceof ApiError) throw error;
+      newToken = null;
+    }
     if (newToken) {
       setAccessToken(newToken);
       response = await rawRequest(path, newToken, { ...options, skipRefresh: true });
+      if (response.status === 401) {
+        // El token recién rotado tampoco sirve: la sesión es inservible.
+        // Limpiar aquí evita que el token caducado se quede en memoria y
+        // el ciclo 401→refresco se repita para siempre.
+        setAccessToken(null);
+        notifySessionExpired();
+        throw new ApiError(401, null, SESSION_EXPIRED_MESSAGE);
+      }
     } else {
       setAccessToken(null);
       notifySessionExpired();
@@ -156,7 +207,29 @@ export async function apiFetch<T = unknown>(
     throw new ApiError(response.status, body, `Error ${response.status}`);
   }
 
+  return response;
+}
+
+export async function apiFetch<T = unknown>(
+  path: string,
+  options: ApiFetchOptions = {},
+): Promise<T> {
+  const response = await requestWithAuth(path, options);
+
   if (response.status === 204) return undefined as T;
   const text = await response.text();
   return (text ? JSON.parse(text) : undefined) as T;
+}
+
+/**
+ * Igual que `apiFetch` pero devuelve el `Response` sin parsear: para
+ * descargas de ficheros (CSV/PDF, `hooks/useExport.ts` y
+ * `hooks/useProgramReport.ts`), cuyo cuerpo no es JSON. Mismas reglas de
+ * auth, refresco y `ApiError` en `!ok`.
+ */
+export async function fetchWithAuth(
+  path: string,
+  options: ApiFetchOptions = {},
+): Promise<Response> {
+  return requestWithAuth(path, options);
 }

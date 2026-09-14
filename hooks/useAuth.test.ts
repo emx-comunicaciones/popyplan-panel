@@ -107,7 +107,30 @@ describe("logout", () => {
     await logout();
 
     expect(getAccessToken()).toBeNull();
-    expect(fetchMock).toHaveBeenCalledWith("/api/session", { method: "DELETE" });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/session",
+      expect.objectContaining({ method: "DELETE", signal: expect.any(AbortSignal) }),
+    );
+  });
+
+  it("si el backend no responde, aborta al cabo de 5 s y resuelve igual (best-effort)", async () => {
+    vi.useFakeTimers();
+    setAccessToken("token-vivo");
+    fetchMock.mockImplementation(
+      (_url: string, init?: RequestInit) =>
+        new Promise((_resolve, reject) => {
+          init?.signal?.addEventListener("abort", () =>
+            reject(new DOMException("La operación fue abortada.", "AbortError")),
+          );
+        }),
+    );
+
+    const pending = logout();
+    await vi.advanceTimersByTimeAsync(5000);
+    await pending;
+
+    expect(getAccessToken()).toBeNull();
+    vi.useRealTimers();
   });
 });
 

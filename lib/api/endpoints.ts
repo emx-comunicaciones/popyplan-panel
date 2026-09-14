@@ -46,10 +46,14 @@ export const SAFETY = {
   /** `GET /api/safety/platform-roles/me/`. */
   PLATFORM_ROLE_ME: "/api/safety/platform-roles/me/",
   /**
-   * `GET /api/safety/reports/queue/?organization=<id>&status=` — paginada
-   * (`docs/SEGURIDAD_Y_MODERACION.md` §4). El Inicio de la entidad solo
-   * usa `.count` (reportes pendientes) sin listar filas; `reportes/page.tsx`
-   * (tarea W4a) sí lista.
+   * `GET /api/safety/reports/queue/?organization=<id>&status=` — **array
+   * plano, no paginada** (`docs/SEGURIDAD_Y_MODERACION.md` §4:
+   * `ReportViewSet.queue` devuelve una lista 200 sin paginador — el
+   * esquema lo envuelve como `PaginatedReportList` por el
+   * `pagination_class` del ViewSet, pero la acción nunca pagina; bug real
+   * encontrado por el e2e de W6). El Inicio de la entidad solo cuenta
+   * `.length` (reportes pendientes) sin listar filas;
+   * `reportes/page.tsx` (tarea W4a) sí lista.
    */
   REPORTS_QUEUE: () => "/api/safety/reports/queue/",
   /** `GET /api/safety/reports/{id}/` (§4): detalle con `target`. */
@@ -61,8 +65,10 @@ export const SAFETY = {
   /** `POST /api/safety/reports/{id}/escalate/ {note?}` (§4). */
   REPORT_ESCALATE: (id: string) => `/api/safety/reports/${id}/escalate/`,
   /**
-   * `GET /api/safety/help-requests/pending/?organization=<id>` — paginada
-   * (`docs/SEGURIDAD_Y_MODERACION.md` §5).
+   * `GET /api/safety/help-requests/pending/?organization=<id>` — **array
+   * plano, no paginada** (`docs/SEGURIDAD_Y_MODERACION.md` §5, mismo
+   * mismatch esquema/realidad que `REPORTS_QUEUE`: la acción devuelve una
+   * lista 200 sin paginar).
    */
   HELP_REQUESTS_PENDING: () => "/api/safety/help-requests/pending/",
   /** `POST /api/safety/help-requests/{id}/acknowledge/` (§5): «He contactado». */

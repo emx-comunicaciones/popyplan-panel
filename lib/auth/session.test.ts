@@ -44,4 +44,37 @@ describe("getServerSession", () => {
 
     expect(await getServerSession()).toBeNull();
   });
+
+  it("si /me/ va bien pero platform-roles/me/ responde 5xx, la sesión resuelve con rol null", async () => {
+    const me = buildMe();
+    headersMock.mockResolvedValue(headerStore("token-123"));
+    serverFetchMock
+      .mockResolvedValueOnce({ ok: true, status: 200, data: me })
+      .mockResolvedValueOnce({ ok: false, status: 502, body: { detail: "bad gateway" } });
+
+    const session = await getServerSession();
+
+    expect(session).toEqual({ token: "token-123", me, platformRole: { role: null } });
+  });
+
+  it("si platform-roles/me/ revienta de red, la sesión también resuelve con rol null", async () => {
+    const me = buildMe();
+    headersMock.mockResolvedValue(headerStore("token-123"));
+    serverFetchMock
+      .mockResolvedValueOnce({ ok: true, status: 200, data: me })
+      .mockRejectedValueOnce(new Error("red caída"));
+
+    const session = await getServerSession();
+
+    expect(session).toEqual({ token: "token-123", me, platformRole: { role: null } });
+  });
+
+  it("un 403 de platform-roles/me/ SÍ anula la sesión (el token es el problema)", async () => {
+    headersMock.mockResolvedValue(headerStore("token-123"));
+    serverFetchMock
+      .mockResolvedValueOnce({ ok: true, status: 200, data: buildMe() })
+      .mockResolvedValueOnce({ ok: false, status: 403, body: null });
+
+    expect(await getServerSession()).toBeNull();
+  });
 });

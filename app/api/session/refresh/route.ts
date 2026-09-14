@@ -9,6 +9,20 @@
  * y responde 401 — quien llama (`lib/api/client.ts`, `hooks/useAuth.ts`)
  * lo interpreta como logout.
  *
+ * Resiliencia (la sesión no se destruye por fallos transitorios):
+ *
+ * - **Error de red** al llamar al backend: 503 **sin** borrar la cookie
+ *   (el `cleared()` de un 401 sí borra; aquí no — la cookie sigue válida
+ *   y el cliente puede reintentar). Antes el `fetch` sin `try/catch`
+ *   convertía el fallo de red en 500 → el cliente lo traducía a «Tu
+ *   sesión ha caducado» y cerraba sesión.
+ * - **`/me/` o `platform-roles/me/` caídos tras una rotación exitosa**:
+ *   503 **guardando igualmente el refresh nuevo** en la cookie: el
+ *   backend ya considera válido R2 (R1 está en lista negra), así que
+ *   tirar R2 destruiría una sesión sana. La cookie se rota igualmente —
+ *   quien reintente lo hará con R2. Antes se respondía 401 borrando la
+ *   cookie.
+ *
  * Tras renovar el access token, completa la sesión igual que el login
  * (`GET /me/` + `GET /platform-roles/me/`) para que quien restaura sesión
  * al recargar la página tenga datos frescos, no solo el token.
@@ -39,11 +53,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ detail: "Sin sesión." }, { status: 401 });
   }
 
-  const refreshResponse = await fetch(`${apiUrl()}${AUTH.TOKEN_REFRESH}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh }),
-  });
+  let refreshResponse: Response;
+  try {
+    refreshResponse = await fetch(`${apiUrl()}${AUTH.TOKEN_REFRESH}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh }),
+    });
+  } catch {
+    // Red caída: la cookie se queda tal cual (sigue válida), el cliente
+    // puede reintentar el refresco.
+    return NextResponse.json({ detail: "No se pudo completar el refresco." }, { status: 503 });
+  }
 
   if (!refreshResponse.ok) {
     return cleared({ detail: "Sesión caducada." }, 401);
@@ -57,7 +78,15 @@ export async function POST(request: NextRequest) {
   ]);
 
   if (!meResult.ok || !roleResult.ok) {
-    return cleared({ detail: "Sesión caducada." }, 401);
+    // Rotación ya aplicada en el backend (R1 en lista negra, R2 válido):
+    // responder 401 y borrar la cookie destruiría una sesión sana. 503
+    // guardando R2: quien reintente lo hará con el refresh nuevo.
+    const response = NextResponse.json(
+      { detail: "No se pudo completar el refresco." },
+      { status: 503 },
+    );
+    response.cookies.set(SESSION_COOKIE_NAME, newRefresh, sessionCookieOptions());
+    return response;
   }
 
   const response = NextResponse.json({

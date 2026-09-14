@@ -60,7 +60,23 @@ export async function restoreSession(): Promise<SessionData | null> {
   return session;
 }
 
+/**
+ * Timeout del `DELETE /api/session`: el logout es best-effort (la cookie
+ * httpOnly la borra el navegador al aplicar la respuesta), así que un
+ * backend colgado no puede dejar «Cerrando sesión…» para siempre.
+ */
+const LOGOUT_TIMEOUT_MS = 5000;
+
 export async function logout(): Promise<void> {
   setAccessToken(null);
-  await fetch("/api/session", { method: "DELETE" }).catch(() => undefined);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), LOGOUT_TIMEOUT_MS);
+  try {
+    await fetch("/api/session", { method: "DELETE", signal: controller.signal });
+  } catch {
+    // Best-effort: la cookie se borra aunque el backend no responda
+    // (abort por timeout o red caída) — el refresh expirará solo.
+  } finally {
+    clearTimeout(timeout);
+  }
 }

@@ -8,7 +8,7 @@ import {
 } from "@/lib/auth/sessionEvents";
 import { resetAccessTokenForTests, setAccessToken, getAccessToken } from "@/lib/auth/tokenStore";
 
-import { ApiError, apiFetch } from "./client";
+import { ApiError, apiFetch, fetchWithAuth } from "./client";
 
 const fetchMock = vi.fn();
 
@@ -211,6 +211,138 @@ describe("apiFetch", () => {
     expect(listener).toHaveBeenCalledTimes(1);
     expect(error).toBeInstanceOf(ApiError);
     expect((error as ApiError).message).toBe(SESSION_EXPIRED_MESSAGE);
+    unsubscribe();
+  });
+
+  it("si el reintento tras refrescar vuelve a dar 401, limpia el token y notifica sesión expirada", async () => {
+    setAccessToken("token-caducado");
+    fetchMock
+      .mockResolvedValueOnce(response({ detail: "expirado" }, 401))
+      .mockResolvedValueOnce(response({ accessToken: "token-nuevo" }, 200))
+      .mockResolvedValueOnce(response({ detail: "sigue sin valer" }, 401)); // reintento
+
+    const listener = vi.fn();
+    const unsubscribe = subscribeSessionExpired(listener);
+
+    const error = await apiFetch("/api/organizations/7/").catch((caught) => caught);
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect((error as ApiError).status).toBe(401);
+    expect(getAccessToken()).toBeNull();
+    expect(listener).toHaveBeenCalledTimes(1);
+    unsubscribe();
+  });
+
+  it("un 503 del route handler de refresco lanza ApiError(503) SIN logout ni notificación", async () => {
+    setAccessToken("token-caducado");
+    fetchMock
+      .mockResolvedValueOnce(response({ detail: "expirado" }, 401))
+      .mockResolvedValueOnce(response({ detail: "No se pudo completar el refresco." }, 503));
+
+    const listener = vi.fn();
+    const unsubscribe = subscribeSessionExpired(listener);
+
+    const error = await apiFetch("/api/organizations/7/").catch((caught) => caught);
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect((error as ApiError).status).toBe(503);
+    expect((error as ApiError).body).toEqual({ detail: "No se pudo completar el refresco." });
+    expect(getAccessToken()).toBe("token-caducado");
+    expect(listener).not.toHaveBeenCalled();
+    unsubscribe();
+  });
+});
+
+describe("fetchWithAuth", () => {
+  it("devuelve el Response sin parsear en un 200 (descarga de fichero)", async () => {
+    setAccessToken("token-vivo");
+    const fileResponse = {
+      ok: true,
+      status: 200,
+      headers: new Headers({ "Content-Type": "text/csv" }),
+    } as Response;
+    fetchMock.mockResolvedValueOnce(fileResponse);
+
+    const res = await fetchWithAuth("/api/panel/entidad/7/export/?format=csv");
+
+    expect(res).toBe(fileResponse);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://api.test/api/panel/entidad/7/export/?format=csv",
+      expect.objectContaining({
+        headers: expect.objectContaining({ Authorization: "Bearer token-vivo" }),
+      }),
+    );
+  });
+
+  it("en !ok lanza ApiError con el cuerpo parseado, igual que apiFetch", async () => {
+    setAccessToken("token-vivo");
+    fetchMock.mockResolvedValueOnce(response({ detail: "prohibido" }, 403));
+
+    const error = await fetchWithAuth("/api/panel/entidad/7/export/?format=pdf").catch(
+      (caught) => caught,
+    );
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect((error as ApiError).status).toBe(403);
+    expect((error as ApiError).body).toEqual({ detail: "prohibido" });
+  });
+
+  it("401 → refresca vía /api/session/refresh → reintenta con el token nuevo", async () => {
+    setAccessToken("token-caducado");
+    const fileResponse = { ok: true, status: 200 } as Response;
+    fetchMock
+      .mockResolvedValueOnce(response({ detail: "expirado" }, 401))
+      .mockResolvedValueOnce(response({ accessToken: "token-nuevo" }, 200))
+      .mockResolvedValueOnce(fileResponse);
+
+    const res = await fetchWithAuth("/api/panel/entidad/7/programs/3/report/?format=csv");
+
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenNthCalledWith(2, "/api/session/refresh", { method: "POST" });
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      3,
+      "http://api.test/api/panel/entidad/7/programs/3/report/?format=csv",
+      expect.objectContaining({
+        headers: expect.objectContaining({ Authorization: "Bearer token-nuevo" }),
+      }),
+    );
+    expect(res).toBe(fileResponse);
+    expect(getAccessToken()).toBe("token-nuevo");
+  });
+
+  it("un 503 del route handler de refresco lanza ApiError(503) y NO notifica sesión expirada", async () => {
+    setAccessToken("token-caducado");
+    fetchMock
+      .mockResolvedValueOnce(response({ detail: "expirado" }, 401))
+      .mockResolvedValueOnce(response({ detail: "No se pudo completar el refresco." }, 503));
+
+    const listener = vi.fn();
+    const unsubscribe = subscribeSessionExpired(listener);
+
+    const error = await fetchWithAuth("/api/panel/entidad/7/export/").catch((caught) => caught);
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect((error as ApiError).status).toBe(503);
+    expect(getAccessToken()).toBe("token-caducado");
+    expect(listener).not.toHaveBeenCalled();
+    unsubscribe();
+  });
+
+  it("si el reintento vuelve a dar 401, limpia el token y notifica sesión expirada", async () => {
+    setAccessToken("token-caducado");
+    fetchMock
+      .mockResolvedValueOnce(response({ detail: "expirado" }, 401))
+      .mockResolvedValueOnce(response({ accessToken: "token-nuevo" }, 200))
+      .mockResolvedValueOnce(response({ detail: "sigue sin valer" }, 401));
+
+    const listener = vi.fn();
+    const unsubscribe = subscribeSessionExpired(listener);
+
+    const error = await fetchWithAuth("/api/panel/entidad/7/export/").catch((caught) => caught);
+
+    expect((error as ApiError).status).toBe(401);
+    expect(getAccessToken()).toBeNull();
+    expect(listener).toHaveBeenCalledTimes(1);
     unsubscribe();
   });
 });
