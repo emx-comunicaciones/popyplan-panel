@@ -90,4 +90,28 @@ describe("useAssignReferent", () => {
 
     expect((result.current.error as AssignReferentError).kind).toBe("desconocido");
   });
+
+  it("invalida la ficha cacheada con userId STRING (parámetro de ruta de Next.js)", async () => {
+    const reference = { id: 1, organization: 7, referent: 3, user: 42, created_at: "2026-01-01T00:00:00Z" };
+    apiFetchMock.mockResolvedValueOnce(reference);
+
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    // `usePerson` cachea la ficha con el `userId` string tal cual llega de
+    // la ruta; si la mutación invalidara con el number de las variables,
+    // `typeof` distinto haría que el prefijo nunca emparejara y la ficha
+    // no se refrescaría (mismo bug que useProgram/useProgramMutations).
+    const personKey = ["panel-person", 7, "42", "since=2026-01-01&until=2026-01-31"];
+    queryClient.setQueryData(personKey, { id: 42 });
+    const clientWrapper = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+
+    const { result } = renderHook(() => useAssignReferent(7), { wrapper: clientWrapper });
+    result.current.mutate({ userId: 42, referentUserId: 3 });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() =>
+      expect(queryClient.getQueryState(personKey)?.isInvalidated).toBe(true),
+    );
+  });
 });

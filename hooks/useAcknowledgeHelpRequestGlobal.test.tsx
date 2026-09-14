@@ -51,4 +51,26 @@ describe("useAcknowledgeHelpRequestGlobal", () => {
     result.current.mutate("1");
     await waitFor(() => expect(result.current.isError).toBe(true));
   });
+
+  it("invalida tanto la lista global como la de entidad", async () => {
+    apiFetchMock.mockResolvedValueOnce({ id: 1 });
+
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const entityKey = ["panel-help-requests-pending", 7];
+    const platformKey = ["panel-platform-help-requests-pending"];
+    queryClient.setQueryData(entityKey, []);
+    queryClient.setQueryData(platformKey, []);
+    const clientWrapper = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+
+    const { result } = renderHook(() => useAcknowledgeHelpRequestGlobal(), { wrapper: clientWrapper });
+    result.current.mutate("1");
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => {
+      expect(queryClient.getQueryState(platformKey)?.isInvalidated).toBe(true);
+      expect(queryClient.getQueryState(entityKey)?.isInvalidated).toBe(true);
+    });
+  });
 });

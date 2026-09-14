@@ -7,25 +7,38 @@
  * ?format=csv|pdf&since&until&group_by` devuelve el fichero
  * (`Content-Disposition: attachment`), nunca JSON: no se puede reusar
  * `lib/api/client.ts::apiFetch` (que siempre intenta `JSON.parse` del
- * cuerpo). Este hook hace el `fetch` a mano con el access token en
- * memoria (`lib/auth/tokenStore.ts`) y dispara la descarga con un
+ * cuerpo), así que la petición va por `fetchWithAuth` (misma auth, pero
+ * devuelve el `Response` sin parsear). `fetchWithAuth` además espera la
+ * restauración de arranque de sesión si el token en memoria aún está
+ * vacío y, ante un 401, refresca la sesión y reintenta una vez — un
+ * access caducado con la cookie de refresh viva ya no se percibe como
+ * «No se pudo generar el informe.». La descarga se dispara con un
  * `<a download>` temporal — el sandbox de un artefacto bloquearía esto,
  * pero aquí es una pestaña real del navegador.
  *
+ * Mapeo de errores (`ApiError` de `fetchWithAuth` → `ExportError`):
  * 503 (WeasyPrint no disponible) → `ExportError('pdf_unavailable')`;
- * 403 (sin `exportar_informes`) → `ExportError('forbidden')`.
+ * 403 (sin `exportar_informes`) → `ExportError('forbidden')`;
+ * 401 (el refresco también falló: sesión caducada de verdad, avisada
+ * por el `SessionExpiredHandler` global) → `ExportError('sesion_caducada')`;
+ * cualquier otro estado → `ExportError('desconocido')`.
  */
 import { useMutation, type UseMutationResult } from "@tanstack/react-query";
 
+import { ApiError, fetchWithAuth } from "@/lib/api/client";
 import { EXPORT } from "@/lib/api/endpoints";
-import { getAccessToken } from "@/lib/auth/tokenStore";
+import { SESSION_EXPIRED_MESSAGE } from "@/lib/auth/sessionEvents";
 import type { Period } from "@/lib/metrics/period";
 
 import type { MetricsGroupBy, MetricsScope } from "./useMetrics";
 
 export type ExportFormat = "csv" | "pdf";
 
-export type ExportErrorKind = "pdf_unavailable" | "forbidden" | "desconocido";
+export type ExportErrorKind =
+  | "pdf_unavailable"
+  | "forbidden"
+  | "sesion_caducada"
+  | "desconocido";
 
 export class ExportError extends Error {
   readonly kind: ExportErrorKind;
@@ -43,12 +56,6 @@ export interface ExportParams {
   period: Period;
   format: ExportFormat;
   groupBy?: MetricsGroupBy;
-}
-
-const DEFAULT_API_URL = "http://localhost:8001";
-
-function apiUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL;
 }
 
 function endpointFor(scope: MetricsScope, orgId?: number | string): string {
@@ -78,13 +85,28 @@ function buildQuery(params: ExportParams): string {
   return query.toString();
 }
 
-async function parseErrorDetail(response: Response): Promise<string | undefined> {
-  try {
-    const body = (await response.json()) as { detail?: string };
-    return typeof body.detail === "string" ? body.detail : undefined;
-  } catch {
-    return undefined;
+function detailOf(error: ApiError): string | undefined {
+  const body = error.body as { detail?: unknown } | null;
+  return typeof body?.detail === "string" ? body.detail : undefined;
+}
+
+function toExportError(error: unknown): ExportError {
+  if (error instanceof ApiError) {
+    if (error.status === 503) {
+      return new ExportError(
+        "pdf_unavailable",
+        detailOf(error) ?? "El informe en PDF no está disponible ahora mismo.",
+      );
+    }
+    if (error.status === 403) {
+      return new ExportError("forbidden", "No tienes permiso para exportar informes.");
+    }
+    if (error.status === 401) {
+      return new ExportError("sesion_caducada", error.message || SESSION_EXPIRED_MESSAGE);
+    }
+    return new ExportError("desconocido", "No se pudo generar el informe.");
   }
+  throw error;
 }
 
 function filenameFrom(header: string | null, fallback: string): string {
@@ -107,24 +129,12 @@ function triggerDownload(blob: Blob, filename: string): void {
 export async function downloadExport(params: ExportParams): Promise<void> {
   const path = endpointFor(params.scope, params.orgId);
   const query = buildQuery(params);
-  const token = getAccessToken();
 
-  const response = await fetch(`${apiUrl()}${path}?${query}`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-  });
-
-  if (!response.ok) {
-    if (response.status === 503) {
-      const detail = await parseErrorDetail(response);
-      throw new ExportError(
-        "pdf_unavailable",
-        detail ?? "El informe en PDF no está disponible ahora mismo.",
-      );
-    }
-    if (response.status === 403) {
-      throw new ExportError("forbidden", "No tienes permiso para exportar informes.");
-    }
-    throw new ExportError("desconocido", "No se pudo generar el informe.");
+  let response: Response;
+  try {
+    response = await fetchWithAuth(`${path}?${query}`);
+  } catch (error) {
+    throw toExportError(error);
   }
 
   const blob = await response.blob();

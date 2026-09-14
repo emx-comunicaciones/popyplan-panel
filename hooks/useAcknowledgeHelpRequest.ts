@@ -3,7 +3,12 @@
 /**
  * `POST /api/safety/help-requests/{id}/acknowledge/`
  * (`docs/SEGURIDAD_Y_MODERACION.md` §5): «He contactado». Invalida la
- * lista de pendientes tras marcarlo.
+ * lista de pendientes tras marcarlo — y también la de plataforma, porque
+ * el hook global (`useAcknowledgeHelpRequestGlobal`) hace POST al mismo
+ * endpoint y quien tiene rol en entidad y en plataforma vería la otra
+ * vista stale para siempre (`refetchOnWindowFocus: false`); cada hook
+ * invalida ambas familias por prefijo (la de entidad acotada a su orgId,
+ * que es la única lista que esa vista muestra).
  */
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
 
@@ -38,6 +43,7 @@ export function useAcknowledgeHelpRequest(
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["panel-help-requests-pending", orgId] });
+      queryClient.invalidateQueries({ queryKey: ["panel-platform-help-requests-pending"] });
     },
   });
 }

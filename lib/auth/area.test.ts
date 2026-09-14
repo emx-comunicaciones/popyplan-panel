@@ -41,6 +41,50 @@ describe("resolveArea", () => {
     });
   });
 
+  it("precedencia documentada: membresía paraguas + entidad resuelve al paraguas sin selector", () => {
+    const me = buildMe({
+      org_memberships: [
+        buildOrgMembership({
+          role: "titular",
+          organization_slug: "asociacion-bidasoa",
+          organization_name: "Asociación Bidasoa",
+        }),
+        buildOrgMembership({
+          role: "analista",
+          organization_slug: "diputacion-demo",
+          organization_type: "administracion",
+        }),
+      ],
+    });
+
+    expect(resolveArea(me, buildPlatformRole(null))).toEqual({
+      kind: "paraguas",
+      slug: "diputacion-demo",
+    });
+  });
+
+  it("precedencia documentada: con dos paraguas resuelve al primero del array", () => {
+    const me = buildMe({
+      org_memberships: [
+        buildOrgMembership({
+          role: "analista",
+          organization_slug: "diputacion-gipuzkoa",
+          organization_type: "administracion",
+        }),
+        buildOrgMembership({
+          role: "analista",
+          organization_slug: "diputacion-bizkaia",
+          organization_type: "administracion",
+        }),
+      ],
+    });
+
+    expect(resolveArea(me, buildPlatformRole(null))).toEqual({
+      kind: "paraguas",
+      slug: "diputacion-gipuzkoa",
+    });
+  });
+
   it("sin rol de plataforma ni membresías con panel resuelve 'sin-acceso'", () => {
     const me = buildMe({ org_memberships: [] });
 

@@ -7,7 +7,11 @@
  * exige en el backend; el botón «Asignar referente» de la ficha de
  * persona lo oculta además en el cliente para esos dos roles). Invalida
  * la ficha de la persona y el listado tras asignar, para que el
- * `referent` mostrado se actualice sin recargar la página.
+ * `referent` mostrado se actualice sin recargar la página — la clave de
+ * la ficha se invalida con `String(userId)` porque `usePerson` la
+ * cachea con el `userId` string del parámetro de ruta de Next.js (mismo
+ * mismatch string↔number que `useProgram`/`useProgramMutations`,
+ * `typeof` distinto jamás empareja por prefijo).
  */
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
 
@@ -69,7 +73,7 @@ export function useAssignReferent(
       }
     },
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["panel-person", orgId, variables.userId] });
+      queryClient.invalidateQueries({ queryKey: ["panel-person", orgId, String(variables.userId)] });
       queryClient.invalidateQueries({ queryKey: ["panel-people", orgId] });
     },
   });

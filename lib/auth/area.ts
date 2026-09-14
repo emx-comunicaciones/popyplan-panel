@@ -5,14 +5,11 @@
  * `me.org_memberships`.
  *
  * Regla de paraguas (W1): `OrgMembershipRef`, tal y como lo sirve hoy
- * `users/profile_serializers.py::OrgMembershipRefSerializer`, no incluye
- * `org_type` — la instrucción de esta tarea es tratar una membresía como
- * paraguas **solo si** el payload lo expone (`organization_type === 'administracion'` (o `org_type` heredado))
- * y, si no, como entidad normal. Hoy nunca lo expone, así que toda
- * membresía resuelve a `entidad` salvo que el backend añada el campo más
- * adelante (entonces esta función ya sabe distinguirlo sin cambios).
- * `docs/preguntas-diseno.md` deja constancia de esta limitación para
- * cuando el panel de paraguas (W2+) necesite detectarlo de verdad.
+ * `users/profile_serializers.py::OrgMembershipRefSerializer`, expone
+ * `organization_type` (`source='organization.org_type'`, ronda de cierre
+ * de Fase 5) — `isParaguas` lo mira (y también el `org_type` heredado
+ * por compatibilidad), así que una membresía con
+ * `organization_type === 'administracion'` resuelve a paraguas.
  */
 import type { MeForArea, OrgMembershipForArea, PlatformRoleMe } from "@/lib/api/types";
 
@@ -66,6 +63,13 @@ export function resolveArea(
 
   const memberships = (me?.org_memberships ?? []).filter(hasPanelRole);
 
+  // Precedencia documentada (decisión del equipo): con al menos una
+  // membresía paraguas se resuelve al paraguas —el primero del array si
+  // hay varias— sin pasar por `/elegir-entidad`, aunque haya otras
+  // membresías de entidad (una diputación manda sobre sus entidades
+  // hijas a la hora de aterrizar el login). Comportamiento fijado por
+  // los tests de `lib/auth/area.test.ts`; cambiarlo es una decisión de
+  // producto, no un refactor.
   const paraguas = memberships.filter(isParaguas);
   if (paraguas.length > 0) {
     return { kind: "paraguas", slug: paraguas[0].organization_slug };

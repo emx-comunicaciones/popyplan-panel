@@ -4,12 +4,14 @@
  * `POST /api/safety/help-requests/{id}/acknowledge/`
  * (`docs/SEGURIDAD_Y_MODERACION.md` §5), llamada desde «Ayuda» de
  * plataforma (tarea W5): mismo endpoint que
- * `hooks/useAcknowledgeHelpRequest.ts` (panel de entidad), pero esa
- * invalida `["panel-help-requests-pending", orgId]` — una clave que la
- * vista global no usa (`usePlatformPendingHelpRequests`, clave
- * `["panel-platform-help-requests-pending"]`). En vez de acoplar el hook
- * de entidad a una clave que no le pertenece, este hook aparte hace la
- * misma llamada e invalida la clave global.
+ * `hooks/useAcknowledgeHelpRequest.ts` (panel de entidad). Antes cada
+ * hook invalidaba solo su propia clave de pendientes — y quien tiene rol
+ * en entidad y en plataforma dejaba la otra vista stale para siempre
+ * (`refetchOnWindowFocus: false`). Ahora ambos cruzan el «He contactado»
+ * a la otra vista: este invalida por prefijo la familia de entidad
+ * (`["panel-help-requests-pending"]`, cubre la de cualquier orgId)
+ * además de la global, y el hook de entidad invalida la suya acotada a
+ * su orgId y también la global.
  */
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
 
@@ -45,6 +47,7 @@ export function useAcknowledgeHelpRequestGlobal(): UseMutationResult<
       }
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["panel-help-requests-pending"] });
       queryClient.invalidateQueries({ queryKey: ["panel-platform-help-requests-pending"] });
     },
   });

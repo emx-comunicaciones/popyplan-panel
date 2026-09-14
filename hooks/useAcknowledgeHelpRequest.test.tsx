@@ -58,4 +58,26 @@ describe("useAcknowledgeHelpRequest", () => {
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error?.message).toBe("No se pudo marcar el aviso como atendido.");
   });
+
+  it("invalida tanto la lista de la entidad como la global de plataforma", async () => {
+    apiFetchMock.mockResolvedValueOnce(buildHelpRequest({ acknowledged_by: 9 }));
+
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const entityKey = ["panel-help-requests-pending", 7];
+    const platformKey = ["panel-platform-help-requests-pending"];
+    queryClient.setQueryData(entityKey, []);
+    queryClient.setQueryData(platformKey, []);
+    const clientWrapper = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+
+    const { result } = renderHook(() => useAcknowledgeHelpRequest(7), { wrapper: clientWrapper });
+    result.current.mutate("hr-1");
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => {
+      expect(queryClient.getQueryState(entityKey)?.isInvalidated).toBe(true);
+      expect(queryClient.getQueryState(platformKey)?.isInvalidated).toBe(true);
+    });
+  });
 });
