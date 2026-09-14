@@ -109,6 +109,10 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    // Cadena vacía (no `null`) es el valor que limpia el campo: el modelo
+    // real es `CharField(blank=True, default='')` (`entities/models.py`,
+    // migración 0003) y `docs/schema.yaml` lo tipa `type: string`, sin
+    // nullable — DRF rechaza `null` con 400. Verificado contra el backend.
     updateOrganization.mutate({ help_phone: currentHelpPhone });
   }
 

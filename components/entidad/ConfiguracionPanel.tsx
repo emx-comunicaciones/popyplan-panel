@@ -15,6 +15,11 @@ import type { OrgMembershipRole } from "@/lib/api/types";
 
 export interface ConfiguracionPanelProps {
   orgId: number | string;
+  /**
+   * Rol de la membresía con la que se mira la página: decide si se pinta
+   * la sección Equipo (ver el docstring del componente).
+   */
+  role: OrgMembershipRole;
 }
 
 const ROLE_OPTIONS: OrgMembershipRole[] = [
@@ -419,12 +424,22 @@ function Ambito({ orgId }: { orgId: number | string }) {
  * (`OrganizationRequest` en `docs/schema.yaml`) aunque exista en el
  * modelo: se omite aquí (el brief lo permitía si el campo no existe en
  * el esquema).
+ *
+ * Matriz de secciones por rol (verificada contra
+ * `entities/permissions.py:14`, `'equipo': {'titular'}`): GET de miembros
+ * del equipo exige rol `titular`, así que un `moderador` vería la sección
+ * siempre en error (403) — Equipo se pinta solo con rol `titular`.
+ * `moderador` sigue viendo el resto (Datos, Referencias y Ámbito). Hueco
+ * relacionado, no resuelto aquí: los selects de referente de
+ * `AddPersonDialog.tsx`/`PersonSheet.tsx::AssignReferentForm` usan
+ * `useOrgMembers` (que exige el mismo permiso de equipo), así que un
+ * `moderador` los verá vacíos salvo «Sin referente».
  */
-export function ConfiguracionPanel({ orgId }: ConfiguracionPanelProps) {
+export function ConfiguracionPanel({ orgId, role }: ConfiguracionPanelProps) {
   return (
     <div className="flex flex-col gap-6">
       <DatosEntidad orgId={orgId} />
-      <Equipo orgId={orgId} />
+      {role === "titular" ? <Equipo orgId={orgId} /> : null}
       <Referencias orgId={orgId} />
       <Ambito orgId={orgId} />
     </div>

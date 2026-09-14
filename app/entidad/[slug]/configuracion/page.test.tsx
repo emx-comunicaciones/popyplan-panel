@@ -206,6 +206,17 @@ describe("EntidadConfiguracionPage", () => {
     expect(scopeMutate).toHaveBeenCalledWith({ comarca: "vega-alta" });
   });
 
+  it("moderador no ve la sección Equipo (GET de equipo solo titular) pero sí el resto", async () => {
+    setDefaultMocks();
+
+    await renderPage("moderador");
+
+    expect(screen.queryByLabelText("Id de usuario")).not.toBeInTheDocument();
+    expect(useOrgMembersMock).not.toHaveBeenCalled();
+    expect(screen.getByLabelText("Persona (id)")).toBeInTheDocument();
+    expect(screen.getByLabelText("Códigos INE, separados por coma")).toBeInTheDocument();
+  });
+
   it("dinamizador no ve Configuración: «Sin acceso»", async () => {
     setDefaultMocks();
 

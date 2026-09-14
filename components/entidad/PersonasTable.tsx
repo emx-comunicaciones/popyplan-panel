@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useInvitations } from "@/hooks/useInvitations";
 import { usePeople } from "@/hooks/usePeople";
+import { useEntityCommunities } from "@/hooks/useEntityCommunities";
 import { useResendInvitation } from "@/hooks/useResendInvitation";
 import { useRevokeInvitation } from "@/hooks/useRevokeInvitation";
 import type { InvitedPersonRow } from "@/lib/api/types";
@@ -67,7 +68,9 @@ function PendingInvitationsHint({ orgId }: { orgId: number | string }) {
 
 /**
  * Tabla de personas de la entidad (`docs/PANEL.md` §3.2): filtros
- * comunidad/referente/participación (`active_since`)/alta (`joined_since`)
+ * comunidad (select de `useEntityCommunities` — el backend solo acepta el
+ * UUID, un texto libre daba 400 a toda la tabla)/referente/participación
+ * (`active_since`)/alta (`joined_since`)
  * más búsqueda, y paginación estándar de DRF. Cada fila enlaza a la ficha
  * operativa (`personas/[userId]`). Tarea W3b: botones «Añadir persona» e
  * «Importar Excel/CSV» (solo `canManage`) y checkbox «Incluir invitadas»
@@ -83,6 +86,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
   const [importOpen, setImportOpen] = useState(false);
   const [revoking, setRevoking] = useState<InvitedPersonRow | null>(null);
   const period = presetPeriod("mes");
+  const communities = useEntityCommunities(orgId);
 
   const people = usePeople(orgId, period, {
     search: filters.search || undefined,
@@ -132,13 +136,19 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
           <label htmlFor="personas-community" className="mb-1 block text-sm font-medium text-text-form">
             Comunidad
           </label>
-          <input
+          <select
             id="personas-community"
-            type="text"
             value={filters.community}
             onChange={(event) => updateFilter("community", event.target.value)}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
-          />
+          >
+            <option value="">Todas</option>
+            {(communities.data ?? []).map((community) => (
+              <option key={community.id} value={community.id}>
+                {community.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label htmlFor="personas-referent" className="mb-1 block text-sm font-medium text-text-form">

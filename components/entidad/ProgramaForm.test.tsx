@@ -1,7 +1,7 @@
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { render, screen } from "@/test-utils/render";
+import { fireEvent, render, screen } from "@/test-utils/render";
 import { buildProgram } from "@/test-utils/fixtures/program";
 
 const useCreateProgramMock = vi.hoisted(() => vi.fn());
@@ -101,6 +101,23 @@ describe("ProgramaForm", () => {
     expect(
       screen.getByText("La fecha de fin no puede ser anterior a la de inicio."),
     ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Guardar" })).toBeDisabled();
+  });
+
+  it("presupuesto negativo desactiva Guardar", async () => {
+    useCreateProgramMock.mockReturnValue(mutationDefaults());
+    useUpdateProgramMock.mockReturnValue(mutationDefaults());
+
+    const user = userEvent.setup();
+    render(<ProgramaForm orgId={7} editing="new" onDone={vi.fn()} />);
+
+    await user.type(screen.getByLabelText("Nombre"), "Refuerzo escolar");
+    await user.type(screen.getByLabelText("Inicio"), "2026-01-01");
+    await user.type(screen.getByLabelText("Fin"), "2026-06-30");
+    // fireEvent en vez de user.type: jsdom sanea el valor intermedio «-»
+    // de un input type=number a cadena vacía y el «-5» nunca llegaría.
+    fireEvent.change(screen.getByLabelText("Presupuesto (€)"), { target: { value: "-5" } });
+
     expect(screen.getByRole("button", { name: "Guardar" })).toBeDisabled();
   });
 

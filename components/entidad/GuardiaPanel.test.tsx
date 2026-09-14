@@ -1,3 +1,4 @@
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, afterEach } from "vitest";
 
 import { axe } from "@/test-utils/axe";
@@ -167,6 +168,31 @@ describe("GuardiaPanel", () => {
         "Popyplan no guarda teléfonos: contacta con la persona por el chat de la app o a través de su referente.",
       ),
     ).toBeInTheDocument();
+  });
+
+  it("guardar el teléfono de ayuda vacío lo limpia con cadena vacía (el contrato real no acepta null)", async () => {
+    mockOrganizationHooks();
+    useOrganizationMock.mockReturnValue({
+      data: buildOrganization({ help_phone: "+34600000001" }),
+    });
+    const mutate = vi.fn();
+    useUpdateOrganizationMock.mockReturnValue({
+      mutate,
+      isPending: false,
+      isError: false,
+      error: null,
+      isSuccess: false,
+    });
+    usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
+    const user = userEvent.setup();
+
+    render(<GuardiaPanel orgId={7} slug={SLUG} />);
+
+    await user.clear(screen.getByLabelText("Teléfono de ayuda"));
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(mutate).toHaveBeenCalledWith({ help_phone: "" });
   });
 
   it("acuse de recibo: mantiene el botón «He contactado» y pinta el error si falla", () => {

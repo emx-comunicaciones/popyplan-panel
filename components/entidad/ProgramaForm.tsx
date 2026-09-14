@@ -57,12 +57,14 @@ export function ProgramaForm({ orgId, editing, onDone }: ProgramaFormProps) {
 
   const mutation = editing === "new" ? createProgram : updateProgram;
   const dateError = validateProgramDates(form.startsOn, form.endsOn);
+  const budgetCents = eurosToCents(form.budgetEuros);
   const canSubmit =
     form.name.trim().length > 0 &&
     form.startsOn.length > 0 &&
     form.endsOn.length > 0 &&
     form.budgetEuros.trim().length > 0 &&
-    !Number.isNaN(eurosToCents(form.budgetEuros)) &&
+    !Number.isNaN(budgetCents) &&
+    budgetCents >= 0 &&
     !dateError;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {

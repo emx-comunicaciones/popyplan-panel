@@ -65,6 +65,8 @@ afterEach(() => {
  * así que hace falta un valor por defecto en todos los tests; el resto
  * de hooks nuevos solo se montan cuando se abre el diálogo
  * correspondiente («Añadir persona» / «Importar Excel/CSV»).
+ * `useEntityCommunities` se llama siempre: alimenta el select del filtro
+ * «Comunidad».
  */
 function mockDefaults() {
   useResendInvitationMock.mockReturnValue({
@@ -79,6 +81,7 @@ function mockDefaults() {
     isError: false,
     error: null,
   });
+  useEntityCommunitiesMock.mockReturnValue({ data: [], isError: false, error: null });
 }
 
 async function renderPage(role = "titular", slug = "alfaville") {
@@ -147,18 +150,47 @@ describe("EntidadPersonasPage", () => {
   it("escribir en los filtros llama a usePeople con la query exacta", async () => {
     mockDefaults();
     usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "comm-1", name: "Paseos" })],
+      isError: false,
+      error: null,
+    });
     const user = userEvent.setup();
 
     await renderPage();
     usePeopleMock.mockClear();
 
     await user.type(screen.getByLabelText("Buscar"), "an");
-    await user.type(screen.getByLabelText("Comunidad"), "comm-1");
+    await user.selectOptions(screen.getByLabelText("Comunidad"), "comm-1");
     await user.type(screen.getByLabelText("Referente"), "7");
 
     const lastCall = usePeopleMock.mock.calls.at(-1);
     expect(lastCall?.[0]).toBe(7);
     expect(lastCall?.[2]).toMatchObject({ search: "an", community: "comm-1", referent: 7 });
+  });
+
+  it("filtro Comunidad: «Todas» no envía el parámetro; elegir una comunidad envía su UUID", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "comm-1", name: "Paseos" })],
+      isError: false,
+      error: null,
+    });
+    const user = userEvent.setup();
+
+    await renderPage();
+    usePeopleMock.mockClear();
+
+    const select = screen.getByLabelText("Comunidad");
+    expect(within(select).getByRole("option", { name: "Todas" })).toBeInTheDocument();
+    expect(within(select).getByRole("option", { name: "Paseos" })).toHaveAttribute("value", "comm-1");
+
+    await user.selectOptions(select, "comm-1");
+    expect(usePeopleMock.mock.calls.at(-1)?.[2]).toMatchObject({ community: "comm-1" });
+
+    await user.selectOptions(select, "");
+    expect(usePeopleMock.mock.calls.at(-1)?.[2].community).toBeUndefined();
   });
 
   it("paginación: sin `previous`, «Anterior» está deshabilitado; con `next`, «Siguiente» no", async () => {
@@ -441,6 +473,7 @@ describe("EntidadPersonasPage", () => {
       error: null,
     });
     useInvitationsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({ data: [], isError: false, error: null });
 
     const user = userEvent.setup();
     await renderPage("titular");
@@ -470,6 +503,7 @@ describe("EntidadPersonasPage", () => {
       error: null,
     });
     useInvitationsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({ data: [], isError: false, error: null });
 
     const user = userEvent.setup();
     await renderPage("titular");
