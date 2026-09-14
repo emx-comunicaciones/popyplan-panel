@@ -35,6 +35,7 @@ function CheckinBox({ eventId }: { eventId: string }) {
   const [token, setToken] = useState("");
   const [message, setMessage] = useState<{ kind: "ok" | "already" | "error"; text: string } | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const [scanning, setScanning] = useState(false);
   const barcodeDetectorAvailable =
     typeof window !== "undefined" && "BarcodeDetector" in window;
@@ -65,25 +66,67 @@ function CheckinBox({ eventId }: { eventId: string }) {
     submitToken(token);
   }
 
+  /**
+   * Asigna el stream al `<video>` cuando ambos existen. El `<video>` solo
+   * se monta con `scanning === true`, así que esto se llama desde
+   * `startScanning` (tras resolver `getUserMedia`) y desde el effect de
+   * `[scanning]` (tras el commit del `<video>`), cubriendo cualquier orden
+   * de resolución. Si el escaneo se detuvo mientras se pedía la cámara,
+   * suelta los tracks en vez de dejarlos vivos.
+   */
+  function attachStream() {
+    const stream = streamRef.current;
+    const video = videoRef.current;
+    if (!stream) return;
+    if (!video) {
+      stream.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+      return;
+    }
+    video.srcObject = stream;
+    video.play().catch(() => {
+      // El usuario pudo parar el escaneo antes de que el play llegara.
+    });
+  }
+
   async function startScanning() {
     setMessage(null);
+    setScanning(true);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
-      setScanning(true);
+      streamRef.current = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
     } catch {
+      streamRef.current = null;
+      setScanning(false);
       setMessage({ kind: "error", text: "No se pudo acceder a la cámara para escanear." });
+      return;
     }
+    attachStream();
   }
 
   function stopScanning() {
-    const stream = videoRef.current?.srcObject as MediaStream | null;
-    stream?.getTracks().forEach((track) => track.stop());
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
     setScanning(false);
   }
+
+  /**
+   * Asigna el stream al `<video>` recién montado y, sobre todo, suelta la
+   * cámara al desmontar el componente (navegación cliente) o al dejar de
+   * escanear: sin este cleanup los tracks de `getUserMedia` quedaban
+   * activos para siempre aunque la página ya no existiera.
+   */
+  useEffect(() => {
+    if (!scanning) return;
+    const video = videoRef.current;
+    attachStream();
+    return () => {
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+      if (video) {
+        video.srcObject = null;
+      }
+    };
+  }, [scanning]);
 
   useEffect(() => {
     if (!scanning) return;

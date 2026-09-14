@@ -1,7 +1,7 @@
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { render, screen } from "@/test-utils/render";
+import { render, screen, waitFor } from "@/test-utils/render";
 import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
@@ -31,6 +31,8 @@ afterEach(() => {
   useAttendeesMock.mockReset();
   useMarkAttendanceMock.mockReset();
   useCheckinMock.mockReset();
+  delete (window as { BarcodeDetector?: unknown }).BarcodeDetector;
+  delete (navigator as { mediaDevices?: unknown }).mediaDevices;
 });
 
 async function renderPage(slug = "alfaville", eventId = "event-uuid-1") {
@@ -159,6 +161,71 @@ describe("EntidadAsistenciaPage", () => {
     await renderPage();
 
     expect(screen.queryByRole("button", { name: "Escanear con la cámara" })).not.toBeInTheDocument();
+  });
+
+  it("«Escanear con la cámara» asigna el stream al <video> y suelta la cámara al desmontar", async () => {
+    useAttendeesMock.mockReturnValue({ data: [ATTENDEE], isError: false, error: null });
+    useMarkAttendanceMock.mockReturnValue({ mutate: vi.fn(), isPending: false, variables: undefined });
+    useCheckinMock.mockReturnValue({ mutate: vi.fn(), isPending: false });
+
+    const trackStop = vi.fn();
+    const stream = { getTracks: () => [{ stop: trackStop }] };
+    Object.defineProperty(navigator, "mediaDevices", {
+      value: { getUserMedia: vi.fn().mockResolvedValue(stream) },
+      configurable: true,
+    });
+    Object.defineProperty(HTMLMediaElement.prototype, "play", {
+      value: vi.fn().mockResolvedValue(undefined),
+      configurable: true,
+    });
+    window.requestAnimationFrame = vi.fn();
+    class FakeBarcodeDetector {
+      async detect() {
+        return [];
+      }
+    }
+    Object.defineProperty(window, "BarcodeDetector", { value: FakeBarcodeDetector, configurable: true });
+
+    const user = userEvent.setup();
+    const { unmount } = await renderPage();
+
+    await user.click(screen.getByRole("button", { name: "Escanear con la cámara" }));
+
+    const video = (await screen.findByLabelText(
+      "Vista de la cámara para escanear el QR",
+    )) as HTMLVideoElement;
+    await waitFor(() => expect(video.srcObject).toBe(stream));
+
+    unmount();
+    expect(trackStop).toHaveBeenCalled();
+  });
+
+  it("sin permiso de cámara, «Escanear con la cámara» muestra error y no queda escaneando", async () => {
+    useAttendeesMock.mockReturnValue({ data: [ATTENDEE], isError: false, error: null });
+    useMarkAttendanceMock.mockReturnValue({ mutate: vi.fn(), isPending: false, variables: undefined });
+    useCheckinMock.mockReturnValue({ mutate: vi.fn(), isPending: false });
+
+    Object.defineProperty(navigator, "mediaDevices", {
+      value: { getUserMedia: vi.fn().mockRejectedValue(new Error("denied")) },
+      configurable: true,
+    });
+    class FakeBarcodeDetector {
+      async detect() {
+        return [];
+      }
+    }
+    Object.defineProperty(window, "BarcodeDetector", { value: FakeBarcodeDetector, configurable: true });
+
+    const user = userEvent.setup();
+    await renderPage();
+
+    await user.click(screen.getByRole("button", { name: "Escanear con la cámara" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "No se pudo acceder a la cámara para escanear.",
+    );
+    expect(screen.queryByLabelText("Vista de la cámara para escanear el QR")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Escanear con la cámara" })).toBeInTheDocument();
   });
 
   it("sin inscritos muestra el estado vacío", async () => {
