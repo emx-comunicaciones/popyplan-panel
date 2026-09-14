@@ -1,6 +1,6 @@
-# CLAUDE.md — Popyplan Panel
+# AGENTS.md — Popyplan Panel
 
-> `AGENTS.md` es una copia de este fichero: si actualizas uno, actualiza el otro.
+> Copia de `CLAUDE.md`: si actualizas uno, actualiza el otro (el contenido debe mantenerse idéntico salvo este encabezado).
 
 Panel web de Popyplan (Next.js 15, App Router, TypeScript estricto,
 Tailwind CSS 4, TanStack Query 5). Consume la misma API Django/DRF que
