@@ -9,6 +9,7 @@
 import { useMutation, useQuery, useQueryClient, type UseMutationResult, type UseQueryResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import type { Organization, OrganizationCreateRequest, PaginatedOrganizationList } from "@/lib/api/types";
 
@@ -91,10 +92,7 @@ export function useCreateOrganization(): UseMutationResult<
         return await apiFetch<Organization>(ORGANIZATIONS.LIST(), { method: "POST", body: input });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
-          const body = error.body as { detail?: unknown } | null;
-          throw new OrganizationsError(
-            typeof body?.detail === "string" ? body.detail : "Revisa los datos: alguno no es válido.",
-          );
+          throw new OrganizationsError(detailOf(error) ?? "Revisa los datos: alguno no es válido.");
         }
         if (error instanceof ApiError && error.status === 403) {
           throw new OrganizationsError("Solo verificador o superadmin dan de alta entidades.");
@@ -155,11 +153,8 @@ export function useSetOrganizationParent(): UseMutationResult<
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
-          const body = error.body as { detail?: unknown } | null;
           throw new OrganizationsError(
-            typeof body?.detail === "string"
-              ? body.detail
-              : "Esa entidad paraguas no es válida (crearía un ciclo).",
+            detailOf(error) ?? "Esa entidad paraguas no es válida (crearía un ciclo).",
           );
         }
         if (error instanceof ApiError && error.status === 403) {

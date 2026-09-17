@@ -97,3 +97,19 @@ describe("useSendAnnouncement", () => {
     expect((result.current.error as SendAnnouncementError).kind).toBe("desconocido");
   });
 });
+
+/**
+ * `lib/api/drfError.ts::detailOf`: el 400 por campo de DRF
+ * (`{campo: ["mensaje"]}`) se pinta con el mensaje del backend, no con el
+ * genérico del hook.
+ */
+describe("useSendAnnouncement (400 por campo)", () => {
+  it("muestra el mensaje del campo que el backend rechaza", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { audience: ["Esa comunidad no es de tu entidad."] }));
+    const { result } = renderHook(() => useSendAnnouncement(7), { wrapper });
+    result.current.mutate({ title: "T", body: "B", audience: "community:c-1" });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Esa comunidad no es de tu entidad.");
+  });
+});

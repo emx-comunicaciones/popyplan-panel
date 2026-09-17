@@ -12,6 +12,7 @@
 import { useMutation, useQuery, useQueryClient, type UseMutationResult, type UseQueryResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import type { Reference, ReferenceList } from "@/lib/api/types";
 
@@ -63,11 +64,9 @@ export function useCreateOrgReference(
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
-          const body = error.body as { detail?: unknown } | null;
           throw new OrgReferencesError(
-            typeof body?.detail === "string"
-              ? body.detail
-              : "Revisa los datos: esa persona ya tiene referente, o quien asignas no es referente.",
+            detailOf(error) ??
+              "Revisa los datos: esa persona ya tiene referente, o quien asignas no es referente.",
           );
         }
         throw new OrgReferencesError("No se pudo asignar el referente.");

@@ -121,3 +121,19 @@ describe("useRevokePlatformRole", () => {
     await waitFor(() => expect(result.current.isError).toBe(true));
   });
 });
+
+/**
+ * `lib/api/drfError.ts::detailOf`: el 400 por campo de DRF
+ * (`{campo: ["mensaje"]}`) se pinta con el mensaje del backend, no con el
+ * genérico del hook.
+ */
+describe("useGrantPlatformRole (400 por campo)", () => {
+  it("muestra el mensaje del campo que el backend rechaza", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { user: ["Esa cuenta no existe."] }));
+    const { result } = renderHook(() => useGrantPlatformRole(), { wrapper });
+    result.current.mutate({ user: 1, role: "moderator" });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Esa cuenta no existe.");
+  });
+});

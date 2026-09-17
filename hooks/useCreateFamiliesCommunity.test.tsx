@@ -116,3 +116,19 @@ describe("useCreateFamiliesCommunity", () => {
     expect(result.current.error?.kind).toBe("desconocido");
   });
 });
+
+/**
+ * `lib/api/drfError.ts::detailOf`: el 400 por campo de DRF
+ * (`{campo: ["mensaje"]}`) se pinta con el mensaje del backend, no con el
+ * genérico del hook.
+ */
+describe("useCreateFamiliesCommunity (400 por campo)", () => {
+  it("muestra el mensaje del campo que el backend rechaza", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { name: ["Este campo no puede estar en blanco."] }));
+    const { result } = renderHook(() => useCreateFamiliesCommunity(), { wrapper });
+    result.current.mutate({ orgId: 7, name: "" });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Este campo no puede estar en blanco.");
+  });
+});

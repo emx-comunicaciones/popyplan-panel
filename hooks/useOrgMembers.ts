@@ -12,6 +12,7 @@
 import { useMutation, useQuery, useQueryClient, type UseMutationResult, type UseQueryResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import type { OrgMembershipFull, OrgMembershipRole } from "@/lib/api/types";
 
@@ -63,11 +64,8 @@ export function useAddOrgMember(
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
-          const body = error.body as { detail?: unknown } | null;
           throw new OrgMembersError(
-            typeof body?.detail === "string"
-              ? body.detail
-              : "Esa persona ya tiene un rol en esta entidad, o el rol no es válido.",
+            detailOf(error) ?? "Esa persona ya tiene un rol en esta entidad, o el rol no es válido.",
           );
         }
         if (error instanceof ApiError && error.status === 403) {

@@ -89,3 +89,19 @@ describe("useResendInvitation", () => {
     expect((result.current.error as ResendInvitationError).kind).toBe("desconocido");
   });
 });
+
+/**
+ * `lib/api/drfError.ts::detailOf`: el 400 por campo de DRF
+ * (`{campo: ["mensaje"]}`) se pinta con el mensaje del backend, no con el
+ * genérico del hook.
+ */
+describe("useResendInvitation (400 con detalle)", () => {
+  it("muestra el detalle del backend en vez del mensaje genérico", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { detail: "Esta invitación ya fue aceptada." }));
+    const { result } = renderHook(() => useResendInvitation(7), { wrapper });
+    result.current.mutate(3);
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Esta invitación ya fue aceptada.");
+  });
+});

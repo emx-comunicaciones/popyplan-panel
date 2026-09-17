@@ -12,6 +12,7 @@
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { PROGRAMS } from "@/lib/api/endpoints";
 import type { Program, ProgramWriteFields } from "@/lib/api/types";
 
@@ -37,19 +38,9 @@ export class ProgramMutationError extends Error {
  * serializers.py`) devuelven sus errores de campo como
  * `{campo: ["mensaje"]}` (DRF estándar), nunca `{detail: "..."}` — a
  * diferencia de los 409 de transición, que sí llevan `{detail: "..."}`
- * (`programs/viewsets.py`, `TransicionInvalida`). Esta función cubre las
- * dos formas, con `detail` primero por si algún día coinciden.
+ * (`programs/viewsets.py`, `TransicionInvalida`). Las dos formas las lee
+ * `lib/api/drfError.ts::detailOf`, compartido con el resto del panel.
  */
-function detailOf(error: ApiError): string | undefined {
-  const body = error.body as Record<string, unknown> | null;
-  if (!body) return undefined;
-  if (typeof body.detail === "string") return body.detail;
-  for (const value of Object.values(body)) {
-    if (Array.isArray(value) && typeof value[0] === "string") return value[0];
-  }
-  return undefined;
-}
-
 function toProgramMutationError(error: unknown, fallback: string): ProgramMutationError {
   if (error instanceof ApiError) {
     if (error.status === 400) {

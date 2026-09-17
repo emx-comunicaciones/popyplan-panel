@@ -166,3 +166,28 @@ describe("useSetOrganizationParent", () => {
     expect(result.current.error).toBeInstanceOf(OrganizationsError);
   });
 });
+
+/**
+ * `lib/api/drfError.ts::detailOf`: el 400 por campo de DRF
+ * (`{campo: ["mensaje"]}`) se pinta con el mensaje del backend, no con el
+ * genérico del hook.
+ */
+describe("useCreateOrganization/useSetOrganizationParent (400 por campo)", () => {
+  it("useCreateOrganization muestra el mensaje del campo", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { cif: ["Ya existe una entidad con ese CIF."] }));
+    const { result } = renderHook(() => useCreateOrganization(), { wrapper });
+    result.current.mutate({ name: "x", slug: "x", org_type: "asociacion", cif: "x" });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Ya existe una entidad con ese CIF.");
+  });
+
+  it("useSetOrganizationParent muestra el mensaje del campo", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { parent: ["Esa entidad no es de tipo administración."] }));
+    const { result } = renderHook(() => useSetOrganizationParent(), { wrapper });
+    result.current.mutate({ orgId: 1, parent: 9 });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Esa entidad no es de tipo administración.");
+  });
+});

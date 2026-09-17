@@ -126,3 +126,19 @@ describe("useEscalateReport", () => {
     expect((result.current.error as ReportActionError).kind).toBe("desconocido");
   });
 });
+
+/**
+ * `lib/api/drfError.ts::detailOf`: el 400 por campo de DRF
+ * (`{campo: ["mensaje"]}`) se pinta con el mensaje del backend, no con el
+ * genérico del hook.
+ */
+describe("useResolveReport (400 por campo)", () => {
+  it("muestra el mensaje del campo que el backend rechaza", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { resolution: ["Esa resolución no es válida."] }));
+    const { result } = renderHook(() => useResolveReport(), { wrapper });
+    result.current.mutate({ reportId: "r1", resolution: "warned" });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Esa resolución no es válida.");
+  });
+});

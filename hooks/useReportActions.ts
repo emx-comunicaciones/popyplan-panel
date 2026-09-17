@@ -9,6 +9,7 @@
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { SAFETY } from "@/lib/api/endpoints";
 import type { ReportDetail, ReportResolution } from "@/lib/api/types";
 
@@ -22,13 +23,6 @@ export class ReportActionError extends Error {
     this.name = "ReportActionError";
     this.kind = kind;
   }
-}
-
-function detailOf(error: ApiError): string | undefined {
-  const body = error.body as { detail?: unknown; error?: unknown } | null;
-  if (typeof body?.detail === "string") return body.detail;
-  if (typeof body?.error === "string") return body.error;
-  return undefined;
 }
 
 function toReportActionError(error: unknown, fallback: string): ReportActionError {

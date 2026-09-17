@@ -92,3 +92,19 @@ describe("useCreateSurvey", () => {
     expect((result.current.error as CreateSurveyError).kind).toBe("desconocido");
   });
 });
+
+/**
+ * `lib/api/drfError.ts::detailOf`: el 400 por campo de DRF
+ * (`{campo: ["mensaje"]}`) se pinta con el mensaje del backend, no con el
+ * genérico del hook.
+ */
+describe("useCreateSurvey (400 por campo)", () => {
+  it("muestra el mensaje del campo que el backend rechaza", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { questions: ["Añade al menos una pregunta."] }));
+    const { result } = renderHook(() => useCreateSurvey(7), { wrapper });
+    result.current.mutate({ title: "T", kind: "periodic", questions: [] });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Añade al menos una pregunta.");
+  });
+});

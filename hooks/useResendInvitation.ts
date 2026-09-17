@@ -9,6 +9,7 @@
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import type { EntityInvitation } from "@/lib/api/types";
 
@@ -37,7 +38,10 @@ export function useResendInvitation(
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
-          throw new ResendInvitationError("invalido", "Esta invitación ya no está pendiente.");
+          throw new ResendInvitationError(
+            "invalido",
+            detailOf(error) ?? "Esta invitación ya no está pendiente.",
+          );
         }
         if (error instanceof ApiError && error.status === 403) {
           throw new ResendInvitationError(

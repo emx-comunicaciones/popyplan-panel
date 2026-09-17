@@ -101,3 +101,19 @@ describe("useUpdateResource", () => {
     expect((result.current.error as UpdateResourceError).kind).toBe("desconocido");
   });
 });
+
+/**
+ * `lib/api/drfError.ts::detailOf`: el 400 por campo de DRF
+ * (`{campo: ["mensaje"]}`) se pinta con el mensaje del backend, no con el
+ * genérico del hook.
+ */
+describe("useUpdateResource (400 por campo)", () => {
+  it("muestra el mensaje del campo que el backend rechaza", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { url: ["Introduce una URL válida."] }));
+    const { result } = renderHook(() => useUpdateResource(7), { wrapper });
+    result.current.mutate({ resourceId: 1, url: "no-es-una-url" });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Introduce una URL válida.");
+  });
+});

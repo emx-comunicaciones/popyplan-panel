@@ -21,6 +21,7 @@
 import { useMutation, useQuery, useQueryClient, type UseMutationResult, type UseQueryResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { BILLING } from "@/lib/api/endpoints";
 import type {
   BillingSummary,
@@ -52,19 +53,9 @@ export class BillingError extends Error {
  * (DRF estándar) devuelven sus errores de campo como `{campo:
  * ["mensaje"]}`; los 409 de transición (`activate`/`end`) y los 403 de
  * «solo superadmin» llevan `{detail: "..."}` (`billing/viewsets.py`).
- * Misma función que `useProgramMutations.ts::detailOf`, con `detail`
- * primero por si algún día coinciden.
+ * Las dos formas las lee `lib/api/drfError.ts::detailOf`, compartido con
+ * el resto del panel.
  */
-function detailOf(error: ApiError): string | undefined {
-  const body = error.body as Record<string, unknown> | null;
-  if (!body) return undefined;
-  if (typeof body.detail === "string") return body.detail;
-  for (const value of Object.values(body)) {
-    if (Array.isArray(value) && typeof value[0] === "string") return value[0];
-  }
-  return undefined;
-}
-
 function toBillingError(error: unknown, fallback: string): BillingError {
   if (error instanceof ApiError) {
     if (error.status === 403) {

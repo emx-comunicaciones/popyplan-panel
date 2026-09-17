@@ -81,3 +81,19 @@ describe("useOrgScope", () => {
     expect(result.current.error?.message).toBe("No se pudo ampliar el ámbito de la entidad.");
   });
 });
+
+/**
+ * `lib/api/drfError.ts::detailOf`: el 400 por campo de DRF
+ * (`{campo: ["mensaje"]}`) se pinta con el mensaje del backend, no con el
+ * genérico del hook.
+ */
+describe("useOrgScope (400 con detalle)", () => {
+  it("muestra el detalle del backend en vez del mensaje genérico", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { places: ["Ese código INE no existe."] }));
+    const { result } = renderHook(() => useOrgScope(7), { wrapper });
+    result.current.mutate({ places: ["99999"] });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Ese código INE no existe.");
+  });
+});

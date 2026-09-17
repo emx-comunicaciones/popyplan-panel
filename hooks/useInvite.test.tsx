@@ -136,3 +136,19 @@ describe("useInvite", () => {
     expect((result.current.error as InviteError).kind).toBe("desconocido");
   });
 });
+
+/**
+ * `lib/api/drfError.ts::detailOf`: el 400 por campo de DRF
+ * (`{campo: ["mensaje"]}`) se pinta con el mensaje del backend, no con el
+ * genérico del hook.
+ */
+describe("useInvite (400 por campo)", () => {
+  it("muestra el mensaje del campo que el backend rechaza", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { email: ["Introduce una dirección de correo válida."] }));
+    const { result } = renderHook(() => useInvite(7), { wrapper });
+    result.current.mutate({ email: "no-es-un-correo" });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Introduce una dirección de correo válida.");
+  });
+});

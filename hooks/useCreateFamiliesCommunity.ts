@@ -15,6 +15,7 @@
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { COMMUNITIES } from "@/lib/api/endpoints";
 import type { CreateFamiliesCommunityRequest, EntityCommunityRow } from "@/lib/api/types";
 
@@ -28,13 +29,6 @@ export class CreateFamiliesCommunityError extends Error {
     this.name = "CreateFamiliesCommunityError";
     this.kind = kind;
   }
-}
-
-function detailOf(error: ApiError): string | undefined {
-  const body = error.body as { detail?: unknown; error?: unknown } | null;
-  if (typeof body?.detail === "string") return body.detail;
-  if (typeof body?.error === "string") return body.error;
-  return undefined;
 }
 
 export interface CreateFamiliesCommunityInput {

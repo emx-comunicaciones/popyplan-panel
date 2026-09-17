@@ -16,6 +16,7 @@
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import type { Reference } from "@/lib/api/types";
 
@@ -29,11 +30,6 @@ export class AssignReferentError extends Error {
     this.name = "AssignReferentError";
     this.kind = kind;
   }
-}
-
-function detailOf(error: ApiError): string | undefined {
-  const body = error.body as { detail?: unknown } | null;
-  return typeof body?.detail === "string" ? body.detail : undefined;
 }
 
 function toAssignReferentError(error: unknown): AssignReferentError {

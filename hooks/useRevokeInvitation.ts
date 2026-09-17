@@ -9,6 +9,7 @@
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
 
 export type RevokeInvitationErrorKind = "invalido" | "sin_permiso" | "no_encontrada" | "desconocido";
@@ -34,7 +35,10 @@ export function useRevokeInvitation(
         await apiFetch<void>(ORGANIZATIONS.INVITATION(orgId, invitationId), { method: "DELETE" });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
-          throw new RevokeInvitationError("invalido", "Esta invitación ya no está pendiente.");
+          throw new RevokeInvitationError(
+            "invalido",
+            detailOf(error) ?? "Esta invitación ya no está pendiente.",
+          );
         }
         if (error instanceof ApiError && error.status === 403) {
           throw new RevokeInvitationError(

@@ -70,3 +70,19 @@ describe("useUpdateOrganization", () => {
     expect((result.current.error as UpdateOrganizationError).kind).toBe("desconocido");
   });
 });
+
+/**
+ * `lib/api/drfError.ts::detailOf`: el 400 por campo de DRF
+ * (`{campo: ["mensaje"]}`) se pinta con el mensaje del backend, no con el
+ * genérico del hook.
+ */
+describe("useUpdateOrganization (400 por campo)", () => {
+  it("muestra el mensaje del campo que el backend rechaza", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { contact_email: ["Introduce una dirección de correo válida."] }));
+    const { result } = renderHook(() => useUpdateOrganization(7), { wrapper });
+    result.current.mutate({ contact_email: "no-es-un-correo" });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Introduce una dirección de correo válida.");
+  });
+});

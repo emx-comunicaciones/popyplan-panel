@@ -10,6 +10,7 @@
 import { useMutation, useQuery, useQueryClient, type UseMutationResult, type UseQueryResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { SAFETY } from "@/lib/api/endpoints";
 import type { PlatformRole, PlatformRoleGrantRequest } from "@/lib/api/types";
 
@@ -51,10 +52,7 @@ export function useGrantPlatformRole(): UseMutationResult<
         return await apiFetch<PlatformRole>(SAFETY.PLATFORM_ROLES(), { method: "POST", body: input });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
-          const body = error.body as { detail?: unknown } | null;
-          throw new PlatformRolesError(
-            typeof body?.detail === "string" ? body.detail : "Revisa el id de usuario y el rol.",
-          );
+          throw new PlatformRolesError(detailOf(error) ?? "Revisa el id de usuario y el rol.");
         }
         if (error instanceof ApiError && error.status === 403) {
           throw new PlatformRolesError("Solo superadmin concede roles de plataforma.");

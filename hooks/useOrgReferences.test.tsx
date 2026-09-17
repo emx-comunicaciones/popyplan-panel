@@ -117,3 +117,19 @@ describe("useRemoveOrgReference", () => {
     expect(result.current.error?.message).toBe("No se pudo quitar el referente.");
   });
 });
+
+/**
+ * `lib/api/drfError.ts::detailOf`: el 400 por campo de DRF
+ * (`{campo: ["mensaje"]}`) se pinta con el mensaje del backend, no con el
+ * genérico del hook.
+ */
+describe("useCreateOrgReference (400 por campo)", () => {
+  it("muestra el mensaje del campo que el backend rechaza", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { referent_user: ["Esa persona no tiene el rol referente."] }));
+    const { result } = renderHook(() => useCreateOrgReference(7), { wrapper });
+    result.current.mutate({ user: 42, referent_user: 9 });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Esa persona no tiene el rol referente.");
+  });
+});

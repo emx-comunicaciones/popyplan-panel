@@ -136,3 +136,19 @@ describe("useRemoveOrgMember", () => {
     expect(result.current.error?.message).toBe("No se pudo quitar a la persona del equipo.");
   });
 });
+
+/**
+ * `lib/api/drfError.ts::detailOf`: el 400 por campo de DRF
+ * (`{campo: ["mensaje"]}`) se pinta con el mensaje del backend, no con el
+ * genérico del hook.
+ */
+describe("useAddOrgMember (400 por campo)", () => {
+  it("muestra el mensaje del campo que el backend rechaza", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { role: ["Ese rol no existe en esta entidad."] }));
+    const { result } = renderHook(() => useAddOrgMember(7), { wrapper });
+    result.current.mutate({ user: 55, role: "dinamizador" });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Ese rol no existe en esta entidad.");
+  });
+});

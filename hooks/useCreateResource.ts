@@ -12,6 +12,7 @@
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import type { EntityResource, ResourceAudience, ResourceCategory, ResourceKind } from "@/lib/api/types";
 import { buildResourcePayload, type ResourceFormInput } from "@/lib/resources/resourceFormData";
@@ -26,13 +27,6 @@ export class CreateResourceError extends Error {
     this.name = "CreateResourceError";
     this.kind = kind;
   }
-}
-
-function detailOf(error: ApiError): string | undefined {
-  const body = error.body as { detail?: unknown; error?: unknown } | null;
-  if (typeof body?.detail === "string") return body.detail;
-  if (typeof body?.error === "string") return body.error;
-  return undefined;
 }
 
 export type CreateResourceInput = ResourceFormInput &
