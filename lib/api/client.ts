@@ -24,8 +24,11 @@
  * - 401 del route handler de refresco → la sesión caducó de verdad:
  *   mismo camino de logout.
  * - 5xx del route handler de refresco → `ApiError` con ese status,
- *   **sin** logout: es un fallo transitorio del backend y TanStack Query
- *   puede reintentarlo; cerrar sesión aquí destruiría una sesión sana.
+ *   **sin** logout: es un fallo transitorio del backend y cerrar sesión
+ *   aquí destruiría una sesión sana. El error se propaga como error de la
+ *   consulta (la UI pinta su `ErrorState`) y la sesión sigue en pie para
+ *   el siguiente intento: **no** hay reintento automático, porque
+ *   `app/providers.tsx` fija `retry: false` para todas las queries.
  * - Error de red en el refresco → se trata como refresco fallido (logout),
  *   como antes.
  *
@@ -179,8 +182,9 @@ async function requestWithAuth(path: string, options: ApiFetchOptions): Promise<
     try {
       newToken = await refreshAccessToken();
     } catch (error) {
-      // 5xx del route handler de refresco: fallo transitorio, reintentable
-      // por TanStack — ni logout ni notificación de sesión expirada.
+      // 5xx del route handler de refresco: fallo transitorio; se propaga
+      // como error de la consulta (sin reintento: `retry: false` en
+      // `app/providers.tsx`), sin logout ni aviso de sesión expirada.
       if (error instanceof ApiError) throw error;
       newToken = null;
     }
