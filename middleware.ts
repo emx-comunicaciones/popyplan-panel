@@ -35,9 +35,13 @@
  *    navegación de documento siguiente, porque borrar la cookie en un
  *    prefetch no sirve de nada (el navegador no la aplica) y puede
  *    adelantarse al refresco bueno de otra petición concurrente.
- * 4. Si el backend no responde (error de red), devuelve **503** en vez de
- *    dejar pasar «sin sesión»: sin cabecera de acceso los layouts
- *    redirigirían a `/login` con la sesión todavía válida.
+ * 4. Si el backend no responde (error de red), o responde 200 con algo
+ *    que no son los dos tokens del contrato
+ *    (`lib/auth/tokenRefresh.ts::parseRefreshedTokens`, hallazgo B3),
+ *    devuelve **503** en vez de dejar pasar «sin sesión»: sin cabecera de
+ *    acceso los layouts redirigirían a `/login` con la sesión todavía
+ *    válida, y sin la comprobación de los tokens la cookie acababa
+ *    valiendo la cadena `"undefined"`.
  * 5. Si sale bien, guarda el refresh nuevo en la cookie (rotación) y
  *    añade el access token a la petición reenviada como cabecera interna
  *    (`ACCESS_TOKEN_HEADER`) — nunca llega al navegador, la lee
@@ -56,10 +60,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { AUTH } from "@/lib/api/endpoints";
-import type { TokenRefreshResponse } from "@/lib/api/types";
 import { forwardedForHeaders } from "@/lib/auth/clientIp";
 import { ACCESS_TOKEN_HEADER, SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/cookie";
 import { singleFlight } from "@/lib/auth/singleFlight";
+import { parseRefreshedTokens } from "@/lib/auth/tokenRefresh";
 
 const DEFAULT_API_URL = "http://localhost:8001";
 
@@ -67,7 +71,16 @@ function apiUrl(): string {
   return process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL;
 }
 
-type RefreshOutcome = { ok: true; access: string; refresh: string } | { ok: false };
+type RefreshOutcome =
+  | { ok: true; access: string; refresh: string }
+  /**
+   * `rechazado`: el backend dice que no (caducado, en lista negra) — hay
+   * que borrar la cookie. `ilegible`: respondió 200 con algo que no es la
+   * pareja de tokens del contrato (proxy, despliegue a medias) — la sesión
+   * puede estar perfectamente sana, así que se trata como el backend caído
+   * (`lib/auth/tokenRefresh.ts`, hallazgo B3).
+   */
+  | { ok: false; reason: "rechazado" | "ilegible" };
 
 /**
  * Refrescos en vuelo indexados por el valor del refresh token: peticiones
@@ -84,9 +97,11 @@ async function doRefreshToken(refresh: string, request: NextRequest): Promise<Re
     headers: { "Content-Type": "application/json", ...forwardedForHeaders(request) },
     body: JSON.stringify({ refresh }),
   });
-  if (!refreshResponse.ok) return { ok: false };
-  const { access, refresh: newRefresh } = (await refreshResponse.json()) as TokenRefreshResponse;
-  return { ok: true, access, refresh: newRefresh };
+  if (!refreshResponse.ok) return { ok: false, reason: "rechazado" };
+
+  const tokens = parseRefreshedTokens(await refreshResponse.json().catch(() => null));
+  if (!tokens) return { ok: false, reason: "ilegible" };
+  return { ok: true, access: tokens.access, refresh: tokens.refresh };
 }
 
 /** `true` para navegaciones de documento (o sin la cabecera, p. ej. curl). */
@@ -144,6 +159,11 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!outcome.ok) {
+    if (outcome.reason === "ilegible") {
+      // No es que la sesión haya caducado: el backend contestó algo que no
+      // se entiende. Mismo trato que si no respondiera.
+      return new NextResponse(null, { status: 503 });
+    }
     if (!isDocumentNavigation(request)) {
       // Prefetch/RSC: no tocar la cookie aquí (el navegador no aplica el
       // Set-Cookie de una subpetición); el borrado real lo hará la

@@ -22,14 +22,14 @@
  *   dev` (que ejecuta dos veces el inicializador de `app/providers.tsx`) o
  *   dos pestañas a la vez rotaban el refresh dos veces y la segunda
  *   recibía 401 → «Tu sesión ha caducado» justo tras entrar.
- * - **Rotación reciente** (`recentlyRotated`, 10 s): si el backend
- *   responde 401 a un refresh que este mismo proceso acaba de rotar con
- *   éxito, la respuesta guardada se repite en vez de borrar la cookie. Es
- *   el caso de una petición que salió del navegador **antes** de que se
- *   aplicara el `Set-Cookie` de la rotación anterior: lleva la cookie
- *   vieja, que el backend ya tiene en lista negra, pero la sesión está
- *   sana. La ventana es corta a propósito (el valor guardado incluye un
- *   access token) y la limpieza es perezosa, al consultar.
+ * - **Rotación reciente** (`lib/auth/rotationCache.ts`, 3 s): si el
+ *   backend responde 401 a un refresh que este mismo proceso acaba de
+ *   rotar con éxito, la respuesta guardada se repite en vez de borrar la
+ *   cookie. Es el caso de una petición que salió del navegador **antes**
+ *   de que se aplicara el `Set-Cookie` de la rotación anterior: lleva la
+ *   cookie vieja, que el backend ya tiene en lista negra, pero la sesión
+ *   está sana. Ese módulo documenta la ventana, la purga y el vaciado en
+ *   el logout.
  * - **Error de red** al llamar al backend: 503 **sin** borrar la cookie
  *   (el `cleared()` de un 401 sí borra; aquí no — la cookie sigue válida
  *   y el cliente puede reintentar). Antes el `fetch` sin `try/catch`
@@ -55,7 +55,9 @@ import { serverFetch } from "@/lib/api/serverFetch";
 import type { MeForArea, PlatformRoleMe } from "@/lib/api/types";
 import { forwardedForHeaders } from "@/lib/auth/clientIp";
 import { SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/cookie";
+import { recallRotation, rememberRotation, type RotatedResult } from "@/lib/auth/rotationCache";
 import { singleFlight } from "@/lib/auth/singleFlight";
+import { parseRefreshedTokens } from "@/lib/auth/tokenRefresh";
 
 const DEFAULT_API_URL = "http://localhost:8001";
 
@@ -63,39 +65,11 @@ function apiUrl(): string {
   return process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL;
 }
 
-/** Resultado de una rotación, independiente de la respuesta HTTP que genera. */
-type RotatedResult =
-  | { kind: "ok"; refresh: string; access: string; user: MeForArea; platformRole: PlatformRoleMe }
-  | { kind: "rotated-sin-perfil"; refresh: string };
-
+/** `RotatedResult` (rotación ya aplicada) más los dos finales sin rotación. */
 type RefreshResult = RotatedResult | { kind: "caducado" } | { kind: "no-disponible" };
 
 /** Rotaciones en vuelo indexadas por el refresh que las provocó (single-flight). */
 const inFlightByRefresh = new Map<string, Promise<RefreshResult>>();
-
-/** Ventana en la que se repite el resultado de una rotación ya aplicada. */
-const RECENT_ROTATION_TTL_MS = 10_000;
-
-const recentlyRotated = new Map<string, { result: RotatedResult; expiresAt: number }>();
-
-function rememberRotation(refresh: string, result: RotatedResult): void {
-  recentlyRotated.set(refresh, { result, expiresAt: Date.now() + RECENT_ROTATION_TTL_MS });
-}
-
-/** Limpieza perezosa: se purga lo caducado en cada consulta. */
-function recallRotation(refresh: string): RotatedResult | null {
-  const now = Date.now();
-  for (const [key, entry] of recentlyRotated) {
-    if (entry.expiresAt <= now) recentlyRotated.delete(key);
-  }
-  return recentlyRotated.get(refresh)?.result ?? null;
-}
-
-function rotatedTokens(data: unknown): { access: string; refresh: string } | null {
-  const body = data as { access?: unknown; refresh?: unknown } | null;
-  if (typeof body?.access !== "string" || typeof body?.refresh !== "string") return null;
-  return { access: body.access, refresh: body.refresh };
-}
 
 async function rotate(refresh: string, request: NextRequest): Promise<RefreshResult> {
   let refreshResponse: Response;
@@ -111,7 +85,7 @@ async function rotate(refresh: string, request: NextRequest): Promise<RefreshRes
 
   if (!refreshResponse.ok) return { kind: "caducado" };
 
-  const tokens = rotatedTokens(await refreshResponse.json().catch(() => null));
+  const tokens = parseRefreshedTokens(await refreshResponse.json().catch(() => null));
   if (!tokens) return { kind: "no-disponible" };
 
   // La rotación ya está aplicada en el backend: pase lo que pase con el

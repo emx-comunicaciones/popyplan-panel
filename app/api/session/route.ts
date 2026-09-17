@@ -24,6 +24,7 @@ import { serverFetch } from "@/lib/api/serverFetch";
 import type { MeForArea, PlatformRoleMe } from "@/lib/api/types";
 import { forwardedForHeaders } from "@/lib/auth/clientIp";
 import { SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/cookie";
+import { clearRecentRotations } from "@/lib/auth/rotationCache";
 
 const DEFAULT_API_URL = "http://localhost:8001";
 
@@ -108,6 +109,10 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   const refresh = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+  // Sin esto, durante la ventana de repetición de `lib/auth/rotationCache.ts`
+  // se podía cambiar el refresh anterior por un access token vivo *después*
+  // de cerrar sesión.
+  clearRecentRotations();
   if (refresh) {
     // Best-effort: invalida el refresh token en el backend
     // (`docs/PANEL.md` §0). Si falla (ya caducado, red caída…), se borra

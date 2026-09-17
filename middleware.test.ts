@@ -206,6 +206,19 @@ describe("middleware", () => {
     expect(res.cookies.get(SESSION_COOKIE_NAME)).toBeUndefined();
   });
 
+  it("con refresh válido, reenvía el access del backend y descarta el que trajera el cliente", async () => {
+    fetchMock.mockResolvedValueOnce(
+      response({ access: "access-nuevo", refresh: "refresh-nuevo" }, 200),
+    );
+
+    const res = await middleware(
+      requestWithCookie("refresh-b2", { [ACCESS_TOKEN_HEADER]: "access-falsificado" }),
+    );
+
+    expect(forwardedHeaderNames(res)).toContain(ACCESS_TOKEN_HEADER);
+    expect(res.headers.get(`x-middleware-request-${ACCESS_TOKEN_HEADER}`)).toBe("access-nuevo");
+  });
+
   it("si el backend responde algo que no es JSON, lo trata como refresco fallido", async () => {
     fetchMock.mockResolvedValueOnce({
       ok: true,
@@ -218,5 +231,24 @@ describe("middleware", () => {
     const res = await middleware(requestWithCookie("refresh-viejo"));
 
     expect(res.status).toBe(503);
+  });
+
+  it("si el backend responde 200 sin access/refresh, NUNCA fija la cookie ni la cabecera", async () => {
+    fetchMock.mockResolvedValueOnce(response({}, 200));
+
+    const res = await middleware(requestWithCookie("refresh-incompleto"));
+
+    expect(res.status).toBe(503);
+    expect(res.cookies.get(SESSION_COOKIE_NAME)).toBeUndefined();
+    expect(res.headers.get(`x-middleware-request-${ACCESS_TOKEN_HEADER}`)).toBeNull();
+  });
+
+  it("si el backend responde 200 con solo uno de los dos tokens, tampoco pasa", async () => {
+    fetchMock.mockResolvedValueOnce(response({ access: "solo-access" }, 200));
+
+    const res = await middleware(requestWithCookie("refresh-a-medias"));
+
+    expect(res.status).toBe(503);
+    expect(res.cookies.get(SESSION_COOKIE_NAME)).toBeUndefined();
   });
 });

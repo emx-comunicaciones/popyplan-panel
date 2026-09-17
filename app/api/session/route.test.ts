@@ -6,6 +6,9 @@ import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import { SESSION_COOKIE_NAME } from "@/lib/auth/cookie";
 
+import { clearRecentRotations } from "@/lib/auth/rotationCache";
+
+import { POST as REFRESH } from "./refresh/route";
 import { DELETE, POST } from "./route";
 
 const fetchMock = vi.fn();
@@ -222,6 +225,31 @@ describe("DELETE /api/session", () => {
     const res = await DELETE(requestWithCookie(undefined));
 
     expect(fetchMock).not.toHaveBeenCalled();
+    expect(res.cookies.get(SESSION_COOKIE_NAME)?.maxAge).toBe(0);
+  });
+
+  it("el logout olvida las rotaciones recientes: el refresh anterior ya no devuelve un access vivo", async () => {
+    clearRecentRotations();
+    const refreshRequest = () => {
+      const req = new NextRequest("http://panel.test/api/session/refresh", { method: "POST" });
+      req.cookies.set(SESSION_COOKIE_NAME, "r-logout");
+      return req;
+    };
+    fetchMock
+      // Refresco inicial: rota r-logout y guarda el resultado.
+      .mockResolvedValueOnce(response({ access: "access-vivo", refresh: "refresh-nuevo" }, 200))
+      .mockResolvedValueOnce(response(buildMe(), 200))
+      .mockResolvedValueOnce(response(buildPlatformRole(null), 200))
+      // Logout.
+      .mockResolvedValueOnce(response({}, 200))
+      // Segundo refresco con la cookie vieja: el backend la tiene en lista negra.
+      .mockResolvedValueOnce(response({ detail: "token_not_valid" }, 401));
+
+    expect((await REFRESH(refreshRequest())).status).toBe(200);
+    await DELETE(requestWithCookie("refresh-nuevo"));
+    const res = await REFRESH(refreshRequest());
+
+    expect(res.status).toBe(401);
     expect(res.cookies.get(SESSION_COOKIE_NAME)?.maxAge).toBe(0);
   });
 

@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import { SESSION_COOKIE_NAME } from "@/lib/auth/cookie";
+import { clearRecentRotations, ROTATION_REPLAY_TTL_MS } from "@/lib/auth/rotationCache";
 
 import { POST } from "./route";
 
@@ -19,6 +20,7 @@ afterEach(() => {
   fetchMock.mockReset();
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
+  clearRecentRotations();
 });
 
 function response(body: unknown, status: number): Response {
@@ -31,11 +33,11 @@ function response(body: unknown, status: number): Response {
 }
 
 /**
- * Cada caso usa un valor de refresh distinto: el módulo de la ruta guarda
- * las rotaciones recientes en un mapa a nivel de módulo (10 s, para no
- * tirar la sesión de un segundo refresco con la cookie vieja) que no se
- * puede resetear desde fuera — un fichero `route.ts` solo puede exportar
- * manejadores HTTP.
+ * Las rotaciones recientes viven en `lib/auth/rotationCache.ts` (el mapa
+ * no puede estar en el `route.ts`: un fichero de ruta solo exporta
+ * manejadores HTTP, así que no habría forma de vaciarlo desde el logout
+ * ni entre casos). El `afterEach` lo vacía; aun así cada caso usa un valor
+ * de refresh propio, para que el orden nunca influya.
  */
 function requestWithCookie(value: string | undefined, headers?: Record<string, string>) {
   const req = new NextRequest("http://panel.test/api/session/refresh", { method: "POST", headers });
@@ -237,7 +239,7 @@ describe("POST /api/session/refresh", () => {
     expect(res.cookies.get(SESSION_COOKIE_NAME)?.value).toBe("refresh-nuevo");
   });
 
-  it("pasados más de 10 s, la rotación reciente ya no vale y el 401 cierra sesión", async () => {
+  it("pasada la ventana de repetición, la rotación reciente ya no vale y el 401 cierra sesión", async () => {
     const start = Date.now();
     const now = vi.spyOn(Date, "now").mockReturnValue(start);
     fetchMock
@@ -247,7 +249,7 @@ describe("POST /api/session/refresh", () => {
       .mockResolvedValueOnce(response({ detail: "token_not_valid" }, 401));
 
     await POST(requestWithCookie("r-caducado-ttl"));
-    now.mockReturnValue(start + 11_000);
+    now.mockReturnValue(start + ROTATION_REPLAY_TTL_MS + 1);
     const res = await POST(requestWithCookie("r-caducado-ttl"));
 
     expect(res.status).toBe(401);
