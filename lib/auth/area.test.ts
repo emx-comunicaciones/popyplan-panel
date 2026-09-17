@@ -127,4 +127,26 @@ describe("resolveArea", () => {
   it("sin sesión (me null) y sin rol de plataforma resuelve 'sin-acceso'", () => {
     expect(resolveArea(null, null)).toBe("sin-acceso");
   });
+
+  it("un rol de plataforma desconocido no resuelve 'plataforma': cae a su membresía de entidad", () => {
+    // El layout de plataforma manda a `/` a quien no tiene uno de los
+    // cuatro roles conocidos; si aquí siguiéramos resolviendo
+    // 'plataforma' por el mero hecho de que `role` no es null, `/` lo
+    // devolvería a `/plataforma` y el bucle dejaría a esa cuenta sin
+    // ningún área (hallazgo de la revisión de la tarea 2).
+    const me = buildMe({
+      org_memberships: [buildOrgMembership({ role: "titular", organization_slug: "alfaville" })],
+    });
+
+    expect(resolveArea(me, { role: "rol-que-el-backend-inventa" })).toEqual({
+      kind: "entidad",
+      slug: "alfaville",
+    });
+  });
+
+  it("un rol de plataforma desconocido sin ninguna membresía resuelve 'sin-acceso'", () => {
+    const me = buildMe({ org_memberships: [] });
+
+    expect(resolveArea(me, { role: "rol-que-el-backend-inventa" })).toBe("sin-acceso");
+  });
 });

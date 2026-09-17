@@ -9,7 +9,7 @@
  * fuera del menú de `dinamizador` y `referente`. «Inicio» solo pide
  * `ver_panel`, así que la ven los cinco roles de panel.
  */
-import type { EntidadPanelRole } from "./area";
+import { isEntidadPanelRole, type EntidadPanelRole } from "./area";
 
 export const PARAGUAS_MENU_ITEMS = ["inicio", "informes"] as const;
 
@@ -24,16 +24,9 @@ export const PARAGUAS_MENU_LABELS: Record<ParaguasMenuItem, string> = {
 const EXPORTA_INFORMES: readonly string[] = ["titular", "moderador", "analista"];
 
 export function paraguasMenuFor(role: EntidadPanelRole | string): ParaguasMenuItem[] {
-  switch (role) {
-    case "titular":
-    case "moderador":
-    case "analista":
-    case "dinamizador":
-    case "referente":
-      return PARAGUAS_MENU_ITEMS.filter(
-        (item) => item !== "informes" || EXPORTA_INFORMES.includes(role),
-      );
-    default:
-      return [];
-  }
+  if (!isEntidadPanelRole(role)) return [];
+
+  return PARAGUAS_MENU_ITEMS.filter(
+    (item) => item !== "informes" || EXPORTA_INFORMES.includes(role),
+  );
 }

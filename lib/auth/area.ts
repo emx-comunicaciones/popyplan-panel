@@ -12,6 +12,7 @@
  * `organization_type === 'administracion'` resuelve a paraguas.
  */
 import type { MeForArea, OrgMembershipForArea, PlatformRoleMe } from "@/lib/api/types";
+import { isPlatformRole } from "@/lib/auth/plataformaMenu";
 
 /** Roles de `OrgMembership` con `ver_panel` (matriz de `entities/permissions.py`). */
 const ENTIDAD_PANEL_ROLES = [
@@ -57,7 +58,15 @@ export function resolveArea(
   me: MeForArea | null | undefined,
   platformRole: PlatformRoleMe | null | undefined,
 ): Area {
-  if (platformRole?.role) {
+  // Solo uno de los cuatro roles de `safety.PlatformRole` lleva al área
+  // de plataforma. `GET /api/safety/platform-roles/me/` devuelve `{role:
+  // string|null}`, una cadena libre: un rol que el backend añada (o un
+  // dato corrupto) no puede resolver aquí a "plataforma", porque el
+  // layout de esa área lo manda de vuelta a `/` (no tiene menú que
+  // pintarle) y las dos redirecciones se harían un bucle, dejando a esa
+  // cuenta sin ningún área. Sin rol conocido se sigue con sus
+  // membresías, que es el acceso que sí tiene.
+  if (isPlatformRole(platformRole?.role)) {
     return "plataforma";
   }
 

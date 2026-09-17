@@ -99,4 +99,16 @@ describe("Home (app/page.tsx)", () => {
     expect(screen.getByText("No tienes acceso a ningún área del panel")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Cerrar sesión" })).toBeInTheDocument();
   });
+
+  it("con un rol de plataforma desconocido redirige a su entidad, no a /plataforma", async () => {
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({
+        org_memberships: [buildOrgMembership({ role: "titular", organization_slug: "alfaville" })],
+      }),
+      platformRole: { role: "rol-que-el-backend-inventa" },
+    });
+
+    expect(await renderHomeExpectingRedirect()).toBe("/entidad/alfaville");
+  });
 });
