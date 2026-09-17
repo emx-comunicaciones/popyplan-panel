@@ -2,6 +2,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 
 import { render, screen } from "@/test-utils/render";
+import { axe } from "@/test-utils/axe";
+import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
+import { buildMe } from "@/test-utils/fixtures/me";
+import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import {
   buildByOrganizationRows,
   buildByPlaceRows,
@@ -11,6 +15,9 @@ import {
 } from "@/test-utils/fixtures/metrics";
 import type { MetricsGroupBy, MetricsScope } from "@/hooks/useMetrics";
 import { MetricsError } from "@/hooks/useMetrics";
+
+const getServerSessionMock = vi.hoisted(() => vi.fn());
+vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
 const useMetricsMock = vi.hoisted(() => vi.fn());
 const useExportMock = vi.hoisted(() => vi.fn());
@@ -45,14 +52,26 @@ function mockCompare(data: ReturnType<typeof buildCompareResponse> | undefined =
   useCompareMock.mockReturnValue({ data, isError: false, error: null });
 }
 
+async function renderPage(role: string | null = "superadmin") {
+  getServerSessionMock.mockResolvedValue({
+    token: "t",
+    me: buildMe({ org_memberships: [] }),
+    platformRole: buildPlatformRole(role),
+  });
+
+  const element = await PlataformaMetricasPage();
+  return render(element);
+}
+
 afterEach(() => {
+  getServerSessionMock.mockReset();
   useMetricsMock.mockReset();
   useExportMock.mockReset();
   useCompareMock.mockReset();
 });
 
 describe("PlataformaMetricasPage", () => {
-  it("muestra las tarjetas con las cifras del ejemplo de docs/PANEL.md §1.4", () => {
+  it("no tiene violaciones de accesibilidad (axe)", async () => {
     useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
     mockMetricsByGroup({
       base: buildMetricsResponse(),
@@ -62,7 +81,22 @@ describe("PlataformaMetricasPage", () => {
     });
     mockCompare();
 
-    render(<PlataformaMetricasPage />);
+    const { container } = await renderPage();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("muestra las tarjetas con las cifras del ejemplo de docs/PANEL.md §1.4", async () => {
+    useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
+    mockMetricsByGroup({
+      base: buildMetricsResponse(),
+      place: buildMetricsResponse({ by_place: buildByPlaceRows() }),
+      organization: buildMetricsResponse({ by_place: buildByOrganizationRows() }),
+      month: buildMetricsResponse({ series: buildSeriesRows() }),
+    });
+    mockCompare();
+
+    await renderPage();
 
     expect(screen.getByRole("heading", { name: "Métricas" })).toBeInTheDocument();
     expect(screen.getByText("Personas activas")).toBeInTheDocument();
@@ -82,7 +116,7 @@ describe("PlataformaMetricasPage", () => {
     mockCompare();
     const user = userEvent.setup();
 
-    render(<PlataformaMetricasPage />);
+    await renderPage();
 
     expect(screen.getByText("Por municipio")).toBeInTheDocument();
     expect(screen.getByText("Alfaville")).toBeInTheDocument();
@@ -105,13 +139,13 @@ describe("PlataformaMetricasPage", () => {
     mockCompare();
     const user = userEvent.setup();
 
-    render(<PlataformaMetricasPage />);
+    await renderPage();
     await user.click(screen.getByRole("button", { name: "Exportar CSV" }));
 
     expect(mutate).toHaveBeenCalledWith(expect.objectContaining({ scope: "plataforma", format: "csv" }));
   });
 
-  it("estado vacío: sin filas en el desglose, pinta el aviso en vez de una tabla vacía", () => {
+  it("estado vacío: sin filas en el desglose, pinta el aviso en vez de una tabla vacía", async () => {
     useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
     mockMetricsByGroup({
       base: buildMetricsResponse(),
@@ -121,14 +155,14 @@ describe("PlataformaMetricasPage", () => {
     });
     mockCompare(buildCompareResponse({ rows: [] }));
 
-    render(<PlataformaMetricasPage />);
+    await renderPage();
 
     expect(screen.getByText("Sin datos para este periodo")).toBeInTheDocument();
     expect(screen.getByText("Sin datos suficientes para la serie mensual")).toBeInTheDocument();
     expect(screen.getByText("Sin datos para esta comparativa")).toBeInTheDocument();
   });
 
-  it("estado de error: useMetrics de la base en error pinta ErrorState", () => {
+  it("estado de error: useMetrics de la base en error pinta ErrorState", async () => {
     useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
     useMetricsMock.mockImplementation(
       (_scope: MetricsScope, _orgId: unknown, _period: unknown, groupBy?: MetricsGroupBy) => {
@@ -144,13 +178,13 @@ describe("PlataformaMetricasPage", () => {
     );
     mockCompare();
 
-    render(<PlataformaMetricasPage />);
+    await renderPage();
 
     expect(screen.getByRole("alert")).toHaveTextContent("No se pudieron cargar las métricas");
     expect(screen.getByText("No tienes acceso a estas métricas.")).toBeInTheDocument();
   });
 
-  it("estado de error: el desglose agrupado en error pinta ErrorState, no el aviso de «sin datos»", () => {
+  it("estado de error: el desglose agrupado en error pinta ErrorState, no el aviso de «sin datos»", async () => {
     useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
     useMetricsMock.mockImplementation(
       (_scope: MetricsScope, _orgId: unknown, _period: unknown, groupBy?: MetricsGroupBy) => {
@@ -166,14 +200,14 @@ describe("PlataformaMetricasPage", () => {
     );
     mockCompare();
 
-    render(<PlataformaMetricasPage />);
+    await renderPage();
 
     expect(screen.getByRole("alert")).toHaveTextContent("No se pudo cargar el desglose");
     expect(screen.getByText("Error de red.")).toBeInTheDocument();
     expect(screen.queryByText("Sin datos para este periodo")).not.toBeInTheDocument();
   });
 
-  it("Comparativa: pinta la tabla con el desglose por defecto 'province'", () => {
+  it("Comparativa: pinta la tabla con el desglose por defecto 'province'", async () => {
     useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
     mockMetricsByGroup({
       base: buildMetricsResponse(),
@@ -183,7 +217,7 @@ describe("PlataformaMetricasPage", () => {
     });
     mockCompare();
 
-    render(<PlataformaMetricasPage />);
+    await renderPage();
 
     expect(useCompareMock).toHaveBeenCalledWith(
       "plataforma",
@@ -206,7 +240,7 @@ describe("PlataformaMetricasPage", () => {
     mockCompare();
     const user = userEvent.setup();
 
-    render(<PlataformaMetricasPage />);
+    await renderPage();
     await user.selectOptions(screen.getByLabelText("Desglose de la comparativa"), "Comarca");
 
     expect(useCompareMock).toHaveBeenLastCalledWith(
@@ -229,7 +263,7 @@ describe("PlataformaMetricasPage", () => {
     mockCompare();
     const user = userEvent.setup();
 
-    render(<PlataformaMetricasPage />);
+    await renderPage();
     expect(screen.getByText("Serie mensual")).toBeInTheDocument();
 
     // Dos `PeriodSelector` en la página (el del dashboard y el de
@@ -238,5 +272,53 @@ describe("PlataformaMetricasPage", () => {
 
     expect(screen.getByText("Serie anual")).toBeInTheDocument();
     expect(useMetricsMock).toHaveBeenLastCalledWith("plataforma", undefined, expect.anything(), "year");
+  });
+
+  it("verifier ve «Sin acceso» (Métricas no está en su menú)", async () => {
+    useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
+    mockMetricsByGroup({ base: buildMetricsResponse() });
+    mockCompare();
+
+    await renderPage("verifier");
+
+    expect(screen.getByText("Sin acceso")).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Métricas" })).not.toBeInTheDocument();
+    expect(useMetricsMock).not.toHaveBeenCalled();
+  });
+
+  it("moderator sí ve el panel de métricas", async () => {
+    useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
+    mockMetricsByGroup({
+      base: buildMetricsResponse(),
+      place: buildMetricsResponse({ by_place: buildByPlaceRows() }),
+      organization: buildMetricsResponse({ by_place: [] }),
+      month: buildMetricsResponse({ series: buildSeriesRows() }),
+    });
+    mockCompare();
+
+    await renderPage("moderator");
+
+    expect(screen.getByRole("heading", { name: "Métricas" })).toBeInTheDocument();
+    expect(screen.queryByText("Sin acceso")).not.toBeInTheDocument();
+  });
+
+  it("sin sesión redirige a /login", async () => {
+    getServerSessionMock.mockResolvedValue(null);
+
+    await expect(PlataformaMetricasPage()).rejects.toEqual(
+      expect.objectContaining({ url: "/login" } satisfies Partial<NextRedirectSignal>),
+    );
+  });
+
+  it("sin rol de plataforma redirige a /", async () => {
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole(null),
+    });
+
+    await expect(PlataformaMetricasPage()).rejects.toEqual(
+      expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>),
+    );
   });
 });

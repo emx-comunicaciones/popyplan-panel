@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { ExportPanel } from "@/components/metrics/ExportPanel";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { isEntidadPanelRole } from "@/lib/auth/area";
+import { paraguasMenuFor } from "@/lib/auth/paraguasMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export const metadata: Metadata = { title: "Informes del paraguas" };
@@ -23,6 +25,10 @@ export default async function ParaguasInformesPage({
   );
   if (!membership) {
     redirect("/");
+  }
+
+  if (!paraguasMenuFor(membership.role).includes("informes")) {
+    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Informes." />;
   }
 
   return (

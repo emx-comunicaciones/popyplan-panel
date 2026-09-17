@@ -21,11 +21,11 @@ afterEach(() => {
   useExportMock.mockReset();
 });
 
-async function renderPage(slug = "diputacion-demo") {
+async function renderPage(slug = "diputacion-demo", role = "titular") {
   getServerSessionMock.mockResolvedValue({
     token: "t",
     me: buildMe({
-      org_memberships: [buildOrgMembership({ role: "titular", organization_slug: slug, organization_id: 5 })],
+      org_memberships: [buildOrgMembership({ role, organization_slug: slug, organization_id: 5 })],
     }),
     platformRole: buildPlatformRole(null),
   });
@@ -105,5 +105,23 @@ describe("ParaguasInformesPage", () => {
     await expect(
       ParaguasInformesPage({ params: Promise.resolve({ slug: "otra-diputacion" }) }),
     ).rejects.toEqual(expect.objectContaining({ url: "/" }));
+  });
+
+  it("referente ve «Sin acceso» (no exporta informes del paraguas)", async () => {
+    useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
+
+    await renderPage("diputacion-demo", "referente");
+
+    expect(screen.getByText("Sin acceso")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Exportar CSV" })).not.toBeInTheDocument();
+  });
+
+  it("analista sí ve los informes del paraguas", async () => {
+    useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
+
+    await renderPage("diputacion-demo", "analista");
+
+    expect(screen.getByRole("heading", { name: "Informes" })).toBeInTheDocument();
+    expect(screen.queryByText("Sin acceso")).not.toBeInTheDocument();
   });
 });

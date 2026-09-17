@@ -11,7 +11,7 @@ import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import { serverFetch } from "@/lib/api/serverFetch";
 import type { Organization } from "@/lib/api/types";
 import { isEntidadPanelRole } from "@/lib/auth/area";
-import { PARAGUAS_MENU_ITEMS, PARAGUAS_MENU_LABELS } from "@/lib/auth/paraguasMenu";
+import { PARAGUAS_MENU_LABELS, paraguasMenuFor } from "@/lib/auth/paraguasMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export default async function ParaguasLayout({
@@ -41,6 +41,7 @@ export default async function ParaguasLayout({
     ORGANIZATIONS.DETAIL(membership.organization_id),
     session.token,
   );
+  const menu = paraguasMenuFor(membership.role);
   const org = orgResult.ok ? orgResult.data : null;
   // Misma lógica de cabecera legible que `app/entidad/[slug]/layout.tsx`
   // (tarea W1, Fase 6): el color de marca de la entidad paraguas tampoco
@@ -85,7 +86,7 @@ export default async function ParaguasLayout({
       <div className="flex flex-1">
         <nav aria-label="Secciones de la entidad paraguas" className="w-56 shrink-0 border-r border-border bg-white p-4">
           <ul className="flex flex-col gap-1">
-            {PARAGUAS_MENU_ITEMS.map((item) => (
+            {menu.map((item) => (
               <li key={item}>
                 <Link
                   href={item === "inicio" ? `/paraguas/${slug}` : `/paraguas/${slug}/${item}`}

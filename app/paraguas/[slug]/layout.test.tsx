@@ -89,4 +89,26 @@ describe("ParaguasLayout", () => {
       ParaguasLayout({ children: <p />, params: Promise.resolve({ slug: "otra-diputacion" }) }),
     ).rejects.toEqual(expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>));
   });
+
+  it("referente no ve «Informes» en el menú (no exporta informes)", async () => {
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({
+        org_memberships: [
+          buildOrgMembership({ role: "referente", organization_slug: "diputacion-demo" }),
+        ],
+      }),
+      platformRole: buildPlatformRole(null),
+    });
+    serverFetchMock.mockResolvedValue({ ok: true, status: 200, data: buildOrganization() });
+
+    const element = await ParaguasLayout({
+      children: <p>contenido</p>,
+      params: Promise.resolve({ slug: "diputacion-demo" }),
+    });
+    render(element);
+
+    expect(screen.getByRole("link", { name: "Inicio" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Informes" })).not.toBeInTheDocument();
+  });
 });
