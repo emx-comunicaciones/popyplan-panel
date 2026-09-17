@@ -111,4 +111,16 @@ describe("PlataformaLayout", () => {
       expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>),
     );
   });
+
+  it("con un rol de plataforma desconocido redirige a / (como quien no tiene rol)", async () => {
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: { role: "rol-que-el-backend-inventa" },
+    });
+
+    await expect(PlataformaLayout({ children: <p /> })).rejects.toEqual(
+      expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>),
+    );
+  });
 });

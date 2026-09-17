@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { plataformaMenuFor } from "./plataformaMenu";
+import { PLATFORM_ROLES, isPlatformRole, plataformaMenuFor } from "./plataformaMenu";
 
 describe("plataformaMenuFor", () => {
   it("superadmin ve todo", () => {
@@ -33,5 +33,14 @@ describe("plataformaMenuFor", () => {
     expect(plataformaMenuFor(null)).toEqual([]);
     expect(plataformaMenuFor(undefined)).toEqual([]);
     expect(plataformaMenuFor("otro")).toEqual([]);
+  });
+
+  it("PLATFORM_ROLES lista los cuatro roles conocidos y isPlatformRole los reconoce", () => {
+    expect([...PLATFORM_ROLES]).toEqual(["superadmin", "verifier", "moderator", "support"]);
+    for (const role of PLATFORM_ROLES) {
+      expect(isPlatformRole(role)).toBe(true);
+    }
+    expect(isPlatformRole("rol-que-el-backend-inventa")).toBe(false);
+    expect(isPlatformRole(null)).toBe(false);
   });
 });

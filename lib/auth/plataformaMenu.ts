@@ -60,6 +60,24 @@ export const PLATAFORMA_MENU_LABELS: Record<PlataformaMenuItem, string> = {
   contratos: "Contratos",
 };
 
+/**
+ * Los cuatro roles de `safety.PlatformRole`. `GET
+ * /api/safety/platform-roles/me/` devuelve `{role: string|null}` —una
+ * cadena libre para el tipo, no una enumeración—, así que un rol que el
+ * backend añada (o un dato corrupto) llegaría aquí sin ser ninguno de
+ * los cuatro: `plataformaMenuFor` le devuelve un menú vacío y quien lo
+ * tenga se quedaría en un panel sin ninguna sección (hallazgo B20). El
+ * layout de plataforma lo trata como «sin rol» y manda a la raíz, que ya
+ * decide el área real.
+ */
+export const PLATFORM_ROLES = ["superadmin", "verifier", "moderator", "support"] as const;
+
+export type PlatformRole = (typeof PLATFORM_ROLES)[number];
+
+export function isPlatformRole(role: string | null | undefined): role is PlatformRole {
+  return !!role && (PLATFORM_ROLES as readonly string[]).includes(role);
+}
+
 const VERIFIER_VISIBLE: readonly PlataformaMenuItem[] = ["inicio", "entidades", "verificaciones"];
 const MODERATOR_VISIBLE: readonly PlataformaMenuItem[] = ["inicio", "reportes", "ayuda", "metricas"];
 const SUPPORT_VISIBLE: readonly PlataformaMenuItem[] = [

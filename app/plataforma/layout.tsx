@@ -4,7 +4,11 @@ import { redirect } from "next/navigation";
 import { LogoutButton } from "@/components/LogoutButton";
 import { SkipLink } from "@/components/ui/SkipLink";
 import { Footer } from "@/components/layout/Footer";
-import { PLATAFORMA_MENU_LABELS, plataformaMenuFor } from "@/lib/auth/plataformaMenu";
+import {
+  PLATAFORMA_MENU_LABELS,
+  isPlatformRole,
+  plataformaMenuFor,
+} from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export default async function PlataformaLayout({ children }: { children: React.ReactNode }) {
@@ -12,7 +16,10 @@ export default async function PlataformaLayout({ children }: { children: React.R
   if (!session) {
     redirect("/login");
   }
-  if (!session.platformRole.role) {
+  // Un rol que no sea uno de los cuatro conocidos (backend nuevo, dato
+  // corrupto) da un menú vacío: se trata igual que no tener rol y se
+  // manda a la raíz, que reparte por área (hallazgo B20).
+  if (!isPlatformRole(session.platformRole.role)) {
     redirect("/");
   }
 
