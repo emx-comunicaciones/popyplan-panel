@@ -65,6 +65,12 @@ describe("filenameFromContentDisposition", () => {
     ).toBe(FALLBACK);
   });
 
+  it("ignora un `filename*` vacío y usa el `filename` de reserva", () => {
+    expect(
+      filenameFromContentDisposition('attachment; filename*=   ; filename="informe.csv"', FALLBACK),
+    ).toBe("informe.csv");
+  });
+
   it("ignora un `filename` vacío", () => {
     expect(filenameFromContentDisposition('attachment; filename=""', FALLBACK)).toBe(FALLBACK);
   });

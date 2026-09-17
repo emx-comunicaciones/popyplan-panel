@@ -113,14 +113,17 @@ export type PersonListRow = PersonRow | InvitedPersonRow;
 
 /**
  * `GET /api/panel/entidad/{org_id}/people/` (`docs/PANEL.md` §3.2):
- * paginada (20 por página, `PageNumberPagination` estándar de DRF),
- * aunque `docs/schema.yaml` la documenta (mal) como un array plano —
- * `panel/viewsets.py::EntidadPeopleView.get` sí pagina de verdad
- * (`_PaginacionPersonas().get_paginated_response(...)`); el `@extend_schema`
- * de la vista no lo refleja. Tipo manual: no hay un `Paginated*List` para
- * esta ruta en `types.generated.ts`. Con `?include_invited=true`, algunas
- * filas del final de la página son `InvitedPersonRow` en vez de
- * `PersonRow` (§3b.7).
+ * paginada (20 por página, `PageNumberPagination` estándar de DRF).
+ *
+ * **Al día (auditoría 2026-09):** el mismatch original ya no existe. El
+ * esquema documentaba esta ruta como un array plano, pero hoy trae
+ * `PersonRowPage` (`{count, next, previous, results: PersonRow[]}`), que
+ * sí refleja lo que devuelve `panel/viewsets.py::EntidadPeopleView.get`.
+ * Este tipo sigue siendo manual por otra razón: `results` es
+ * `PersonListRow[]`, porque con `?include_invited=true` las últimas filas
+ * de la página son `InvitedPersonRow` (§3b.7) y eso el esquema no lo
+ * declara. Si algún día `PersonRowPage.results` admite las dos formas,
+ * este tipo puede pasar a ser un alias del generado.
  */
 export interface PaginatedPersonRowList {
   count: number;
@@ -587,20 +590,28 @@ export interface ProgramWriteFields {
 }
 
 /**
- * `GET /api/safety/audit/` y `GET /api/panel/entidad/{id}/audit/` (tarea
- * P6 del backend, en curso al escribir esta tarea de panel — no
- * documentada todavía en `docs/PANEL.md`; ver el informe de esta tarea
- * para el porqué y para la forma confirmada leyendo
- * `safety/serializers.py::AuditLogSerializer` directamente). Forma fija:
- * `{id, actor, action, target_type, target_id, metadata, ip?, created_at}`
- * — `ip` solo para `superadmin` vía `/api/safety/audit/` (nunca en la
- * vista acotada a una entidad). Tipo manual: no existe en
- * `types.generated.ts` porque el backend aún no ha regenerado el esquema.
+ * `GET /api/safety/audit/` y `GET /api/panel/entidad/{id}/audit/`.
+ *
+ * **Al día (auditoría 2026-09):** el esquema ya trae `AuditLog` y
+ * `PaginatedAuditLogList` (el backend regeneró `docs/schema.yaml` tras la
+ * tarea P6), así que la nota anterior — «no existe en
+ * `types.generated.ts`» — ya no vale. `AuditActor` pasa a ser un alias
+ * del generado, idéntico campo a campo. `AuditLogEntry` sigue siendo
+ * manual por dos diferencias reales con `AuditLog`:
+ *
+ * 1. `ip?: string | null` no está en el generado. El serializer solo la
+ *    añade cuando el contexto trae `show_ip=True` (`audit-list`,
+ *    exclusivo de `superadmin`; la vista acotada a una entidad nunca la
+ *    manda), y drf-spectacular no sabe declarar un campo condicional.
+ * 2. `metadata` es `Record<string, unknown>` aquí y `unknown` en el
+ *    generado: `AuditoriaPanel` la recorre como pares `clave=valor`, y
+ *    con `unknown` habría que comprobar la forma en cada uso.
+ *
+ * `PaginatedAuditLogList` también es manual: el generado marca todos sus
+ * campos como opcionales (drf-spectacular lo hace en cada respuesta
+ * paginada) y `results` lleva `AuditLog`, no `AuditLogEntry`.
  */
-export interface AuditActor {
-  id: number;
-  public_name: string;
-}
+export type AuditActor = components["schemas"]["AuditActor"];
 export interface AuditLogEntry {
   id: string;
   actor: AuditActor;
