@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
 import { axe } from "@/test-utils/axe";
-import { routerMock } from "@/test-utils/nextNavigationMock";
+import { routerMock, setSearchParams } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import { ApiError } from "@/lib/api/client";
@@ -106,6 +106,46 @@ describe("LoginPage", () => {
     await user.click(screen.getByRole("button", { name: "Entrar" }));
 
     expect(routerMock.replace).toHaveBeenCalledWith("/elegir-entidad");
+  });
+
+  it("con returnTo válido vuelve al destino que pidió el middleware", async () => {
+    const user = userEvent.setup();
+    setSearchParams({ returnTo: "/entidad/alfaville/personas?page=3" });
+    loginMock.mockResolvedValue({
+      accessToken: "token-1",
+      user: buildMe({
+        org_memberships: [buildOrgMembership({ role: "titular", organization_slug: "alfaville" })],
+      }),
+      platformRole: buildPlatformRole(null),
+    });
+
+    render(<LoginPage />);
+
+    await user.type(screen.getByLabelText("Usuario o email"), "titular@alfaville.test");
+    await user.type(screen.getByLabelText("Contraseña"), "correcta-1234");
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(routerMock.replace).toHaveBeenCalledWith("/entidad/alfaville/personas?page=3");
+  });
+
+  it("con un returnTo que apunta fuera del panel, ignora el destino y va al área", async () => {
+    const user = userEvent.setup();
+    setSearchParams({ returnTo: "//evil.example/entidad/alfaville" });
+    loginMock.mockResolvedValue({
+      accessToken: "token-1",
+      user: buildMe({
+        org_memberships: [buildOrgMembership({ role: "titular", organization_slug: "alfaville" })],
+      }),
+      platformRole: buildPlatformRole(null),
+    });
+
+    render(<LoginPage />);
+
+    await user.type(screen.getByLabelText("Usuario o email"), "titular@alfaville.test");
+    await user.type(screen.getByLabelText("Contraseña"), "correcta-1234");
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(routerMock.replace).toHaveBeenCalledWith("/entidad/alfaville");
   });
 
   it("un error de servidor (500) muestra el mensaje genérico", async () => {

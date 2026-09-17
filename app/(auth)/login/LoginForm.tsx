@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/Button";
@@ -8,6 +8,7 @@ import { Footer } from "@/components/layout/Footer";
 import { ApiError } from "@/lib/api/client";
 import { resolveArea } from "@/lib/auth/area";
 import { consumeSessionExpiredMessage } from "@/lib/auth/sessionEvents";
+import { safeReturnTo } from "@/lib/auth/returnTo";
 import { login } from "@/hooks/useAuth";
 
 function areaPath(area: ReturnType<typeof resolveArea>): string {
@@ -40,6 +41,11 @@ function errorMessage(error: unknown): string {
  */
 export function LoginForm() {
   const router = useRouter();
+  // Destino guardado por `middleware.ts` cuando la sesión no llegó a la
+  // ruta pedida (enlace profundo con `SameSite=Strict`, refresh caducado).
+  // `safeReturnTo` lo descarta si no es una ruta interna del panel: sin
+  // esa validación, `?returnTo=//otro.sitio` sería una redirección abierta.
+  const searchParams = useSearchParams();
   const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
   // Si venimos de un cierre de sesión forzado (`SessionExpiredHandler`,
@@ -55,7 +61,7 @@ export function LoginForm() {
     try {
       const session = await login(usernameOrEmail, password);
       const area = resolveArea(session.user, session.platformRole);
-      router.replace(areaPath(area));
+      router.replace(safeReturnTo(searchParams.get("returnTo")) ?? areaPath(area));
     } catch (caught) {
       setError(errorMessage(caught));
       setSubmitting(false);

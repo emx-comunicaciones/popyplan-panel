@@ -4,12 +4,17 @@ import { cleanup } from "@testing-library/react";
 import React from "react";
 import { afterEach, vi } from "vitest";
 
-import { redirectMock, resetNextNavigationMocks, routerMock } from "./test-utils/nextNavigationMock";
+import {
+  getSearchParamsMock,
+  redirectMock,
+  resetNextNavigationMocks,
+  routerMock,
+} from "./test-utils/nextNavigationMock";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => routerMock,
   usePathname: () => "/",
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => getSearchParamsMock(),
   redirect: redirectMock,
 }));
 

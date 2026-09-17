@@ -28,6 +28,21 @@ export const redirectMock = vi.fn((url: string): never => {
   throw new NextRedirectSignal(url);
 });
 
+/**
+ * Parámetros de consulta que devuelve `useSearchParams()`. Un test que
+ * los necesite (p. ej. el `returnTo` del login) los fija con
+ * `setSearchParams`; el `afterEach` global los vacía.
+ */
+let searchParams = new URLSearchParams();
+
+export function getSearchParamsMock(): URLSearchParams {
+  return searchParams;
+}
+
+export function setSearchParams(init: string | Record<string, string>): void {
+  searchParams = new URLSearchParams(init);
+}
+
 export function resetNextNavigationMocks(): void {
   routerMock.push.mockClear();
   routerMock.replace.mockClear();
@@ -35,4 +50,5 @@ export function resetNextNavigationMocks(): void {
   routerMock.refresh.mockClear();
   routerMock.prefetch.mockClear();
   redirectMock.mockClear();
+  searchParams = new URLSearchParams();
 }
