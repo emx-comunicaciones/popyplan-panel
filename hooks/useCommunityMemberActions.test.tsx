@@ -128,3 +128,29 @@ describe("useChangeCommunityMemberRole", () => {
     expect(result.current.error?.message).toBe("No se pudo cambiar el rol.");
   });
 });
+
+/**
+ * `lib/api/drfError.ts::detailOf`: además del `{"error": "…"}` que ya
+ * leía este hook, cubre el `{"detail": "…"}` y el 400 por campo de DRF.
+ */
+describe("useKickCommunityMember (formas de error del backend)", () => {
+  it("muestra el `detail` del backend", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(403, { detail: "No moderas esta comunidad." }));
+
+    const { result } = renderHook(() => useKickCommunityMember(), { wrapper });
+    result.current.mutate({ communityId: "c1", memberId: "m1" });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("No moderas esta comunidad.");
+  });
+
+  it("muestra el mensaje del campo que el backend rechaza", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { member: ["Esa persona ya no es miembro."] }));
+
+    const { result } = renderHook(() => useKickCommunityMember(), { wrapper });
+    result.current.mutate({ communityId: "c1", memberId: "m1" });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Esa persona ya no es miembro.");
+  });
+});

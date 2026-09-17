@@ -11,6 +11,7 @@
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { COMMUNITIES } from "@/lib/api/endpoints";
 import type { CommunityMember } from "@/lib/api/types";
 
@@ -19,11 +20,6 @@ export class CommunityMemberActionError extends Error {
     super(message);
     this.name = "CommunityMemberActionError";
   }
-}
-
-function detailOf(error: ApiError): string | undefined {
-  const body = error.body as { error?: unknown } | null;
-  return typeof body?.error === "string" ? body.error : undefined;
 }
 
 function toActionError(error: unknown, fallback: string): CommunityMemberActionError {
