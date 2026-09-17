@@ -71,6 +71,10 @@ export function useAssignReferent(
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["panel-person", orgId, String(variables.userId)] });
       queryClient.invalidateQueries({ queryKey: ["panel-people", orgId] });
+      // La tabla «Referencias» de Configuración lee esta clave
+      // (`useOrgReferences`): sin invalidarla, el referente recién
+      // asignado no aparecía allí.
+      queryClient.invalidateQueries({ queryKey: ["panel-org-references", orgId] });
     },
   });
 }

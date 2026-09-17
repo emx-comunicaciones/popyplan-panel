@@ -50,6 +50,16 @@ function invalidateMembers(queryClient: ReturnType<typeof useQueryClient>, orgId
   queryClient.invalidateQueries({ queryKey: ["panel-org-members", orgId] });
 }
 
+/**
+ * Quien deja el equipo deja de poder ser referente y cambia su rol en la
+ * entidad: el listado de personas y las fichas lo pintan, y sus claves
+ * llevan filtros/periodo, así que se invalidan por prefijo.
+ */
+function invalidatePeople(queryClient: ReturnType<typeof useQueryClient>, orgId: number | string): void {
+  queryClient.invalidateQueries({ queryKey: ["panel-people", orgId] });
+  queryClient.invalidateQueries({ queryKey: ["panel-person", orgId] });
+}
+
 export function useAddOrgMember(
   orgId: number | string,
 ): UseMutationResult<OrgMembershipFull, OrgMembersError, AddOrgMemberInput> {
@@ -96,6 +106,9 @@ export function useRemoveOrgMember(
         throw new OrgMembersError("No se pudo quitar a la persona del equipo.");
       }
     },
-    onSuccess: () => invalidateMembers(queryClient, orgId),
+    onSuccess: () => {
+      invalidateMembers(queryClient, orgId);
+      invalidatePeople(queryClient, orgId);
+    },
   });
 }

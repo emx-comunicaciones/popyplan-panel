@@ -81,3 +81,31 @@ describe("useAcknowledgeHelpRequest", () => {
     });
   });
 });
+
+describe("useAcknowledgeHelpRequest (contadores de Inicio)", () => {
+  it("refresca el contador del Inicio de la entidad y las estadísticas de plataforma", async () => {
+    apiFetchMock.mockResolvedValueOnce(buildHelpRequest({ acknowledged_by: 9 }));
+
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    // `useEntityHome` cuenta los avisos pendientes con su propia clave, y
+    // `useDashboardStats` los agrega para el Inicio de plataforma: sin
+    // invalidarlas, «He contactado» dejaba las dos tarjetas con el número
+    // de antes hasta recargar la página.
+    const homeKey = ["panel-home-pending-help-requests", 7];
+    const statsKey = ["panel-dashboard-stats"];
+    queryClient.setQueryData(homeKey, 3);
+    queryClient.setQueryData(statsKey, { pending_help_requests: 3 });
+    const clientWrapper = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+
+    const { result } = renderHook(() => useAcknowledgeHelpRequest(7), { wrapper: clientWrapper });
+    result.current.mutate("hr-1");
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => {
+      expect(queryClient.getQueryState(homeKey)?.isInvalidated).toBe(true);
+      expect(queryClient.getQueryState(statsKey)?.isInvalidated).toBe(true);
+    });
+  });
+});

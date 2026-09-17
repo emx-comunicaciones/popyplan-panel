@@ -74,3 +74,29 @@ describe("useAcknowledgeHelpRequestGlobal", () => {
     });
   });
 });
+
+describe("useAcknowledgeHelpRequestGlobal (contadores de Inicio)", () => {
+  it("refresca el contador de Inicio de cualquier entidad y las estadísticas de plataforma", async () => {
+    apiFetchMock.mockResolvedValueOnce({ id: 1 });
+
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    // Desde plataforma no se sabe de qué entidad es el aviso: la familia
+    // de contadores de Inicio se invalida entera por prefijo.
+    const homeKey = ["panel-home-pending-help-requests", 7];
+    const statsKey = ["panel-dashboard-stats"];
+    queryClient.setQueryData(homeKey, 3);
+    queryClient.setQueryData(statsKey, { pending_help_requests: 3 });
+    const clientWrapper = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+
+    const { result } = renderHook(() => useAcknowledgeHelpRequestGlobal(), { wrapper: clientWrapper });
+    result.current.mutate("1");
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => {
+      expect(queryClient.getQueryState(homeKey)?.isInvalidated).toBe(true);
+      expect(queryClient.getQueryState(statsKey)?.isInvalidated).toBe(true);
+    });
+  });
+});

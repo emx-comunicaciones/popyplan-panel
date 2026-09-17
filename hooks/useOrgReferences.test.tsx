@@ -133,3 +133,51 @@ describe("useCreateOrgReference (400 por campo)", () => {
     expect(result.current.error?.message).toBe("Esa persona no tiene el rol referente.");
   });
 });
+
+describe("useCreateOrgReference/useRemoveOrgReference (personas y fichas)", () => {
+  it("asignar un referente refresca el listado de personas y sus fichas", async () => {
+    apiFetchMock.mockResolvedValueOnce({ id: 1, organization: 7, referent: 9, user: 42, created_at: "2026-01-01T00:00:00Z" });
+
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    // La columna «Referente» del listado y la ficha de la persona salen
+    // de estas dos familias, con filtros/periodo en la clave: prefijo.
+    const peopleKey = ["panel-people", 7, "since=2026-01-01&until=2026-01-31"];
+    const personKey = ["panel-person", 7, "42", "since=2026-01-01&until=2026-01-31"];
+    queryClient.setQueryData(peopleKey, { count: 0, next: null, previous: null, results: [] });
+    queryClient.setQueryData(personKey, { user_id: 42 });
+    const clientWrapper = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+
+    const { result } = renderHook(() => useCreateOrgReference(7), { wrapper: clientWrapper });
+    result.current.mutate({ user: 42, referent_user: 9 });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => {
+      expect(queryClient.getQueryState(peopleKey)?.isInvalidated).toBe(true);
+      expect(queryClient.getQueryState(personKey)?.isInvalidated).toBe(true);
+    });
+  });
+
+  it("quitar un referente refresca el listado de personas y sus fichas", async () => {
+    apiFetchMock.mockResolvedValueOnce(undefined);
+
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const peopleKey = ["panel-people", 7, "since=2026-01-01&until=2026-01-31"];
+    const personKey = ["panel-person", 7, "42", "since=2026-01-01&until=2026-01-31"];
+    queryClient.setQueryData(peopleKey, { count: 0, next: null, previous: null, results: [] });
+    queryClient.setQueryData(personKey, { user_id: 42 });
+    const clientWrapper = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+
+    const { result } = renderHook(() => useRemoveOrgReference(7), { wrapper: clientWrapper });
+    result.current.mutate(42);
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => {
+      expect(queryClient.getQueryState(peopleKey)?.isInvalidated).toBe(true);
+      expect(queryClient.getQueryState(personKey)?.isInvalidated).toBe(true);
+    });
+  });
+});

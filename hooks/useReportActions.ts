@@ -40,6 +40,12 @@ function toReportActionError(error: unknown, fallback: string): ReportActionErro
 function invalidate(queryClient: ReturnType<typeof useQueryClient>, reportId: string): void {
   queryClient.invalidateQueries({ queryKey: ["panel-report", reportId] });
   queryClient.invalidateQueries({ queryKey: ["panel-reports-queue"] });
+  // Los dos Inicios cuentan reportes pendientes por su cuenta
+  // (`useEntityHome.ts`, `useDashboardStats.ts`). La acción no sabe de
+  // qué entidad es el reporte (la cola de plataforma es global), así que
+  // la familia del contador de entidad se invalida entera por prefijo.
+  queryClient.invalidateQueries({ queryKey: ["panel-home-pending-reports"] });
+  queryClient.invalidateQueries({ queryKey: ["panel-dashboard-stats"] });
 }
 
 export function useAssignReport(): UseMutationResult<ReportDetail, ReportActionError, string> {

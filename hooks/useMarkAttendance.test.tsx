@@ -26,7 +26,7 @@ describe("useMarkAttendance", () => {
   it("hace POST con {user_id, attended} exactos", async () => {
     apiFetchMock.mockResolvedValueOnce({ user_id: 42, status: "attended" });
 
-    const { result } = renderHook(() => useMarkAttendance("event-uuid-1"), { wrapper });
+    const { result } = renderHook(() => useMarkAttendance("event-uuid-1", 7), { wrapper });
     result.current.mutate({ userId: 42, attended: true });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -41,7 +41,7 @@ describe("useMarkAttendance", () => {
   it("marcar 'no asistió' manda attended: false", async () => {
     apiFetchMock.mockResolvedValueOnce({ user_id: 42, status: "no_show" });
 
-    const { result } = renderHook(() => useMarkAttendance("event-uuid-1"), { wrapper });
+    const { result } = renderHook(() => useMarkAttendance("event-uuid-1", 7), { wrapper });
     result.current.mutate({ userId: 42, attended: false });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -57,7 +57,7 @@ describe("useMarkAttendance", () => {
       new ApiError(400, { detail: "La asistencia se pasa cuando la actividad ha empezado." }),
     );
 
-    const { result } = renderHook(() => useMarkAttendance("event-uuid-1"), { wrapper });
+    const { result } = renderHook(() => useMarkAttendance("event-uuid-1", 7), { wrapper });
     result.current.mutate({ userId: 42, attended: true });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
@@ -72,7 +72,7 @@ describe("useMarkAttendance", () => {
   it("403 surge como 'sin_permiso'", async () => {
     apiFetchMock.mockRejectedValueOnce(new ApiError(403, null));
 
-    const { result } = renderHook(() => useMarkAttendance("event-uuid-1"), { wrapper });
+    const { result } = renderHook(() => useMarkAttendance("event-uuid-1", 7), { wrapper });
     result.current.mutate({ userId: 42, attended: true });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
@@ -83,7 +83,7 @@ describe("useMarkAttendance", () => {
   it("404 (no estaba apuntada) surge como 'no_inscrita'", async () => {
     apiFetchMock.mockRejectedValueOnce(new ApiError(404, { detail: "Esa persona no está apuntada." }));
 
-    const { result } = renderHook(() => useMarkAttendance("event-uuid-1"), { wrapper });
+    const { result } = renderHook(() => useMarkAttendance("event-uuid-1", 7), { wrapper });
     result.current.mutate({ userId: 999, attended: true });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
@@ -94,11 +94,55 @@ describe("useMarkAttendance", () => {
   it("cualquier otro error surge como 'desconocido'", async () => {
     apiFetchMock.mockRejectedValueOnce(new Error("red caída"));
 
-    const { result } = renderHook(() => useMarkAttendance("event-uuid-1"), { wrapper });
+    const { result } = renderHook(() => useMarkAttendance("event-uuid-1", 7), { wrapper });
     result.current.mutate({ userId: 42, attended: true });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
 
     expect((result.current.error as MarkAttendanceError).kind).toBe("desconocido");
+  });
+});
+
+/**
+ * `lib/api/drfError.ts::detailOf`: el 400 por campo de DRF
+ * (`{campo: ["mensaje"]}`) se pinta con el mensaje del backend, no con el
+ * genérico del hook.
+ */
+describe("useMarkAttendance (400 por campo)", () => {
+  it("muestra el mensaje del campo que el backend rechaza", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, { user_id: ["Esta persona no está apuntada."] }));
+
+    const { result } = renderHook(() => useMarkAttendance("event-uuid-1", 7), { wrapper });
+    result.current.mutate({ userId: 42, attended: true });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Esta persona no está apuntada.");
+  });
+});
+
+describe("useMarkAttendance (listados que dependen de la asistencia)", () => {
+  it("refresca las actividades de la entidad y las fichas de persona", async () => {
+    apiFetchMock.mockResolvedValueOnce({ user_id: 42, status: "attended" });
+
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    // Marcar asistencia cambia el recuento «asistió/no asistió» de la
+    // actividad y el historial de la ficha de esa persona: ambas familias
+    // llevan periodo/filtros en la clave, así que se invalidan por prefijo.
+    const eventsKey = ["panel-entity-events", 7, "since=2026-01-01&until=2026-01-31"];
+    const personKey = ["panel-person", 7, "42", "since=2026-01-01&until=2026-01-31"];
+    queryClient.setQueryData(eventsKey, []);
+    queryClient.setQueryData(personKey, { user_id: 42 });
+    const clientWrapper = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+
+    const { result } = renderHook(() => useMarkAttendance("event-uuid-1", 7), { wrapper: clientWrapper });
+    result.current.mutate({ userId: 42, attended: true });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => {
+      expect(queryClient.getQueryState(eventsKey)?.isInvalidated).toBe(true);
+      expect(queryClient.getQueryState(personKey)?.isInvalidated).toBe(true);
+    });
   });
 });

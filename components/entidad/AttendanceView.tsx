@@ -14,6 +14,13 @@ import type { Attendee } from "@/lib/api/types";
 
 export interface AttendanceViewProps {
   eventId: string;
+  /**
+   * Entidad a la que pertenece la actividad. No viaja en ninguna
+   * petición de esta pantalla: la usan `useMarkAttendance`/`useCheckin`
+   * para refrescar los listados de la entidad que dependen de la
+   * asistencia (actividades y fichas de persona).
+   */
+  orgId: number | string;
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -30,8 +37,8 @@ function extractToken(scanned: string): string {
   return match ? match[1] : scanned;
 }
 
-function CheckinBox({ eventId }: { eventId: string }) {
-  const checkin = useCheckin(eventId);
+function CheckinBox({ eventId, orgId }: { eventId: string; orgId: number | string }) {
+  const checkin = useCheckin(eventId, orgId);
   const [token, setToken] = useState("");
   const [message, setMessage] = useState<{ kind: "ok" | "already" | "error"; text: string } | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -207,8 +214,16 @@ function CheckinBox({ eventId }: { eventId: string }) {
   );
 }
 
-function AttendeeRow({ attendee, eventId }: { attendee: Attendee; eventId: string }) {
-  const markAttendance = useMarkAttendance(eventId);
+function AttendeeRow({
+  attendee,
+  eventId,
+  orgId,
+}: {
+  attendee: Attendee;
+  eventId: string;
+  orgId: number | string;
+}) {
+  const markAttendance = useMarkAttendance(eventId, orgId);
   const [rowMessage, setRowMessage] = useState<string | null>(null);
   const isPendingThisRow = markAttendance.isPending && markAttendance.variables?.userId === attendee.user.id;
 
@@ -252,12 +267,12 @@ function AttendeeRow({ attendee, eventId }: { attendee: Attendee; eventId: strin
  * (`POST .../attendance/`, exige que la actividad ya haya empezado) y
  * check-in por QR (`POST .../checkin/`, ventana `-2h..+12h`, idempotente).
  */
-export function AttendanceView({ eventId }: AttendanceViewProps) {
+export function AttendanceView({ eventId, orgId }: AttendanceViewProps) {
   const attendees = useAttendees(eventId);
 
   return (
     <div className="flex flex-col gap-4">
-      <CheckinBox eventId={eventId} />
+      <CheckinBox eventId={eventId} orgId={orgId} />
 
       <section aria-labelledby="asistentes-heading">
         <h2 id="asistentes-heading" className="mb-2 text-lg font-semibold text-text-base">
@@ -286,7 +301,12 @@ export function AttendanceView({ eventId }: AttendanceViewProps) {
               </thead>
               <tbody>
                 {attendees.data.map((attendee) => (
-                  <AttendeeRow key={attendee.user.id} attendee={attendee} eventId={eventId} />
+                  <AttendeeRow
+                    key={attendee.user.id}
+                    attendee={attendee}
+                    eventId={eventId}
+                    orgId={orgId}
+                  />
                 ))}
               </tbody>
             </table>

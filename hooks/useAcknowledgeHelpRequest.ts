@@ -44,6 +44,11 @@ export function useAcknowledgeHelpRequest(
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["panel-help-requests-pending", orgId] });
       queryClient.invalidateQueries({ queryKey: ["panel-platform-help-requests-pending"] });
+      // Los dos Inicios cuentan avisos pendientes por su cuenta
+      // (`useEntityHome.ts`, `useDashboardStats.ts`): sin invalidarlos,
+      // sus tarjetas seguían con el número de antes hasta recargar.
+      queryClient.invalidateQueries({ queryKey: ["panel-home-pending-help-requests", orgId] });
+      queryClient.invalidateQueries({ queryKey: ["panel-dashboard-stats"] });
     },
   });
 }

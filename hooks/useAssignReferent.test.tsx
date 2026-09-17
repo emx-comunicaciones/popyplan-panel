@@ -115,3 +115,24 @@ describe("useAssignReferent", () => {
     );
   });
 });
+
+describe("useAssignReferent (tabla de referencias)", () => {
+  it("refresca también el listado de referentes de la entidad", async () => {
+    apiFetchMock.mockResolvedValueOnce({ id: 1, organization: 7, referent: 3, user: 42, created_at: "2026-01-01T00:00:00Z" });
+
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    // La tabla «Referencias» de Configuración lee esta clave: sin
+    // invalidarla, el referente recién asignado no aparecía allí.
+    const referencesKey = ["panel-org-references", 7];
+    queryClient.setQueryData(referencesKey, []);
+    const clientWrapper = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+
+    const { result } = renderHook(() => useAssignReferent(7), { wrapper: clientWrapper });
+    result.current.mutate({ userId: 42, referentUserId: 3 });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => expect(queryClient.getQueryState(referencesKey)?.isInvalidated).toBe(true));
+  });
+});

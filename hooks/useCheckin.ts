@@ -47,8 +47,14 @@ function toCheckinError(error: unknown): CheckinError {
   return new CheckinError("desconocido", "No se pudo dar el check-in.");
 }
 
+/**
+ * `orgId` no viaja en la petición: sirve solo para invalidar los listados
+ * de la entidad que dependen de la asistencia (actividades y fichas de
+ * persona), cuyas claves lo llevan.
+ */
 export function useCheckin(
   eventId: string,
+  orgId: number | string,
 ): UseMutationResult<CheckinResponse, CheckinError, { token: string }> {
   const queryClient = useQueryClient();
 
@@ -65,6 +71,10 @@ export function useCheckin(
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["event-attendees", eventId] });
+      // Mismo efecto que marcar asistencia a mano (`useMarkAttendance`):
+      // cambia el recuento de la actividad y el historial de la ficha.
+      queryClient.invalidateQueries({ queryKey: ["panel-entity-events", orgId] });
+      queryClient.invalidateQueries({ queryKey: ["panel-person", orgId] });
     },
   });
 }

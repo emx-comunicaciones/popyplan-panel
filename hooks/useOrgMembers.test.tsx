@@ -152,3 +152,29 @@ describe("useAddOrgMember (400 por campo)", () => {
     expect(result.current.error?.message).toBe("Ese rol no existe en esta entidad.");
   });
 });
+
+describe("useRemoveOrgMember (personas y fichas)", () => {
+  it("dar de baja del equipo refresca el listado de personas y sus fichas", async () => {
+    apiFetchMock.mockResolvedValueOnce(undefined);
+
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    // Quien deja el equipo deja de poder ser referente y cambia su rol en
+    // la entidad: el listado de personas y las fichas lo pintan.
+    const peopleKey = ["panel-people", 7, "since=2026-01-01&until=2026-01-31"];
+    const personKey = ["panel-person", 7, "55", "since=2026-01-01&until=2026-01-31"];
+    queryClient.setQueryData(peopleKey, { count: 0, next: null, previous: null, results: [] });
+    queryClient.setQueryData(personKey, { user_id: 55 });
+    const clientWrapper = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+
+    const { result } = renderHook(() => useRemoveOrgMember(7), { wrapper: clientWrapper });
+    result.current.mutate(55);
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => {
+      expect(queryClient.getQueryState(peopleKey)?.isInvalidated).toBe(true);
+      expect(queryClient.getQueryState(personKey)?.isInvalidated).toBe(true);
+    });
+  });
+});

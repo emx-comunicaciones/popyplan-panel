@@ -49,6 +49,11 @@ export function useAcknowledgeHelpRequestGlobal(): UseMutationResult<
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["panel-help-requests-pending"] });
       queryClient.invalidateQueries({ queryKey: ["panel-platform-help-requests-pending"] });
+      // Igual que el hook de entidad, pero desde plataforma no se sabe de
+      // qué entidad es el aviso: la familia de contadores de Inicio se
+      // invalida entera por prefijo.
+      queryClient.invalidateQueries({ queryKey: ["panel-home-pending-help-requests"] });
+      queryClient.invalidateQueries({ queryKey: ["panel-dashboard-stats"] });
     },
   });
 }

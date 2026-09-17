@@ -142,3 +142,30 @@ describe("useResolveReport (400 por campo)", () => {
     expect(result.current.error?.message).toBe("Esa resolución no es válida.");
   });
 });
+
+describe("useReportActions (contadores de Inicio)", () => {
+  it("resolver un reporte refresca el contador de Inicio y las estadísticas de plataforma", async () => {
+    apiFetchMock.mockResolvedValueOnce(buildReportDetail());
+
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    // La acción no sabe de qué entidad es el reporte (la cola de
+    // plataforma es global), así que la familia de contadores de Inicio
+    // se invalida entera por prefijo.
+    const homeKey = ["panel-home-pending-reports", 7];
+    const statsKey = ["panel-dashboard-stats"];
+    queryClient.setQueryData(homeKey, 2);
+    queryClient.setQueryData(statsKey, { pending_reports: 2 });
+    const clientWrapper = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+
+    const { result } = renderHook(() => useResolveReport(), { wrapper: clientWrapper });
+    result.current.mutate({ reportId: "r1", resolution: "warned" });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => {
+      expect(queryClient.getQueryState(homeKey)?.isInvalidated).toBe(true);
+      expect(queryClient.getQueryState(statsKey)?.isInvalidated).toBe(true);
+    });
+  });
+});

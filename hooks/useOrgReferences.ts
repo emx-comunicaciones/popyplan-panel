@@ -43,6 +43,11 @@ function invalidateReferences(
   orgId: number | string,
 ): void {
   queryClient.invalidateQueries({ queryKey: ["panel-org-references", orgId] });
+  // La columna «Referente» del listado de personas y la ficha de cada
+  // persona salen de otras dos familias, con filtros/periodo en la clave
+  // (`usePeople`/`usePerson`): prefijo.
+  queryClient.invalidateQueries({ queryKey: ["panel-people", orgId] });
+  queryClient.invalidateQueries({ queryKey: ["panel-person", orgId] });
 }
 
 export interface CreateReferenceInput {

@@ -53,8 +53,14 @@ export interface MarkAttendanceInput {
   attended: boolean;
 }
 
+/**
+ * `orgId` no viaja en la petición: sirve solo para invalidar los listados
+ * de la entidad que dependen de la asistencia (actividades y fichas de
+ * persona), cuyas claves lo llevan.
+ */
 export function useMarkAttendance(
   eventId: string,
+  orgId: number | string,
 ): UseMutationResult<AttendanceMarkResponse, MarkAttendanceError, MarkAttendanceInput> {
   const queryClient = useQueryClient();
 
@@ -71,6 +77,11 @@ export function useMarkAttendance(
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["event-attendees", eventId] });
+      // Marcar asistencia cambia el recuento «asistió/no asistió» de la
+      // actividad y el historial de la ficha de la persona. Las dos
+      // familias llevan periodo/filtros en la clave: prefijo.
+      queryClient.invalidateQueries({ queryKey: ["panel-entity-events", orgId] });
+      queryClient.invalidateQueries({ queryKey: ["panel-person", orgId] });
     },
   });
 }
