@@ -6,12 +6,7 @@
  * JSON (p. ej. HTML de un proxy caído) se trata como error, no revienta:
  * el parse protegido devuelve `{ ok: false }` como cualquier otro fallo.
  */
-
-const DEFAULT_API_URL = "http://localhost:8001";
-
-function apiUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL;
-}
+import { apiBaseUrl } from "./baseUrl";
 
 export type ServerFetchResult<T> =
   | { ok: true; status: number; data: T }
@@ -22,7 +17,7 @@ export async function serverFetch<T = unknown>(
   token: string,
   init?: RequestInit,
 ): Promise<ServerFetchResult<T>> {
-  const response = await fetch(`${apiUrl()}${path}`, {
+  const response = await fetch(`${apiBaseUrl()}${path}`, {
     ...init,
     cache: "no-store",
     headers: {

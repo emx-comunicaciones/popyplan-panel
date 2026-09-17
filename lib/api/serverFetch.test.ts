@@ -101,6 +101,18 @@ describe("serverFetch", () => {
     expect(result).toEqual({ ok: false, status: 200, body: null });
   });
 
+  it("normaliza la barra final de NEXT_PUBLIC_API_URL (sin doble barra en la ruta)", async () => {
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "http://api.test/");
+    fetchMock.mockResolvedValueOnce(jsonResponse({ ok: true }));
+
+    await serverFetch("/api/users/users/me/", "token-123");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://api.test/api/users/users/me/",
+      expect.anything(),
+    );
+  });
+
   it("sin NEXT_PUBLIC_API_URL cae al backend local por defecto", async () => {
     vi.unstubAllEnvs();
     delete process.env.NEXT_PUBLIC_API_URL;

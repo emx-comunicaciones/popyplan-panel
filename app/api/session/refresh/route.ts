@@ -50,6 +50,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 
+import { apiBaseUrl } from "@/lib/api/baseUrl";
 import { AUTH, SAFETY, USERS } from "@/lib/api/endpoints";
 import { serverFetch } from "@/lib/api/serverFetch";
 import type { MeForArea, PlatformRoleMe } from "@/lib/api/types";
@@ -58,12 +59,6 @@ import { SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/cookie";
 import { recallRotation, rememberRotation, type RotatedResult } from "@/lib/auth/rotationCache";
 import { singleFlight } from "@/lib/auth/singleFlight";
 import { parseRefreshedTokens } from "@/lib/auth/tokenRefresh";
-
-const DEFAULT_API_URL = "http://localhost:8001";
-
-function apiUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL;
-}
 
 /** `RotatedResult` (rotación ya aplicada) más los dos finales sin rotación. */
 type RefreshResult = RotatedResult | { kind: "caducado" } | { kind: "no-disponible" };
@@ -74,7 +69,7 @@ const inFlightByRefresh = new Map<string, Promise<RefreshResult>>();
 async function rotate(refresh: string, request: NextRequest): Promise<RefreshResult> {
   let refreshResponse: Response;
   try {
-    refreshResponse = await fetch(`${apiUrl()}${AUTH.TOKEN_REFRESH}`, {
+    refreshResponse = await fetch(`${apiBaseUrl()}${AUTH.TOKEN_REFRESH}`, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...forwardedForHeaders(request) },
       body: JSON.stringify({ refresh }),

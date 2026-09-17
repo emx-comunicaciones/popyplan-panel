@@ -53,15 +53,10 @@
  *    la petición, en vez de lanzarla ya con el token vacío (lo que
  *    provocaría el 401 innecesario que dispara el punto 1).
  */
+import { apiBaseUrl } from "@/lib/api/baseUrl";
 import { awaitBootRestore } from "@/lib/auth/bootSession";
 import { notifySessionExpired, SESSION_EXPIRED_MESSAGE } from "@/lib/auth/sessionEvents";
 import { getAccessToken, setAccessToken } from "@/lib/auth/tokenStore";
-
-const DEFAULT_API_URL = "http://localhost:8001";
-
-function apiUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL;
-}
 
 export class ApiError extends Error {
   readonly status: number;
@@ -100,7 +95,7 @@ async function rawRequest(
   const { body, headers, ...rest } = options;
   delete rest.skipRefresh;
   const formData = isFormData(body);
-  return fetch(`${apiUrl()}${path}`, {
+  return fetch(`${apiBaseUrl()}${path}`, {
     ...rest,
     headers: {
       ...(formData ? {} : { "Content-Type": "application/json" }),

@@ -19,18 +19,13 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 
+import { apiBaseUrl } from "@/lib/api/baseUrl";
 import { AUTH, SAFETY, USERS } from "@/lib/api/endpoints";
 import { serverFetch } from "@/lib/api/serverFetch";
 import type { MeForArea, PlatformRoleMe } from "@/lib/api/types";
 import { forwardedForHeaders } from "@/lib/auth/clientIp";
 import { SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/cookie";
 import { clearRecentRotations } from "@/lib/auth/rotationCache";
-
-const DEFAULT_API_URL = "http://localhost:8001";
-
-function apiUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL;
-}
 
 interface LoginBody {
   username_or_email?: unknown;
@@ -59,7 +54,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const loginResponse = await fetch(`${apiUrl()}${AUTH.LOGIN}`, {
+  const loginResponse = await fetch(`${apiBaseUrl()}${AUTH.LOGIN}`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...forwardedForHeaders(request) },
     body: JSON.stringify({
@@ -117,7 +112,7 @@ export async function DELETE(request: NextRequest) {
     // Best-effort: invalida el refresh token en el backend
     // (`docs/PANEL.md` §0). Si falla (ya caducado, red caída…), se borra
     // la cookie igualmente: el logout local no depende de esta llamada.
-    await fetch(`${apiUrl()}${AUTH.LOGOUT}`, {
+    await fetch(`${apiBaseUrl()}${AUTH.LOGOUT}`, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...forwardedForHeaders(request) },
       body: JSON.stringify({ refresh }),

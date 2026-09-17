@@ -59,17 +59,12 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 
+import { apiBaseUrl } from "@/lib/api/baseUrl";
 import { AUTH } from "@/lib/api/endpoints";
 import { forwardedForHeaders } from "@/lib/auth/clientIp";
 import { ACCESS_TOKEN_HEADER, SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/cookie";
 import { singleFlight } from "@/lib/auth/singleFlight";
 import { parseRefreshedTokens } from "@/lib/auth/tokenRefresh";
-
-const DEFAULT_API_URL = "http://localhost:8001";
-
-function apiUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL;
-}
 
 type RefreshOutcome =
   | { ok: true; access: string; refresh: string }
@@ -92,7 +87,7 @@ type RefreshOutcome =
 const inFlightByRefresh = new Map<string, Promise<RefreshOutcome>>();
 
 async function doRefreshToken(refresh: string, request: NextRequest): Promise<RefreshOutcome> {
-  const refreshResponse = await fetch(`${apiUrl()}${AUTH.TOKEN_REFRESH}`, {
+  const refreshResponse = await fetch(`${apiBaseUrl()}${AUTH.TOKEN_REFRESH}`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...forwardedForHeaders(request) },
     body: JSON.stringify({ refresh }),
