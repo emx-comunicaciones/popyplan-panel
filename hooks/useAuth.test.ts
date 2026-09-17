@@ -6,7 +6,14 @@ import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import { ApiError } from "@/lib/api/client";
 import { getAccessToken, resetAccessTokenForTests, setAccessToken } from "@/lib/auth/tokenStore";
 
-import { login, logout, restoreSession, useAccessToken } from "./useAuth";
+import {
+  bootRestoreSession,
+  login,
+  logout,
+  resetBootRestoreSessionForTests,
+  restoreSession,
+  useAccessToken,
+} from "./useAuth";
 
 const fetchMock = vi.fn();
 
@@ -18,6 +25,7 @@ afterEach(() => {
   fetchMock.mockReset();
   vi.unstubAllGlobals();
   resetAccessTokenForTests();
+  resetBootRestoreSessionForTests();
 });
 
 function response(body: unknown, status: number): Response {
@@ -96,6 +104,30 @@ describe("restoreSession", () => {
 
     expect(session).toBeNull();
     expect(getAccessToken()).toBeNull();
+  });
+});
+
+describe("bootRestoreSession", () => {
+  it("dos llamadas (StrictMode monta dos veces) comparten un solo refresco", async () => {
+    const me = buildMe();
+    fetchMock.mockResolvedValue(
+      response({ accessToken: "token-boot", user: me, platformRole: buildPlatformRole(null) }, 200),
+    );
+
+    const [first, second] = await Promise.all([bootRestoreSession(), bootRestoreSession()]);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(first).toBe(second);
+    expect(getAccessToken()).toBe("token-boot");
+  });
+
+  it("también comparte el resultado si la segunda llamada llega cuando la primera ya terminó", async () => {
+    fetchMock.mockResolvedValue(response({ detail: "sin sesión" }, 401));
+
+    await bootRestoreSession();
+    await bootRestoreSession();
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });
 

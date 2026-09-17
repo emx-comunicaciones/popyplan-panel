@@ -48,6 +48,30 @@ export async function login(usernameOrEmail: string, password: string): Promise<
   return session;
 }
 
+/**
+ * Restauración de arranque, una sola por carga de página (hallazgo M1).
+ *
+ * `app/providers.tsx` lanza la restauración desde el inicializador
+ * perezoso de un `useState`, que **el StrictMode de React ejecuta dos
+ * veces** en desarrollo (y `next dev` es lo que corre el e2e): sin este
+ * guard salían dos `POST /api/session/refresh` concurrentes con la misma
+ * cookie. El route handler ya los agrupa (`singleFlight`), pero lo
+ * barato es no disparar la segunda petición siquiera; el guard vive a
+ * nivel de módulo, así que se reinicia solo con cada carga completa de
+ * página, que es exactamente lo que se quiere restaurar.
+ */
+let bootRestorePromise: Promise<SessionData | null> | null = null;
+
+export function bootRestoreSession(): Promise<SessionData | null> {
+  bootRestorePromise ??= restoreSession();
+  return bootRestorePromise;
+}
+
+/** Solo para tests: vuelve al estado inicial entre casos. */
+export function resetBootRestoreSessionForTests(): void {
+  bootRestorePromise = null;
+}
+
 /** Restaura la sesión al arrancar la app (recarga de página). */
 export async function restoreSession(): Promise<SessionData | null> {
   const response = await fetch("/api/session/refresh", { method: "POST" });

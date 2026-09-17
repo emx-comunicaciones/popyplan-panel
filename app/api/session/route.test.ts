@@ -30,10 +30,11 @@ function response(body: unknown, status: number): Response {
   } as Response;
 }
 
-function loginRequest(body: unknown) {
+function loginRequest(body: unknown, headers?: Record<string, string>) {
   return new NextRequest("http://panel.test/api/session", {
     method: "POST",
     body: JSON.stringify(body),
+    headers,
   });
 }
 
@@ -118,6 +119,56 @@ describe("POST /api/session", () => {
     );
   });
 
+  it("reenvía al backend la IP real del cliente (el rate limit por IP del login es compartido)", async () => {
+    fetchMock
+      .mockResolvedValueOnce(response({ key: "access-123", refresh: "refresh-456", user: {} }, 200))
+      .mockResolvedValueOnce(response(buildMe(), 200))
+      .mockResolvedValueOnce(response(buildPlatformRole(null), 200));
+
+    await POST(
+      loginRequest(
+        { username_or_email: "x", password: "y" },
+        { "x-forwarded-for": "203.0.113.7, 70.41.3.18" },
+      ),
+    );
+
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "http://api.test/api/auth/login/",
+      expect.objectContaining({
+        headers: expect.objectContaining({ "X-Forwarded-For": "203.0.113.7" }),
+      }),
+    );
+  });
+
+  it("si el login responde 200 con un cuerpo ilegible, responde 502 sin fijar la cookie", async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => {
+        throw new Error("no es JSON");
+      },
+      text: async () => "",
+    } as unknown as Response);
+
+    const res = await POST(loginRequest({ username_or_email: "x", password: "y" }));
+    const data = await res.json();
+
+    expect(res.status).toBe(502);
+    expect(data).toEqual({ detail: "Respuesta inesperada del servidor de autenticación." });
+    expect(res.cookies.get(SESSION_COOKIE_NAME)).toBeUndefined();
+  });
+
+  it("si el login responde 200 sin refresh, responde 502 sin fijar la cookie", async () => {
+    fetchMock.mockResolvedValueOnce(response({ key: "access-123", user: {} }, 200));
+
+    const res = await POST(loginRequest({ username_or_email: "x", password: "y" }));
+
+    expect(res.status).toBe(502);
+    expect(res.cookies.get(SESSION_COOKIE_NAME)).toBeUndefined();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it("si el login sale bien pero /me falla, responde 502", async () => {
     fetchMock
       .mockResolvedValueOnce(response({ key: "access-123", refresh: "refresh-456", user: {} }, 200))
@@ -147,6 +198,24 @@ describe("DELETE /api/session", () => {
     expect(res.status).toBe(200);
     expect(cookie?.value).toBe("");
     expect(cookie?.maxAge).toBe(0);
+  });
+
+  it("el logout también reenvía la IP real del cliente (misma clave de rate limit que el login)", async () => {
+    fetchMock.mockResolvedValueOnce(response({}, 200));
+
+    const req = new NextRequest("http://panel.test/api/session", {
+      method: "DELETE",
+      headers: { "x-real-ip": "198.51.100.4" },
+    });
+    req.cookies.set(SESSION_COOKIE_NAME, "refresh-789");
+    await DELETE(req);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://api.test/api/auth/logout/",
+      expect.objectContaining({
+        headers: expect.objectContaining({ "X-Forwarded-For": "198.51.100.4" }),
+      }),
+    );
   });
 
   it("sin cookie, no llama al backend y borra la cookie igualmente", async () => {

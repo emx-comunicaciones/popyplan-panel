@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { SessionExpiredHandler } from "@/components/SessionExpiredHandler";
-import { restoreSession } from "@/hooks/useAuth";
+import { bootRestoreSession } from "@/hooks/useAuth";
 import { registerBootRestore } from "@/lib/auth/bootSession";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -22,7 +22,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
   // render — antes de que ningún componente hijo monte su propio efecto y
   // dispare una petición con el token todavía vacío (bug crítico de demo,
   // ver `lib/api/client.ts`). `registerBootRestore` la deja disponible para
-  // que `apiFetch` la espere si hace falta.
+  // que `apiFetch` la espere si hace falta. `bootRestoreSession` memoiza
+  // la promesa a nivel de módulo: el StrictMode de React ejecuta este
+  // inicializador dos veces en desarrollo, y sin esa memoización salían
+  // dos refrescos concurrentes con la misma cookie.
   //
   // El `typeof window` es imprescindible: este mismo inicializador corre
   // también durante el renderizado en servidor de una página estática
@@ -32,7 +35,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   // que es lo único que importa para evitar la carrera.
   useState(() => {
     if (typeof window !== "undefined") {
-      registerBootRestore(restoreSession());
+      registerBootRestore(bootRestoreSession());
     }
   });
 

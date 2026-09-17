@@ -3,20 +3,20 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { render } from "@/test-utils/render";
 import { awaitBootRestore, resetBootRestoreForTests } from "@/lib/auth/bootSession";
 
-const restoreSessionMock = vi.hoisted(() => vi.fn());
-vi.mock("@/hooks/useAuth", () => ({ restoreSession: restoreSessionMock }));
+const bootRestoreSessionMock = vi.hoisted(() => vi.fn());
+vi.mock("@/hooks/useAuth", () => ({ bootRestoreSession: bootRestoreSessionMock }));
 
 import { Providers } from "./providers";
 
 afterEach(() => {
-  restoreSessionMock.mockReset();
+  bootRestoreSessionMock.mockReset();
   resetBootRestoreForTests();
 });
 
 describe("Providers", () => {
   it("registra la restauración de sesión de arranque para que apiFetch la espere", async () => {
     let resolveRestore: () => void = () => undefined;
-    restoreSessionMock.mockReturnValue(
+    bootRestoreSessionMock.mockReturnValue(
       new Promise((resolve) => {
         resolveRestore = () => resolve(null);
       }),
@@ -28,7 +28,7 @@ describe("Providers", () => {
       </Providers>,
     );
 
-    expect(restoreSessionMock).toHaveBeenCalledTimes(1);
+    expect(bootRestoreSessionMock).toHaveBeenCalledTimes(1);
 
     let settled = false;
     const pending = awaitBootRestore().then(() => {
@@ -42,7 +42,7 @@ describe("Providers", () => {
   });
 
   it("pinta a los hijos", () => {
-    restoreSessionMock.mockReturnValue(Promise.resolve(null));
+    bootRestoreSessionMock.mockReturnValue(Promise.resolve(null));
 
     const { getByText } = render(
       <Providers>
