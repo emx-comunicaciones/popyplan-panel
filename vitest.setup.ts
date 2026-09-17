@@ -6,6 +6,7 @@ import { afterEach, vi } from "vitest";
 
 import {
   getSearchParamsMock,
+  notFoundMock,
   redirectMock,
   resetNextNavigationMocks,
   routerMock,
@@ -16,6 +17,7 @@ vi.mock("next/navigation", () => ({
   usePathname: () => "/",
   useSearchParams: () => getSearchParamsMock(),
   redirect: redirectMock,
+  notFound: notFoundMock,
 }));
 
 /**

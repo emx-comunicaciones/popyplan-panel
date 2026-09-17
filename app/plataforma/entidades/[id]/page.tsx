@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { EntidadDetail } from "@/components/plataforma/EntidadDetail";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -8,12 +8,24 @@ import { getServerSession } from "@/lib/auth/session";
 
 export const metadata: Metadata = { title: "Ficha de la entidad (plataforma)" };
 
+/**
+ * `Organization.id` es un entero en el backend (`/api/organizations/{id}/`):
+ * cualquier otra cosa en la ruta es una URL inventada, no una entidad que
+ * el backend pueda tener — se responde 404 sin llegar a pedirla, en vez de
+ * pintar la ficha con un error de carga dentro (hallazgo B8).
+ */
+const NUMERIC_ID = /^\d+$/;
+
 export default async function PlataformaEntidadDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  if (!NUMERIC_ID.test(id)) {
+    notFound();
+  }
+
   const session = await getServerSession();
   if (!session) {
     redirect("/login");

@@ -11,7 +11,7 @@ const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
 import { render, screen, waitFor } from "@/test-utils/render";
-import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
+import { NextNotFoundSignal, NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildOrganization } from "@/test-utils/fixtures/organization";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
@@ -112,5 +112,30 @@ describe("PlataformaEntidadDetailPage", () => {
     await expect(PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) })).rejects.toEqual(
       expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>),
     );
+  });
+
+  it("un id que no es un número entero da 404 (nunca llega a pedir la ficha)", async () => {
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    await expect(
+      PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "no-soy-un-id" }) }),
+    ).rejects.toBeInstanceOf(NextNotFoundSignal);
+    expect(apiFetchMock).not.toHaveBeenCalled();
+  });
+
+  it("un id vacío también da 404", async () => {
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    await expect(
+      PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "" }) }),
+    ).rejects.toBeInstanceOf(NextNotFoundSignal);
   });
 });

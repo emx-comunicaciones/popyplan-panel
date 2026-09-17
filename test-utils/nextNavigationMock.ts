@@ -28,6 +28,17 @@ export const redirectMock = vi.fn((url: string): never => {
   throw new NextRedirectSignal(url);
 });
 
+/** `notFound()` real de Next.js interrumpe el render igual que `redirect()`. */
+export class NextNotFoundSignal extends Error {
+  constructor() {
+    super("NEXT_NOT_FOUND");
+  }
+}
+
+export const notFoundMock = vi.fn((): never => {
+  throw new NextNotFoundSignal();
+});
+
 /**
  * Parámetros de consulta que devuelve `useSearchParams()`. Un test que
  * los necesite (p. ej. el `returnTo` del login) los fija con
@@ -50,5 +61,6 @@ export function resetNextNavigationMocks(): void {
   routerMock.refresh.mockClear();
   routerMock.prefetch.mockClear();
   redirectMock.mockClear();
+  notFoundMock.mockClear();
   searchParams = new URLSearchParams();
 }
