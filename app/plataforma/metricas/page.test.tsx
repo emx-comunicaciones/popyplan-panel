@@ -150,6 +150,29 @@ describe("PlataformaMetricasPage", () => {
     expect(screen.getByText("No tienes acceso a estas métricas.")).toBeInTheDocument();
   });
 
+  it("estado de error: el desglose agrupado en error pinta ErrorState, no el aviso de «sin datos»", () => {
+    useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
+    useMetricsMock.mockImplementation(
+      (_scope: MetricsScope, _orgId: unknown, _period: unknown, groupBy?: MetricsGroupBy) => {
+        if (groupBy === "place") {
+          return {
+            data: undefined,
+            isError: true,
+            error: new MetricsError("desconocido", "Error de red."),
+          };
+        }
+        return { data: buildMetricsResponse(), isError: false, error: null };
+      },
+    );
+    mockCompare();
+
+    render(<PlataformaMetricasPage />);
+
+    expect(screen.getByRole("alert")).toHaveTextContent("No se pudo cargar el desglose");
+    expect(screen.getByText("Error de red.")).toBeInTheDocument();
+    expect(screen.queryByText("Sin datos para este periodo")).not.toBeInTheDocument();
+  });
+
   it("Comparativa: pinta la tabla con el desglose por defecto 'province'", () => {
     useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
     mockMetricsByGroup({

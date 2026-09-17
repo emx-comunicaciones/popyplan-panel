@@ -176,6 +176,25 @@ describe("ParaguasInicioPage", () => {
     expect(screen.getByText("No tienes acceso a estas métricas.")).toBeInTheDocument();
   });
 
+  it("estado de error: una query secundaria en error pinta ErrorState en su sección, no el aviso de «sin datos»", async () => {
+    useMetricsMock.mockImplementation((_scope: MetricsScope, _orgId: unknown, _period: unknown, groupBy?: MetricsGroupBy) => {
+      if (groupBy === "place") {
+        return {
+          data: undefined,
+          isError: true,
+          error: new MetricsError("desconocido", "Error de red."),
+        };
+      }
+      return { data: buildMetricsResponse(), isError: false, error: null };
+    });
+    mockCompare();
+    await renderPage();
+
+    expect(screen.getByRole("alert")).toHaveTextContent("No se pudo cargar el desglose por municipio");
+    expect(screen.getByText("Error de red.")).toBeInTheDocument();
+    expect(screen.queryByText("Sin municipios con datos en este periodo")).not.toBeInTheDocument();
+  });
+
   it("Comparativa: pinta la tabla con el desglose por defecto 'comarca'", async () => {
     mockMetricsByGroup({
       base: buildMetricsResponse(),
