@@ -80,7 +80,9 @@ describe("downloadProgramReport", () => {
     );
     expect(createObjectURLMock).toHaveBeenCalledWith(blob);
     expect(clickSpy).toHaveBeenCalled();
-    expect(revokeObjectURLMock).toHaveBeenCalledWith("blob:mock-url");
+    // `triggerDownload` libera la URL del blob en el siguiente turno, no
+    // en la misma vuelta (revocarla antes cancela la descarga).
+    await waitFor(() => expect(revokeObjectURLMock).toHaveBeenCalledWith("blob:mock-url"));
 
     clickSpy.mockRestore();
   });

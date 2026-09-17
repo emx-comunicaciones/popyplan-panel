@@ -83,7 +83,33 @@ describe("downloadExport", () => {
     );
     expect(createObjectURLMock).toHaveBeenCalledWith(blob);
     expect(clickSpy).toHaveBeenCalled();
-    expect(revokeObjectURLMock).toHaveBeenCalledWith("blob:mock-url");
+    // `triggerDownload` libera la URL del blob en el siguiente turno, no
+    // en la misma vuelta (revocarla antes cancela la descarga).
+    await waitFor(() => expect(revokeObjectURLMock).toHaveBeenCalledWith("blob:mock-url"));
+
+    clickSpy.mockRestore();
+  });
+
+  it("usa el nombre de fichero con acentos de `filename*=UTF-8''\u2026`", async () => {
+    fetchMock.mockResolvedValueOnce(
+      fakeResponse({
+        ok: true,
+        status: 200,
+        headers: {
+          "Content-Disposition": "attachment; filename=\"informe.csv\"; filename*=UTF-8''informe%20del%20a%C3%B1o.csv",
+        },
+      }),
+    );
+    let downloadName: string | undefined;
+    const clickSpy = vi
+      .spyOn(HTMLAnchorElement.prototype, "click")
+      .mockImplementation(function click(this: HTMLAnchorElement) {
+        downloadName = this.download;
+      });
+
+    await downloadExport({ scope: "entidad", orgId: 7, period: PERIOD, format: "csv" });
+
+    expect(downloadName).toBe("informe del año.csv");
 
     clickSpy.mockRestore();
   });

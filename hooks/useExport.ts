@@ -13,8 +13,9 @@
  * vacío y, ante un 401, refresca la sesión y reintenta una vez — un
  * access caducado con la cookie de refresh viva ya no se percibe como
  * «No se pudo generar el informe.». La descarga se dispara con un
- * `<a download>` temporal — el sandbox de un artefacto bloquearía esto,
- * pero aquí es una pestaña real del navegador.
+ * `<a download>` temporal (`lib/download/triggerDownload.ts`, compartido
+ * con `hooks/useProgramReport.ts`) y el nombre del fichero sale de
+ * `Content-Disposition` (`lib/download/filenameFrom.ts`).
  *
  * Mapeo de errores (`ApiError` de `fetchWithAuth` → `ExportError`):
  * 503 (WeasyPrint no disponible) → `ExportError('pdf_unavailable')`;
@@ -26,8 +27,11 @@
 import { useMutation, type UseMutationResult } from "@tanstack/react-query";
 
 import { ApiError, fetchWithAuth } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { EXPORT } from "@/lib/api/endpoints";
 import { SESSION_EXPIRED_MESSAGE } from "@/lib/auth/sessionEvents";
+import { filenameFromContentDisposition } from "@/lib/download/filenameFrom";
+import { triggerDownload } from "@/lib/download/triggerDownload";
 import type { Period } from "@/lib/metrics/period";
 
 import type { MetricsGroupBy, MetricsScope } from "./useMetrics";
@@ -85,11 +89,6 @@ function buildQuery(params: ExportParams): string {
   return query.toString();
 }
 
-function detailOf(error: ApiError): string | undefined {
-  const body = error.body as { detail?: unknown } | null;
-  return typeof body?.detail === "string" ? body.detail : undefined;
-}
-
 function toExportError(error: unknown): ExportError {
   if (error instanceof ApiError) {
     if (error.status === 503) {
@@ -109,23 +108,6 @@ function toExportError(error: unknown): ExportError {
   throw error;
 }
 
-function filenameFrom(header: string | null, fallback: string): string {
-  if (!header) return fallback;
-  const match = /filename="?([^";]+)"?/.exec(header);
-  return match ? match[1] : fallback;
-}
-
-function triggerDownload(blob: Blob, filename: string): void {
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-}
-
 export async function downloadExport(params: ExportParams): Promise<void> {
   const path = endpointFor(params.scope, params.orgId);
   const query = buildQuery(params);
@@ -138,7 +120,7 @@ export async function downloadExport(params: ExportParams): Promise<void> {
   }
 
   const blob = await response.blob();
-  const filename = filenameFrom(
+  const filename = filenameFromContentDisposition(
     response.headers.get("Content-Disposition"),
     `informe.${params.format}`,
   );

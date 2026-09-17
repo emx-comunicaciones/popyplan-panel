@@ -17,8 +17,11 @@
 import { useMutation, type UseMutationResult } from "@tanstack/react-query";
 
 import { ApiError, fetchWithAuth } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { PROGRAMS } from "@/lib/api/endpoints";
 import { SESSION_EXPIRED_MESSAGE } from "@/lib/auth/sessionEvents";
+import { filenameFromContentDisposition } from "@/lib/download/filenameFrom";
+import { triggerDownload } from "@/lib/download/triggerDownload";
 
 export type ProgramReportFormat = "csv" | "pdf";
 
@@ -44,11 +47,6 @@ export interface ProgramReportParams {
   format: ProgramReportFormat;
 }
 
-function detailOf(error: ApiError): string | undefined {
-  const body = error.body as { detail?: unknown } | null;
-  return typeof body?.detail === "string" ? body.detail : undefined;
-}
-
 function toProgramReportError(error: unknown): ProgramReportError {
   if (error instanceof ApiError) {
     if (error.status === 503) {
@@ -68,23 +66,6 @@ function toProgramReportError(error: unknown): ProgramReportError {
   throw error;
 }
 
-function filenameFrom(header: string | null, fallback: string): string {
-  if (!header) return fallback;
-  const match = /filename="?([^";]+)"?/.exec(header);
-  return match ? match[1] : fallback;
-}
-
-function triggerDownload(blob: Blob, filename: string): void {
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-}
-
 export async function downloadProgramReport(params: ProgramReportParams): Promise<void> {
   const path = PROGRAMS.REPORT(params.orgId, params.programId);
   const query = new URLSearchParams({ format: params.format }).toString();
@@ -97,7 +78,7 @@ export async function downloadProgramReport(params: ProgramReportParams): Promis
   }
 
   const blob = await response.blob();
-  const filename = filenameFrom(
+  const filename = filenameFromContentDisposition(
     response.headers.get("Content-Disposition"),
     `informe-programa.${params.format}`,
   );
