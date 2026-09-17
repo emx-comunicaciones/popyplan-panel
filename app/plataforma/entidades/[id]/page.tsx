@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { EntidadDetail } from "@/components/plataforma/EntidadDetail";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { plataformaMenuFor } from "@/lib/auth/plataformaMenu";
+import { isPlatformRole, plataformaMenuFor } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export const metadata: Metadata = { title: "Ficha de la entidad (plataforma)" };
@@ -30,7 +30,7 @@ export default async function PlataformaEntidadDetailPage({
   if (!session) {
     redirect("/login");
   }
-  if (!session.platformRole.role) {
+  if (!isPlatformRole(session.platformRole.role)) {
     redirect("/");
   }
 

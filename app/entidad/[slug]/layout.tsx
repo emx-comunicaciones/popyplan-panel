@@ -10,6 +10,7 @@ import { contrastRatio, readableOn } from "@/lib/a11y/contrast";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { ENTIDAD_MENU_LABELS, entidadMenuFor } from "@/lib/auth/entidadMenu";
 import { getServerOrganization } from "@/lib/auth/organization";
+import { isPlatformRole } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export default async function EntidadLayout({
@@ -24,8 +25,11 @@ export default async function EntidadLayout({
   if (!session) {
     redirect("/login");
   }
-  if (session.platformRole.role) {
-    // El rol de plataforma manda: no navega el panel de entidad (lib/auth/area.ts).
+  if (isPlatformRole(session.platformRole.role)) {
+    // El rol de plataforma manda: no navega el panel de entidad
+    // (lib/auth/area.ts). Solo uno de los cuatro roles conocidos, para
+    // no rebotar contra el layout de plataforma, que devuelve a `/`
+    // cualquier otro (bucle de redirecciones).
     redirect("/plataforma");
   }
 

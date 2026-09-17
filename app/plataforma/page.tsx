@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { PlataformaHomeDashboard } from "@/components/plataforma/PlataformaHomeDashboard";
+import { isPlatformRole } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export const metadata: Metadata = { title: "Inicio de plataforma" };
@@ -11,7 +12,7 @@ export default async function PlataformaInicioPage() {
   if (!session) {
     redirect("/login");
   }
-  if (!session.platformRole.role) {
+  if (!isPlatformRole(session.platformRole.role)) {
     redirect("/");
   }
 

@@ -111,4 +111,30 @@ describe("ParaguasLayout", () => {
     expect(screen.getByRole("link", { name: "Inicio" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Informes" })).not.toBeInTheDocument();
   });
+
+  it("con un rol de plataforma desconocido NO va a /plataforma: pinta el panel del paraguas", async () => {
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({
+        org_memberships: [
+          buildOrgMembership({
+            role: "analista",
+            organization_slug: "diputacion-demo",
+            organization_name: "Diputación Demo",
+          }),
+        ],
+      }),
+      platformRole: { role: "rol-que-el-backend-inventa" },
+    });
+    serverFetchMock.mockResolvedValue({ ok: true, status: 200, data: buildOrganization() });
+
+    const element = await ParaguasLayout({
+      children: <p>contenido</p>,
+      params: Promise.resolve({ slug: "diputacion-demo" }),
+    });
+    render(element);
+
+    expect(screen.getByRole("link", { name: "Inicio" })).toBeInTheDocument();
+    expect(screen.getByText("contenido")).toBeInTheDocument();
+  });
 });

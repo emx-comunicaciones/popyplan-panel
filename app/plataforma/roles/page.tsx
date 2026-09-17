@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { RolesPanel } from "@/components/plataforma/RolesPanel";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { plataformaMenuFor } from "@/lib/auth/plataformaMenu";
+import { isPlatformRole, plataformaMenuFor } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export const metadata: Metadata = { title: "Roles de plataforma" };
@@ -13,7 +13,7 @@ export default async function PlataformaRolesPage() {
   if (!session) {
     redirect("/login");
   }
-  if (!session.platformRole.role) {
+  if (!isPlatformRole(session.platformRole.role)) {
     redirect("/");
   }
 

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { ContratosPanel } from "@/components/plataforma/ContratosPanel";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { plataformaMenuFor } from "@/lib/auth/plataformaMenu";
+import { isPlatformRole, plataformaMenuFor } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export const metadata: Metadata = { title: "Contratos" };
@@ -20,7 +20,7 @@ export default async function PlataformaContratosPage() {
   if (!session) {
     redirect("/login");
   }
-  if (!session.platformRole.role) {
+  if (!isPlatformRole(session.platformRole.role)) {
     redirect("/");
   }
 

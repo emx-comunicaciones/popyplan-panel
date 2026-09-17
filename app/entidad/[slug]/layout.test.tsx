@@ -196,4 +196,26 @@ describe("EntidadLayout", () => {
 
     expect(screen.getByText("No se pudo cargar la ficha de la entidad")).toBeInTheDocument();
   });
+
+  it("con un rol de plataforma desconocido NO va a /plataforma: pinta el panel de su entidad", async () => {
+    // `resolveArea` ya no resuelve 'plataforma' con un rol desconocido,
+    // así que la raíz manda aquí; si este layout siguiera mirando solo
+    // que `role` no sea null, lo devolvería a `/plataforma`, cuyo layout
+    // lo manda otra vez a `/` (bucle de redirecciones, revisión de la
+    // tarea 2).
+    getServerSessionMock.mockResolvedValue({
+      ...session("titular"),
+      platformRole: { role: "rol-que-el-backend-inventa" },
+    });
+    serverFetchMock.mockResolvedValue({ ok: true, status: 200, data: buildOrganization() });
+
+    const element = await EntidadLayout({
+      children: <p>contenido</p>,
+      params: Promise.resolve({ slug: "alfaville" }),
+    });
+    render(element);
+
+    expect(screen.getByRole("link", { name: "Inicio" })).toBeInTheDocument();
+    expect(screen.getByText("contenido")).toBeInTheDocument();
+  });
 });

@@ -9,6 +9,7 @@ import { Footer } from "@/components/layout/Footer";
 import { contrastRatio, readableOn } from "@/lib/a11y/contrast";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { getServerOrganization } from "@/lib/auth/organization";
+import { isPlatformRole } from "@/lib/auth/plataformaMenu";
 import { PARAGUAS_MENU_LABELS, paraguasMenuFor } from "@/lib/auth/paraguasMenu";
 import { getServerSession } from "@/lib/auth/session";
 
@@ -24,7 +25,9 @@ export default async function ParaguasLayout({
   if (!session) {
     redirect("/login");
   }
-  if (session.platformRole.role) {
+  if (isPlatformRole(session.platformRole.role)) {
+    // Mismo criterio que `app/entidad/[slug]/layout.tsx`: solo un rol
+    // de plataforma conocido manda sobre el panel de entidad paraguas.
     redirect("/plataforma");
   }
 

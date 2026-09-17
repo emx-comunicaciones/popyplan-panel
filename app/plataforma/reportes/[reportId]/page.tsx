@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { ReporteDetail } from "@/components/entidad/ReporteDetail";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { plataformaMenuFor } from "@/lib/auth/plataformaMenu";
+import { isPlatformRole, plataformaMenuFor } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export const metadata: Metadata = { title: "Detalle de reporte (plataforma)" };
@@ -18,7 +18,7 @@ export default async function PlataformaReporteDetailPage({
   if (!session) {
     redirect("/login");
   }
-  if (!session.platformRole.role) {
+  if (!isPlatformRole(session.platformRole.role)) {
     redirect("/");
   }
 
