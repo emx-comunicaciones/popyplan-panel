@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { ActividadesTable } from "@/components/entidad/ActividadesTable";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { isEntidadPanelRole } from "@/lib/auth/area";
+import { entidadMenuFor } from "@/lib/auth/entidadMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export const metadata: Metadata = { title: "Asistencia" };
@@ -28,6 +30,10 @@ export default async function EntidadAsistenciaIndexPage({
   );
   if (!membership) {
     redirect("/");
+  }
+
+  if (!entidadMenuFor(membership.role).includes("asistencia")) {
+    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Asistencia." />;
   }
 
   return (

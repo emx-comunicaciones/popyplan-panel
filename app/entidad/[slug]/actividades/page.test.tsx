@@ -36,11 +36,11 @@ afterEach(() => {
   useEntityEventsMock.mockReset();
 });
 
-async function renderPage(slug = "alfaville") {
+async function renderPage(slug = "alfaville", role = "titular") {
   getServerSessionMock.mockResolvedValue({
     token: "t",
     me: buildMe({
-      org_memberships: [buildOrgMembership({ role: "titular", organization_slug: slug, organization_id: 7 })],
+      org_memberships: [buildOrgMembership({ role, organization_slug: slug, organization_id: 7 })],
     }),
     platformRole: { role: null },
   });
@@ -128,5 +128,23 @@ describe("EntidadActividadesPage", () => {
     await expect(
       EntidadActividadesPage({ params: Promise.resolve({ slug: "otra-entidad" }) }),
     ).rejects.toEqual(expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>));
+  });
+
+  it("analista no ve Actividades: «Sin acceso»", async () => {
+    useEntityEventsMock.mockReturnValue({ data: [], isError: false, error: null });
+
+    await renderPage("alfaville", "analista");
+
+    expect(screen.getByText("Sin acceso")).toBeInTheDocument();
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  });
+
+  it("referente sí ve Actividades", async () => {
+    useEntityEventsMock.mockReturnValue({ data: [EVENT_ROW], isError: false, error: null });
+
+    await renderPage("alfaville", "referente");
+
+    expect(screen.getByRole("heading", { name: "Actividades" })).toBeInTheDocument();
+    expect(screen.queryByText("Sin acceso")).not.toBeInTheDocument();
   });
 });

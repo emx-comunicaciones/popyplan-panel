@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { PersonSheet } from "@/components/entidad/PersonSheet";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { isEntidadPanelRole } from "@/lib/auth/area";
+import { entidadMenuFor } from "@/lib/auth/entidadMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export const metadata: Metadata = { title: "Ficha de la persona" };
@@ -28,6 +30,10 @@ export default async function EntidadPersonaPage({
   );
   if (!membership) {
     redirect("/");
+  }
+
+  if (!entidadMenuFor(membership.role).includes("personas")) {
+    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Personas." />;
   }
 
   const canAssignReferent = membership.role === "titular" || membership.role === "moderador";

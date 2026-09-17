@@ -35,11 +35,11 @@ afterEach(() => {
   delete (navigator as { mediaDevices?: unknown }).mediaDevices;
 });
 
-async function renderPage(slug = "alfaville", eventId = "event-uuid-1") {
+async function renderPage(slug = "alfaville", eventId = "event-uuid-1", role = "titular") {
   getServerSessionMock.mockResolvedValue({
     token: "t",
     me: buildMe({
-      org_memberships: [buildOrgMembership({ role: "titular", organization_slug: slug, organization_id: 7 })],
+      org_memberships: [buildOrgMembership({ role, organization_slug: slug, organization_id: 7 })],
     }),
     platformRole: { role: null },
   });
@@ -272,5 +272,26 @@ describe("EntidadAsistenciaPage", () => {
     await expect(
       EntidadAsistenciaPage({ params: Promise.resolve({ slug: "otra-entidad", eventId: "e1" }) }),
     ).rejects.toEqual(expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>));
+  });
+
+  it("analista no ve la asistencia de la actividad: «Sin acceso»", async () => {
+    useAttendeesMock.mockReturnValue({ data: [ATTENDEE], isError: false, error: null });
+    useMarkAttendanceMock.mockReturnValue({ mutate: vi.fn(), isPending: false, variables: undefined });
+    useCheckinMock.mockReturnValue({ mutate: vi.fn(), isPending: false });
+
+    await renderPage("alfaville", "event-uuid-1", "analista");
+
+    expect(screen.getByText("Sin acceso")).toBeInTheDocument();
+    expect(screen.queryByText("Ana")).not.toBeInTheDocument();
+  });
+
+  it("referente tampoco ve la asistencia de la actividad: «Sin acceso»", async () => {
+    useAttendeesMock.mockReturnValue({ data: [ATTENDEE], isError: false, error: null });
+    useMarkAttendanceMock.mockReturnValue({ mutate: vi.fn(), isPending: false, variables: undefined });
+    useCheckinMock.mockReturnValue({ mutate: vi.fn(), isPending: false });
+
+    await renderPage("alfaville", "event-uuid-1", "referente");
+
+    expect(screen.getByText("Sin acceso")).toBeInTheDocument();
   });
 });

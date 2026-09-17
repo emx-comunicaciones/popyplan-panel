@@ -624,4 +624,24 @@ describe("EntidadPersonasPage", () => {
       "/plantilla-personas.csv",
     );
   });
+
+  it("analista no ve Personas: «Sin acceso»", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+
+    await renderPage("analista");
+
+    expect(screen.getByText("Sin acceso")).toBeInTheDocument();
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  });
+
+  it("referente sí ve Personas", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+
+    await renderPage("referente");
+
+    expect(screen.getByRole("heading", { name: "Personas" })).toBeInTheDocument();
+    expect(screen.queryByText("Sin acceso")).not.toBeInTheDocument();
+  });
 });

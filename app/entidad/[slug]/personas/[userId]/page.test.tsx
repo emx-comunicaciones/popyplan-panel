@@ -171,4 +171,14 @@ describe("EntidadPersonaPage", () => {
       EntidadPersonaPage({ params: Promise.resolve({ slug: "otra-entidad", userId: "42" }) }),
     ).rejects.toEqual(expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>));
   });
+
+  it("analista no ve la ficha de la persona: «Sin acceso»", async () => {
+    usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
+    useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
+
+    await renderPage("analista");
+
+    expect(screen.getByText("Sin acceso")).toBeInTheDocument();
+    expect(screen.queryByText("Ana")).not.toBeInTheDocument();
+  });
 });
