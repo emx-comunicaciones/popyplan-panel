@@ -7,11 +7,9 @@ import { SkipLink } from "@/components/ui/SkipLink";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Footer } from "@/components/layout/Footer";
 import { contrastRatio, readableOn } from "@/lib/a11y/contrast";
-import { ORGANIZATIONS } from "@/lib/api/endpoints";
-import { serverFetch } from "@/lib/api/serverFetch";
-import type { Organization } from "@/lib/api/types";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { ENTIDAD_MENU_LABELS, entidadMenuFor } from "@/lib/auth/entidadMenu";
+import { getServerOrganization } from "@/lib/auth/organization";
 import { getServerSession } from "@/lib/auth/session";
 
 export default async function EntidadLayout({
@@ -39,10 +37,7 @@ export default async function EntidadLayout({
     redirect("/");
   }
 
-  const orgResult = await serverFetch<Organization>(
-    ORGANIZATIONS.DETAIL(membership.organization_id),
-    session.token,
-  );
+  const orgResult = await getServerOrganization(membership.organization_id, session.token);
 
   const menu = entidadMenuFor(membership.role);
   const org = orgResult.ok ? orgResult.data : null;

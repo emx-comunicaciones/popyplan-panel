@@ -20,6 +20,7 @@
  * `/me/`: ahí el token es el problema, no el endpoint.
  */
 import { headers } from "next/headers";
+import { cache } from "react";
 
 import { serverFetch } from "@/lib/api/serverFetch";
 import { SAFETY, USERS } from "@/lib/api/endpoints";
@@ -32,7 +33,15 @@ export interface ServerSession {
   platformRole: PlatformRoleMe;
 }
 
-export async function getServerSession(): Promise<ServerSession | null> {
+/**
+ * Memoizada por petición con `cache` de React: el layout de área y su
+ * página la llaman por separado en la misma navegación, y sin esto cada
+ * uno pedía `/me/` y `platform-roles/me/` por su cuenta — cuatro
+ * llamadas al backend donde bastan dos (hallazgo B5). Fuera de una
+ * petición de servidor (tests) `cache` no memoiza: la llamada pasa
+ * directa y el comportamiento no cambia.
+ */
+export const getServerSession = cache(async function getServerSession(): Promise<ServerSession | null> {
   const store = await headers();
   const token = store.get(ACCESS_TOKEN_HEADER);
   if (!token) return null;
@@ -58,4 +67,4 @@ export async function getServerSession(): Promise<ServerSession | null> {
   }
 
   return { token, me: meResult.data, platformRole };
-}
+});

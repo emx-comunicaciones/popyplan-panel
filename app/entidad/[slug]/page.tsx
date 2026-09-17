@@ -2,10 +2,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { EntityHomeDashboard } from "@/components/entidad/EntityHomeDashboard";
-import { ORGANIZATIONS } from "@/lib/api/endpoints";
-import { serverFetch } from "@/lib/api/serverFetch";
-import type { Organization } from "@/lib/api/types";
 import { isEntidadPanelRole } from "@/lib/auth/area";
+import { getServerOrganization } from "@/lib/auth/organization";
 import { getServerSession } from "@/lib/auth/session";
 
 export const metadata: Metadata = { title: "Inicio de la entidad" };
@@ -28,10 +26,7 @@ export default async function EntidadInicioPage({
     redirect("/");
   }
 
-  const orgResult = await serverFetch<Organization>(
-    ORGANIZATIONS.DETAIL(membership.organization_id),
-    session.token,
-  );
+  const orgResult = await getServerOrganization(membership.organization_id, session.token);
   const orgName = orgResult.ok ? orgResult.data.name : membership.organization_name;
 
   return (
