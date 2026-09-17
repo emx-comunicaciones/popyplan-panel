@@ -51,6 +51,46 @@ describe("useEntityCommunities", () => {
     expect(result.current.data).toEqual([page1, page2]);
   });
 
+  it("concatena las tres páginas de la entidad en un solo listado", async () => {
+    const rows = [1, 2, 3].map((n) =>
+      buildEntityCommunityRow({
+        id: `c${n}`,
+        owner: { type: "organization", id: 7, name: "Alfaville", verified: true },
+      }),
+    );
+    apiFetchMock
+      .mockResolvedValueOnce({ count: 3, next: "http://api.test/?page=2", previous: null, results: [rows[0]] })
+      .mockResolvedValueOnce({ count: 3, next: "http://api.test/?page=3", previous: null, results: [rows[1]] })
+      .mockResolvedValueOnce({ count: 3, next: null, previous: null, results: [rows[2]] });
+
+    const { result } = renderHook(() => useEntityCommunities(7), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(apiFetchMock).toHaveBeenCalledTimes(3);
+    expect(result.current.data).toEqual(rows);
+  });
+
+  it("avisa en vez de truncar en silencio cuando `next` sigue vivo tras el tope de páginas", async () => {
+    // El backend nunca deja de mandar `next`: sin este aviso, el hook
+    // devolvería 250 páginas como si fueran todas y la entidad no vería
+    // sus últimas comunidades en ningún select del panel.
+    apiFetchMock.mockResolvedValue({
+      count: 99999,
+      next: "http://api.test/?page=999",
+      previous: null,
+      results: [buildEntityCommunityRow({ id: "c1", owner: { type: "organization", id: 7, name: "Alfaville", verified: true } })],
+    });
+
+    const { result } = renderHook(() => useEntityCommunities(7), { wrapper });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    expect(apiFetchMock).toHaveBeenCalledTimes(250);
+    expect(result.current.error).toBeInstanceOf(EntityCommunitiesError);
+    expect(result.current.error?.message).toBe(
+      "Hay demasiadas comunidades para cargarlas todas; contacta con Popyplan.",
+    );
+  });
+
   it("cualquier fallo surge como EntityCommunitiesError", async () => {
     apiFetchMock.mockRejectedValueOnce(new Error("red caída"));
 

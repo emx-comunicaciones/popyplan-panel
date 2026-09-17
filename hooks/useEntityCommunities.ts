@@ -10,8 +10,12 @@
  * Además, `communities/services/visibility.py::_visibles_para` excluye
  * las comunidades `private` de quien no es ya miembro — un `titular` que
  * no esté personalmente dentro de una comunidad privada de su propia
- * entidad no la verá aquí. Tope de 20 páginas (2000 comunidades) para no
- * recorrer sin fin si algo falla en el filtrado.
+ * entidad no la verá aquí. Tope de 250 páginas (5000 comunidades, a 20
+ * por página) para no recorrer sin fin si algo falla en el filtrado: si
+ * al llegar al tope el backend sigue mandando `next`, el hook **avisa**
+ * en vez de devolver un listado truncado como si fuera completo (un
+ * select de comunidad al que le faltan filas es peor que un error
+ * visible: nadie sabría que falta nada).
  */
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
@@ -26,7 +30,7 @@ export class EntityCommunitiesError extends Error {
   }
 }
 
-const MAX_PAGES = 20;
+const MAX_PAGES = 250;
 
 async function fetchAllPages(): Promise<EntityCommunityRow[]> {
   const rows: EntityCommunityRow[] = [];
@@ -40,6 +44,12 @@ async function fetchAllPages(): Promise<EntityCommunityRow[]> {
     rows.push(...data.results);
     next = data.next;
     page += 1;
+  }
+
+  if (next) {
+    throw new EntityCommunitiesError(
+      "Hay demasiadas comunidades para cargarlas todas; contacta con Popyplan.",
+    );
   }
 
   return rows;
@@ -56,7 +66,10 @@ export function useEntityCommunities(
         return all.filter(
           (community) => community.owner.type === "organization" && String(community.owner.id) === String(orgId),
         );
-      } catch {
+      } catch (error) {
+        // El aviso de «demasiadas páginas» ya trae su propio mensaje: solo
+        // los fallos de red o del backend caen al genérico.
+        if (error instanceof EntityCommunitiesError) throw error;
         throw new EntityCommunitiesError("No se pudieron cargar las comunidades de la entidad.");
       }
     },
