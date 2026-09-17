@@ -8,8 +8,8 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { Footer } from "@/components/layout/Footer";
 import { contrastRatio, readableOn } from "@/lib/a11y/contrast";
 import { isEntidadPanelRole } from "@/lib/auth/area";
-import { PARAGUAS_MENU_LABELS, paraguasMenuFor } from "@/lib/auth/paraguasMenu";
 import { getServerOrganization } from "@/lib/auth/organization";
+import { PARAGUAS_MENU_LABELS, paraguasMenuFor } from "@/lib/auth/paraguasMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export default async function ParaguasLayout({

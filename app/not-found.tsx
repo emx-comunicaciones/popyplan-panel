@@ -20,7 +20,7 @@ export default function NotFound() {
         action={
           <Link
             href="/"
-            className="text-sm font-medium text-primary-700 underline focus-visible:outline-3 focus-visible:outline-primary-700"
+            className="text-sm font-medium text-primary-700 underline"
           >
             Volver al inicio
           </Link>
