@@ -1172,14 +1172,17 @@ Component (`lib/auth/session.ts::getServerSession`, usado por los tres
 layouts de área) no puede escribir cookies — si intentara refrescar él
 mismo, el refresh rotado se perdería y la sesión moriría en la
 siguiente petición (el anterior ya está en lista negra). El middleware
-(`matcher`: `/entidad/**`, `/paraguas/**`, `/plataforma/**`,
-`/elegir-entidad`) hace el refresco una vez por navegación, rota la
-cookie, y pasa el access token a la petición como cabecera interna
+(`matcher`: `/`, `/entidad/**`, `/paraguas/**`, `/plataforma/**`,
+`/elegir-entidad` — la raíz entró con el hallazgo A2 de la segunda
+ronda) hace el refresco una vez por navegación, rota la cookie, y pasa
+el access token a la petición como cabecera interna
 (`ACCESS_TOKEN_HEADER = 'x-pp-access-token'`, nunca llega al navegador)
 que `getServerSession` lee con `headers()` de `next/headers`. Sin
-cookie, o si el backend rechaza el refresh, el middleware la borra y
-deja pasar sin cabecera — `getServerSession` devuelve `null` y el
-layout/página redirige a `/login`, igual que antes.
+cookie, o si el backend rechaza el refresh, una navegación de documento
+va a `/login?returnTo=<destino>` (y un prefetch/RSC pasa sin cabecera,
+con lo que `getServerSession` devuelve `null` y el layout redirige);
+**el middleware no borra nunca la cookie**, eso lo hace el route handler
+de refresco o el logout (F3, ver «Hardening de sesión» más abajo).
 
 `lib/api/serverFetch.ts` (servidor) no reintenta nunca — quien llama
 decide (`redirect('/login')`).
@@ -1191,13 +1194,17 @@ decide (`redirect('/login')`).
   comparten una sola llamada a `token/refresh/` — sin él, el perdedor de la
   carrera recibía 401 y respondía `Set-Cookie` de borrado, destruyendo la
   sesión de quien acababa de entrar (misma clase que el bug de demo que
-  `lib/api/client.ts` ya tenía resuelto solo en el cliente). Además el
-  borrado de cookie en 401 **solo se aplica a navegaciones de documento**
-  (`sec-fetch-dest: document`, o ausente de la cabecera); en prefetch/RSC
-  se deja pasar sin tocarla (el navegador no aplica `Set-Cookie` de
-  subpeticiones). Error de red del backend durante una navegación →
-  **503** (antes dejaba pasar sin cabecera y los layouts redirigían a
-  `/login` con la sesión válida).
+  `lib/api/client.ts` ya tenía resuelto solo en el cliente). **El
+  middleware ya no borra la cookie en ningún camino** (F3, revisión final
+  de la rama): un 401 del backend no distingue «caducado» de «otro
+  proceso lo rotó hace un instante», y el middleware corre en Edge sin
+  acceso al `rotationCache` del route handler (que vive en Node), así que
+  el borrado tiraba también el refresh nuevo que el navegador ya tenía.
+  Ahora una navegación de documento con el refresh rechazado solo redirige
+  a `/login?returnTo=<destino>`; un prefetch/RSC pasa sin sesión, igual
+  que antes (el navegador no aplica `Set-Cookie` de subpeticiones). Error
+  de red del backend durante una navegación → **503** (antes dejaba pasar
+  sin cabecera y los layouts redirigían a `/login` con la sesión válida).
 - **Route handler `/api/session/refresh` resiliente**: error de red → 503
   sin borrar la cookie (antes: 500 → «Tu sesión ha caducada» y logout en
   cada despliegue del backend); si tras rotar el refresh falla `/me/` o
@@ -1231,7 +1238,10 @@ contrato en su código, no solo en `docs/schema.yaml`: **3 hallazgos
 altos, 16 medios y 40 bajos**. Todos corregidos con test primero (rojo →
 verde) salvo `B6` (crecimiento de `OutstandingToken`/`BlacklistedToken`
 por rotación: es del repo backend, `flushexpiredtokens`). La suite pasa
-de 1014 a **1362 tests**; cobertura de líneas **99,86 %**.
+de 1014 a **1362 tests**; cobertura de líneas **99,86 %**. La revisión
+completa de la rama sobre ese trabajo añadió cinco hallazgos más (F1-F5)
+y siete menores — ver «Revisión final de la rama» al final de esta
+sección: **1375 tests**, líneas **99,86 %**.
 
 ### Sesión, middleware y rutas de auth
 
@@ -1253,7 +1263,18 @@ de 1014 a **1362 tests**; cobertura de líneas **99,86 %**.
   lista de marcas de tiempo. Sin reenviar la IP, en producción toda
   petición sale con la del servidor Next: cinco navegaciones de cualquier
   persona dejaban el login en 429 para todo el mundo (y explicaban los
-  429 de la suite e2e).
+  429 de la suite e2e). **Frontera de confianza (F4, trade-off asumido y
+  documentado, no arreglado)**: el panel reenvía el primer valor de la
+  cabecera entrante *tal cual*, sin poder saber si lo puso el proxy o
+  quien llama. El proxy delante de Next tiene que **fijar**
+  `X-Forwarded-For` (`proxy_set_header X-Forwarded-For $remote_addr`),
+  **nunca anexar** (`$proxy_add_x_forwarded_for`): si anexa, el primer
+  elemento es el del cliente y basta rotarlo en cada intento para
+  saltarse el límite de login. Descartar la cabecera entrante no es
+  alternativa (vuelve el 429 global de A1). El arreglo duradero es del
+  repo backend: clave de límite por endpoint (o por cuenta), no solo por
+  IP. Anotado en el docstring del módulo y en `.env.example` («Notas de
+  despliegue»).
 - **Un solo refresco por cookie, también en el route handler** (M1):
   `lib/auth/singleFlight.ts::singleFlight(map, key, fn)` extrae la
   mecánica que ya tenía el middleware y ahora la usan los dos.
@@ -1268,6 +1289,20 @@ de 1014 a **1362 tests**; cobertura de líneas **99,86 %**.
   proceso de larga vida) y se vacía **entera** en el logout: la entrada
   peligrosa está indexada por el refresh anterior, no por el de la
   cookie que cierra sesión, así que borrar solo una clave no bastaba.
+  **Alcance real de M1 (F3, revisión final de la rama)**: los dos
+  single-flight y la caché de replay cierran la carrera **dentro de cada
+  proceso**, no entre procesos — `middleware.ts` corre en el runtime Edge
+  y `app/api/session/refresh/route.ts` en Node, con mapas y caché
+  propios, y en multi-instancia tampoco se comparten. No se ha inventado
+  una caché compartida (haría falta un almacén externo, trabajo aparte);
+  la mitigación es que **solo el route handler borra la cookie**, porque
+  es el único que consulta la caché de replay antes de dar el refresh por
+  caducado (más el logout, que la borra a propósito). El middleware, ante
+  un 401, se limita a mandar al login con el destino guardado: la cookie
+  de más que se queda en el navegador no da bucle —`/login` está fuera
+  del `matcher`— y la restauración de arranque de `app/providers.tsx`
+  llama a ese route handler, que la borra con su 401 si de verdad estaba
+  caducada, o **revive la sesión** si lo que había era la carrera.
 - **`lib/auth/tokenRefresh.ts::parseRefreshedTokens`** (B3): un 200 del
   backend sin `access`/`refresh` string (proxy, despliegue a medias,
   página de error con estado 200) pasaba por un `as` y la cookie acababa
@@ -1368,9 +1403,23 @@ de 1014 a **1362 tests**; cobertura de líneas **99,86 %**.
   reales son `org.logo` (cabeceras de entidad y paraguas) y `data.photo`
   (`PersonSheet.tsx`), todas del backend. **Se evalúa al cargar
   `next.config.ts`, así que los dos valores se fijan en el build**: quien
-  despliegue tiene que declararlos ahí, no solo en runtime. Por eso este
-  módulo no usa `apiBaseUrl()` (que lanzaría, porque `next build` corre
-  con `NODE_ENV=production`).
+  despliegue tiene que declararlos ahí, no solo en runtime — `.env.example`
+  lo dice ahora al lado de cada variable, con lo que pasa si faltan en el
+  build: el único host permitido queda `http://localhost:8001` y los logos
+  del backend real no se pintan (la cabecera se queda sin logo, no se cae
+  la página). Por eso este módulo no usa `apiBaseUrl()` (que lanzaría,
+  porque `next build` corre con `NODE_ENV=production`).
+  **Revisión final de la rama (F2)**: acotar los patrones dejó un filo
+  nuevo, porque `next/image` **lanza en render** si la `src` no casa con
+  ninguno («hostname is not configured under images») — un logo con un
+  dominio no declarado no dejaba la cabecera sin logo, tumbaba el layout
+  entero a `app/error.tsx`. `isAllowedImageSrc(src)` (mismo módulo, misma
+  lista, nunca una copia) comprueba protocolo + hostname + puerto, y los
+  tres sitios que pintan imágenes remotas (las dos cabeceras y
+  `PersonSheet.tsx`) solo montan `<Image>` si pasa; si no, se comportan
+  igual que con `logo`/`photo` a `null`. Rutas relativas siempre
+  permitidas; cadena vacía, texto ilegible, `data:` y `//host/...`
+  rechazados sin lanzar.
 - **`lib/config/securityHeaders.ts`** (M3) aplica a `/(.*)`:
   `X-Content-Type-Options: nosniff`, `Referrer-Policy:
   strict-origin-when-cross-origin`, `X-Frame-Options: DENY`,
@@ -1393,8 +1442,11 @@ de 1014 a **1362 tests**; cobertura de líneas **99,86 %**.
   familias, reportes, exportaciones, bajas de equipo y referencia…)
   enseñaban «Revisa los datos…» sin decir cuál. La rama `error` está ahí
   porque tres de esos hooks ya la leían; no puede robar precedencia a un
-  error por campo (un campo DRF llamado `error` llega como array).
-  `fieldErrorsOf` existe y está cubierto, pero todavía sin consumidor.
+  error por campo (un campo DRF llamado `error` llega como array). Es la
+  **única** función del módulo: hubo un `fieldErrorsOf` (mapa campo →
+  primer mensaje) que nunca llegó a tener consumidor y se borró con sus
+  tests en la revisión final de la rama, en vez de dejarlo como código
+  muerto cubierto.
 - **`useEntityCommunities` con tope explícito** (M4): `MAX_PAGES` pasa de
   20 a **250** (× `PAGE_SIZE` 20 del backend = 5000 comunidades) y, si
   `next` sigue no nulo al agotarlas, **lanza** «Hay demasiadas
@@ -1403,6 +1455,13 @@ de 1014 a **1362 tests**; cobertura de líneas **99,86 %**.
   así que con el tope viejo (400) las comunidades de la entidad a partir
   de esa página desaparecían en silencio de Comunidades, del select de
   Personas, de `AddPersonDialog`, de `hasFamilies` y de Familias.
+  **Revisión final de la rama (F5)**: ese recorrido son hasta 250
+  peticiones **en serie** y el `staleTime` por defecto de TanStack es 0,
+  así que cada montaje de un select de comunidad lo repetía entero. Ahora
+  `staleTime: 5 * 60 * 1000`; las mutaciones que crean o cambian una
+  comunidad ya invalidan la clave, así que la caché no esconde nada
+  recién creado. El arreglo real sigue siendo un filtro `owner_org` en el
+  backend (ver «Pendientes conocidos»).
 - **Invalidaciones cruzadas** (B10): atender un aviso de ayuda o resolver
   un reporte invalida ya el Inicio de la entidad y
   `["panel-dashboard-stats"]`; marcar asistencia o hacer check-in
@@ -1664,6 +1723,67 @@ fichero completo con `e2e/helpers.ts::expectExportFilename` (B40).
 anidar un `js-yaml` vulnerable; quedan los avisos de `postcss` dentro de
 Next, que solo se cierran subiendo a Next 16 (rotura, fuera de alcance).
 
+### Revisión final de la rama (F1-F5 y menores)
+
+Revisión completa del diff de la rama (`47664b4..8d7cafe`) sobre el
+trabajo ya fusionado: cinco hallazgos de peso y siete menores, todos con
+test rojo → verde salvo los puramente documentales (F4 y la parte de
+notas de F2).
+
+- **F1. `referente` solo tenía enlaces a una pantalla que su panel le
+  niega** (`components/entidad/ActividadesTable.tsx`): `REFERENTE_VISIBLE`
+  (`lib/auth/entidadMenu.ts`) no incluye `asistencia` —decisión de
+  producto, no se toca—, pero la tabla enlazaba el título de cada
+  actividad a `/entidad/{slug}/asistencia/{eventId}`, cuyo gate le
+  devuelve «Sin acceso». La tabla recibe ahora `canOpenAttendance`, que
+  calcula el Server Component con
+  `entidadMenuFor(role).includes("asistencia")` (siempre `true` en
+  `asistencia/page.tsx`, que ya está gateada por esa sección); sin
+  permiso el título se pinta como `<span>`, sin `<a>`.
+- **F2. Guard de host antes de `next/image`** — ver la entrada de
+  `lib/config/imagePatterns.ts` en «Configuración de Next» arriba.
+- **F3. Carrera de refresco entre runtimes** — ver «Alcance real de M1»
+  y el bullet del middleware en «Hardening de sesión» arriba. Decisión:
+  el middleware deja de borrar la cookie; no se inventa una caché
+  compartida entre Edge y Node.
+- **F4. `X-Forwarded-For` sin frontera de confianza** — trade-off
+  documentado (no arreglado en este repo), ver la entrada de
+  `lib/auth/clientIp.ts` arriba y `.env.example`.
+- **F5. `useEntityCommunities` con `staleTime`** — ver su entrada en
+  «Hooks de datos» arriba.
+
+Menores:
+
+- **`components/ui/ConfirmDialog.tsx` con `useId()`** en vez de
+  `id="confirm-dialog-title"` fijo: dos diálogos montados a la vez (los
+  de Equipo y Referencias en `ConfiguracionPanel`) compartían
+  `aria-labelledby` y se anunciaban con el título del primero.
+- **`lib/auth/paraguasMenu.test.ts`** fija literales (`["inicio",
+  "informes"]`) en los tres casos positivos: con `[...PARAGUAS_MENU_ITEMS]`
+  una sección nueva habría pasado el test sin que nadie decidiera que
+  ese rol la ve.
+- **`fieldErrorsOf` borrada** de `lib/api/drfError.ts` (sin consumidor).
+- **`EntidadDetail::EquipoTab`**: los avisos de `addMember.isError` y
+  `createReference.isError` estaban fuera de `canManage`, donde no hay
+  formulario que pueda disparar la mutación — ramas muertas, movidas
+  dentro.
+- **`lib/a11y/contrast.test.ts`**: dos aserciones con `?? 0` /
+  `?? "#FFFFFF"` habrían pasado con un `null` inesperado; ahora
+  comprueban que no es nulo antes de comparar.
+- **`.github/workflows/ci.yml`** con `concurrency` +
+  `cancel-in-progress`: dos empujones seguidos a la misma rama ya no
+  dejan dos tandas completas (con su `e2e` y su backend) compitiendo. El
+  solape push+PR de la misma rama sigue siendo posible (son dos
+  `github.ref` distintos), y está explicado en el propio comentario del
+  fichero.
+- **`components/metrics/ExportPanel.tsx`**: las props de periodo pasan a
+  unión discriminada (`{period; preset; onPeriodChange}` o los tres
+  `undefined`), así un `period` sin `onPeriodChange` es error de
+  compilación en vez de un selector que no cambia nada. Los dos
+  consumidores sueltos (las dos páginas de Informes) no pasan ninguno de
+  los tres, así que no cambian. Hay un test de tipos con
+  `@ts-expect-error` que falla si alguien deshace la unión.
+
 ### Pendientes conocidos (no son bugs, son deuda anotada)
 
 - **`components/plataforma/ContratosPanel.tsx` pasa de 700 líneas.** El
@@ -1687,6 +1807,17 @@ Next, que solo se cierran subiendo a Next 16 (rotura, fuera de alcance).
   así que ningún componente puede reaccionar a él sin comparar cadenas.
   Añadirle `kind: "sin_acceso" | "desconocido"` (como `PersonError`)
   dejaría salir solos los textos específicos de los selects de referente.
+- **Filtro `owner_org` en `GET /api/communities/`, del repo backend.**
+  Sin él, `hooks/useEntityCommunities.ts` recorre el listado global
+  página a página (hasta 250 peticiones en serie) y filtra en el cliente;
+  el `staleTime` de 5 minutos (F5) solo hace que ese recorrido no se
+  repita en cada montaje.
+- **Refresco de sesión sin caché compartida entre runtimes** (F3): el
+  single-flight y el `rotationCache` valen dentro de cada proceso. Una
+  caché compartida (Redis o equivalente) cerraría también la carrera
+  entre el middleware Edge y el route handler Node, y entre instancias;
+  mientras no exista, la mitigación es que solo el route handler borre la
+  cookie.
 - **B6, del repo backend**: cada navegación rota el refresh y deja una
   fila en `OutstandingToken`/`BlacklistedToken`. Sin un
   `flushexpiredtokens` periódico, esas tablas crecen sin techo.
@@ -1723,8 +1854,10 @@ en CI lo gate el job `e2e`).
   ambas tareas — W5 solo añade specs de Playwright, que no cuentan para
   esta métrica). Tras la auditoría de bugs de 2026-09: **99,84 %**. Tras
   la segunda ronda (2026-09-18, `middleware.ts` incluido): **99,86 %**
-  (2206/2209 líneas). El umbral fijado sigue en 99,7 porque real menos
-  0,3 (99,56) queda por debajo, así que el ratchet no sube.
+  (2206/2209 líneas). Tras la revisión final de la rama (F1-F5 y
+  menores): **99,86 %** (2205/2208 líneas, 1375 tests). El umbral fijado
+  sigue en 99,7 porque real menos 0,3 (99,56) queda por debajo, así que
+  el ratchet no sube.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la
