@@ -145,7 +145,14 @@ function ResourceForm({
     setForm((prev) => ({ ...prev, file }));
   }
 
-  const canSubmit = form.title.trim().length > 0 && !fileError;
+  // Un enlace sin URL o un PDF/vídeo/audio/documento sin fichero nunca
+  // pasan la validación del backend (400): se bloquea antes de enviar.
+  // Editando, el fichero solo es obligatorio si el recurso no tenía uno
+  // («deja vacío para conservar el fichero actual»).
+  const hasStoredFile = editing !== "new" && Boolean(editing.file);
+  const missingUrl = form.kind === "link" && form.url.trim().length === 0;
+  const missingFile = requiresFile && !form.file && !hasStoredFile;
+  const canSubmit = form.title.trim().length > 0 && !fileError && !missingUrl && !missingFile;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -157,7 +164,10 @@ function ResourceForm({
       kind: form.kind,
       audience: form.audience,
       is_featured: form.isFeatured,
-      body: form.kind === "text" ? form.body : undefined,
+      // Editando, pasar de «Texto» a otro tipo manda `body: ""` explícito
+      // para limpiar el texto anterior (`buildResourcePayload` solo
+      // descarta `undefined`, la cadena vacía sí viaja en el PATCH).
+      body: form.kind === "text" ? form.body : editing === "new" ? undefined : "",
       url: form.kind === "link" ? form.url : undefined,
       file: form.file ?? undefined,
     };
@@ -320,7 +330,7 @@ function ResourceForm({
           <Button type="submit" disabled={!canSubmit || mutation.isPending}>
             Guardar
           </Button>
-          <Button type="button" variant="secondary" onClick={onDone}>
+          <Button type="button" variant="secondary" onClick={onDone} disabled={mutation.isPending}>
             Cancelar
           </Button>
         </div>
@@ -416,7 +426,16 @@ export function RecursosPanel({ orgId, canManage }: RecursosPanelProps) {
     <div className="flex flex-col gap-6">
       {canManage ? (
         editing ? (
-          <ResourceForm orgId={orgId} editing={editing} onDone={() => setEditing(null)} />
+          // `key`: el estado del formulario nace de `editing` en el
+          // `useState` inicial, así que sin remontar, pasar de editar A a
+          // editar B (o de «Nuevo recurso» a editar A) conservaría los
+          // campos del anterior y el `PATCH` de B mandaría los datos de A.
+          <ResourceForm
+            key={editing === "new" ? "new" : editing.id}
+            orgId={orgId}
+            editing={editing}
+            onDone={() => setEditing(null)}
+          />
         ) : (
           <div>
             <Button type="button" onClick={() => setEditing("new")}>
@@ -441,7 +460,10 @@ export function RecursosPanel({ orgId, canManage }: RecursosPanelProps) {
                     resource={resource}
                     canManage={canManage}
                     onEdit={() => setEditing(resource)}
-                    onDelete={() => setDeleting(resource)}
+                    onDelete={() => {
+                      deleteResource.reset();
+                      setDeleting(resource);
+                    }}
                   />
                 </li>
               ))}
@@ -453,14 +475,30 @@ export function RecursosPanel({ orgId, canManage }: RecursosPanelProps) {
       <ConfirmDialog
         open={deleting !== null}
         title="Eliminar recurso"
-        description={deleting ? `¿Eliminar «${deleting.title}»? Esta acción no se puede deshacer.` : ""}
+        description={
+          // El error del borrado se pinta aquí dentro, no bajo la lista:
+          // el diálogo sigue abierto tras un fallo (solo se cierra en
+          // caso de éxito) y quien acaba de pulsar «Eliminar» lee el
+          // motivo sin perder el contexto de lo que iba a borrar.
+          <div className="flex flex-col gap-2">
+            <p>{deleting ? `¿Eliminar «${deleting.title}»? Esta acción no se puede deshacer.` : ""}</p>
+            {deleteResource.isError ? (
+              <p role="alert" className="text-error">
+                {deleteResource.error.message}
+              </p>
+            ) : null}
+          </div>
+        }
         confirmLabel="Eliminar"
         pending={deleteResource.isPending}
         onConfirm={() => {
           if (!deleting) return;
           deleteResource.mutate(deleting.id, { onSuccess: () => setDeleting(null) });
         }}
-        onCancel={() => setDeleting(null)}
+        onCancel={() => {
+          deleteResource.reset();
+          setDeleting(null);
+        }}
       />
     </div>
   );

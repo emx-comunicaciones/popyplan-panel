@@ -58,7 +58,13 @@ afterEach(() => {
 function mockDefaults() {
   useCreateResourceMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false, error: null });
   useUpdateResourceMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false, error: null });
-  useDeleteResourceMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false, error: null });
+  useDeleteResourceMock.mockReturnValue({
+    mutate: vi.fn(),
+    isPending: false,
+    isError: false,
+    error: null,
+    reset: vi.fn(),
+  });
   useEntityCommunitiesMock.mockReturnValue({ data: [], isError: false, error: null });
 }
 
@@ -208,10 +214,51 @@ describe("EntidadRecursosPage", () => {
     );
   });
 
+  it("editar A y después B precarga los valores de B, no los de A", async () => {
+    mockDefaults();
+    useResourcesMock.mockReturnValue({
+      data: [
+        buildEntityResource({ id: 1, title: "Guía de acogida", kind: "text", body: "Bienvenida" }),
+        buildEntityResource({ id: 2, title: "Curso de formación", kind: "text", body: "Temario" }),
+      ],
+      isError: false,
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getAllByRole("button", { name: "Editar" })[0]);
+    expect(screen.getByLabelText("Título")).toHaveValue("Guía de acogida");
+
+    await user.click(screen.getAllByRole("button", { name: "Editar" })[1]);
+    expect(screen.getByLabelText("Título")).toHaveValue("Curso de formación");
+    expect(screen.getByLabelText("Texto")).toHaveValue("Temario");
+  });
+
+  it("con «Nuevo recurso» abierto, editar un recurso precarga sus valores", async () => {
+    mockDefaults();
+    useResourcesMock.mockReturnValue({
+      data: [buildEntityResource({ id: 1, title: "Guía de acogida", kind: "text", body: "Bienvenida" })],
+      isError: false,
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getByRole("button", { name: "Nuevo recurso" }));
+    await user.type(screen.getByLabelText("Título"), "Borrador a medias");
+
+    await user.click(screen.getByRole("button", { name: "Editar" }));
+
+    expect(screen.getByLabelText("Título")).toHaveValue("Guía de acogida");
+  });
+
   it("eliminar pide confirmación antes de llamar a la mutación", async () => {
     const mutate = vi.fn();
     mockDefaults();
-    useDeleteResourceMock.mockReturnValue({ mutate, isPending: false, isError: false, error: null });
+    useDeleteResourceMock.mockReturnValue({ mutate, isPending: false, isError: false, error: null, reset: vi.fn() });
     useResourcesMock.mockReturnValue({
       data: [buildEntityResource({ id: 1, title: "Guía de acogida" })],
       isError: false,
@@ -229,6 +276,154 @@ describe("EntidadRecursosPage", () => {
     await user.click(within(dialog).getByRole("button", { name: "Eliminar" }));
 
     expect(mutate).toHaveBeenCalledWith(1, expect.anything());
+  });
+
+  it("el error de borrado se pinta dentro del diálogo, que sigue abierto", async () => {
+    mockDefaults();
+    useDeleteResourceMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      isError: true,
+      error: new Error("Solo titular o moderador pueden borrar recursos."),
+      reset: vi.fn(),
+    });
+    useResourcesMock.mockReturnValue({
+      data: [buildEntityResource({ id: 1, title: "Guía de acogida" })],
+      isError: false,
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getByRole("button", { name: "Eliminar" }));
+    const dialog = screen.getByRole("alertdialog");
+
+    expect(within(dialog).getByRole("alert")).toHaveTextContent(
+      "Solo titular o moderador pueden borrar recursos.",
+    );
+  });
+
+  it("al abrir el diálogo de borrado se limpia el error del intento anterior", async () => {
+    const reset = vi.fn();
+    mockDefaults();
+    useDeleteResourceMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      isError: false,
+      error: null,
+      reset,
+    });
+    useResourcesMock.mockReturnValue({
+      data: [buildEntityResource({ id: 1, title: "Guía de acogida" })],
+      isError: false,
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getByRole("button", { name: "Eliminar" }));
+
+    expect(reset).toHaveBeenCalled();
+  });
+
+  it("tipo «Enlace» sin URL no deja guardar", async () => {
+    mockDefaults();
+    useResourcesMock.mockReturnValue({ data: [], isError: false, error: null });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getByRole("button", { name: "Nuevo recurso" }));
+    await user.type(screen.getByLabelText("Título"), "Web de la entidad");
+    await user.selectOptions(screen.getByLabelText("Tipo"), "link");
+
+    expect(screen.getByRole("button", { name: "Guardar" })).toBeDisabled();
+
+    await user.type(screen.getByLabelText("Enlace"), "https://popyplan.com");
+
+    expect(screen.getByRole("button", { name: "Guardar" })).toBeEnabled();
+  });
+
+  it("creando un recurso de tipo PDF sin fichero no deja guardar", async () => {
+    mockDefaults();
+    useResourcesMock.mockReturnValue({ data: [], isError: false, error: null });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getByRole("button", { name: "Nuevo recurso" }));
+    await user.type(screen.getByLabelText("Título"), "Memoria 2026");
+    await user.selectOptions(screen.getByLabelText("Tipo"), "pdf");
+
+    expect(screen.getByRole("button", { name: "Guardar" })).toBeDisabled();
+  });
+
+  it("editando un recurso que ya tiene fichero, el fichero es opcional", async () => {
+    mockDefaults();
+    useResourcesMock.mockReturnValue({
+      data: [
+        buildEntityResource({
+          id: 1,
+          title: "Memoria 2026",
+          kind: "pdf",
+          body: "",
+          file: "https://cdn.example/memoria.pdf",
+        }),
+      ],
+      isError: false,
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getByRole("button", { name: "Editar" }));
+
+    expect(screen.getByRole("button", { name: "Guardar" })).toBeEnabled();
+  });
+
+  it("editar un recurso de texto y pasarlo a enlace manda body vacío para limpiar el anterior", async () => {
+    const mutate = vi.fn();
+    mockDefaults();
+    useUpdateResourceMock.mockReturnValue({ mutate, isPending: false, isError: false, error: null });
+    useResourcesMock.mockReturnValue({
+      data: [buildEntityResource({ id: 1, title: "Guía de acogida", kind: "text", body: "Bienvenida" })],
+      isError: false,
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getByRole("button", { name: "Editar" }));
+    await user.selectOptions(screen.getByLabelText("Tipo"), "link");
+    await user.type(screen.getByLabelText("Enlace"), "https://popyplan.com");
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(mutate).toHaveBeenCalledWith(
+      expect.objectContaining({ resourceId: 1, kind: "link", url: "https://popyplan.com", body: "" }),
+      expect.anything(),
+    );
+  });
+
+  it("con el guardado en vuelo, «Cancelar» está deshabilitado", async () => {
+    mockDefaults();
+    useCreateResourceMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: true,
+      isError: false,
+      error: null,
+    });
+    useResourcesMock.mockReturnValue({ data: [], isError: false, error: null });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getByRole("button", { name: "Nuevo recurso" }));
+
+    expect(screen.getByRole("button", { name: "Cancelar" })).toBeDisabled();
   });
 
   it("moderador también gestiona recursos", async () => {
