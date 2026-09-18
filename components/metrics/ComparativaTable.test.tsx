@@ -16,7 +16,7 @@ describe("ComparativaTable", () => {
   it("pinta la leyenda del periodo anterior", () => {
     render(<ComparativaTable data={buildCompareResponse()} />);
 
-    expect(screen.getByText("frente a 31 dic – 31 mar 2026")).toBeInTheDocument();
+    expect(screen.getByText("frente a 31 dic 2025 – 31 mar 2026")).toBeInTheDocument();
   });
 
   it("caption con el desglose de la respuesta", () => {

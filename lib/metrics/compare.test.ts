@@ -44,6 +44,21 @@ describe("formatDeltaPct", () => {
   it("suprimido es «—»", () => {
     expect(formatDeltaPct(null, true)).toBe("—");
   });
+
+  it("una diferencia negativa que redondea a 0,0 se pinta sin signo", () => {
+    // -0.0001 son -0,01 puntos: con una sola décima es 0,0, así que un
+    // «-0,0 %» sería ruido (parece una bajada que no existe).
+    expect(formatDeltaPct(-0.0001, false)).toBe("0,0 %");
+  });
+
+  it("una diferencia positiva que redondea a 0,0 se pinta sin signo", () => {
+    expect(formatDeltaPct(0.0004, false)).toBe("0,0 %");
+  });
+
+  it("una diferencia que sí llega a una décima conserva su signo", () => {
+    expect(formatDeltaPct(-0.0006, false)).toBe("-0,1 %");
+    expect(formatDeltaPct(0.0005, false)).toBe("+0,1 %");
+  });
 });
 
 describe("previousPeriodLabel", () => {
@@ -53,9 +68,27 @@ describe("previousPeriodLabel", () => {
     );
   });
 
-  it("otro rango, otro año", () => {
+  it("otro rango, mismo año", () => {
+    expect(previousPeriodLabel({ since: "2026-01-02", until: "2026-03-31" })).toBe(
+      "frente a 2 ene – 31 mar 2026",
+    );
+  });
+
+  it("si el periodo anterior cruza el año, la fecha inicial también lleva año («Año»)", () => {
+    expect(previousPeriodLabel({ since: "2024-09-17", until: "2025-09-17" })).toBe(
+      "frente a 17 sept 2024 – 17 sept 2025",
+    );
+  });
+
+  it("un periodo anterior de fin de año lleva los dos años", () => {
     expect(previousPeriodLabel({ since: "2025-12-31", until: "2026-03-31" })).toBe(
-      "frente a 31 dic – 31 mar 2026",
+      "frente a 31 dic 2025 – 31 mar 2026",
+    );
+  });
+
+  it("un periodo anterior plurianual lleva los dos años", () => {
+    expect(previousPeriodLabel({ since: "2019-01-01", until: "2022-12-31" })).toBe(
+      "frente a 1 ene 2019 – 31 dic 2022",
     );
   });
 });

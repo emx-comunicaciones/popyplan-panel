@@ -38,10 +38,16 @@ export function formatDeltaCount(value: number | null, suppressed: boolean): str
 /**
  * `formatDeltaPct(0.05) → '+5,0 %'`; `formatDeltaPct(-0.02) → '-2,0 %'`;
  * `formatDeltaPct(null, true) → '—'`.
+ *
+ * El signo se decide sobre el valor **ya redondeado a la décima** que se
+ * va a pintar: una diferencia de -0,01 puntos se pinta «0,0 %», nunca
+ * «-0,0 %» (un signo delante de un cero se lee como una bajada real que
+ * no existe, y es el caso habitual de dos periodos prácticamente
+ * iguales).
  */
 export function formatDeltaPct(value: number | null, suppressed: boolean): string {
   if (suppressed || value === null) return DELTA_NOT_AVAILABLE;
-  const points = value * 100;
+  const points = Math.round(value * 100 * 10) / 10;
   if (points === 0) return `${DELTA_PERCENT_FORMATTER.format(0)} %`;
   const sign = points > 0 ? "+" : "-";
   return `${sign}${DELTA_PERCENT_FORMATTER.format(Math.abs(points))} %`;
@@ -58,12 +64,18 @@ const SHORT_DATE_WITH_YEAR = new Intl.DateTimeFormat("es-ES", {
 /**
  * «frente a 1 ene – 31 mar 2026»: leyenda del periodo anterior con el que
  * se compara el actual (`docs/PANEL.md` §11.3, `previous.since`/`.until`,
- * `"YYYY-MM-DD"`). El año solo se repite en la fecha final, igual que en
- * el ejemplo del brief de esta tarea.
+ * `"YYYY-MM-DD"`). El año va siempre en la fecha final y **solo** en la
+ * inicial cuando el periodo cruza el cambio de año: con los presets
+ * «Año» y «Plurianual» las dos fechas caen en años distintos, y omitir
+ * el de la inicial hacía leer un periodo de un año («frente a 17 sept –
+ * 17 sept 2025») como si fuera de un día.
  */
 export function previousPeriodLabel(previous: { since: string; until: string }): string {
-  const since = SHORT_DATE.format(new Date(`${previous.since}T00:00:00Z`));
-  const until = SHORT_DATE_WITH_YEAR.format(new Date(`${previous.until}T00:00:00Z`));
+  const sinceDate = new Date(`${previous.since}T00:00:00Z`);
+  const untilDate = new Date(`${previous.until}T00:00:00Z`);
+  const sameYear = sinceDate.getUTCFullYear() === untilDate.getUTCFullYear();
+  const since = (sameYear ? SHORT_DATE : SHORT_DATE_WITH_YEAR).format(sinceDate);
+  const until = SHORT_DATE_WITH_YEAR.format(untilDate);
   return `frente a ${since} – ${until}`;
 }
 

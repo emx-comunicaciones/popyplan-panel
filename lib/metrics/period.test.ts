@@ -83,17 +83,43 @@ describe("validatePeriod", () => {
     expect(validatePeriod("2026-02-01", "2026-01-01")).toBe("rango_invertido");
   });
 
-  it("rechaza un periodo de más de 1461 días", () => {
-    expect(validatePeriod("2021-01-01", "2025-01-01")).toBe("periodo_demasiado_largo");
+  it("acepta una diferencia de exactamente 1461 días (mismo límite que el backend)", () => {
+    // `panel/viewsets.py::_periodo` rechaza con `(until - since).days >
+    // PERIODO_MAX_DIAS`: la **diferencia** entre las dos fechas, no el
+    // número de días del periodo contando ambos extremos. Este par son
+    // 1461 días de diferencia (1462 días inclusive), y el backend lo
+    // acepta.
+    expect(validatePeriod("2021-01-01", "2025-01-01")).toBeNull();
   });
 
-  it("acepta un periodo de exactamente 1461 días", () => {
-    expect(validatePeriod("2021-01-02", "2025-01-01")).toBeNull();
+  it("rechaza una diferencia de 1462 días", () => {
+    expect(validatePeriod("2021-01-01", "2025-01-02")).toBe("periodo_demasiado_largo");
   });
 
   it("rechaza una fecha no parseable", () => {
     expect(validatePeriod("no-es-fecha", "2026-01-01")).toBe("fecha_invalida");
     expect(validatePeriod("2026-01-01", "31/01/2026")).toBe("fecha_invalida");
+  });
+
+  it("rechaza un día que no existe en ese mes (no lo rebalsa al mes siguiente)", () => {
+    // `new Date('2026-02-31T00:00:00Z')` no falla: da el 3 de marzo. Sin
+    // comprobar los componentes, el panel mandaría al backend una fecha
+    // distinta de la que se escribió.
+    expect(validatePeriod("2026-02-31", "2026-03-31")).toBe("fecha_invalida");
+    expect(validatePeriod("2025-02-29", "2025-03-31")).toBe("fecha_invalida");
+  });
+
+  it("rechaza un mes fuera de rango", () => {
+    expect(validatePeriod("2026-13-01", "2026-12-31")).toBe("fecha_invalida");
+    expect(validatePeriod("2026-01-01", "2026-00-10")).toBe("fecha_invalida");
+  });
+
+  it("rechaza el año 0000 (el backend tampoco lo parsea)", () => {
+    expect(validatePeriod("0000-01-01", "2026-01-01")).toBe("fecha_invalida");
+  });
+
+  it("acepta un 29 de febrero de un año bisiesto", () => {
+    expect(validatePeriod("2024-02-29", "2024-03-31")).toBeNull();
   });
 });
 
