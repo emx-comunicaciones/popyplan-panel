@@ -14,6 +14,30 @@ describe("relativeLuminance", () => {
   it("acepta hex en minúsculas", () => {
     expect(relativeLuminance("#ffffff")).toBeCloseTo(1, 5);
   });
+
+  it("acepta la forma corta #RGB", () => {
+    expect(relativeLuminance("#fff")).toBeCloseTo(1, 5);
+    expect(relativeLuminance("#000")).toBeCloseTo(0, 5);
+  });
+
+  it("acepta hex sin almohadilla", () => {
+    expect(relativeLuminance("ffffff")).toBeCloseTo(1, 5);
+    expect(relativeLuminance("fff")).toBeCloseTo(1, 5);
+  });
+
+  it("acepta #RRGGBBAA e ignora el canal alfa", () => {
+    expect(relativeLuminance("#FFFFFF80")).toBeCloseTo(1, 5);
+  });
+
+  it("devuelve null si el color no es un hex reconocible", () => {
+    // `primary_color` es un dato de la entidad, no de esta app: puede
+    // llegar vacío, con un nombre CSS o con un hex a medias.
+    expect(relativeLuminance("rojo")).toBeNull();
+    expect(relativeLuminance("#12345")).toBeNull();
+    expect(relativeLuminance("#GGGGGG")).toBeNull();
+    expect(relativeLuminance("")).toBeNull();
+    expect(relativeLuminance("rgb(255,0,0)")).toBeNull();
+  });
 });
 
 describe("contrastRatio", () => {
@@ -26,7 +50,10 @@ describe("contrastRatio", () => {
   });
 
   it("es simétrico: el orden de los dos colores no cambia el resultado", () => {
-    expect(contrastRatio("#1FB3AE", "#FFFFFF")).toBeCloseTo(contrastRatio("#FFFFFF", "#1FB3AE"), 5);
+    expect(contrastRatio("#1FB3AE", "#FFFFFF")).toBeCloseTo(
+      contrastRatio("#FFFFFF", "#1FB3AE") ?? 0,
+      5,
+    );
   });
 
   it("primary-700 (#0E7C78) sobre blanco ronda 5,0:1", () => {
@@ -35,6 +62,11 @@ describe("contrastRatio", () => {
 
   it("primary (#1FB3AE, decorativo) sobre blanco falla AA: ronda 2,59:1", () => {
     expect(contrastRatio("#1FB3AE", "#FFFFFF")).toBeCloseTo(2.59, 1);
+  });
+
+  it("devuelve null si alguno de los dos colores no es un hex reconocible", () => {
+    expect(contrastRatio("#FFFFFF", "no-es-color")).toBeNull();
+    expect(contrastRatio("no-es-color", "#FFFFFF")).toBeNull();
   });
 });
 
@@ -51,7 +83,13 @@ describe("readableOn", () => {
     const bg = "#1FB3AE";
     const chosen = readableOn(bg);
     const other = chosen === "#FFFFFF" ? "#1A2C33" : "#FFFFFF";
-    expect(contrastRatio(chosen, bg)).toBeGreaterThanOrEqual(contrastRatio(other, bg));
+    expect(contrastRatio(chosen ?? "#FFFFFF", bg)).toBeGreaterThanOrEqual(
+      contrastRatio(other, bg) ?? 0,
+    );
+  });
+
+  it("devuelve null si el fondo no es un hex reconocible (no calculable)", () => {
+    expect(readableOn("no-es-color")).toBeNull();
   });
 });
 
@@ -72,5 +110,9 @@ describe("meetsAA", () => {
     // holgadamente y otro que se sabe que falla, cubriendo ambos lados.
     expect(meetsAA("#FFFFFF", "#000000")).toBe(true);
     expect(meetsAA("#777777", "#888888")).toBe(false);
+  });
+
+  it("un color no calculable no cumple AA (no se puede demostrar que sí)", () => {
+    expect(meetsAA("#FFFFFF", "no-es-color")).toBe(false);
   });
 });

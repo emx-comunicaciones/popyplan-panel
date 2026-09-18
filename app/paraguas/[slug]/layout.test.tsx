@@ -56,6 +56,49 @@ describe("ParaguasLayout", () => {
     );
   });
 
+  it("con un color de marca en forma corta (#0a4) lo usa; con uno no calculable cae al tinte", async () => {
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({
+        org_memberships: [
+          buildOrgMembership({
+            role: "analista",
+            organization_slug: "diputacion-demo",
+            organization_name: "Diputación Demo",
+          }),
+        ],
+      }),
+      platformRole: buildPlatformRole(null),
+    });
+    serverFetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: buildOrganization({ primary_color: "#0a4" }),
+    });
+
+    const corto = await ParaguasLayout({
+      children: <p>contenido</p>,
+      params: Promise.resolve({ slug: "diputacion-demo" }),
+    });
+    const { container, unmount } = render(corto);
+    expect(container.querySelector("header")?.style.backgroundColor).toBe("rgb(0, 170, 68)");
+    unmount();
+
+    serverFetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: buildOrganization({ primary_color: "rojo corporativo" }),
+    });
+    const ilegible = await ParaguasLayout({
+      children: <p>contenido</p>,
+      params: Promise.resolve({ slug: "diputacion-demo" }),
+    });
+    const segundo = render(ilegible);
+    expect(segundo.container.querySelector("header")?.style.backgroundColor).toBe(
+      "var(--color-primary-100)",
+    );
+  });
+
   it("sin sesión redirige a /login", async () => {
     getServerSessionMock.mockResolvedValue(null);
 

@@ -56,9 +56,14 @@ export default async function EntidadLayout({
   // ilegible.
   const primaryColor = org?.primary_color || null;
   const headerText = primaryColor ? readableOn(primaryColor) : "#FFFFFF";
-  const headerIsLegible = !primaryColor || contrastRatio(headerText, primaryColor) >= 3;
+  // `readableOn`/`contrastRatio` devuelven `null` cuando el color de
+  // marca no es un hex calculable (vacío, un nombre CSS, un hex a
+  // medias): «no calculable» cae al mismo tinte que un par ilegible.
+  const headerContrast =
+    primaryColor && headerText ? contrastRatio(headerText, primaryColor) : null;
+  const headerIsLegible = !primaryColor || (headerContrast !== null && headerContrast >= 3);
   const headerBackground = headerIsLegible ? primaryColor || "var(--color-primary-700)" : "var(--color-primary-100)";
-  const headerForeground = headerIsLegible ? headerText : "var(--color-text-base)";
+  const headerForeground = headerIsLegible && headerText ? headerText : "var(--color-text-base)";
   const headerAccent = headerIsLegible ? undefined : (primaryColor ?? undefined);
 
   return (
