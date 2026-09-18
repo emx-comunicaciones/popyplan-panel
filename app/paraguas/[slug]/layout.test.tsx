@@ -94,9 +94,10 @@ describe("ParaguasLayout", () => {
       params: Promise.resolve({ slug: "diputacion-demo" }),
     });
     const segundo = render(ilegible);
-    expect(segundo.container.querySelector("header")?.style.backgroundColor).toBe(
-      "var(--color-primary-100)",
-    );
+    const cabecera = segundo.container.querySelector("header");
+    expect(cabecera?.style.backgroundColor).toBe("var(--color-primary-100)");
+    // La franja inferior no repite el color inválido.
+    expect(cabecera?.style.borderBottom).toBe("6px solid var(--color-primary)");
   });
 
   it("sin sesión redirige a /login", async () => {

@@ -54,7 +54,13 @@ export default async function ParaguasLayout({
   const headerIsLegible = !primaryColor || (headerContrast !== null && headerContrast >= 3);
   const headerBackground = headerIsLegible ? primaryColor || "var(--color-primary-700)" : "var(--color-primary-100)";
   const headerForeground = headerIsLegible && headerText ? headerText : "var(--color-text-base)";
-  const headerAccent = headerIsLegible ? undefined : (primaryColor ?? undefined);
+  // La franja solo tiene sentido con un color que el navegador vaya a
+  // pintar: si `primary_color` no es un hex calculable, una declaración
+  // inválida dejaría la cabecera sin borde inferior de todos modos, así
+  // que se usa el tinte decorativo de la marca.
+  const headerAccent = headerIsLegible
+    ? undefined
+    : (primaryColor && headerText ? primaryColor : "var(--color-primary)");
 
   return (
     <div className="flex min-h-screen flex-col bg-border-light">

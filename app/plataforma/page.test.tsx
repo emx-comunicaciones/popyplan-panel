@@ -10,7 +10,7 @@ const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
 import { ApiError } from "@/lib/api/client";
-import { render, screen, waitFor } from "@/test-utils/render";
+import { render, screen, waitFor, within } from "@/test-utils/render";
 import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
@@ -269,7 +269,10 @@ describe("PlataformaInicioPage", () => {
     await waitFor(() =>
       expect(screen.getByText("Solicitudes de ayuda pendientes")).toBeInTheDocument(),
     );
-    expect(screen.getAllByText("No disponible").length).toBeGreaterThan(0);
+    // Acotado a la tarjeta de ayuda: un «No disponible» de cualquier otra
+    // tarjeta no puede dar este test por bueno.
+    const tarjeta = screen.getByRole("link", { name: /Solicitudes de ayuda pendientes/ });
+    expect(within(tarjeta).getByText("No disponible")).toBeInTheDocument();
   });
 
   it("sin sesión redirige a /login", async () => {

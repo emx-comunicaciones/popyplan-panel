@@ -220,6 +220,9 @@ describe("EntidadLayout", () => {
     const header = container.querySelector("header");
     expect(header?.style.backgroundColor).toBe("var(--color-primary-100)");
     expect(header?.style.color).toBe("var(--color-text-base)");
+    // La franja inferior no repite el color inválido (sería una
+    // declaración que el navegador descarta): usa el tono decorativo.
+    expect(header?.style.borderBottom).toBe("6px solid var(--color-primary)");
   });
 
   it("si falla la ficha de la entidad muestra un ErrorState pero no bloquea la página", async () => {

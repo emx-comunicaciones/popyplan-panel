@@ -31,7 +31,12 @@ const FIXED_PRESETS = Object.keys(PRESET_LABELS) as FixedPreset[];
 const ERROR_MESSAGES: Record<PeriodValidationError, string> = {
   fecha_invalida: "Introduce fechas válidas.",
   rango_invertido: "La fecha de inicio debe ser anterior o igual a la de fin.",
-  periodo_demasiado_largo: "El periodo no puede superar 4 años (1461 días).",
+  // La regla es sobre la **diferencia** entre las dos fechas, igual que
+  // en el backend (`panel/viewsets.py::_periodo`, `(until - since).days >
+  // 1461`): decir «no puede superar 1461 días» hacía leer como rechazado
+  // un periodo de 1462 días contando ambos extremos, que sí se acepta.
+  periodo_demasiado_largo:
+    "El periodo no puede abarcar más de 1461 días entre las dos fechas (unos 4 años).",
 };
 
 /** Selector de periodo: mes/trimestre/año (presets) o rango personalizado. */

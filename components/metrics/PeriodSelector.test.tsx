@@ -101,6 +101,52 @@ describe("PeriodSelector", () => {
     expect(screen.getByLabelText("Desde")).toHaveValue("2026-03-15");
   });
 
+  it("un rango demasiado ancho avisa con la regla de la diferencia entre fechas", async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <PeriodSelector
+        value={{ since: "2026-01-01", until: "2026-01-31" }}
+        preset="mes"
+        onChange={onChange}
+      />,
+    );
+
+    // 1462 días de diferencia: uno más de los que acepta el backend.
+    await user.clear(screen.getByLabelText("Desde"));
+    await user.type(screen.getByLabelText("Desde"), "2021-01-01");
+    await user.clear(screen.getByLabelText("Hasta"));
+    await user.type(screen.getByLabelText("Hasta"), "2025-01-02");
+    await user.click(screen.getByRole("button", { name: "Personalizado" }));
+
+    expect(
+      screen.getByText(
+        "El periodo no puede abarcar más de 1461 días entre las dos fechas (unos 4 años).",
+      ),
+    ).toBeInTheDocument();
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("un rango de 1461 días de diferencia se acepta, como en el backend", async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <PeriodSelector
+        value={{ since: "2026-01-01", until: "2026-01-31" }}
+        preset="mes"
+        onChange={onChange}
+      />,
+    );
+
+    await user.clear(screen.getByLabelText("Desde"));
+    await user.type(screen.getByLabelText("Desde"), "2021-01-01");
+    await user.clear(screen.getByLabelText("Hasta"));
+    await user.type(screen.getByLabelText("Hasta"), "2025-01-01");
+    await user.click(screen.getByRole("button", { name: "Personalizado" }));
+
+    expect(onChange).toHaveBeenCalledWith({ since: "2021-01-01", until: "2025-01-01" }, "personalizado");
+  });
+
   it("al pulsar un preset avisa con el periodo y el preset elegidos", async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
