@@ -16,6 +16,7 @@ import EntidadLayout from "./layout";
 afterEach(() => {
   getServerSessionMock.mockReset();
   serverFetchMock.mockReset();
+  vi.unstubAllEnvs();
 });
 
 function session(role: string) {
@@ -125,12 +126,13 @@ describe("EntidadLayout", () => {
     ).rejects.toEqual(expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>));
   });
 
-  it("con logo pinta la imagen de la entidad", async () => {
+  it("con logo en un host permitido pinta la imagen de la entidad", async () => {
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "https://api.test");
     getServerSessionMock.mockResolvedValue(session("titular"));
     serverFetchMock.mockResolvedValue({
       ok: true,
       status: 200,
-      data: buildOrganization({ logo: "https://cdn.test/logo.png" }),
+      data: buildOrganization({ logo: "https://api.test/media/logo.png" }),
     });
 
     const element = await EntidadLayout({
@@ -142,6 +144,25 @@ describe("EntidadLayout", () => {
     // El logo es decorativo (`alt=""`), así que no entra en el árbol de
     // accesibilidad: se comprueba por el propio nodo `<img>`.
     expect(container.querySelector("img")).not.toBeNull();
+  });
+
+  it("con un logo en un host NO permitido no pinta imagen y el layout sigue en pie", async () => {
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "https://api.test");
+    getServerSessionMock.mockResolvedValue(session("titular"));
+    serverFetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: buildOrganization({ logo: "https://host-ajeno.example/logo.png" }),
+    });
+
+    const element = await EntidadLayout({
+      children: <p>contenido</p>,
+      params: Promise.resolve({ slug: "alfaville" }),
+    });
+    const { container } = render(element);
+
+    expect(container.querySelector("img")).toBeNull();
+    expect(screen.getByText("Asociación Vecinal Alfaville")).toBeInTheDocument();
   });
 
   it("con un color de marca claro (#FFFF00), la cabecera usa texto oscuro legible", async () => {

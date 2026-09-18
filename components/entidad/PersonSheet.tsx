@@ -11,6 +11,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { useAssignReferent } from "@/hooks/useAssignReferent";
 import { useOrgMembers } from "@/hooks/useOrgMembers";
 import { usePerson } from "@/hooks/usePerson";
+import { isAllowedImageSrc } from "@/lib/config/imagePatterns";
 import { presetPeriod } from "@/lib/metrics/period";
 
 export interface PersonSheetProps {
@@ -154,7 +155,11 @@ export function PersonSheet({ orgId, userId, canAssignReferent }: PersonSheetPro
     <div className="flex flex-col gap-4">
       <Card>
         <div className="flex items-center gap-4">
-          {data.photo ? (
+          {/* Mismo guard que las cabeceras de entidad/paraguas: una foto
+              servida desde un host que no está en `images.remotePatterns`
+              haría lanzar a `next/image` y tumbaría la ficha entera
+              (`lib/config/imagePatterns.ts::isAllowedImageSrc`). */}
+          {data.photo && isAllowedImageSrc(data.photo) ? (
             <Image
               src={data.photo}
               alt=""

@@ -89,3 +89,49 @@ export function imageRemotePatterns(): ImageRemotePattern[] {
 
   return [...byKey.values()];
 }
+
+/**
+ * ¿Puede `next/image` servir esta `src`?
+ *
+ * **Por qué hace falta**: `next/image` **lanza en render** cuando la `src`
+ * remota no casa con ningún `images.remotePatterns` («hostname is not
+ * configured under images»). Las tres imágenes remotas del panel vienen
+ * del backend (`org.logo` en las cabeceras de `/entidad/[slug]` y
+ * `/paraguas/[slug]`, `data.photo` en `PersonSheet.tsx`), así que un logo
+ * cargado con un dominio que el despliegue no declaró en
+ * `NEXT_PUBLIC_MEDIA_HOSTS` no dejaba sin logo la cabecera: tumbaba el
+ * layout entero de esa entidad a `app/error.tsx`. Con este guard, los
+ * tres sitios se comportan igual que si `logo`/`photo` fuera `null`.
+ *
+ * Usa **la misma lista** que `imageRemotePatterns()` (nunca una copia):
+ * protocolo y hostname exactos (el hostname sin distinguir mayúsculas,
+ * como el DNS) y el puerto solo si el patrón lo declara — un `port`
+ * ausente o vacío casa con cualquier puerto, igual que en Next.
+ *
+ * Una ruta relativa (`/media/...`) la sirve el propio panel y no pasa por
+ * `remotePatterns`: siempre permitida. Cualquier otra cosa (cadena vacía,
+ * texto que no es una URL, `data:`, `//host/...` sin protocolo) se
+ * rechaza sin lanzar.
+ */
+export function isAllowedImageSrc(src: string): boolean {
+  const value = src.trim();
+  if (value.length === 0) return false;
+  // Relativa del propio panel. `//host/...` no lo es (URL sin protocolo).
+  if (value.startsWith("/") && !value.startsWith("//")) return true;
+
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") return false;
+  const protocol = url.protocol === "https:" ? "https" : "http";
+
+  return imageRemotePatterns().some(
+    (pattern) =>
+      pattern.protocol === protocol &&
+      pattern.hostname.toLowerCase() === url.hostname.toLowerCase() &&
+      (!pattern.port || pattern.port === url.port),
+  );
+}

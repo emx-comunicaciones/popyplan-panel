@@ -46,6 +46,7 @@ afterEach(() => {
   usePersonMock.mockReset();
   useAssignReferentMock.mockReset();
   useOrgMembersMock.mockReset();
+  vi.unstubAllEnvs();
 });
 
 async function renderPage(role = "titular", slug = "alfaville", userId = "42") {
@@ -224,5 +225,34 @@ describe("EntidadPersonaPage", () => {
 
     expect(screen.getByText("Sin acceso")).toBeInTheDocument();
     expect(screen.queryByText("Ana")).not.toBeInTheDocument();
+  });
+
+  it("una foto en un host permitido se pinta", async () => {
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "https://api.test");
+    usePersonMock.mockReturnValue({
+      data: { ...PERSON_DETAIL, photo: "https://api.test/media/ana.png" },
+      isError: false,
+      error: null,
+    });
+    useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
+
+    const { container } = await renderPage();
+
+    expect(container.querySelector("img")).not.toBeNull();
+  });
+
+  it("una foto en un host NO permitido no se pinta y la ficha sigue en pie", async () => {
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "https://api.test");
+    usePersonMock.mockReturnValue({
+      data: { ...PERSON_DETAIL, photo: "https://host-ajeno.example/ana.png" },
+      isError: false,
+      error: null,
+    });
+    useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
+
+    const { container } = await renderPage();
+
+    expect(container.querySelector("img")).toBeNull();
+    expect(screen.getByText("Ana")).toBeInTheDocument();
   });
 });

@@ -16,7 +16,24 @@ import ParaguasLayout from "./layout";
 afterEach(() => {
   getServerSessionMock.mockReset();
   serverFetchMock.mockReset();
+  vi.unstubAllEnvs();
 });
+
+function session(role: string) {
+  return {
+    token: "t",
+    me: buildMe({
+      org_memberships: [
+        buildOrgMembership({
+          role,
+          organization_slug: "diputacion-demo",
+          organization_name: "Diputación Demo",
+        }),
+      ],
+    }),
+    platformRole: buildPlatformRole(null),
+  };
+}
 
 describe("ParaguasLayout", () => {
   it("pinta la cabecera con el nombre de la entidad paraguas", async () => {
@@ -179,6 +196,43 @@ describe("ParaguasLayout", () => {
     render(element);
 
     expect(screen.getByRole("link", { name: "Inicio" })).toBeInTheDocument();
+    expect(screen.getByText("contenido")).toBeInTheDocument();
+  });
+
+  it("con logo en un host permitido pinta la imagen del paraguas", async () => {
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "https://api.test");
+    getServerSessionMock.mockResolvedValue(session("titular"));
+    serverFetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: buildOrganization({ logo: "https://api.test/media/logo.png" }),
+    });
+
+    const element = await ParaguasLayout({
+      children: <p>contenido</p>,
+      params: Promise.resolve({ slug: "diputacion-demo" }),
+    });
+    const { container } = render(element);
+
+    expect(container.querySelector("img")).not.toBeNull();
+  });
+
+  it("con un logo en un host NO permitido no pinta imagen y el layout sigue en pie", async () => {
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "https://api.test");
+    getServerSessionMock.mockResolvedValue(session("titular"));
+    serverFetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: buildOrganization({ logo: "https://host-ajeno.example/logo.png" }),
+    });
+
+    const element = await ParaguasLayout({
+      children: <p>contenido</p>,
+      params: Promise.resolve({ slug: "diputacion-demo" }),
+    });
+    const { container } = render(element);
+
+    expect(container.querySelector("img")).toBeNull();
     expect(screen.getByText("contenido")).toBeInTheDocument();
   });
 });

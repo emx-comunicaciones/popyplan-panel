@@ -12,6 +12,7 @@ import { ENTIDAD_MENU_LABELS, entidadMenuFor } from "@/lib/auth/entidadMenu";
 import { getServerOrganization } from "@/lib/auth/organization";
 import { isPlatformRole } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
+import { isAllowedImageSrc } from "@/lib/config/imagePatterns";
 
 export default async function EntidadLayout({
   children,
@@ -84,7 +85,12 @@ export default async function EntidadLayout({
         }}
       >
         <div className="flex items-center gap-3">
-          {org?.logo ? (
+          {/* `next/image` lanza en render si el host no está en
+              `images.remotePatterns`: sin este guard, un logo servido
+              desde un dominio que el despliegue no declaró tumbaba el
+              layout entero a `app/error.tsx` (ver
+              `lib/config/imagePatterns.ts::isAllowedImageSrc`). */}
+          {org?.logo && isAllowedImageSrc(org.logo) ? (
             <Image
               src={org.logo}
               alt=""
