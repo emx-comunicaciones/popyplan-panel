@@ -8,13 +8,14 @@
  * exige, esto es solo para no mostrar un botón que va a dar 403).
  */
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Table } from "@/components/ui/Table";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useOrganizations } from "@/hooks/useOrganizations";
 import type { Organization } from "@/lib/api/types";
 
@@ -30,11 +31,28 @@ export function EntidadesTable({ canCreate }: EntidadesTableProps) {
   const [page, setPage] = useState(1);
   const [showCreate, setShowCreate] = useState(false);
 
+  /**
+   * La búsqueda se aplica con retardo (`useDebouncedValue`, 300 ms): el
+   * `<input>` es inmediato, pero el listado solo se vuelve a pedir
+   * cuando se para de escribir — si no, «ana» disparaba tres
+   * peticiones. «Verificación» es un `<select>`, se aplica tal cual.
+   */
+  const debouncedSearch = useDebouncedValue(search);
+
   const organizations = useOrganizations({
     verified: verified === "" ? undefined : verified === "true",
-    search: search || undefined,
+    search: debouncedSearch || undefined,
     page,
   });
+
+  /**
+   * La página vuelve a 1 cuando la búsqueda **se aplica** (cuando cambia
+   * el valor con retardo), no con cada tecla; «Verificación», que no
+   * lleva retardo, la devuelve a 1 en su propio `onChange`.
+   */
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -66,10 +84,7 @@ export function EntidadesTable({ canCreate }: EntidadesTableProps) {
               id="entidades-search"
               type="search"
               value={search}
-              onChange={(event) => {
-                setSearch(event.target.value);
-                setPage(1);
-              }}
+              onChange={(event) => setSearch(event.target.value)}
               className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             />
           </div>

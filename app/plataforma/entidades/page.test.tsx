@@ -10,7 +10,7 @@ const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
 import { ApiError } from "@/lib/api/client";
-import { render, screen, waitFor } from "@/test-utils/render";
+import { act, fireEvent, render, screen, waitFor } from "@/test-utils/render";
 import userEvent from "@testing-library/user-event";
 import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
@@ -21,6 +21,7 @@ import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import PlataformaEntidadesPage from "./page";
 
 afterEach(() => {
+  vi.useRealTimers();
   getServerSessionMock.mockReset();
   apiFetchMock.mockReset();
 });
@@ -113,6 +114,78 @@ describe("PlataformaEntidadesPage", () => {
     expect(
       screen.queryByText("Entidad «Asociación Bidasoa» creada, sin verificar."),
     ).not.toBeInTheDocument();
+  });
+
+  /**
+   * El buscador va con retardo (`hooks/useDebouncedValue.ts`): estos dos
+   * tests usan `fireEvent.change` (una tecla por llamada) y no
+   * `userEvent`, que se queda colgado con `vi.useFakeTimers()` (el
+   * `asyncWrapper` de Testing Library solo adelanta los temporizadores
+   * falsos de *jest*).
+   */
+  it("el buscador va con retardo: teclear «ana» solo pide el listado una vez, con el valor final", async () => {
+    apiFetchMock.mockResolvedValue({ count: 0, next: null, previous: null, results: [] });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+    vi.useFakeTimers();
+
+    const element = await PlataformaEntidadesPage();
+    render(element);
+
+    const input = screen.getByLabelText("Buscar por nombre");
+    for (const value of ["a", "an", "ana"]) {
+      fireEvent.change(input, { target: { value } });
+    }
+
+    // El input es inmediato, pero todavía no se ha pedido ninguna búsqueda.
+    expect(input).toHaveValue("ana");
+    expect(apiFetchMock.mock.calls.some(([path]) => String(path).includes("search="))).toBe(false);
+
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+
+    const searched = apiFetchMock.mock.calls
+      .map(([path]) => String(path))
+      .filter((path) => path.includes("search="));
+    expect(searched).toEqual(["/api/organizations/?search=ana"]);
+  });
+
+  it("la página vuelve a 1 cuando se aplica la búsqueda, no con cada tecla", async () => {
+    apiFetchMock.mockResolvedValue({
+      count: 40,
+      next: "http://api.test/?page=2",
+      previous: null,
+      results: [buildOrganization({ id: 9, name: "Ayuntamiento de Irun" })],
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const element = await PlataformaEntidadesPage();
+    render(element);
+    // La primera carga se espera con temporizadores reales (`waitFor`);
+    // los falsos entran después, para controlar solo el retardo.
+    await waitFor(() => expect(screen.getByText("Ayuntamiento de Irun")).toBeInTheDocument());
+    vi.useFakeTimers();
+
+    fireEvent.click(screen.getByRole("button", { name: "Siguiente" }));
+    expect(apiFetchMock.mock.calls.at(-1)?.[0]).toBe("/api/organizations/?page=2");
+
+    fireEvent.change(screen.getByLabelText("Buscar por nombre"), { target: { value: "ana" } });
+    // La tecla por sí sola no cambia el listado: sigue en la página 2.
+    expect(apiFetchMock.mock.calls.at(-1)?.[0]).toBe("/api/organizations/?page=2");
+
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+
+    expect(apiFetchMock.mock.calls.at(-1)?.[0]).toBe("/api/organizations/?search=ana");
   });
 
   it("moderator ve «Sin acceso» (Entidades no está en su menú)", async () => {

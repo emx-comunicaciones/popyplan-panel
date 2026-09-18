@@ -15,6 +15,7 @@ import { Card } from "@/components/ui/Card";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useGrantPlatformRole, usePlatformRoles, useRevokePlatformRole } from "@/hooks/usePlatformRoles";
 import { useUserSearch } from "@/hooks/useUserSearch";
 import type { PlatformRoleName } from "@/lib/api/types";
@@ -32,7 +33,14 @@ function GrantRoleForm() {
   const [search, setSearch] = useState("");
   const [userId, setUserId] = useState("");
   const [role, setRole] = useState<PlatformRoleName>("moderator");
-  const results = useUserSearch(search);
+  /**
+   * El `<input>` es inmediato, pero la búsqueda de cuentas se lanza con
+   * retardo (`useDebouncedValue`, 300 ms): `useUserSearch` ya se
+   * contiene hasta los dos caracteres, y aun así teclear «ana» pedía
+   * «an» y «ana».
+   */
+  const debouncedSearch = useDebouncedValue(search);
+  const results = useUserSearch(debouncedSearch);
 
   return (
     <Card title="Conceder rol">
