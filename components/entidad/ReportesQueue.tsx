@@ -83,7 +83,9 @@ export function ReportesQueue({ orgId, slug }: ReportesQueueProps) {
                   <th scope="col" className="px-3 py-2 font-semibold">Objetivo</th>
                   <th scope="col" className="px-3 py-2 font-semibold">Estado</th>
                   <th scope="col" className="px-3 py-2 font-semibold">Fecha</th>
-                  <th scope="col" className="px-3 py-2 font-semibold" />
+                  <th scope="col" className="px-3 py-2 font-semibold">
+                    <span className="sr-only">Acciones</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>

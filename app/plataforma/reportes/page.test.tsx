@@ -9,6 +9,7 @@ vi.mock("@/lib/api/client", async () => {
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
+import { axe } from "@/test-utils/axe";
 import { render, screen, waitFor } from "@/test-utils/render";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
@@ -23,6 +24,21 @@ afterEach(() => {
 });
 
 describe("PlataformaReportesPage", () => {
+  it("no tiene violaciones de accesibilidad (axe)", async () => {
+    apiFetchMock.mockResolvedValueOnce([buildReportRow({ organization: 7 })]);
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("moderator"),
+    });
+
+    const element = await PlataformaReportesPage();
+    const { container } = render(element);
+    await waitFor(() => expect(screen.getByRole("table")).toBeInTheDocument());
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("moderator ve la cola global con la columna de entidad y el escalado", async () => {
     // Array plano de verdad (no `{count, ...}`, docs/SEGURIDAD_Y_MODERACION.md §4).
     apiFetchMock.mockResolvedValueOnce([

@@ -113,7 +113,7 @@ export function ReportesQueuePlataforma() {
               { key: "created_at", header: "Fecha", render: (report) => formatDate(report.created_at) },
               {
                 key: "detail",
-                header: "",
+                header: <span className="sr-only">Acciones</span>,
                 render: (report) => (
                   <Link href={`/plataforma/reportes/${report.id}`} className="font-medium text-primary-700 underline">
                     Ver detalle

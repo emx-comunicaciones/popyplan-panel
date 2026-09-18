@@ -2,7 +2,13 @@ import type { ReactNode } from "react";
 
 export interface TableColumn<Row> {
   key: string;
-  header: string;
+  /**
+   * Cabecera de la columna. `ReactNode` (no `string`) para poder pasar
+   * un `<span className="sr-only">` en las columnas que no enseñan
+   * título —una de acciones o de enlace al detalle—: una `<th>` vacía
+   * incumple la regla `empty-table-header` de `axe-core`.
+   */
+  header: ReactNode;
   render: (row: Row) => ReactNode;
 }
 

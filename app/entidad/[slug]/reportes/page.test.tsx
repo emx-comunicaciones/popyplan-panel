@@ -1,6 +1,7 @@
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { axe } from "@/test-utils/axe";
 import { render, screen } from "@/test-utils/render";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
@@ -38,10 +39,18 @@ async function renderPage(role = "titular", slug = "alfaville") {
   });
 
   const element = await EntidadReportesPage({ params: Promise.resolve({ slug }) });
-  render(element);
+  return render(element);
 }
 
 describe("EntidadReportesPage", () => {
+  it("no tiene violaciones de accesibilidad (axe)", async () => {
+    useReportsQueueMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+
+    const { container } = await renderPage();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("lista los reportes con enlace al detalle", async () => {
     useReportsQueueMock.mockReturnValue({ data: pageData(), isError: false, error: null });
 
