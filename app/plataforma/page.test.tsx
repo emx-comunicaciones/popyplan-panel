@@ -151,6 +151,7 @@ describe("PlataformaInicioPage", () => {
 
     await waitFor(() => expect(screen.getByText("5")).toBeInTheDocument());
     const requested = apiFetchMock.mock.calls.map((call) => String(call[0]));
+    expect(requested.some((path) => path.startsWith("/api/admin/dashboard-stats/"))).toBe(false);
     expect(requested.some((path) => path.startsWith("/api/safety/reports/queue/"))).toBe(false);
     expect(requested.some((path) => path.startsWith("/api/safety/help-requests/"))).toBe(false);
     expect(requested.some((path) => path.startsWith("/api/plataforma/billing/"))).toBe(false);

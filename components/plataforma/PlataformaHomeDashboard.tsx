@@ -57,9 +57,12 @@ function KpiCard({ label, value, href }: { label: string; value: string; href?: 
 }
 
 /**
- * `GET /api/admin/dashboard-stats/` pide `is_staff`, que hoy solo tiene
- * `superadmin`: el hook traduce ese 403 a `null` y las dos tarjetas
- * desaparecen (no es un error, ese rol simplemente no las tiene).
+ * `GET /api/admin/dashboard-stats/` pide `IsAdminUser` (`is_staff`), que
+ * hoy solo tiene `superadmin` (CLAUDE.md, «Área de plataforma: Inicio»).
+ * No hay sección de menú que corresponda a esta ruta, así que el montaje
+ * se condiciona directamente a ese rol: los demás ni la piden. El hook
+ * sigue traduciendo un 403 a `null` (las dos tarjetas desaparecen) por si
+ * un `superadmin` no fuera `is_staff` en una instalación concreta.
  */
 function EstadisticasCards() {
   const stats = useDashboardStats();
@@ -186,7 +189,7 @@ export function PlataformaHomeDashboard({ role }: PlataformaHomeDashboardProps) 
 
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-      <EstadisticasCards />
+      {role === "superadmin" ? <EstadisticasCards /> : null}
       {menu.includes("reportes") ? <ReportesPendientesCard /> : null}
       {menu.includes("ayuda") ? <AyudaPendienteCard /> : null}
       {menu.includes("entidades") ? <EntidadesCards /> : null}

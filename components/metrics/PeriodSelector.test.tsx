@@ -1,10 +1,42 @@
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 
-import { presetPeriod } from "@/lib/metrics/period";
+import { presetPeriod, type Period, type PeriodPreset } from "@/lib/metrics/period";
 import { render, screen } from "@/test-utils/render";
 
-import { PeriodSelector } from "./PeriodSelector";
+import { PeriodSelector, type PeriodSelectorProps } from "./PeriodSelector";
+
+/**
+ * El `rerender` de Testing Library con el `render` propio del repo
+ * desmonta el componente (el envoltorio del proveedor deja de estar en la
+ * raíz), y un remontaje reinicia el estado, que es justo lo que estos
+ * tests no deben ejercitar. Este arnés mantiene el selector montado y
+ * cambia el periodo desde el padre, como hace un dashboard.
+ */
+function Harness({ onChange = () => {} }: { onChange?: PeriodSelectorProps["onChange"] }) {
+  const [period, setPeriod] = useState<Period>({ since: "2026-01-01", until: "2026-01-31" });
+  const [preset, setPreset] = useState<PeriodPreset>("mes");
+  const [, forceRender] = useState(0);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => {
+          setPeriod({ since: "2023-01-01", until: "2026-09-18" });
+          setPreset("plurianual");
+        }}
+      >
+        Periodo de fuera
+      </button>
+      <button type="button" onClick={() => forceRender((n) => n + 1)}>
+        Repintar sin cambiar el periodo
+      </button>
+      <PeriodSelector value={period} preset={preset} onChange={onChange} />
+    </>
+  );
+}
 
 describe("PeriodSelector", () => {
   it("el preset activo se anuncia con aria-pressed, el resto no", () => {
@@ -30,6 +62,43 @@ describe("PeriodSelector", () => {
 
     expect(screen.getByRole("button", { name: "Personalizado" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "Este mes" })).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("si el periodo cambia desde fuera, los campos de fecha se ponen al día", async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+
+    expect(screen.getByLabelText("Desde")).toHaveValue("2026-01-01");
+
+    await user.click(screen.getByRole("button", { name: "Periodo de fuera" }));
+
+    expect(screen.getByLabelText("Desde")).toHaveValue("2023-01-01");
+    expect(screen.getByLabelText("Hasta")).toHaveValue("2026-09-18");
+  });
+
+  it("«Personalizado» manda el rango puesto al día, no el que había al montarse", async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    render(<Harness onChange={onChange} />);
+
+    await user.click(screen.getByRole("button", { name: "Periodo de fuera" }));
+    await user.click(screen.getByRole("button", { name: "Personalizado" }));
+
+    expect(onChange).toHaveBeenCalledWith({ since: "2023-01-01", until: "2026-09-18" }, "personalizado");
+  });
+
+  it("no pisa lo que se está tecleando cuando el periodo de fuera no ha cambiado", async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+
+    await user.clear(screen.getByLabelText("Desde"));
+    await user.type(screen.getByLabelText("Desde"), "2026-03-15");
+
+    // Un re-render del padre con las mismas fechas (otro objeto) no puede
+    // borrar lo tecleado.
+    await user.click(screen.getByRole("button", { name: "Repintar sin cambiar el periodo" }));
+
+    expect(screen.getByLabelText("Desde")).toHaveValue("2026-03-15");
   });
 
   it("al pulsar un preset avisa con el periodo y el preset elegidos", async () => {

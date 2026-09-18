@@ -45,6 +45,7 @@ import {
 } from "@/hooks/useBilling";
 import { useOrganizations } from "@/hooks/useOrganizations";
 import type { Contract, ContractStatus, Invoice, InvoiceStatus, PricingTier } from "@/lib/api/types";
+import { tierRangeFromFields, validateTierRange } from "@/lib/billing/tierRange";
 import { eurosToCents, formatEuros } from "@/lib/programs/money";
 
 import { ContratoForm } from "./ContratoForm";
@@ -319,22 +320,18 @@ function TierForm({ editing, onDone }: TierFormProps) {
     event.preventDefault();
     if (!canSubmit) return;
 
-    const min = Number(minPopulation) || 0;
-    const max = maxPopulation.trim() === "" ? null : Number(maxPopulation);
-    if (min < 0) {
-      setRangeError("La población mínima no puede ser negativa.");
-      return;
-    }
-    if (max !== null && max < min) {
-      setRangeError("La población máxima no puede ser menor que la mínima.");
+    const range = tierRangeFromFields(minPopulation, maxPopulation);
+    const invalidRange = validateTierRange(range);
+    if (invalidRange) {
+      setRangeError(invalidRange);
       return;
     }
     setRangeError(null);
 
     const fields = {
       name,
-      min_population: min,
-      max_population: max,
+      min_population: range.min,
+      max_population: range.max,
       annual_price_cents: priceCents,
       is_active: isActive,
     };

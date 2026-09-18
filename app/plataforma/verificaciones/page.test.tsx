@@ -90,6 +90,31 @@ describe("PlataformaVerificacionesPage", () => {
     expect(screen.getByRole("button", { name: "Anterior" })).toBeEnabled();
   });
 
+  it("si la última página se queda vacía (ya revisada), vuelve a la primera", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path.endsWith("?page=2")) {
+        return { count: 1, next: null, previous: "http://api/anterior", results: [] };
+      }
+      return { count: 1, next: "http://api/siguiente", previous: null, results: [REVIEW] };
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("verifier"),
+    });
+
+    const user = userEvent.setup();
+    const element = await PlataformaVerificacionesPage();
+    render(element);
+
+    await waitFor(() => expect(screen.getByText(/Vuelvo a intentarlo/)).toBeInTheDocument());
+    await user.click(screen.getByRole("button", { name: "Siguiente" }));
+
+    // No se queda en una página 2 vacía sin manera de volver.
+    await waitFor(() => expect(screen.getByText(/Vuelvo a intentarlo/)).toBeInTheDocument());
+    expect(screen.queryByText("Sin revisiones pendientes")).not.toBeInTheDocument();
+  });
+
   it("moderator ve «Sin acceso»", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",

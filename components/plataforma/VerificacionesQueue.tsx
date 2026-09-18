@@ -8,7 +8,7 @@
  * Paginada: «Anterior»/«Siguiente» y el recuento total, mismo patrón que
  * `EntidadesTable.tsx` (antes solo se veía la primera página).
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -88,6 +88,15 @@ function ReviewCard({ review }: { review: VerificationReview }) {
 export function VerificacionesQueue() {
   const [page, setPage] = useState(1);
   const reviews = useVerificationReviewsQueue({ page });
+
+  // La cola se vacía sola según se van resolviendo revisiones: si la
+  // página en la que estamos se queda sin filas, volver a la primera en
+  // vez de dejar un «Sin revisiones pendientes» del que no se sale
+  // (mismo patrón que `PersonasTable` cuando su página deja de existir).
+  const emptyPage = reviews.data?.results.length === 0;
+  useEffect(() => {
+    if (page > 1 && emptyPage) setPage(1);
+  }, [page, emptyPage]);
 
   if (reviews.isError) {
     if (reviews.error.kind === "sin_acceso") {

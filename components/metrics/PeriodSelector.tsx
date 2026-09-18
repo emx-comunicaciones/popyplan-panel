@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import {
@@ -41,6 +41,19 @@ export function PeriodSelector({ value, preset, onChange }: PeriodSelectorProps)
   const [error, setError] = useState<PeriodValidationError | null>(null);
   const sinceId = useId();
   const untilId = useId();
+
+  // El periodo puede cambiar desde fuera (un dashboard que también lo
+  // controla, `ExportPanel` con la prop `period`): sin esto, los dos
+  // campos de fecha se quedaban con el rango con el que se montó el
+  // selector y pulsar «Personalizado» devolvía el dashboard a ese rango
+  // viejo. Las dependencias son las dos cadenas, no el objeto `value`:
+  // un re-render del padre con las mismas fechas no vuelve a entrar y no
+  // pisa lo que se esté tecleando.
+  useEffect(() => {
+    setCustomSince(value.since);
+    setCustomUntil(value.until);
+    setError(null);
+  }, [value.since, value.until]);
 
   function selectPreset(next: FixedPreset) {
     setError(null);

@@ -196,6 +196,40 @@ describe("PlataformaMetricasPage", () => {
     });
   });
 
+  it("el «Personalizado» del panel de exportación no devuelve el dashboard al periodo viejo", async () => {
+    const mutate = vi.fn();
+    useExportMock.mockReturnValue({ mutate, isPending: false, error: null });
+    mockMetricsByGroup({
+      base: buildMetricsResponse(),
+      place: buildMetricsResponse({ by_place: buildByPlaceRows() }),
+      organization: buildMetricsResponse({ by_place: [] }),
+      month: buildMetricsResponse({ series: [] }),
+      year: buildMetricsResponse({ series: [] }),
+    });
+    mockCompare();
+    const user = userEvent.setup();
+
+    await renderPage();
+
+    await user.click(screen.getAllByRole("button", { name: "Año" })[0]);
+
+    // Los campos de fecha del panel de exportación (el segundo selector)
+    // reflejan el periodo nuevo, no el mes con el que se montó.
+    const anio = presetPeriod("anio");
+    expect(screen.getAllByLabelText("Desde")[1]).toHaveValue(anio.since);
+    expect(screen.getAllByLabelText("Hasta")[1]).toHaveValue(anio.until);
+
+    // Y pulsar «Personalizado» ahí abajo confirma ese mismo rango en vez
+    // de revertir el dashboard al mes en curso.
+    await user.click(screen.getAllByRole("button", { name: "Personalizado" })[1]);
+    await user.click(screen.getByRole("button", { name: "Exportar CSV" }));
+
+    expect(mutate).toHaveBeenCalledWith(expect.objectContaining({ period: anio }));
+    screen.getAllByRole("button", { name: "Personalizado" }).forEach((button) => {
+      expect(button).toHaveAttribute("aria-pressed", "true");
+    });
+  });
+
   it("estado vacío: sin filas en el desglose, pinta el aviso en vez de una tabla vacía", async () => {
     useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
     mockMetricsByGroup({

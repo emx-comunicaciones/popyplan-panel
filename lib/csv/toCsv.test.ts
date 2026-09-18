@@ -27,8 +27,13 @@ describe("csvCell", () => {
     expect(csvCell("\rSUM(A1)")).toBe("\"'\rSUM(A1)\"");
   });
 
-  it("un número negativo también se neutraliza (llega como texto que empieza por «-»)", () => {
-    expect(csvCell(-2)).toBe("\"'-2\"");
+  it("un número no se neutraliza: la inyección solo llega por texto", () => {
+    expect(csvCell(-2)).toBe('"-2"');
+    expect(csvCell(-19.99)).toBe('"-19.99"');
+  });
+
+  it("la misma cifra escrita como texto sí se neutraliza", () => {
+    expect(csvCell("-2")).toBe("\"'-2\"");
   });
 
   it("no toca una celda normal", () => {

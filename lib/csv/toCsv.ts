@@ -29,10 +29,19 @@ const BOM = "﻿";
 
 export type CsvValue = string | number | boolean | null | undefined;
 
-/** Una celda ya escapada, lista para concatenar (comillas incluidas). */
+/**
+ * Una celda ya escapada, lista para concatenar (comillas incluidas). El
+ * apóstrofo solo se antepone a cadenas: un `number` no puede traer una
+ * fórmula, y prefijarlo estropearía cualquier cifra negativa (`-2` →
+ * `'-2`, que ya no es un número para la hoja de cálculo). La misma cifra
+ * escrita como texto sí pasa por la comprobación, porque entonces viene
+ * de un campo libre.
+ */
 export function csvCell(value: CsvValue): string {
   const text = value == null ? "" : String(value);
-  const safe = FORMULA_PREFIXES.some((prefix) => text.startsWith(prefix)) ? `'${text}` : text;
+  const risky =
+    typeof value === "string" && FORMULA_PREFIXES.some((prefix) => text.startsWith(prefix));
+  const safe = risky ? `'${text}` : text;
   return `"${safe.replace(/"/g, '""')}"`;
 }
 
