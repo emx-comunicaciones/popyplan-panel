@@ -19,6 +19,8 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { Table } from "@/components/ui/Table";
 import { useAuditLog, type AuditLogFilters } from "@/hooks/useAuditLog";
 import type { AuditLogEntry } from "@/lib/api/types";
+import { csvBlob } from "@/lib/csv/toCsv";
+import { triggerDownload } from "@/lib/download/triggerDownload";
 
 function formatDateTime(iso: string): string {
   return new Date(iso).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
@@ -30,10 +32,18 @@ function metadataText(entry: AuditLogEntry): string {
   return entries.map(([key, value]) => `${key}=${JSON.stringify(value)}`).join(", ");
 }
 
-function toCsv(rows: AuditLogEntry[]): string {
-  const header = ["id", "actor", "action", "target_type", "target_id", "metadata", "created_at"];
-  const lines = rows.map((row) =>
-    [
+const CSV_HEADER = ["id", "actor", "action", "target_type", "target_id", "metadata", "created_at"];
+
+/**
+ * El CSV lo arma `lib/csv/toCsv.ts`, que entrecomilla toda celda y
+ * neutraliza las que una hoja de cálculo leería como fórmula (`=`, `+`,
+ * `-`, `@`, tabulador, retorno de carro): `action`, `target_type` y
+ * `metadata` los escribe quien genera la acción auditada, no el panel.
+ */
+function downloadCsv(rows: AuditLogEntry[]): void {
+  const blob = csvBlob([
+    CSV_HEADER,
+    ...rows.map((row) => [
       row.id,
       `${row.actor.public_name} (#${row.actor.id})`,
       row.action,
@@ -41,22 +51,9 @@ function toCsv(rows: AuditLogEntry[]): string {
       row.target_id,
       metadataText(row),
       row.created_at,
-    ]
-      .map((value) => `"${String(value).replace(/"/g, '""')}"`)
-      .join(";"),
-  );
-  return [header.join(";"), ...lines].join("\n");
-}
-
-function downloadCsv(rows: AuditLogEntry[]): void {
-  const csv = toCsv(rows);
-  const blob = new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "auditoria.csv";
-  link.click();
-  URL.revokeObjectURL(url);
+    ]),
+  ]);
+  triggerDownload(blob, "auditoria.csv");
 }
 
 export function AuditoriaPanel() {

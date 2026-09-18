@@ -5,6 +5,8 @@
  * `docs/SEGURIDAD_Y_MODERACION.md` §7): `GET
  * /api/users/verification/reviews/queue/` (`pending`, paginada),
  * `verifier`/`superadmin`. Aprobar concede el nivel; rechazar no.
+ * Paginada: «Anterior»/«Siguiente» y el recuento total, mismo patrón que
+ * `EntidadesTable.tsx` (antes solo se veía la primera página).
  */
 import { useState } from "react";
 
@@ -84,7 +86,8 @@ function ReviewCard({ review }: { review: VerificationReview }) {
 }
 
 export function VerificacionesQueue() {
-  const reviews = useVerificationReviewsQueue();
+  const [page, setPage] = useState(1);
+  const reviews = useVerificationReviewsQueue({ page });
 
   if (reviews.isError) {
     if (reviews.error.kind === "sin_acceso") {
@@ -100,10 +103,34 @@ export function VerificacionesQueue() {
   }
 
   return (
-    <ul className="flex flex-col gap-3">
-      {reviews.data.results.map((review) => (
-        <ReviewCard key={review.id} review={review} />
-      ))}
-    </ul>
+    <div className="flex flex-col gap-4">
+      <ul className="flex flex-col gap-3">
+        {reviews.data.results.map((review) => (
+          <ReviewCard key={review.id} review={review} />
+        ))}
+      </ul>
+
+      {/* Misma paginación que `EntidadesTable`: la cola está paginada de
+          verdad y sin estos controles solo se veía la primera página. */}
+      <div className="flex items-center justify-between">
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={!reviews.data.previous}
+          onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+        >
+          Anterior
+        </Button>
+        <span className="text-sm text-text-secondary">{reviews.data.count} revisiones</span>
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={!reviews.data.next}
+          onClick={() => setPage((prev) => prev + 1)}
+        >
+          Siguiente
+        </Button>
+      </div>
+    </div>
   );
 }

@@ -9,6 +9,11 @@ vi.mock("@/lib/api/client", async () => {
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
+const triggerDownloadMock = vi.hoisted(() => vi.fn());
+vi.mock("@/lib/download/triggerDownload", () => ({ triggerDownload: triggerDownloadMock }));
+
+import userEvent from "@testing-library/user-event";
+
 import { render, screen, waitFor } from "@/test-utils/render";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
@@ -29,6 +34,7 @@ const ENTRY = {
 afterEach(() => {
   getServerSessionMock.mockReset();
   apiFetchMock.mockReset();
+  triggerDownloadMock.mockReset();
 });
 
 describe("PlataformaAuditoriaPage", () => {
@@ -47,6 +53,42 @@ describe("PlataformaAuditoriaPage", () => {
     await waitFor(() => expect(screen.getByText("organization.verified")).toBeInTheDocument());
     expect(screen.getByText(/since="2026-01-01"/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Exportar CSV de esta página" })).toBeInTheDocument();
+  });
+
+  it("la exportación CSV neutraliza las celdas que parecen una fórmula", async () => {
+    apiFetchMock.mockResolvedValueOnce({
+      count: 1,
+      next: null,
+      previous: null,
+      results: [
+        {
+          ...ENTRY,
+          action: "=HYPERLINK(\"http://malo\";\"pincha\")",
+          metadata: { nota: "texto; con separador" },
+        },
+      ],
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const user = userEvent.setup();
+    const element = await PlataformaAuditoriaPage();
+    render(element);
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Exportar CSV de esta página" })).toBeInTheDocument(),
+    );
+    await user.click(screen.getByRole("button", { name: "Exportar CSV de esta página" }));
+
+    expect(triggerDownloadMock).toHaveBeenCalledTimes(1);
+    const [blob, filename] = triggerDownloadMock.mock.calls[0];
+    expect(filename).toBe("auditoria.csv");
+    const text = await (blob as Blob).text();
+    expect(text).toContain("\"'=HYPERLINK(\"\"http://malo\"\";\"\"pincha\"\")\"");
+    expect(text).toContain('"nota=""texto; con separador"""');
   });
 
   it("moderator ve «Sin acceso»", async () => {

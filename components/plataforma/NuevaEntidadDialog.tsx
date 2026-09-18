@@ -45,6 +45,10 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!canSubmit) return;
+    // El aviso de la última alta correcta se borra al empezar otra: si el
+    // nuevo envío falla, quedarían en pantalla el error y un «creada» que
+    // no corresponde a lo que se acaba de enviar.
+    setCreated(null);
     create.mutate(
       {
         name: name.trim(),

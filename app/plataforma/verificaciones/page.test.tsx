@@ -9,6 +9,8 @@ vi.mock("@/lib/api/client", async () => {
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
+import userEvent from "@testing-library/user-event";
+
 import { render, screen, waitFor } from "@/test-utils/render";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
@@ -53,6 +55,39 @@ describe("PlataformaVerificacionesPage", () => {
     await waitFor(() => expect(screen.getByText(/Vuelvo a intentarlo/)).toBeInTheDocument());
     expect(screen.getByRole("button", { name: "Aprobar" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Rechazar" })).toBeInTheDocument();
+  });
+
+  it("pagina la cola: recuento total y «Siguiente» pide la página 2", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path.endsWith("?page=2")) {
+        return {
+          count: 12,
+          next: null,
+          previous: "http://api/anterior",
+          results: [{ ...REVIEW, id: "r2", username: "jon", appeal_text: "Segunda página." }],
+        };
+      }
+      return { count: 12, next: "http://api/siguiente", previous: null, results: [REVIEW] };
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("verifier"),
+    });
+
+    const user = userEvent.setup();
+    const element = await PlataformaVerificacionesPage();
+    render(element);
+
+    await waitFor(() => expect(screen.getByText("12 revisiones")).toBeInTheDocument());
+    expect(screen.getByRole("button", { name: "Anterior" })).toBeDisabled();
+
+    await user.click(screen.getByRole("button", { name: "Siguiente" }));
+
+    await waitFor(() => expect(screen.getByText("Segunda página.")).toBeInTheDocument());
+    expect(apiFetchMock).toHaveBeenCalledWith(expect.stringContaining("?page=2"));
+    expect(screen.getByRole("button", { name: "Siguiente" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Anterior" })).toBeEnabled();
   });
 
   it("moderator ve «Sin acceso»", async () => {
