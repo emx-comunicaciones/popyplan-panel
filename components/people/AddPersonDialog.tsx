@@ -56,6 +56,10 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
   }
 
   function handleClose() {
+    // Con la invitación en vuelo no se cierra ni se resetea la mutación:
+    // `Dialog` ya bloquea `Escape` y el botón ×, y este guard cubre el
+    // resto de caminos («Cancelar», que además va deshabilitado).
+    if (invite.isPending) return;
     resetForm();
     setSentTo(null);
     invite.reset();
@@ -85,7 +89,13 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
   }
 
   return (
-    <Dialog open titleId="add-person-title" title="Añadir persona" onClose={handleClose}>
+    <Dialog
+      open
+      titleId="add-person-title"
+      title="Añadir persona"
+      pending={invite.isPending}
+      onClose={handleClose}
+    >
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div>
           <label htmlFor="add-person-name" className="mb-1 block text-sm font-medium text-text-form">
@@ -170,7 +180,12 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
           <Button type="submit" disabled={!canSubmit || invite.isPending}>
             Enviar invitación
           </Button>
-          <Button type="button" variant="secondary" onClick={handleClose}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleClose}
+            disabled={invite.isPending}
+          >
             Cancelar
           </Button>
         </div>

@@ -77,6 +77,7 @@ function NuevaComunidadDialog({
   }
 
   function handleClose() {
+    if (createCommunity.isPending) return;
     resetForm();
     onClose();
   }
@@ -101,6 +102,7 @@ function NuevaComunidadDialog({
       open={open}
       titleId="nueva-comunidad-familias-title"
       title="Nueva comunidad de familias"
+      pending={createCommunity.isPending}
       onClose={handleClose}
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -161,7 +163,12 @@ function NuevaComunidadDialog({
           <Button type="submit" disabled={!canSubmit || createCommunity.isPending}>
             Crear comunidad
           </Button>
-          <Button type="button" variant="secondary" onClick={handleClose}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleClose}
+            disabled={createCommunity.isPending}
+          >
             Cancelar
           </Button>
         </div>

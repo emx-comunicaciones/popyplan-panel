@@ -294,4 +294,25 @@ describe("FamiliasPanel", () => {
       expect.anything(),
     );
   });
+
+  it("con el alta en vuelo, Escape no cierra el diálogo y «Cancelar» está deshabilitado", async () => {
+    mockMutationDefaults();
+    useCreateFamiliesCommunityMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: true,
+      isError: false,
+      error: null,
+      reset: vi.fn(),
+    });
+    useFamiliesSummaryMock.mockReturnValue({ data: buildFamiliesSummary(), isError: false, error: null });
+
+    const user = userEvent.setup();
+    render(<FamiliasPanel orgId={7} slug="alfaville" canManage />);
+
+    await user.click(screen.getByRole("button", { name: "Nueva comunidad de familias" }));
+    await user.keyboard("{Escape}");
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancelar" })).toBeDisabled();
+  });
 });

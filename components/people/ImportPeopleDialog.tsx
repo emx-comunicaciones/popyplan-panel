@@ -98,6 +98,7 @@ export function ImportPeopleDialog({ orgId, onClose }: ImportPeopleDialogProps) 
   }
 
   function handleClose() {
+    if (importPeople.isPending) return;
     resetAll();
     onClose();
   }
@@ -141,7 +142,13 @@ export function ImportPeopleDialog({ orgId, onClose }: ImportPeopleDialogProps) 
   }
 
   return (
-    <Dialog open titleId="import-people-title" title="Importar personas" onClose={handleClose}>
+    <Dialog
+      open
+      titleId="import-people-title"
+      title="Importar personas"
+      pending={importPeople.isPending}
+      onClose={handleClose}
+    >
       <div className="flex flex-col gap-4">
         <a
           href="/plantilla-personas.csv"
@@ -175,7 +182,12 @@ export function ImportPeopleDialog({ orgId, onClose }: ImportPeopleDialogProps) 
               <Button type="button" onClick={handlePreview} disabled={!file || importPeople.isPending}>
                 Vista previa
               </Button>
-              <Button type="button" variant="secondary" onClick={handleClose}>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleClose}
+                disabled={importPeople.isPending}
+              >
                 Cancelar
               </Button>
             </div>
@@ -195,10 +207,23 @@ export function ImportPeopleDialog({ orgId, onClose }: ImportPeopleDialogProps) 
               <Button type="button" onClick={handleConfirm} disabled={importPeople.isPending}>
                 Confirmar importación
               </Button>
-              <Button type="button" variant="secondary" onClick={() => setPhase("select")}>
+              {/* Volver a la selección olvida el fichero y la vista previa:
+                  dejarlos puestos hacía que «Vista previa» reenviara el
+                  mismo fichero como si fuera otro. */}
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={resetAll}
+                disabled={importPeople.isPending}
+              >
                 Elegir otro fichero
               </Button>
-              <Button type="button" variant="secondary" onClick={handleClose}>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleClose}
+                disabled={importPeople.isPending}
+              >
                 Cancelar
               </Button>
             </div>
