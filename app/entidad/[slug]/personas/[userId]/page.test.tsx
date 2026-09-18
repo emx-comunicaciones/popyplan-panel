@@ -115,11 +115,11 @@ describe("EntidadPersonaPage", () => {
     expect(container.textContent).not.toMatch(/@/);
     expect(container.textContent).not.toMatch(/\+34/);
     expect(screen.queryByText(/email|correo/i)).not.toBeInTheDocument();
-    // La ficha sí dice «Nivel de verificación: Teléfono verificado» (el
-    // nivel del contrato, `LevelEnum`): eso no es un dato de contacto, no
-    // enseña ningún número. Lo que no puede aparecer es el teléfono en sí
-    // ni una etiqueta que lo prometa.
-    expect(screen.queryByText(/teléfono de contacto|teléfono:/i)).not.toBeInTheDocument();
+    // «Teléfono verificado» (nivel del contrato, `LevelEnum`) es la única
+    // excepción permitida: dice que el teléfono está verificado, no cuál
+    // es. Cualquier otra mención a un teléfono sí sería un dato de
+    // contacto, y el número en sí nunca aparece.
+    expect(screen.queryByText(/teléfono(?! verificado)/i)).not.toBeInTheDocument();
     expect(container.textContent).not.toMatch(/\d{9}/);
   });
 

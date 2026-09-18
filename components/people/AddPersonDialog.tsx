@@ -147,6 +147,7 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
             id="add-person-community"
             value={community}
             onChange={(event) => setCommunity(event.target.value)}
+            aria-describedby={communities.isError ? "add-person-community-error" : undefined}
             className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
             <option value="">Sin comunidad (alta en «General»)</option>
@@ -157,7 +158,9 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
             ))}
           </select>
           {communities.isError ? (
-            <p className="mt-1 text-xs text-error">No se pudieron cargar las comunidades.</p>
+            <p id="add-person-community-error" role="alert" className="mt-1 text-xs text-error">
+              No se pudieron cargar las comunidades.
+            </p>
           ) : null}
         </div>
         <div>
@@ -168,6 +171,7 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
             id="add-person-referent"
             value={referentUser}
             onChange={(event) => setReferentUser(event.target.value)}
+            aria-describedby={members.isError ? "add-person-referent-error" : undefined}
             className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
             <option value="">Sin referente</option>
@@ -178,7 +182,9 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
             ))}
           </select>
           {members.isError ? (
-            <p className="mt-1 text-xs text-error">No se pudieron cargar los referentes.</p>
+            <p id="add-person-referent-error" role="alert" className="mt-1 text-xs text-error">
+              No se pudieron cargar los referentes.
+            </p>
           ) : null}
         </div>
 

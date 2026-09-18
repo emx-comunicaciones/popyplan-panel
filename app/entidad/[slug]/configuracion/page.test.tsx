@@ -37,6 +37,16 @@ vi.mock("@/hooks/useOrgScope", () => ({ useOrgScope: useOrgScopeMock }));
 
 import EntidadConfiguracionPage from "./page";
 
+const REFERENCE = {
+  id: 1,
+  organization: 7,
+  referent: 9,
+  user: 42,
+  created_at: "2026-01-05T09:00:00Z",
+  public_name: "Bea",
+  photo: "",
+} as Reference;
+
 function idleMutation() {
   return {
     mutate: vi.fn(),
@@ -332,7 +342,7 @@ describe("EntidadConfiguracionPage", () => {
 
     // El nombre del referente no viene en `Reference` (solo su id): se
     // resuelve contra el equipo ya cargado en esta misma pestaña.
-    expect(screen.getByText("Bea — referente: Ana")).toBeInTheDocument();
+    expect(screen.getByText("Bea — Referente: Ana")).toBeInTheDocument();
     const referenciasCard = screen.getByText("Referencias").parentElement as HTMLElement;
     await user.click(within(referenciasCard).getByRole("button", { name: "Quitar" }));
 
@@ -341,6 +351,31 @@ describe("EntidadConfiguracionPage", () => {
     await user.click(within(dialog).getByRole("button", { name: "Quitar" }));
 
     expect(removeMutate).toHaveBeenCalledWith(42, expect.anything());
+  });
+
+  it("mientras carga el equipo, el nombre del referente no se da por perdido", async () => {
+    setDefaultMocks();
+    useOrgMembersMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useOrgReferencesMock.mockReturnValue({ data: [REFERENCE], isError: false, error: null });
+
+    await renderPage();
+
+    expect(screen.getByText("Bea — Referente…")).toBeInTheDocument();
+    expect(screen.queryByText(/sin nombre/)).not.toBeInTheDocument();
+  });
+
+  it("si el equipo falla, la referencia lo dice en vez de fingir que no hay nombre", async () => {
+    setDefaultMocks();
+    useOrgMembersMock.mockReturnValue({
+      data: undefined,
+      isError: true,
+      error: new Error("Solo el titular puede ver el equipo de la entidad."),
+    });
+    useOrgReferencesMock.mockReturnValue({ data: [REFERENCE], isError: false, error: null });
+
+    await renderPage();
+
+    expect(screen.getByText("Bea — Referente no disponible")).toBeInTheDocument();
   });
 
   it("una referencia cuyo referente no está en el equipo cargado no enseña su id", async () => {
@@ -364,7 +399,7 @@ describe("EntidadConfiguracionPage", () => {
 
     await renderPage();
 
-    expect(screen.getByText("Bea — referente sin nombre")).toBeInTheDocument();
+    expect(screen.getByText("Bea — Referente sin nombre")).toBeInTheDocument();
     expect(screen.queryByText(/referente #9/)).not.toBeInTheDocument();
   });
 

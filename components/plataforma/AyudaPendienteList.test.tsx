@@ -72,6 +72,38 @@ describe("AyudaPendienteList", () => {
     ).toBeInTheDocument();
   });
 
+  it("con la consulta en error, el recordatorio sigue estando", () => {
+    usePlatformPendingHelpRequestsMock.mockReturnValue({
+      data: undefined,
+      isError: true,
+      error: new Error("No se pudieron cargar los avisos de ayuda."),
+    });
+    useAcknowledgeHelpRequestGlobalMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
+
+    render(<AyudaPendienteList />);
+
+    expect(screen.getByRole("alert")).toHaveTextContent("No se pudieron cargar los avisos de ayuda");
+    expect(
+      screen.getByText(
+        "Popyplan no guarda teléfonos: contacta con la persona por el chat de la app o a través de su referente.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("mientras carga, el recordatorio sigue estando", () => {
+    usePlatformPendingHelpRequestsMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useAcknowledgeHelpRequestGlobalMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
+
+    render(<AyudaPendienteList />);
+
+    expect(screen.getByText("Cargando avisos…")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Popyplan no guarda teléfonos: contacta con la persona por el chat de la app o a través de su referente.",
+      ),
+    ).toBeInTheDocument();
+  });
+
   it("miembro con referente: muestra la entidad y el referente, sin el badge de no pertenencia", () => {
     usePlatformPendingHelpRequestsMock.mockReturnValue({
       data: [

@@ -92,6 +92,7 @@ function AssignReferentForm({
             id="referent-user-id"
             value={referentUserId}
             onChange={(event) => setReferentUserId(event.target.value)}
+            aria-describedby={members.isError ? "referent-user-id-error" : undefined}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
             <option value="">Selecciona una persona</option>
@@ -102,7 +103,9 @@ function AssignReferentForm({
             ))}
           </select>
           {members.isError ? (
-            <p className="mt-1 text-xs text-error">No se pudieron cargar los referentes.</p>
+            <p id="referent-user-id-error" role="alert" className="mt-1 text-xs text-error">
+              No se pudieron cargar los referentes.
+            </p>
           ) : null}
         </div>
         <Button type="submit" disabled={assignReferent.isPending}>

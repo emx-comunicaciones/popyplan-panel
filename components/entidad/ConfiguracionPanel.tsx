@@ -333,8 +333,15 @@ function ReferentName({
   referentUserId: number;
 }) {
   const members = useOrgMembers(orgId);
-  const member = (members.data ?? []).find((m) => m.user === referentUserId);
-  return <>{member ? `: ${member.public_name}` : " sin nombre"}</>;
+  // Los tres estados se distinguen: mientras el equipo carga, «sin
+  // nombre» sería mentira (todavía puede aparecer), y si la consulta
+  // falla, la referencia sí tiene referente pero no se ha podido
+  // resolver — que no es lo mismo que no encontrarlo en una lista ya
+  // cargada.
+  if (members.isError) return <>Referente no disponible</>;
+  if (!members.data) return <>Referente…</>;
+  const member = members.data.find((m) => m.user === referentUserId);
+  return <>{member ? `Referente: ${member.public_name}` : "Referente sin nombre"}</>;
 }
 
 function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam: boolean }) {
@@ -408,11 +415,11 @@ function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam
           {references.data.map((reference) => (
             <li key={reference.id} className="flex items-center justify-between gap-2">
               <span>
-                {reference.public_name} — referente
+                {reference.public_name} —{" "}
                 {canSeeTeam ? (
                   <ReferentName orgId={orgId} referentUserId={reference.referent} />
                 ) : (
-                  " sin nombre"
+                  "Referente sin nombre"
                 )}
               </span>
               <Button

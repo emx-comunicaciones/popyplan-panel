@@ -306,6 +306,7 @@ function ResourceForm({
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, audience: event.target.value as ResourceAudience }))
               }
+              aria-describedby={communities.isError ? "resource-audience-error" : undefined}
               className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             >
               <option value="members">Miembros</option>
@@ -317,7 +318,9 @@ function ResourceForm({
             {communities.isError ? (
               // Igual que en `ComunicacionesPanel`: sin comunidades
               // cargadas no se sabe si hay espacio de familias.
-              <p className="mt-1 text-xs text-error">No se pudieron cargar las comunidades.</p>
+              <p id="resource-audience-error" role="alert" className="mt-1 text-xs text-error">
+                No se pudieron cargar las comunidades.
+              </p>
             ) : !hasFamilies ? (
               <p className="mt-1 text-xs text-text-secondary">
                 «Familias» estará disponible cuando exista el espacio de familias.

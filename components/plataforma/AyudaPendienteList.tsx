@@ -71,7 +71,7 @@ function HelpRequestCard({ request }: { request: HelpRequestRow }) {
   );
 }
 
-export function AyudaPendienteList() {
+function AvisosBody() {
   const requests = usePlatformPendingHelpRequests();
 
   if (requests.isError) {
@@ -80,24 +80,33 @@ export function AyudaPendienteList() {
   if (!requests.data) {
     return <p className="text-sm text-text-secondary">Cargando avisos…</p>;
   }
+  if (requests.data.length === 0) {
+    return (
+      <EmptyState
+        title="Sin avisos pendientes"
+        description="Ninguna entidad tiene avisos de ayuda sin atender."
+      />
+    );
+  }
+  return (
+    <ul className="flex flex-col gap-3">
+      {requests.data.map((request) => (
+        <HelpRequestCard key={request.id} request={request} />
+      ))}
+    </ul>
+  );
+}
+
+export function AyudaPendienteList() {
   return (
     <div className="flex flex-col gap-3">
-      {requests.data.length === 0 ? (
-        <EmptyState
-          title="Sin avisos pendientes"
-          description="Ninguna entidad tiene avisos de ayuda sin atender."
-        />
-      ) : (
-        <ul className="flex flex-col gap-3">
-          {requests.data.map((request) => (
-            <HelpRequestCard key={request.id} request={request} />
-          ))}
-        </ul>
-      )}
+      <AvisosBody />
       {/*
         Mismo recordatorio que la guardia de la entidad
-        (`GuardiaPanel.tsx`), de la misma constante: quien atiende desde
-        plataforma tampoco tiene un teléfono al que llamar.
+        (`GuardiaPanel.tsx`), de la misma constante y en todos los estados
+        (cargando, error, sin avisos y con avisos): quien atiende desde
+        plataforma tampoco tiene un teléfono al que llamar, y saberlo no
+        depende de que la consulta haya ido bien.
       */}
       <p className="text-sm text-text-secondary">{NO_PHONE_NOTICE}</p>
     </div>

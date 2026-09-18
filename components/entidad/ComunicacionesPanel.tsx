@@ -157,6 +157,7 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
                 aria-label="Comunidad"
                 value={communityId}
                 onChange={(event) => setCommunityId(event.target.value)}
+                aria-describedby={communities.isError ? "comunicacion-comunidades-error" : undefined}
                 className="ml-6 rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
               >
                 <option value="">Elige una comunidad</option>
@@ -177,13 +178,18 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
                 disabled={!hasFamilies}
                 checked={audienceKind === "families"}
                 onChange={() => setAudienceKind("families")}
+                aria-describedby={communities.isError ? "comunicacion-comunidades-error" : undefined}
               />
               Familias
             </label>
             {communities.isError ? (
               // Sin el listado no se puede saber si la entidad tiene
               // espacio de familias: la pista de siempre sería engañosa.
-              <p className="ml-6 text-xs text-error">No se pudieron cargar las comunidades.</p>
+              // El mismo aviso describe los dos controles afectados (el
+              // select de comunidad y la opción «Familias»).
+              <p id="comunicacion-comunidades-error" role="alert" className="ml-6 text-xs text-error">
+                No se pudieron cargar las comunidades.
+              </p>
             ) : !hasFamilies ? (
               <p className="ml-6 text-xs text-text-secondary">
                 Disponible cuando exista el espacio de familias.

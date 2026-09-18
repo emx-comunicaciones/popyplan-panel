@@ -465,7 +465,13 @@ describe("EntidadPersonasPage", () => {
 
     await renderPage("titular");
 
-    expect(screen.getByText("No se pudieron cargar las comunidades.")).toBeInTheDocument();
+    // El aviso es un `role="alert"` que además describe al propio select:
+    // quien navega con lector de pantalla lo oye al llegar al control, no
+    // solo si se topa con el texto suelto.
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveTextContent("No se pudieron cargar las comunidades.");
+    expect(screen.getByLabelText("Comunidad")).toHaveAttribute("aria-describedby", alert.id);
+    expect(alert.id).not.toBe("");
   });
 
   it("«Añadir persona»: avisa si fallan las comunidades o los referentes", async () => {
