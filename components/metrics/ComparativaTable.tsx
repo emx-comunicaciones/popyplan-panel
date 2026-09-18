@@ -10,9 +10,13 @@ export interface ComparativaTableProps {
 const NOT_AVAILABLE_LABEL = "No disponible por umbral de agregación";
 
 /**
- * Celda de `delta` (`docs/PANEL.md` §11.3): «—» accesible (con
- * `aria-label`) cuando la fila está suprimida (`row.delta.suppressed`,
- * el «o» de los dos periodos), el valor real con signo si no. A
+ * Celda de `delta` (`docs/PANEL.md` §11.3): «—» accesible cuando la
+ * fila está suprimida (`row.delta.suppressed`, el «o» de los dos
+ * periodos), el valor real con signo si no. El guion va en un
+ * `role="img"` con `aria-label`: un `aria-label` sobre un `<span>` sin
+ * rol cuelga de un elemento genérico y los lectores de pantalla no
+ * tienen por qué anunciarlo (la especificación ARIA no permite nombrar
+ * un rol genérico), así que el motivo de la ausencia se perdía. A
  * diferencia de `current`/`previous` (que reutilizan `formatCount`/
  * `formatPct` y pintan «<5»), una diferencia suprimida nunca es «<5»:
  * no hay una cifra parcial que mostrar, es directamente «no disponible».
@@ -27,7 +31,11 @@ function DeltaCell({
   format: (value: number | null, suppressed: boolean) => string;
 }) {
   if (suppressed) {
-    return <span aria-label={NOT_AVAILABLE_LABEL}>—</span>;
+    return (
+      <span role="img" aria-label={NOT_AVAILABLE_LABEL}>
+        —
+      </span>
+    );
   }
   return <>{format(value, false)}</>;
 }

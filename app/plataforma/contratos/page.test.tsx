@@ -101,6 +101,20 @@ describe("PlataformaContratosPage", () => {
     expect(screen.queryByRole("button", { name: "Nuevo tramo" })).not.toBeInTheDocument();
   });
 
+  it("las pestañas anuncian cuál está activa con aria-pressed", async () => {
+    mockApiFetch();
+    const user = userEvent.setup();
+    await renderPage("superadmin");
+
+    expect(screen.getByRole("button", { name: "Contratos" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Tramos" })).toHaveAttribute("aria-pressed", "false");
+
+    await user.click(screen.getByRole("button", { name: "Tramos" }));
+
+    expect(screen.getByRole("button", { name: "Tramos" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Contratos" })).toHaveAttribute("aria-pressed", "false");
+  });
+
   it("cambia a la pestaña Facturas y exige elegir un contrato primero", async () => {
     mockApiFetch();
     const user = userEvent.setup();

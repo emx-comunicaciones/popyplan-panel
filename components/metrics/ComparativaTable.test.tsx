@@ -40,13 +40,15 @@ describe("ComparativaTable", () => {
     expect(screen.getByText("0,0 %")).toBeInTheDocument();
   });
 
-  it("fila suprimida: current/previous de Personas y % asistencia en «<5», Δ «—» con aria-label de umbral", () => {
+  it("fila suprimida: current/previous de Personas y % asistencia en «<5», Δ «—» anunciado como no disponible", () => {
     render(<ComparativaTable data={buildCompareResponse()} />);
 
     expect(screen.getByText("Donostialdea")).toBeInTheDocument();
     // Personas actual/anterior + % asistencia actual/anterior: cuatro celdas en '<5'.
     expect(screen.getAllByText("<5").length).toBe(4);
-    const notAvailable = screen.getAllByLabelText("No disponible por umbral de agregación");
+    // El «—» lleva un rol con nombre accesible propio: un `aria-label`
+    // suelto sobre un `<span>` genérico no lo anuncia ningún lector.
+    const notAvailable = screen.getAllByRole("img", { name: "No disponible por umbral de agregación" });
     expect(notAvailable).toHaveLength(2); // Personas (Δ) y % asistencia (Δ).
     notAvailable.forEach((el) => expect(el).toHaveTextContent("—"));
   });

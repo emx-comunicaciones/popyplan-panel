@@ -127,6 +127,28 @@ describe("PlataformaMetricasPage", () => {
     expect(screen.getByText("Asociación Hija Uno")).toBeInTheDocument();
   });
 
+  it("«Agrupar por»: el botón activo se anuncia con aria-pressed", async () => {
+    useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
+    mockMetricsByGroup({
+      base: buildMetricsResponse(),
+      place: buildMetricsResponse({ by_place: buildByPlaceRows() }),
+      organization: buildMetricsResponse({ by_place: buildByOrganizationRows() }),
+      month: buildMetricsResponse({ series: buildSeriesRows() }),
+    });
+    mockCompare();
+    const user = userEvent.setup();
+
+    await renderPage();
+
+    expect(screen.getByRole("button", { name: "Territorio" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Entidad" })).toHaveAttribute("aria-pressed", "false");
+
+    await user.click(screen.getByRole("button", { name: "Entidad" }));
+
+    expect(screen.getByRole("button", { name: "Entidad" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Territorio" })).toHaveAttribute("aria-pressed", "false");
+  });
+
   it("«Exportar CSV» llama a useExport().mutate con scope 'plataforma' y format 'csv'", async () => {
     const mutate = vi.fn();
     useExportMock.mockReturnValue({ mutate, isPending: false, error: null });

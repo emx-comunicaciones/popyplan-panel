@@ -68,6 +68,7 @@ export function PeriodSelector({ value, preset, onChange }: PeriodSelectorProps)
           key={key}
           type="button"
           variant={preset === key ? "primary" : "secondary"}
+          aria-pressed={preset === key}
           onClick={() => selectPreset(key)}
         >
           {PRESET_LABELS[key]}
@@ -101,6 +102,7 @@ export function PeriodSelector({ value, preset, onChange }: PeriodSelectorProps)
         <Button
           type="button"
           variant={preset === "personalizado" ? "primary" : "secondary"}
+          aria-pressed={preset === "personalizado"}
           onClick={applyCustom}
         >
           Personalizado

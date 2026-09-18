@@ -116,6 +116,7 @@ export function PlataformaMetricsDashboard() {
                 key={option.value}
                 type="button"
                 variant={groupBy === option.value ? "primary" : "secondary"}
+                aria-pressed={groupBy === option.value}
                 onClick={() => setGroupBy(option.value)}
               >
                 {option.label}

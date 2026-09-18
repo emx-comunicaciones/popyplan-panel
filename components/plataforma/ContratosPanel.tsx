@@ -608,6 +608,7 @@ export function ContratosPanel({ role }: ContratosPanelProps) {
             key={value}
             type="button"
             variant={section === value ? "primary" : "secondary"}
+            aria-pressed={section === value}
             onClick={() => setSection(value)}
           >
             {SECTION_LABELS[value]}

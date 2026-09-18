@@ -81,6 +81,32 @@ describe("PlataformaEntidadDetailPage", () => {
     expect(screen.getByText("Última factura").closest("dl")).toHaveTextContent("600,00 €");
   });
 
+  it("las pestañas de la ficha anuncian cuál está activa con aria-pressed", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") {
+        return buildOrganization({ id: 9, name: "Ayuntamiento de Irun" });
+      }
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const user = userEvent.setup();
+    const element = await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) });
+    render(element);
+
+    expect(screen.getByRole("button", { name: "Datos" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Ámbito" })).toHaveAttribute("aria-pressed", "false");
+
+    await user.click(screen.getByRole("button", { name: "Ámbito" }));
+
+    expect(screen.getByRole("button", { name: "Ámbito" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Datos" })).toHaveAttribute("aria-pressed", "false");
+  });
+
   it("moderator ve «Sin acceso»", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",
