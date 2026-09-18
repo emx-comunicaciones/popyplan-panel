@@ -5,7 +5,7 @@
  *
  * El contrato promete `{access, refresh}`, pero un proxy, un backend a
  * medio desplegar o una página de error con estado 200 pueden devolver
- * otra cosa. Sin esta comprobación, el `as TokenRefreshResponse` dejaba
+ * otra cosa. Sin esta comprobación, el `as` al tipo del esquema dejaba
  * pasar un cuerpo vacío y la cookie de sesión acababa valiendo la cadena
  * `"undefined"` (y la cabecera interna de acceso, igual): la sesión moría
  * en silencio, sin ningún error visible.

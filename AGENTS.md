@@ -30,35 +30,29 @@ Tres áreas por rol, cada una bajo su propia ruta:
 de plataforma manda sobre cualquier rol de entidad; con varias entidades
 elegibles, `/elegir-entidad` deja escoger.
 
-**Regla de paraguas (documentada, importante para quien siga esta
-tarea):** `GET /api/users/users/me/` (`OrgMembershipRefSerializer`,
-`users/profile_serializers.py` en el backend) **no expone `org_type`**
-por cada membresía hoy — solo `Organization` completa lo tiene. Esta
-tarea trata una membresía como paraguas únicamente si el payload alguna
-vez expone `org_type === 'administracion'` (campo opcional en
-`OrgMembershipForArea`, `lib/api/types.ts`); mientras no lo haga, toda
-membresía resuelve a `entidad`. Si el backend añade el campo, no hace
-falta tocar `resolveArea`.
+**Regla de paraguas (al día, 2026-09):** `GET /api/users/users/me/`
+(`OrgMembershipRefSerializer`, `users/profile_serializers.py` en el
+backend) **sí** dice el tipo de organización de cada membresía, en el
+campo `organization_type` (`source='organization.org_type'`, desde la
+ronda de cierre de Fase 5; `OrgMembershipRef.organization_type: string`
+en `docs/schema.yaml`, y el backend seedeado devuelve
+`"organization_type": "administracion"` para `panel-analista-gfa@test.com`).
+`lib/auth/area.ts::isParaguas` lo lee de ahí, así que una `analista` o
+`titular` de una diputación aterriza en `/paraguas/{slug}` sin pasar por
+`/elegir-entidad` (con varias membresías paraguas se resuelve a la
+primera del array; decisión fijada por `lib/auth/area.test.ts`).
 
-**Actualización (tarea W5, Fase 6): el campo sí llegó, pero con otro
-nombre.** `users/profile_serializers.py::OrgMembershipRefSerializer` ya
-expone `organization_type` (`source='organization.org_type'`) desde la
-«ronda de cierre de Fase 5» — confirmado contra el backend seedeado
-(`GET /api/users/users/me/` de `panel-analista-gfa@test.com` devuelve
-`"organization_type": "administracion"`) y contra `docs/schema.yaml`
-regenerado (`OrgMembershipRef.organization_type: string`, sin `org_type`).
-El párrafo de arriba (y `lib/auth/area.ts::isParaguas`/
-`lib/api/types.ts::OrgMembershipForArea`) siguen mirando `org_type`, un
-nombre de campo que el backend nunca ha usado — la condición nunca se ha
-cumplido ni se cumplirá tal cual está. **No se corrige en esta tarea**
-(fuera del alcance de W5, y cambiar `resolveArea` cambia a qué URL
-aterriza el login de cualquier `analista`/`titular` de una entidad
-paraguas, con eco en `lib/auth/area.test.ts` y en el propio
-`e2e/comparativa.spec.ts` de esta tarea, que sigue navegando a mano a
-`/paraguas/...` por si acaso): el fix real es de una línea
-(`membership.organization_type === "administracion"` en
-`isParaguas`, y renombrar el campo opcional de `OrgMembershipForArea`),
-documentado aquí para quien retome esta pantalla.
+`isParaguas` acepta además un `org_type === 'administracion'` heredado,
+el nombre que la nota original de la tarea W1 daba por bueno y que el
+backend nunca ha usado: `OrgMembershipForArea` (`lib/api/types.ts`) lo
+declara como campo opcional y varios fixtures de test lo usan, así que
+la rama se mantiene como respaldo. Las dos notas que este fichero
+arrastraba (W1: «el backend no expone el tipo»; W5: «el campo llegó con
+otro nombre y no se corrige») quedan **obsoletas**: el fix de una línea
+que describían está aplicado desde la primera ronda de la auditoría
+estática. `e2e/analista.spec.ts` y `e2e/comparativa.spec.ts` siguen
+navegando a mano a `/paraguas/...`, ahora a propósito (así el flujo bajo
+prueba no depende de la resolución de área).
 
 ## Contratos que consume (repo backend `~/Code/popyplan`)
 
@@ -569,7 +563,16 @@ Ayuda/Métricas (`safety/services/reports.py::queue` y
   `public_name` de `useOrgMembers` (P7 lo añadió a `OrgMembership`,
   `docs/PANEL.md` §10.3) en vez de «Persona n.º `<user_id>`» o un id a
   mano — cierra las preguntas 13 y 22. Lo mismo en las tablas de Equipo
-  y Referencias (`ConfiguracionPanel.tsx`/`EntidadDetail.tsx`).
+  (`ConfiguracionPanel.tsx`/`EntidadDetail.tsx`), que sí reciben
+  `OrgMembership.public_name`. **La tabla de Referencias no**: `Reference`
+  trae el `public_name` de la persona referenciada, pero del referente
+  solo `referent: number`, así que `ConfiguracionPanel::ReferentName`
+  resuelve el nombre contra `useOrgMembers` y distingue tres estados
+  («Referente…» mientras carga, «Referente no disponible» con la consulta
+  en error, «Referente sin nombre» si el equipo está cargado y esa cuenta
+  no está). Y solo lo intenta con rol `titular`: el `GET` de equipo es
+  solo-titular (`entities/permissions.py`, `'equipo': {'titular'}`), así
+  que con `moderador` se pinta «sin nombre» sin pedir nada.
 - **Atajo de plataforma en Equipo/Métricas**
   (`components/plataforma/EntidadDetail.tsx`): el aviso de «esto
   normalmente da sin acceso» de W5 se corrigió — desde P7,
@@ -610,19 +613,24 @@ respuesta, nunca la pedían de verdad:
    directo de un `<h1>` de página (el caso más común), saltaba de nivel
    1 a 3 sin pasar por 2 (`heading-order` de `axe-core`). Pasa a
    `<h2>`, que nunca salta nivel venga de donde venga.
-4. **La descarga de informes nunca lleva el nombre de fichero real**
-   (`e2e/titular.spec.ts`, flujo de Informes): `pop/settings.py` no
-   declara `CORS_EXPOSE_HEADERS`, así que `Content-Disposition` — donde
-   viaja `popyplan-<slug>-<since>-<until>.csv` (`docs/PANEL.md` §2.2)
-   — no es una cabecera "segura" por defecto y el navegador se la
-   oculta a `fetch()` en una petición cross-origin (el panel en
-   `:3000`/`:3100` contra el backend en `:8001`); `useExport.ts
-   ::filenameFrom` cae siempre al nombre por defecto (`informe.csv`).
-   **No es solo del test: pasa igual en el panel real.** Arreglarlo
-   exige `CORS_EXPOSE_HEADERS = ['Content-Disposition']` en el repo
-   backend — fuera de alcance de esta tarea (solo repo del panel); el
-   test comprueba el comportamiento real (se descarga un `.csv`) y deja
-   la causa documentada aquí y en el propio `e2e/titular.spec.ts`.
+4. **La descarga de informes no llevaba el nombre de fichero real**
+   (`e2e/titular.spec.ts`, flujo de Informes) — **resuelto, en el repo
+   backend**. `pop/settings.py` no declaraba `CORS_EXPOSE_HEADERS`, así
+   que `Content-Disposition` — donde viaja
+   `popyplan-<slug>-<since>-<until>.csv` (`docs/PANEL.md` §2.2) — no es
+   una cabecera "segura" por defecto y el navegador se la ocultaba a
+   `fetch()` en una petición cross-origin (el panel en `:3000`/`:3100`
+   contra el backend en `:8001`): `useExport.ts::filenameFrom` caía
+   siempre al nombre por defecto (`informe.csv`), en el panel real
+   igual que en el test. Desde entonces el backend declara
+   `CORS_EXPOSE_HEADERS = ['Content-Disposition']` (y `pop.settings_e2e`
+   lo hereda con su `from .settings import *`, así que el job `e2e` de
+   CI también lo tiene). `e2e/titular.spec.ts` y `e2e/programas.spec.ts`
+   comprueban ya el nombre completo con
+   `e2e/helpers.ts::expectExportFilename`, que solo acepta el nombre de
+   respaldo si la respuesta no trae `Access-Control-Expose-Headers` con
+   esa cabecera — así un backend anterior al cambio no deja el test
+   verde por casualidad.
 
 ### Auditoría estática de bugs (2026-09, post-Fase 6)
 
@@ -827,18 +835,17 @@ precio y un contrato nuevo con él, para Asociación Bidasoa). Ninguno de
 los cuatro necesita las fixtures de `helpers.ts` de arriba (fechas
 fijas, sin ventana horaria que provocar).
 
-**Hueco de contrato re-confirmado en esta tarea, con corrección**
-(pregunta 3 de `docs/preguntas-diseno.md`): el login de la analista de
-la diputación (`panel-analista-gfa@test.com`) sigue aterrizando en
-`/entidad/gipuzkoako-foru-aldundia`, no en `/paraguas/...` — pero **no**
-porque el backend no exponga el tipo de organización en
-`org_memberships` (como decía esta nota hasta ahora): sí lo expone, como
-`organization_type`, no como `org_type` (ver «Regla de paraguas» al
-principio de este fichero, actualización de la tarea W5). `e2e/analista.spec.ts`
-y `e2e/comparativa.spec.ts` (nuevo en esta tarea) navegan a la vista de
-paraguas a propósito (`page.goto('/paraguas/gipuzkoako-foru-aldundia')`),
-que sí funciona para esa cuenta (el gate de la página solo mira
-membresía + rol, no el tipo de organización).
+**Hueco de contrato de W5, ya cerrado** (pregunta 3 de
+`docs/preguntas-diseno.md`): el login de la analista de la diputación
+(`panel-analista-gfa@test.com`) aterrizaba en
+`/entidad/gipuzkoako-foru-aldundia` porque `isParaguas` miraba un campo
+(`org_type`) que el backend nunca ha servido; con `organization_type`
+(ver «Regla de paraguas» al principio de este fichero) resuelve ya a
+`/paraguas/...`. `e2e/analista.spec.ts` y `e2e/comparativa.spec.ts`
+siguen navegando a la vista de paraguas a propósito
+(`page.goto('/paraguas/gipuzkoako-foru-aldundia')`): el gate de la página
+solo mira membresía + rol, así que el flujo bajo prueba queda fijado sin
+depender de la resolución de área.
 
 **Límite de peticiones del login, imprescindible saberlo**: `POST
 /api/auth/login/` está limitado a **5 intentos por 60 segundos por
@@ -1177,8 +1184,11 @@ decide (`redirect('/login')`).
   `platform-roles/me/`, devuelve 503 **con la cookie ya fijada al refresh
   nuevo** — la rotación se aplicó en el backend y tirar R2 destruía la
   sesión sin culpa del usuario. En el cliente, un 5xx del handler de
-  refresh lanza `ApiError` reintentable (TanStack reintenta) en vez de
-  logout; solo el 401 cierra sesión.
+  refresh lanza `ApiError` en vez de cerrar sesión, y ese error se
+  propaga como fallo de la consulta (la vista pinta su `ErrorState`):
+  **no hay reintento automático**, porque `app/providers.tsx` fija
+  `retry: false` para todas las queries — la nota anterior («TanStack
+  reintenta») era falsa. Solo el 401 cierra sesión.
 - **`getServerSession` tolerante**: si `/me/` va bien pero
   `platform-roles/me/` falla con 5xx/red, la sesión se resuelve con
   `platformRole = { role: null }` (un 502 puntual ya no manda a `/login`);
@@ -1192,6 +1202,471 @@ decide (`redirect('/login')`).
   Nuevo kind de error en ambos hooks: `sesion_caducada`.
 - **Logout con timeout** (`hooks/useAuth.ts`): `AbortController` + 5 s;
   un backend colgado ya no deja «Cerrando sesión…» indefinidamente.
+
+## Auditoría estática 2026-09-18 (segunda ronda)
+
+Segunda revisión completa de lectura (rama `bugfix/repo-audit`, base
+`47664b4`), esta vez con el árbol del backend delante para comprobar cada
+contrato en su código, no solo en `docs/schema.yaml`: **3 hallazgos
+altos, 16 medios y 40 bajos**. Todos corregidos con test primero (rojo →
+verde) salvo `B6` (crecimiento de `OutstandingToken`/`BlacklistedToken`
+por rotación: es del repo backend, `flushexpiredtokens`). La suite pasa
+de 1014 a **1362 tests**; cobertura de líneas **99,86 %**.
+
+### Sesión, middleware y rutas de auth
+
+- **`/` entra en `middleware.ts::config.matcher`** (A2, el más grave de
+  los tres): `getServerSession` solo lee la cabecera interna que pone el
+  middleware, así que en `app/page.tsx` la sesión era siempre `null` y
+  **todos** los `redirect("/")` del panel (slug ajeno, rol de plataforma
+  revocado, `elegir-entidad`) aterrizaban en `/login` con la cookie viva,
+  como si se hubiera cerrado sesión; la pantalla «No tienes acceso a
+  ningún área del panel» era inalcanzable. Los tests no lo veían porque
+  mockean `getServerSession`.
+- **`lib/auth/clientIp.ts::forwardedForHeaders`** (A1) reenvía la IP real
+  (`x-forwarded-for` → primer valor, o `x-real-ip`) en las **cuatro**
+  llamadas de auth al backend: login y logout (`app/api/session/route.ts`),
+  refresco del route handler y refresco del middleware. El porqué está en
+  su docstring: `users/rate_limiting.py::_get_rate_limit_key` agrupa por
+  `ip:<REMOTE_ADDR>:<segundo segmento del path>`, así que login (5/min) y
+  `token/refresh/` (100/min) comparten la clave `ip:<ip>:auth` y una sola
+  lista de marcas de tiempo. Sin reenviar la IP, en producción toda
+  petición sale con la del servidor Next: cinco navegaciones de cualquier
+  persona dejaban el login en 429 para todo el mundo (y explicaban los
+  429 de la suite e2e).
+- **Un solo refresco por cookie, también en el route handler** (M1):
+  `lib/auth/singleFlight.ts::singleFlight(map, key, fn)` extrae la
+  mecánica que ya tenía el middleware y ahora la usan los dos.
+  `POST /api/session/refresh` comparte **toda** la operación (rotación +
+  `/me/` + `platform-roles/me/`) entre peticiones concurrentes con la
+  misma cookie, no solo la rotación. Además `lib/auth/rotationCache.ts`
+  recuerda 3 s (`ROTATION_REPLAY_TTL_MS`) el resultado de una rotación
+  con éxito, indexado por el refresh **viejo**: una petición que salió
+  del navegador antes de aplicarse el `Set-Cookie` anterior recibe ese
+  mismo resultado en vez de un 401 que borra la cookie. Purga perezosa al
+  guardar y al consultar (si no, retendría access tokens y perfiles en un
+  proceso de larga vida) y se vacía **entera** en el logout: la entrada
+  peligrosa está indexada por el refresh anterior, no por el de la
+  cookie que cierra sesión, así que borrar solo una clave no bastaba.
+- **`lib/auth/tokenRefresh.ts::parseRefreshedTokens`** (B3): un 200 del
+  backend sin `access`/`refresh` string (proxy, despliegue a medias,
+  página de error con estado 200) pasaba por un `as` y la cookie acababa
+  valiendo la cadena `"undefined"`. Ahora se valida en los dos sitios que
+  refrescan; el middleware distingue `rechazado` (no-2xx → borrar cookie)
+  de `ilegible` (200 raro → **503**, la sesión puede estar sana). El
+  login hace lo propio: cuerpo inesperado → 502 sin cookie.
+- **`lib/auth/returnTo.ts::safeReturnTo`** (B1): sin cookie, o con el
+  refresh rechazado, una **navegación de documento** va a
+  `/login?returnTo=<pathname+search>`. La allowlist es por primer
+  segmento (`entidad`/`paraguas`/`plataforma`/`elegir-entidad`) y la
+  función devuelve `null`, no `/`, para que quien llame decida — en
+  `LoginForm.tsx` un valor descartado cae al área que resuelve
+  `resolveArea`, sin una navegación extra. Solo documento: redirigir un
+  prefetch/RSC ensucia la caché del router. Leer el parámetro obligó a
+  `export const dynamic = "force-dynamic"` en `app/(auth)/login/page.tsx`
+  (`useSearchParams` rompía el build, y un `<Suspense>` habría dejado el
+  fallback prerenderizado justo en la primera pantalla).
+- **La cabecera interna `x-pp-access-token` se borra en todos los
+  caminos** (B2): `middleware.ts::passThroughWithoutAccess` clona las
+  cabeceras y la quita antes de dejar pasar una petición sin sesión, así
+  que un cliente no puede forjarla; los otros dos caminos sin sesión (503
+  de red, redirección al login) no propagan la petición.
+- **`hooks/useAuth.ts::bootRestoreSession`** memoiza `restoreSession()` a
+  nivel de módulo: en StrictMode el inicializador de `useState` de
+  `app/providers.tsx` corría dos veces y lanzaba dos refrescos
+  concurrentes con la misma cookie — exactamente la carrera de M1, y en
+  `next dev`, que es lo que ejecuta el e2e.
+- **`retry: false`** es global (`app/providers.tsx`), así que el 5xx del
+  route handler de refresco **no** se reintenta: se propaga como error de
+  la consulta. Corregidos los dos comentarios de `lib/api/client.ts` y el
+  pasaje de «Hardening de sesión» que afirmaban lo contrario (B4).
+
+### Gates de página, rutas de error y sesión por petición
+
+- **Las cinco páginas de entidad que faltaban gatean por
+  `entidadMenuFor`** (M2): `personas`, `personas/[userId]`,
+  `actividades`, `asistencia`, `asistencia/[eventId]` solo comprobaban
+  «tener alguna membresía con panel», así que `analista` y `referente`
+  entraban por URL y veían un `ErrorState` 403 en vez del «Sin acceso»
+  del resto del panel. Mismo gate literal que `comunidades/page.tsx`.
+  `app/plataforma/metricas/page.tsx` no tenía **ningún** gate (era un
+  Server Component síncrono, sin sesión): ahora sigue el patrón de
+  `plataforma/reportes/page.tsx`. Estos gates no sustituyen al backend
+  (que sigue respondiendo 403): evitan pantallas rotas por URL directa.
+- **`lib/auth/paraguasMenu.ts::paraguasMenuFor(role)`**: el layout de
+  paraguas pintaba las dos secciones para los cinco roles, así que
+  `dinamizador`/`referente` veían «Informes» sin poder exportar
+  (`exportar_informes`, `docs/PANEL.md` §2.1). Ahora el `<nav>` y el gate
+  de `paraguas/[slug]/informes` filtran con la misma función, igual que
+  hace `entidadMenuFor` en la entidad.
+- **`PLATFORM_ROLES`/`isPlatformRole`** (`lib/auth/plataformaMenu.ts`)
+  son la **única** definición de «rol de plataforma» del panel: las usan
+  `lib/auth/area.ts::resolveArea`, los tres layouts de área y las once
+  páginas de `/plataforma`. Antes cada sitio hacía
+  `if (session.platformRole.role)` (comprobación de verdad/falsedad), así
+  que un rol que el backend añadiera —o un dato corrupto— dejaba la
+  cuenta dando vueltas: `/` → `/entidad/{slug}` → `/plataforma` → `/` →
+  … `ERR_TOO_MANY_REDIRECTS`. **Quien añada un quinto rol en
+  `safety.PlatformRole` tiene que añadirlo a esa constante**, o la cuenta
+  nueva aterrizará en su entidad (o en «sin acceso»), nunca en el área de
+  plataforma.
+- **`lib/auth/organization.ts::getServerOrganization` y
+  `getServerSession` con `cache` de React** (B5): una navegación a
+  `/entidad/<slug>` hacía **seis** llamadas al backend (layout y página
+  pedían cada uno `/me/`, `platform-roles/me/` y `/organizations/{id}/`);
+  ahora tres. En Vitest no cambia nada: fuera de un contexto de petición
+  de servidor, `cache()` de React 19 llama a la función tal cual.
+- **`app/{not-found,error,global-error}.tsx`** (B7): antes un 404 o una
+  excepción de render caían en la pantalla genérica de Next, en inglés y
+  sin salida. Las tres usan `EmptyState`/`ErrorState` del panel («Volver
+  al inicio», «Reintentar» con `reset()`); `global-error.tsx` lleva sus
+  estilos en línea porque sustituye al layout raíz.
+- **`app/plataforma/entidades/[id]/page.tsx`** llama a `notFound()` con un
+  id no numérico (B8), antes de leer la sesión: pedía
+  `/api/organizations/no-soy-un-id/` y pintaba un error de carga dentro
+  de la ficha. `test-utils/nextNavigationMock.ts` gana `notFoundMock` con
+  su propia señal, como ya tenía el `redirect`.
+
+### Configuración de Next
+
+- **`lib/api/baseUrl.ts::apiBaseUrl()`** (B9) reemplaza los cinco
+  `?? DEFAULT_API_URL` duplicados (`lib/api/client.ts`,
+  `lib/api/serverFetch.ts`, `middleware.ts` y los dos route handlers de
+  sesión). Normaliza la barra final (`https://host//api/...`) y **lanza**
+  si falta la variable con `NODE_ENV === "production"`: un despliegue sin
+  `NEXT_PUBLIC_API_URL` ahora falla en voz alta en la primera petición en
+  vez de apuntar en silencio a `localhost`. Se llama siempre **dentro**
+  de la función que hace el `fetch`, nunca a nivel de módulo, para no
+  romper `next build` en un entorno que todavía no tiene la variable.
+- **`lib/config/imagePatterns.ts`** (M3): `images.remotePatterns` era
+  `{hostname: "**"}` en http y https, o sea `/_next/image?url=` como
+  proxy abierto a todo internet desde nuestro dominio. Ahora el patrón se
+  deriva de `NEXT_PUBLIC_API_URL` (protocolo, host y **puerto** exactos —
+  un `port` ausente casa con cualquier puerto en Next) más
+  `NEXT_PUBLIC_MEDIA_HOSTS`, una lista de hostnames separada por comas
+  para el caso de un CDN con dominio propio. Las tres imágenes remotas
+  reales son `org.logo` (cabeceras de entidad y paraguas) y `data.photo`
+  (`PersonSheet.tsx`), todas del backend. **Se evalúa al cargar
+  `next.config.ts`, así que los dos valores se fijan en el build**: quien
+  despliegue tiene que declararlos ahí, no solo en runtime. Por eso este
+  módulo no usa `apiBaseUrl()` (que lanzaría, porque `next build` corre
+  con `NODE_ENV=production`).
+- **`lib/config/securityHeaders.ts`** (M3) aplica a `/(.*)`:
+  `X-Content-Type-Options: nosniff`, `Referrer-Policy:
+  strict-origin-when-cross-origin`, `X-Frame-Options: DENY`,
+  `Permissions-Policy: camera=(self), microphone=(), geolocation=()` y
+  HSTS solo en producción. `camera=(self)` se conserva a propósito (el
+  check-in por QR de `AttendanceView.tsx` llama a `getUserMedia`), con un
+  test que lo fija. **Sin CSP, deliberadamente**: Next inyecta scripts en
+  línea y una CSP útil exige un nonce por respuesta desde el middleware,
+  que es trabajo aparte — hay un test que lo deja fijado para que nadie
+  la añada a medias sin darse cuenta.
+
+### Hooks de datos
+
+- **`lib/api/drfError.ts::detailOf`** (M5) es el único lector de errores
+  DRF del panel: `detail` → `error` → primer string de cualquier array de
+  campo (`non_field_errors` incluido) → `undefined`. El backend valida
+  con `is_valid(raise_exception=True)` y responde **por campo**, así que
+  19 mutaciones (invitar, alta de equipo, referencias, entidades,
+  encuestas, comunicaciones, asistencia, roles, importación, recursos,
+  familias, reportes, exportaciones, bajas de equipo y referencia…)
+  enseñaban «Revisa los datos…» sin decir cuál. La rama `error` está ahí
+  porque tres de esos hooks ya la leían; no puede robar precedencia a un
+  error por campo (un campo DRF llamado `error` llega como array).
+  `fieldErrorsOf` existe y está cubierto, pero todavía sin consumidor.
+- **`useEntityCommunities` con tope explícito** (M4): `MAX_PAGES` pasa de
+  20 a **250** (× `PAGE_SIZE` 20 del backend = 5000 comunidades) y, si
+  `next` sigue no nulo al agotarlas, **lanza** «Hay demasiadas
+  comunidades para cargarlas todas; contacta con Popyplan.» en vez de
+  devolver un listado truncado que parece completo. El listado es global,
+  así que con el tope viejo (400) las comunidades de la entidad a partir
+  de esa página desaparecían en silencio de Comunidades, del select de
+  Personas, de `AddPersonDialog`, de `hasFamilies` y de Familias.
+- **Invalidaciones cruzadas** (B10): atender un aviso de ayuda o resolver
+  un reporte invalida ya el Inicio de la entidad y
+  `["panel-dashboard-stats"]`; marcar asistencia o hacer check-in
+  invalida `panel-entity-events` y `panel-person`; asignar/quitar
+  referencia y quitar del equipo invalidan `panel-people`/`panel-person`/
+  `panel-org-references`. Para poder hacerlo, `useMarkAttendance` y
+  `useCheckin` reciben ahora `(eventId, orgId)` — `orgId` no viaja en la
+  petición, solo en la clave de caché, y lo hila
+  `AttendanceView.tsx` desde la página. Los tests comprueban el
+  emparejamiento real (`getQueryState(...).isInvalidated`), no que se
+  llamara a `invalidateQueries`: es la única forma de atrapar el fallo
+  string↔number que este fichero ya documenta para `useProgram`.
+- **`lib/download/{triggerDownload,filenameFrom}.ts`** (B12): las dos
+  copias que había (`useExport`, `useProgramReport`) revocaban la URL del
+  blob en la misma vuelta del `click()`, lo que cancela la descarga en
+  Safari y en Chrome con ficheros grandes — ahora se revoca en el turno
+  siguiente, y en un `finally`, así que un `click()` bloqueado no deja un
+  `<a>` huérfano. `filenameFromContentDisposition` entiende
+  `filename*=UTF-8''…` con preferencia sobre `filename="…"` (RFC 6266
+  §4.3) y **exige** ese juego de caracteres: sin él no hay forma de saber
+  en qué está codificado el nombre, y la cabecera es inválida.
+- **`usePeople` distingue el 404** con `kind: "pagina_inexistente"`
+  (B13) y `PersonasTable` vuelve a la página 1 cuando llega estando más
+  allá: la tabla se quedaba en un `ErrorState` sin salida, porque los
+  botones de paginación desaparecen con él. **`VerificacionesQueue`
+  gana la paginación que le faltaba** (B22: el hook ya aceptaba `page`,
+  pero la cola solo enseñaba la primera página) y el mismo retorno
+  automático, porque se vacía sola según se resuelven revisiones.
+  **`usePlatformPendingHelpRequests`** gana `kind: "sin_acceso" |
+  "desconocido"` (patrón de `useReportsQueue`), para que su tarjeta del
+  Inicio de plataforma se esconda con un 403 y solo diga «No disponible»
+  con un fallo real.
+
+### Componentes: formularios, diálogos y textos
+
+- **`ResourceForm` con `key` por recurso** (A3, el bug más grave del
+  plan): el estado nacía del `useState` inicial a partir de `editing`, y
+  los botones «Editar» de todas las tarjetas siguen activos con el
+  formulario abierto. Editar A → Editar B enviaba
+  `updateResource.mutate({resourceId: B.id, ...camposDeA})`, es decir,
+  **sobrescribía B con los datos de A** (o con el formulario vacío si
+  venía de «Nuevo recurso»). `key={editing === "new" ? "new" :
+  editing.id}` remonta el formulario. Además `canSubmit` valida enlace
+  sin URL y fichero obligatorio al crear, y al editar solo se manda
+  `body: ""`/`url: ""` cuando el recurso **guardado** era de ese tipo y
+  deja de serlo (el campo no se enseña salvo con su `kind`, así que el
+  borrado era invisible para quien editaba).
+- **Patrón de error de mutación en un diálogo** (M6-M10, B19, B21),
+  aplicado ya en todos: el `error.message` se pinta **dentro** del
+  `ConfirmDialog` como `<p role="alert">` en su `description` (que admite
+  cualquier `ReactNode`), `reset()` al abrir y al cancelar, y el diálogo
+  se cierra **solo** en el `onSuccess` de `mutate`. Antes el aviso
+  quedaba detrás del overlay, fuera de la vista, con los botones
+  rehabilitados y sin decir qué había pasado (borrar recurso, cerrar
+  programa, finalizar contrato, marcar factura pagada, revocar
+  invitación, quitar del equipo). En la misma línea, los formularios de
+  Equipo y Referencias limpian sus campos en `onSuccess`, no tras
+  `mutate` (B14): un 400 dejaba el formulario en blanco y había que
+  volver a teclear los ids.
+- **`components/ui/Dialog.tsx` con `pending`** (B16): `Escape` y el botón
+  × cerraban el diálogo con la mutación en vuelo (el `ConfirmDialog` ya
+  lo guardaba). Ahora el guard está en los dos, el contenedor lleva
+  `aria-busy={pending}` y todos los «Cancelar» van `disabled`. Los dos
+  `Dialog` que envuelven a `ProgramaForm` reciben el estado por una prop
+  `onPendingChange` del formulario, porque la mutación vive dentro
+  (`useCreateProgram`/`useUpdateProgram` son instancias por componente).
+  «Elegir otro fichero» de `ImportPeopleDialog` hace `resetAll()` (B17):
+  volvía a la fase de selección con el fichero puesto, así que «Vista
+  previa» reenviaba el mismo como si fuera otro.
+- **Confirmación en las bajas que faltaban** (M12, B19): «Quitar» del
+  Equipo y de Referencias (`ConfiguracionPanel`), «Expulsar»
+  (`ComunidadesPanel`, con el diálogo dentro de la propia fila para
+  reutilizar su instancia del hook) y las dos «Quitar» de la pestaña
+  Equipo de `EntidadDetail`. Quitarse a uno mismo del equipo añade la
+  línea «Vas a quitarte a ti mismo del equipo y perderás el acceso al
+  panel.» (`currentUserId` llega del Server Component).
+- **Nada de valores crudos del contrato** (B20): `lib/reports/labels.ts`
+  (`reasonLabel`/`statusLabel`, con reserva al valor crudo si el backend
+  añade uno nuevo) sustituye las dos copias idénticas que tenían
+  `ReportesQueue.tsx` y `ReportesQueuePlataforma.tsx`; «Asignado a» se
+  pinta «Asignado a una persona del equipo»/«Sin asignar», sin id, que es
+  lo máximo que permite el contrato (`ReportDetail.assigned_to` es
+  `number | null`, sin `assigned_to_display`); y
+  `PersonDetail.verification_level` es un **entero 0-3**, no un enum de
+  cadenas, así que se etiqueta con los cuatro niveles reales de
+  `LevelEnum` (0 sin verificar, 1 teléfono, 2 mayoría de edad, 3
+  identidad) con reserva al número.
+- **`lib/help/noPhoneNotice.ts`** (B26): la línea «Popyplan no guarda
+  teléfonos: contacta con la persona por el chat de la app o a través de
+  su referente.» pasa a un módulo compartido y `AyudaPendienteList` la
+  pinta en sus cuatro estados (cargando, error, vacío y con avisos),
+  igual que `GuardiaPanel` — antes solo la tenía la guardia de la
+  entidad, y un aviso de ayuda sin teléfono visible se lee como un dato
+  que falta si nadie explica la regla.
+- **Consultas auxiliares que fallaban en silencio** (B15): un select
+  vacío o una sección en blanco era indistinguible de «no hay datos».
+  Ahora avisan los ajustes de guardia (`GuardiaPanel`), el recuento de
+  invitaciones, los selects de comunidad y de referente
+  (`PersonasTable`/`AddPersonDialog`/`PersonSheet`, con `role="alert"` e
+  `aria-describedby` solo mientras el aviso está visible) y el
+  `hasFamilies` de Comunicaciones y Recursos — ahí la pista «Disponible
+  cuando exista el espacio de familias» **mentía** cuando lo que fallaba
+  era la petición. En el Inicio de plataforma, `PlataformaHomeDashboard`
+  monta cada tarjeta en su propio componente según `plataformaMenuFor` (y
+  las estadísticas de `dashboard-stats` según el rol, porque piden
+  `is_staff` y no tienen sección de menú): un `verifier` ya no pide tres
+  rutas para recibir tres 403. Un fallo que **no** es 403 pinta «No
+  disponible»; esconder la tarjeta se leía como un cero.
+- **Accesibilidad**: `aria-pressed` en los cuatro selectores de botones
+  (pestañas de `EntidadDetail` y `ContratosPanel`, «Agrupar por» de
+  métricas, presets de `PeriodSelector`), donde solo el color marcaba el
+  activo (M15); `<th>` con `<span className="sr-only">Acciones</span>` en
+  las columnas de acciones (B27, `TableColumn.header` pasa de `string` a
+  `ReactNode` para poder hacerlo también en la tabla compartida); `<h2>`
+  en vez de `<h3>` en `ComunidadesPanel` (B28, `heading-order`); y el
+  «—» de la comparativa pasa a `role="img"` con
+  `aria-label="No disponible por umbral de agregación"` (B29), que
+  sustituye el contenido del guion por un nombre accesible. Los tres
+  primeros los encontró `axe`; los tests nuevos de `axe` suman
+  `configuracion`, `comunidades` y las dos colas de `reportes` a la lista
+  de páginas cubiertas.
+- **`components/ui/Stat.tsx` borrado** (B25): sin ningún consumidor desde
+  hace fases, y con `StatCard` haciendo lo mismo. Igual
+  `lib/api/types.ts::TokenRefreshResponse`, que se quedó sin uso al
+  sustituir su `as` por `parseRefreshedTokens`; y `resourceFormData.ts`
+  pierde un ternario cuyas dos ramas eran idénticas (B36). Tres tipos
+  manuales de `lib/api/types.ts` dejan de decir que el esquema no los
+  cubre: `PersonRowPage`, `AuditLog` y `PaginatedAuditLogList` ya
+  existen en `types.generated.ts`, así que los docstrings explican ahora
+  la razón real por la que siguen a mano (`results` mezcla
+  `InvitedPersonRow`; `ip` es un campo condicional que
+  drf-spectacular no declara) y `AuditActor` pasa a ser un alias del
+  generado.
+
+### Plataforma, métricas y lógica pura
+
+- **`lib/csv/toCsv.ts`** (B30): la exportación CSV de Auditoría
+  concatenaba a mano, así que un `;`, un salto de línea o una comilla en
+  `metadata` partía la fila. Ahora toda celda va entrecomillada con las
+  comillas internas duplicadas (RFC 4180), el BOM lo pone `csvBlob` una
+  sola vez y las celdas que empiezan por `=`, `+`, `-`, `@`, tabulador o
+  retorno llevan un `'` delante (inyección de fórmulas: `action`,
+  `target_type` y `metadata` los escribe quien genera la acción
+  auditada). **El prefijo solo se aplica a `string`**: hacerlo sobre un
+  `number` estropeaba cualquier cifra negativa (`-2` → `'-2`, que deja de
+  ser un número para la hoja de cálculo). `AuditoriaPanel::downloadCsv`
+  dispara la descarga con `lib/download/triggerDownload.ts` en vez del
+  `<a>` que tenía a mano, así que hereda el arreglo del revoke diferido.
+- **`lib/billing/tierRange.ts`** (B24) valida el rango de población de un
+  tramo (mínimo negativo o no finito, máximo no finito, máximo por debajo
+  del mínimo) con el mismo patrón que
+  `lib/programs/validation.ts::validateProgramDates`. Vive en `lib/`
+  porque los dos campos son `<input type="number">` y el navegador (y
+  jsdom) **vacía** el valor ante cualquier cosa que no sea un número, así
+  que el caso `NaN` no se puede provocar por la UI: el helper lo deja
+  probado donde sí es alcanzable. `FacturaForm` valida además que el
+  vencimiento no sea anterior a la emisión, y `TEAM_MANAGER_ROLES`
+  (`lib/auth/plataformaMenu.ts`, `superadmin`/`moderator`) oculta los
+  formularios de la pestaña Equipo a `verifier`, que los veía y recibía
+  403 (B19).
+- **`ExportPanel` controlado por el dashboard que lo envuelve** (B23):
+  props opcionales `period`/`preset`/`onPeriodChange` — en
+  `PlataformaMetricsDashboard` el panel de exportación y las tarjetas
+  compartían pantalla con dos periodos distintos, así que se exportaba un
+  rango que no era el que se estaba mirando. Sin esas props se comporta
+  como antes (así lo usan las dos páginas de Informes, donde va suelto).
+  Destapó un quirk real de **`PeriodSelector`**: `customSince`/
+  `customUntil` se inicializaban una sola vez desde `value`, así que un
+  periodo cambiado desde fuera no llegaba a los dos `<input type="date">`
+  y pulsar «Personalizado» mandaba el rango viejo. Ahora un `useEffect`
+  con las **dos cadenas** como dependencias (no el objeto) los sincroniza
+  sin pisar lo que se esté tecleando.
+- **El tope de periodo se mide como diferencia de días** (B31): el
+  backend hace `(until - since).days > PERIODO_MAX_DIAS`
+  (`panel/viewsets.py`), mientras el panel contaba de forma inclusiva y
+  rechazaba de más — `2021-01-01..2025-01-01` (1461 de diferencia) es
+  válido y el selector lo negaba. El mensaje lo dice ahora como es: «El
+  periodo no puede abarcar más de 1461 días entre las dos fechas (unos 4
+  años).».
+- **`parseIsoDate` rechaza días que no existen** (B32): `new
+  Date("2026-02-31T00:00:00Z")` no falla, devuelve el 3 de marzo, así que
+  el panel mandaba al backend una fecha distinta de la escrita. Se
+  comprueba el ISO de vuelta (equivalente a comparar año/mes/día, y sin
+  ramas muertas: un día inexistente siempre desplaza también el mes) y se
+  rechaza el año 0, válido en JS pero no en Python.
+- **`previousPeriodLabel` pone el año en las dos fechas cuando
+  difieren** (M13, `lib/metrics/compare.ts`): la leyenda de la
+  comparativa se leía «frente a 17 sept – 17 sept 2025» para un periodo
+  anterior de un año entero (como si fuera de un día), y un plurianual
+  perdía el año de inicio.
+- **`formatDeltaPct` redondea antes de decidir el signo** (B33): un
+  `-0.0001` se pintaba «-0,0 %». **`eurosToCents`** (B34) acepta el
+  formato es-ES pegado (`1.234,56`, con espacio normal o irrompible) y
+  devuelve `NaN` para negativos; los puntos solo se quitan si hay coma
+  decimal, así que `1.234` de un `type="number"` sigue siendo 123
+  céntimos.
+- **`lib/a11y/contrast.ts` devuelve `null` en vez de `NaN`** (B35):
+  `hexToRgb` acepta `#RGB`/`#RRGGBB`/`#RRGGBBAA` (el canal alfa se
+  ignora: el contraste WCAG es entre colores opacos) y
+  `relativeLuminance`/`contrastRatio`/`readableOn` propagan `null`. El
+  bug real: un color de marca en forma corta (`#0a4`) daba `NaN` y la
+  cabecera caía al tinte en vez de usarlo — el caso del color no
+  parseable ya caía bien, pero **por accidente** (toda comparación con
+  `NaN` es falsa). Los dos layouts tratan `null` como un par por debajo
+  de 3:1 (tinte `--color-primary-100` + franja de 6 px) y, cuando el
+  color no se puede calcular, la franja usa `var(--color-primary)`: un
+  `border-bottom: 6px solid <valor inválido>` es una declaración que el
+  navegador descarta, y la cabecera se quedaba sin franja.
+- **`lib/a11y/useFocusTrap.ts`** (M16): el foco escapaba del diálogo si
+  `activeElement` era el `body` (clic en el overlay o en un texto) o si
+  no había nada enfocable dentro (un `ConfirmDialog` con `pending`
+  deshabilita sus dos botones). Ahora `Tab` con el foco fuera o sin items
+  hace `preventDefault()` y enfoca el primer elemento o el contenedor; el
+  selector excluye `input[type="hidden"]` y cualquier `tabindex="-1"`; y
+  al cerrar, si el opener ya no está en el documento (Revocar, Marcar
+  pagada, Finalizar, Verificar…), el foco va a
+  `#main-content` en vez de perderse en el `body`. Firma pública sin
+  cambios.
+
+### Buscadores con retardo
+
+`hooks/useDebouncedValue.ts` (300 ms por defecto, `setTimeout` reiniciado
+en cada cambio y cancelado al desmontar) lo usan `PersonasTable`
+(búsqueda, referente y las dos fechas), `EntidadesTable` (búsqueda),
+`AuditoriaPanel` (sus seis filtros, que pasan a ser controlados para
+poder distinguir el valor tecleado del aplicado) y `RolesPanel` (buscador
+de cuentas, por encima del `enabled` de dos caracteres de
+`useUserSearch`) — antes cada tecla era una petición: teclear «ana»
+pedía `?search=a`, `?search=an` y `?search=ana`. Los `<select>` **no** se
+debouncean y mantienen su reset de página inmediato (un evento por
+elección; retrasarlo solo añadiría latencia); el reset a la página 1 de
+los campos de texto va con el valor **aplicado**, en un `useEffect`.
+**Ojo al escribir un test de retardo**: `userEvent` se cuelga con
+`vi.useFakeTimers()` en esta suite (el `asyncWrapper` de Testing Library
+solo adelanta el reloj si detecta los temporizadores falsos de *jest*),
+así que estos tests usan `fireEvent.change` +
+`act(() => vi.advanceTimersByTime(300))`, y cada fichero tocado pone
+`vi.useRealTimers()` al principio de su `afterEach`. Está explicado con
+un comentario en los cuatro ficheros de test.
+
+### CI, e2e y dependencias
+
+`playwright.config.ts` genera los dos reportes
+(`[["list"], ["html", { open: "never", outputFolder: "playwright-report" }]]`;
+antes CI subía una carpeta que `reporter: "list"` nunca creaba) y el job
+`e2e` sube además `test-results/` con las trazas (B37). El workflow se
+dispara también en `pull_request` a `develop` y `main`, así que una rama
+de trabajo ya pasa por CI antes de fusionarse (B38). `middleware.ts`
+entra en `coverage.include` (B39): vive en la raíz, así que ningún patrón
+lo alcanzaba, y su propio `middleware.test.ts` lo cubre al 100 %.
+`e2e/analista.spec.ts` deja de usar un `getByText("Asistencia")` que
+empareja por subcadena con las cabeceras «% asistencia (…)» de la
+comparativa, y las dos descargas de informe comprueban el nombre de
+fichero completo con `e2e/helpers.ts::expectExportFilename` (B40).
+`npm audit fix` (sin `--force`) sube `@redocly/openapi-core`, que deja de
+anidar un `js-yaml` vulnerable; quedan los avisos de `postcss` dentro de
+Next, que solo se cierran subiendo a Next 16 (rotura, fuera de alcance).
+
+### Pendientes conocidos (no son bugs, son deuda anotada)
+
+- **`components/plataforma/ContratosPanel.tsx` pasa de 700 líneas.** El
+  corte natural son sus tres `*Tab` (`ContratosTab`/`TramosTab`/
+  `FacturasTab`) a ficheros propios: ya son componentes independientes
+  con su propio estado. No se hizo aquí para no mezclar un movimiento de
+  ficheros con las correcciones.
+- **Ids estáticos en los avisos de error** de selects y formularios
+  (derivados del id del control, no de `useId()`): válidos mientras cada
+  uno de esos componentes sea único por página, que hoy lo es. Quien
+  monte dos instancias a la vez tiene que pasar a `useId()`.
+- **Las regiones `role="status"`/`role="alert"` se montan junto al
+  mensaje**, no antes: un lector de pantalla puede perderse el primer
+  anuncio. Lo correcto es una región vacía persistente por vista; es un
+  cambio de patrón, no un arreglo puntual.
+- **«Rechazar» una solicitud pendiente de comunidad** (`ComunidadesPanel
+  ::PendingRow`) sigue sin confirmación. Es reversible (la persona puede
+  volver a solicitar), pero rompe la coherencia de M12.
+- **`hooks/useOrgMembers.ts` no tipa su 403.** Distingue el caso solo en
+  el *mensaje* («Solo el titular puede ver el equipo de la entidad.»),
+  así que ningún componente puede reaccionar a él sin comparar cadenas.
+  Añadirle `kind: "sin_acceso" | "desconocido"` (como `PersonError`)
+  dejaría salir solos los textos específicos de los selects de referente.
+- **B6, del repo backend**: cada navegación rota el refresh y deja una
+  fila en `OutstandingToken`/`BlacklistedToken`. Sin un
+  `flushexpiredtokens` periódico, esas tablas crecen sin techo.
 
 ## Comandos
 
@@ -1212,20 +1687,21 @@ en CI lo gate el job `e2e`).
 
 ## Cobertura
 
-- Vitest mide líneas sobre `lib/**`, `hooks/**` y `app/**/*.ts` (route
-  handlers y helpers; nunca `.tsx` de páginas/layouts/componentes, que se
-  prueban por comportamiento, no por cobertura —
-  `components/metrics/*.tsx` y `components/entidad/*.tsx` tampoco
-  cuentan). Umbral con ratchet en `vitest.config.ts`
-  (`coverage.thresholds.lines`): **100 % al cerrar W1, W2 y W3** (umbral
-  fijado a 99.7, real menos 0.3); solo puede subir. Objetivo final del
-  plan de cobertura: ≥98 % (ya superado aquí). Real al cerrar W4/W5:
-  **99,89 %** (1964/1966 líneas, sin cambios entre ambas tareas — W5 solo
-  añade specs de Playwright, que no cuentan para esta métrica); real
-  menos 0,3 (99,59) sigue por debajo del umbral ya fijado (99,7), así que
-  el ratchet no sube en esta tarea (mismo caso que W4). Tras la auditoría
-  de bugs de 2026-09: **99,84 %** de líneas (el umbral fijado sigue en
-  99,7; real menos 0,3 = 99,54).
+- Vitest mide líneas sobre `lib/**`, `hooks/**`, `app/**/*.ts` (route
+  handlers y helpers) y `middleware.ts` (añadido en la segunda ronda de
+  auditoría: vive en la raíz, así que ningún patrón lo alcanzaba); nunca
+  `.tsx` de páginas/layouts/componentes, que se prueban por
+  comportamiento, no por cobertura — `components/metrics/*.tsx` y
+  `components/entidad/*.tsx` tampoco cuentan. Umbral con ratchet en
+  `vitest.config.ts` (`coverage.thresholds.lines`): **100 % al cerrar
+  W1, W2 y W3** (umbral fijado a 99.7, real menos 0.3); solo puede
+  subir. Objetivo final del plan de cobertura: ≥98 % (ya superado aquí).
+  Real al cerrar W4/W5: **99,89 %** (1964/1966 líneas, sin cambios entre
+  ambas tareas — W5 solo añade specs de Playwright, que no cuentan para
+  esta métrica). Tras la auditoría de bugs de 2026-09: **99,84 %**. Tras
+  la segunda ronda (2026-09-18, `middleware.ts` incluido): **99,86 %**
+  (2206/2209 líneas). El umbral fijado sigue en 99,7 porque real menos
+  0,3 (99,56) queda por debajo, así que el ratchet no sube.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la

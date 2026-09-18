@@ -13,12 +13,18 @@ export type Me = components["schemas"]["Me"];
 export type OrgMembershipRef = components["schemas"]["OrgMembershipRef"];
 
 /**
- * `OrgMembershipRef` tal y como lo devuelve hoy el backend nunca incluye
- * `org_type` (ver `users/profile_serializers.py::OrgMembershipRefSerializer`):
- * solo lo tiene `Organization` completa. `resolveArea` (`lib/auth/area.ts`)
- * acepta el campo como opcional para poder distinguir una entidad paraguas
- * (`org_type === 'administracion'`) el día que el backend lo añada a este
- * serializer, sin romper el contrato actual mientras tanto.
+ * El tipo de organización de cada membresía **sí** llega, y se llama
+ * `organization_type` (`users/profile_serializers.py::OrgMembershipRefSerializer`,
+ * `source='organization.org_type'`): está en `OrgMembershipRef` del esquema
+ * generado como `string` obligatorio, así que `resolveArea`
+ * (`lib/auth/area.ts::isParaguas`) lo lee de ahí sin ampliar nada.
+ *
+ * Lo único que este tipo añade es `org_type?`, el nombre que la nota
+ * original de la tarea W1 daba por bueno y que el backend nunca ha usado:
+ * `isParaguas` lo sigue aceptando como respaldo (y varios fixtures de test
+ * lo usan), de modo que un payload con cualquiera de los dos nombres
+ * resuelve igual. Si algún día se retiran esos fixtures, se puede borrar
+ * el campo y la rama de `isParaguas` a la vez.
  */
 export type OrgMembershipForArea = OrgMembershipRef & {
   org_type?: components["schemas"]["OrgTypeEnum"];
@@ -40,9 +46,6 @@ export type OrgTypeEnum = components["schemas"]["OrgTypeEnum"];
 
 /** Respuesta de `POST /api/auth/login/` (`docs/PANEL.md` §0: incluye `refresh`). */
 export type LoginResponse = components["schemas"]["LoginResponse"];
-
-/** Respuesta de `POST /api/auth/token/refresh/` (`docs/PANEL.md` §0). */
-export type TokenRefreshResponse = components["schemas"]["TokenRefresh"];
 
 /**
  * `GET /api/panel/{entidad,paraguas,plataforma}/*\/metrics/`
