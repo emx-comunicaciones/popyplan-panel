@@ -9,9 +9,9 @@ import { ANALISTA_GFA_EMAIL, DEMO_PASSWORD } from "./helpers";
  * suprimida (`<5`) o no disponible (`—`) — el volumen de la demo
  * sembrada es pequeño, así que ambos indicadores son esperables.
  *
- * Mismo hueco de contrato que `analista.spec.ts` (`org_type` no
- * distingue esta membresía como paraguas): se navega a la vista de
- * paraguas a propósito, no por redirección automática.
+ * Como en `analista.spec.ts`, se navega a la vista de paraguas a
+ * propósito en vez de depender de la resolución de área del login (que
+ * hoy sí lleva ahí, desde que `isParaguas` mira `organization_type`).
  */
 test("analista de paraguas ve la comparativa por comarca con celdas suprimidas", async ({ page }) => {
   await page.goto("/login");

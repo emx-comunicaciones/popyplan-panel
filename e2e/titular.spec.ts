@@ -6,6 +6,7 @@ import {
   TITULAR_BIDASOA_EMAIL,
   apiLogin,
   createCheckinFixture,
+  expectExportFilename,
   newApiContext,
   resolveOrgId,
   type CheckinFixture,
@@ -90,24 +91,23 @@ test.describe("Titular de Asociación Bidasoa", () => {
     await page.getByRole("link", { name: "Informes", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Informes" })).toBeVisible();
 
+    // El hueco de CORS que este e2e descubrió en la tarea W6 está
+    // cerrado: `pop/settings.py` declara
+    // `CORS_EXPOSE_HEADERS = ['Content-Disposition']`, así que el panel
+    // puede leer el nombre real que manda `panel/viewsets.py`
+    // (`popyplan-<slug>-<since>-<until>.csv`, docs/PANEL.md §2.2). Se
+    // comprueba entero, no solo la extensión; `expectExportFilename`
+    // guarda el respaldo para un backend anterior al cambio.
+    const responsePromise = page.waitForResponse(
+      (response) => response.url().includes("/export/") && response.url().includes("format=csv"),
+    );
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: "Exportar CSV" }).click();
     const download = await downloadPromise;
 
-    // **Hueco de contrato real, descubierto por este e2e**: el backend
-    // manda `Content-Disposition: attachment;
-    // filename="popyplan-<slug>-<since>-<until>.csv"` (docs/PANEL.md §2.2,
-    // confirmado leyendo `panel/viewsets.py`), pero `pop/settings.py` no
-    // declara `CORS_EXPOSE_HEADERS` — `Content-Disposition` no está en la
-    // lista de cabeceras "seguras" que CORS expone por defecto a
-    // `fetch()`, así que `useExport.ts::filenameFrom` nunca puede leerla
-    // desde un origen distinto (el panel en :3000/:3100 contra el backend
-    // en :8001) y cae siempre al nombre por defecto (`informe.csv`) —
-    // tanto aquí como en producción real, no solo en el test. Arreglarlo
-    // exige un cambio de configuración en el repo backend
-    // (`CORS_EXPOSE_HEADERS = ['Content-Disposition']`), fuera del
-    // alcance de esta tarea (solo repo del panel). Se comprueba el
-    // comportamiento real: la descarga ocurre y es un `.csv`.
-    expect(download.suggestedFilename()).toMatch(/\.csv$/);
+    expectExportFilename(download, await responsePromise, {
+      pattern: new RegExp(`popyplan-${BIDASOA_SLUG}-\\d{4}-\\d{2}-\\d{2}-\\d{4}-\\d{2}-\\d{2}\\.csv`),
+      fallback: "informe.csv",
+    });
   });
 });

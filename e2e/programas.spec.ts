@@ -1,6 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-import { BIDASOA_SLUG, DEMO_PASSWORD, TITULAR_BIDASOA_EMAIL } from "./helpers";
+import {
+  BIDASOA_SLUG,
+  DEMO_PASSWORD,
+  TITULAR_BIDASOA_EMAIL,
+  expectExportFilename,
+} from "./helpers";
 
 /**
  * Titular de Asociación Bidasoa (tarea W5, Fase 6, `docs/PANEL.md` §12):
@@ -59,12 +64,20 @@ test("titular crea, activa y cierra un programa, y descarga su informe CSV", asy
   await expect(page.getByText("Cerrado")).toBeVisible();
   await expect(page.getByText("Notas de cierre: Cierre de prueba e2e.")).toBeVisible();
 
-  // Descargar el informe (CSV): el nombre real depende de
-  // `Content-Disposition`, que sufre el mismo hueco de CORS que
-  // `titular.spec.ts` documenta para las exportaciones — el fallback
-  // (`informe-programa.csv`) también acaba en `.csv`.
+  // Descargar el informe (CSV). El nombre real lo pone
+  // `programs/viewsets.py` en `Content-Disposition`
+  // (`popyplan-programa-<id>.csv`, docs/PANEL.md §12.4) y el backend ya
+  // expone esa cabecera por CORS, así que se comprueba entero; el
+  // respaldo (`informe-programa.csv`) lo cubre `expectExportFilename`.
+  const responsePromise = page.waitForResponse(
+    (response) => response.url().includes("/report/") && response.url().includes("format=csv"),
+  );
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Descargar informe CSV" }).click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toMatch(/\.csv$/);
+
+  expectExportFilename(download, await responsePromise, {
+    pattern: /popyplan-programa-\d+\.csv/,
+    fallback: "informe-programa.csv",
+  });
 });

@@ -1,4 +1,10 @@
-import { request as playwrightRequest, type APIRequestContext } from "@playwright/test";
+import {
+  expect,
+  request as playwrightRequest,
+  type APIRequestContext,
+  type Download,
+  type Response,
+} from "@playwright/test";
 
 /**
  * Utilidades de fixture para los flujos e2e (tarea W6): llaman al
@@ -197,4 +203,49 @@ export async function escalateFirstPendingReport(
     data: {},
   });
   return escalateResponse.ok();
+}
+
+/**
+ * Comprueba el nombre con el que se descarga un informe.
+ *
+ * El nombre real lo pone el backend en `Content-Disposition`
+ * (`popyplan-<slug>-<since>-<until>.<fmt>` para las exportaciones del
+ * panel, `panel/viewsets.py`; `popyplan-programa-<id>.<fmt>` para el
+ * informe de un programa, `programs/viewsets.py`) y el panel lo lee con
+ * `lib/download/filenameFrom.ts`. Esa cabecera solo llega a `fetch()`
+ * desde otro origen (panel en `:3100`, backend en `:8001`) si el backend
+ * la expone: `pop/settings.py` ya declara
+ * `CORS_EXPOSE_HEADERS = ['Content-Disposition']` (y `pop.settings_e2e`,
+ * que usa el job `e2e` de CI, lo hereda con su `from .settings import *`),
+ * así que lo normal es comprobar el nombre completo.
+ *
+ * **Respaldo documentado**: contra un backend anterior a ese cambio, el
+ * navegador oculta la cabecera y `useExport`/`useProgramReport` caen a su
+ * nombre por defecto (`informe.csv`, `informe-programa.csv`). Para no
+ * dejar el test verde por casualidad en ese caso, se distingue leyendo
+ * `Access-Control-Expose-Headers` de la propia respuesta (Playwright ve
+ * las cabeceras de red reales, sin el filtro de CORS del navegador): solo
+ * si el backend no la expone se acepta el nombre de respaldo.
+ */
+export function expectExportFilename(
+  download: Download,
+  response: Response,
+  { pattern, fallback }: { pattern: RegExp; fallback: string },
+): void {
+  const headers = response.headers();
+  const exposed = (headers["access-control-expose-headers"] ?? "")
+    .split(",")
+    .map((name) => name.trim().toLowerCase())
+    .some((name) => name === "content-disposition" || name === "*");
+
+  if (!exposed) {
+    expect(
+      download.suggestedFilename(),
+      "el backend no expone Content-Disposition (CORS): se espera el nombre de respaldo del panel",
+    ).toBe(fallback);
+    return;
+  }
+
+  expect(headers["content-disposition"] ?? "").toMatch(pattern);
+  expect(download.suggestedFilename()).toMatch(pattern);
 }
