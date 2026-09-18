@@ -116,6 +116,40 @@ describe("useRemoveOrgReference", () => {
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error?.message).toBe("No se pudo quitar el referente.");
   });
+
+  it("un 400 con `detail` pinta el mensaje literal del backend", async () => {
+    apiFetchMock.mockRejectedValueOnce(
+      new ApiError(400, { detail: "Esa persona no tiene referente asignado." }),
+    );
+
+    const { result } = renderHook(() => useRemoveOrgReference(7), { wrapper });
+    result.current.mutate(42);
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Esa persona no tiene referente asignado.");
+  });
+
+  it("un 400 sin cuerpo reconocible cae al mensaje genérico", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, null));
+
+    const { result } = renderHook(() => useRemoveOrgReference(7), { wrapper });
+    result.current.mutate(42);
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("No se pudo quitar el referente.");
+  });
+
+  it("un 403 pinta el mensaje de permiso del backend", async () => {
+    apiFetchMock.mockRejectedValueOnce(
+      new ApiError(403, { detail: "No tienes permiso para gestionar referentes." }),
+    );
+
+    const { result } = renderHook(() => useRemoveOrgReference(7), { wrapper });
+    result.current.mutate(42);
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("No tienes permiso para gestionar referentes.");
+  });
 });
 
 /**

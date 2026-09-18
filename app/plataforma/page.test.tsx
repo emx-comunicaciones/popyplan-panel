@@ -216,6 +216,62 @@ describe("PlataformaInicioPage", () => {
     expect(screen.queryByText("Reportes pendientes")).not.toBeInTheDocument();
   });
 
+  it("un 403 de los avisos de ayuda también esconde su tarjeta", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/admin/dashboard-stats/") {
+        throw new ApiError(403, { detail: "Sin permiso." });
+      }
+      if (path.startsWith("/api/safety/reports/queue/")) return [];
+      if (path.startsWith("/api/safety/help-requests/")) {
+        throw new ApiError(403, { detail: "Sin permiso." });
+      }
+      if (path.startsWith("/api/organizations/?verified=true")) return ORGS_PAGE(5);
+      if (path.startsWith("/api/organizations/?verified=false")) return ORGS_PAGE(2);
+      if (path === "/api/plataforma/billing/summary/") return buildBillingSummary();
+      throw new Error(`sin mock para ${path}`);
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const element = await PlataformaInicioPage();
+    render(element);
+
+    await waitFor(() => expect(screen.getByText("Reportes pendientes")).toBeInTheDocument());
+    expect(screen.queryByText("Solicitudes de ayuda pendientes")).not.toBeInTheDocument();
+  });
+
+  it("un fallo que no es de permisos deja los avisos de ayuda en «No disponible»", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/admin/dashboard-stats/") {
+        throw new ApiError(403, { detail: "Sin permiso." });
+      }
+      if (path.startsWith("/api/safety/reports/queue/")) return [];
+      if (path.startsWith("/api/safety/help-requests/")) {
+        throw new ApiError(500, { detail: "Error del servidor." });
+      }
+      if (path.startsWith("/api/organizations/?verified=true")) return ORGS_PAGE(5);
+      if (path.startsWith("/api/organizations/?verified=false")) return ORGS_PAGE(2);
+      if (path === "/api/plataforma/billing/summary/") return buildBillingSummary();
+      throw new Error(`sin mock para ${path}`);
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const element = await PlataformaInicioPage();
+    render(element);
+
+    await waitFor(() =>
+      expect(screen.getByText("Solicitudes de ayuda pendientes")).toBeInTheDocument(),
+    );
+    expect(screen.getAllByText("No disponible").length).toBeGreaterThan(0);
+  });
+
   it("sin sesión redirige a /login", async () => {
     getServerSessionMock.mockResolvedValue(null);
 

@@ -201,12 +201,14 @@ describe("PlataformaEntidadDetailPage", () => {
 
     await user.click(within(dialog).getByRole("button", { name: "Quitar" }));
 
-    // El mensaje lo decide `useRemoveOrgMember` (hoy genérico); lo que se
-    // comprueba aquí es que se lee dentro del diálogo y que este no se
-    // cierra con la baja fallida.
+    // El mensaje lo decide `useRemoveOrgMember`: con un `detail` del
+    // backend se pinta literal (`lib/api/drfError.ts::detailOf`), que es
+    // lo único que explica por qué no se puede. Se comprueba además que
+    // se lee dentro del diálogo y que este no se cierra con la baja
+    // fallida.
     await waitFor(() =>
       expect(within(dialog).getByRole("alert")).toHaveTextContent(
-        "No se pudo quitar a la persona del equipo.",
+        "La entidad se quedaría sin titular.",
       ),
     );
     expect(screen.getByRole("alertdialog")).toBeInTheDocument();

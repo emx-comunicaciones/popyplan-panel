@@ -135,6 +135,50 @@ describe("useRemoveOrgMember", () => {
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error?.message).toBe("No se pudo quitar a la persona del equipo.");
   });
+
+  it("un 400 con `detail` pinta el mensaje literal del backend", async () => {
+    apiFetchMock.mockRejectedValueOnce(
+      new ApiError(400, { detail: "La entidad no puede quedarse sin titular." }),
+    );
+
+    const { result } = renderHook(() => useRemoveOrgMember(7), { wrapper });
+    result.current.mutate(55);
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("La entidad no puede quedarse sin titular.");
+  });
+
+  it("un 409 con `detail` también pinta el mensaje del backend", async () => {
+    apiFetchMock.mockRejectedValueOnce(
+      new ApiError(409, { detail: "Esa persona ya no está en el equipo." }),
+    );
+
+    const { result } = renderHook(() => useRemoveOrgMember(7), { wrapper });
+    result.current.mutate(55);
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Esa persona ya no está en el equipo.");
+  });
+
+  it("un 400 sin cuerpo reconocible cae al mensaje genérico", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(400, null));
+
+    const { result } = renderHook(() => useRemoveOrgMember(7), { wrapper });
+    result.current.mutate(55);
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("No se pudo quitar a la persona del equipo.");
+  });
+
+  it("un 403 con `detail` prefiere el mensaje del backend al genérico de permiso", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(403, { detail: "Solo el titular." }));
+
+    const { result } = renderHook(() => useRemoveOrgMember(7), { wrapper });
+    result.current.mutate(55);
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("Solo el titular.");
+  });
 });
 
 /**

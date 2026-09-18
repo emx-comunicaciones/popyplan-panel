@@ -100,8 +100,16 @@ export function useRemoveOrgMember(
           method: "DELETE",
         });
       } catch (error) {
+        // `detailOf` (`lib/api/drfError.ts`) primero: el backend explica
+        // por qué no se puede (p. ej. dejar la entidad sin titular) mejor
+        // que el genérico de aquí.
         if (error instanceof ApiError && error.status === 403) {
-          throw new OrgMembersError("Solo el titular puede quitar del equipo.");
+          throw new OrgMembersError(detailOf(error) ?? "Solo el titular puede quitar del equipo.");
+        }
+        if (error instanceof ApiError && (error.status === 400 || error.status === 409)) {
+          throw new OrgMembersError(
+            detailOf(error) ?? "No se pudo quitar a la persona del equipo.",
+          );
         }
         throw new OrgMembersError("No se pudo quitar a la persona del equipo.");
       }

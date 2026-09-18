@@ -99,16 +99,14 @@ function ReportesPendientesCard() {
   );
 }
 
-/**
- * `usePlatformPendingHelpRequests` no distingue hoy el 403 del resto de
- * fallos (un solo tipo de error), así que cualquier fallo se pinta como
- * «No disponible» — el rol que llega aquí tiene «ayuda» en su menú y por
- * tanto acceso a la ruta.
- */
 function AyudaPendienteCard() {
   const helpRequests = usePlatformPendingHelpRequests();
 
   if (helpRequests.isError) {
+    // Mismo criterio que `ReportesPendientesCard`: un 403 es una sección
+    // que ese rol no tiene (la tarjeta desaparece), no un fallo del que
+    // avisar con «No disponible».
+    if (helpRequests.error.kind === "sin_acceso") return null;
     return (
       <KpiCard label="Solicitudes de ayuda pendientes" value={UNAVAILABLE} href="/plataforma/ayuda" />
     );

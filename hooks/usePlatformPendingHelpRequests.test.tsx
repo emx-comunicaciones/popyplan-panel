@@ -9,6 +9,8 @@ vi.mock("@/lib/api/client", async () => {
   return { ...actual, apiFetch: apiFetchMock };
 });
 
+import { ApiError } from "@/lib/api/client";
+
 import { usePlatformPendingHelpRequests } from "./usePlatformPendingHelpRequests";
 
 afterEach(() => {
@@ -71,5 +73,14 @@ describe("usePlatformPendingHelpRequests", () => {
 
     const { result } = renderHook(() => usePlatformPendingHelpRequests(), { wrapper });
     await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.kind).toBe("desconocido");
+  });
+
+  it("un 403 se distingue como «sin_acceso» (la tarjeta de Inicio se oculta)", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(403, { detail: "Sin permiso." }));
+
+    const { result } = renderHook(() => usePlatformPendingHelpRequests(), { wrapper });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.kind).toBe("sin_acceso");
   });
 });

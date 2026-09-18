@@ -15,14 +15,19 @@
  */
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
-import { apiFetch } from "@/lib/api/client";
+import { ApiError, apiFetch } from "@/lib/api/client";
 import { SAFETY } from "@/lib/api/endpoints";
 import type { HelpRequestRow } from "@/lib/api/types";
 
+export type PlatformHelpRequestsErrorKind = "sin_acceso" | "desconocido";
+
 export class PlatformHelpRequestsError extends Error {
-  constructor(message: string) {
+  readonly kind: PlatformHelpRequestsErrorKind;
+
+  constructor(kind: PlatformHelpRequestsErrorKind, message: string) {
     super(message);
     this.name = "PlatformHelpRequestsError";
+    this.kind = kind;
   }
 }
 
@@ -36,8 +41,21 @@ export function usePlatformPendingHelpRequests(): UseQueryResult<
       try {
         const rows = await apiFetch<HelpRequestRow[]>(SAFETY.HELP_REQUESTS_PENDING());
         return [...rows].sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
-      } catch {
-        throw new PlatformHelpRequestsError("No se pudieron cargar los avisos de ayuda.");
+      } catch (error) {
+        // Mismo criterio que `useReportsQueue.ts`: un 403 no es un fallo
+        // que contar a quien mira, es una sección que ese rol no tiene —
+        // la tarjeta del Inicio de plataforma se oculta en vez de pintar
+        // «No disponible».
+        if (error instanceof ApiError && error.status === 403) {
+          throw new PlatformHelpRequestsError(
+            "sin_acceso",
+            "No tienes acceso a los avisos de ayuda.",
+          );
+        }
+        throw new PlatformHelpRequestsError(
+          "desconocido",
+          "No se pudieron cargar los avisos de ayuda.",
+        );
       }
     },
   });

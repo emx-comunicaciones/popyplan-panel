@@ -92,7 +92,15 @@ export function useRemoveOrgReference(
         await apiFetch<void>(`${ORGANIZATIONS.REFERENCES(orgId)}?user_id=${userId}`, {
           method: "DELETE",
         });
-      } catch {
+      } catch (error) {
+        // Igual que en el alta: si el backend explica por qué no se puede
+        // (`lib/api/drfError.ts::detailOf`), ese mensaje manda.
+        if (
+          error instanceof ApiError &&
+          (error.status === 400 || error.status === 403 || error.status === 409)
+        ) {
+          throw new OrgReferencesError(detailOf(error) ?? "No se pudo quitar el referente.");
+        }
         throw new OrgReferencesError("No se pudo quitar el referente.");
       }
     },
