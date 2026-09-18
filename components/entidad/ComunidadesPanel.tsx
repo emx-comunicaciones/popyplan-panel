@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import {
@@ -67,6 +68,7 @@ function MemberRow({
 }) {
   const changeRole = useChangeCommunityMemberRole();
   const kick = useKickCommunityMember();
+  const [confirmingKick, setConfirmingKick] = useState(false);
 
   return (
     <tr className="border-b border-border-light">
@@ -100,8 +102,10 @@ function MemberRow({
               <Button
                 type="button"
                 variant="danger"
-                disabled={kick.isPending}
-                onClick={() => kick.mutate({ communityId, memberId: member.id })}
+                onClick={() => {
+                  kick.reset();
+                  setConfirmingKick(true);
+                }}
               >
                 Expulsar
               </Button>
@@ -115,11 +119,39 @@ function MemberRow({
             {changeRole.error.message}
           </p>
         ) : null}
-        {kick.isError ? (
-          <p role="alert" className="mt-1 text-xs text-error">
-            {kick.error.message}
-          </p>
-        ) : null}
+
+        <ConfirmDialog
+          open={confirmingKick}
+          title="Expulsar de la comunidad"
+          description={
+            // Mismo patrón que «Revocar» en `PersonasTable`: el error se
+            // lee dentro del diálogo, que solo se cierra si la expulsión
+            // llega a hacerse.
+            <div className="flex flex-col gap-2">
+              <p>
+                ¿Expulsar a «{member.full_name}» de esta comunidad? Dejará de ver sus actividades y
+                tendrá que volver a solicitar la entrada.
+              </p>
+              {kick.isError ? (
+                <p role="alert" className="text-error">
+                  {kick.error.message}
+                </p>
+              ) : null}
+            </div>
+          }
+          confirmLabel="Expulsar"
+          pending={kick.isPending}
+          onConfirm={() =>
+            kick.mutate(
+              { communityId, memberId: member.id },
+              { onSuccess: () => setConfirmingKick(false) },
+            )
+          }
+          onCancel={() => {
+            kick.reset();
+            setConfirmingKick(false);
+          }}
+        />
       </td>
     </tr>
   );
@@ -172,9 +204,9 @@ function CommunityDetail({ communityId }: { communityId: string }) {
   return (
     <div className="flex flex-col gap-6">
       <section aria-labelledby="pendientes-heading">
-        <h3 id="pendientes-heading" className="mb-2 text-base font-semibold text-text-base">
+        <h2 id="pendientes-heading" className="mb-2 text-base font-semibold text-text-base">
           Solicitudes pendientes
-        </h3>
+        </h2>
         {pending.isError ? (
           <ErrorState title="No se pudieron cargar las solicitudes" description={pending.error.message} />
         ) : !pending.data ? (
@@ -202,9 +234,9 @@ function CommunityDetail({ communityId }: { communityId: string }) {
       </section>
 
       <section aria-labelledby="miembros-heading">
-        <h3 id="miembros-heading" className="mb-2 text-base font-semibold text-text-base">
+        <h2 id="miembros-heading" className="mb-2 text-base font-semibold text-text-base">
           Miembros
-        </h3>
+        </h2>
         {members.isError ? (
           <ErrorState title="No se pudieron cargar los miembros" description={members.error.message} />
         ) : !members.data ? (

@@ -1,7 +1,8 @@
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { render, screen } from "@/test-utils/render";
+import { axe } from "@/test-utils/axe";
+import { render, screen, within } from "@/test-utils/render";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildEntityCommunityRow, buildCommunityMember } from "@/test-utils/fixtures/community";
@@ -42,7 +43,7 @@ afterEach(() => {
 });
 
 function idleMutation() {
-  return { mutate: vi.fn(), isPending: false, isError: false };
+  return { mutate: vi.fn(), isPending: false, isError: false, error: null, reset: vi.fn() };
 }
 
 async function renderPage(role = "titular", slug = "alfaville") {
@@ -55,10 +56,38 @@ async function renderPage(role = "titular", slug = "alfaville") {
   });
 
   const element = await EntidadComunidadesPage({ params: Promise.resolve({ slug }) });
-  render(element);
+  return render(element);
 }
 
 describe("EntidadComunidadesPage", () => {
+  it("no tiene violaciones de accesibilidad (axe), con una comunidad abierta", async () => {
+    const user = userEvent.setup();
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c1", name: "Paseos al atardecer" })],
+      isError: false,
+      error: null,
+    });
+    useCommunityMembersMock.mockReturnValue({
+      data: [buildCommunityMember({ id: "m1", full_name: "Marta López", role: "member" })],
+      isError: false,
+      error: null,
+    });
+    useCommunityPendingRequestsMock.mockReturnValue({
+      data: [buildCommunityMember({ id: "p1", full_name: "Bea Ruiz", status: "pending" })],
+      isError: false,
+      error: null,
+    });
+    useApproveCommunityMemberMock.mockReturnValue(idleMutation());
+    useRejectCommunityMemberMock.mockReturnValue(idleMutation());
+    useKickCommunityMemberMock.mockReturnValue(idleMutation());
+    useChangeCommunityMemberRoleMock.mockReturnValue(idleMutation());
+
+    const { container } = await renderPage();
+    await user.click(screen.getByRole("button", { name: /Paseos al atardecer/ }));
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("lista las comunidades de la entidad con su actividad", async () => {
     useEntityCommunitiesMock.mockReturnValue({
       data: [buildEntityCommunityRow({ name: "Paseos al atardecer", members_count: 12 })],
@@ -113,7 +142,7 @@ describe("EntidadComunidadesPage", () => {
     expect(approveMutate).toHaveBeenCalledWith({ communityId: "c1", memberId: "p1" });
   });
 
-  it("expulsar llama a la mutación con el id correcto", async () => {
+  it("expulsar pide confirmación antes de llamar a la mutación", async () => {
     const user = userEvent.setup();
     useEntityCommunitiesMock.mockReturnValue({
       data: [buildEntityCommunityRow({ id: "c1", name: "Paseos al atardecer" })],
@@ -129,14 +158,53 @@ describe("EntidadComunidadesPage", () => {
     const kickMutate = vi.fn();
     useApproveCommunityMemberMock.mockReturnValue(idleMutation());
     useRejectCommunityMemberMock.mockReturnValue(idleMutation());
-    useKickCommunityMemberMock.mockReturnValue({ mutate: kickMutate, isPending: false, isError: false });
+    useKickCommunityMemberMock.mockReturnValue({ ...idleMutation(), mutate: kickMutate });
     useChangeCommunityMemberRoleMock.mockReturnValue(idleMutation());
 
     await renderPage();
     await user.click(screen.getByRole("button", { name: /Paseos al atardecer/ }));
     await user.click(screen.getByRole("button", { name: "Expulsar" }));
 
-    expect(kickMutate).toHaveBeenCalledWith({ communityId: "c1", memberId: "m1" });
+    expect(kickMutate).not.toHaveBeenCalled();
+    const dialog = screen.getByRole("alertdialog", { name: "Expulsar de la comunidad" });
+    expect(within(dialog).getByText(/Marta López/)).toBeInTheDocument();
+
+    await user.click(within(dialog).getByRole("button", { name: "Expulsar" }));
+
+    expect(kickMutate).toHaveBeenCalledWith(
+      { communityId: "c1", memberId: "m1" },
+      expect.anything(),
+    );
+  });
+
+  it("si expulsar falla, el error se lee dentro del diálogo", async () => {
+    const user = userEvent.setup();
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c1", name: "Paseos al atardecer" })],
+      isError: false,
+      error: null,
+    });
+    useCommunityMembersMock.mockReturnValue({
+      data: [buildCommunityMember({ id: "m1", full_name: "Marta López", role: "member" })],
+      isError: false,
+      error: null,
+    });
+    useCommunityPendingRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useApproveCommunityMemberMock.mockReturnValue(idleMutation());
+    useRejectCommunityMemberMock.mockReturnValue(idleMutation());
+    useKickCommunityMemberMock.mockReturnValue({
+      ...idleMutation(),
+      isError: true,
+      error: new Error("No se pudo expulsar a esa persona."),
+    });
+    useChangeCommunityMemberRoleMock.mockReturnValue(idleMutation());
+
+    await renderPage();
+    await user.click(screen.getByRole("button", { name: /Paseos al atardecer/ }));
+    await user.click(screen.getByRole("button", { name: "Expulsar" }));
+
+    const dialog = screen.getByRole("alertdialog", { name: "Expulsar de la comunidad" });
+    expect(within(dialog).getByRole("alert")).toHaveTextContent("No se pudo expulsar a esa persona.");
   });
 
   it("sin comunidades muestra el estado vacío", async () => {

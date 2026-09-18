@@ -1,7 +1,8 @@
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { render, screen, within } from "@/test-utils/render";
+import { axe } from "@/test-utils/axe";
+import { act, render, screen, within } from "@/test-utils/render";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildOrganization } from "@/test-utils/fixtures/organization";
@@ -37,7 +38,14 @@ vi.mock("@/hooks/useOrgScope", () => ({ useOrgScope: useOrgScopeMock }));
 import EntidadConfiguracionPage from "./page";
 
 function idleMutation() {
-  return { mutate: vi.fn(), isPending: false, isError: false, isSuccess: false };
+  return {
+    mutate: vi.fn(),
+    isPending: false,
+    isError: false,
+    isSuccess: false,
+    error: null,
+    reset: vi.fn(),
+  };
 }
 
 afterEach(() => {
@@ -75,10 +83,38 @@ async function renderPage(role = "titular", slug = "alfaville") {
   });
 
   const element = await EntidadConfiguracionPage({ params: Promise.resolve({ slug }) });
-  render(element);
+  return render(element);
 }
 
 describe("EntidadConfiguracionPage", () => {
+  it("no tiene violaciones de accesibilidad (axe)", async () => {
+    setDefaultMocks();
+    useOrgMembersMock.mockReturnValue({
+      data: [buildOrgMembershipFull({ user: 88, public_name: "Carla" })],
+      isError: false,
+      error: null,
+    });
+    useOrgReferencesMock.mockReturnValue({
+      data: [
+        {
+          id: 1,
+          organization: 7,
+          referent: 88,
+          user: 42,
+          created_at: "2026-01-05T09:00:00Z",
+          public_name: "Bea",
+          photo: "",
+        } as Reference,
+      ],
+      isError: false,
+      error: null,
+    });
+
+    const { container } = await renderPage();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("guarda los datos de la entidad", async () => {
     setDefaultMocks();
     const updateMutate = vi.fn();
@@ -106,7 +142,7 @@ describe("EntidadConfiguracionPage", () => {
   it("añadir miembro al equipo llama a la mutación con user y role", async () => {
     setDefaultMocks();
     const addMutate = vi.fn();
-    useAddOrgMemberMock.mockReturnValue({ mutate: addMutate, isPending: false, isError: false });
+    useAddOrgMemberMock.mockReturnValue({ ...idleMutation(), mutate: addMutate });
     const user = userEvent.setup();
 
     await renderPage();
@@ -115,10 +151,10 @@ describe("EntidadConfiguracionPage", () => {
     await user.selectOptions(screen.getByLabelText("Rol"), "analista");
     await user.click(screen.getByRole("button", { name: "Añadir" }));
 
-    expect(addMutate).toHaveBeenCalledWith({ user: 55, role: "analista" });
+    expect(addMutate).toHaveBeenCalledWith({ user: 55, role: "analista" }, expect.anything());
   });
 
-  it("quitar del equipo llama a la mutación con el user id", async () => {
+  it("quitar del equipo pide confirmación antes de llamar a la mutación", async () => {
     setDefaultMocks();
     useOrgMembersMock.mockReturnValue({
       data: [buildOrgMembershipFull({ user: 88, public_name: "Carla" })],
@@ -126,7 +162,10 @@ describe("EntidadConfiguracionPage", () => {
       error: null,
     });
     const removeMutate = vi.fn();
-    useRemoveOrgMemberMock.mockReturnValue({ mutate: removeMutate, isPending: false, isError: false });
+    useRemoveOrgMemberMock.mockReturnValue({
+      ...idleMutation(),
+      mutate: removeMutate,
+    });
     const user = userEvent.setup();
 
     await renderPage();
@@ -134,13 +173,107 @@ describe("EntidadConfiguracionPage", () => {
     const equipoSection = screen.getByText("Carla").closest("table") as HTMLElement;
     await user.click(within(equipoSection).getByRole("button", { name: "Quitar" }));
 
-    expect(removeMutate).toHaveBeenCalledWith(88);
+    expect(removeMutate).not.toHaveBeenCalled();
+    const dialog = screen.getByRole("alertdialog", { name: "Quitar del equipo" });
+    expect(within(dialog).getByText(/Carla/)).toBeInTheDocument();
+
+    await user.click(within(dialog).getByRole("button", { name: "Quitar" }));
+
+    expect(removeMutate).toHaveBeenCalledWith(88, expect.anything());
   });
 
-  it("asignar referencia llama a la mutación con user y referent_user", async () => {
+  it("quitarse a uno mismo del equipo avisa de que se pierde el acceso al panel", async () => {
+    setDefaultMocks();
+    // `buildMe` da id 42, el mismo `user` que `buildOrgMembershipFull`.
+    useOrgMembersMock.mockReturnValue({
+      data: [buildOrgMembershipFull({ user: 42, public_name: "Ana" })],
+      isError: false,
+      error: null,
+    });
+    useRemoveOrgMemberMock.mockReturnValue(idleMutation());
+    const user = userEvent.setup();
+
+    await renderPage();
+
+    const equipoSection = screen.getByText("Ana").closest("table") as HTMLElement;
+    await user.click(within(equipoSection).getByRole("button", { name: "Quitar" }));
+
+    const dialog = screen.getByRole("alertdialog", { name: "Quitar del equipo" });
+    expect(
+      within(dialog).getByText("Vas a quitarte a ti mismo del equipo y perderás el acceso al panel."),
+    ).toBeInTheDocument();
+  });
+
+  it("quitar a otra persona del equipo no avisa de pérdida de acceso propia", async () => {
+    setDefaultMocks();
+    useOrgMembersMock.mockReturnValue({
+      data: [buildOrgMembershipFull({ user: 88, public_name: "Carla" })],
+      isError: false,
+      error: null,
+    });
+    useRemoveOrgMemberMock.mockReturnValue(idleMutation());
+    const user = userEvent.setup();
+
+    await renderPage();
+
+    const equipoSection = screen.getByText("Carla").closest("table") as HTMLElement;
+    await user.click(within(equipoSection).getByRole("button", { name: "Quitar" }));
+
+    expect(
+      screen.queryByText("Vas a quitarte a ti mismo del equipo y perderás el acceso al panel."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("si quitar del equipo falla, el error se lee dentro del diálogo, que sigue abierto", async () => {
+    setDefaultMocks();
+    useOrgMembersMock.mockReturnValue({
+      data: [buildOrgMembershipFull({ user: 88, public_name: "Carla" })],
+      isError: false,
+      error: null,
+    });
+    useRemoveOrgMemberMock.mockReturnValue({
+      ...idleMutation(),
+      isError: true,
+      error: new Error("Solo el titular puede quitar del equipo."),
+    });
+    const user = userEvent.setup();
+
+    await renderPage();
+
+    const equipoSection = screen.getByText("Carla").closest("table") as HTMLElement;
+    await user.click(within(equipoSection).getByRole("button", { name: "Quitar" }));
+
+    const dialog = screen.getByRole("alertdialog", { name: "Quitar del equipo" });
+    expect(within(dialog).getByRole("alert")).toHaveTextContent(
+      "Solo el titular puede quitar del equipo.",
+    );
+  });
+
+  it("añadir miembro: los campos solo se limpian cuando el alta sale bien", async () => {
+    setDefaultMocks();
+    const addMutate = vi.fn();
+    useAddOrgMemberMock.mockReturnValue({ ...idleMutation(), mutate: addMutate });
+    const user = userEvent.setup();
+
+    await renderPage();
+
+    await user.type(screen.getByLabelText("Id de usuario"), "55");
+    await user.click(screen.getByRole("button", { name: "Añadir" }));
+
+    // El backend responde 400: la mutación no llama a `onSuccess` y el
+    // valor escrito sigue ahí para corregirlo.
+    expect(screen.getByLabelText("Id de usuario")).toHaveValue(55);
+
+    const options = addMutate.mock.calls.at(-1)?.[1] as { onSuccess: () => void };
+    await act(async () => options.onSuccess());
+
+    expect(screen.getByLabelText("Id de usuario")).toHaveValue(null);
+  });
+
+  it("asignar referencia: los campos solo se limpian cuando el alta sale bien", async () => {
     setDefaultMocks();
     const createMutate = vi.fn();
-    useCreateOrgReferenceMock.mockReturnValue({ mutate: createMutate, isPending: false, isError: false });
+    useCreateOrgReferenceMock.mockReturnValue({ ...idleMutation(), mutate: createMutate });
     const user = userEvent.setup();
 
     await renderPage();
@@ -149,7 +282,29 @@ describe("EntidadConfiguracionPage", () => {
     await user.type(screen.getByLabelText("Referente (id)"), "9");
     await user.click(screen.getByRole("button", { name: "Asignar" }));
 
-    expect(createMutate).toHaveBeenCalledWith({ user: 42, referent_user: 9 });
+    expect(screen.getByLabelText("Persona (id)")).toHaveValue(42);
+    expect(screen.getByLabelText("Referente (id)")).toHaveValue(9);
+
+    const options = createMutate.mock.calls.at(-1)?.[1] as { onSuccess: () => void };
+    await act(async () => options.onSuccess());
+
+    expect(screen.getByLabelText("Persona (id)")).toHaveValue(null);
+    expect(screen.getByLabelText("Referente (id)")).toHaveValue(null);
+  });
+
+  it("asignar referencia llama a la mutación con user y referent_user", async () => {
+    setDefaultMocks();
+    const createMutate = vi.fn();
+    useCreateOrgReferenceMock.mockReturnValue({ ...idleMutation(), mutate: createMutate });
+    const user = userEvent.setup();
+
+    await renderPage();
+
+    await user.type(screen.getByLabelText("Persona (id)"), "42");
+    await user.type(screen.getByLabelText("Referente (id)"), "9");
+    await user.click(screen.getByRole("button", { name: "Asignar" }));
+
+    expect(createMutate).toHaveBeenCalledWith({ user: 42, referent_user: 9 }, expect.anything());
   });
 
   it("lista referencias existentes y quitar llama a la mutación", async () => {
@@ -165,16 +320,19 @@ describe("EntidadConfiguracionPage", () => {
     } as Reference;
     useOrgReferencesMock.mockReturnValue({ data: [reference], isError: false, error: null });
     const removeMutate = vi.fn();
-    useRemoveOrgReferenceMock.mockReturnValue({ mutate: removeMutate, isPending: false, isError: false });
+    useRemoveOrgReferenceMock.mockReturnValue({ ...idleMutation(), mutate: removeMutate });
     const user = userEvent.setup();
 
     await renderPage();
 
-    expect(screen.getByText("Bea — referente #9")).toBeInTheDocument();
     const referenciasCard = screen.getByText("Referencias").parentElement as HTMLElement;
     await user.click(within(referenciasCard).getByRole("button", { name: "Quitar" }));
 
-    expect(removeMutate).toHaveBeenCalledWith(42);
+    expect(removeMutate).not.toHaveBeenCalled();
+    const dialog = screen.getByRole("alertdialog", { name: "Quitar referencia" });
+    await user.click(within(dialog).getByRole("button", { name: "Quitar" }));
+
+    expect(removeMutate).toHaveBeenCalledWith(42, expect.anything());
   });
 
   it("ampliar ámbito por municipios llama a la mutación con places", async () => {

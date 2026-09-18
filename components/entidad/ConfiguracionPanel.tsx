@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useAddOrgMember, useOrgMembers, useRemoveOrgMember } from "@/hooks/useOrgMembers";
@@ -11,7 +12,7 @@ import { useCreateOrgReference, useOrgReferences, useRemoveOrgReference } from "
 import { useOrganization } from "@/hooks/useOrganization";
 import { useOrgScope } from "@/hooks/useOrgScope";
 import { useUpdateOrganization } from "@/hooks/useUpdateOrganization";
-import type { OrgMembershipRole } from "@/lib/api/types";
+import type { OrgMembershipFull, OrgMembershipRole, Reference } from "@/lib/api/types";
 
 export interface ConfiguracionPanelProps {
   orgId: number | string;
@@ -20,6 +21,12 @@ export interface ConfiguracionPanelProps {
    * la sección Equipo (ver el docstring del componente).
    */
   role: OrgMembershipRole;
+  /**
+   * Id de la cuenta con la que se mira la página (`session.me.id`): el
+   * equipo no lo puede saber por sí solo (`OrgMembership.user` es un id
+   * suelto) y hace falta para avisar a quien va a quitarse a sí mismo.
+   */
+  currentUserId: number;
 }
 
 const ROLE_OPTIONS: OrgMembershipRole[] = [
@@ -167,18 +174,20 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
   );
 }
 
-function Equipo({ orgId }: { orgId: number | string }) {
+function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserId: number }) {
   const members = useOrgMembers(orgId);
   const addMember = useAddOrgMember(orgId);
   const removeMember = useRemoveOrgMember(orgId);
   const [userId, setUserId] = useState("");
   const [role, setRole] = useState<OrgMembershipRole>("dinamizador");
+  const [removing, setRemoving] = useState<OrgMembershipFull | null>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!userId) return;
-    addMember.mutate({ user: Number(userId), role });
-    setUserId("");
+    // El campo se limpia solo si el alta sale bien: con un 400 («esa
+    // persona ya tiene un rol») el id escrito sigue ahí para corregirlo.
+    addMember.mutate({ user: Number(userId), role }, { onSuccess: () => setUserId("") });
   }
 
   return (
@@ -237,7 +246,9 @@ function Equipo({ orgId }: { orgId: number | string }) {
               <tr className="border-b border-border text-text-secondary">
                 <th scope="col" className="px-3 py-2 font-semibold">Usuario</th>
                 <th scope="col" className="px-3 py-2 font-semibold">Rol</th>
-                <th scope="col" className="px-3 py-2 font-semibold" />
+                <th scope="col" className="px-3 py-2 font-semibold">
+                  <span className="sr-only">Acciones</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -249,8 +260,10 @@ function Equipo({ orgId }: { orgId: number | string }) {
                     <Button
                       type="button"
                       variant="danger"
-                      disabled={removeMember.isPending}
-                      onClick={() => removeMember.mutate(member.user)}
+                      onClick={() => {
+                        removeMember.reset();
+                        setRemoving(member);
+                      }}
                     >
                       Quitar
                     </Button>
@@ -261,11 +274,43 @@ function Equipo({ orgId }: { orgId: number | string }) {
           </table>
         </div>
       )}
-      {removeMember.isError ? (
-        <p role="alert" className="mt-2 text-sm text-error">
-          {removeMember.error.message}
-        </p>
-      ) : null}
+
+      <ConfirmDialog
+        open={removing !== null}
+        title="Quitar del equipo"
+        description={
+          // Mismo patrón que «Revocar» en `PersonasTable`: el error de la
+          // baja se lee dentro del diálogo, que solo se cierra si la
+          // llamada sale bien.
+          <div className="flex flex-col gap-2">
+            <p>
+              {removing
+                ? `¿Quitar a «${removing.public_name}» del equipo de la entidad? Dejará de tener rol en el panel.`
+                : ""}
+            </p>
+            {removing && removing.user === currentUserId ? (
+              <p className="font-medium text-text-base">
+                Vas a quitarte a ti mismo del equipo y perderás el acceso al panel.
+              </p>
+            ) : null}
+            {removeMember.isError ? (
+              <p role="alert" className="text-error">
+                {removeMember.error.message}
+              </p>
+            ) : null}
+          </div>
+        }
+        confirmLabel="Quitar"
+        pending={removeMember.isPending}
+        onConfirm={() => {
+          if (!removing) return;
+          removeMember.mutate(removing.user, { onSuccess: () => setRemoving(null) });
+        }}
+        onCancel={() => {
+          removeMember.reset();
+          setRemoving(null);
+        }}
+      />
     </Card>
   );
 }
@@ -276,13 +321,21 @@ function Referencias({ orgId }: { orgId: number | string }) {
   const removeReference = useRemoveOrgReference(orgId);
   const [userId, setUserId] = useState("");
   const [referentUserId, setReferentUserId] = useState("");
+  const [removing, setRemoving] = useState<Reference | null>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!userId || !referentUserId) return;
-    createReference.mutate({ user: Number(userId), referent_user: Number(referentUserId) });
-    setUserId("");
-    setReferentUserId("");
+    // Igual que en Equipo: los campos solo se vacían con el alta hecha.
+    createReference.mutate(
+      { user: Number(userId), referent_user: Number(referentUserId) },
+      {
+        onSuccess: () => {
+          setUserId("");
+          setReferentUserId("");
+        },
+      },
+    );
   }
 
   return (
@@ -338,8 +391,10 @@ function Referencias({ orgId }: { orgId: number | string }) {
               <Button
                 type="button"
                 variant="danger"
-                disabled={removeReference.isPending}
-                onClick={() => removeReference.mutate(reference.user)}
+                onClick={() => {
+                  removeReference.reset();
+                  setRemoving(reference);
+                }}
               >
                 Quitar
               </Button>
@@ -347,6 +402,35 @@ function Referencias({ orgId }: { orgId: number | string }) {
           ))}
         </ul>
       )}
+
+      <ConfirmDialog
+        open={removing !== null}
+        title="Quitar referencia"
+        description={
+          <div className="flex flex-col gap-2">
+            <p>
+              {removing
+                ? `¿Quitar el referente de «${removing.public_name}»? Esta persona se quedará sin referente en la entidad.`
+                : ""}
+            </p>
+            {removeReference.isError ? (
+              <p role="alert" className="text-error">
+                {removeReference.error.message}
+              </p>
+            ) : null}
+          </div>
+        }
+        confirmLabel="Quitar"
+        pending={removeReference.isPending}
+        onConfirm={() => {
+          if (!removing) return;
+          removeReference.mutate(removing.user, { onSuccess: () => setRemoving(null) });
+        }}
+        onCancel={() => {
+          removeReference.reset();
+          setRemoving(null);
+        }}
+      />
     </Card>
   );
 }
@@ -435,11 +519,11 @@ function Ambito({ orgId }: { orgId: number | string }) {
  * `useOrgMembers` (que exige el mismo permiso de equipo), así que un
  * `moderador` los verá vacíos salvo «Sin referente».
  */
-export function ConfiguracionPanel({ orgId, role }: ConfiguracionPanelProps) {
+export function ConfiguracionPanel({ orgId, role, currentUserId }: ConfiguracionPanelProps) {
   return (
     <div className="flex flex-col gap-6">
       <DatosEntidad orgId={orgId} />
-      {role === "titular" ? <Equipo orgId={orgId} /> : null}
+      {role === "titular" ? <Equipo orgId={orgId} currentUserId={currentUserId} /> : null}
       <Referencias orgId={orgId} />
       <Ambito orgId={orgId} />
     </div>

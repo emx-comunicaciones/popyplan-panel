@@ -37,7 +37,11 @@ export default async function EntidadConfiguracionPage({
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-semibold text-text-base">Configuración</h1>
-      <ConfiguracionPanel orgId={membership.organization_id} role={membership.role} />
+      <ConfiguracionPanel
+        orgId={membership.organization_id}
+        role={membership.role}
+        currentUserId={session.me.id}
+      />
     </div>
   );
 }
