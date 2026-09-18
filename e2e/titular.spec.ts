@@ -98,8 +98,13 @@ test.describe("Titular de Asociación Bidasoa", () => {
     // (`popyplan-<slug>-<since>-<until>.csv`, docs/PANEL.md §2.2). Se
     // comprueba entero, no solo la extensión; `expectExportFilename`
     // guarda el respaldo para un backend anterior al cambio.
+    // `status() === 200`: `fetchWithAuth` puede refrescar y reintentar
+    // ante un 401, y aquí interesa la respuesta que trae el fichero.
     const responsePromise = page.waitForResponse(
-      (response) => response.url().includes("/export/") && response.url().includes("format=csv"),
+      (response) =>
+        response.url().includes("/export/") &&
+        response.url().includes("format=csv") &&
+        response.status() === 200,
     );
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: "Exportar CSV" }).click();

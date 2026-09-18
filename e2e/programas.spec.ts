@@ -69,8 +69,13 @@ test("titular crea, activa y cierra un programa, y descarga su informe CSV", asy
   // (`popyplan-programa-<id>.csv`, docs/PANEL.md §12.4) y el backend ya
   // expone esa cabecera por CORS, así que se comprueba entero; el
   // respaldo (`informe-programa.csv`) lo cubre `expectExportFilename`.
+  // `status() === 200` por lo mismo que en `titular.spec.ts`:
+  // `fetchWithAuth` reintenta tras refrescar si el access ha caducado.
   const responsePromise = page.waitForResponse(
-    (response) => response.url().includes("/report/") && response.url().includes("format=csv"),
+    (response) =>
+      response.url().includes("/report/") &&
+      response.url().includes("format=csv") &&
+      response.status() === 200,
   );
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Descargar informe CSV" }).click();
