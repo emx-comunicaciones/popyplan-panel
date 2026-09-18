@@ -14,6 +14,13 @@
  * Invariante 7 (nada de seguridad detrás de pago): un contrato `ended`
  * no limita ninguna función de la entidad — este panel es solo la vista
  * de plataforma sobre `billing`, nunca condiciona el resto del panel.
+ * Un contrato ya finalizado tampoco ofrece «Editar»: el backend rechaza
+ * cualquier cambio sobre él.
+ *
+ * Las dos acciones que pasan por `ConfirmDialog` («Finalizar» y «Marcar
+ * pagada») pintan el error de su mutación **dentro** del diálogo, que
+ * solo se cierra si la llamada sale bien — mismo patrón que «Quitar» del
+ * equipo o «Revocar» una invitación.
  */
 import { useState, type FormEvent } from "react";
 
@@ -38,7 +45,7 @@ import {
 } from "@/hooks/useBilling";
 import { useOrganizations } from "@/hooks/useOrganizations";
 import type { Contract, ContractStatus, Invoice, InvoiceStatus, PricingTier } from "@/lib/api/types";
-import { formatEuros } from "@/lib/programs/money";
+import { eurosToCents, formatEuros } from "@/lib/programs/money";
 
 import { ContratoForm } from "./ContratoForm";
 import { FacturaForm } from "./FacturaForm";
@@ -196,7 +203,10 @@ function ContratosTab({ canManage, onViewInvoices }: ContratosTabProps) {
                   <Button type="button" variant="secondary" onClick={() => onViewInvoices(c.id)}>
                     Ver facturas
                   </Button>
-                  {canManage ? (
+                  {/* Un contrato finalizado no se modifica (el backend
+                      responde 409 a cualquier cambio), así que no se
+                      ofrece «Editar» sobre él. */}
+                  {canManage && c.status !== "ended" ? (
                     <Button type="button" variant="secondary" onClick={() => setEditing(c)}>
                       Editar
                     </Button>
@@ -207,7 +217,14 @@ function ContratosTab({ canManage, onViewInvoices }: ContratosTabProps) {
                     </Button>
                   ) : null}
                   {canManage && c.status === "active" ? (
-                    <Button type="button" variant="danger" onClick={() => setEnding(c)}>
+                    <Button
+                      type="button"
+                      variant="danger"
+                      onClick={() => {
+                        endContract.reset();
+                        setEnding(c);
+                      }}
+                    >
                       Finalizar
                     </Button>
                   ) : null}
@@ -235,10 +252,28 @@ function ContratosTab({ canManage, onViewInvoices }: ContratosTabProps) {
       <ConfirmDialog
         open={ending !== null}
         title="Finalizar contrato"
-        description="La entidad deja de facturarse por este contrato. No afecta a su funcionamiento en el panel (invariante 7): sigue operando igual."
+        description={
+          // Mismo patrón que «Quitar» del equipo o «Revocar» invitación:
+          // el error se lee dentro del diálogo, que solo se cierra si la
+          // llamada sale bien.
+          <div className="flex flex-col gap-2">
+            <p>
+              La entidad deja de facturarse por este contrato. No afecta a su funcionamiento en
+              el panel: sigue operando igual.
+            </p>
+            {endContract.isError ? (
+              <p role="alert" className="text-error">
+                {endContract.error.message}
+              </p>
+            ) : null}
+          </div>
+        }
         confirmLabel="Finalizar"
         pending={endContract.isPending}
-        onCancel={() => setEnding(null)}
+        onCancel={() => {
+          endContract.reset();
+          setEnding(null);
+        }}
         onConfirm={() => {
           if (!ending) return;
           endContract.mutate(ending.id, { onSuccess: () => setEnding(null) });
@@ -272,18 +307,34 @@ function TierForm({ editing, onDone }: TierFormProps) {
   );
   const [isActive, setIsActive] = useState(editing === "new" ? true : (editing.is_active ?? true));
 
+  const [rangeError, setRangeError] = useState<string | null>(null);
+
   const mutation = editing === "new" ? createTier : updateTier;
-  const priceCents = Math.round(Number(priceEuros.replace(",", ".")) * 100);
+  // Misma conversión que el presupuesto de Programas: redondear tras
+  // multiplicar por 100 evita el error de coma flotante de JS.
+  const priceCents = eurosToCents(priceEuros);
   const canSubmit = name.trim().length > 0 && priceEuros.trim().length > 0 && !Number.isNaN(priceCents);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!canSubmit) return;
 
+    const min = Number(minPopulation) || 0;
+    const max = maxPopulation.trim() === "" ? null : Number(maxPopulation);
+    if (min < 0) {
+      setRangeError("La población mínima no puede ser negativa.");
+      return;
+    }
+    if (max !== null && max < min) {
+      setRangeError("La población máxima no puede ser menor que la mínima.");
+      return;
+    }
+    setRangeError(null);
+
     const fields = {
       name,
-      min_population: Number(minPopulation) || 0,
-      max_population: maxPopulation.trim() === "" ? null : Number(maxPopulation),
+      min_population: min,
+      max_population: max,
       annual_price_cents: priceCents,
       is_active: isActive,
     };
@@ -319,7 +370,11 @@ function TierForm({ editing, onDone }: TierFormProps) {
             type="number"
             min="0"
             value={minPopulation}
-            onChange={(event) => setMinPopulation(event.target.value)}
+            aria-describedby={rangeError ? "tramo-rango-error" : undefined}
+            onChange={(event) => {
+              setRangeError(null);
+              setMinPopulation(event.target.value);
+            }}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
@@ -332,7 +387,11 @@ function TierForm({ editing, onDone }: TierFormProps) {
             type="number"
             min="0"
             value={maxPopulation}
-            onChange={(event) => setMaxPopulation(event.target.value)}
+            aria-describedby={rangeError ? "tramo-rango-error" : undefined}
+            onChange={(event) => {
+              setRangeError(null);
+              setMaxPopulation(event.target.value);
+            }}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
@@ -360,6 +419,12 @@ function TierForm({ editing, onDone }: TierFormProps) {
         />
         Tramo activo (disponible para nuevos contratos)
       </label>
+
+      {rangeError ? (
+        <p id="tramo-rango-error" role="alert" className="text-sm text-error">
+          {rangeError}
+        </p>
+      ) : null}
 
       <div className="flex gap-2">
         <Button type="submit" disabled={!canSubmit || mutation.isPending}>
@@ -458,6 +523,7 @@ function FacturasTab({ canManage, selectedContractId, onSelectContract }: Factur
   const [creating, setCreating] = useState(false);
   const [paying, setPaying] = useState<Invoice | null>(null);
   const [paidOn, setPaidOn] = useState("");
+  const [paidOnError, setPaidOnError] = useState<string | null>(null);
 
   return (
     <div className="flex flex-col gap-4">
@@ -527,6 +593,8 @@ function FacturasTab({ canManage, selectedContractId, onSelectContract }: Factur
                         type="button"
                         variant="secondary"
                         onClick={() => {
+                          payInvoice.reset();
+                          setPaidOnError(null);
                           setPaying(i);
                           setPaidOn(new Date().toISOString().slice(0, 10));
                         }}
@@ -563,27 +631,47 @@ function FacturasTab({ canManage, selectedContractId, onSelectContract }: Factur
                   id="factura-paid-on"
                   type="date"
                   value={paidOn}
-                  onChange={(event) => setPaidOn(event.target.value)}
+                  aria-describedby={paidOnError ? "factura-paid-on-error" : undefined}
+                  onChange={(event) => {
+                    setPaidOnError(null);
+                    setPaidOn(event.target.value);
+                  }}
                   className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
                 />
+                {paidOnError ? (
+                  <p id="factura-paid-on-error" role="alert" className="text-error">
+                    {paidOnError}
+                  </p>
+                ) : null}
+                {/* El error de la llamada también se lee aquí: el diálogo
+                    solo se cierra si el pago se registra de verdad. */}
+                {payInvoice.isError ? (
+                  <p role="alert" className="text-error">
+                    {payInvoice.error.message}
+                  </p>
+                ) : null}
               </div>
             }
             confirmLabel="Marcar pagada"
             pending={payInvoice.isPending}
-            onCancel={() => setPaying(null)}
+            onCancel={() => {
+              payInvoice.reset();
+              setPaidOnError(null);
+              setPaying(null);
+            }}
             onConfirm={() => {
-              if (!paying || !paidOn) return;
+              if (!paying) return;
+              if (!paidOn) {
+                setPaidOnError("Indica la fecha de pago.");
+                return;
+              }
+              setPaidOnError(null);
               payInvoice.mutate(
                 { invoiceId: paying.id, contractId: selectedContractId, paidOn },
                 { onSuccess: () => setPaying(null) },
               );
             }}
           />
-          {payInvoice.isError ? (
-            <p role="alert" className="text-sm text-error">
-              {payInvoice.error.message}
-            </p>
-          ) : null}
         </>
       )}
     </div>

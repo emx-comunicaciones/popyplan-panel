@@ -27,6 +27,7 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
   const [issuedOn, setIssuedOn] = useState("");
   const [dueOn, setDueOn] = useState("");
   const [notes, setNotes] = useState("");
+  const [dateError, setDateError] = useState<string | null>(null);
 
   const canSubmit =
     number.trim().length > 0 &&
@@ -38,6 +39,14 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!canSubmit) return;
+
+    // Las dos fechas llegan como `YYYY-MM-DD`, así que la comparación de
+    // cadenas ya ordena bien. El backend lo valida otra vez.
+    if (dueOn < issuedOn) {
+      setDateError("La fecha de vencimiento no puede ser anterior a la de emisión.");
+      return;
+    }
+    setDateError(null);
 
     createInvoice.mutate(
       {
@@ -91,7 +100,11 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
             id="factura-issued-on"
             type="date"
             value={issuedOn}
-            onChange={(event) => setIssuedOn(event.target.value)}
+            aria-describedby={dateError ? "factura-fechas-error" : undefined}
+            onChange={(event) => {
+              setDateError(null);
+              setIssuedOn(event.target.value);
+            }}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
@@ -103,7 +116,11 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
             id="factura-due-on"
             type="date"
             value={dueOn}
-            onChange={(event) => setDueOn(event.target.value)}
+            aria-describedby={dateError ? "factura-fechas-error" : undefined}
+            onChange={(event) => {
+              setDateError(null);
+              setDueOn(event.target.value);
+            }}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
         </div>
@@ -121,6 +138,12 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
           className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
         />
       </div>
+
+      {dateError ? (
+        <p id="factura-fechas-error" role="alert" className="text-sm text-error">
+          {dateError}
+        </p>
+      ) : null}
 
       <div className="flex gap-2">
         <Button type="submit" disabled={!canSubmit || createInvoice.isPending}>
