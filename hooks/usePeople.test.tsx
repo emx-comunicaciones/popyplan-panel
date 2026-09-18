@@ -113,6 +113,15 @@ describe("usePeople", () => {
     expect((result.current.error as PeopleError).kind).toBe("sin_acceso");
   });
 
+  it("un 404 (página que ya no existe) surge como 'pagina_inexistente'", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(404, { detail: "Página inválida." }));
+
+    const { result } = renderHook(() => usePeople(7, PERIOD, { page: 3 }), { wrapper });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    expect((result.current.error as PeopleError).kind).toBe("pagina_inexistente");
+  });
+
   it("cualquier otro error surge como 'desconocido'", async () => {
     apiFetchMock.mockRejectedValueOnce(new Error("red caída"));
 

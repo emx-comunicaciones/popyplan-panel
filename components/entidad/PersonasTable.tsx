@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { AddPersonDialog } from "@/components/people/AddPersonDialog";
 import { ImportPeopleDialog } from "@/components/people/ImportPeopleDialog";
@@ -85,6 +85,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
   const [addOpen, setAddOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [revoking, setRevoking] = useState<InvitedPersonRow | null>(null);
+  const [resentTo, setResentTo] = useState<string | null>(null);
   const period = presetPeriod("mes");
   const communities = useEntityCommunities(orgId);
 
@@ -100,6 +101,20 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
 
   const resendInvitation = useResendInvitation(orgId);
   const revokeInvitation = useRevokeInvitation(orgId);
+
+  /**
+   * El paginador de DRF responde 404 cuando la página pedida ya no
+   * existe (se revoca una invitación, o alguien cambia los filtros desde
+   * otra pestaña, y el listado encoge mientras se mira la página 3). Sin
+   * esto la tabla se quedaba en un `ErrorState` del que no se sale, con
+   * los botones de paginación fuera de la vista.
+   */
+  useEffect(() => {
+    if (page > 1 && people.error?.kind === "pagina_inexistente") {
+      setPage(1);
+      setResentTo(null);
+    }
+  }, [page, people.error]);
 
   function updateFilter<K extends keyof PersonasFilters>(key: K, value: string) {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -207,9 +222,9 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
           {resendInvitation.error.message}
         </p>
       ) : null}
-      {revokeInvitation.isError ? (
-        <p role="alert" className="text-sm text-error">
-          {revokeInvitation.error.message}
+      {resentTo ? (
+        <p role="status" className="text-sm text-success">
+          Invitación reenviada a {resentTo}.
         </p>
       ) : null}
 
@@ -263,11 +278,23 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
                                 type="button"
                                 variant="secondary"
                                 disabled={resendInvitation.isPending}
-                                onClick={() => resendInvitation.mutate(row.invitation_id)}
+                                onClick={() => {
+                                  setResentTo(null);
+                                  resendInvitation.mutate(row.invitation_id, {
+                                    onSuccess: () => setResentTo(row.display_name),
+                                  });
+                                }}
                               >
                                 Reenviar
                               </Button>
-                              <Button type="button" variant="danger" onClick={() => setRevoking(row)}>
+                              <Button
+                                type="button"
+                                variant="danger"
+                                onClick={() => {
+                                  revokeInvitation.reset();
+                                  setRevoking(row);
+                                }}
+                              >
                                 Revocar
                               </Button>
                             </div>
@@ -307,7 +334,10 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
               type="button"
               variant="secondary"
               disabled={!people.data.previous}
-              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+              onClick={() => {
+                setResentTo(null);
+                setPage((prev) => Math.max(1, prev - 1));
+              }}
             >
               Anterior
             </Button>
@@ -316,7 +346,10 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
               type="button"
               variant="secondary"
               disabled={!people.data.next}
-              onClick={() => setPage((prev) => prev + 1)}
+              onClick={() => {
+                setResentTo(null);
+                setPage((prev) => prev + 1);
+              }}
             >
               Siguiente
             </Button>
@@ -331,9 +364,21 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
         open={revoking !== null}
         title="Revocar invitación"
         description={
-          revoking
-            ? `¿Revocar la invitación a «${revoking.display_name}»? Esta acción no se puede deshacer.`
-            : ""
+          // El error de la revocación se lee aquí dentro: el diálogo solo
+          // se cierra si la llamada sale bien, así que quien acaba de
+          // pulsar «Revocar» ve el motivo sin perder el contexto.
+          <div className="flex flex-col gap-2">
+            <p>
+              {revoking
+                ? `¿Revocar la invitación a «${revoking.display_name}»? Esta acción no se puede deshacer.`
+                : ""}
+            </p>
+            {revokeInvitation.isError ? (
+              <p role="alert" className="text-error">
+                {revokeInvitation.error.message}
+              </p>
+            ) : null}
+          </div>
         }
         confirmLabel="Revocar"
         pending={revokeInvitation.isPending}
@@ -341,7 +386,10 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
           if (!revoking) return;
           revokeInvitation.mutate(revoking.invitation_id, { onSuccess: () => setRevoking(null) });
         }}
-        onCancel={() => setRevoking(null)}
+        onCancel={() => {
+          revokeInvitation.reset();
+          setRevoking(null);
+        }}
       />
     </div>
   );

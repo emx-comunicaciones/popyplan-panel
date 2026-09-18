@@ -74,12 +74,14 @@ function mockDefaults() {
     isPending: false,
     isError: false,
     error: null,
+    reset: vi.fn(),
   });
   useRevokeInvitationMock.mockReturnValue({
     mutate: vi.fn(),
     isPending: false,
     isError: false,
     error: null,
+    reset: vi.fn(),
   });
   useEntityCommunitiesMock.mockReturnValue({ data: [], isError: false, error: null });
 }
@@ -460,6 +462,7 @@ describe("EntidadPersonasPage", () => {
       isPending: false,
       isError: false,
       error: null,
+      reset: vi.fn(),
     });
     useRevokeInvitationMock.mockReturnValue({
       mutate: vi.fn(),
@@ -480,7 +483,7 @@ describe("EntidadPersonasPage", () => {
     await user.click(screen.getByLabelText("Incluir invitadas"));
     await user.click(screen.getByRole("button", { name: "Reenviar" }));
 
-    expect(resendMutate).toHaveBeenCalledWith(5);
+    expect(resendMutate).toHaveBeenCalledWith(5, expect.anything());
   });
 
   it("«Revocar» pide confirmación antes de llamar a la mutación", async () => {
@@ -490,12 +493,14 @@ describe("EntidadPersonasPage", () => {
       isPending: false,
       isError: false,
       error: null,
+      reset: vi.fn(),
     });
     useRevokeInvitationMock.mockReturnValue({
       mutate: revokeMutate,
       isPending: false,
       isError: false,
       error: null,
+      reset: vi.fn(),
     });
     usePeopleMock.mockReturnValue({
       data: pageData({ results: [buildInvitedPersonRow({ invitation_id: 5, display_name: "Carla" })] }),
@@ -517,6 +522,112 @@ describe("EntidadPersonasPage", () => {
     await user.click(within(dialog).getByRole("button", { name: "Revocar" }));
 
     expect(revokeMutate).toHaveBeenCalledWith(5, expect.anything());
+  });
+
+  it("el error de revocar se pinta dentro del diálogo, no bajo la tabla", async () => {
+    mockDefaults();
+    useRevokeInvitationMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      isError: true,
+      error: new Error("Solo titular o moderador pueden revocar invitaciones."),
+      reset: vi.fn(),
+    });
+    usePeopleMock.mockReturnValue({
+      data: pageData({ results: [buildInvitedPersonRow({ invitation_id: 5, display_name: "Carla" })] }),
+      isError: false,
+      error: null,
+    });
+    useInvitationsMock.mockReturnValue({ data: [], isError: false, error: null });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+    await user.click(screen.getByLabelText("Incluir invitadas"));
+    await user.click(screen.getByRole("button", { name: "Revocar" }));
+
+    const dialog = screen.getByRole("alertdialog");
+    expect(within(dialog).getByRole("alert")).toHaveTextContent(
+      "Solo titular o moderador pueden revocar invitaciones.",
+    );
+    expect(screen.getAllByRole("alert")).toHaveLength(1);
+  });
+
+  it("tras «Reenviar» con éxito, avisa con el nombre y se limpia al cambiar de página", async () => {
+    mockDefaults();
+    useResendInvitationMock.mockReturnValue({
+      mutate: vi.fn((_id: number, options?: { onSuccess?: () => void }) => options?.onSuccess?.()),
+      isPending: false,
+      isError: false,
+      error: null,
+      reset: vi.fn(),
+    });
+    usePeopleMock.mockReturnValue({
+      data: pageData({
+        next: "http://api/page=2",
+        results: [buildInvitedPersonRow({ invitation_id: 5, display_name: "Carla" })],
+      }),
+      isError: false,
+      error: null,
+    });
+    useInvitationsMock.mockReturnValue({ data: [], isError: false, error: null });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+    await user.click(screen.getByLabelText("Incluir invitadas"));
+    await user.click(screen.getByRole("button", { name: "Reenviar" }));
+
+    expect(screen.getByRole("status")).toHaveTextContent("Invitación reenviada a Carla.");
+
+    await user.click(screen.getByRole("button", { name: "Siguiente" }));
+
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("un 404 de una página que ya no existe devuelve el listado a la página 1", async () => {
+    mockDefaults();
+    useInvitationsMock.mockReturnValue({ data: [], isError: false, error: null });
+    usePeopleMock.mockImplementation(
+      (_orgId: unknown, _period: unknown, filters: { page?: number }) => {
+        if (filters.page && filters.page > 1) {
+          return {
+            data: undefined,
+            isError: true,
+            error: Object.assign(new Error("Esa página del listado ya no existe."), {
+              kind: "pagina_inexistente",
+            }),
+          };
+        }
+        return { data: pageData({ next: "http://api/page=2" }), isError: false, error: null };
+      },
+    );
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getByRole("button", { name: "Siguiente" }));
+
+    expect(screen.queryByText("No se pudieron cargar las personas")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Ana" })).toBeInTheDocument();
+    expect(usePeopleMock).toHaveBeenLastCalledWith(
+      7,
+      expect.anything(),
+      expect.objectContaining({ page: 1 }),
+    );
+  });
+
+  it("un error que no es de paginación sigue pintando el ErrorState", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({
+      data: undefined,
+      isError: true,
+      error: Object.assign(new Error("No tienes acceso al listado de personas."), {
+        kind: "sin_acceso",
+      }),
+    });
+
+    await renderPage("titular");
+
+    expect(screen.getByRole("alert")).toHaveTextContent("No tienes acceso al listado de personas.");
   });
 
   it("dinamizador con include_invited ve la fila pero sin Reenviar/Revocar", async () => {
@@ -578,6 +689,81 @@ describe("EntidadPersonasPage", () => {
 
     expect(mutate).toHaveBeenNthCalledWith(2, { file, dryRun: false }, expect.anything());
     expect(screen.getByText("Importación confirmada.")).toBeInTheDocument();
+  });
+
+  it("importar: «Elegir otro fichero» olvida el fichero y la vista previa", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    const previewResult = { created: 2, resent: 0, already_members: 0, errors: [] };
+    const mutate = vi.fn((input, options) => {
+      options?.onSuccess?.(previewResult);
+    });
+    useImportPeopleMock.mockReturnValue({
+      mutate,
+      isPending: false,
+      isError: false,
+      error: null,
+      reset: vi.fn(),
+    });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getByRole("button", { name: "Importar Excel/CSV" }));
+    const file = new File(["nombre;email\nAna;ana@example.com"], "personas.csv", { type: "text/csv" });
+    await user.upload(screen.getByLabelText("Fichero (.xlsx o .csv)"), file);
+    await user.click(screen.getByRole("button", { name: "Vista previa" }));
+
+    await user.click(screen.getByRole("button", { name: "Elegir otro fichero" }));
+
+    expect(screen.getByLabelText("Fichero (.xlsx o .csv)")).toHaveValue("");
+    expect(screen.getByRole("button", { name: "Vista previa" })).toBeDisabled();
+    expect(screen.queryByText("Creadas:")).not.toBeInTheDocument();
+  });
+
+  it("importar: con la subida en vuelo, Escape no cierra el diálogo", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useImportPeopleMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: true,
+      isError: false,
+      error: null,
+      reset: vi.fn(),
+    });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getByRole("button", { name: "Importar Excel/CSV" }));
+    await user.keyboard("{Escape}");
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancelar" })).toBeDisabled();
+  });
+
+  it("añadir persona: con la invitación en vuelo, Escape no cierra y «Cancelar» está deshabilitado", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useOrgMembersMock.mockReturnValue({ data: [], isError: false, error: null });
+    const reset = vi.fn();
+    useInviteMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: true,
+      isError: false,
+      error: null,
+      reset,
+    });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getByRole("button", { name: "Añadir persona" }));
+    await user.keyboard("{Escape}");
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancelar" })).toBeDisabled();
+    expect(reset).not.toHaveBeenCalled();
   });
 
   it("importar: fichero que supera el límite de 5 MB muestra error y bloquea la vista previa", async () => {

@@ -33,7 +33,18 @@ export interface PeopleFilters {
   includeInvited?: boolean;
 }
 
-export type PeopleErrorKind = "periodo_invalido" | "sin_acceso" | "desconocido";
+export type PeopleErrorKind =
+  | "periodo_invalido"
+  | "sin_acceso"
+  /**
+   * 404 del paginador de DRF: la página pedida ya no existe (alguien
+   * revocó una invitación o se filtró la lista mientras se miraba la
+   * página 3). Quien consume el hook vuelve a la página 1
+   * (`components/entidad/PersonasTable.tsx`) en vez de dejar la tabla en
+   * un error del que no se sale.
+   */
+  | "pagina_inexistente"
+  | "desconocido";
 
 export class PeopleError extends Error {
   readonly kind: PeopleErrorKind;
@@ -64,6 +75,9 @@ function toPeopleError(error: unknown): PeopleError {
     }
     if (error.status === 403) {
       return new PeopleError("sin_acceso", "No tienes acceso al listado de personas.");
+    }
+    if (error.status === 404) {
+      return new PeopleError("pagina_inexistente", "Esa página del listado ya no existe.");
     }
   }
   return new PeopleError("desconocido", "No se pudo cargar el listado de personas.");
