@@ -51,6 +51,49 @@ describe("ExportPanel", () => {
     expect(mutate).toHaveBeenCalledWith(expect.objectContaining({ groupBy: "year" }));
   });
 
+  it("con periodo controlado, exporta el que le pasa el dashboard, no el suyo", async () => {
+    const mutate = vi.fn();
+    useExportMock.mockReturnValue({ mutate, isPending: false, error: null });
+    const user = userEvent.setup();
+
+    render(
+      <ExportPanel
+        scope="paraguas"
+        orgId={3}
+        period={{ since: "2025-01-01", until: "2025-12-31" }}
+        preset="anio"
+        onPeriodChange={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Exportar CSV" }));
+
+    expect(mutate).toHaveBeenCalledWith(
+      expect.objectContaining({ period: { since: "2025-01-01", until: "2025-12-31" } }),
+    );
+    expect(screen.getByRole("button", { name: "Año" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("con periodo controlado, cambiar el selector avisa al dashboard en vez de guardarlo aparte", async () => {
+    const onPeriodChange = vi.fn();
+    useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
+    const user = userEvent.setup();
+
+    render(
+      <ExportPanel
+        scope="paraguas"
+        orgId={3}
+        period={{ since: "2025-01-01", until: "2025-12-31" }}
+        preset="anio"
+        onPeriodChange={onPeriodChange}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Trimestre" }));
+
+    expect(onPeriodChange).toHaveBeenCalledWith(expect.objectContaining({ since: expect.any(String) }), "trimestre");
+    // El panel no se queda con un periodo propio: sigue pintando el del dashboard.
+    expect(screen.getByRole("button", { name: "Año" })).toHaveAttribute("aria-pressed", "true");
+  });
+
   it("sin groupBy en props: exporta sin group_by mientras el desglose siga en «habitual»", async () => {
     const mutate = vi.fn();
     useExportMock.mockReturnValue({ mutate, isPending: false, error: null });

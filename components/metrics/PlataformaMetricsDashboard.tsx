@@ -199,7 +199,16 @@ export function PlataformaMetricsDashboard() {
             )}
           </section>
 
-          <ExportPanel scope="plataforma" groupBy={groupBy} />
+          {/* El periodo lo manda este dashboard: el selector del panel de
+              exportación es el mismo estado, no uno propio — antes se podía
+              exportar un rango distinto del que se estaba mirando. */}
+          <ExportPanel
+            scope="plataforma"
+            groupBy={groupBy}
+            period={period}
+            preset={preset}
+            onPeriodChange={handlePeriodChange}
+          />
         </>
       )}
     </div>

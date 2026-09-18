@@ -15,6 +15,7 @@ import {
 } from "@/test-utils/fixtures/metrics";
 import type { MetricsGroupBy, MetricsScope } from "@/hooks/useMetrics";
 import { MetricsError } from "@/hooks/useMetrics";
+import { presetPeriod } from "@/lib/metrics/period";
 
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
@@ -165,6 +166,34 @@ describe("PlataformaMetricasPage", () => {
     await user.click(screen.getByRole("button", { name: "Exportar CSV" }));
 
     expect(mutate).toHaveBeenCalledWith(expect.objectContaining({ scope: "plataforma", format: "csv" }));
+  });
+
+  it("el periodo del dashboard manda en la exportación: cambiarlo arriba cambia lo que se exporta", async () => {
+    const mutate = vi.fn();
+    useExportMock.mockReturnValue({ mutate, isPending: false, error: null });
+    mockMetricsByGroup({
+      base: buildMetricsResponse(),
+      place: buildMetricsResponse({ by_place: buildByPlaceRows() }),
+      organization: buildMetricsResponse({ by_place: [] }),
+      month: buildMetricsResponse({ series: [] }),
+      year: buildMetricsResponse({ series: [] }),
+    });
+    mockCompare();
+    const user = userEvent.setup();
+
+    await renderPage();
+
+    // Dos selectores de periodo (el del dashboard y el del panel de
+    // exportación): el primero es el de arriba.
+    await user.click(screen.getAllByRole("button", { name: "Año" })[0]);
+    await user.click(screen.getByRole("button", { name: "Exportar CSV" }));
+
+    const anio = presetPeriod("anio");
+    expect(mutate).toHaveBeenCalledWith(expect.objectContaining({ period: anio }));
+    // Y el selector del panel de exportación refleja el mismo preset.
+    screen.getAllByRole("button", { name: "Año" }).forEach((button) => {
+      expect(button).toHaveAttribute("aria-pressed", "true");
+    });
   });
 
   it("estado vacío: sin filas en el desglose, pinta el aviso en vez de una tabla vacía", async () => {

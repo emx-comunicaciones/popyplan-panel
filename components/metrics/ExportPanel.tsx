@@ -22,6 +22,17 @@ export interface ExportPanelProps {
    * a la vez (`docs/PANEL.md` §11.4).
    */
   groupBy?: MetricsGroupBy;
+  /**
+   * Periodo controlado por el dashboard que envuelve este panel: con él,
+   * el selector de aquí y el de arriba son el mismo periodo (antes cada
+   * uno llevaba el suyo y se exportaba un rango distinto del que se
+   * estaba mirando). Sin él, el panel conserva su propio estado, que es
+   * como lo usan las páginas de Informes, donde va suelto.
+   */
+  period?: Period;
+  preset?: PeriodPreset;
+  /** Obligatorio junto a `period`: sin él el selector no podría cambiar nada. */
+  onPeriodChange?: (period: Period, preset: PeriodPreset) => void;
 }
 
 type ExportGroupByChoice = "habitual" | "year";
@@ -36,15 +47,30 @@ type ExportGroupByChoice = "habitual" | "year";
  * y renombra la serie temporal de «Por mes» a «Por año» — el propio
  * backend decide eso, este panel solo añade la opción al selector.
  */
-export function ExportPanel({ scope, orgId, groupBy }: ExportPanelProps) {
-  const [preset, setPreset] = useState<PeriodPreset>("mes");
-  const [period, setPeriod] = useState<Period>(() => presetPeriod("mes"));
+export function ExportPanel({
+  scope,
+  orgId,
+  groupBy,
+  period,
+  preset,
+  onPeriodChange,
+}: ExportPanelProps) {
+  const [ownPreset, setOwnPreset] = useState<PeriodPreset>("mes");
+  const [ownPeriod, setOwnPeriod] = useState<Period>(() => presetPeriod("mes"));
   const [exportGroupBy, setExportGroupBy] = useState<ExportGroupByChoice>("habitual");
   const selectId = useId();
 
+  const controlled = period !== undefined;
+  const effectivePeriod = period ?? ownPeriod;
+  const effectivePreset = preset ?? ownPreset;
+
   function handlePeriodChange(next: Period, nextPreset: PeriodPreset) {
-    setPeriod(next);
-    setPreset(nextPreset);
+    if (controlled) {
+      onPeriodChange?.(next, nextPreset);
+      return;
+    }
+    setOwnPeriod(next);
+    setOwnPreset(nextPreset);
   }
 
   const effectiveGroupBy: MetricsGroupBy | undefined =
@@ -55,7 +81,7 @@ export function ExportPanel({ scope, orgId, groupBy }: ExportPanelProps) {
       <p className="mb-4 text-sm text-text-secondary">
         Los informes no contienen nombres de personas.
       </p>
-      <PeriodSelector value={period} preset={preset} onChange={handlePeriodChange} />
+      <PeriodSelector value={effectivePeriod} preset={effectivePreset} onChange={handlePeriodChange} />
       <div className="mt-4">
         <label htmlFor={selectId} className="mb-1 block text-sm font-medium text-text-form">
           Desglose del informe
@@ -71,7 +97,7 @@ export function ExportPanel({ scope, orgId, groupBy }: ExportPanelProps) {
         </select>
       </div>
       <div className="mt-4">
-        <ExportButtons params={{ scope, orgId, period, groupBy: effectiveGroupBy }} />
+        <ExportButtons params={{ scope, orgId, period: effectivePeriod, groupBy: effectiveGroupBy }} />
       </div>
     </Card>
   );
