@@ -1,7 +1,7 @@
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { render, screen, within } from "@/test-utils/render";
+import { act, fireEvent, render, screen, waitFor, within } from "@/test-utils/render";
 import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
@@ -48,6 +48,7 @@ function pageData(overrides: Record<string, unknown> = {}) {
 }
 
 afterEach(() => {
+  vi.useRealTimers();
   getServerSessionMock.mockReset();
   usePeopleMock.mockReset();
   useInvitationsMock.mockReset();
@@ -166,9 +167,113 @@ describe("EntidadPersonasPage", () => {
     await user.selectOptions(screen.getByLabelText("Comunidad"), "comm-1");
     await user.type(screen.getByLabelText("Referente"), "7");
 
-    const lastCall = usePeopleMock.mock.calls.at(-1);
-    expect(lastCall?.[0]).toBe(7);
-    expect(lastCall?.[2]).toMatchObject({ search: "an", community: "comm-1", referent: 7 });
+    // Los campos de texto se aplican con retardo (`useDebouncedValue`,
+    // 300 ms): el `waitFor` espera a que la query los reciba.
+    await waitFor(() => {
+      const lastCall = usePeopleMock.mock.calls.at(-1);
+      expect(lastCall?.[0]).toBe(7);
+      expect(lastCall?.[2]).toMatchObject({ search: "an", community: "comm-1", referent: 7 });
+    });
+  });
+
+  /**
+   * Los tests de retardo usan `fireEvent.change` (una tecla por
+   * llamada) y no `userEvent`: el `asyncWrapper` de Testing Library
+   * drena la cola de microtareas con un `setTimeout(0)` que solo
+   * adelanta si detecta los temporizadores falsos de *jest*, así que
+   * `userEvent` se queda colgado con `vi.useFakeTimers()`.
+   */
+  it("el buscador va con retardo: teclear «ana» solo produce una consulta, con el valor final", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    vi.useFakeTimers();
+
+    await renderPage();
+    usePeopleMock.mockClear();
+
+    const input = screen.getByLabelText("Buscar");
+    for (const value of ["a", "an", "ana"]) {
+      fireEvent.change(input, { target: { value } });
+    }
+
+    // El input es inmediato (quien escribe ve su texto), pero ninguna de
+    // las llamadas provocadas por las teclas lleva todavía `search`.
+    expect(input).toHaveValue("ana");
+    expect(usePeopleMock.mock.calls.every((call) => call[2].search === undefined)).toBe(true);
+
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+
+    // Una sola query distinta (una petición): nunca se pidió «a» ni «an».
+    const searches = usePeopleMock.mock.calls.map((call) => call[2].search);
+    expect([...new Set(searches)]).toEqual([undefined, "ana"]);
+  });
+
+  it("los filtros de fecha también van con retardo", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    vi.useFakeTimers();
+
+    await renderPage();
+    usePeopleMock.mockClear();
+
+    fireEvent.change(screen.getByLabelText("Participación desde"), {
+      target: { value: "2026-01-01" },
+    });
+    expect(usePeopleMock.mock.calls.every((call) => call[2].activeSince === undefined)).toBe(true);
+
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+
+    expect(usePeopleMock.mock.calls.at(-1)?.[2]).toMatchObject({ activeSince: "2026-01-01" });
+  });
+
+  it("la página vuelve a 1 cuando se aplica el filtro (valor con retardo), no con cada tecla", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({
+      data: pageData({ next: "http://api.test/next", previous: null }),
+      isError: false,
+      error: null,
+    });
+    vi.useFakeTimers();
+
+    await renderPage();
+    fireEvent.click(screen.getByRole("button", { name: "Siguiente" }));
+    expect(usePeopleMock.mock.calls.at(-1)?.[2]).toMatchObject({ page: 2 });
+
+    fireEvent.change(screen.getByLabelText("Buscar"), { target: { value: "ana" } });
+    // Todavía en la página 2: la tecla por sí sola no cambia el listado.
+    expect(usePeopleMock.mock.calls.at(-1)?.[2]).toMatchObject({ page: 2, search: undefined });
+
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+
+    expect(usePeopleMock.mock.calls.at(-1)?.[2]).toMatchObject({ page: 1, search: "ana" });
+  });
+
+  it("cambiar «Comunidad» (un select, sin retardo) devuelve la página a 1 al momento", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({
+      data: pageData({ next: "http://api.test/next", previous: null }),
+      isError: false,
+      error: null,
+    });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "comm-1", name: "Paseos" })],
+      isError: false,
+      error: null,
+    });
+
+    await renderPage();
+    fireEvent.click(screen.getByRole("button", { name: "Siguiente" }));
+    expect(usePeopleMock.mock.calls.at(-1)?.[2]).toMatchObject({ page: 2 });
+
+    fireEvent.change(screen.getByLabelText("Comunidad"), { target: { value: "comm-1" } });
+
+    expect(usePeopleMock.mock.calls.at(-1)?.[2]).toMatchObject({ page: 1, community: "comm-1" });
   });
 
   it("filtro Comunidad: «Todas» no envía el parámetro; elegir una comunidad envía su UUID", async () => {

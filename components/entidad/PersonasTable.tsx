@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useInvitations } from "@/hooks/useInvitations";
 import { usePeople } from "@/hooks/usePeople";
 import { useEntityCommunities } from "@/hooks/useEntityCommunities";
@@ -96,12 +97,25 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
   const period = presetPeriod("mes");
   const communities = useEntityCommunities(orgId);
 
+  /**
+   * Los campos que se teclean (búsqueda, referente y las dos fechas) se
+   * aplican con retardo (`useDebouncedValue`, 300 ms): el `<input>` es
+   * inmediato, pero la query solo cambia cuando se para de escribir —
+   * si no, «ana» disparaba tres peticiones y las respuestas podían
+   * llegar desordenadas. «Comunidad» es un `<select>` (un único evento
+   * por elección), así que se aplica tal cual.
+   */
+  const search = useDebouncedValue(filters.search);
+  const referent = useDebouncedValue(filters.referent);
+  const activeSince = useDebouncedValue(filters.activeSince);
+  const joinedSince = useDebouncedValue(filters.joinedSince);
+
   const people = usePeople(orgId, period, {
-    search: filters.search || undefined,
+    search: search || undefined,
     community: filters.community || undefined,
-    referent: filters.referent ? Number(filters.referent) : undefined,
-    activeSince: filters.activeSince || undefined,
-    joinedSince: filters.joinedSince || undefined,
+    referent: referent ? Number(referent) : undefined,
+    activeSince: activeSince || undefined,
+    joinedSince: joinedSince || undefined,
     includeInvited,
     page,
   });
@@ -123,9 +137,18 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
     }
   }, [page, people.error]);
 
+  /**
+   * La página vuelve a 1 cuando el filtro **se aplica** (cuando cambia
+   * el valor con retardo), no con cada tecla: si no, la primera letra
+   * del buscador ya pedía la página 1 del listado viejo. «Comunidad»,
+   * que no lleva retardo, la devuelve a 1 en su propio `onChange`.
+   */
+  useEffect(() => {
+    setPage(1);
+  }, [search, referent, activeSince, joinedSince]);
+
   function updateFilter<K extends keyof PersonasFilters>(key: K, value: string) {
     setFilters((prev) => ({ ...prev, [key]: value }));
-    setPage(1);
   }
 
   return (
@@ -161,7 +184,10 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
           <select
             id="personas-community"
             value={filters.community}
-            onChange={(event) => updateFilter("community", event.target.value)}
+            onChange={(event) => {
+              updateFilter("community", event.target.value);
+              setPage(1);
+            }}
             aria-describedby={communities.isError ? "personas-community-error" : undefined}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
