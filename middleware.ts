@@ -27,14 +27,27 @@
  *    recibiría 401 (el refresh que envió ya está en lista negra) y
  *    destruiría la sesión de quien acababa de entrar (mismo bug que
  *    `lib/api/client.ts` arregló con `inFlightRefresh`).
- * 3. Si el backend rechaza el refresh (caducado, en lista negra), borra
- *    la cookie y manda a `/login` **solo en navegaciones de documento**
+ * 3. Si el backend rechaza el refresh (caducado, en lista negra), manda a
+ *    `/login?returnTo=<destino>` **solo en navegaciones de documento**
  *    (`sec-fetch-dest: document`, o sin la cabecera — navegadores
- *    antiguos, curl, Playwright viejo): en un prefetch/RSC
- *    (`sec-fetch-dest` distinto de `document`) el borrado se aplaza a la
- *    navegación de documento siguiente, porque borrar la cookie en un
- *    prefetch no sirve de nada (el navegador no la aplica) y puede
- *    adelantarse al refresco bueno de otra petición concurrente.
+ *    antiguos, curl, Playwright viejo); un prefetch/RSC
+ *    (`sec-fetch-dest` distinto de `document`) pasa sin sesión y lo
+ *    resolverá la navegación de documento siguiente. **Este middleware no
+ *    borra nunca la cookie** (hallazgo F3): el single-flight del punto 2
+ *    cierra la carrera de rotación *dentro de este proceso*, pero no
+ *    entre runtimes (el middleware corre en Edge y
+ *    `app/api/session/refresh/route.ts` en Node, con su propio
+ *    `lib/auth/rotationCache.ts`) ni entre instancias. O sea: un 401 de
+ *    aquí puede ser el de un refresh que otro proceso acaba de rotar con
+ *    éxito hace milisegundos, con la sesión perfectamente sana — y
+ *    borrarlo tiraba también el refresh nuevo que el navegador ya tenía.
+ *    Quien borra la cookie es el route handler `/api/session/refresh`
+ *    (que sí consulta esa caché de replay antes de darla por caducada) o
+ *    el logout. La cookie de más que se queda en el navegador no es un
+ *    bucle: `/login` está **fuera** del `matcher` de abajo, así que el
+ *    middleware no vuelve a correr allí, y la restauración de arranque de
+ *    `app/providers.tsx` llama a ese route handler, que la borra con su
+ *    401 si de verdad estaba caducada.
  * 4. Si el backend no responde (error de red), o responde 200 con algo
  *    que no son los dos tokens del contrato
  *    (`lib/auth/tokenRefresh.ts::parseRefreshedTokens`, hallazgo B3),
@@ -69,8 +82,9 @@ import { parseRefreshedTokens } from "@/lib/auth/tokenRefresh";
 type RefreshOutcome =
   | { ok: true; access: string; refresh: string }
   /**
-   * `rechazado`: el backend dice que no (caducado, en lista negra) — hay
-   * que borrar la cookie. `ilegible`: respondió 200 con algo que no es la
+   * `rechazado`: el backend dice que no (caducado, en lista negra, o
+   * rotado por otro proceso hace un instante) — al login, sin tocar la
+   * cookie (punto 3 del docstring). `ilegible`: respondió 200 con algo que no es la
    * pareja de tokens del contrato (proxy, despliegue a medias) — la sesión
    * puede estar perfectamente sana, así que se trata como el backend caído
    * (`lib/auth/tokenRefresh.ts`, hallazgo B3).
@@ -160,14 +174,14 @@ export async function middleware(request: NextRequest) {
       return new NextResponse(null, { status: 503 });
     }
     if (!isDocumentNavigation(request)) {
-      // Prefetch/RSC: no tocar la cookie aquí (el navegador no aplica el
-      // Set-Cookie de una subpetición); el borrado real lo hará la
-      // navegación de documento siguiente, que repetirá este refresco.
+      // Prefetch/RSC: la petición pasa sin sesión y el layout que llame a
+      // `getServerSession()` redirigirá; la navegación de documento
+      // siguiente repetirá este refresco.
       return passThroughWithoutAccess(request);
     }
-    const response = redirectToLogin(request);
-    response.cookies.set(SESSION_COOKIE_NAME, "", { ...sessionCookieOptions(), maxAge: 0 });
-    return response;
+    // Navegación de documento: al login con el destino, pero **sin**
+    // borrar la cookie (hallazgo F3, ver el docstring del módulo).
+    return redirectToLogin(request);
   }
 
   const requestHeaders = new Headers(request.headers);

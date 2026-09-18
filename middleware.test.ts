@@ -137,7 +137,7 @@ describe("middleware", () => {
     );
   });
 
-  it("con refresh caducado/en lista negra, borra la cookie y redirige al login con el destino", async () => {
+  it("con refresh caducado/en lista negra redirige al login con el destino, sin tocar la cookie", async () => {
     fetchMock.mockResolvedValueOnce(response({ detail: "token_not_valid" }, 401));
 
     const res = await middleware(requestWithCookie("refresh-caducado"));
@@ -146,18 +146,22 @@ describe("middleware", () => {
     expect(res.headers.get("location")).toBe(
       "http://panel.test/login?returnTo=%2Fentidad%2Falfaville",
     );
-    expect(res.cookies.get(SESSION_COOKIE_NAME)?.value).toBe("");
-    expect(res.cookies.get(SESSION_COOKIE_NAME)?.maxAge).toBe(0);
+    // Hallazgo F3: el middleware (Edge) no comparte `rotationCache` con
+    // `/api/session/refresh` (Node), así que su 401 puede ser el de un
+    // refresh que otro proceso acaba de rotar con éxito — borrar la cookie
+    // aquí destruía una sesión sana. El borrado lo hace el route handler,
+    // que sí tiene la caché de replay, o el logout.
+    expect(res.cookies.get(SESSION_COOKIE_NAME)).toBeUndefined();
   });
 
-  it("401 en navegación de documento (sec-fetch-dest: document) borra la cookie", async () => {
+  it("401 en navegación de documento (sec-fetch-dest: document) tampoco borra la cookie", async () => {
     fetchMock.mockResolvedValueOnce(response({ detail: "token_not_valid" }, 401));
 
     const res = await middleware(
       requestWithCookie("refresh-caducado", { "sec-fetch-dest": "document" }),
     );
 
-    expect(res.cookies.get(SESSION_COOKIE_NAME)?.maxAge).toBe(0);
+    expect(res.cookies.get(SESSION_COOKIE_NAME)).toBeUndefined();
   });
 
   it("401 en prefetch/RSC (sec-fetch-dest distinto de document) NO toca la cookie ni reenvía la cabecera interna", async () => {
