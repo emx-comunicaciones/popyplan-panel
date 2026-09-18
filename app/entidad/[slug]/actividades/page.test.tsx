@@ -147,4 +147,24 @@ describe("EntidadActividadesPage", () => {
     expect(screen.getByRole("heading", { name: "Actividades" })).toBeInTheDocument();
     expect(screen.queryByText("Sin acceso")).not.toBeInTheDocument();
   });
+
+  it("referente no ve enlaces a Asistencia (su rol no tiene esa sección)", async () => {
+    useEntityEventsMock.mockReturnValue({ data: [EVENT_ROW], isError: false, error: null });
+
+    await renderPage("alfaville", "referente");
+
+    expect(screen.queryByRole("link", { name: /E3/ })).not.toBeInTheDocument();
+    expect(within(screen.getByRole("table")).getByText("E3")).toBeInTheDocument();
+  });
+
+  it("dinamizador sí ve el enlace a Asistencia", async () => {
+    useEntityEventsMock.mockReturnValue({ data: [EVENT_ROW], isError: false, error: null });
+
+    await renderPage("alfaville", "dinamizador");
+
+    expect(screen.getByRole("link", { name: /E3/ })).toHaveAttribute(
+      "href",
+      "/entidad/alfaville/asistencia/e3",
+    );
+  });
 });

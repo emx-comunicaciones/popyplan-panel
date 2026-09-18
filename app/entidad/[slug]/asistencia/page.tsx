@@ -40,7 +40,8 @@ export default async function EntidadAsistenciaIndexPage({
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-semibold text-text-base">Asistencia</h1>
       <p className="text-sm text-text-secondary">Elige una actividad para gestionar su asistencia.</p>
-      <ActividadesTable orgId={membership.organization_id} slug={slug} />
+      {/* Siempre `true`: esta página ya está gateada por `asistencia`. */}
+      <ActividadesTable orgId={membership.organization_id} slug={slug} canOpenAttendance />
     </div>
   );
 }

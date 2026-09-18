@@ -11,6 +11,16 @@ import { presetPeriod } from "@/lib/metrics/period";
 export interface ActividadesTableProps {
   orgId: number | string;
   slug: string;
+  /**
+   * Si quien mira tiene la sección «Asistencia» en su menú
+   * (`lib/auth/entidadMenu.ts::entidadMenuFor`). Con `false` el título de
+   * cada actividad se pinta como texto: `referente` no tiene `asistencia`
+   * en `REFERENTE_VISIBLE` (decisión de producto), así que el enlace le
+   * llevaba a la pantalla «Sin acceso» de
+   * `asistencia/[eventId]/page.tsx`. Lo calcula el Server Component que
+   * monta la tabla, que ya tiene `membership.role`.
+   */
+  canOpenAttendance: boolean;
 }
 
 const STATUS_LABELS: Record<EntityEventStatus, string> = {
@@ -26,9 +36,10 @@ function formatDateTime(iso: string): string {
 /**
  * Lista de actividades de la entidad por periodo (`docs/PANEL.md` §3.4),
  * con inscritos/asistencia/ausencias y el responsable cuando quien mira
- * tiene lista nominal. Cada fila enlaza a `asistencia/{eventId}`.
+ * tiene lista nominal. Cada fila enlaza a `asistencia/{eventId}` cuando
+ * el rol de quien mira tiene esa sección (`canOpenAttendance`).
  */
-export function ActividadesTable({ orgId, slug }: ActividadesTableProps) {
+export function ActividadesTable({ orgId, slug, canOpenAttendance }: ActividadesTableProps) {
   const [status, setStatus] = useState<EntityEventStatus | "">("");
   const period = presetPeriod("mes");
 
@@ -77,12 +88,16 @@ export function ActividadesTable({ orgId, slug }: ActividadesTableProps) {
               {events.data.map((event) => (
                 <tr key={event.id} className="border-b border-border-light">
                   <td className="px-3 py-2 text-text-base">
-                    <Link
-                      href={`/entidad/${slug}/asistencia/${event.id}`}
-                      className="font-medium text-primary-700 underline"
-                    >
-                      {event.title}
-                    </Link>
+                    {canOpenAttendance ? (
+                      <Link
+                        href={`/entidad/${slug}/asistencia/${event.id}`}
+                        className="font-medium text-primary-700 underline"
+                      >
+                        {event.title}
+                      </Link>
+                    ) : (
+                      <span className="font-medium">{event.title}</span>
+                    )}
                     <div className="text-xs text-text-secondary">{formatDateTime(event.starts_at)}</div>
                   </td>
                   <td className="px-3 py-2 text-text-base">{STATUS_LABELS[event.status as EntityEventStatus] ?? event.status}</td>

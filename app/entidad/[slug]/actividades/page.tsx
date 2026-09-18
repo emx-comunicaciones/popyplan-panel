@@ -27,14 +27,21 @@ export default async function EntidadActividadesPage({
     redirect("/");
   }
 
-  if (!entidadMenuFor(membership.role).includes("actividades")) {
+  const menu = entidadMenuFor(membership.role);
+  if (!menu.includes("actividades")) {
     return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Actividades." />;
   }
 
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-semibold text-text-base">Actividades</h1>
-      <ActividadesTable orgId={membership.organization_id} slug={slug} />
+      <ActividadesTable
+        orgId={membership.organization_id}
+        slug={slug}
+        // `referente` no tiene Asistencia en su menú: sin esto, el título
+        // de cada actividad le enlazaba a una pantalla «Sin acceso».
+        canOpenAttendance={menu.includes("asistencia")}
+      />
     </div>
   );
 }
