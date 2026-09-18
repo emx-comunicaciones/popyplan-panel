@@ -27,8 +27,8 @@ afterEach(() => {
   useUpdateProgramMock.mockReset();
 });
 
-function mutationDefaults() {
-  return { mutate: vi.fn(), isPending: false, isError: false, error: null };
+function mutationDefaults(overrides: Record<string, unknown> = {}) {
+  return { mutate: vi.fn(), isPending: false, isError: false, error: null, ...overrides };
 }
 
 describe("ProgramasPanel", () => {
@@ -99,5 +99,20 @@ describe("ProgramasPanel", () => {
 
     const dialog = screen.getByRole("dialog");
     expect(within(dialog).getByLabelText("Nombre")).toBeInTheDocument();
+  });
+
+  it("con el alta en vuelo, ni Escape ni el botón × cierran el diálogo", async () => {
+    useProgramsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useCreateProgramMock.mockReturnValue(mutationDefaults({ isPending: true }));
+    useUpdateProgramMock.mockReturnValue(mutationDefaults());
+
+    const user = userEvent.setup();
+    render(<ProgramasPanel orgId={7} slug="alfaville" canManage />);
+
+    await user.click(screen.getByRole("button", { name: "Nuevo programa" }));
+    await user.keyboard("{Escape}");
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cerrar" })).toBeDisabled();
   });
 });

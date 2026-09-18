@@ -10,7 +10,7 @@
  * va a fallar. Mismo patrón que `RecursosPanel.tsx::ResourceForm`:
  * `editing` es `"new"` (crear) o un `Program` (editar, `PATCH` parcial).
  */
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { useCreateProgram, useUpdateProgram } from "@/hooks/useProgramMutations";
@@ -22,6 +22,13 @@ export interface ProgramaFormProps {
   orgId: number | string;
   editing: Program | "new";
   onDone: () => void;
+  /**
+   * Avisa hacia arriba de si el guardado está en vuelo. El formulario se
+   * usa dentro de un `Dialog` que pertenece a quien lo monta
+   * (`ProgramasPanel`/`ProgramaDetalle`), y ese diálogo necesita saberlo
+   * para no dejarse cerrar con el `POST`/`PATCH` a medias (`pending`).
+   */
+  onPendingChange?: (pending: boolean) => void;
 }
 
 interface ProgramFormState {
@@ -48,7 +55,7 @@ function formFromProgram(program: Program): ProgramFormState {
   };
 }
 
-export function ProgramaForm({ orgId, editing, onDone }: ProgramaFormProps) {
+export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: ProgramaFormProps) {
   const createProgram = useCreateProgram(orgId);
   const updateProgram = useUpdateProgram(orgId);
   const [form, setForm] = useState<ProgramFormState>(
@@ -56,6 +63,12 @@ export function ProgramaForm({ orgId, editing, onDone }: ProgramaFormProps) {
   );
 
   const mutation = editing === "new" ? createProgram : updateProgram;
+  const isPending = mutation.isPending;
+
+  useEffect(() => {
+    onPendingChange?.(isPending);
+  }, [isPending, onPendingChange]);
+
   const dateError = validateProgramDates(form.startsOn, form.endsOn);
   const budgetCents = eurosToCents(form.budgetEuros);
   const canSubmit =
@@ -176,10 +189,10 @@ export function ProgramaForm({ orgId, editing, onDone }: ProgramaFormProps) {
       ) : null}
 
       <div className="flex gap-2">
-        <Button type="submit" disabled={!canSubmit || mutation.isPending}>
+        <Button type="submit" disabled={!canSubmit || isPending}>
           Guardar
         </Button>
-        <Button type="button" variant="secondary" onClick={onDone}>
+        <Button type="button" variant="secondary" onClick={onDone} disabled={isPending}>
           Cancelar
         </Button>
       </div>

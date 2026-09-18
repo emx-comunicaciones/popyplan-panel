@@ -10,6 +10,12 @@
  * (tarea W6): atrapa el foco con `useFocusTrap` (foco inicial dentro
  * del diálogo, `Tab`/`Shift+Tab` sin escapar, `Escape` cierra, el foco
  * vuelve a donde estaba al cerrarse).
+ *
+ * `pending` (mismo criterio que `ConfirmDialog.tsx`): con una mutación
+ * en vuelo, ni `Escape` ni el botón × cierran el diálogo — cerrarlo
+ * desmontaría el formulario con la petición a medias y se perdería el
+ * error que va a pintar. El overlay nunca ha cerrado al pulsarlo, ni
+ * aquí ni en `ConfirmDialog`, así que no hace falta guardarlo.
  */
 import { useRef, type ReactNode } from "react";
 
@@ -22,6 +28,8 @@ export interface DialogProps {
   onClose: () => void;
   children: ReactNode;
   widthClassName?: string;
+  /** Mutación en vuelo: el diálogo no se puede cerrar hasta que termine. */
+  pending?: boolean;
 }
 
 export function Dialog({
@@ -31,9 +39,12 @@ export function Dialog({
   onClose,
   children,
   widthClassName = "max-w-lg",
+  pending = false,
 }: DialogProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  useFocusTrap(containerRef, open, onClose);
+  useFocusTrap(containerRef, open, () => {
+    if (!pending) onClose();
+  });
 
   if (!open) return null;
 
@@ -54,6 +65,7 @@ export function Dialog({
           <button
             type="button"
             onClick={onClose}
+            disabled={pending}
             aria-label="Cerrar"
             className="text-lg leading-none text-text-secondary hover:text-text-base focus-visible:outline-primary-700"
           >

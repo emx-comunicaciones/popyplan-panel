@@ -121,6 +121,7 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
   const closeProgram = useCloseProgram(orgId);
   const programReport = useProgramReport();
   const [editing, setEditing] = useState(false);
+  const [editPending, setEditPending] = useState(false);
   const [closing, setClosing] = useState(false);
   const [closingNotes, setClosingNotes] = useState("");
 
@@ -169,7 +170,14 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
               </Button>
             ) : null}
             {canManage && data.status === "active" ? (
-              <Button type="button" variant="danger" onClick={() => setClosing(true)}>
+              <Button
+                type="button"
+                variant="danger"
+                onClick={() => {
+                  closeProgram.reset();
+                  setClosing(true);
+                }}
+              >
                 Cerrar programa
               </Button>
             ) : null}
@@ -214,9 +222,15 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
         open={editing}
         titleId="editar-programa-title"
         title="Editar programa"
+        pending={editPending}
         onClose={() => setEditing(false)}
       >
-        <ProgramaForm orgId={orgId} editing={data} onDone={() => setEditing(false)} />
+        <ProgramaForm
+          orgId={orgId}
+          editing={data}
+          onDone={() => setEditing(false)}
+          onPendingChange={setEditPending}
+        />
       </Dialog>
 
       <ConfirmDialog
@@ -235,6 +249,14 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
               rows={3}
               className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             />
+            {/* El mensaje literal del backend (409 «Un programa cerrado no
+                se modifica.», 400 por campo) se lee aquí dentro: el
+                diálogo solo se cierra si el cierre sale bien. */}
+            {closeProgram.isError ? (
+              <p role="alert" className="text-error">
+                {closeProgram.error.message}
+              </p>
+            ) : null}
           </div>
         }
         confirmLabel="Cerrar programa"
@@ -250,7 +272,10 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
             },
           );
         }}
-        onCancel={() => setClosing(false)}
+        onCancel={() => {
+          closeProgram.reset();
+          setClosing(false);
+        }}
       />
     </div>
   );

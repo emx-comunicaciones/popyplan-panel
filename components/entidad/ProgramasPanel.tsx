@@ -46,6 +46,7 @@ function formatDate(iso: string): string {
 export function ProgramasPanel({ orgId, slug, canManage }: ProgramasPanelProps) {
   const programs = usePrograms(orgId);
   const [creating, setCreating] = useState(false);
+  const [createPending, setCreatePending] = useState(false);
 
   if (programs.isError) {
     return (
@@ -101,9 +102,15 @@ export function ProgramasPanel({ orgId, slug, canManage }: ProgramasPanelProps) 
         open={creating}
         titleId="nuevo-programa-title"
         title="Nuevo programa"
+        pending={createPending}
         onClose={() => setCreating(false)}
       >
-        <ProgramaForm orgId={orgId} editing="new" onDone={() => setCreating(false)} />
+        <ProgramaForm
+          orgId={orgId}
+          editing="new"
+          onDone={() => setCreating(false)}
+          onPendingChange={setCreatePending}
+        />
       </Dialog>
     </div>
   );

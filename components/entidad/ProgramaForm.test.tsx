@@ -134,6 +134,25 @@ describe("ProgramaForm", () => {
     expect(onDone).toHaveBeenCalled();
   });
 
+  it("con el guardado en vuelo, «Cancelar» está deshabilitado", () => {
+    useCreateProgramMock.mockReturnValue(mutationDefaults({ isPending: true }));
+    useUpdateProgramMock.mockReturnValue(mutationDefaults());
+
+    render(<ProgramaForm orgId={7} editing="new" onDone={vi.fn()} />);
+
+    expect(screen.getByRole("button", { name: "Cancelar" })).toBeDisabled();
+  });
+
+  it("avisa a quien lo monta de si el guardado está en vuelo", () => {
+    const onPendingChange = vi.fn();
+    useCreateProgramMock.mockReturnValue(mutationDefaults({ isPending: true }));
+    useUpdateProgramMock.mockReturnValue(mutationDefaults());
+
+    render(<ProgramaForm orgId={7} editing="new" onDone={vi.fn()} onPendingChange={onPendingChange} />);
+
+    expect(onPendingChange).toHaveBeenCalledWith(true);
+  });
+
   it("muestra el error de la mutación", () => {
     useCreateProgramMock.mockReturnValue(
       mutationDefaults({ isError: true, error: new Error("No se pudo crear el programa.") }),

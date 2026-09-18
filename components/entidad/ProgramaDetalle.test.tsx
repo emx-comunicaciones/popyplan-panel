@@ -8,6 +8,8 @@ import { buildMetricsResponse } from "@/test-utils/fixtures/metrics";
 const useProgramMock = vi.hoisted(() => vi.fn());
 const useActivateProgramMock = vi.hoisted(() => vi.fn());
 const useCloseProgramMock = vi.hoisted(() => vi.fn());
+const useCreateProgramMock = vi.hoisted(() => vi.fn());
+const useUpdateProgramMock = vi.hoisted(() => vi.fn());
 const useProgramReportMock = vi.hoisted(() => vi.fn());
 const useMetricsMock = vi.hoisted(() => vi.fn());
 
@@ -23,6 +25,8 @@ vi.mock("@/hooks/useProgramMutations", async () => {
     ...actual,
     useActivateProgram: useActivateProgramMock,
     useCloseProgram: useCloseProgramMock,
+    useCreateProgram: useCreateProgramMock,
+    useUpdateProgram: useUpdateProgramMock,
   };
 });
 vi.mock("@/hooks/useProgramReport", async () => {
@@ -39,13 +43,22 @@ vi.mock("@/hooks/useMetrics", async () => {
 import { ProgramaDetalle } from "./ProgramaDetalle";
 
 function mutationDefaults(overrides: Record<string, unknown> = {}) {
-  return { mutate: vi.fn(), isPending: false, isError: false, error: null, ...overrides };
+  return {
+    mutate: vi.fn(),
+    isPending: false,
+    isError: false,
+    error: null,
+    reset: vi.fn(),
+    ...overrides,
+  };
 }
 
 function mockDefaults() {
   useActivateProgramMock.mockReturnValue(mutationDefaults());
   useCloseProgramMock.mockReturnValue(mutationDefaults());
   useProgramReportMock.mockReturnValue(mutationDefaults());
+  useCreateProgramMock.mockReturnValue(mutationDefaults());
+  useUpdateProgramMock.mockReturnValue(mutationDefaults());
   useMetricsMock.mockReturnValue({ data: buildMetricsResponse(), isError: false, error: null });
 }
 
@@ -54,6 +67,8 @@ afterEach(() => {
   useActivateProgramMock.mockReset();
   useCloseProgramMock.mockReset();
   useProgramReportMock.mockReset();
+  useCreateProgramMock.mockReset();
+  useUpdateProgramMock.mockReset();
   useMetricsMock.mockReset();
 });
 
@@ -167,6 +182,68 @@ describe("ProgramaDetalle", () => {
       { programId: 9, closingNotes: "Cerrado con éxito" },
       expect.anything(),
     );
+  });
+
+  it("el error de cerrar programa se pinta dentro del diálogo, que sigue abierto", async () => {
+    mockDefaults();
+    useCloseProgramMock.mockReturnValue(
+      mutationDefaults({ isError: true, error: new Error("Un programa cerrado no se modifica.") }),
+    );
+    useProgramMock.mockReturnValue({
+      data: buildProgram({ id: 9, status: "active" }),
+      isError: false,
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    render(<ProgramaDetalle orgId={7} programId={9} canManage canExport />);
+
+    await user.click(screen.getByRole("button", { name: "Cerrar programa" }));
+
+    const dialog = screen.getByRole("alertdialog");
+    expect(within(dialog).getByRole("alert")).toHaveTextContent(
+      "Un programa cerrado no se modifica.",
+    );
+  });
+
+  it("abrir el diálogo de cierre limpia el error del intento anterior", async () => {
+    mockDefaults();
+    const reset = vi.fn();
+    useCloseProgramMock.mockReturnValue(mutationDefaults({ reset }));
+    useProgramMock.mockReturnValue({
+      data: buildProgram({ id: 9, status: "active" }),
+      isError: false,
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    render(<ProgramaDetalle orgId={7} programId={9} canManage canExport />);
+
+    await user.click(screen.getByRole("button", { name: "Cerrar programa" }));
+
+    expect(reset).toHaveBeenCalled();
+  });
+
+  it("con el guardado del formulario en vuelo, Escape no cierra el diálogo de edición", async () => {
+    mockDefaults();
+    useProgramMock.mockReturnValue({
+      data: buildProgram({ name: "Refuerzo escolar", status: "draft" }),
+      isError: false,
+      error: null,
+    });
+
+    // `ProgramaForm` avisa hacia arriba de que su mutación está en vuelo
+    // (`onPendingChange`) para que el diálogo que lo envuelve no se pueda
+    // cerrar con el `PATCH` a medias.
+    useUpdateProgramMock.mockReturnValue(mutationDefaults({ isPending: true }));
+
+    const user = userEvent.setup();
+    render(<ProgramaDetalle orgId={7} programId={3} canManage canExport />);
+
+    await user.click(screen.getByRole("button", { name: "Editar" }));
+    await user.keyboard("{Escape}");
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
   it("closed: no ve Editar/Activar/Cerrar, pero sí las notas de cierre", () => {
