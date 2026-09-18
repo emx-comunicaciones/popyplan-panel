@@ -54,6 +54,7 @@ export function Dialog({
         ref={containerRef}
         role="dialog"
         aria-modal="true"
+        aria-busy={pending}
         aria-labelledby={titleId}
         tabIndex={-1}
         className={`w-full ${widthClassName} rounded-lg bg-white p-6 shadow-lg`}
@@ -64,7 +65,9 @@ export function Dialog({
           </h2>
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => {
+              if (!pending) onClose();
+            }}
             disabled={pending}
             aria-label="Cerrar"
             className="text-lg leading-none text-text-secondary hover:text-text-base focus-visible:outline-primary-700"

@@ -153,6 +153,20 @@ describe("ProgramaForm", () => {
     expect(onPendingChange).toHaveBeenCalledWith(true);
   });
 
+  it("al desmontarse avisa de que ya no hay nada en vuelo", () => {
+    const onPendingChange = vi.fn();
+    useCreateProgramMock.mockReturnValue(mutationDefaults({ isPending: true }));
+    useUpdateProgramMock.mockReturnValue(mutationDefaults());
+
+    const { unmount } = render(
+      <ProgramaForm orgId={7} editing="new" onDone={vi.fn()} onPendingChange={onPendingChange} />,
+    );
+    onPendingChange.mockClear();
+    unmount();
+
+    expect(onPendingChange).toHaveBeenCalledWith(false);
+  });
+
   it("muestra el error de la mutación", () => {
     useCreateProgramMock.mockReturnValue(
       mutationDefaults({ isError: true, error: new Error("No se pudo crear el programa.") }),

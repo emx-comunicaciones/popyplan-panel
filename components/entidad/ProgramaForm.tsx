@@ -67,6 +67,10 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
 
   useEffect(() => {
     onPendingChange?.(isPending);
+    // Al desmontar (el diálogo se cierra tras guardar) quien lo monta no
+    // puede quedarse con `pending` a true para siempre: sin diálogo
+    // abierto nadie volvería a bajarlo.
+    return () => onPendingChange?.(false);
   }, [isPending, onPendingChange]);
 
   const dateError = validateProgramDates(form.startsOn, form.endsOn);

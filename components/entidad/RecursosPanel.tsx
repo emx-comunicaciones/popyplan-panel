@@ -164,11 +164,15 @@ function ResourceForm({
       kind: form.kind,
       audience: form.audience,
       is_featured: form.isFeatured,
-      // Editando, pasar de «Texto» a otro tipo manda `body: ""` explícito
-      // para limpiar el texto anterior (`buildResourcePayload` solo
-      // descarta `undefined`, la cadena vacía sí viaja en el PATCH).
-      body: form.kind === "text" ? form.body : editing === "new" ? undefined : "",
-      url: form.kind === "link" ? form.url : undefined,
+      // `body`/`url` solo se limpian (cadena vacía explícita) cuando el
+      // recurso guardado era de ese tipo y deja de serlo: `EntityResource`
+      // los lleva para cualquier `kind`, así que mandar `""` en toda
+      // edición no-texto borraría el `body` de un PDF por editarle el
+      // título. Fuera de ese caso van `undefined` y `buildResourcePayload`
+      // los descarta del PATCH (la cadena vacía sí viaja, ver
+      // `lib/resources/resourceFormData.ts`).
+      body: form.kind === "text" ? form.body : editing !== "new" && editing.kind === "text" ? "" : undefined,
+      url: form.kind === "link" ? form.url : editing !== "new" && editing.kind === "link" ? "" : undefined,
       file: form.file ?? undefined,
     };
 

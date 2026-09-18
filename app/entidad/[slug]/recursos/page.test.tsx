@@ -408,6 +408,69 @@ describe("EntidadRecursosPage", () => {
     );
   });
 
+  it("editar solo el título de un PDF no toca body ni url", async () => {
+    const mutate = vi.fn();
+    mockDefaults();
+    useUpdateResourceMock.mockReturnValue({ mutate, isPending: false, isError: false, error: null });
+    useResourcesMock.mockReturnValue({
+      data: [
+        buildEntityResource({
+          id: 1,
+          title: "Memoria 2026",
+          kind: "pdf",
+          body: "Resumen de la memoria",
+          file: "https://cdn.example/memoria.pdf",
+        }),
+      ],
+      isError: false,
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getByRole("button", { name: "Editar" }));
+    await user.type(screen.getByLabelText("Título"), " (v2)");
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+
+    const [payload] = mutate.mock.calls[0];
+    expect(payload.title).toBe("Memoria 2026 (v2)");
+    expect(payload.body).toBeUndefined();
+    expect(payload.url).toBeUndefined();
+  });
+
+  it("editar un enlace y pasarlo a texto manda url vacía para limpiar la anterior", async () => {
+    const mutate = vi.fn();
+    mockDefaults();
+    useUpdateResourceMock.mockReturnValue({ mutate, isPending: false, isError: false, error: null });
+    useResourcesMock.mockReturnValue({
+      data: [
+        buildEntityResource({
+          id: 1,
+          title: "Web de la entidad",
+          kind: "link",
+          body: "",
+          url: "https://popyplan.com",
+        }),
+      ],
+      isError: false,
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getByRole("button", { name: "Editar" }));
+    await user.selectOptions(screen.getByLabelText("Tipo"), "text");
+    await user.type(screen.getByLabelText("Texto"), "Ahora es texto");
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(mutate).toHaveBeenCalledWith(
+      expect.objectContaining({ resourceId: 1, kind: "text", body: "Ahora es texto", url: "" }),
+      expect.anything(),
+    );
+  });
+
   it("con el guardado en vuelo, «Cancelar» está deshabilitado", async () => {
     mockDefaults();
     useCreateResourceMock.mockReturnValue({

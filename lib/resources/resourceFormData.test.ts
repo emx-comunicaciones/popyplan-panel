@@ -26,6 +26,16 @@ describe("buildResourcePayload", () => {
     expect(payload).toEqual({ title: "Nuevo título" });
   });
 
+  it("la cadena vacía sí viaja (limpiar `body`/`url` al cambiar de tipo)", () => {
+    const payload = buildResourcePayload({ title: "Guía", body: "", url: "" });
+    expect(payload).toEqual({ title: "Guía", body: "", url: "" });
+
+    const file = new File(["contenido"], "guia.pdf");
+    const formData = buildResourcePayload({ title: "Guía", body: "", url: "", file }) as FormData;
+    expect(formData.get("body")).toBe("");
+    expect(formData.get("url")).toBe("");
+  });
+
   it("con fichero, construye un FormData con todos los campos y el fichero", () => {
     const file = new File(["contenido"], "guia.pdf", { type: "application/pdf" });
     const payload = buildResourcePayload({
