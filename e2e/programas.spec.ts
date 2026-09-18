@@ -80,8 +80,9 @@ test("titular crea, activa y cierra un programa, y descarga su informe CSV", asy
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Descargar informe CSV" }).click();
   const download = await downloadPromise;
+  const response = await responsePromise;
 
-  expectExportFilename(download, await responsePromise, {
+  expectExportFilename(download, response, {
     pattern: /popyplan-programa-\d+\.csv/,
     fallback: "informe-programa.csv",
   });

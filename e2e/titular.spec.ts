@@ -109,8 +109,9 @@ test.describe("Titular de Asociación Bidasoa", () => {
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: "Exportar CSV" }).click();
     const download = await downloadPromise;
+    const response = await responsePromise;
 
-    expectExportFilename(download, await responsePromise, {
+    expectExportFilename(download, response, {
       pattern: new RegExp(`popyplan-${BIDASOA_SLUG}-\\d{4}-\\d{2}-\\d{2}-\\d{4}-\\d{2}-\\d{2}\\.csv`),
       fallback: "informe.csv",
     });

@@ -8,6 +8,11 @@ on:
   # en `develop`, cuando ya no hay dónde revisar el fallo. El job `e2e`
   # sigue condicionado al secreto `BACK_REPO_TOKEN`, así que en un fork
   # (que no lo recibe) se salta con gracia en vez de fallar.
+  # Ojo: este disparador solo actúa si se abre una propuesta, y la
+  # convención del repo (ver «Convenciones» de CLAUDE.md) es cerrar tarea
+  # en `develop` y adelantar `main` por fast-forward *sin* propuesta —
+  # así que en el flujo habitual sigue siendo el `push` de arriba el que
+  # da la señal. `pull_request` cubre el caso en que sí se abra una.
   pull_request:
     branches: [develop, main]
 

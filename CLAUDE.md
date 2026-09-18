@@ -21,9 +21,10 @@ Tres áreas por rol, cada una bajo su propia ruta:
   una diputación) sobre sus entidades hijas: Inicio (métricas) e
   Informes (exportación), ver «Vista del financiador» más abajo.
 - **`/plataforma`** — panel del equipo de Popyplan (`safety.PlatformRole`:
-  `superadmin`, `verifier`, `moderator`, `support`). Menú de 8 secciones
+  `superadmin`, `verifier`, `moderator`, `support`). Menú de 9 secciones
   (Inicio, Entidades, Reportes, Ayuda, Verificaciones, Roles, Auditoría,
-  Métricas), con visibilidad por rol (`lib/auth/plataformaMenu.ts`) —
+  Métricas, Contratos), con visibilidad por rol
+  (`lib/auth/plataformaMenu.ts`) —
   ver «Área de plataforma» más abajo.
 
 `lib/auth/area.ts::resolveArea(me, platformRole)` decide el área: el rol
@@ -426,7 +427,9 @@ filtra el propio menú lateral con la misma función).
 
 **Matriz de visibilidad** (`lib/auth/plataformaMenu.ts::plataformaMenuFor`,
 sacada del permiso real de cada endpoint, no inventada): `superadmin` ve
-las 8 secciones; `verifier` solo Inicio/Entidades/Verificaciones
+todas las secciones (las 8 de W5, más Contratos desde W4 de Fase 6 —
+`support` también la ve, ver «Contratos y facturación» más abajo);
+`verifier` solo Inicio/Entidades/Verificaciones
 (`organization-list/create/verify` y `verification-review-*` piden
 `verifier`/`superadmin`); `moderator` y `support` ven Inicio/Reportes/
 Ayuda/Métricas (`safety/services/reports.py::queue` y
@@ -766,24 +769,41 @@ Hallazgos desmentidos (no había bug contra el contrato vigente):
   de arriba, `lib/a11y/tokens.test.ts`, no con axe). Cada
   `page.test.tsx` cubierto tiene un test «no tiene violaciones de
   accesibilidad (axe)» como primer test del `describe`, con `render()`
-  del propio `@/test-utils/render` para tener `container`:
+  del propio `@/test-utils/render` para tener `container`. La lista
+  exacta y siempre comprobable es
+  `grep -rln "toHaveNoViolations" app components`; al cerrar la segunda
+  ronda de auditoría (ver «Auditoría estática 2026-09-18» más abajo) son
+  **22 páginas y 4 componentes**:
   `app/(auth)/login`, `app/accesibilidad` (declaración pública, tarea
   W1), `entidad/[slug]` (Inicio), `entidad/[slug]/personas`
   (tabla + diálogo «Añadir persona» abierto, valida el foco atrapado),
   `entidad/[slug]/informes`, `entidad/[slug]/asistencia/[eventId]`
   (caja de check-in), `entidad/[slug]/encuestas/[surveyId]` (gráfico
   `recharts`), `entidad/[slug]/familias` (resumen + lista de comunidades,
-  ronda final de Fase 5), `paraguas/[slug]` (Inicio), `plataforma` (Inicio),
+  ronda final de Fase 5), `entidad/[slug]/comunidades`,
+  `entidad/[slug]/configuracion`, `entidad/[slug]/reportes` (cola),
+  `entidad/[slug]/programas` y `entidad/[slug]/programas/[programId]`,
+  `paraguas/[slug]` (Inicio), `plataforma` (Inicio),
   `plataforma/entidades` (tabla + diálogo «Nueva entidad» abierto),
-  `plataforma/reportes/[reportId]`. **Excepción documentada**: el resto
-  de páginas (`comunidades`, `actividades`, `reportes`, `guardia`,
-  `configuracion`, `comunicaciones`, `encuestas`, `recursos`,
-  `paraguas/[slug]/informes`, `plataforma/{auditoria,ayuda,verificaciones,
-  roles,reportes,metricas,entidades/[id]}`) no llevan todavía su propio
-  test de `axe` — la cobertura elegida es representativa de las tres
-  áreas y de los patrones compartidos (tablas, diálogos con foco
-  atrapado, gráficos, formularios), pero no exhaustiva; ampliarla es
-  trabajo mecánico para quien retome accesibilidad en Fase 6.
+  `plataforma/reportes` (cola) y `plataforma/reportes/[reportId]`,
+  `plataforma/metricas`, `plataforma/contratos`, más las dos rutas de
+  error (`app/error`, `app/not-found`); y, a nivel de componente,
+  `components/entidad/GuardiaPanel`,
+  `components/plataforma/AyudaPendienteList`,
+  `components/metrics/ComparativaTable` y
+  `components/metrics/ExportPanel` — estos cuatro cubren por dentro lo
+  que sus páginas (`guardia`, `plataforma/ayuda`, la comparativa de los
+  dos dashboards y los dos `informes`) no comprueban por fuera.
+  **Excepción documentada**: siguen sin test propio de `axe`
+  `elegir-entidad`, `entidad/[slug]/{actividades,asistencia,
+  comunicaciones,encuestas,recursos,guardia}`,
+  `entidad/[slug]/personas/[userId]`, `entidad/[slug]/reportes/[reportId]`,
+  `paraguas/[slug]/informes` y
+  `plataforma/{auditoria,ayuda,verificaciones,roles,entidades/[id]}` — la
+  cobertura es representativa de las tres áreas y de todos los patrones
+  compartidos (tablas, diálogos con foco atrapado, gráficos, formularios,
+  pestañas), pero no exhaustiva; ampliarla es trabajo mecánico para quien
+  retome accesibilidad.
 - **Declaración de accesibilidad** (tarea W1, Fase 6): página pública
   `/accesibilidad` (`app/accesibilidad/page.tsx`, Server Component, sin
   sesión), conforme al RD 1112/2018 — alcance, situación de
@@ -1521,7 +1541,10 @@ de 1014 a **1362 tests**; cobertura de líneas **99,86 %**.
 
 - **`lib/csv/toCsv.ts`** (B30): la exportación CSV de Auditoría
   concatenaba a mano, así que un `;`, un salto de línea o una comilla en
-  `metadata` partía la fila. Ahora toda celda va entrecomillada con las
+  `metadata` partía la fila. **El separador es `;`** (no `,`) y el
+  fichero lleva BOM: es lo que espera un Excel en configuración regional
+  española, igual que las exportaciones que genera el backend.
+  Ahora toda celda va entrecomillada con las
   comillas internas duplicadas (RFC 4180), el BOM lo pone `csvBlob` una
   sola vez y las celdas que empiezan por `=`, `+`, `-`, `@`, tabulador o
   retorno llevan un `'` delante (inyección de fórmulas: `action`,
