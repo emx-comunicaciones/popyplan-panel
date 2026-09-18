@@ -21,6 +21,23 @@
  * que encadenar valores dejaría la clave a merced de quien envíe la
  * cabecera. El valor que se propaga es el que ya puso el proxy de entrada
  * del panel (`x-forwarded-for` o, si no, `x-real-ip`).
+ *
+ * **Frontera de confianza (hallazgo F4, trade-off asumido):** este módulo
+ * reenvía el **primer** valor de la cabecera entrante *tal cual*, sin
+ * poder distinguir si lo puso el proxy o el propio cliente. Por tanto, el
+ * proxy que haya delante de Next tiene que **fijar** `X-Forwarded-For`
+ * (en nginx, `proxy_set_header X-Forwarded-For $remote_addr`), **nunca
+ * anexar** al valor entrante (`$proxy_add_x_forwarded_for`): si lo anexa,
+ * el primer elemento es el que mandó quien llama, y basta rotarlo en cada
+ * intento para saltarse el límite de login del backend (5/minuto por
+ * `ip:<ip>:auth`, `users/rate_limiting.py`). La alternativa —descartar la
+ * cabecera entrante— no sirve: el panel siempre va detrás de un proxy en
+ * producción y sin ella todas las peticiones de auth saldrían con la IP
+ * del proceso de Next, que es justo el 429 global que arregló A1. El
+ * arreglo duradero es del repo backend: clavar el límite por endpoint (o
+ * por cuenta) en vez de solo por IP, y declarar allí la lista de proxies
+ * de confianza. Anotado en `.env.example` («Notas de despliegue») y en
+ * CLAUDE.md.
  */
 
 /** Primer valor no vacío de una lista `a, b, c`. */

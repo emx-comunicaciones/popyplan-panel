@@ -73,5 +73,15 @@ export function useEntityCommunities(
         throw new EntityCommunitiesError("No se pudieron cargar las comunidades de la entidad.");
       }
     },
+    // El listado es **global** y hay que recorrerlo página a página (hasta
+    // 250 peticiones en serie) para filtrar por `owner_org` en el cliente,
+    // porque el backend no admite ese filtro. Con el `staleTime` por
+    // defecto (0), cada montaje de un select de comunidad
+    // (`AddPersonDialog`, `PersonasTable`, `ComunicacionesPanel`,
+    // `RecursosPanel`, `FamiliasPanel`…) repetía el recorrido entero. El
+    // arreglo real es el filtro `owner_org` en el backend, anotado en
+    // «Pendientes conocidos» de CLAUDE.md; mientras no llegue, 5 minutos
+    // de caché: una comunidad nueva la invalidan sus propias mutaciones.
+    staleTime: 5 * 60 * 1000,
   });
 }

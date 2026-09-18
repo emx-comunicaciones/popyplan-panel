@@ -99,4 +99,29 @@ describe("useEntityCommunities", () => {
 
     expect(result.current.error).toBeInstanceOf(EntityCommunitiesError);
   });
+
+  it("dos montajes seguidos con el mismo cliente hacen UNA sola pasada de páginas", async () => {
+    // Recorrido paginado caro (hasta 250 peticiones en serie): con el
+    // `staleTime` por defecto (0) cada montaje de un select de comunidad
+    // lo repetía entero.
+    const mine = buildEntityCommunityRow({
+      id: "c1",
+      owner: { type: "organization", id: 7, name: "Alfaville", verified: true },
+    });
+    apiFetchMock.mockResolvedValue({ count: 1, next: null, previous: null, results: [mine] });
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    function sharedWrapper({ children }: { children: ReactNode }) {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    }
+
+    const first = renderHook(() => useEntityCommunities(7), { wrapper: sharedWrapper });
+    await waitFor(() => expect(first.result.current.isSuccess).toBe(true));
+    first.unmount();
+
+    const second = renderHook(() => useEntityCommunities(7), { wrapper: sharedWrapper });
+    await waitFor(() => expect(second.result.current.isSuccess).toBe(true));
+
+    expect(second.result.current.data).toEqual([mine]);
+    expect(apiFetchMock).toHaveBeenCalledTimes(1);
+  });
 });
