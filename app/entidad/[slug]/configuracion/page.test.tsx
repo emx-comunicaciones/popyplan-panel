@@ -319,12 +319,20 @@ describe("EntidadConfiguracionPage", () => {
       photo: "",
     } as Reference;
     useOrgReferencesMock.mockReturnValue({ data: [reference], isError: false, error: null });
+    useOrgMembersMock.mockReturnValue({
+      data: [buildOrgMembershipFull({ user: 9, role: "referente", public_name: "Ana" })],
+      isError: false,
+      error: null,
+    });
     const removeMutate = vi.fn();
     useRemoveOrgReferenceMock.mockReturnValue({ ...idleMutation(), mutate: removeMutate });
     const user = userEvent.setup();
 
     await renderPage();
 
+    // El nombre del referente no viene en `Reference` (solo su id): se
+    // resuelve contra el equipo ya cargado en esta misma pestaña.
+    expect(screen.getByText("Bea — referente: Ana")).toBeInTheDocument();
     const referenciasCard = screen.getByText("Referencias").parentElement as HTMLElement;
     await user.click(within(referenciasCard).getByRole("button", { name: "Quitar" }));
 
@@ -333,6 +341,31 @@ describe("EntidadConfiguracionPage", () => {
     await user.click(within(dialog).getByRole("button", { name: "Quitar" }));
 
     expect(removeMutate).toHaveBeenCalledWith(42, expect.anything());
+  });
+
+  it("una referencia cuyo referente no está en el equipo cargado no enseña su id", async () => {
+    setDefaultMocks();
+    useOrgMembersMock.mockReturnValue({ data: [], isError: false, error: null });
+    useOrgReferencesMock.mockReturnValue({
+      data: [
+        {
+          id: 1,
+          organization: 7,
+          referent: 9,
+          user: 42,
+          created_at: "2026-01-05T09:00:00Z",
+          public_name: "Bea",
+          photo: "",
+        } as Reference,
+      ],
+      isError: false,
+      error: null,
+    });
+
+    await renderPage();
+
+    expect(screen.getByText("Bea — referente sin nombre")).toBeInTheDocument();
+    expect(screen.queryByText(/referente #9/)).not.toBeInTheDocument();
   });
 
   it("ampliar ámbito por municipios llama a la mutación con places", async () => {

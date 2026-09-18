@@ -58,7 +58,7 @@ async function renderPage(role = "titular", slug = "alfaville", userId = "42") {
   });
 
   const element = await EntidadPersonaPage({ params: Promise.resolve({ slug, userId }) });
-  render(element);
+  return render(element);
 }
 
 describe("EntidadPersonaPage", () => {
@@ -69,13 +69,38 @@ describe("EntidadPersonaPage", () => {
     await renderPage();
 
     expect(screen.getByText("Ana")).toBeInTheDocument();
-    expect(screen.getByText(/Nivel de verificación 1/)).toBeInTheDocument();
+    expect(screen.getByText(/Nivel de verificación: Teléfono verificado/)).toBeInTheDocument();
     expect(screen.getByText(/Referente: Bea/)).toBeInTheDocument();
     expect(screen.getByText("Comunidad Uno")).toBeInTheDocument();
     expect(screen.getByText("member")).toBeInTheDocument();
     expect(screen.getByText(/E1/)).toBeInTheDocument();
     expect(screen.getByText("Asistió")).toBeInTheDocument();
     expect(screen.getByText(/Próximo taller/)).toBeInTheDocument();
+  });
+
+  it("traduce cada nivel de verificación del contrato", async () => {
+    for (const [level, label] of [
+      [0, "Sin verificar"],
+      [2, "Mayoría de edad"],
+      [3, "Identidad completa"],
+    ] as const) {
+      usePersonMock.mockReturnValue({
+        data: { ...PERSON_DETAIL, verification_level: level },
+        isError: false,
+        error: null,
+      });
+      useAssignReferentMock.mockReturnValue({
+        mutate: vi.fn(),
+        isPending: false,
+        isSuccess: false,
+        isError: false,
+      });
+
+      const { unmount } = await renderPage();
+
+      expect(screen.getByText(new RegExp(`Nivel de verificación: ${label}`))).toBeInTheDocument();
+      unmount();
+    }
   });
 
   it("nunca muestra email ni teléfono en el DOM", async () => {
@@ -89,8 +114,13 @@ describe("EntidadPersonaPage", () => {
 
     expect(container.textContent).not.toMatch(/@/);
     expect(container.textContent).not.toMatch(/\+34/);
-    expect(screen.queryByText(/email/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/teléfono/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/email|correo/i)).not.toBeInTheDocument();
+    // La ficha sí dice «Nivel de verificación: Teléfono verificado» (el
+    // nivel del contrato, `LevelEnum`): eso no es un dato de contacto, no
+    // enseña ningún número. Lo que no puede aparecer es el teléfono en sí
+    // ni una etiqueta que lo prometa.
+    expect(screen.queryByText(/teléfono de contacto|teléfono:/i)).not.toBeInTheDocument();
+    expect(container.textContent).not.toMatch(/\d{9}/);
   });
 
   it("titular/moderador ven «Asignar referente»; referente no", async () => {

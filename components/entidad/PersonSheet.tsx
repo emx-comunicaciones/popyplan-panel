@@ -29,6 +29,21 @@ function formatDate(iso: string | null): string {
   return new Date(iso).toLocaleDateString("es-ES");
 }
 
+/**
+ * `PersonDetail.verification_level` es un entero, no una cadena
+ * (`docs/PANEL.md` §3.3): los niveles son los de `LevelEnum` en
+ * `lib/api/types.generated.ts` (`1` teléfono verificado, `2` mayoría de
+ * edad, `3` identidad completa), y `0` es «sin verificar» (ninguna
+ * `VerificationReference`). Un nivel que el panel no conozca se pinta
+ * como número en vez de quedarse en blanco.
+ */
+const VERIFICATION_LEVEL_LABELS: Record<number, string> = {
+  0: "Sin verificar",
+  1: "Teléfono verificado",
+  2: "Mayoría de edad",
+  3: "Identidad completa",
+};
+
 const ATTENDANCE_LABELS: Record<string, string> = {
   registered: "Inscrito",
   waitlisted: "Lista de espera",
@@ -148,7 +163,8 @@ export function PersonSheet({ orgId, userId, canAssignReferent }: PersonSheetPro
           <div>
             <p className="text-lg font-semibold text-text-base">{data.public_name}</p>
             <p className="text-sm text-text-secondary">
-              De alta desde {formatDate(data.joined_at)} · Nivel de verificación {data.verification_level}
+              De alta desde {formatDate(data.joined_at)} · Nivel de verificación:{" "}
+              {VERIFICATION_LEVEL_LABELS[data.verification_level] ?? data.verification_level}
             </p>
             <p className="text-sm text-text-secondary">
               Referente: {data.referent ? data.referent.public_name : "Sin referente"}

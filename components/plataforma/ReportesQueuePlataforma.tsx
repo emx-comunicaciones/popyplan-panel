@@ -20,23 +20,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { Table } from "@/components/ui/Table";
 import { useReportsQueue, type ReportsQueueFilters } from "@/hooks/useReportsQueue";
 import type { ReportRow } from "@/lib/api/types";
-
-const REASON_LABELS: Record<string, string> = {
-  harassment: "Acoso",
-  hate: "Odio",
-  spam: "Spam",
-  scam: "Estafa",
-  underage: "Menor de edad",
-  self_harm_risk: "Riesgo de autolesión",
-  drugs_sale: "Venta de sustancias",
-  other: "Otro",
-};
-
-const STATUS_LABELS: Record<string, string> = {
-  pending: "Pendiente",
-  in_review: "En revisión",
-  resolved: "Resuelto",
-};
+import { reasonLabel, statusLabel } from "@/lib/reports/labels";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("es-ES");
@@ -90,7 +74,7 @@ export function ReportesQueuePlataforma() {
                 header: "Motivo",
                 render: (report) => (
                   <Badge tone={report.reason === "self_harm_risk" ? "error" : "neutral"}>
-                    {REASON_LABELS[report.reason] ?? report.reason}
+                    {reasonLabel(report.reason)}
                   </Badge>
                 ),
               },
@@ -105,7 +89,7 @@ export function ReportesQueuePlataforma() {
                 header: "Estado",
                 render: (report) => (
                   <span className="flex items-center gap-1">
-                    {STATUS_LABELS[report.status] ?? report.status}
+                    {statusLabel(report.status)}
                     {report.escalated_at ? <Badge tone="info">Escalado</Badge> : null}
                   </span>
                 ),

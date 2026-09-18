@@ -10,6 +10,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { useReport } from "@/hooks/useReport";
 import { useAssignReport, useEscalateReport, useResolveReport } from "@/hooks/useReportActions";
 import type { ReportResolution } from "@/lib/api/types";
+import { reasonLabel, statusLabel } from "@/lib/reports/labels";
 
 export interface ReporteDetailProps {
   reportId: string;
@@ -66,7 +67,7 @@ export function ReporteDetail({ reportId, readOnly = false }: ReporteDetailProps
       <Card title="Detalle">
         <dl className="grid grid-cols-2 gap-2 text-sm">
           <dt className="text-text-secondary">Motivo</dt>
-          <dd className="text-text-base">{data.reason}</dd>
+          <dd className="text-text-base">{reasonLabel(data.reason)}</dd>
           <dt className="text-text-secondary">Objetivo</dt>
           <dd className="text-text-base">
             {data.target.type} — {data.target.name ?? data.target.title ?? data.target.id}
@@ -75,10 +76,18 @@ export function ReporteDetail({ reportId, readOnly = false }: ReporteDetailProps
           <dd className="text-text-base">{data.description || "—"}</dd>
           <dt className="text-text-secondary">Estado</dt>
           <dd className="text-text-base">
-            <Badge tone={alreadyResolved ? "success" : "info"}>{data.status}</Badge>
+            <Badge tone={alreadyResolved ? "success" : "info"}>{statusLabel(data.status)}</Badge>
           </dd>
           <dt className="text-text-secondary">Asignado a</dt>
-          <dd className="text-text-base">{data.assigned_to ?? "Sin asignar"}</dd>
+          {/*
+            `ReportDetail.assigned_to` es un id de cuenta suelto
+            (`number | null`), sin nombre ni `*_display` en el contrato:
+            el panel nunca pinta ids de cuenta (invariante 1/9), así que
+            solo se dice si está asignado o no.
+          */}
+          <dd className="text-text-base">
+            {data.assigned_to ? "Asignado a una persona del equipo" : "Sin asignar"}
+          </dd>
           <dt className="text-text-secondary">Entidad</dt>
           <dd className="text-text-base">{data.organization_display?.name ?? "Global"}</dd>
           {data.escalated_at ? (

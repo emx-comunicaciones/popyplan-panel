@@ -63,6 +63,57 @@ describe("EntidadReporteDetailPage", () => {
     expect(screen.getByRole("button", { name: "Asignarme" })).toBeInTheDocument();
   });
 
+  it("pinta el motivo y el estado en castellano, no el valor del contrato", async () => {
+    useReportMock.mockReturnValue({
+      data: buildReportDetail({ reason: "self_harm_risk", status: "in_review", assigned_to: null }),
+      isError: false,
+      error: null,
+    });
+    useAssignReportMock.mockReturnValue(idleMutation());
+    useResolveReportMock.mockReturnValue(idleMutation());
+    useEscalateReportMock.mockReturnValue(idleMutation());
+
+    await renderPage();
+
+    expect(screen.getByText("Riesgo de autolesión")).toBeInTheDocument();
+    expect(screen.getByText("En revisión")).toBeInTheDocument();
+    expect(screen.queryByText("self_harm_risk")).not.toBeInTheDocument();
+    expect(screen.queryByText("in_review")).not.toBeInTheDocument();
+  });
+
+  it("con reporte asignado no enseña el id suelto de la persona", async () => {
+    useReportMock.mockReturnValue({
+      data: buildReportDetail({ assigned_to: 9 }),
+      isError: false,
+      error: null,
+    });
+    useAssignReportMock.mockReturnValue(idleMutation());
+    useResolveReportMock.mockReturnValue(idleMutation());
+    useEscalateReportMock.mockReturnValue(idleMutation());
+
+    await renderPage();
+
+    // `ReportDetail.assigned_to` es un id suelto (`number | null`), sin
+    // nombre: el panel nunca pinta ids de cuenta (invariante 1/9).
+    expect(screen.getByText("Asignado a una persona del equipo")).toBeInTheDocument();
+    expect(screen.queryByText("9")).not.toBeInTheDocument();
+  });
+
+  it("sin asignar lo dice explícitamente", async () => {
+    useReportMock.mockReturnValue({
+      data: buildReportDetail({ assigned_to: null }),
+      isError: false,
+      error: null,
+    });
+    useAssignReportMock.mockReturnValue(idleMutation());
+    useResolveReportMock.mockReturnValue(idleMutation());
+    useEscalateReportMock.mockReturnValue(idleMutation());
+
+    await renderPage();
+
+    expect(screen.getByText("Sin asignar")).toBeInTheDocument();
+  });
+
   it("resolver llama a la mutación con resolution y note", async () => {
     const resolveMutate = vi.fn();
     useReportMock.mockReturnValue({ data: buildReportDetail({ assigned_to: 9 }), isError: false, error: null });

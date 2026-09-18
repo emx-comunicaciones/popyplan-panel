@@ -7,28 +7,12 @@ import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useReportsQueue, type ReportsQueueFilters } from "@/hooks/useReportsQueue";
+import { reasonLabel, statusLabel } from "@/lib/reports/labels";
 
 export interface ReportesQueueProps {
   orgId: number | string;
   slug: string;
 }
-
-const REASON_LABELS: Record<string, string> = {
-  harassment: "Acoso",
-  hate: "Odio",
-  spam: "Spam",
-  scam: "Estafa",
-  underage: "Menor de edad",
-  self_harm_risk: "Riesgo de autolesión",
-  drugs_sale: "Venta de sustancias",
-  other: "Otro",
-};
-
-const STATUS_LABELS: Record<string, string> = {
-  pending: "Pendiente",
-  in_review: "En revisión",
-  resolved: "Resuelto",
-};
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("es-ES");
@@ -93,12 +77,12 @@ export function ReportesQueue({ orgId, slug }: ReportesQueueProps) {
                   <tr key={report.id} className="border-b border-border-light">
                     <td className="px-3 py-2 text-text-base">
                       <Badge tone={report.reason === "self_harm_risk" ? "error" : "neutral"}>
-                        {REASON_LABELS[report.reason] ?? report.reason}
+                        {reasonLabel(report.reason)}
                       </Badge>
                     </td>
                     <td className="px-3 py-2 text-text-base">{report.target_type}</td>
                     <td className="px-3 py-2 text-text-base">
-                      {STATUS_LABELS[report.status] ?? report.status}
+                      {statusLabel(report.status)}
                     </td>
                     <td className="px-3 py-2 text-text-base">{formatDate(report.created_at)}</td>
                     <td className="px-3 py-2 text-text-base">

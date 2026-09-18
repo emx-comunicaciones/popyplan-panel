@@ -315,7 +315,29 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
   );
 }
 
-function Referencias({ orgId }: { orgId: number | string }) {
+/**
+ * Nombre del referente de una referencia: `Reference` trae el
+ * `public_name` de la persona, pero del referente solo el id
+ * (`referent`), así que se resuelve contra el equipo —la misma consulta
+ * que ya pide la sección Equipo, compartida por clave de caché—. Es un
+ * componente aparte para montarlo solo con rol `titular`: el `GET` de
+ * equipo es solo-titular (`entities/permissions.py`) y un `moderador`
+ * solo se ganaría un 403 por referencia. Sin nombre se dice «sin
+ * nombre», nunca el id (el panel no pinta ids de cuenta, invariante 1/9).
+ */
+function ReferentName({
+  orgId,
+  referentUserId,
+}: {
+  orgId: number | string;
+  referentUserId: number;
+}) {
+  const members = useOrgMembers(orgId);
+  const member = (members.data ?? []).find((m) => m.user === referentUserId);
+  return <>{member ? `: ${member.public_name}` : " sin nombre"}</>;
+}
+
+function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam: boolean }) {
   const references = useOrgReferences(orgId);
   const createReference = useCreateOrgReference(orgId);
   const removeReference = useRemoveOrgReference(orgId);
@@ -386,7 +408,12 @@ function Referencias({ orgId }: { orgId: number | string }) {
           {references.data.map((reference) => (
             <li key={reference.id} className="flex items-center justify-between gap-2">
               <span>
-                {reference.public_name} — referente #{reference.referent}
+                {reference.public_name} — referente
+                {canSeeTeam ? (
+                  <ReferentName orgId={orgId} referentUserId={reference.referent} />
+                ) : (
+                  " sin nombre"
+                )}
               </span>
               <Button
                 type="button"
@@ -524,7 +551,7 @@ export function ConfiguracionPanel({ orgId, role, currentUserId }: Configuracion
     <div className="flex flex-col gap-6">
       <DatosEntidad orgId={orgId} />
       {role === "titular" ? <Equipo orgId={orgId} currentUserId={currentUserId} /> : null}
-      <Referencias orgId={orgId} />
+      <Referencias orgId={orgId} canSeeTeam={role === "titular"} />
       <Ambito orgId={orgId} />
     </div>
   );
