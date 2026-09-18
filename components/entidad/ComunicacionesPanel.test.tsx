@@ -37,6 +37,30 @@ afterEach(() => {
 });
 
 describe("ComunicacionesPanel", () => {
+  it("si las comunidades fallan, lo avisa bajo la audiencia en vez de callar", () => {
+    useAnnouncementsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useSendAnnouncementMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      isError: false,
+      error: null,
+      reset: vi.fn(),
+    });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: undefined,
+      isError: true,
+      error: new Error("No se pudieron cargar las comunidades de la entidad."),
+    });
+
+    render(<ComunicacionesPanel orgId={7} canCompose />);
+
+    expect(screen.getByText("No se pudieron cargar las comunidades.")).toBeInTheDocument();
+    // Sin comunidades cargadas, la pista de «familias» sería engañosa.
+    expect(
+      screen.queryByText("Disponible cuando exista el espacio de familias."),
+    ).not.toBeInTheDocument();
+  });
+
   it("canCompose=false: solo muestra el historial, sin formulario", () => {
     useAnnouncementsMock.mockReturnValue({ data: [buildAnnouncement()], isError: false, error: null });
     useEntityCommunitiesMock.mockReturnValue({ data: [], isError: false, error: null });

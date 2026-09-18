@@ -104,6 +104,25 @@ describe("EntidadRecursosPage", () => {
     expect(screen.getByRole("button", { name: "Nuevo recurso" })).toBeInTheDocument();
   });
 
+  it("si las comunidades fallan, el formulario lo avisa bajo «Audiencia»", async () => {
+    mockDefaults();
+    useResourcesMock.mockReturnValue({ data: [], isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: undefined,
+      isError: true,
+      error: new Error("No se pudieron cargar las comunidades de la entidad."),
+    });
+    const user = userEvent.setup();
+
+    await renderPage("titular");
+    await user.click(screen.getByRole("button", { name: "Nuevo recurso" }));
+
+    expect(screen.getByText("No se pudieron cargar las comunidades.")).toBeInTheDocument();
+    expect(
+      screen.queryByText("«Familias» estará disponible cuando exista el espacio de familias."),
+    ).not.toBeInTheDocument();
+  });
+
   it("crear un recurso de tipo texto manda category/kind/audience/body", async () => {
     const mutate = vi.fn();
     mockDefaults();

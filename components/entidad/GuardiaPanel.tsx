@@ -103,6 +103,19 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
   const updateOrganization = useUpdateOrganization(orgId);
   const [helpPhone, setHelpPhone] = useState<string | null>(null);
 
+  // Un fallo de la ficha dejaba la sección entera en blanco, sin decir
+  // nada: quien entra no sabe si la entidad no tiene teléfono de guardia
+  // o si la petición se ha caído.
+  if (organization.isError) {
+    return (
+      <Card title="Ajustes de guardia">
+        <ErrorState
+          title="No se pudieron cargar los ajustes de guardia"
+          description={organization.error.message}
+        />
+      </Card>
+    );
+  }
   if (!organization.data) return null;
 
   const currentHelpPhone = helpPhone ?? organization.data.help_phone ?? "";

@@ -86,6 +86,9 @@ function AssignReferentForm({
               </option>
             ))}
           </select>
+          {members.isError ? (
+            <p className="mt-1 text-xs text-error">No se pudieron cargar los referentes.</p>
+          ) : null}
         </div>
         <Button type="submit" disabled={assignReferent.isPending}>
           {assignReferent.isPending ? "Asignando…" : "Asignar referente"}

@@ -435,6 +435,69 @@ describe("EntidadPersonasPage", () => {
     expect(screen.getByText("1 invitación pendiente")).toBeInTheDocument();
   });
 
+  it("si el recuento de invitaciones falla, lo avisa junto al checkbox", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useInvitationsMock.mockReturnValue({
+      data: undefined,
+      isError: true,
+      error: new Error("No tienes permiso para ver las invitaciones."),
+    });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.click(screen.getByLabelText("Incluir invitadas"));
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "No se pudo cargar el recuento de invitaciones.",
+    );
+  });
+
+  it("si las comunidades fallan, el filtro «Comunidad» lo avisa", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: undefined,
+      isError: true,
+      error: new Error("No se pudieron cargar las comunidades de la entidad."),
+    });
+
+    await renderPage("titular");
+
+    expect(screen.getByText("No se pudieron cargar las comunidades.")).toBeInTheDocument();
+  });
+
+  it("«Añadir persona»: avisa si fallan las comunidades o los referentes", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: undefined,
+      isError: true,
+      error: new Error("No se pudieron cargar las comunidades de la entidad."),
+    });
+    useOrgMembersMock.mockReturnValue({
+      data: undefined,
+      isError: true,
+      error: new Error("Solo el titular puede ver el equipo de la entidad."),
+    });
+    useInviteMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      isError: false,
+      error: null,
+      reset: vi.fn(),
+    });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+    await user.click(screen.getByRole("button", { name: "Añadir persona" }));
+
+    const dialog = screen.getByRole("dialog", { name: "Añadir persona" });
+    expect(within(dialog).getByText("No se pudieron cargar las comunidades.")).toBeInTheDocument();
+    expect(within(dialog).getByText("No se pudieron cargar los referentes.")).toBeInTheDocument();
+  });
+
   it("con include_invited, la fila invitada muestra display_name, invited_at y acciones", async () => {
     mockDefaults();
     usePeopleMock.mockReturnValue({

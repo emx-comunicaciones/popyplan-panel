@@ -180,7 +180,11 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
               />
               Familias
             </label>
-            {!hasFamilies ? (
+            {communities.isError ? (
+              // Sin el listado no se puede saber si la entidad tiene
+              // espacio de familias: la pista de siempre sería engañosa.
+              <p className="ml-6 text-xs text-error">No se pudieron cargar las comunidades.</p>
+            ) : !hasFamilies ? (
               <p className="ml-6 text-xs text-text-secondary">
                 Disponible cuando exista el espacio de familias.
               </p>

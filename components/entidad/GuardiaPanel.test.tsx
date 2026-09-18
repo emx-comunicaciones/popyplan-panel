@@ -73,6 +73,28 @@ describe("GuardiaPanel", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  it("si la ficha de la entidad falla, los ajustes de guardia lo dicen", () => {
+    useOrganizationMock.mockReturnValue({
+      data: undefined,
+      isError: true,
+      error: new Error("No se pudo cargar la ficha de la entidad."),
+    });
+    useUpdateOrganizationMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isSuccess: false,
+    });
+    usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
+
+    render(<GuardiaPanel orgId={7} slug={SLUG} />);
+
+    expect(screen.getByText("No se pudieron cargar los ajustes de guardia")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Teléfono de ayuda")).not.toBeInTheDocument();
+  });
+
   it("miembro con referente: enlaza a la ficha y muestra el referente", () => {
     mockOrganizationHooks();
     usePendingHelpRequestsMock.mockReturnValue({

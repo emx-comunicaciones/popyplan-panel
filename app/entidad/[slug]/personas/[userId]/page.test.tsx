@@ -101,6 +101,20 @@ describe("EntidadPersonaPage", () => {
     expect(screen.getByRole("button", { name: "Asignar referente" })).toBeInTheDocument();
   });
 
+  it("si la lista de referentes falla, «Asignar referente» lo avisa bajo el select", async () => {
+    usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
+    useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
+    useOrgMembersMock.mockReturnValue({
+      data: undefined,
+      isError: true,
+      error: new Error("Solo el titular puede ver el equipo de la entidad."),
+    });
+
+    await renderPage("titular");
+
+    expect(screen.getByText("No se pudieron cargar los referentes.")).toBeInTheDocument();
+  });
+
   it("referente no ve el botón «Asignar referente»", async () => {
     usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
     useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });

@@ -156,6 +156,9 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
               </option>
             ))}
           </select>
+          {communities.isError ? (
+            <p className="mt-1 text-xs text-error">No se pudieron cargar las comunidades.</p>
+          ) : null}
         </div>
         <div>
           <label htmlFor="add-person-referent" className="mb-1 block text-sm font-medium text-text-form">
@@ -174,6 +177,9 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
               </option>
             ))}
           </select>
+          {members.isError ? (
+            <p className="mt-1 text-xs text-error">No se pudieron cargar los referentes.</p>
+          ) : null}
         </div>
 
         <div className="flex gap-2">

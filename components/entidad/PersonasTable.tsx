@@ -57,6 +57,13 @@ function formatDate(iso: string | null): string {
  */
 function PendingInvitationsHint({ orgId }: { orgId: number | string }) {
   const invitations = useInvitations(orgId, "pending");
+  if (invitations.isError) {
+    return (
+      <span role="status" className="text-xs text-error">
+        No se pudo cargar el recuento de invitaciones.
+      </span>
+    );
+  }
   if (!invitations.data) return null;
   const count = invitations.data.length;
   return (
@@ -164,6 +171,9 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
               </option>
             ))}
           </select>
+          {communities.isError ? (
+            <p className="mt-1 text-xs text-error">No se pudieron cargar las comunidades.</p>
+          ) : null}
         </div>
         <div>
           <label htmlFor="personas-referent" className="mb-1 block text-sm font-medium text-text-form">

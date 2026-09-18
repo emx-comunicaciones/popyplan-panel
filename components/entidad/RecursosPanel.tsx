@@ -314,7 +314,11 @@ function ResourceForm({
                 Familias
               </option>
             </select>
-            {!hasFamilies ? (
+            {communities.isError ? (
+              // Igual que en `ComunicacionesPanel`: sin comunidades
+              // cargadas no se sabe si hay espacio de familias.
+              <p className="mt-1 text-xs text-error">No se pudieron cargar las comunidades.</p>
+            ) : !hasFamilies ? (
               <p className="mt-1 text-xs text-text-secondary">
                 «Familias» estará disponible cuando exista el espacio de familias.
               </p>
