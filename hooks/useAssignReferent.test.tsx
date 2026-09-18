@@ -69,6 +69,22 @@ describe("useAssignReferent", () => {
     );
   });
 
+  it("400 por campo (`{campo: [\"msg\"]}`) surge con el mensaje del backend", async () => {
+    // `lib/api/drfError.ts::detailOf`: antes de compartirlo, este hook
+    // solo leía `{detail}` y un error por campo caía al genérico.
+    apiFetchMock.mockRejectedValueOnce(
+      new ApiError(400, { referent_user: ["Esa persona no tiene el rol referente."] }),
+    );
+
+    const { result } = renderHook(() => useAssignReferent(7), { wrapper });
+    result.current.mutate({ userId: 42, referentUserId: 3 });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    expect((result.current.error as AssignReferentError).kind).toBe("invalido");
+    expect(result.current.error?.message).toBe("Esa persona no tiene el rol referente.");
+  });
+
   it("403 surge como 'sin_permiso'", async () => {
     apiFetchMock.mockRejectedValueOnce(new ApiError(403, null));
 

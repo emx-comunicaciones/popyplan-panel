@@ -47,6 +47,25 @@ describe("triggerDownload", () => {
     clickSpy.mockRestore();
   });
 
+  it("si el click falla, el <a> sale del documento y la URL se libera igual", () => {
+    vi.useFakeTimers();
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {
+      throw new Error("descarga bloqueada por el navegador");
+    });
+
+    expect(() => triggerDownload(new Blob(["x"]), "informe.csv")).toThrow(
+      "descarga bloqueada por el navegador",
+    );
+
+    // Sin limpieza, cada intento fallido dejaría un <a> huérfano en el
+    // <body> y una URL de blob viva hasta recargar la página.
+    expect(document.querySelector("a[download]")).toBeNull();
+    vi.runAllTimers();
+    expect(revokeObjectURLMock).toHaveBeenCalledWith("blob:mock-url");
+
+    clickSpy.mockRestore();
+  });
+
   it("libera la URL del blob en el siguiente turno, no durante la descarga", () => {
     vi.useFakeTimers();
     const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => undefined);

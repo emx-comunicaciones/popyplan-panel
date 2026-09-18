@@ -44,10 +44,38 @@ describe("filenameFromContentDisposition", () => {
     ).toBe("informe del año.csv");
   });
 
-  it("admite `filename*` sin juego de caracteres ni idioma", () => {
-    expect(filenameFromContentDisposition("attachment; filename*=informe.csv", FALLBACK)).toBe(
-      "informe.csv",
-    );
+  it("rechaza un `filename*` en otro juego de caracteres y usa el `filename` de reserva", () => {
+    // `decodeURIComponent` solo sabe de UTF-8: descodificar un
+    // ISO-8859-1 con él devuelve mojibake, no un error.
+    expect(
+      filenameFromContentDisposition(
+        "attachment; filename=\"informe.csv\"; filename*=ISO-8859-1''informe%E1.csv",
+        FALLBACK,
+      ),
+    ).toBe("informe.csv");
+  });
+
+  it("rechaza un `filename*` en otro juego de caracteres aunque se descodifique sin error", () => {
+    // Solo ASCII: `decodeURIComponent` no protesta, así que sin mirar el
+    // juego de caracteres este nombre pasaría como si fuera UTF-8.
+    expect(
+      filenameFromContentDisposition(
+        "attachment; filename=\"reserva.csv\"; filename*=ISO-8859-1''informe.csv",
+        FALLBACK,
+      ),
+    ).toBe("reserva.csv");
+  });
+
+  it("admite el juego de caracteres en cualquier caja (`utf-8`, `UTF-8`)", () => {
+    expect(
+      filenameFromContentDisposition("attachment; filename*=utf-8''informe%20del%20a%C3%B1o.csv", FALLBACK),
+    ).toBe("informe del año.csv");
+  });
+
+  it("exige el juego de caracteres que manda la RFC 5987", () => {
+    // `filename*=` sin juego de caracteres es una cabecera mal formada:
+    // no hay forma de saber en qué está codificada.
+    expect(filenameFromContentDisposition("attachment; filename*=otro.csv", FALLBACK)).toBe(FALLBACK);
   });
 
   it("si `filename*` viene mal codificado, usa el `filename` de reserva", () => {
@@ -67,7 +95,10 @@ describe("filenameFromContentDisposition", () => {
 
   it("ignora un `filename*` vacío y usa el `filename` de reserva", () => {
     expect(
-      filenameFromContentDisposition('attachment; filename*=   ; filename="informe.csv"', FALLBACK),
+      filenameFromContentDisposition(
+        "attachment; filename*=UTF-8''   ; filename=\"informe.csv\"",
+        FALLBACK,
+      ),
     ).toBe("informe.csv");
   });
 

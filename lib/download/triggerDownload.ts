@@ -9,6 +9,11 @@
  * vuelta: revocarla mientras el navegador aún está resolviendo el click
  * cancela la descarga (bug clásico de Safari y de Chrome con ficheros
  * grandes).
+ *
+ * La limpieza va en un `finally`: si el navegador bloquea el click (una
+ * política de descargas, una extensión), el error sube a quien llamó —
+ * que lo pinta como error de la descarga — pero ni el `<a>` se queda
+ * huérfano en el `<body>` ni la URL del blob viva hasta recargar.
  */
 export function triggerDownload(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
@@ -16,7 +21,10 @@ export function triggerDownload(blob: Blob, filename: string): void {
   link.href = url;
   link.download = filename;
   document.body.appendChild(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 0);
+  try {
+    link.click();
+  } finally {
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
 }

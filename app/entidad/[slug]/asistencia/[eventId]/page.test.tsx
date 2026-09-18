@@ -71,6 +71,22 @@ describe("EntidadAsistenciaPage", () => {
     expect(screen.getByText("Inscrito")).toBeInTheDocument();
   });
 
+  it("pasa a los hooks el id de la actividad y el id numérico de la entidad", async () => {
+    useAttendeesMock.mockReturnValue({ data: [ATTENDEE], isError: false, error: null });
+    useMarkAttendanceMock.mockReturnValue({ mutate: vi.fn(), isPending: false, variables: undefined });
+    useCheckinMock.mockReturnValue({ mutate: vi.fn(), isPending: false });
+
+    await renderPage();
+
+    // `orgId` no viaja en la petición: lo usan los dos hooks para
+    // invalidar `["panel-entity-events", orgId]`/`["panel-person", orgId]`,
+    // claves que llevan el id numérico de `organization_id`. Pasar el
+    // slug aquí dejaría esas dos familias sin refrescar y nadie lo notaría
+    // hasta recargar la página.
+    expect(useMarkAttendanceMock).toHaveBeenCalledWith("event-uuid-1", 7);
+    expect(useCheckinMock).toHaveBeenCalledWith("event-uuid-1", 7);
+  });
+
   it("«Marcar asistió» llama a mark con {userId, attended:true}", async () => {
     useAttendeesMock.mockReturnValue({ data: [ATTENDEE], isError: false, error: null });
     const mutate = vi.fn();

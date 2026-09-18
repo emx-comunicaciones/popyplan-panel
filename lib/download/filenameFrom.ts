@@ -7,8 +7,8 @@
  * acentos o eñes sin depender del juego de caracteres del servidor.
  *
  * Orden de preferencia, el que manda la RFC 6266 §4.3: `filename*`
- * primero (si se descodifica bien) y `filename` como reserva. Si no hay
- * ninguno utilizable, `fallback`.
+ * primero (si declara UTF-8 y se descodifica bien) y `filename` como
+ * reserva. Si no hay ninguno utilizable, `fallback`.
  *
  * Recordatorio para quien lo depure: en el panel esta cabecera casi
  * siempre llega vacía. `pop/settings.py` no declara
@@ -16,7 +16,7 @@
  * `Content-Disposition` a `fetch()` en una petición entre orígenes y se
  * acaba usando siempre `fallback` (ver CLAUDE.md, «Cierre del panel»).
  */
-const EXTENDED = /filename\*=(?:([^']*)'([^']*)')?([^;]+)/i;
+const EXTENDED = /filename\*=([^';]*)'[^']*'([^;]+)/i;
 const PLAIN = /filename=("([^"]*)"|[^;]+)/i;
 
 function plainFilename(header: string): string | undefined {
@@ -29,7 +29,13 @@ function plainFilename(header: string): string | undefined {
 function extendedFilename(header: string): string | undefined {
   const match = EXTENDED.exec(header);
   if (!match) return undefined;
-  const raw = match[3].trim();
+  // El juego de caracteres es obligatorio (RFC 5987) y aquí solo vale
+  // UTF-8: `decodeURIComponent` da por hecho ese juego, así que con un
+  // ISO-8859-1 devolvería mojibake sin protestar cuando el nombre es
+  // ASCII puro. Cualquier otro valor (o ninguno) cae al `filename` de
+  // reserva, que al menos está en un juego que el navegador ya conoce.
+  if (match[1].trim().toLowerCase() !== "utf-8") return undefined;
+  const raw = match[2].trim();
   if (raw.length === 0) return undefined;
   try {
     return decodeURIComponent(raw);
