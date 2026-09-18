@@ -544,7 +544,9 @@ function Ambito({ orgId }: { orgId: number | string }) {
  * relacionado, no resuelto aquí: los selects de referente de
  * `AddPersonDialog.tsx`/`PersonSheet.tsx::AssignReferentForm` usan
  * `useOrgMembers` (que exige el mismo permiso de equipo), así que un
- * `moderador` los verá vacíos salvo «Sin referente».
+ * `moderador` los verá vacíos salvo «Sin referente» —con el aviso «No se
+ * pudieron cargar los referentes.» debajo, que al menos distingue el
+ * fallo de una entidad sin referentes.
  */
 export function ConfiguracionPanel({ orgId, role, currentUserId }: ConfiguracionPanelProps) {
   return (
