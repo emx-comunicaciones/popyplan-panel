@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { PLATFORM_ROLES, isPlatformRole, plataformaMenuFor } from "./plataformaMenu";
+import {
+  PLATFORM_ROLES,
+  TEAM_MANAGER_ROLES,
+  canManageTeamFromPlatform,
+  isPlatformRole,
+  plataformaMenuFor,
+} from "./plataformaMenu";
 
 describe("plataformaMenuFor", () => {
   it("superadmin ve todo", () => {
@@ -33,6 +39,21 @@ describe("plataformaMenuFor", () => {
     expect(plataformaMenuFor(null)).toEqual([]);
     expect(plataformaMenuFor(undefined)).toEqual([]);
     expect(plataformaMenuFor("otro")).toEqual([]);
+  });
+
+  it("TEAM_MANAGER_ROLES son los que el backend deja gestionar el equipo de una entidad", () => {
+    expect([...TEAM_MANAGER_ROLES]).toEqual(["superadmin", "moderator"]);
+    expect((TEAM_MANAGER_ROLES as readonly string[]).includes("verifier")).toBe(false);
+    expect((TEAM_MANAGER_ROLES as readonly string[]).includes("support")).toBe(false);
+  });
+
+  it("canManageTeamFromPlatform solo deja pasar a esos dos roles", () => {
+    expect(canManageTeamFromPlatform("superadmin")).toBe(true);
+    expect(canManageTeamFromPlatform("moderator")).toBe(true);
+    expect(canManageTeamFromPlatform("verifier")).toBe(false);
+    expect(canManageTeamFromPlatform("support")).toBe(false);
+    expect(canManageTeamFromPlatform(null)).toBe(false);
+    expect(canManageTeamFromPlatform(undefined)).toBe(false);
   });
 
   it("PLATFORM_ROLES lista los cuatro roles conocidos y isPlatformRole los reconoce", () => {

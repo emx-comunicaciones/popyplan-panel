@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useOrgMembers, useAddOrgMember, useRemoveOrgMember } from "@/hooks/useOrgMembers";
 import { useOrgReferences, useCreateOrgReference, useRemoveOrgReference } from "@/hooks/useOrgReferences";
@@ -34,7 +35,13 @@ import { useMetrics } from "@/hooks/useMetrics";
 import { formatCount, formatPct } from "@/lib/metrics/format";
 import { presetPeriod } from "@/lib/metrics/period";
 import { formatEuros } from "@/lib/programs/money";
-import type { InvoiceStatus, OrgMembershipRole } from "@/lib/api/types";
+import { canManageTeamFromPlatform } from "@/lib/auth/plataformaMenu";
+import type {
+  InvoiceStatus,
+  OrgMembershipFull,
+  OrgMembershipRole,
+  Reference,
+} from "@/lib/api/types";
 
 export interface EntidadDetailProps {
   orgId: number | string;
@@ -277,7 +284,16 @@ function AmbitoTab({ orgId, role }: { orgId: number | string; role: string | nul
   );
 }
 
-function EquipoTab({ orgId }: { orgId: number | string }) {
+/**
+ * Pestaña «Equipo»: el listado lo ve cualquier rol que llegue a la ficha;
+ * los formularios y los botones «Quitar» solo los roles que el backend
+ * deja gestionar el equipo de una entidad sin membresía propia
+ * (`TEAM_MANAGER_ROLES`, `lib/auth/plataformaMenu.ts`). Un `verifier` los
+ * veía y recibía un 403 al usarlos. Ocultos, nunca deshabilitados, como
+ * en el resto del panel.
+ */
+function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role: string | null }) {
+  const canManage = canManageTeamFromPlatform(platformRole);
   const members = useOrgMembers(orgId);
   const addMember = useAddOrgMember(orgId);
   const removeMember = useRemoveOrgMember(orgId);
@@ -288,59 +304,63 @@ function EquipoTab({ orgId }: { orgId: number | string }) {
   const [role, setRole] = useState<OrgMembershipRole>("dinamizador");
   const [refUser, setRefUser] = useState("");
   const [refReferent, setRefReferent] = useState("");
+  const [removingMember, setRemovingMember] = useState<OrgMembershipFull | null>(null);
+  const [removingReference, setRemovingReference] = useState<Reference | null>(null);
 
   return (
     <div className="flex flex-col gap-4">
       <p className="text-xs text-text-secondary">
-        El equipo y las referencias los gestiona el titular de la entidad (permiso «equipo»,
-        `docs/SEGURIDAD_Y_MODERACION.md` §8). Desde la tarea backend P7, `superadmin` y
-        `moderator` de plataforma también pueden verlo y gestionarlo sin membresía propia
-        (`docs/PANEL.md` §10.2); `support` y `verifier` no.
+        {canManage
+          ? "El equipo y las referencias los gestiona normalmente el titular de la entidad; desde plataforma también puedes cambiarlos tú."
+          : "El equipo y las referencias los gestiona el titular de la entidad. Tu rol de plataforma no gestiona el equipo desde aquí: puedes consultarlo, no cambiarlo."}
       </p>
 
       <Card title="Equipo">
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (!userId) return;
-            addMember.mutate({ user: Number(userId), role });
-            setUserId("");
-          }}
-          className="mb-4 flex flex-wrap items-end gap-3"
-        >
-          <div>
-            <label htmlFor="plataforma-equipo-user" className="mb-1 block text-sm font-medium text-text-form">
-              Id de usuario
-            </label>
-            <input
-              id="plataforma-equipo-user"
-              type="number"
-              value={userId}
-              onChange={(event) => setUserId(event.target.value)}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
-            />
-          </div>
-          <div>
-            <label htmlFor="plataforma-equipo-role" className="mb-1 block text-sm font-medium text-text-form">
-              Rol
-            </label>
-            <select
-              id="plataforma-equipo-role"
-              value={role}
-              onChange={(event) => setRole(event.target.value as OrgMembershipRole)}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
-            >
-              {ROLE_OPTIONS.map((value) => (
-                <option key={value} value={value}>
-                  {value}
-                </option>
-              ))}
-            </select>
-          </div>
-          <Button type="submit" disabled={addMember.isPending}>
-            Añadir
-          </Button>
-        </form>
+        {canManage ? (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (!userId) return;
+              // El campo se vacía solo si el alta sale bien: si falla, el id
+              // sigue ahí para corregirlo sin volver a teclearlo.
+              addMember.mutate({ user: Number(userId), role }, { onSuccess: () => setUserId("") });
+            }}
+            className="mb-4 flex flex-wrap items-end gap-3"
+          >
+            <div>
+              <label htmlFor="plataforma-equipo-user" className="mb-1 block text-sm font-medium text-text-form">
+                Id de usuario
+              </label>
+              <input
+                id="plataforma-equipo-user"
+                type="number"
+                value={userId}
+                onChange={(event) => setUserId(event.target.value)}
+                className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              />
+            </div>
+            <div>
+              <label htmlFor="plataforma-equipo-role" className="mb-1 block text-sm font-medium text-text-form">
+                Rol
+              </label>
+              <select
+                id="plataforma-equipo-role"
+                value={role}
+                onChange={(event) => setRole(event.target.value as OrgMembershipRole)}
+                className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              >
+                {ROLE_OPTIONS.map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <Button type="submit" disabled={addMember.isPending}>
+              Añadir
+            </Button>
+          </form>
+        ) : null}
         {addMember.isError ? (
           <p role="alert" className="mb-2 text-sm text-error">
             {addMember.error.message}
@@ -360,64 +380,71 @@ function EquipoTab({ orgId }: { orgId: number | string }) {
                 <span>
                   {member.public_name} — {member.role}
                 </span>
-                <Button
-                  type="button"
-                  variant="danger"
-                  disabled={removeMember.isPending}
-                  onClick={() => removeMember.mutate(member.user)}
-                >
-                  Quitar
-                </Button>
+                {canManage ? (
+                  <Button
+                    type="button"
+                    variant="danger"
+                    onClick={() => {
+                      removeMember.reset();
+                      setRemovingMember(member);
+                    }}
+                  >
+                    Quitar
+                  </Button>
+                ) : null}
               </li>
             ))}
           </ul>
         )}
-        {removeMember.isError ? (
-          <p role="alert" className="mt-2 text-sm text-error">
-            {removeMember.error.message}
-          </p>
-        ) : null}
       </Card>
 
       <Card title="Referencias">
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (!refUser || !refReferent) return;
-            createReference.mutate({ user: Number(refUser), referent_user: Number(refReferent) });
-            setRefUser("");
-            setRefReferent("");
-          }}
-          className="mb-4 flex flex-wrap items-end gap-3"
-        >
-          <div>
-            <label htmlFor="plataforma-ref-user" className="mb-1 block text-sm font-medium text-text-form">
-              Persona (id)
-            </label>
-            <input
-              id="plataforma-ref-user"
-              type="number"
-              value={refUser}
-              onChange={(event) => setRefUser(event.target.value)}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
-            />
-          </div>
-          <div>
-            <label htmlFor="plataforma-ref-referent" className="mb-1 block text-sm font-medium text-text-form">
-              Referente (id)
-            </label>
-            <input
-              id="plataforma-ref-referent"
-              type="number"
-              value={refReferent}
-              onChange={(event) => setRefReferent(event.target.value)}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
-            />
-          </div>
-          <Button type="submit" disabled={createReference.isPending}>
-            Asignar
-          </Button>
-        </form>
+        {canManage ? (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (!refUser || !refReferent) return;
+              createReference.mutate(
+                { user: Number(refUser), referent_user: Number(refReferent) },
+                {
+                  onSuccess: () => {
+                    setRefUser("");
+                    setRefReferent("");
+                  },
+                },
+              );
+            }}
+            className="mb-4 flex flex-wrap items-end gap-3"
+          >
+            <div>
+              <label htmlFor="plataforma-ref-user" className="mb-1 block text-sm font-medium text-text-form">
+                Persona (id)
+              </label>
+              <input
+                id="plataforma-ref-user"
+                type="number"
+                value={refUser}
+                onChange={(event) => setRefUser(event.target.value)}
+                className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              />
+            </div>
+            <div>
+              <label htmlFor="plataforma-ref-referent" className="mb-1 block text-sm font-medium text-text-form">
+                Referente (id)
+              </label>
+              <input
+                id="plataforma-ref-referent"
+                type="number"
+                value={refReferent}
+                onChange={(event) => setRefReferent(event.target.value)}
+                className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              />
+            </div>
+            <Button type="submit" disabled={createReference.isPending}>
+              Asignar
+            </Button>
+          </form>
+        ) : null}
         {createReference.isError ? (
           <p role="alert" className="mb-2 text-sm text-error">
             {createReference.error.message}
@@ -437,19 +464,87 @@ function EquipoTab({ orgId }: { orgId: number | string }) {
                 <span>
                   {reference.public_name} — referente #{reference.referent}
                 </span>
-                <Button
-                  type="button"
-                  variant="danger"
-                  disabled={removeReference.isPending}
-                  onClick={() => removeReference.mutate(reference.user)}
-                >
-                  Quitar
-                </Button>
+                {canManage ? (
+                  <Button
+                    type="button"
+                    variant="danger"
+                    onClick={() => {
+                      removeReference.reset();
+                      setRemovingReference(reference);
+                    }}
+                  >
+                    Quitar
+                  </Button>
+                ) : null}
               </li>
             ))}
           </ul>
         )}
       </Card>
+
+      {/* Dar de baja a alguien del equipo o quitarle su referente son
+          acciones irreversibles desde el panel: confirmación primero, y el
+          error de la llamada dentro del propio diálogo, que solo se cierra
+          si la baja sale bien. */}
+      <ConfirmDialog
+        open={removingMember !== null}
+        title="Quitar del equipo"
+        description={
+          <div className="flex flex-col gap-2">
+            <p>
+              {removingMember
+                ? `¿Quitar a «${removingMember.public_name}» del equipo de la entidad? Dejará de tener rol en el panel.`
+                : ""}
+            </p>
+            {removeMember.isError ? (
+              <p role="alert" className="text-error">
+                {removeMember.error.message}
+              </p>
+            ) : null}
+          </div>
+        }
+        confirmLabel="Quitar"
+        pending={removeMember.isPending}
+        onConfirm={() => {
+          if (!removingMember) return;
+          removeMember.mutate(removingMember.user, { onSuccess: () => setRemovingMember(null) });
+        }}
+        onCancel={() => {
+          removeMember.reset();
+          setRemovingMember(null);
+        }}
+      />
+
+      <ConfirmDialog
+        open={removingReference !== null}
+        title="Quitar la referencia"
+        description={
+          <div className="flex flex-col gap-2">
+            <p>
+              {removingReference
+                ? `¿Quitar el referente asignado a «${removingReference.public_name}»?`
+                : ""}
+            </p>
+            {removeReference.isError ? (
+              <p role="alert" className="text-error">
+                {removeReference.error.message}
+              </p>
+            ) : null}
+          </div>
+        }
+        confirmLabel="Quitar"
+        pending={removeReference.isPending}
+        onConfirm={() => {
+          if (!removingReference) return;
+          removeReference.mutate(removingReference.user, {
+            onSuccess: () => setRemovingReference(null),
+          });
+        }}
+        onCancel={() => {
+          removeReference.reset();
+          setRemovingReference(null);
+        }}
+      />
     </div>
   );
 }
@@ -463,7 +558,7 @@ function MetricasTab({ orgId }: { orgId: number | string }) {
       return (
         <EmptyState
           title="Sin acceso"
-          description="Tu rol de plataforma no da acceso a las métricas de esta entidad (solo superadmin, moderator y support lo tienen, docs/PANEL.md §10.2). Usa el menú «Métricas» de plataforma, agrupado por entidad, para ver sus cifras agregadas."
+          description="Tu rol de plataforma no da acceso a las métricas de esta entidad. Usa el menú «Métricas» de plataforma, agrupado por entidad, para ver sus cifras agregadas."
         />
       );
     }
@@ -563,7 +658,7 @@ function ContratoTab({ orgId }: { orgId: number | string }) {
       return (
         <EmptyState
           title="Sin acceso"
-          description="Tu rol de plataforma no da acceso a la facturación (solo superadmin y support, docs/PANEL.md §13.2)."
+          description="Tu rol de plataforma no da acceso a la facturación de las entidades."
         />
       );
     }
@@ -636,7 +731,7 @@ export function EntidadDetail({ orgId, role }: EntidadDetailProps) {
       {section === "datos" ? <DatosTab orgId={orgId} role={role} /> : null}
       {section === "paraguas" ? <ParaguasTab orgId={orgId} role={role} /> : null}
       {section === "ambito" ? <AmbitoTab orgId={orgId} role={role} /> : null}
-      {section === "equipo" ? <EquipoTab orgId={orgId} /> : null}
+      {section === "equipo" ? <EquipoTab orgId={orgId} role={role} /> : null}
       {section === "metricas" ? <MetricasTab orgId={orgId} /> : null}
       {section === "comunidades" ? <ComunidadesTab orgId={orgId} /> : null}
       {section === "contrato" ? <ContratoTab orgId={orgId} /> : null}

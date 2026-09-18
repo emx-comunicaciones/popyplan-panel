@@ -10,7 +10,8 @@ vi.mock("@/lib/api/client", async () => {
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
-import { render, screen, waitFor } from "@/test-utils/render";
+import { ApiError } from "@/lib/api/client";
+import { render, screen, waitFor, within } from "@/test-utils/render";
 import { NextNotFoundSignal, NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildOrganization } from "@/test-utils/fixtures/organization";
@@ -105,6 +106,132 @@ describe("PlataformaEntidadDetailPage", () => {
 
     expect(screen.getByRole("button", { name: "Ámbito" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "Datos" })).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("Equipo: verifier ve el listado sin formularios ni «Quitar»", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") {
+        return buildOrganization({ id: 9, name: "Ayuntamiento de Irun" });
+      }
+      if (path.includes("/members/")) {
+        return [{ id: 1, user: 4, public_name: "Ane", role: "titular" }];
+      }
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("verifier"),
+    });
+
+    const user = userEvent.setup();
+    const element = await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) });
+    render(element);
+
+    await user.click(screen.getByRole("button", { name: "Equipo" }));
+
+    await waitFor(() => expect(screen.getByText(/Ane/)).toBeInTheDocument());
+    expect(screen.queryByRole("button", { name: "Añadir" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Asignar" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Quitar" })).not.toBeInTheDocument();
+    expect(screen.getByText(/Tu rol de plataforma no gestiona el equipo/)).toBeInTheDocument();
+  });
+
+  it("Equipo: superadmin añade a alguien y el formulario se limpia solo si la llamada sale bien", async () => {
+    const members: unknown[] = [];
+    apiFetchMock.mockImplementation(async (path: string, options?: { method?: string }) => {
+      if (path === "/api/organizations/9/") {
+        return buildOrganization({ id: 9, name: "Ayuntamiento de Irun" });
+      }
+      if (path.includes("/members/") && options?.method === "POST") {
+        throw new ApiError(400, { user: ["Esta persona ya está en el equipo."] });
+      }
+      if (path.includes("/members/")) return members;
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const user = userEvent.setup();
+    const element = await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) });
+    render(element);
+
+    await user.click(screen.getByRole("button", { name: "Equipo" }));
+    await user.type(screen.getByLabelText("Id de usuario"), "42");
+    await user.click(screen.getByRole("button", { name: "Añadir" }));
+
+    // La llamada falla: el id sigue en el campo para poder corregirlo.
+    await waitFor(() =>
+      expect(screen.getByText("Esta persona ya está en el equipo.")).toBeInTheDocument(),
+    );
+    expect(screen.getByLabelText("Id de usuario")).toHaveValue(42);
+  });
+
+  it("Equipo: «Quitar» pide confirmación y el error se lee dentro del diálogo", async () => {
+    apiFetchMock.mockImplementation(async (path: string, options?: { method?: string }) => {
+      if (path === "/api/organizations/9/") {
+        return buildOrganization({ id: 9, name: "Ayuntamiento de Irun" });
+      }
+      if (path.includes("/members/") && options?.method === "DELETE") {
+        throw new ApiError(400, { detail: "La entidad se quedaría sin titular." });
+      }
+      if (path.includes("/members/")) {
+        return [{ id: 1, user: 4, public_name: "Ane", role: "titular" }];
+      }
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const user = userEvent.setup();
+    const element = await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) });
+    render(element);
+
+    await user.click(screen.getByRole("button", { name: "Equipo" }));
+    await user.click(await screen.findByRole("button", { name: "Quitar" }));
+
+    const dialog = screen.getByRole("alertdialog");
+    expect(within(dialog).getByText(/Ane/)).toBeInTheDocument();
+
+    await user.click(within(dialog).getByRole("button", { name: "Quitar" }));
+
+    // El mensaje lo decide `useRemoveOrgMember` (hoy genérico); lo que se
+    // comprueba aquí es que se lee dentro del diálogo y que este no se
+    // cierra con la baja fallida.
+    await waitFor(() =>
+      expect(within(dialog).getByRole("alert")).toHaveTextContent(
+        "No se pudo quitar a la persona del equipo.",
+      ),
+    );
+    expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+  });
+
+  it("no enseña rutas de documentación interna en los avisos de la ficha", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") {
+        return buildOrganization({ id: 9, name: "Ayuntamiento de Irun" });
+      }
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const user = userEvent.setup();
+    const element = await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) });
+    const { container } = render(element);
+
+    await user.click(screen.getByRole("button", { name: "Equipo" }));
+    expect(container.textContent).not.toMatch(/docs\//);
+    expect(container.textContent).not.toMatch(/`/);
   });
 
   it("moderator ve «Sin acceso»", async () => {

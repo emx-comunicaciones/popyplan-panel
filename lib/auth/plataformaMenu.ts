@@ -78,6 +78,21 @@ export function isPlatformRole(role: string | null | undefined): role is Platfor
   return !!role && (PLATFORM_ROLES as readonly string[]).includes(role);
 }
 
+/**
+ * Roles de plataforma que el backend deja gestionar el equipo de una
+ * entidad sin tener membresía propia en ella (`panel/permissions.py
+ * ::PuedeEnEntidad`, atajo de la tarea P7, `docs/PANEL.md` §10.2):
+ * `superadmin` y `moderator` pasan la comprobación `equipo`; `support`
+ * solo `ver_panel` y `verifier` nada. `EntidadDetail.tsx` esconde con
+ * esta lista los formularios y el botón «Quitar» de la pestaña Equipo:
+ * un `verifier` los veía y recibía un 403 al usarlos.
+ */
+export const TEAM_MANAGER_ROLES = ["superadmin", "moderator"] as const;
+
+export function canManageTeamFromPlatform(role: string | null | undefined): boolean {
+  return !!role && (TEAM_MANAGER_ROLES as readonly string[]).includes(role);
+}
+
 const VERIFIER_VISIBLE: readonly PlataformaMenuItem[] = ["inicio", "entidades", "verificaciones"];
 const MODERATOR_VISIBLE: readonly PlataformaMenuItem[] = ["inicio", "reportes", "ayuda", "metricas"];
 const SUPPORT_VISIBLE: readonly PlataformaMenuItem[] = [
