@@ -41,6 +41,37 @@ describe("AyudaPendienteList", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  it("recuerda siempre que Popyplan no guarda teléfonos, igual que la guardia de la entidad", () => {
+    usePlatformPendingHelpRequestsMock.mockReturnValue({
+      data: [buildHelpRequest()],
+      isError: false,
+      error: null,
+    });
+    useAcknowledgeHelpRequestGlobalMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
+
+    render(<AyudaPendienteList />);
+
+    expect(
+      screen.getByText(
+        "Popyplan no guarda teléfonos: contacta con la persona por el chat de la app o a través de su referente.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("sin avisos pendientes, el recordatorio sigue estando", () => {
+    usePlatformPendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestGlobalMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
+
+    render(<AyudaPendienteList />);
+
+    expect(screen.getByText("Sin avisos pendientes")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Popyplan no guarda teléfonos: contacta con la persona por el chat de la app o a través de su referente.",
+      ),
+    ).toBeInTheDocument();
+  });
+
   it("miembro con referente: muestra la entidad y el referente, sin el badge de no pertenencia", () => {
     usePlatformPendingHelpRequestsMock.mockReturnValue({
       data: [

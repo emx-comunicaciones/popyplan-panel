@@ -13,6 +13,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { useAcknowledgeHelpRequestGlobal } from "@/hooks/useAcknowledgeHelpRequestGlobal";
 import { usePlatformPendingHelpRequests } from "@/hooks/usePlatformPendingHelpRequests";
 import type { HelpRequestRow } from "@/lib/api/types";
+import { NO_PHONE_NOTICE } from "@/lib/help/noPhoneNotice";
 
 function formatDateTime(iso: string): string {
   return new Date(iso).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
@@ -79,20 +80,26 @@ export function AyudaPendienteList() {
   if (!requests.data) {
     return <p className="text-sm text-text-secondary">Cargando avisos…</p>;
   }
-  if (requests.data.length === 0) {
-    return (
-      <EmptyState
-        title="Sin avisos pendientes"
-        description="Ninguna entidad tiene avisos de ayuda sin atender."
-      />
-    );
-  }
-
   return (
-    <ul className="flex flex-col gap-3">
-      {requests.data.map((request) => (
-        <HelpRequestCard key={request.id} request={request} />
-      ))}
-    </ul>
+    <div className="flex flex-col gap-3">
+      {requests.data.length === 0 ? (
+        <EmptyState
+          title="Sin avisos pendientes"
+          description="Ninguna entidad tiene avisos de ayuda sin atender."
+        />
+      ) : (
+        <ul className="flex flex-col gap-3">
+          {requests.data.map((request) => (
+            <HelpRequestCard key={request.id} request={request} />
+          ))}
+        </ul>
+      )}
+      {/*
+        Mismo recordatorio que la guardia de la entidad
+        (`GuardiaPanel.tsx`), de la misma constante: quien atiende desde
+        plataforma tampoco tiene un teléfono al que llamar.
+      */}
+      <p className="text-sm text-text-secondary">{NO_PHONE_NOTICE}</p>
+    </div>
   );
 }

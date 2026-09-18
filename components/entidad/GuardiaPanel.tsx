@@ -13,6 +13,7 @@ import { usePendingHelpRequests } from "@/hooks/usePendingHelpRequests";
 import { useOrganization } from "@/hooks/useOrganization";
 import { useUpdateOrganization } from "@/hooks/useUpdateOrganization";
 import type { HelpRequestRow } from "@/lib/api/types";
+import { NO_PHONE_NOTICE } from "@/lib/help/noPhoneNotice";
 
 export interface GuardiaPanelProps {
   orgId: number | string;
@@ -205,10 +206,7 @@ export function GuardiaPanel({ orgId, slug }: GuardiaPanelProps) {
             ))}
           </ul>
         )}
-        <p className="mt-3 text-sm text-text-secondary">
-          Popyplan no guarda teléfonos: contacta con la persona por el chat de la app o a través de su
-          referente.
-        </p>
+        <p className="mt-3 text-sm text-text-secondary">{NO_PHONE_NOTICE}</p>
       </section>
     </div>
   );
