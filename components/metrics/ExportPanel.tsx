@@ -9,7 +9,7 @@ import { presetPeriod, type Period, type PeriodPreset } from "@/lib/metrics/peri
 import { ExportButtons } from "./ExportButtons";
 import { PeriodSelector } from "./PeriodSelector";
 
-export interface ExportPanelProps {
+interface ExportPanelOwnProps {
   scope: MetricsScope;
   orgId?: number | string;
   /**
@@ -22,18 +22,35 @@ export interface ExportPanelProps {
    * a la vez (`docs/PANEL.md` §11.4).
    */
   groupBy?: MetricsGroupBy;
-  /**
-   * Periodo controlado por el dashboard que envuelve este panel: con él,
-   * el selector de aquí y el de arriba son el mismo periodo (antes cada
-   * uno llevaba el suyo y se exportaba un rango distinto del que se
-   * estaba mirando). Sin él, el panel conserva su propio estado, que es
-   * como lo usan las páginas de Informes, donde va suelto.
-   */
-  period?: Period;
-  preset?: PeriodPreset;
-  /** Obligatorio junto a `period`: sin él el selector no podría cambiar nada. */
-  onPeriodChange?: (period: Period, preset: PeriodPreset) => void;
 }
+
+/**
+ * Periodo controlado por el dashboard que envuelve este panel: con él, el
+ * selector de aquí y el de arriba son el mismo periodo (antes cada uno
+ * llevaba el suyo y se exportaba un rango distinto del que se estaba
+ * mirando). Los tres van juntos por tipo: un `period` sin
+ * `onPeriodChange` dejaba el selector sin poder cambiar nada, y era un
+ * error que solo se veía al usarlo.
+ */
+interface ControlledPeriodProps {
+  period: Period;
+  preset: PeriodPreset;
+  onPeriodChange: (period: Period, preset: PeriodPreset) => void;
+}
+
+/**
+ * Sin periodo del dashboard el panel conserva su propio estado, que es
+ * como lo usan las páginas de Informes, donde va suelto. Los tres campos
+ * se declaran como `undefined` (no ausentes) para que la unión discrimine.
+ */
+interface UncontrolledPeriodProps {
+  period?: undefined;
+  preset?: undefined;
+  onPeriodChange?: undefined;
+}
+
+export type ExportPanelProps = ExportPanelOwnProps &
+  (ControlledPeriodProps | UncontrolledPeriodProps);
 
 type ExportGroupByChoice = "habitual" | "year";
 

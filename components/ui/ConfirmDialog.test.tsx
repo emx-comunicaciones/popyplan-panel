@@ -1,7 +1,7 @@
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-import { render } from "@/test-utils/render";
+import { render, screen } from "@/test-utils/render";
 
 import { ConfirmDialog } from "./ConfirmDialog";
 
@@ -34,5 +34,19 @@ describe("ConfirmDialog", () => {
     await user.keyboard("{Escape}");
 
     expect(onCancel).not.toHaveBeenCalled();
+  });
+
+  it("dos diálogos abiertos a la vez tienen cada uno su propio nombre accesible", () => {
+    // Con un `id` fijo, `aria-labelledby` de los dos apuntaba al primer
+    // `<h2>` del documento y ambos se anunciaban con el mismo título.
+    render(
+      <>
+        <ConfirmDialog open title="Quitar del equipo" onConfirm={vi.fn()} onCancel={vi.fn()} />
+        <ConfirmDialog open title="Quitar referencia" onConfirm={vi.fn()} onCancel={vi.fn()} />
+      </>,
+    );
+
+    expect(screen.getByRole("alertdialog", { name: "Quitar del equipo" })).toBeInTheDocument();
+    expect(screen.getByRole("alertdialog", { name: "Quitar referencia" })).toBeInTheDocument();
   });
 });

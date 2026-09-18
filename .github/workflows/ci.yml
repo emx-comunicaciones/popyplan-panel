@@ -16,6 +16,19 @@ on:
   pull_request:
     branches: [develop, main]
 
+# Una sola tanda viva por referencia (hallazgo M6). `push` solo dispara en
+# `develop`/`main`, así que el solape push+PR se da al empujar a `develop`
+# con una propuesta `develop → main` abierta: ahí los dos disparadores
+# corren con `github.ref` distinto (`refs/heads/develop` frente a
+# `refs/pull/N/merge`), por eso la clave lleva el número de propuesta
+# cuando lo hay — son dos grupos y cada uno se agrupa consigo mismo. Lo
+# que esto sí evita siempre: dos empujones seguidos a la misma rama
+# dejando dos tandas completas (con su `e2e` y su backend) compitiendo, y
+# gastando minutos en un commit que ya nadie va a revisar.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest

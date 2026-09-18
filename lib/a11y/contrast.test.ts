@@ -50,10 +50,9 @@ describe("contrastRatio", () => {
   });
 
   it("es simétrico: el orden de los dos colores no cambia el resultado", () => {
-    expect(contrastRatio("#1FB3AE", "#FFFFFF")).toBeCloseTo(
-      contrastRatio("#FFFFFF", "#1FB3AE") ?? 0,
-      5,
-    );
+    const reversed = contrastRatio("#FFFFFF", "#1FB3AE");
+    expect(reversed).not.toBeNull();
+    expect(contrastRatio("#1FB3AE", "#FFFFFF")).toBeCloseTo(reversed as number, 5);
   });
 
   it("primary-700 (#0E7C78) sobre blanco ronda 5,0:1", () => {
@@ -82,10 +81,11 @@ describe("readableOn", () => {
   it("el color elegido siempre da más ratio que la alternativa descartada", () => {
     const bg = "#1FB3AE";
     const chosen = readableOn(bg);
+    expect(chosen).not.toBeNull();
     const other = chosen === "#FFFFFF" ? "#1A2C33" : "#FFFFFF";
-    expect(contrastRatio(chosen ?? "#FFFFFF", bg)).toBeGreaterThanOrEqual(
-      contrastRatio(other, bg) ?? 0,
-    );
+    const otherRatio = contrastRatio(other, bg);
+    expect(otherRatio).not.toBeNull();
+    expect(contrastRatio(chosen as string, bg)).toBeGreaterThanOrEqual(otherRatio as number);
   });
 
   it("devuelve null si el fondo no es un hex reconocible (no calculable)", () => {

@@ -361,7 +361,9 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
             </Button>
           </form>
         ) : null}
-        {addMember.isError ? (
+        {/* Dentro de `canManage`: sin el formulario no hay manera de
+            disparar la mutación, así que fuera era una rama muerta. */}
+        {canManage && addMember.isError ? (
           <p role="alert" className="mb-2 text-sm text-error">
             {addMember.error.message}
           </p>
@@ -445,7 +447,8 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
             </Button>
           </form>
         ) : null}
-        {createReference.isError ? (
+        {/* Igual que arriba: rama muerta fuera de `canManage`. */}
+        {canManage && createReference.isError ? (
           <p role="alert" className="mb-2 text-sm text-error">
             {createReference.error.message}
           </p>

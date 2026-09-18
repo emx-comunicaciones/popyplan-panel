@@ -17,9 +17,12 @@
  *    mensajes por campo; `non_field_errors` es un campo más.
  *
  * `detailOf` devuelve **un** mensaje para pintar en el aviso del
- * formulario (el primero que encuentre, en ese orden de preferencia);
- * `fieldErrorsOf` devuelve el mapa completo campo → primer mensaje, por
- * si un formulario quiere pintar el error junto a cada control.
+ * formulario (el primero que encuentre, en ese orden de preferencia). Es
+ * la única función del módulo: hubo un `fieldErrorsOf` (mapa completo
+ * campo → primer mensaje, para pintar el error junto a cada control) que
+ * nunca llegó a tener consumidor y se borró en vez de dejarlo como código
+ * muerto cubierto por sus propios tests; quien necesite el desglose por
+ * campo lo reintroduce con el formulario que lo use.
  */
 import type { ApiError } from "@/lib/api/client";
 
@@ -27,12 +30,6 @@ function bodyObjectOf(error: ApiError): Record<string, unknown> | undefined {
   const body = error.body;
   if (!body || typeof body !== "object" || Array.isArray(body)) return undefined;
   return body as Record<string, unknown>;
-}
-
-function stringOf(value: unknown): string | undefined {
-  if (typeof value === "string") return value;
-  if (Array.isArray(value) && typeof value[0] === "string") return value[0];
-  return undefined;
 }
 
 /**
@@ -49,21 +46,4 @@ export function detailOf(error: ApiError): string | undefined {
     if (Array.isArray(value) && typeof value[0] === "string") return value[0];
   }
   return undefined;
-}
-
-/**
- * Mapa campo → primer mensaje, para pintar el error junto a cada control.
- * Incluye `detail`/`error` con su propia clave cuando vienen sueltos: no
- * hay forma de saber desde aquí si son de un campo o globales, y quien
- * pinte por campo ya sabe qué claves son suyas.
- */
-export function fieldErrorsOf(error: ApiError): Record<string, string> {
-  const body = bodyObjectOf(error);
-  if (!body) return {};
-  const fields: Record<string, string> = {};
-  for (const [field, value] of Object.entries(body)) {
-    const message = stringOf(value);
-    if (message !== undefined) fields[field] = message;
-  }
-  return fields;
 }

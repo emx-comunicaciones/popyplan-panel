@@ -104,4 +104,20 @@ describe("ExportPanel", () => {
 
     expect(mutate).toHaveBeenCalledWith(expect.objectContaining({ groupBy: undefined }));
   });
+
+  it("el tipo de props impide un `period` sin `onPeriodChange`", () => {
+    // Comprobación de tipos, no de comportamiento: `ExportPanelProps` es una
+    // unión discriminada, así que un periodo controlado sin la función para
+    // cambiarlo no compila (el selector no podría cambiar nada). Si alguien
+    // deshace la unión, `@ts-expect-error` se queda sin error y
+    // `npm run typecheck` falla.
+    useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
+
+    render(
+      // @ts-expect-error falta `onPeriodChange` (y `preset`) junto a `period`
+      <ExportPanel scope="entidad" orgId={7} period={{ since: "2025-01-01", until: "2025-01-31" }} />,
+    );
+
+    expect(screen.getByRole("heading", { name: "Exportar informe" })).toBeInTheDocument();
+  });
 });

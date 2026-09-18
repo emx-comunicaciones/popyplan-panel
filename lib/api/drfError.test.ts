@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { ApiError } from "@/lib/api/client";
-import { detailOf, fieldErrorsOf } from "@/lib/api/drfError";
+import { detailOf } from "@/lib/api/drfError";
 
 describe("detailOf", () => {
   it("devuelve el `detail` suelto (errores globales y de transición)", () => {
@@ -44,37 +44,5 @@ describe("detailOf", () => {
     expect(detailOf(new ApiError(400, ["fuera de contrato"]))).toBeUndefined();
     expect(detailOf(new ApiError(400, { campo: [] }))).toBeUndefined();
     expect(detailOf(new ApiError(400, { campo: 3 }))).toBeUndefined();
-  });
-});
-
-describe("fieldErrorsOf", () => {
-  it("devuelve el primer mensaje de cada campo", () => {
-    expect(
-      fieldErrorsOf(
-        new ApiError(400, {
-          email: ["Introduce una dirección de correo válida.", "Segundo mensaje ignorado."],
-          starts_on: ["Este campo es obligatorio."],
-        }),
-      ),
-    ).toEqual({
-      email: "Introduce una dirección de correo válida.",
-      starts_on: "Este campo es obligatorio.",
-    });
-  });
-
-  it("admite el mensaje suelto como cadena (`detail`, `error`)", () => {
-    expect(fieldErrorsOf(new ApiError(400, { detail: "Revisa los datos." }))).toEqual({
-      detail: "Revisa los datos.",
-    });
-  });
-
-  it("ignora los valores que no son ni cadena ni array de cadenas", () => {
-    expect(fieldErrorsOf(new ApiError(400, { campo: [], otro: 3, anidado: { a: 1 } }))).toEqual({});
-  });
-
-  it("devuelve un objeto vacío sin cuerpo o con un cuerpo que no es un objeto", () => {
-    expect(fieldErrorsOf(new ApiError(400, null))).toEqual({});
-    expect(fieldErrorsOf(new ApiError(400, "texto plano"))).toEqual({});
-    expect(fieldErrorsOf(new ApiError(400, ["fuera de contrato"]))).toEqual({});
   });
 });

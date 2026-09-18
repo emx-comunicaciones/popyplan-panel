@@ -9,7 +9,7 @@
  * segura — `Tab`/`Shift+Tab` sin escapar, `Escape` cancela, el foco
  * vuelve a donde estaba al cerrarse).
  */
-import { useRef, type ReactNode } from "react";
+import { useId, useRef, type ReactNode } from "react";
 
 import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
 
@@ -37,6 +37,10 @@ export function ConfirmDialog({
   onCancel,
 }: ConfirmDialogProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  // `useId()` y no un id fijo: dos diálogos montados a la vez (Equipo y
+  // Referencias de `ConfiguracionPanel`, p. ej.) compartían
+  // `aria-labelledby` y los dos se anunciaban con el título del primero.
+  const titleId = useId();
   // Durante una mutación pendiente los botones ya están deshabilitados:
   // Escape no debe cancelar (cerraría el diálogo con la acción en vuelo y
   // ocultaría el posible error de la mutación).
@@ -52,11 +56,11 @@ export function ConfirmDialog({
         ref={containerRef}
         role="alertdialog"
         aria-modal="true"
-        aria-labelledby="confirm-dialog-title"
+        aria-labelledby={titleId}
         tabIndex={-1}
         className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg"
       >
-        <h2 id="confirm-dialog-title" className="text-base font-semibold text-text-base">
+        <h2 id={titleId} className="text-base font-semibold text-text-base">
           {title}
         </h2>
         {description ? <div className="mt-2 text-sm text-text-secondary">{description}</div> : null}

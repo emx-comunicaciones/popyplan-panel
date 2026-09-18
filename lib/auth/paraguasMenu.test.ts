@@ -1,18 +1,21 @@
 import { describe, expect, it } from "vitest";
 
-import { PARAGUAS_MENU_ITEMS, paraguasMenuFor } from "./paraguasMenu";
+import { paraguasMenuFor } from "./paraguasMenu";
 
 describe("paraguasMenuFor", () => {
+  // Literales, no `[...PARAGUAS_MENU_ITEMS]`: con la constante, añadir una
+  // sección al menú del paraguas dejaría estos tres casos en verde sin que
+  // nadie hubiera decidido que ese rol la ve.
   it("titular ve las dos secciones", () => {
-    expect(paraguasMenuFor("titular")).toEqual([...PARAGUAS_MENU_ITEMS]);
+    expect(paraguasMenuFor("titular")).toEqual(["inicio", "informes"]);
   });
 
   it("moderador ve las dos secciones", () => {
-    expect(paraguasMenuFor("moderador")).toEqual([...PARAGUAS_MENU_ITEMS]);
+    expect(paraguasMenuFor("moderador")).toEqual(["inicio", "informes"]);
   });
 
   it("analista ve las dos secciones (exporta informes)", () => {
-    expect(paraguasMenuFor("analista")).toEqual([...PARAGUAS_MENU_ITEMS]);
+    expect(paraguasMenuFor("analista")).toEqual(["inicio", "informes"]);
   });
 
   it("dinamizador solo ve Inicio (no exporta informes)", () => {
