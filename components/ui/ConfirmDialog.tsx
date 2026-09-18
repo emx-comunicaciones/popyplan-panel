@@ -37,9 +37,10 @@ export function ConfirmDialog({
   onCancel,
 }: ConfirmDialogProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  // `useId()` y no un id fijo: dos diálogos montados a la vez (Equipo y
-  // Referencias de `ConfiguracionPanel`, p. ej.) compartían
-  // `aria-labelledby` y los dos se anunciaban con el título del primero.
+  // `useId()` y no un id fijo: hoy ninguna página monta dos de estos a la
+  // vez (cada uno vive tras su propio estado de «confirmando»), pero nada
+  // lo impide — y con el id fijo los dos `aria-labelledby` apuntaban al
+  // primer `<h2>` del documento y se anunciaban con el mismo título.
   const titleId = useId();
   // Durante una mutación pendiente los botones ya están deshabilitados:
   // Escape no debe cancelar (cerraría el diálogo con la acción en vuelo y

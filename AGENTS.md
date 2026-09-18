@@ -1755,9 +1755,10 @@ notas de F2).
 Menores:
 
 - **`components/ui/ConfirmDialog.tsx` con `useId()`** en vez de
-  `id="confirm-dialog-title"` fijo: dos diálogos montados a la vez (los
-  de Equipo y Referencias en `ConfiguracionPanel`) compartían
-  `aria-labelledby` y se anunciaban con el título del primero.
+  `id="confirm-dialog-title"` fijo: hoy ninguna página monta dos a la vez,
+  pero nada lo impide, y con el id fijo los dos `aria-labelledby`
+  apuntaban al primer `<h2>` del documento y se anunciaban con el mismo
+  título.
 - **`lib/auth/paraguasMenu.test.ts`** fija literales (`["inicio",
   "informes"]`) en los tres casos positivos: con `[...PARAGUAS_MENU_ITEMS]`
   una sección nueva habría pasado el test sin que nadie decidiera que
