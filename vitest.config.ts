@@ -37,6 +37,11 @@ export default defineConfig({
         "lib/**/*.{ts,tsx}",
         "hooks/**/*.{ts,tsx}",
         "app/**/*.ts",
+        // `middleware.ts` vive en la raíz, así que ningún patrón de
+        // arriba lo alcanzaba: era el único fichero de lógica de sesión
+        // que no contaba para el umbral, pese a decidir el refresco de
+        // cookie de cada navegación (`middleware.test.ts` sí existía).
+        "middleware.ts",
       ],
       exclude: [
         "lib/api/types.generated.ts",

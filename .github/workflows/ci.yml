@@ -3,6 +3,13 @@ name: CI
 on:
   push:
     branches: [develop, main]
+  # Los mismos comandos sobre la rama de la propuesta: sin esto, una rama
+  # de trabajo (`bugfix/*`, `feature/*`) solo pasaba por CI al fusionarse
+  # en `develop`, cuando ya no hay dónde revisar el fallo. El job `e2e`
+  # sigue condicionado al secreto `BACK_REPO_TOKEN`, así que en un fork
+  # (que no lo recibe) se salta con gracia en vez de fallar.
+  pull_request:
+    branches: [develop, main]
 
 jobs:
   build:
@@ -169,3 +176,17 @@ jobs:
           name: playwright-report
           path: popyplan-panel/playwright-report/
           retention-days: 7
+
+      # El reporte HTML dice *qué* falló; las trazas dicen *por qué* (DOM,
+      # consola y peticiones de red de cada paso). `trace: "on-first-retry"`
+      # en `playwright.config.ts` con `retries: 1` en CI las genera solo
+      # cuando un test falla y se reintenta, así que este artefacto está
+      # vacío mientras todo va bien (de ahí `if-no-files-found: ignore`).
+      - name: Subir las trazas de Playwright si falla
+        if: failure() && steps.check_token.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: popyplan-panel/test-results/
+          retention-days: 7
+          if-no-files-found: ignore

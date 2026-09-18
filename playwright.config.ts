@@ -26,7 +26,13 @@ export default defineConfig({
   // vez…), así que un solo worker, igual que hace el móvil
   // (`popyplan-mobile/playwright.config.live.ts`).
   workers: 1,
-  reporter: "list",
+  // `list` para leer el avance en la consola y `html` para tener el
+  // reporte que el job `e2e` de CI sube como artefacto cuando algo falla
+  // (`.github/workflows/ci.yml`). `open: "never"`: en local un fallo no
+  // debe abrir el navegador por su cuenta, y en CI no hay navegador que
+  // abrir. Las trazas (`trace: "on-first-retry"`, más abajo) se guardan
+  // aparte, en `test-results/`, que ese mismo job sube también.
+  reporter: [["list"], ["html", { open: "never", outputFolder: "playwright-report" }]],
   timeout: 60_000,
   use: {
     baseURL: PANEL_BASE_URL,
