@@ -9,6 +9,7 @@ vi.mock("@/lib/api/client", async () => {
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
+import { ApiError } from "@/lib/api/client";
 import { render, screen, waitFor } from "@/test-utils/render";
 import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
@@ -105,13 +106,13 @@ describe("PlataformaInicioPage", () => {
   it("verifier no ve tarjetas de reportes/ayuda (sin acceso ni menú)", async () => {
     apiFetchMock.mockImplementation(async (path: string) => {
       if (path === "/api/admin/dashboard-stats/") {
-        throw Object.assign(new Error("403"), { status: 403 });
+        throw new ApiError(403, { detail: "Sin permiso." });
       }
       if (path.startsWith("/api/organizations/?page=")) return ORGS_PAGE(0);
       if (path.startsWith("/api/organizations/?verified=true")) return ORGS_PAGE(5);
       if (path.startsWith("/api/organizations/?verified=false")) return ORGS_PAGE(2);
       if (path === "/api/plataforma/billing/summary/") {
-        throw Object.assign(new Error("403"), { status: 403 });
+        throw new ApiError(403, { detail: "Sin permiso." });
       }
       throw new Error(`sin mock para ${path}`);
     });
@@ -128,6 +129,90 @@ describe("PlataformaInicioPage", () => {
     expect(screen.queryByText("Reportes pendientes")).not.toBeInTheDocument();
     expect(screen.queryByText("Solicitudes de ayuda pendientes")).not.toBeInTheDocument();
     expect(screen.queryByText("Contratos vigentes")).not.toBeInTheDocument();
+  });
+
+  it("verifier no pide siquiera las rutas de reportes, ayuda ni facturación", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/admin/dashboard-stats/") {
+        throw new ApiError(403, { detail: "Sin permiso." });
+      }
+      if (path.startsWith("/api/organizations/?verified=true")) return ORGS_PAGE(5);
+      if (path.startsWith("/api/organizations/?verified=false")) return ORGS_PAGE(2);
+      throw new Error(`sin mock para ${path}`);
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("verifier"),
+    });
+
+    const element = await PlataformaInicioPage();
+    render(element);
+
+    await waitFor(() => expect(screen.getByText("5")).toBeInTheDocument());
+    const requested = apiFetchMock.mock.calls.map((call) => String(call[0]));
+    expect(requested.some((path) => path.startsWith("/api/safety/reports/queue/"))).toBe(false);
+    expect(requested.some((path) => path.startsWith("/api/safety/help-requests/"))).toBe(false);
+    expect(requested.some((path) => path.startsWith("/api/plataforma/billing/"))).toBe(false);
+  });
+
+  it("un fallo que no es de permisos deja la tarjeta con «No disponible», no la esconde", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/admin/dashboard-stats/") {
+        throw new ApiError(403, { detail: "Sin permiso." });
+      }
+      if (path.startsWith("/api/safety/reports/queue/")) {
+        throw new ApiError(500, { detail: "Error del servidor." });
+      }
+      if (path.startsWith("/api/safety/help-requests/")) return [];
+      if (path.startsWith("/api/organizations/?verified=true")) return ORGS_PAGE(5);
+      if (path.startsWith("/api/organizations/?verified=false")) return ORGS_PAGE(2);
+      if (path === "/api/plataforma/billing/summary/") {
+        throw new ApiError(500, { detail: "Error del servidor." });
+      }
+      throw new Error(`sin mock para ${path}`);
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const element = await PlataformaInicioPage();
+    render(element);
+
+    await waitFor(() => expect(screen.getByText("Reportes pendientes")).toBeInTheDocument());
+    expect(screen.getAllByText("No disponible").length).toBeGreaterThan(0);
+    expect(screen.getByText("Contratos vigentes")).toBeInTheDocument();
+  });
+
+  it("un 403 de la cola de reportes sí esconde la tarjeta (ese rol no la tiene)", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/admin/dashboard-stats/") {
+        throw new ApiError(403, { detail: "Sin permiso." });
+      }
+      if (path.startsWith("/api/safety/reports/queue/")) {
+        throw new ApiError(403, { detail: "Sin permiso." });
+      }
+      if (path.startsWith("/api/safety/help-requests/")) return [];
+      if (path.startsWith("/api/organizations/?verified=true")) return ORGS_PAGE(5);
+      if (path.startsWith("/api/organizations/?verified=false")) return ORGS_PAGE(2);
+      if (path === "/api/plataforma/billing/summary/") {
+        return buildBillingSummary();
+      }
+      throw new Error(`sin mock para ${path}`);
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const element = await PlataformaInicioPage();
+    render(element);
+
+    await waitFor(() => expect(screen.getByText("Contratos vigentes")).toBeInTheDocument());
+    expect(screen.queryByText("Reportes pendientes")).not.toBeInTheDocument();
   });
 
   it("sin sesión redirige a /login", async () => {
