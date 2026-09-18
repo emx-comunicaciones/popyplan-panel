@@ -41,4 +41,29 @@ describe("eurosToCents", () => {
   it("cadena no numérica da NaN", () => {
     expect(Number.isNaN(eurosToCents("abc"))).toBe(true);
   });
+
+  it("acepta un importe pegado con separador de millares es-ES", () => {
+    expect(eurosToCents("1.234,56")).toBe(123456);
+    expect(eurosToCents("1.234.567,89")).toBe(123456789);
+  });
+
+  it("acepta espacios dentro del importe (incluido el irrompible)", () => {
+    expect(eurosToCents("1 234,56")).toBe(123456);
+    expect(eurosToCents("1 234,56")).toBe(123456);
+  });
+
+  it("sin coma decimal, el punto se sigue leyendo como decimal", () => {
+    // `<input type="number">` siempre manda punto decimal: «1.234» son
+    // 1,234 €, no 1.234 €.
+    expect(eurosToCents("1.234")).toBe(123);
+  });
+
+  it("un importe negativo da NaN (un presupuesto no puede serlo)", () => {
+    expect(Number.isNaN(eurosToCents("-1"))).toBe(true);
+    expect(Number.isNaN(eurosToCents("-19,99"))).toBe(true);
+  });
+
+  it("dos comas decimales dan NaN", () => {
+    expect(Number.isNaN(eurosToCents("1,2,3"))).toBe(true);
+  });
 });

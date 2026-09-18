@@ -28,7 +28,7 @@ export function buildResourcePayload(input: ResourceFormInput): FormData | Recor
     for (const field of FORM_FIELDS) {
       const value = input[field];
       if (value === undefined) continue;
-      formData.append(field, typeof value === "boolean" ? String(value) : String(value));
+      formData.append(field, String(value));
     }
     formData.append("file", input.file);
     return formData;

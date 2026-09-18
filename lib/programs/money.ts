@@ -26,16 +26,27 @@ export function formatEuros(cents: number): string {
 }
 
 /**
- * `eurosToCents("19,99") → 1999`; acepta coma o punto decimal (el
- * `value` de un `<input type="number">` siempre usa punto, pero por si
- * llega de otro origen). Una cadena vacía o no numérica da `NaN` —
- * responsabilidad de quien llama comprobarlo antes de mandar el
- * formulario (`ProgramaForm.tsx` ya exige el campo).
+ * `eurosToCents("19,99") → 1999`; acepta coma o punto decimal. Una
+ * cadena vacía, no numérica o negativa da `NaN` — responsabilidad de
+ * quien llama comprobarlo antes de mandar el formulario
+ * (`ProgramaForm.tsx`/`ContratoForm.tsx`/`FacturaForm.tsx` ya exigen el
+ * campo y bloquean el envío con `NaN`).
+ *
+ * Los formularios del panel usan `<input type="number">`, cuyo `value`
+ * siempre llega normalizado (punto decimal, sin separador de millares ni
+ * espacios), así que aceptar el formato es-ES pegado desde fuera
+ * («1.234,56», «1 234,56») es **defensivo**: cubre un `value` que venga
+ * de otro origen sin cambiar nada de lo que ya funcionaba. Solo se
+ * quitan los puntos cuando hay una coma decimal: sin ella, «1.234» es lo
+ * que manda un `type="number"` para 1,234 € y se sigue leyendo así.
  */
 export function eurosToCents(input: string): number {
-  const normalized = input.trim().replace(",", ".");
-  if (normalized === "") return NaN;
-  const parsed = Number(normalized);
-  if (!Number.isFinite(parsed)) return NaN;
+  const withoutSpaces = input.trim().replace(/[\s  ]/g, "");
+  if (withoutSpaces === "") return NaN;
+  const withoutGrouping = withoutSpaces.includes(",")
+    ? withoutSpaces.replace(/\./g, "")
+    : withoutSpaces;
+  const parsed = Number(withoutGrouping.replace(",", "."));
+  if (!Number.isFinite(parsed) || parsed < 0) return NaN;
   return Math.round(parsed * 100);
 }
