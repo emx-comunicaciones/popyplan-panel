@@ -209,6 +209,14 @@ export const PANEL = {
   /** `GET /api/panel/entidad/{org_id}/people/{user_id}/`. */
   PERSON: (orgId: number | string, userId: number | string) =>
     `/api/panel/entidad/${orgId}/people/${userId}/`,
+  /**
+   * `GET /api/panel/entidad/{org_id}/people/{user_id}/support/`
+   * (`docs/PANEL.md` §14.5): lo que ve el referente asignado de la red de
+   * apoyo de esa persona. Solo el referente ve datos (titular/moderador
+   * que no lo sean → 404 igual que la ficha; `analista` → 403).
+   */
+  PERSON_SUPPORT: (orgId: number | string, userId: number | string) =>
+    `/api/panel/entidad/${orgId}/people/${userId}/support/`,
   /** `GET /api/panel/entidad/{org_id}/events/`. */
   EVENTS: (orgId: number | string) => `/api/panel/entidad/${orgId}/events/`,
   /**

@@ -390,33 +390,29 @@ export type ResourceAudience = components["schemas"]["Audience743Enum"];
  * `Community.space`/`allow_cross_space` ya llegan en `EntityCommunityRow`
  * (`CommunityList` los expone, §8.1) y no necesitan tipo propio.
  *
- * **Ampliación a mano de esta tarea**: el fix de backend que suprime
- * `members_count` (`null` + `suppressed: true`) para quien no tiene
- * `ver_lista_nominal` en la entidad llega en paralelo a este trabajo —
- * `docs/schema.yaml` todavía documenta `FamiliesSummary.members_count` y
- * `FamilyCommunityRow.members_count` como `number` a secas. Se amplían
- * aquí a `number | null` con un `suppressed?` opcional (mismo patrón que
- * `PeopleMetrics`), para que `useFamiliesSummary` funcione tanto contra
- * el contrato documentado hoy como contra el que trae la supresión, sin
- * esperar a regenerar `types.generated.ts`. `hooks/useFamiliesSummary.ts`
- * normaliza cualquiera de las dos formas antes de que `formatCount`
- * (`lib/metrics/format.ts`) decida qué pintar.
+ * **La ampliación a mano que este tipo llevaba ya no hace falta**: el fix
+ * de backend que suprime `members_count` (`null` + `suppressed: true`)
+ * para quien no tiene `ver_lista_nominal` llegó documentado en
+ * `docs/schema.yaml` con la tarea de la red de apoyo (§14.5) —
+ * `FamiliesSummary.members_count`/`FamilyCommunityRow.members_count` ya
+ * son `number | null` con `suppressed: boolean` obligatorio en el
+ * esquema generado, así que se usan tal cual.
  */
-export type FamiliesSummaryCommunityRow = Omit<
-  components["schemas"]["FamilyCommunityRow"],
-  "members_count"
-> & {
-  members_count: number | null;
-  suppressed?: boolean;
-};
-export type FamiliesSummary = Omit<
-  components["schemas"]["FamiliesSummary"],
-  "communities" | "members_count"
-> & {
-  communities: FamiliesSummaryCommunityRow[];
-  members_count: number | null;
-  suppressed?: boolean;
-};
+export type FamiliesSummaryCommunityRow = components["schemas"]["FamilyCommunityRow"];
+/**
+ * §14.5 (red de apoyo): además del resumen de comunidades de familias de
+ * siempre, trae los cuatro contadores agregados de
+ * `support.services.metrics.families_counters` — `people_with_support_network`/
+ * `active_supporters`/`supporters_notified_on_help` como
+ * `SuppressibleCount` (`{value: number | null; suppressed: boolean}`,
+ * misma regla de supresión que el resto del panel, `PANEL_MIN_GROUP_SIZE`)
+ * y `missing_families_space_supporters` como entero sin umbral (no
+ * describe personas, describe una tarea pendiente de la propia entidad).
+ * Ya llegan tipados así en el esquema generado, sin ampliación a mano.
+ */
+export type FamiliesSummary = components["schemas"]["FamiliesSummary"];
+/** `{value: number | null; suppressed: boolean}` — ver `FamiliesSummary` arriba. */
+export type SuppressibleCount = components["schemas"]["SuppressibleCount"];
 export type FamilyUpcomingEvent = components["schemas"]["FamilyUpcomingEvent"];
 export type FamilyAnnouncementRow = components["schemas"]["FamilyAnnouncementRow"];
 export type FamilyResourceRow = components["schemas"]["FamilyResourceRow"];
@@ -698,3 +694,17 @@ export type InvoicePayRequest = components["schemas"]["InvoicePayRequest"];
 
 /** `GET .../summary/` (portada de plataforma, `docs/PANEL.md` §13.2). */
 export type BillingSummary = components["schemas"]["BillingSummary"];
+
+/**
+ * `GET /api/panel/entidad/{org_id}/people/{user_id}/support/`
+ * (`docs/PANEL.md` §14.5): lo único que ve el referente asignado de la
+ * red de apoyo de una persona — solo vínculos efectivos (activos y sin
+ * pausa), nunca fechas, contacto, pendientes ni quién invitó a quién. El
+ * esquema generado llama a esta fila `ReferentNetworkRow`
+ * (`support/serializers.py`, spec §5.2), no `PersonSupportRow`: se
+ * realiasa aquí con el nombre que usa el resto de este módulo para lo
+ * que ve el panel de una persona (`PersonDetail`, `PersonRow`…).
+ */
+export type PersonSupportRow = components["schemas"]["ReferentNetworkRow"];
+/** `relationship` de un vínculo de la red de apoyo (`docs/PANEL.md` §14.2). */
+export type SupportRelationship = components["schemas"]["RelationshipEnum"];

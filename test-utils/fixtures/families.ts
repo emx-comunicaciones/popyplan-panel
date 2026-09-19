@@ -64,6 +64,13 @@ export function buildFamiliesSummary(overrides: Partial<FamiliesSummary> = {}): 
     upcoming_events: [buildFamilyUpcomingEvent()],
     announcements: [buildFamilyAnnouncementRow()],
     resources: [buildFamilyResourceRow()],
+    // Contadores de la red de apoyo (`docs/PANEL.md` §14.5, tarea 1 del
+    // plan de red de apoyo): añadidos al esquema con esa tarea, sin
+    // consumidor todavía en `FamiliasPanel.tsx` (tarea 4).
+    people_with_support_network: { value: 3, suppressed: false },
+    active_supporters: { value: 4, suppressed: false },
+    supporters_notified_on_help: { value: 2, suppressed: false },
+    missing_families_space_supporters: 0,
     ...overrides,
   };
 }

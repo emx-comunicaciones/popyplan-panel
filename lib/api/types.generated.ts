@@ -3434,6 +3434,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/panel/entidad/{org_id}/people/{user_id}/support/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/entidad/{org_id}/people/{user_id}/support/` — solo el
+         *     referente asignado (spec §5.2).
+         *
+         *     El permiso `ver_ficha` deja pasar también a titular, moderador y a los
+         *     atajos de plataforma; por eso la comprobación de `Reference` va en el
+         *     cuerpo (`network_for_referent`) y responde 404 con el mismo `detail` que
+         *     la ficha, para no revelar que esa persona tiene red.
+         */
+        get: operations["panel_entidad_people_support_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/panel/entidad/{org_id}/programs/": {
         parameters: {
             query?: never;
@@ -4894,6 +4919,174 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/support/consent/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/support/consent/` — el texto de consentimiento vigente sin
+         *     necesidad de token: lo usa «Ver lo que ve» en la app de la persona.
+         */
+        get: operations["support_consent_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/support/help-requests/{help_request_id}/respond/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description `POST /api/support/help-requests/{id}/respond/` — «me encargo». Solo un
+         *     apoyo al que se avisó de verdad (spec §6); idempotente.
+         */
+        post: operations["support_help_requests_respond_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/support/invitations/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description `POST /api/support/invitations/` — única respuesta con el secreto. */
+        post: operations["support_invitations_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/support/invitations/accept/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description `POST /api/support/invitations/accept/` — aquí es donde el apoyo da su
+         *     consentimiento (spec §5).
+         */
+        post: operations["support_invitations_accept_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/support/invitations/preview/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/support/invitations/preview/?token=|code=` (decisión 5 del
+         *     plan): la pantalla de aceptación necesita saber de quién es la invitación
+         *     y qué se consiente **antes** de aceptar.
+         */
+        get: operations["support_invitations_preview_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/support/links/{link_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * @description Sin traductor de errores a propósito: el único error que
+         *     `revoke` puede lanzar es el `PermissionError` de quien no forma parte
+         *     del vínculo, y a esa persona `_link_de` ya le ha respondido 404. Un
+         *     vínculo ya revocado se deja igual (204, idempotente) y una invitación
+         *     pendiente se borra (`revoke` devuelve `None`, spec §2.1).
+         */
+        delete: operations["support_links_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description `PATCH`/`DELETE /api/support/links/{link_id}/` — la persona edita, y
+         *     cualquiera de los dos deshace el vínculo.
+         */
+        patch: operations["support_links_partial_update"];
+        trace?: never;
+    };
+    "/api/support/mine/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/support/mine/` — mi red de apoyo, tal y como la veo yo.
+         *
+         *     Los revocados no salen: el estado se conserva como prueba del
+         *     consentimiento y de su fin (spec §2.1), no para enseñárselo a nadie.
+         */
+        get: operations["support_mine_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/support/supporting/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/support/supporting/` — a quién acompaño y cómo contactar con
+         *     sus entidades (spec §5.1). Nunca sus comunidades de miembros, sus
+         *     actividades ni quién más está en su red.
+         */
+        get: operations["support_supporting_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/surveys/{sid}/respond/": {
         parameters: {
             query?: never;
@@ -5910,6 +6103,10 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AcceptRequest: {
+            token?: string;
+            code?: string;
+        };
         /**
          * @description Serializer para que un admin envíe una notificación dirigida:
          *     a todos los usuarios (target='all') o a uno concreto (target='user').
@@ -6114,12 +6311,13 @@ export interface components {
          * @description * `help` - Ayuda
          *     * `training` - Formación
          *     * `families` - Familias
+         *     * `accompany` - Cómo acompañar
          *     * `habits` - Hábitos
          *     * `activities` - Actividades
          *     * `about` - Sobre la entidad
          * @enum {string}
          */
-        CategoryEnum: "help" | "training" | "families" | "habits" | "activities" | "about";
+        CategoryEnum: "help" | "training" | "families" | "accompany" | "habits" | "activities" | "about";
         /**
          * @description * `sports` - Deportivos
          *     * `cultural` - Culturales
@@ -7328,6 +7526,10 @@ export interface components {
          *     Familias (Fase 5, tarea P6): comunidades `space='families'` de la
          *     entidad, cuánta gente hay en ellas, sus próximas actividades y sus
          *     últimos anuncios/recursos dirigidos a ese espacio.
+         *
+         *     Los cuatro últimos campos son los agregados de la red de apoyo (spec
+         *     «Mi red de apoyo» §7, `support.services.metrics.families_counters`):
+         *     nunca listan quién acompaña a quién, solo cuánta gente tiene red.
          */
         FamiliesSummary: {
             communities: components["schemas"]["FamilyCommunityRow"][];
@@ -7336,6 +7538,10 @@ export interface components {
             upcoming_events: components["schemas"]["FamilyUpcomingEvent"][];
             announcements: components["schemas"]["FamilyAnnouncementRow"][];
             resources: components["schemas"]["FamilyResourceRow"][];
+            people_with_support_network: components["schemas"]["SuppressibleCount"];
+            active_supporters: components["schemas"]["SuppressibleCount"];
+            supporters_notified_on_help: components["schemas"]["SuppressibleCount"];
+            missing_families_space_supporters: number;
         };
         FamilyAnnouncementRow: {
             id: number;
@@ -7403,6 +7609,7 @@ export interface components {
             readonly community_display: components["schemas"]["CommunityRef"] | null;
             readonly event_display: components["schemas"]["EventRef"] | null;
             readonly organization_display: components["schemas"]["OrganizationRef"] | null;
+            readonly support_responses: components["schemas"]["SupportResponse"][];
             /** Atendido por */
             readonly acknowledged_by: number | null;
             /**
@@ -7821,10 +8028,12 @@ export interface components {
          *     * `account_suspended` - Cuenta suspendida
          *     * `announcement` - Comunicación oficial
          *     * `survey` - Encuesta
+         *     * `support_help_request` - Aviso de ayuda de tu red
+         *     * `support_link` - Red de apoyo
          *     * `system` - Sistema
          * @enum {string}
          */
-        NotificationTypeEnum: "dm_request" | "message" | "plan_invitation" | "plan_update" | "plan_reminder" | "plan_cancelled" | "plan_completed" | "review_received" | "warning" | "report_resolved" | "help_request" | "account_suspended" | "announcement" | "survey" | "system";
+        NotificationTypeEnum: "dm_request" | "message" | "plan_invitation" | "plan_update" | "plan_reminder" | "plan_cancelled" | "plan_completed" | "review_received" | "warning" | "report_resolved" | "help_request" | "account_suspended" | "announcement" | "survey" | "support_help_request" | "support_link" | "system";
         OptimizedPhotoListItem: {
             id: number;
             user: number;
@@ -8682,6 +8891,15 @@ export interface components {
             rating?: number;
             comment?: string;
         };
+        /**
+         * @description Los tres únicos campos que la persona edita de su vínculo. Todos
+         *     opcionales: `support.services.links.update` ignora los que no llegan.
+         */
+        PatchedSupportLinkUpdateRequest: {
+            relationship?: components["schemas"]["RelationshipEnum"];
+            notify_on_help?: boolean;
+            paused?: boolean;
+        };
         /** @description Serializer para penalizaciones avanzadas - Todos los campos de penalización */
         PatchedUserAdvancedPenaltyRequest: {
             /** Format: int64 */
@@ -9239,6 +9457,12 @@ export interface components {
             id: number;
             public_name: string;
         };
+        /** @description Lo único que el referente asignado ve de la red (spec §5.2). */
+        ReferentNetworkRow: {
+            supporter: components["schemas"]["UserRef"];
+            relationship: string;
+            notify_on_help: boolean;
+        };
         ReferentRef: {
             user_id: number;
             public_name: string;
@@ -9271,6 +9495,18 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        /**
+         * @description * `parent` - Madre o padre
+         *     * `partner` - Pareja
+         *     * `sibling` - Hermano o hermana
+         *     * `relative` - Otro familiar
+         *     * `friend` - Amistad
+         *     * `legal_guardian` - Tutor o tutora legal
+         *     * `trusted_other` - Otra persona de confianza
+         *     * `unspecified` - Prefiero no indicarlo
+         * @enum {string}
+         */
+        RelationshipEnum: "parent" | "partner" | "sibling" | "relative" | "friend" | "legal_guardian" | "trusted_other" | "unspecified";
         /**
          * @description Un reporte tal y como lo lee la cola: sin el contenido del objetivo
          *     (eso solo se sirve en el detalle, `ReportDetailSerializer`).
@@ -9494,6 +9730,14 @@ export interface components {
          */
         ReviewTypeEnum: "event" | "team";
         /**
+         * @description * `person` - La persona
+         *     * `supporter` - El apoyo
+         *     * `block` - Un bloqueo
+         *     * `system` - El sistema
+         * @enum {string}
+         */
+        RevokedByEnum: "person" | "supporter" | "block" | "system";
+        /**
          * @description * `superadmin` - Superadmin
          *     * `verifier` - Verificador
          *     * `moderator` - Moderador de plataforma
@@ -9539,6 +9783,123 @@ export interface components {
         SuccessResponse: {
             /** @description Mensaje de confirmación */
             detail: string;
+        };
+        SupportHelpNotice: {
+            /** Format: uuid */
+            help_request_id: string;
+            /** Format: date-time */
+            notified_at: string;
+            /** Format: date-time */
+            responded_at: string | null;
+        };
+        /** @description Única respuesta que lleva el secreto (token y código de un solo uso). */
+        SupportInvitationCreated: {
+            /** Format: uuid */
+            link_id: string;
+            token: string;
+            code: string;
+            /** Format: date-time */
+            expires_at: string;
+            deeplink: string;
+        };
+        /**
+         * @description Lo que ve quien abre la invitación antes de decidir: de quién es y qué
+         *     consiente exactamente (la pantalla de aceptación ES el consentimiento).
+         */
+        SupportInvitationPreview: {
+            person: components["schemas"]["UserRef"];
+            /** Format: date-time */
+            expires_at: string;
+            consent: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * @description El vínculo tal y como lo ven sus dos partes. Sin `token` ni `code`: el
+         *     secreto de la invitación solo se entrega al crearla.
+         */
+        SupportLink: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly person: components["schemas"]["UserRef"];
+            readonly supporter: components["schemas"]["UserRef"] | null;
+            /** Estado */
+            readonly status: components["schemas"]["SupportLinkStatusEnum"];
+            /** Relación */
+            readonly relationship: components["schemas"]["RelationshipEnum"];
+            /** Avisar si pide ayuda */
+            readonly notify_on_help: boolean;
+            /** En pausa */
+            readonly paused: boolean;
+            /** Versión del consentimiento */
+            readonly consent_version: string;
+            /** Format: date-time */
+            readonly created_at: string;
+            /**
+             * Aceptado el
+             * Format: date-time
+             */
+            readonly accepted_at: string | null;
+            /**
+             * Revocado el
+             * Format: date-time
+             */
+            readonly revoked_at: string | null;
+            /** Revocado por */
+            readonly revoked_by: components["schemas"]["RevokedByEnum"];
+            /** Format: date-time */
+            readonly invitation_expires_at: string | null;
+        };
+        /**
+         * @description * `invited` - Invitación pendiente
+         *     * `active` - Activo
+         *     * `revoked` - Revocado
+         * @enum {string}
+         */
+        SupportLinkStatusEnum: "invited" | "active" | "revoked";
+        /**
+         * @description Un apoyo de la red de la persona que ya dijo «me encargo»
+         *     (`support.SupportHelpNotice`). Nunca más que su alias público
+         *     (invariante 9). Solo para el esquema.
+         */
+        SupportResponse: {
+            supporter: components["schemas"]["ReferentDisplay"];
+            /** Format: date-time */
+            responded_at: string;
+        };
+        /**
+         * @description Entidad donde participa la persona acompañada: cómo contactar con ella
+         *     (teléfono de ayuda y referente) y dónde está su espacio de familias.
+         */
+        SupportedOrganization: {
+            id: number;
+            name: string;
+            help_phone: string;
+            referent: components["schemas"]["UserRef"] | null;
+            /** Format: uuid */
+            families_community_id: string | null;
+        };
+        /**
+         * @description Una persona a la que se acompaña. Sin sus comunidades de miembros, sus
+         *     actividades ni quién más está en su red (spec §5).
+         */
+        SupportingRow: {
+            /** Format: uuid */
+            link_id: string;
+            person: components["schemas"]["UserRef"];
+            relationship: string;
+            paused: boolean;
+            organizations: components["schemas"]["SupportedOrganization"][];
+        };
+        /**
+         * @description Una cifra de personas con el umbral de agregación aplicado: `value` es
+         *     `None` y `suppressed` es `true` cuando el grupo no llega a
+         *     `PANEL_MIN_GROUP_SIZE` y quien mira no tiene `ver_lista_nominal`
+         *     (`panel.services.metrics.suppress`).
+         */
+        SuppressibleCount: {
+            value: number | null;
+            suppressed: boolean;
         };
         /** @description Salida: una encuesta, con sus preguntas. */
         Survey: {
@@ -9934,6 +10295,14 @@ export interface components {
             /** Format: uri */
             readonly photo: string | null;
             readonly verification_level: number;
+        };
+        /**
+         * @description Identidad mínima: id y nombre público. Nunca email ni teléfono
+         *     (invariante 9).
+         */
+        UserRef: {
+            id: number;
+            public_name: string;
         };
         /** @description Serializer para respuesta de lista de verificaciones */
         UserVerificationListResponse: {
@@ -15522,9 +15891,11 @@ export interface operations {
                  *     * `account_suspended` - Cuenta suspendida
                  *     * `announcement` - Comunicación oficial
                  *     * `survey` - Encuesta
+                 *     * `support_help_request` - Aviso de ayuda de tu red
+                 *     * `support_link` - Red de apoyo
                  *     * `system` - Sistema
                  */
-                notification_type?: "account_suspended" | "announcement" | "dm_request" | "help_request" | "message" | "plan_cancelled" | "plan_completed" | "plan_invitation" | "plan_reminder" | "plan_update" | "report_resolved" | "review_received" | "survey" | "system" | "warning";
+                notification_type?: "account_suspended" | "announcement" | "dm_request" | "help_request" | "message" | "plan_cancelled" | "plan_completed" | "plan_invitation" | "plan_reminder" | "plan_update" | "report_resolved" | "review_received" | "support_help_request" | "support_link" | "survey" | "system" | "warning";
                 /** @description Which field to use when ordering the results. */
                 ordering?: string;
                 /** @description A page number within the paginated result set. */
@@ -17564,6 +17935,42 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PersonDetail"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_people_support_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+                user_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReferentNetworkRow"][];
                 };
             };
             /** @description No response body */
@@ -20635,6 +21042,283 @@ export interface operations {
                     "application/json": {
                         data?: Record<string, never>[];
                     };
+                };
+            };
+        };
+    };
+    support_consent_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    support_help_requests_respond_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                help_request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupportHelpNotice"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    support_invitations_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupportInvitationCreated"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    support_invitations_accept_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["AcceptRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AcceptRequest"];
+                "multipart/form-data": components["schemas"]["AcceptRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupportLink"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    support_invitations_preview_retrieve: {
+        parameters: {
+            query?: {
+                code?: string;
+                token?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupportInvitationPreview"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    support_links_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                link_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    support_links_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                link_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedSupportLinkUpdateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedSupportLinkUpdateRequest"];
+                "multipart/form-data": components["schemas"]["PatchedSupportLinkUpdateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupportLink"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    support_mine_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupportLink"][];
+                };
+            };
+        };
+    };
+    support_supporting_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupportingRow"][];
                 };
             };
         };
