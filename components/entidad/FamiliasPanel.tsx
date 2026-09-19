@@ -19,6 +19,18 @@
  * esta tarea — se trata cualquier `members_count: null` como suprimido
  * (`<5`), lleve o no un `suppressed` explícito (ver
  * `lib/api/types.ts::FamiliesSummary`).
+ *
+ * **Contadores de la red de apoyo** (`docs/PANEL.md` §14.5, tarea 3 del
+ * plan de red de apoyo): tres tarjetas más (`people_with_support_network`/
+ * `active_supporters`/`supporters_notified_on_help`, ya `SuppressibleCount`
+ * en el esquema generado) pintadas con `formatCount(value, suppressed)`
+ * como el resto del panel, y un aviso (`role="status"`) sobre
+ * `missing_families_space_supporters` (entero sin umbral: cuenta apoyos
+ * distintos a la espera de que la entidad cree su comunidad de familias,
+ * nunca personas) — sin comunidad todavía, invita a crearla justo encima
+ * del botón «Nueva comunidad de familias» ya existente (no se duplica el
+ * diálogo); con comunidad ya creada, solo informa de que el alta se
+ * completará sola. Nunca se lista quién acompaña a quién.
  */
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
@@ -45,6 +57,20 @@ export interface FamiliasPanelProps {
 
 function isSuppressed(row: { members_count: number | null; suppressed?: boolean }): boolean {
   return row.members_count === null || row.suppressed === true;
+}
+
+/**
+ * Aviso de apoyos a la espera de la comunidad de familias
+ * (`missing_families_space_supporters`, `docs/PANEL.md` §14.5): cuenta
+ * apoyos distintos, sin umbral de supresión (no describe personas, describe
+ * una tarea pendiente de la propia entidad), así que siempre es un número
+ * exacto. Singular con 1, nunca se lista quién acompaña a quién.
+ */
+function missingSupportersNotice(count: number): string {
+  if (count === 1) {
+    return "1 persona de la red de apoyo espera a que crees la comunidad de familias.";
+  }
+  return `${count} personas de la red de apoyo esperan a que crees la comunidad de familias.`;
 }
 
 function formatDateTime(iso: string): string {
@@ -290,10 +316,35 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
           <StatCard label="Comunidades de familias" value={formatCount(data.communities.length)} />
           <StatCard label="Personas" value={formatCount(data.members_count, isSuppressed(data))} />
           <StatCard label="Próximas actividades" value={formatCount(data.upcoming_events.length)} />
+          <StatCard
+            label="Personas con red de apoyo"
+            value={formatCount(
+              data.people_with_support_network.value,
+              data.people_with_support_network.suppressed,
+            )}
+          />
+          <StatCard
+            label="Apoyos activos"
+            value={formatCount(data.active_supporters.value, data.active_supporters.suppressed)}
+          />
+          <StatCard
+            label="Apoyos que reciben avisos"
+            value={formatCount(
+              data.supporters_notified_on_help.value,
+              data.supporters_notified_on_help.suppressed,
+            )}
+          />
         </div>
       </section>
 
       <section aria-labelledby="familias-comunidades-heading">
+        {data.missing_families_space_supporters > 0 ? (
+          <p role="status" className="mb-3 rounded-md border border-border bg-category-light p-3 text-sm text-text-form">
+            {data.communities.length === 0
+              ? missingSupportersNotice(data.missing_families_space_supporters)
+              : "El alta en la comunidad de familias se completará automáticamente."}
+          </p>
+        ) : null}
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <h2 id="familias-comunidades-heading" className="text-lg font-semibold text-text-base">
             Comunidades de familias

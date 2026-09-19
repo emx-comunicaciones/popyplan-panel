@@ -73,6 +73,30 @@ describe("useFamiliesSummary", () => {
     expect(result.current.data).toEqual(summary);
   });
 
+  it("pasa tal cual los contadores de la red de apoyo (§14.5, ya tipados como SuppressibleCount)", async () => {
+    const summary = buildFamiliesSummary({
+      people_with_support_network: { value: null, suppressed: true },
+      active_supporters: { value: 9, suppressed: false },
+      supporters_notified_on_help: { value: 6, suppressed: false },
+      missing_families_space_supporters: 2,
+    });
+    apiFetchMock.mockResolvedValueOnce(summary);
+
+    const { result } = renderHook(() => useFamiliesSummary(7), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data?.people_with_support_network).toEqual({
+      value: null,
+      suppressed: true,
+    });
+    expect(result.current.data?.active_supporters).toEqual({ value: 9, suppressed: false });
+    expect(result.current.data?.supporters_notified_on_help).toEqual({
+      value: 6,
+      suppressed: false,
+    });
+    expect(result.current.data?.missing_families_space_supporters).toBe(2);
+  });
+
   it("cualquier fallo surge como FamiliesSummaryError", async () => {
     apiFetchMock.mockRejectedValueOnce(new Error("red caída"));
 

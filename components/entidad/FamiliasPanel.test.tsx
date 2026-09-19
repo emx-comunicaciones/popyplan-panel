@@ -295,6 +295,139 @@ describe("FamiliasPanel", () => {
     );
   });
 
+  it("tarjetas de la red de apoyo: pintan value/suppressed con formatCount", () => {
+    mockMutationDefaults();
+    useFamiliesSummaryMock.mockReturnValue({
+      data: buildFamiliesSummary({
+        people_with_support_network: { value: 7, suppressed: false },
+        active_supporters: { value: null, suppressed: true },
+        supporters_notified_on_help: { value: 3, suppressed: false },
+      }),
+      isError: false,
+      error: null,
+    });
+
+    render(<FamiliasPanel orgId={7} slug="alfaville" canManage />);
+
+    expect(screen.getByText("Personas con red de apoyo")).toBeInTheDocument();
+    expect(screen.getByText("Apoyos activos")).toBeInTheDocument();
+    expect(screen.getByText("Apoyos que reciben avisos")).toBeInTheDocument();
+    expect(screen.getByText("7")).toBeInTheDocument();
+    expect(screen.getByText("<5")).toBeInTheDocument();
+    expect(screen.getByText("3")).toBeInTheDocument();
+  });
+
+  it("sin comunidades y apoyos pendientes (>1): aviso en plural con el botón de crear", () => {
+    mockMutationDefaults();
+    useFamiliesSummaryMock.mockReturnValue({
+      data: buildFamiliesSummary({
+        communities: [],
+        missing_families_space_supporters: 3,
+      }),
+      isError: false,
+      error: null,
+    });
+
+    render(<FamiliasPanel orgId={7} slug="alfaville" canManage />);
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "3 personas de la red de apoyo esperan a que crees la comunidad de familias.",
+    );
+    expect(screen.getByRole("button", { name: "Nueva comunidad de familias" })).toBeInTheDocument();
+  });
+
+  it("sin comunidades y un solo apoyo pendiente: aviso en singular", () => {
+    mockMutationDefaults();
+    useFamiliesSummaryMock.mockReturnValue({
+      data: buildFamiliesSummary({
+        communities: [],
+        missing_families_space_supporters: 1,
+      }),
+      isError: false,
+      error: null,
+    });
+
+    render(<FamiliasPanel orgId={7} slug="alfaville" canManage />);
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "1 persona de la red de apoyo espera a que crees la comunidad de familias.",
+    );
+  });
+
+  it("sin comunidades, apoyos pendientes y canManage=false: aviso sin el botón de crear", () => {
+    mockMutationDefaults();
+    useFamiliesSummaryMock.mockReturnValue({
+      data: buildFamiliesSummary({
+        communities: [],
+        missing_families_space_supporters: 2,
+      }),
+      isError: false,
+      error: null,
+    });
+
+    render(<FamiliasPanel orgId={7} slug="alfaville" canManage={false} />);
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "2 personas de la red de apoyo esperan a que crees la comunidad de familias.",
+    );
+    expect(
+      screen.queryByRole("button", { name: "Nueva comunidad de familias" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("con comunidades y apoyos pendientes: aviso de alta automática, sin botón nuevo", () => {
+    mockMutationDefaults();
+    useFamiliesSummaryMock.mockReturnValue({
+      data: buildFamiliesSummary({
+        communities: [buildFamiliesSummaryCommunityRow({ name: "Familias Alfaville" })],
+        missing_families_space_supporters: 4,
+      }),
+      isError: false,
+      error: null,
+    });
+
+    render(<FamiliasPanel orgId={7} slug="alfaville" canManage />);
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "El alta en la comunidad de familias se completará automáticamente.",
+    );
+    // Un único botón «Nueva comunidad de familias» (el de gestión habitual, no uno duplicado por el aviso).
+    expect(screen.getAllByRole("button", { name: "Nueva comunidad de familias" })).toHaveLength(1);
+  });
+
+  it("sin apoyos pendientes (0): no pinta ningún aviso", () => {
+    mockMutationDefaults();
+    useFamiliesSummaryMock.mockReturnValue({
+      data: buildFamiliesSummary({
+        communities: [],
+        missing_families_space_supporters: 0,
+      }),
+      isError: false,
+      error: null,
+    });
+
+    render(<FamiliasPanel orgId={7} slug="alfaville" canManage />);
+
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("nunca lista nombres de apoyos en el árbol", () => {
+    mockMutationDefaults();
+    useFamiliesSummaryMock.mockReturnValue({
+      data: buildFamiliesSummary({
+        communities: [],
+        missing_families_space_supporters: 1,
+      }),
+      isError: false,
+      error: null,
+    });
+
+    const { container } = render(<FamiliasPanel orgId={7} slug="alfaville" canManage />);
+
+    expect(container).not.toHaveTextContent("supporter");
+    expect(container).not.toHaveTextContent("public_name");
+  });
+
   it("con el alta en vuelo, Escape no cierra el diálogo y «Cancelar» está deshabilitado", async () => {
     mockMutationDefaults();
     useCreateFamiliesCommunityMock.mockReturnValue({
