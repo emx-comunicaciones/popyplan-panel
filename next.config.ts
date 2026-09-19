@@ -1,7 +1,17 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
 
 import { imageRemotePatterns } from "./lib/config/imagePatterns";
 import { securityHeaders } from "./lib/config/securityHeaders";
+
+/**
+ * `next-intl` sin enrutado de idioma (spec de diseño
+ * `2026-09-19-i18n-es-eu-ca`, decisión 7): sin segmento `[locale]` en las
+ * rutas, así que el middleware de sesión, los layouts y los e2e no
+ * cambian de estructura — el plugin solo conecta `i18n/request.ts`
+ * (idioma por cookie `pp_lang`) con el resto del árbol de Next.
+ */
+const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 /**
  * La lógica de ambas piezas vive en `lib/config/*` para poder probarla
@@ -26,4 +36,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

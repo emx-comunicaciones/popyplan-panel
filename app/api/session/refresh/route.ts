@@ -59,6 +59,7 @@ import { SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/cookie";
 import { recallRotation, rememberRotation, type RotatedResult } from "@/lib/auth/rotationCache";
 import { singleFlight } from "@/lib/auth/singleFlight";
 import { parseRefreshedTokens } from "@/lib/auth/tokenRefresh";
+import { requestLanguageHeader } from "@/lib/i18n/requestLanguage";
 
 /** `RotatedResult` (rotación ya aplicada) más los dos finales sin rotación. */
 type RefreshResult = RotatedResult | { kind: "caducado" } | { kind: "no-disponible" };
@@ -71,7 +72,11 @@ async function rotate(refresh: string, request: NextRequest): Promise<RefreshRes
   try {
     refreshResponse = await fetch(`${apiBaseUrl()}${AUTH.TOKEN_REFRESH}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...forwardedForHeaders(request) },
+      headers: {
+        "Content-Type": "application/json",
+        ...forwardedForHeaders(request),
+        ...requestLanguageHeader(request),
+      },
       body: JSON.stringify({ refresh }),
     });
   } catch {

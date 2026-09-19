@@ -1,0 +1,18 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "accept": "Accept",
+    "close": "Close",
+    "save": "Save",
+    "retry": "Retry",
+    "loading": "Loading…",
+    "noAccess": "No access",
+    "backHome": "Back to home"
+  },
+  "language": {
+    "title": "Language",
+    "es": "Spanish",
+    "eu": "Basque",
+    "ca": "Catalan"
+  }
+}

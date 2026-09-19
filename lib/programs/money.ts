@@ -7,22 +7,39 @@
  * en JS). `formatEuros` hace el camino inverso para pintar el presupuesto
  * ya guardado, formato es-ES (`docs/PANEL.md` §12: «presupuesto
  * formateado es-ES»).
+ *
+ * **Idioma del formateador** (spec de diseño `2026-09-19-i18n-es-eu-ca`,
+ * decisión 4): mismo criterio que `lib/metrics/format.ts` — el locale
+ * sale de `lib/i18n/locale.ts` y se cachea por idioma; `es-ES`, `eu-ES`
+ * y `ca-ES` formatean moneda de forma idéntica, así que ningún importe
+ * visible cambia.
  */
+import { activeLanguage, localeFor } from "@/lib/i18n/locale";
 
-const EURO_FORMATTER = new Intl.NumberFormat("es-ES", {
-  style: "currency",
-  currency: "EUR",
-  // Mismo motivo que `INTEGER_FORMATTER` de `lib/metrics/format.ts`: CLDR
-  // reciente solo agrupa millares en es-ES a partir de 5 cifras
-  // (`1234,56 €` sin punto, `12.345,67 €` con él) — forzar el
-  // agrupamiento hace que un presupuesto de 4 cifras también lleve el
-  // separador de millares, más legible y consistente con esa otra tabla.
-  useGrouping: "always",
-});
+const euroFormatters = new Map<string, Intl.NumberFormat>();
+function euroFormatter(): Intl.NumberFormat {
+  const locale = localeFor(activeLanguage());
+  let formatter = euroFormatters.get(locale);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "EUR",
+      // Mismo motivo que `integerFormatter` de `lib/metrics/format.ts`:
+      // CLDR reciente solo agrupa millares en es-ES a partir de 5 cifras
+      // (`1234,56 €` sin punto, `12.345,67 €` con él) — forzar el
+      // agrupamiento hace que un presupuesto de 4 cifras también lleve el
+      // separador de millares, más legible y consistente con esa otra
+      // tabla.
+      useGrouping: "always",
+    });
+    euroFormatters.set(locale, formatter);
+  }
+  return formatter;
+}
 
 /** `formatEuros(123456) → '1.234,56 €'`. */
 export function formatEuros(cents: number): string {
-  return EURO_FORMATTER.format(cents / 100);
+  return euroFormatter().format(cents / 100);
 }
 
 /**
@@ -41,7 +58,7 @@ export function formatEuros(cents: number): string {
  * que manda un `type="number"` para 1,234 € y se sigue leyendo así.
  */
 export function eurosToCents(input: string): number {
-  const withoutSpaces = input.trim().replace(/[\s  ]/g, "");
+  const withoutSpaces = input.trim().replace(/[\s  ]/g, "");
   if (withoutSpaces === "") return NaN;
   const withoutGrouping = withoutSpaces.includes(",")
     ? withoutSpaces.replace(/\./g, "")

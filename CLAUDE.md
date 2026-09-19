@@ -2027,6 +2027,131 @@ qué se puede hacer en ella y quién la ve.
   (`test-utils/nextNavigationMock.ts::setPathname`, mismo patrón que
   `setSearchParams`).
 
+## Internacionalización (i18n)
+
+Spec de diseño (autoridad de las tres decisiones de abajo, compartida con
+`popyplan`/`popyplan-mobile`):
+`~/Code/popyplan/docs/superpowers/specs/2026-09-19-i18n-es-eu-ca-design.md`.
+Plan de este repo:
+`docs/superpowers/plans/2026-09-19-i18n-panel.md` (6 tareas; esta sección
+documenta la Tarea 1, infraestructura — las tareas 2-6 extraen los
+literales de componentes/hooks área por área, sin tocar nada de lo de
+aquí salvo para consumirlo).
+
+**Idiomas:** `es` (por defecto), `eu`, `ca` — los tres que se ofrecen a
+las personas (`lib/i18n/languages.ts::SUPPORTED_LANGUAGES`). El inglés
+(`messages/en.json`) es la **cadena fuente** del código (decisión 2 del
+diseño: «el backend tiene que ser en inglés, el desarrollo de código en
+inglés siempre») y entra en el test de paridad, pero **nunca** se ofrece
+como idioma de interfaz. Euskera en batua (Euskaltzaindia); catalán en
+la forma general del IEC — glosario compartido en
+`docs/i18n/glosario.md` (copia del glosario del backend, que es la
+fuente si cambia).
+
+**Convención de extracción (todo texto de UI, tareas 2-6):** cada
+literal de un componente/hook pasa por `t()` (`useTranslations`/
+`getTranslations` de `next-intl`); las claves son jerárquicas en
+minúsculas con puntos (`area.pantalla.elemento`, p. ej. `common.cancel`,
+`entidad.personas.title`), nunca claves dinámicas construidas por
+concatenación salvo un mapa explícito con todas las variantes
+(`Record<Role, string>` de claves). El valor de `es.json` es
+**exactamente** el literal que había antes de la migración — nada se
+reescribe salvo concatenaciones/plurales, que pasan a mensajes ICU
+(`{count, plural, one {…} other {…}}`, soportado nativamente por
+`next-intl`); una redacción que convenga mejorar se anota en
+`docs/i18n/PENDIENTES.md` en vez de cambiarse de paso.
+
+**Sin enrutado de idioma** (decisión 7 del diseño): `next-intl` v4
+(`next.config.ts::createNextIntlPlugin('./i18n/request.ts')`) sin
+segmento `[locale]` en las rutas — el middleware de sesión, los layouts
+y los e2e no cambian de estructura. `i18n/request.ts`
+(`getRequestConfig`) resuelve el idioma con
+`lib/i18n/serverLanguage.ts::getServerLanguage` (cookie `pp_lang` vía
+`cookies()` → `Accept-Language` vía `headers()`, ambas de
+`next/headers` → `es`) y carga `messages/<locale>.json`. `app/layout.tsx`
+(Server Component) llama a `getLocale()`/`getMessages()` para
+`<html lang>` y envolver `children` en `NextIntlClientProvider`.
+
+**Cookie de idioma** (`lib/i18n/cookie.ts`, decisión 2): `pp_lang`, **no**
+`httpOnly` (el selector de idioma y `document.documentElement.lang` la
+necesitan legible desde el cliente), `SameSite=Lax`, `path=/`, un año de
+vida. `POST /api/lang {lang}` (`app/api/lang/route.ts`) la fija —
+`lang` fuera de los tres soportados → 400 `{detail}`; con uno válido,
+204 y `Set-Cookie`. `lib/i18n/cookie.ts::resolveLanguage({cookie,
+acceptLanguage})` es la única función que decide el idioma de una
+petición (cookie → `Accept-Language`, tomando el primer idioma de la
+lista con calidad cuyo código base esté soportado → `es`); la usan tanto
+`i18n/request.ts`/`serverFetch.ts` (vía `getServerLanguage`, con
+`next/headers`) como `middleware.ts` y las dos rutas de sesión (vía
+`lib/i18n/requestLanguage.ts::requestLanguageHeader(request)`, que lee
+directamente `NextRequest.cookies`/`.headers` — necesario en el
+middleware, que corre en Edge y no puede usar `next/headers`).
+
+**`Accept-Language` en todas las peticiones al backend** (decisión 5):
+`lib/api/client.ts::apiFetch`/`fetchWithAuth` (cliente) la mandan igual
+que `document.documentElement.lang`; `lib/api/serverFetch.ts` (Server
+Components/Route Handlers) y las cuatro llamadas de auth que hacen
+`fetch` a mano (`app/api/session/route.ts` login/logout,
+`app/api/session/refresh/route.ts`, el refresco de `middleware.ts`) la
+mandan resuelta contra la petición entrante. Los `detail` que devuelve
+el backend siguen mostrándose tal cual (`lib/api/drfError.ts` no
+cambia): el backend es quien decide en qué idioma responde según esa
+cabecera.
+
+**Formateadores por idioma** (decisión 4): `lib/i18n/locale.ts::localeFor`
+mapea `es→es-ES`, `eu→eu-ES`, `ca→ca-ES`; `activeLanguage()` lee
+`document.documentElement.lang` en el cliente (fijado por
+`app/layout.tsx` desde la cookie) y cae a `es` sin `document` (primer
+render de un Client Component en el servidor, sin hidratar todavía).
+`lib/metrics/format.ts` y `lib/programs/money.ts` construyen su
+`Intl.NumberFormat` así, con un formateador cacheado por idioma (`Map`)
+en vez del `Intl.NumberFormat("es-ES", …)` fijo de antes. **El aspecto
+de ningún número cambia**: `es-ES`/`eu-ES`/`ca-ES` comparten el mismo
+separador de millares (`.`) y decimal (`,`), comprobado antes de escribir
+el módulo — por eso los tests numéricos existentes no se tocaron, solo
+ganaron un caso por idioma que fija que siguen iguales.
+
+**Patrón de tests** (fijado en `test-utils/render.tsx`/`vitest.setup.ts`,
+tarea 1, para que las tareas 2-6 no tengan que inventarlo cada vez):
+
+- `next-intl/server` (`getLocale`/`getMessages`/`getTranslations`) **no
+  se puede invocar de verdad bajo Vitest+jsdom**: el paquete resuelve a
+  su condición `react-client`, que lanza `` `getRequestConfig` is not
+  supported in Client Components `` en cuanto algo la importa fuera del
+  runtime real de Next (verificado al escribir esta tarea). Por eso
+  `vitest.setup.ts` mockea **todo** el módulo `next-intl/server`, igual
+  patrón que el mock ya existente de `next/navigation`: resuelve
+  `getLocale`/`getMessages` a `es`/`messages/es.json` y `getTranslations`
+  a un traductor que busca la clave en ese mismo catálogo real (nunca
+  cadenas inventadas, para que una clave que falte rompa el test que la
+  usa) — sin soporte de plurales ICU todavía, se amplía si una tarea
+  futura lo necesita.
+- Un componente de **cliente** con `useTranslations` se prueba con
+  `render()` normal (`test-utils/render.tsx`): envuelve en
+  `NextIntlClientProvider locale="es" messages={es}` con el catálogo real
+  (`messages/es.json`), así el idioma por defecto de los tests sigue
+  siendo `es` y ninguna aserción de texto existente cambia (decisión 2:
+  «`es` es el idioma por defecto en tests»).
+- Un **Server Component** (`page.tsx`) que use `getTranslations`/
+  `getLocale` se sigue probando con el patrón que ya usan las páginas de
+  servidor de este repo: `const element = await Page({ params });
+  render(element)` (ver p. ej. `app/entidad/[slug]/page.test.tsx`) — con
+  el mock de arriba puesto, `getTranslations()` dentro de esa página
+  funciona sin más. `test-utils/render.tsx::renderServer(elementPromise)`
+  es el envoltorio de esas dos líneas, para no repetirlas.
+- `lib/i18n/messages.test.ts` (paridad, decisión 9): las cuatro claves
+  hoja de `messages/{en,es,eu,ca}.json` coinciden exactamente, ningún
+  valor vacío, y los mismos parámetros ICU de nivel superior por clave
+  (`extractIcuArgs` cuenta llaves para saltar el texto literal de las
+  ramas `one`/`other` de un plural, así no se confunde con otro
+  parámetro). Verde al final de cada tarea de extracción (2-6).
+
+**Cuando el contrato del backend traiga `preferred_language`
+(`GET/PATCH /api/users/users/me/`, decisión 2 del diseño), la tarea 6 lo
+consume** (`hooks/useAuth.ts` al entrar; el selector de idioma hace el
+`PATCH`) — no está aquí todavía: la Tarea 1 solo monta la infraestructura
+del lado del panel.
+
 ## Comandos
 
 - `npm run dev` / `npm run build` / `npm run start`
@@ -2062,9 +2187,11 @@ en CI lo gate el job `e2e`).
   (2206/2209 líneas). Tras la revisión final de la rama (F1-F5 y
   menores): **99,86 %** (2205/2208 líneas, 1375 tests). Tras la Fase 7
   (red de apoyo, revisión final incluida): **99,86 %** (2225/2228
-  líneas, 1418 tests, 162 ficheros). El umbral fijado sigue en 99,7
-  porque real menos 0,3 (99,56) queda por debajo, así que el ratchet no
-  sube.
+  líneas, 1418 tests, 162 ficheros). Tras la Tarea 1 de i18n
+  (infraestructura `next-intl`, sin extraer literales todavía): **99,86 %**
+  (2287/2290 líneas, 1542 tests, 173 ficheros). El umbral fijado sigue en
+  99,7 porque real menos 0,3 (99,56) queda por debajo, así que el ratchet
+  no sube.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la

@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ACCESS_TOKEN_HEADER, SESSION_COOKIE_NAME } from "@/lib/auth/cookie";
+import { LANG_COOKIE_NAME } from "@/lib/i18n/cookie";
 
 import { config, middleware } from "./middleware";
 
@@ -133,6 +134,38 @@ describe("middleware", () => {
       "http://api.test/api/auth/token/refresh/",
       expect.objectContaining({
         headers: expect.objectContaining({ "X-Forwarded-For": "203.0.113.7" }),
+      }),
+    );
+  });
+
+  it("reenvía la cookie pp_lang al backend como Accept-Language al refrescar", async () => {
+    fetchMock.mockResolvedValueOnce(
+      response({ access: "access-nuevo", refresh: "refresh-nuevo" }, 200),
+    );
+
+    const req = requestWithCookie("refresh-viejo");
+    req.cookies.set(LANG_COOKIE_NAME, "eu");
+    await middleware(req);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://api.test/api/auth/token/refresh/",
+      expect.objectContaining({
+        headers: expect.objectContaining({ "Accept-Language": "eu" }),
+      }),
+    );
+  });
+
+  it("sin cookie pp_lang, cae a Accept-Language del navegador y luego a es", async () => {
+    fetchMock.mockResolvedValueOnce(
+      response({ access: "access-nuevo", refresh: "refresh-nuevo" }, 200),
+    );
+
+    await middleware(requestWithCookie("refresh-viejo", { "accept-language": "ca-ES,ca;q=0.9" }));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://api.test/api/auth/token/refresh/",
+      expect.objectContaining({
+        headers: expect.objectContaining({ "Accept-Language": "ca" }),
       }),
     );
   });

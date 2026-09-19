@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -24,17 +26,28 @@ export const metadata: Metadata = {
   description: "Panel web de entidades, paraguas y plataforma de Popyplan",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Idioma de la petición (spec de diseño `2026-09-19-i18n-es-eu-ca`,
+  // decisión 3): `getLocale()`/`getMessages()` leen la misma resolución
+  // que `i18n/request.ts` (cookie `pp_lang` → `Accept-Language` → `es`).
+  // `<html lang>` es la fuente que luego usan `lib/api/client.ts`
+  // (`document.documentElement.lang`) y `lib/i18n/locale.ts::activeLanguage`
+  // para formatear números en el cliente con el idioma correcto.
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="es">
+    <html lang={locale}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>{children}</Providers>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <Providers>{children}</Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

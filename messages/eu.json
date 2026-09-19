@@ -1,0 +1,18 @@
+{
+  "common": {
+    "cancel": "Utzi",
+    "accept": "Onartu",
+    "close": "Itxi",
+    "save": "Gorde",
+    "retry": "Saiatu berriro",
+    "loading": "Kargatzen…",
+    "noAccess": "Sarbiderik ez",
+    "backHome": "Itzuli hasierara"
+  },
+  "language": {
+    "title": "Hizkuntza",
+    "es": "Gaztelania",
+    "eu": "Euskara",
+    "ca": "Katalana"
+  }
+}

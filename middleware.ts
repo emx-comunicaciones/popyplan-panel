@@ -78,6 +78,7 @@ import { forwardedForHeaders } from "@/lib/auth/clientIp";
 import { ACCESS_TOKEN_HEADER, SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/cookie";
 import { singleFlight } from "@/lib/auth/singleFlight";
 import { parseRefreshedTokens } from "@/lib/auth/tokenRefresh";
+import { requestLanguageHeader } from "@/lib/i18n/requestLanguage";
 
 type RefreshOutcome =
   | { ok: true; access: string; refresh: string }
@@ -103,7 +104,11 @@ const inFlightByRefresh = new Map<string, Promise<RefreshOutcome>>();
 async function doRefreshToken(refresh: string, request: NextRequest): Promise<RefreshOutcome> {
   const refreshResponse = await fetch(`${apiBaseUrl()}${AUTH.TOKEN_REFRESH}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...forwardedForHeaders(request) },
+    headers: {
+      "Content-Type": "application/json",
+      ...forwardedForHeaders(request),
+      ...requestLanguageHeader(request),
+    },
     body: JSON.stringify({ refresh }),
   });
   if (!refreshResponse.ok) return { ok: false, reason: "rechazado" };

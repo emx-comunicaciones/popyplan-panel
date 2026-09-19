@@ -1,0 +1,18 @@
+{
+  "common": {
+    "cancel": "Cancel·la",
+    "accept": "Accepta",
+    "close": "Tanca",
+    "save": "Desa",
+    "retry": "Torna-ho a provar",
+    "loading": "Carregant…",
+    "noAccess": "Sense accés",
+    "backHome": "Torna a l'inici"
+  },
+  "language": {
+    "title": "Idioma",
+    "es": "Castellà",
+    "eu": "Basc",
+    "ca": "Català"
+  }
+}

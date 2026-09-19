@@ -1,0 +1,18 @@
+{
+  "common": {
+    "cancel": "Cancelar",
+    "accept": "Aceptar",
+    "close": "Cerrar",
+    "save": "Guardar",
+    "retry": "Reintentar",
+    "loading": "Cargando…",
+    "noAccess": "Sin acceso",
+    "backHome": "Volver al inicio"
+  },
+  "language": {
+    "title": "Idioma",
+    "es": "Español",
+    "eu": "Euskara",
+    "ca": "Català"
+  }
+}

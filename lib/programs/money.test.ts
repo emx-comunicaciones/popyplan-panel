@@ -1,6 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { eurosToCents, formatEuros } from "./money";
+
+const originalHtmlLang = document.documentElement.lang;
+afterEach(() => {
+  document.documentElement.lang = originalHtmlLang;
+});
 
 // `Intl.NumberFormat` de moneda separa el importe del símbolo con un
 // espacio irrompible (` `), no un espacio normal.
@@ -10,6 +15,14 @@ describe("formatEuros", () => {
   it("formatea céntimos como euros en es-ES", () => {
     expect(formatEuros(123456)).toBe(`1.234,56${NBSP}€`);
   });
+
+  it.each(["es", "eu", "ca"] as const)(
+    "con <html lang>=%s el formato no cambia (spec i18n: los tres locales lo comparten)",
+    (lang) => {
+      document.documentElement.lang = lang;
+      expect(formatEuros(123456)).toBe(`1.234,56${NBSP}€`);
+    },
+  );
 
   it("cero se pinta como 0,00 €", () => {
     expect(formatEuros(0)).toBe(`0,00${NBSP}€`);

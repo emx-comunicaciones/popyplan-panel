@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import { SESSION_COOKIE_NAME } from "@/lib/auth/cookie";
+import { LANG_COOKIE_NAME } from "@/lib/i18n/cookie";
 
 import { clearRecentRotations } from "@/lib/auth/rotationCache";
 
@@ -144,6 +145,47 @@ describe("POST /api/session", () => {
     );
   });
 
+  it("reenvía la cookie pp_lang de quien inicia sesión como Accept-Language del login", async () => {
+    fetchMock
+      .mockResolvedValueOnce(response({ key: "access-123", refresh: "refresh-456", user: {} }, 200))
+      .mockResolvedValueOnce(response(buildMe(), 200))
+      .mockResolvedValueOnce(response(buildPlatformRole(null), 200));
+
+    const req = loginRequest({ username_or_email: "x", password: "y" });
+    req.cookies.set(LANG_COOKIE_NAME, "ca");
+    await POST(req);
+
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "http://api.test/api/auth/login/",
+      expect.objectContaining({
+        headers: expect.objectContaining({ "Accept-Language": "ca" }),
+      }),
+    );
+  });
+
+  it("sin cookie pp_lang, el login cae a Accept-Language del navegador", async () => {
+    fetchMock
+      .mockResolvedValueOnce(response({ key: "access-123", refresh: "refresh-456", user: {} }, 200))
+      .mockResolvedValueOnce(response(buildMe(), 200))
+      .mockResolvedValueOnce(response(buildPlatformRole(null), 200));
+
+    await POST(
+      loginRequest(
+        { username_or_email: "x", password: "y" },
+        { "accept-language": "eu-ES,eu;q=0.9" },
+      ),
+    );
+
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "http://api.test/api/auth/login/",
+      expect.objectContaining({
+        headers: expect.objectContaining({ "Accept-Language": "eu" }),
+      }),
+    );
+  });
+
   it("si el login responde 200 con un cuerpo ilegible, responde 502 sin fijar la cookie", async () => {
     fetchMock.mockResolvedValueOnce({
       ok: true,
@@ -217,6 +259,21 @@ describe("DELETE /api/session", () => {
       "http://api.test/api/auth/logout/",
       expect.objectContaining({
         headers: expect.objectContaining({ "X-Forwarded-For": "198.51.100.4" }),
+      }),
+    );
+  });
+
+  it("el logout reenvía la cookie pp_lang como Accept-Language", async () => {
+    fetchMock.mockResolvedValueOnce(response({}, 200));
+
+    const req = requestWithCookie("refresh-789");
+    req.cookies.set(LANG_COOKIE_NAME, "eu");
+    await DELETE(req);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://api.test/api/auth/logout/",
+      expect.objectContaining({
+        headers: expect.objectContaining({ "Accept-Language": "eu" }),
       }),
     );
   });

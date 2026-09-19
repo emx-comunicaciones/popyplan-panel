@@ -1,6 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { formatCount, formatPct } from "./format";
+
+const originalHtmlLang = document.documentElement.lang;
+afterEach(() => {
+  document.documentElement.lang = originalHtmlLang;
+});
 
 describe("formatCount", () => {
   it("separa los miles con punto (locale es-ES)", () => {
@@ -22,6 +27,14 @@ describe("formatCount", () => {
   it("con value no nulo se pinta el valor real, aunque `suppressed` sea true (fix de carry-over W6: el `suppressed` es de toda la sección, no de esta celda — docs/PANEL.md §1.4/§1.5)", () => {
     expect(formatCount(8, true)).toBe("8");
   });
+
+  it.each(["es", "eu", "ca"] as const)(
+    "con <html lang>=%s el separador de miles no cambia (spec i18n: los tres locales lo comparten)",
+    (lang) => {
+      document.documentElement.lang = lang;
+      expect(formatCount(1234)).toBe("1.234");
+    },
+  );
 });
 
 describe("formatPct", () => {
@@ -44,4 +57,12 @@ describe("formatPct", () => {
   it("con value no nulo se pinta el valor real, aunque `suppressed` sea true", () => {
     expect(formatPct(0.75, true)).toBe("75,0 %");
   });
+
+  it.each(["es", "eu", "ca"] as const)(
+    "con <html lang>=%s el decimal sigue con coma (spec i18n: los tres locales lo comparten)",
+    (lang) => {
+      document.documentElement.lang = lang;
+      expect(formatPct(0.75)).toBe("75,0 %");
+    },
+  );
 });

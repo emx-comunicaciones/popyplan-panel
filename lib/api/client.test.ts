@@ -11,6 +11,7 @@ import { resetAccessTokenForTests, setAccessToken, getAccessToken } from "@/lib/
 import { ApiError, apiFetch, fetchWithAuth } from "./client";
 
 const fetchMock = vi.fn();
+const originalHtmlLang = document.documentElement.lang;
 
 beforeEach(() => {
   vi.stubGlobal("fetch", fetchMock);
@@ -24,6 +25,7 @@ afterEach(() => {
   resetAccessTokenForTests();
   resetBootRestoreForTests();
   resetSessionEventsForTests();
+  document.documentElement.lang = originalHtmlLang;
 });
 
 function response(body: unknown, status: number): Response {
@@ -49,6 +51,21 @@ describe("apiFetch", () => {
       }),
     );
     expect(data).toEqual({ id: 1 });
+  });
+
+  it("manda Accept-Language igual a document.documentElement.lang (spec i18n, tarea 1)", async () => {
+    document.documentElement.lang = "eu";
+    setAccessToken("token-vivo");
+    fetchMock.mockResolvedValueOnce(response({ id: 1 }, 200));
+
+    await apiFetch("/api/organizations/7/");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://api.test/api/organizations/7/",
+      expect.objectContaining({
+        headers: expect.objectContaining({ "Accept-Language": "eu" }),
+      }),
+    );
   });
 
   it("401 → refresca vía /api/session/refresh → reintenta con el token nuevo", async () => {

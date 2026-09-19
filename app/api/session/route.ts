@@ -26,6 +26,7 @@ import type { MeForArea, PlatformRoleMe } from "@/lib/api/types";
 import { forwardedForHeaders } from "@/lib/auth/clientIp";
 import { SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/cookie";
 import { clearRecentRotations } from "@/lib/auth/rotationCache";
+import { requestLanguageHeader } from "@/lib/i18n/requestLanguage";
 
 interface LoginBody {
   username_or_email?: unknown;
@@ -56,7 +57,11 @@ export async function POST(request: NextRequest) {
 
   const loginResponse = await fetch(`${apiBaseUrl()}${AUTH.LOGIN}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...forwardedForHeaders(request) },
+    headers: {
+      "Content-Type": "application/json",
+      ...forwardedForHeaders(request),
+      ...requestLanguageHeader(request),
+    },
     body: JSON.stringify({
       username_or_email: body.username_or_email,
       password: body.password,
@@ -114,7 +119,11 @@ export async function DELETE(request: NextRequest) {
     // la cookie igualmente: el logout local no depende de esta llamada.
     await fetch(`${apiBaseUrl()}${AUTH.LOGOUT}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...forwardedForHeaders(request) },
+      headers: {
+        "Content-Type": "application/json",
+        ...forwardedForHeaders(request),
+        ...requestLanguageHeader(request),
+      },
       body: JSON.stringify({ refresh }),
     }).catch(() => undefined);
   }

@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import { SESSION_COOKIE_NAME } from "@/lib/auth/cookie";
+import { LANG_COOKIE_NAME } from "@/lib/i18n/cookie";
 import { clearRecentRotations, ROTATION_REPLAY_TTL_MS } from "@/lib/auth/rotationCache";
 
 import { POST } from "./route";
@@ -173,6 +174,25 @@ describe("POST /api/session/refresh", () => {
       REFRESH_URL,
       expect.objectContaining({
         headers: expect.objectContaining({ "X-Forwarded-For": "203.0.113.7" }),
+      }),
+    );
+  });
+
+  it("reenvía la cookie pp_lang de quien refresca como Accept-Language", async () => {
+    fetchMock
+      .mockResolvedValueOnce(response({ access: "a", refresh: "r" }, 200))
+      .mockResolvedValueOnce(response(buildMe(), 200))
+      .mockResolvedValueOnce(response(buildPlatformRole(null), 200));
+
+    const req = requestWithCookie("r-lang");
+    req.cookies.set(LANG_COOKIE_NAME, "ca");
+    await POST(req);
+
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      REFRESH_URL,
+      expect.objectContaining({
+        headers: expect.objectContaining({ "Accept-Language": "ca" }),
       }),
     );
   });

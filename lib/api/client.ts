@@ -87,6 +87,21 @@ function isFormData(value: unknown): value is FormData {
   return typeof FormData !== "undefined" && value instanceof FormData;
 }
 
+/**
+ * `Accept-Language` de cliente (spec de diseño `2026-09-19-i18n-es-eu-ca`,
+ * decisión 5): igual que `document.documentElement.lang`, que
+ * `app/layout.tsx` fija desde `getLocale()` (cookie `pp_lang` →
+ * `Accept-Language` del navegador → `es`) y que el selector de idioma
+ * actualiza sin recargar del todo (`router.refresh()`). Sin `document`
+ * (fuera de un navegador — no ocurre en el uso real de `apiFetch`, solo
+ * defensivo) no se añade la cabecera.
+ */
+function clientLanguageHeader(): Record<string, string> {
+  if (typeof document === "undefined") return {};
+  const lang = document.documentElement.lang;
+  return lang ? { "Accept-Language": lang } : {};
+}
+
 async function rawRequest(
   path: string,
   token: string | null,
@@ -99,6 +114,7 @@ async function rawRequest(
     ...rest,
     headers: {
       ...(formData ? {} : { "Content-Type": "application/json" }),
+      ...clientLanguageHeader(),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },

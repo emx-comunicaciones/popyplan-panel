@@ -23,16 +23,46 @@
  * registros) *y* la sección está marcada `suppressed`; con `value` no
  * nulo, se pinta el valor real sea cual sea el `suppressed` de la
  * sección.
+ *
+ * **Idioma del formateador (spec de diseño `2026-09-19-i18n-es-eu-ca`,
+ * decisión 4):** el locale de `Intl.NumberFormat` sale de
+ * `lib/i18n/locale.ts::activeLanguage`/`localeFor` en vez de fijarse a
+ * `es-ES`, con un formateador por idioma cacheado en un `Map` (se
+ * construye una sola vez cada uno). El comportamiento visible no
+ * cambia — `es-ES`, `eu-ES` y `ca-ES` usan el mismo separador de
+ * millares (`.`) y decimal (`,`), comprobado antes de escribir este
+ * módulo — pero así el idioma correcto queda cableado por si algún día
+ * alguno de los tres divergiera.
  */
+import { activeLanguage, localeFor } from "@/lib/i18n/locale";
 
-const INTEGER_FORMATTER = new Intl.NumberFormat("es-ES", {
-  maximumFractionDigits: 0,
-  useGrouping: "always",
-});
-const PERCENT_FORMATTER = new Intl.NumberFormat("es-ES", {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-});
+const integerFormatters = new Map<string, Intl.NumberFormat>();
+function integerFormatter(): Intl.NumberFormat {
+  const locale = localeFor(activeLanguage());
+  let formatter = integerFormatters.get(locale);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(locale, {
+      maximumFractionDigits: 0,
+      useGrouping: "always",
+    });
+    integerFormatters.set(locale, formatter);
+  }
+  return formatter;
+}
+
+const percentFormatters = new Map<string, Intl.NumberFormat>();
+function percentFormatter(): Intl.NumberFormat {
+  const locale = localeFor(activeLanguage());
+  let formatter = percentFormatters.get(locale);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(locale, {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+    percentFormatters.set(locale, formatter);
+  }
+  return formatter;
+}
 
 /**
  * `formatCount(1284) → '1.284'`; `formatCount(null, true) → '<5'`;
@@ -42,11 +72,11 @@ const PERCENT_FORMATTER = new Intl.NumberFormat("es-ES", {
  */
 export function formatCount(value: number | null, suppressed = false): string {
   if (value === null) return suppressed ? "<5" : "—";
-  return INTEGER_FORMATTER.format(value);
+  return integerFormatter().format(value);
 }
 
 /** `formatPct(0.75) → '75,0 %'`; `formatPct(null, true) → '<5'`. */
 export function formatPct(value: number | null, suppressed = false): string {
   if (value === null) return suppressed ? "<5" : "—";
-  return `${PERCENT_FORMATTER.format(value * 100)} %`;
+  return `${percentFormatter().format(value * 100)} %`;
 }

@@ -1,12 +1,32 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+const headersMock = vi.hoisted(() => vi.fn());
+const cookiesMock = vi.hoisted(() => vi.fn());
+vi.mock("next/headers", () => ({ headers: headersMock, cookies: cookiesMock }));
+
 import { serverFetch } from "./serverFetch";
 
 const fetchMock = vi.fn();
 
+/**
+ * `Accept-Language` (spec de diseño `2026-09-19-i18n-es-eu-ca`, decisión
+ * 5): por defecto, sin cookie `pp_lang` ni cabecera `Accept-Language` en
+ * la petición entrante (mismo resultado que fuera de un ámbito de
+ * petición real, ver `lib/i18n/serverLanguage.test.ts`), se manda `es` —
+ * los tests que no comprueban el idioma no necesitan configurar nada.
+ */
+function headerStore(entries: Record<string, string> = {}) {
+  return { get: (name: string) => entries[name.toLowerCase()] ?? null };
+}
+function cookieStore(entries: Record<string, string> = {}) {
+  return { get: (name: string) => (name in entries ? { value: entries[name] } : undefined) };
+}
+
 beforeEach(() => {
   vi.stubGlobal("fetch", fetchMock);
   vi.stubEnv("NEXT_PUBLIC_API_URL", "http://api.test");
+  headersMock.mockResolvedValue(headerStore());
+  cookiesMock.mockResolvedValue(cookieStore());
 });
 
 afterEach(() => {
@@ -123,6 +143,31 @@ describe("serverFetch", () => {
     expect(fetchMock).toHaveBeenCalledWith(
       "http://localhost:8001/api/users/users/me/",
       expect.anything(),
+    );
+  });
+
+  it("reenvía la cookie pp_lang de la petición como Accept-Language", async () => {
+    cookiesMock.mockResolvedValue(cookieStore({ pp_lang: "eu" }));
+    fetchMock.mockResolvedValueOnce(jsonResponse({ ok: true }));
+
+    await serverFetch("/api/users/users/me/", "token-123");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://api.test/api/users/users/me/",
+      expect.objectContaining({
+        headers: expect.objectContaining({ "Accept-Language": "eu" }),
+      }),
+    );
+  });
+
+  it("sin cookie pp_lang, sin Accept-Language soportado ni ámbito de petición, manda es", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ ok: true }));
+
+    await serverFetch("/api/users/users/me/", "token-123");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://api.test/api/users/users/me/",
+      expect.objectContaining({ headers: expect.objectContaining({ "Accept-Language": "es" }) }),
     );
   });
 });

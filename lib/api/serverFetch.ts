@@ -7,6 +7,7 @@
  * el parse protegido devuelve `{ ok: false }` como cualquier otro fallo.
  */
 import { apiBaseUrl } from "./baseUrl";
+import { getServerLanguage } from "@/lib/i18n/serverLanguage";
 
 export type ServerFetchResult<T> =
   | { ok: true; status: number; data: T }
@@ -17,12 +18,17 @@ export async function serverFetch<T = unknown>(
   token: string,
   init?: RequestInit,
 ): Promise<ServerFetchResult<T>> {
+  // `Accept-Language` (spec de diseño `2026-09-19-i18n-es-eu-ca`, decisión
+  // 5): cookie `pp_lang` de la petición → `Accept-Language` del navegador
+  // → `es` (`lib/i18n/serverLanguage.ts`, `next/headers`).
+  const language = await getServerLanguage();
   const response = await fetch(`${apiBaseUrl()}${path}`, {
     ...init,
     cache: "no-store",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
+      "Accept-Language": language,
       ...init?.headers,
     },
   });
