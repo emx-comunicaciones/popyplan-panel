@@ -817,3 +817,74 @@ de verdad pese a la corrección de esta tarea (el dato ya existe en el
 backend, con otro nombre de campo) — no es una pregunta de diseño, es
 un fix de código pendiente, documentado en `CLAUDE.md` («Regla de
 paraguas») para quien retome esa pantalla.
+
+## Fase 7 — Red de apoyo (panel)
+
+Plan `docs/superpowers/plans/2026-09-19-red-de-apoyo-panel.md`,
+`~/Code/popyplan/docs/PANEL.md` §14.5-14.6. Ninguna de las tres preguntas
+de abajo bloqueó la implementación (las seis decisiones del plan ya
+estaban tomadas de antemano); quedan para quien retome esta pantalla.
+
+### 34. ¿Debe el titular ver al menos el recuento de apoyos de una persona?
+
+Hoy la sección «Red de apoyo» de la ficha es binaria por rol: el
+referente asignado ve la lista completa (nombre, relación, si recibe
+avisos) y **cualquier otro rol, titular incluido, no ve absolutamente
+nada** — ni siquiera un «esta persona tiene N apoyos» sin nombres. El
+contrato del backend (`docs/PANEL.md` §14.5) lo hace así a propósito:
+titular/moderador que no son el referente reciben 404 (el mismo
+`detail` que la ficha, para no filtrar que existe red), así que un
+recuento agregado por persona necesitaría una ruta nueva del backend
+con un permiso distinto de `ver_ficha` — no es algo que el panel pueda
+decidir por su cuenta cambiando solo el cliente. **Pregunta:** ¿tiene
+sentido de producto que el titular vea al menos un número (sin nombres,
+sin relación) para saber que una persona no está sola, o la opacidad
+total es la decisión correcta incluso para quien gestiona la entidad?
+Los tres contadores agregados de Familias (personas con red, apoyos
+activos, apoyos que reciben avisos) ya le dan al titular una foto de
+conjunto — puede que ya sea la respuesta de producto a esta pregunta y
+no haga falta nada por persona.
+
+### 35. ¿Plantilla de bienvenida editable por la entidad?
+
+`lib/communications/templates.ts::SUPPORT_WELCOME_TEMPLATE` es un texto
+fijo en el código, igual que el resto de textos fijos del panel (el
+banner de anonimato de Encuestas, el de separación de espacios de
+Familias, etc.) — cualquier entidad que quiera adaptar el tono o
+mencionar su propio referente por nombre tiene que pedirle el cambio a
+quien mantiene el panel. **Pregunta:** ¿debería ser editable por
+titular/moderador (un campo de configuración de la entidad, con este
+texto como valor por defecto), o el texto fijo es intencionadamente
+así — una plantilla de bienvenida que no varía entre entidades, como
+garantía de que dice siempre lo mismo sobre privacidad («no verás las
+conversaciones, la actividad privada ni la ubicación»)? Si la respuesta
+es «editable», el backend necesitaría un campo nuevo (no hay ninguno
+hoy para plantillas por entidad) y el panel perdería la garantía de que
+el texto de privacidad es siempre el mismo.
+
+### 36. `GuardiaPanel`/`AyudaPendienteList` no pintan `support_responses`
+
+El backend ya expone `support_responses` en `HelpRequestRow`
+(`docs/PANEL.md` §14.4: `[{"supporter": {"id", "public_name"},
+"responded_at"}]`, solo quien respondió «me encargo» a un aviso de
+ayuda) — la app móvil sí lo enseña («`<nombre>`, de su red, se
+encarga»). El panel web ya regeneró el tipo (`lib/api/types.ts
+::SupportResponse`, tarea 1 del plan de red de apoyo) pero **ningún
+componente lo lee todavía**: ni `components/entidad/GuardiaPanel.tsx`
+ni `components/plataforma/AyudaPendienteList.tsx` lo mencionan, así que
+la guardia de la entidad y la cola agregada de plataforma no saben si
+alguien de la red ya se está ocupando de un aviso de ayuda cuando
+deciden si atenderlo. **Pregunta:** ¿debería la guardia ver esa
+información (mismo criterio que el móvil, «`<nombre>`, de su red, se
+encarga», quizá como una línea o `Badge` bajo cada aviso pendiente) para
+evitar duplicar esfuerzo con la red de apoyo, o es deliberado que la
+guardia actúe sin mirar quién más está respondiendo (la spec del
+backend dice explícitamente que «me encargo» **no sustituye** a la
+guardia, `notify_on_call` sigue igual)? Si la respuesta es sí, es un
+cambio pequeño y acotado a esos dos componentes — el tipo y el dato ya
+existen, no hace falta tocar el backend.
+
+No surgió ningún juzgamiento de tipo «Retirar»/etiquetas en esta tarea:
+la única acción de escritura que toca esta pantalla (crear la comunidad
+de familias) ya existía de una tarea anterior y no cambió, y la sección
+«Red de apoyo» de la ficha es de solo lectura.

@@ -375,15 +375,19 @@ el brief tampoco lo pedía para esos dos).
   que pide el brief: «Las comunidades de familias están separadas de las
   de miembros; nadie declara ser familiar de nadie.» — se pinta siempre,
   sea cual sea el estado de la consulta con datos.
-- **Regla de supresión de `members_count`**: un fix de backend que llegó
-  en paralelo a esta tarea puede suprimir el recuento de personas
-  (`null` + `suppressed: true`) para quien no tiene `ver_lista_nominal`
-  en la entidad — al escribir esta tarea `docs/schema.yaml` todavía
-  documentaba `FamiliesSummary.members_count`/`FamilyCommunityRow
-  .members_count` como `number` a secas, así que `lib/api/types.ts`
-  amplía ambos a mano a `number | null` con un `suppressed?` opcional
-  (mismo patrón que `PeopleMetrics`, sin esperar a regenerar
-  `types.generated.ts`). Se pinta con `formatCount` (`lib/metrics/format.ts`,
+- **Regla de supresión de `members_count`**: un fix de backend suprime el
+  recuento de personas (`null` + `suppressed: true`) para quien no tiene
+  `ver_lista_nominal` en la entidad. Al escribir esta tarea
+  `docs/schema.yaml` todavía documentaba `FamiliesSummary.members_count`/
+  `FamilyCommunityRow.members_count` como `number` a secas, así que
+  `lib/api/types.ts` los ampliaba a mano a `number | null` con un
+  `suppressed?` opcional (mismo patrón que `PeopleMetrics`). **Esa
+  ampliación manual ya no existe** (retirada en la Tarea 1 del plan de
+  «Red de apoyo», Fase 7: el esquema regenerado desde la rama de backend
+  correspondiente ya tipa los dos campos como `number | null` con
+  `suppressed: boolean` **obligatorio**, así que `FamiliesSummaryCommunityRow`/
+  `FamiliesSummary` son hoy alias directos del esquema generado, sin
+  ensanche a mano). Se pinta con `formatCount` (`lib/metrics/format.ts`,
   reutilizado tal cual): cualquier `members_count: null` se trata como
   suprimido (`<5`) lleve o no el campo `suppressed` explícito, porque en
   este endpoint no hay otra razón para que llegue `null`.
@@ -415,6 +419,122 @@ el brief tampoco lo pedía para esos dos).
   el espacio de familias»).
 - **`components/ui/ComingSoon.tsx` retirado**: Familias era la última
   sección que lo usaba; se borró en vez de dejarlo como código muerto.
+
+## Red de apoyo (Fase 7)
+
+`~/Code/popyplan/docs/PANEL.md` §14.5 (lo que ve el referente y los
+contadores de Familias) y §14.6 (datos de demo), rama de backend
+`feature/red-de-apoyo-backend`. El panel consume solo esa cara del
+contrato — invitar/aceptar/pausar un vínculo, «pedir ayuda» y «me
+encargo» son pantallas del móvil (spec `2026-09-18-red-de-apoyo-design.md`
+§7); aquí no hay ninguna acción de escritura sobre la red, solo lectura
+condicionada al rol y tres contadores agregados. **Nunca** una lista de
+quién acompaña a quién fuera de la ficha que ve el referente.
+
+- **Tipos y hook** (`lib/api/types.ts`, `hooks/usePersonSupport.ts`):
+  `PersonSupportRow` alias `components["schemas"]["ReferentNetworkRow"]`
+  (el esquema nombra la fila distinto de como la nombraba el plan,
+  anotado con un docstring) — `{supporter: {id, public_name},
+  relationship, notify_on_help}`. `usePersonSupport(orgId, userId,
+  enabled)` pide `GET /api/panel/entidad/{org_id}/people/{user_id}/support/`
+  (`PANEL.PERSON_SUPPORT`) y traduce 403/404 a `kind: 'sin_acceso'`
+  (titular/moderador que no son el referente asignado reciben 404 con el
+  mismo `detail` que la ficha, para no revelar que la persona tiene red;
+  `analista` recibe 403 antes de llegar a `ver_ficha`); cualquier otro
+  error queda `'desconocido'` con el `detail` literal del backend
+  (`lib/api/drfError.ts::detailOf`). `lib/support/relationshipLabel.ts`
+  traduce las ocho relaciones del contrato (`parent`→«Madre o padre»,
+  `friend`→«Amistad», …), con reserva al valor crudo si el backend añade
+  una relación nueva, mismo patrón que `lib/reports/labels.ts`.
+- **Ficha de persona, decisión 1-2 del plan** (`components/entidad/
+  PersonSheet.tsx::SupportNetworkSection`): la sección solo se monta
+  (hook llamado con `enabled: isReferent`) si `membership.role ===
+  'referente'` (calculado en `app/entidad/[slug]/personas/[userId]/
+  page.tsx`, junto a `canAssignReferent`) — así titular/moderador ni
+  siquiera disparan la petición que el backend rechazaría a propósito.
+  Con `isReferent` y `kind: 'sin_acceso'` (404/403 real, poco probable
+  pero posible si el rol cambia entre el render del Server Component y
+  la petición del cliente), la sección **no se pinta nada en absoluto**
+  — ni cabecera ni mensaje: mostrar que existe la sección ya sería un
+  dato. Con datos, cada fila es «`{public_name} · {relationshipLabel} ·
+  Recibe avisos|Sin avisos`» (invariante 9: nunca contacto, fechas ni
+  quién invitó a quién) y una línea fija: «Solo tú, como referente, ves
+  esta red. Popyplan no guarda teléfonos: contacta con la persona por el
+  chat de la app.». Un error real (`'desconocido'`) sí pinta un
+  `ErrorState` **dentro** de la sección, sin romper el resto de la
+  ficha.
+- **Familias, decisión 3-4 del plan** (`components/entidad/
+  FamiliasPanel.tsx`): tres `StatCard` más en el resumen («Personas con
+  red de apoyo», «Apoyos activos», «Apoyos que reciben avisos»,
+  `people_with_support_network`/`active_supporters`/
+  `supporters_notified_on_help`, cada una ya `SuppressibleCount` en el
+  esquema generado) pintadas con `formatCount(value, suppressed)` como
+  el resto del panel — ninguna lógica de supresión nueva. Un aviso
+  `role="status"` sobre `missing_families_space_supporters` (entero sin
+  umbral: cuenta apoyos **distintos** a la espera de que la entidad cree
+  su comunidad de familias, nunca personas, así que no lleva `<5`):
+  sin comunidad de familias, «`<N>` persona(s) de la red de apoyo
+  espera(n) a que crees la comunidad de familias.» (singular con 1)
+  justo encima del botón «Nueva comunidad de familias» ya existente
+  (`canManage`, sin diálogo nuevo); con comunidad ya creada y el
+  contador todavía > 0 (carrera de la señal diferida, §14.5), «El alta
+  en la comunidad de familias se completará automáticamente.». Con el
+  contador a 0, sin aviso. Ningún nombre de apoyo se pinta en este
+  panel.
+- **Recursos, decisión 6**: `accompany` (`CATEGORY_ORDER`/
+  `CATEGORY_LABELS`, `components/entidad/RecursosPanel.tsx`, líneas
+  ~40-56) entra tras `families` como «Cómo acompañar», junto a las seis
+  categorías de la tarea W4b — el `<select>` del formulario ya deriva
+  sus opciones de esas dos constantes, sin cambio adicional.
+- **Comunicaciones, decisión 5** (`lib/communications/templates.ts`,
+  `components/entidad/ComunicacionesPanel.tsx::ComposeForm`): botón
+  «Usar plantilla: Bienvenida a la red de apoyo», visible solo con
+  `hasFamilies` (dentro de `ComposeForm`, que el padre ya solo monta con
+  `canCompose`, así que no hace falta una comprobación extra). Rellena
+  título/cuerpo con `SUPPORT_WELCOME_TEMPLATE` (texto fijo, única fuente
+  esa constante) y selecciona audiencia «Familias»; no envía nada por sí
+  solo. Si el título o el cuerpo ya tienen texto, `applyTemplate`
+  devuelve `overwritten: true` y se pide confirmación con
+  `ConfirmDialog` («Se reemplazará el texto actual del título y del
+  cuerpo.») antes de sobrescribir; con el formulario vacío se aplica
+  directamente.
+- **Encuestas**: sin cambios — la spec de esta fase no pedía ninguno ahí.
+- **Cuentas de demo** (`docs/PANEL.md` §14.6, contraseña
+  `panel-pass-1234` para todas): «Persona 01» de Asociación Bidasoa
+  tiene dos apoyos, `panel-demo-apoyo-01@test.com` («Apoyo 01», relación
+  `parent`, recibe avisos) y `panel-demo-apoyo-02@test.com` («Apoyo 02»,
+  relación `friend`, sin avisos); «Persona 02» tiene uno,
+  `panel-demo-apoyo-03@test.com` (`partner`, recibe avisos). Las dos
+  personas tienen `Reference` hacia
+  `panel-referente-asociacion-bidasoa@test.com`, que por eso ve «Red de
+  apoyo» en sus fichas; `panel-titular-asociacion-bidasoa@test.com` ve
+  las mismas fichas sin esa sección (no es el referente). **Elkartea
+  Txikia** (`elkartea-txikia`,
+  `panel-titular-elkartea-txikia@test.com`) es una sexta entidad
+  sembrada a propósito **sin** comunidad de familias, con
+  `panel-demo-apoyo-04@test.com` a la espera de que se cree
+  (`missing_families_space_supporters === 1`) — es el único caso real
+  del aviso «crea tu comunidad de familias» en la demo; no se le quita
+  el espacio de familias a ninguna de las dos asociaciones grandes
+  porque son las que usa el resto de tests y del e2e del panel.
+- **`e2e/red-de-apoyo.spec.ts`** (`e2e/helpers.ts` gana
+  `REFERENTE_BIDASOA_EMAIL`/`TITULAR_TXIKIA_EMAIL`): referente Bidasoa
+  ve «Red de apoyo» en la ficha de «Persona 01» con el `public_name`
+  real de `panel-demo-apoyo-01@test.com` (leído por API,
+  `GET /api/users/users/me/`, nunca «Miren» a mano — ese nombre es solo
+  el ejemplo ilustrativo de `docs/PANEL.md` §14.5, la demo real usa
+  «Apoyo `NN`»); titular Bidasoa no ve esa sección en la misma ficha;
+  titular de Elkartea Txikia ve en Familias el aviso de «1 persona» y el
+  botón «Nueva comunidad de familias». Solo 4 logins en todo el spec
+  (límite de 5/min/IP en local, `pop.settings_e2e` lo desactiva en CI):
+  un login de API (`panel-demo-apoyo-01`, para leer su `public_name`) y
+  tres logins de UI (referente, titular Bidasoa, titular Txikia) — sin
+  resolver ningún id por API, la navegación es toda por clic (Personas →
+  «Persona 01»), igual que `e2e/titular.spec.ts`.
+- **La ficha de persona sale de la excepción de `axe`**: ver «Cierre del
+  panel» más abajo — pasa a tener su propio test de accesibilidad ahora
+  que gana una sección condicional por rol (referente con datos), no
+  solo la ausencia de un campo.
 
 ## Área de plataforma: Inicio, Entidades, Reportes, Ayuda, Verificaciones, Roles, Auditoría (tarea W5)
 
@@ -771,13 +891,15 @@ Hallazgos desmentidos (no había bug contra el contrato vigente):
   accesibilidad (axe)» como primer test del `describe`, con `render()`
   del propio `@/test-utils/render` para tener `container`. La lista
   exacta y siempre comprobable es
-  `grep -rln "toHaveNoViolations" app components`; al cerrar la segunda
-  ronda de auditoría (ver «Auditoría estática 2026-09-18» más abajo) son
-  **22 páginas y 4 componentes**:
+  `grep -rln "toHaveNoViolations" app components`; tras la Tarea 5 del
+  plan de «Red de apoyo» (Fase 7, la ficha de persona gana su propio
+  test) son **23 páginas y 4 componentes**:
   `app/(auth)/login`, `app/accesibilidad` (declaración pública, tarea
   W1), `entidad/[slug]` (Inicio), `entidad/[slug]/personas`
   (tabla + diálogo «Añadir persona» abierto, valida el foco atrapado),
-  `entidad/[slug]/informes`, `entidad/[slug]/asistencia/[eventId]`
+  `entidad/[slug]/personas/[userId]` (ficha, con la sección «Red de
+  apoyo» del referente y datos), `entidad/[slug]/informes`,
+  `entidad/[slug]/asistencia/[eventId]`
   (caja de check-in), `entidad/[slug]/encuestas/[surveyId]` (gráfico
   `recharts`), `entidad/[slug]/familias` (resumen + lista de comunidades,
   ronda final de Fase 5), `entidad/[slug]/comunidades`,
@@ -797,7 +919,7 @@ Hallazgos desmentidos (no había bug contra el contrato vigente):
   **Excepción documentada**: siguen sin test propio de `axe`
   `elegir-entidad`, `entidad/[slug]/{actividades,asistencia,
   comunicaciones,encuestas,recursos,guardia}`,
-  `entidad/[slug]/personas/[userId]`, `entidad/[slug]/reportes/[reportId]`,
+  `entidad/[slug]/reportes/[reportId]`,
   `paraguas/[slug]/informes` y
   `plataforma/{auditoria,ayuda,verificaciones,roles,entidades/[id]}` — la
   cobertura es representativa de las tres áreas y de todos los patrones
