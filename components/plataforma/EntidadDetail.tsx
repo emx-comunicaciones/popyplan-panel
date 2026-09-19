@@ -16,6 +16,7 @@
  * membresía real insuficiente — no es ya el caso general.
  */
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -23,15 +24,31 @@ import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { useOrgMembers, useAddOrgMember, useRemoveOrgMember } from "@/hooks/useOrgMembers";
-import { useOrgReferences, useCreateOrgReference, useRemoveOrgReference } from "@/hooks/useOrgReferences";
+import {
+  useOrgMembers,
+  useAddOrgMember,
+  useRemoveOrgMember,
+  type OrgMembersErrorKind,
+} from "@/hooks/useOrgMembers";
+import {
+  useOrgReferences,
+  useCreateOrgReference,
+  useRemoveOrgReference,
+  type OrgReferencesErrorKind,
+} from "@/hooks/useOrgReferences";
 import { useOrganization } from "@/hooks/useOrganization";
-import { useOrganizations, useSetOrganizationParent, useVerifyOrganization } from "@/hooks/useOrganizations";
-import { useOrgScope } from "@/hooks/useOrgScope";
-import { useEntityCommunities } from "@/hooks/useEntityCommunities";
-import { useEntityEvents } from "@/hooks/useEntityEvents";
-import { useContracts, useInvoices } from "@/hooks/useBilling";
-import { useMetrics } from "@/hooks/useMetrics";
+import {
+  useOrganizations,
+  useSetOrganizationParent,
+  useVerifyOrganization,
+  type OrganizationsErrorKind,
+} from "@/hooks/useOrganizations";
+import { useOrgScope, type OrgScopeErrorKind } from "@/hooks/useOrgScope";
+import { useEntityCommunities, type EntityCommunitiesErrorKind } from "@/hooks/useEntityCommunities";
+import { useEntityEvents, type EntityEventsErrorKind } from "@/hooks/useEntityEvents";
+import { useContracts, useInvoices, type BillingErrorKind } from "@/hooks/useBilling";
+import { useMetrics, type MetricsErrorKind } from "@/hooks/useMetrics";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 import { formatCount, formatPct } from "@/lib/metrics/format";
 import { presetPeriod } from "@/lib/metrics/period";
 import { formatEuros } from "@/lib/programs/money";
@@ -60,26 +77,26 @@ const SECTIONS = [
 ] as const;
 type Section = (typeof SECTIONS)[number];
 
-const SECTION_LABELS: Record<Section, string> = {
-  datos: "Datos",
-  paraguas: "Paraguas",
-  ambito: "Ámbito",
-  equipo: "Equipo",
-  metricas: "Métricas",
-  comunidades: "Comunidades y actividades",
-  contrato: "Contrato",
+const SECTION_LABEL_KEYS: Record<Section, string> = {
+  datos: "plataforma.entidadFicha.tabDatos",
+  paraguas: "plataforma.entidadFicha.tabParaguas",
+  ambito: "plataforma.entidadFicha.tabAmbito",
+  equipo: "plataforma.entidadFicha.tabEquipo",
+  metricas: "plataforma.metricas.heading",
+  comunidades: "plataforma.entidadFicha.tabComunidades",
+  contrato: "plataforma.entidadFicha.tabContrato",
 };
 
-const CONTRACT_STATUS_LABELS: Record<string, string> = {
-  draft: "Borrador",
-  active: "Vigente",
-  ended: "Finalizado",
+const CONTRACT_STATUS_LABEL_KEYS: Record<string, string> = {
+  draft: "plataforma.contratos.statusDraft",
+  active: "plataforma.contratos.statusActive",
+  ended: "plataforma.contratos.statusEnded",
 };
 
-const INVOICE_STATUS_LABELS: Record<InvoiceStatus, string> = {
-  paid: "Pagada",
-  pending: "Pendiente",
-  overdue: "Vencida",
+const INVOICE_STATUS_LABEL_KEYS: Record<InvoiceStatus, string> = {
+  paid: "plataforma.contratos.invoiceStatusPaid",
+  pending: "plataforma.contratos.invoiceStatusPending",
+  overdue: "plataforma.contratos.invoiceStatusOverdue",
 };
 
 const ROLE_OPTIONS: OrgMembershipRole[] = [
@@ -91,48 +108,134 @@ const ROLE_OPTIONS: OrgMembershipRole[] = [
   "voluntario",
 ];
 
+// Reutiliza exactamente las mismas claves que `ConfiguracionPanel.tsx`
+// (entidad): los hooks son los mismos y el backend no varía el mensaje
+// según quien llama, solo cambia quién puede llegar a disparar cada
+// mutación.
+const ADD_ORG_MEMBER_ERROR_KEYS: Record<OrgMembersErrorKind, string> = {
+  invalido: "errors.addOrgMember.invalido",
+  sin_acceso: "errors.addOrgMember.sinAcceso",
+  desconocido: "errors.addOrgMember.desconocido",
+};
+
+const REMOVE_ORG_MEMBER_ERROR_KEYS: Record<OrgMembersErrorKind, string> = {
+  invalido: "errors.removeOrgMember.invalido",
+  sin_acceso: "errors.removeOrgMember.sinAcceso",
+  desconocido: "errors.removeOrgMember.desconocido",
+};
+
+const ORG_MEMBERS_QUERY_ERROR_KEYS: Record<OrgMembersErrorKind, string> = {
+  invalido: "errors.orgMembers.desconocido",
+  sin_acceso: "errors.orgMembers.sinAcceso",
+  desconocido: "errors.orgMembers.desconocido",
+};
+
+const CREATE_ORG_REFERENCE_ERROR_KEYS: Record<OrgReferencesErrorKind, string> = {
+  invalido: "errors.createOrgReference.invalido",
+  desconocido: "errors.createOrgReference.desconocido",
+};
+
+const REMOVE_ORG_REFERENCE_ERROR_KEYS: Record<OrgReferencesErrorKind, string> = {
+  invalido: "errors.removeOrgReference.invalido",
+  desconocido: "errors.removeOrgReference.desconocido",
+};
+
+const ORG_SCOPE_ERROR_KEYS: Record<OrgScopeErrorKind, string> = {
+  invalido: "errors.orgScope.invalido",
+  sin_permiso: "errors.orgScope.sinPermiso",
+  desconocido: "errors.orgScope.desconocido",
+};
+
+const VERIFY_ORGANIZATION_ERROR_KEYS: Record<OrganizationsErrorKind, string> = {
+  invalido: "errors.createOrganization.invalido",
+  sin_permiso: "errors.verifyOrganization.sinPermiso",
+  desconocido: "errors.verifyOrganization.desconocido",
+};
+
+const SET_PARENT_ERROR_KEYS: Record<OrganizationsErrorKind, string> = {
+  invalido: "errors.setOrganizationParent.invalido",
+  sin_permiso: "errors.setOrganizationParent.sinPermiso",
+  desconocido: "errors.setOrganizationParent.desconocido",
+};
+
+const ENTITY_COMMUNITIES_ERROR_KEYS: Record<EntityCommunitiesErrorKind, string> = {
+  demasiadas_paginas: "errors.entityCommunities.demasiadasPaginas",
+  desconocido: "errors.entityCommunities.desconocido",
+};
+
+const ENTITY_EVENTS_ERROR_KEYS: Record<EntityEventsErrorKind, string> = {
+  periodo_invalido: "errors.entityEvents.periodoInvalido",
+  sin_acceso: "errors.entityEvents.sinAcceso",
+  desconocido: "errors.entityEvents.desconocido",
+};
+
+const METRICS_ERROR_KEYS: Record<MetricsErrorKind, string> = {
+  periodo_invalido: "errors.metrics.periodoInvalido",
+  sin_acceso: "errors.metrics.sinAcceso",
+  desconocido: "errors.metrics.desconocido",
+};
+
+// `useContracts({organization: orgId})` e `useInvoices` reutilizan
+// `BillingError` (mismo hook que `ContratosPanel.tsx`); su
+// «desconocido» es el mismo texto genérico de la consulta de listado
+// (esta ficha no distingue «contrato de esta entidad» de «contratos» a
+// nivel de mensaje, porque el hook no lo hace).
+const CONTRACTS_ERROR_KEYS: Record<BillingErrorKind, string> = {
+  sin_acceso: "errors.contractMutation.sinAcceso",
+  invalido: "errors.contractMutation.invalido",
+  conflicto: "errors.contractMutation.conflicto",
+  no_encontrado: "errors.contractMutation.noEncontrado",
+  desconocido: "errors.contractsQuery.desconocido",
+};
+
 function DatosTab({ orgId, role }: { orgId: number | string; role: string | null }) {
+  const t = useTranslations();
   const organization = useOrganization(orgId);
   const verify = useVerifyOrganization();
   const canVerify = role === "verifier" || role === "superadmin";
 
   if (organization.isError) {
-    return <ErrorState title="No se pudo cargar la ficha" description={organization.error.message} />;
+    return (
+      <ErrorState
+        title={t("plataforma.entidadFicha.loadError")}
+        description={t("entidad.configuracion.dataLoadErrorDescription")}
+      />
+    );
   }
   if (!organization.data) {
-    return <p className="text-sm text-text-secondary">Cargando…</p>;
+    return <p className="text-sm text-text-secondary">{t("common.loading")}</p>;
   }
 
   const org = organization.data;
 
   return (
-    <Card title="Datos de la entidad">
+    <Card title={t("plataforma.entidadFicha.dataCardTitle")}>
       <dl className="grid grid-cols-2 gap-2 text-sm">
-        <dt className="text-text-secondary">Nombre</dt>
+        <dt className="text-text-secondary">{t("plataforma.entidades.nameHeader")}</dt>
         <dd className="text-text-base">{org.name}</dd>
-        <dt className="text-text-secondary">Slug</dt>
+        <dt className="text-text-secondary">{t("plataforma.entidades.slugLabel")}</dt>
         <dd className="text-text-base">{org.slug}</dd>
-        <dt className="text-text-secondary">Tipo</dt>
+        <dt className="text-text-secondary">{t("plataforma.entidades.typeHeader")}</dt>
         <dd className="text-text-base">{org.org_type}</dd>
-        <dt className="text-text-secondary">Verificación</dt>
+        <dt className="text-text-secondary">{t("plataforma.entidades.verifiedLabel")}</dt>
         <dd className="text-text-base">
           <Badge tone={org.is_verified ? "success" : "neutral"}>
-            {org.is_verified ? "Verificada" : "Pendiente"}
+            {org.is_verified ? t("plataforma.entidades.verifiedTrue") : t("plataforma.entidades.verifiedFalse")}
           </Badge>
         </dd>
-        <dt className="text-text-secondary">Descripción</dt>
+        <dt className="text-text-secondary">{t("plataforma.entidades.descriptionLabel")}</dt>
         <dd className="text-text-base">{org.description || "—"}</dd>
-        <dt className="text-text-secondary">Contacto</dt>
+        <dt className="text-text-secondary">{t("plataforma.entidadFicha.contactLabel")}</dt>
         <dd className="text-text-base">{org.contact_email || "—"}</dd>
       </dl>
       {!org.is_verified && canVerify ? (
         <div className="mt-3">
           <Button type="button" disabled={verify.isPending} onClick={() => verify.mutate(orgId)}>
-            Verificar entidad
+            {t("plataforma.entidadFicha.verifyAction")}
           </Button>
           {verify.isError ? (
             <p role="alert" className="mt-1 text-sm text-error">
-              {verify.error.message}
+              {errorKindText(verify.error, VERIFY_ORGANIZATION_ERROR_KEYS, t, "errors.verifyOrganization.desconocido")}
             </p>
           ) : null}
         </div>
@@ -142,6 +245,7 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
 }
 
 function ParaguasTab({ orgId, role }: { orgId: number | string; role: string | null }) {
+  const t = useTranslations();
   const organization = useOrganization(orgId);
   const children = useOrganizations({ parent: orgId });
   const setParent = useSetOrganizationParent();
@@ -150,15 +254,17 @@ function ParaguasTab({ orgId, role }: { orgId: number | string; role: string | n
 
   return (
     <div className="flex flex-col gap-4">
-      <Card title="Entidad paraguas">
+      <Card title={t("plataforma.entidadFicha.umbrellaCardTitle")}>
         <p className="text-sm text-text-base">
-          Paraguas actual: {organization.data?.parent ?? "sin asignar"}
+          {t("plataforma.entidadFicha.currentParent", {
+            parent: organization.data?.parent ?? t("plataforma.entidadFicha.noParent"),
+          })}
         </p>
         {canSetParent ? (
           <div className="mt-3 flex flex-wrap items-end gap-3">
             <div>
               <label htmlFor="paraguas-new-parent" className="mb-1 block text-sm font-medium text-text-form">
-                Nuevo paraguas (id, vacío para quitar)
+                {t("plataforma.entidadFicha.newParentLabel")}
               </label>
               <input
                 id="paraguas-new-parent"
@@ -175,27 +281,30 @@ function ParaguasTab({ orgId, role }: { orgId: number | string; role: string | n
                 setParent.mutate({ orgId, parent: newParent ? Number(newParent) : null })
               }
             >
-              Guardar
+              {t("common.save")}
             </Button>
           </div>
         ) : (
-          <p className="mt-2 text-xs text-text-secondary">Solo superadmin cambia la entidad paraguas.</p>
+          <p className="mt-2 text-xs text-text-secondary">{t("errors.setOrganizationParent.sinPermiso")}</p>
         )}
         {setParent.isError ? (
           <p role="alert" className="mt-2 text-sm text-error">
-            {setParent.error.message}
+            {errorKindText(setParent.error, SET_PARENT_ERROR_KEYS, t, "errors.setOrganizationParent.desconocido")}
           </p>
         ) : null}
-        {setParent.isSuccess ? <p className="mt-2 text-sm text-success">Guardado.</p> : null}
+        {setParent.isSuccess ? <p className="mt-2 text-sm text-success">{t("plataforma.entidadFicha.saved")}</p> : null}
       </Card>
 
-      <Card title="Entidades hijas">
+      <Card title={t("plataforma.entidadFicha.childrenCardTitle")}>
         {children.isError ? (
-          <ErrorState title="No se pudieron cargar las hijas" description={children.error.message} />
+          <ErrorState
+            title={t("plataforma.entidadFicha.childrenLoadError")}
+            description={t("errors.organizations.desconocido")}
+          />
         ) : !children.data ? (
-          <p className="text-sm text-text-secondary">Cargando…</p>
+          <p className="text-sm text-text-secondary">{t("common.loading")}</p>
         ) : children.data.results.length === 0 ? (
-          <EmptyState title="Sin entidades hijas" />
+          <EmptyState title={t("plataforma.entidadFicha.childrenEmpty")} />
         ) : (
           <ul className="flex flex-col gap-1 text-sm">
             {children.data.results.map((child) => (
@@ -209,6 +318,7 @@ function ParaguasTab({ orgId, role }: { orgId: number | string; role: string | n
 }
 
 function AmbitoTab({ orgId, role }: { orgId: number | string; role: string | null }) {
+  const t = useTranslations();
   const scope = useOrgScope(orgId);
   const [kind, setKind] = useState<"places" | "comarca" | "province">("places");
   const [value, setValue] = useState("");
@@ -217,14 +327,14 @@ function AmbitoTab({ orgId, role }: { orgId: number | string; role: string | nul
   if (!canManage) {
     return (
       <EmptyState
-        title="Sin acceso"
-        description="Solo superadmin amplía el ámbito de una entidad desde plataforma (el titular lo hace desde su propia entidad)."
+        title={t("common.noAccess")}
+        description={t("plataforma.entidadFicha.scopeNoAccessDescription")}
       />
     );
   }
 
   return (
-    <Card title="Ámbito">
+    <Card title={t("plataforma.entidadFicha.scopeCardTitle")}>
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -241,7 +351,7 @@ function AmbitoTab({ orgId, role }: { orgId: number | string; role: string | nul
       >
         <div>
           <label htmlFor="plataforma-ambito-kind" className="mb-1 block text-sm font-medium text-text-form">
-            Tipo
+            {t("plataforma.entidades.typeHeader")}
           </label>
           <select
             id="plataforma-ambito-kind"
@@ -249,14 +359,16 @@ function AmbitoTab({ orgId, role }: { orgId: number | string; role: string | nul
             onChange={(event) => setKind(event.target.value as typeof kind)}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
-            <option value="places">Municipios (códigos INE)</option>
-            <option value="comarca">Comarca</option>
-            <option value="province">Provincia</option>
+            <option value="places">{t("plataforma.entidadFicha.scopeKindPlaces")}</option>
+            <option value="comarca">{t("metrics.groupBy.comarca")}</option>
+            <option value="province">{t("metrics.groupBy.province")}</option>
           </select>
         </div>
         <div>
           <label htmlFor="plataforma-ambito-value" className="mb-1 block text-sm font-medium text-text-form">
-            {kind === "places" ? "Códigos INE, separados por coma" : "Código"}
+            {kind === "places"
+              ? t("plataforma.entidadFicha.scopeValuePlaces")
+              : t("plataforma.entidadFicha.scopeValueCode")}
           </label>
           <input
             id="plataforma-ambito-value"
@@ -267,17 +379,17 @@ function AmbitoTab({ orgId, role }: { orgId: number | string; role: string | nul
           />
         </div>
         <Button type="submit" disabled={scope.isPending}>
-          Ampliar ámbito
+          {t("plataforma.entidadFicha.expandScopeAction")}
         </Button>
       </form>
       {scope.isError ? (
         <p role="alert" className="mt-2 text-sm text-error">
-          {scope.error.message}
+          {errorKindText(scope.error, ORG_SCOPE_ERROR_KEYS, t, "errors.orgScope.desconocido")}
         </p>
       ) : null}
       {scope.isSuccess ? (
         <p className="mt-2 text-sm text-success">
-          Añadidos {scope.data.added} municipios (ámbito total: {scope.data.total}).
+          {t("plataforma.entidadFicha.scopeSuccess", { added: scope.data.added, total: scope.data.total })}
         </p>
       ) : null}
     </Card>
@@ -293,6 +405,7 @@ function AmbitoTab({ orgId, role }: { orgId: number | string; role: string | nul
  * en el resto del panel.
  */
 function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role: string | null }) {
+  const t = useTranslations();
   const canManage = canManageTeamFromPlatform(platformRole);
   const members = useOrgMembers(orgId);
   const addMember = useAddOrgMember(orgId);
@@ -311,11 +424,11 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
     <div className="flex flex-col gap-4">
       <p className="text-xs text-text-secondary">
         {canManage
-          ? "El equipo y las referencias los gestiona normalmente el titular de la entidad; desde plataforma también puedes cambiarlos tú."
-          : "El equipo y las referencias los gestiona el titular de la entidad. Tu rol de plataforma no gestiona el equipo desde aquí: puedes consultarlo, no cambiarlo."}
+          ? t("plataforma.entidadFicha.teamManageableNotice")
+          : t("plataforma.entidadFicha.teamReadOnlyNotice")}
       </p>
 
-      <Card title="Equipo">
+      <Card title={t("plataforma.entidadFicha.teamCardTitle")}>
         {canManage ? (
           <form
             onSubmit={(event) => {
@@ -329,7 +442,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
           >
             <div>
               <label htmlFor="plataforma-equipo-user" className="mb-1 block text-sm font-medium text-text-form">
-                Id de usuario
+                {t("plataforma.roles.userIdLabel")}
               </label>
               <input
                 id="plataforma-equipo-user"
@@ -341,7 +454,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
             </div>
             <div>
               <label htmlFor="plataforma-equipo-role" className="mb-1 block text-sm font-medium text-text-form">
-                Rol
+                {t("plataforma.roles.roleLabel")}
               </label>
               <select
                 id="plataforma-equipo-role"
@@ -357,7 +470,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
               </select>
             </div>
             <Button type="submit" disabled={addMember.isPending}>
-              Añadir
+              {t("plataforma.entidadFicha.addAction")}
             </Button>
           </form>
         ) : null}
@@ -365,16 +478,19 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
             disparar la mutación, así que fuera era una rama muerta. */}
         {canManage && addMember.isError ? (
           <p role="alert" className="mb-2 text-sm text-error">
-            {addMember.error.message}
+            {errorKindText(addMember.error, ADD_ORG_MEMBER_ERROR_KEYS, t, "errors.addOrgMember.desconocido")}
           </p>
         ) : null}
 
         {members.isError ? (
-          <EmptyState title="Sin acceso" description={members.error.message} />
+          <EmptyState
+            title={t("common.noAccess")}
+            description={errorKindText(members.error, ORG_MEMBERS_QUERY_ERROR_KEYS, t, "errors.orgMembers.desconocido")}
+          />
         ) : !members.data ? (
-          <p className="text-sm text-text-secondary">Cargando…</p>
+          <p className="text-sm text-text-secondary">{t("common.loading")}</p>
         ) : members.data.length === 0 ? (
-          <EmptyState title="Sin equipo todavía" />
+          <EmptyState title={t("plataforma.entidadFicha.teamEmpty")} />
         ) : (
           <ul className="flex flex-col gap-2 text-sm">
             {members.data.map((member) => (
@@ -391,7 +507,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
                       setRemovingMember(member);
                     }}
                   >
-                    Quitar
+                    {t("plataforma.entidadFicha.removeAction")}
                   </Button>
                 ) : null}
               </li>
@@ -400,7 +516,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
         )}
       </Card>
 
-      <Card title="Referencias">
+      <Card title={t("plataforma.entidadFicha.referencesCardTitle")}>
         {canManage ? (
           <form
             onSubmit={(event) => {
@@ -420,7 +536,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
           >
             <div>
               <label htmlFor="plataforma-ref-user" className="mb-1 block text-sm font-medium text-text-form">
-                Persona (id)
+                {t("plataforma.entidadFicha.personIdLabel")}
               </label>
               <input
                 id="plataforma-ref-user"
@@ -432,7 +548,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
             </div>
             <div>
               <label htmlFor="plataforma-ref-referent" className="mb-1 block text-sm font-medium text-text-form">
-                Referente (id)
+                {t("plataforma.entidadFicha.referentIdLabel")}
               </label>
               <input
                 id="plataforma-ref-referent"
@@ -443,29 +559,35 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
               />
             </div>
             <Button type="submit" disabled={createReference.isPending}>
-              Asignar
+              {t("plataforma.entidadFicha.assignAction")}
             </Button>
           </form>
         ) : null}
         {/* Igual que arriba: rama muerta fuera de `canManage`. */}
         {canManage && createReference.isError ? (
           <p role="alert" className="mb-2 text-sm text-error">
-            {createReference.error.message}
+            {errorKindText(createReference.error, CREATE_ORG_REFERENCE_ERROR_KEYS, t, "errors.createOrgReference.desconocido")}
           </p>
         ) : null}
 
         {references.isError ? (
-          <EmptyState title="Sin acceso" description={references.error.message} />
+          <EmptyState
+            title={t("common.noAccess")}
+            description={t("entidad.configuracion.referencesLoadErrorDescription")}
+          />
         ) : !references.data ? (
-          <p className="text-sm text-text-secondary">Cargando…</p>
+          <p className="text-sm text-text-secondary">{t("common.loading")}</p>
         ) : references.data.length === 0 ? (
-          <EmptyState title="Sin referencias todavía" />
+          <EmptyState title={t("plataforma.entidadFicha.referencesEmpty")} />
         ) : (
           <ul className="flex flex-col gap-2 text-sm">
             {references.data.map((reference) => (
               <li key={reference.id} className="flex items-center justify-between gap-2">
                 <span>
-                  {reference.public_name} — referente #{reference.referent}
+                  {t("plataforma.entidadFicha.referenceRow", {
+                    name: reference.public_name,
+                    referentId: reference.referent,
+                  })}
                 </span>
                 {canManage ? (
                   <Button
@@ -476,7 +598,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
                       setRemovingReference(reference);
                     }}
                   >
-                    Quitar
+                    {t("plataforma.entidadFicha.removeAction")}
                   </Button>
                 ) : null}
               </li>
@@ -491,22 +613,24 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
           si la baja sale bien. */}
       <ConfirmDialog
         open={removingMember !== null}
-        title="Quitar del equipo"
+        title={t("plataforma.entidadFicha.removeMemberConfirmTitle")}
         description={
           <div className="flex flex-col gap-2">
             <p>
               {removingMember
-                ? `¿Quitar a «${removingMember.public_name}» del equipo de la entidad? Dejará de tener rol en el panel.`
+                ? t("plataforma.entidadFicha.removeMemberConfirmDescription", {
+                    name: removingMember.public_name,
+                  })
                 : ""}
             </p>
             {removeMember.isError ? (
               <p role="alert" className="text-error">
-                {removeMember.error.message}
+                {errorKindText(removeMember.error, REMOVE_ORG_MEMBER_ERROR_KEYS, t, "errors.removeOrgMember.desconocido")}
               </p>
             ) : null}
           </div>
         }
-        confirmLabel="Quitar"
+        confirmLabel={t("plataforma.entidadFicha.removeAction")}
         pending={removeMember.isPending}
         onConfirm={() => {
           if (!removingMember) return;
@@ -520,22 +644,24 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
 
       <ConfirmDialog
         open={removingReference !== null}
-        title="Quitar la referencia"
+        title={t("plataforma.entidadFicha.removeReferenceConfirmTitle")}
         description={
           <div className="flex flex-col gap-2">
             <p>
               {removingReference
-                ? `¿Quitar el referente asignado a «${removingReference.public_name}»?`
+                ? t("plataforma.entidadFicha.removeReferenceConfirmDescription", {
+                    name: removingReference.public_name,
+                  })
                 : ""}
             </p>
             {removeReference.isError ? (
               <p role="alert" className="text-error">
-                {removeReference.error.message}
+                {errorKindText(removeReference.error, REMOVE_ORG_REFERENCE_ERROR_KEYS, t, "errors.removeOrgReference.desconocido")}
               </p>
             ) : null}
           </div>
         }
-        confirmLabel="Quitar"
+        confirmLabel={t("plataforma.entidadFicha.removeAction")}
         pending={removeReference.isPending}
         onConfirm={() => {
           if (!removingReference) return;
@@ -553,6 +679,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
 }
 
 function MetricasTab({ orgId }: { orgId: number | string }) {
+  const t = useTranslations();
   const period = presetPeriod("mes");
   const metrics = useMetrics("entidad", orgId, period);
 
@@ -560,32 +687,37 @@ function MetricasTab({ orgId }: { orgId: number | string }) {
     if (metrics.error.kind === "sin_acceso") {
       return (
         <EmptyState
-          title="Sin acceso"
-          description="Tu rol de plataforma no da acceso a las métricas de esta entidad. Usa el menú «Métricas» de plataforma, agrupado por entidad, para ver sus cifras agregadas."
+          title={t("common.noAccess")}
+          description={t("plataforma.entidadFicha.metricsNoAccessDescription")}
         />
       );
     }
-    return <ErrorState title="No se pudieron cargar las métricas" description={metrics.error.message} />;
+    return (
+      <ErrorState
+        title={t("metrics.dashboard.loadError")}
+        description={errorKindText(metrics.error, METRICS_ERROR_KEYS, t, "errors.metrics.desconocido")}
+      />
+    );
   }
   if (!metrics.data) {
-    return <p className="text-sm text-text-secondary">Cargando métricas…</p>;
+    return <p className="text-sm text-text-secondary">{t("metrics.dashboard.loading")}</p>;
   }
 
   return (
-    <Card title="Métricas del mes en curso">
+    <Card title={t("plataforma.entidadFicha.metricsCardTitle")}>
       <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <div>
-          <dt className="text-sm text-text-secondary">Personas activas</dt>
+          <dt className="text-sm text-text-secondary">{t("metrics.stats.activePeople")}</dt>
           <dd className="text-2xl font-semibold text-text-base">
             {formatCount(metrics.data.people.active, metrics.data.people.suppressed)}
           </dd>
         </div>
         <div>
-          <dt className="text-sm text-text-secondary">Actividades celebradas</dt>
+          <dt className="text-sm text-text-secondary">{t("metrics.stats.eventsHeld")}</dt>
           <dd className="text-2xl font-semibold text-text-base">{metrics.data.events.held}</dd>
         </div>
         <div>
-          <dt className="text-sm text-text-secondary">Asistencia</dt>
+          <dt className="text-sm text-text-secondary">{t("metrics.stats.attendanceRate")}</dt>
           <dd className="text-2xl font-semibold text-text-base">
             {formatPct(metrics.data.attendance.rate, metrics.data.attendance.suppressed)}
           </dd>
@@ -596,32 +728,46 @@ function MetricasTab({ orgId }: { orgId: number | string }) {
 }
 
 function ComunidadesTab({ orgId }: { orgId: number | string }) {
+  const t = useTranslations();
   const communities = useEntityCommunities(orgId);
   const period = presetPeriod("mes");
   const events = useEntityEvents(orgId, period);
 
   return (
     <div className="flex flex-col gap-4">
-      <Card title="Comunidades">
+      <Card title={t("menu.entidad.comunidades")}>
         {communities.isError ? (
-          <ErrorState title="No se pudieron cargar las comunidades" description={communities.error.message} />
+          <ErrorState
+            title={t("plataforma.entidadFicha.communitiesLoadError")}
+            description={errorKindText(communities.error, ENTITY_COMMUNITIES_ERROR_KEYS, t, "errors.entityCommunities.desconocido")}
+          />
         ) : !communities.data ? (
-          <p className="text-sm text-text-secondary">Cargando…</p>
+          <p className="text-sm text-text-secondary">{t("common.loading")}</p>
         ) : (
-          <p className="text-sm text-text-base">{communities.data.length} comunidades visibles.</p>
+          <p className="text-sm text-text-base">
+            {t("plataforma.entidadFicha.communitiesVisibleCount", { count: communities.data.length })}
+          </p>
         )}
       </Card>
-      <Card title="Actividades del mes en curso">
+      <Card title={t("plataforma.entidadFicha.activitiesCardTitle")}>
         {events.isError ? (
           events.error.kind === "sin_acceso" ? (
-            <EmptyState title="Sin acceso" description="La plataforma no tiene rol en esta entidad." />
+            <EmptyState
+              title={t("common.noAccess")}
+              description={t("plataforma.entidadFicha.activitiesNoAccessDescription")}
+            />
           ) : (
-            <ErrorState title="No se pudieron cargar las actividades" description={events.error.message} />
+            <ErrorState
+              title={t("plataforma.entidadFicha.activitiesLoadError")}
+              description={errorKindText(events.error, ENTITY_EVENTS_ERROR_KEYS, t, "errors.entityEvents.desconocido")}
+            />
           )
         ) : !events.data ? (
-          <p className="text-sm text-text-secondary">Cargando…</p>
+          <p className="text-sm text-text-secondary">{t("common.loading")}</p>
         ) : (
-          <p className="text-sm text-text-base">{events.data.length} actividades este mes.</p>
+          <p className="text-sm text-text-base">
+            {t("plataforma.entidadFicha.activitiesThisMonthCount", { count: events.data.length })}
+          </p>
         )}
       </Card>
     </div>
@@ -643,6 +789,7 @@ function formatContractDate(iso: string): string {
  * el más reciente por `starts_on`.
  */
 function ContratoTab({ orgId }: { orgId: number | string }) {
+  const t = useTranslations();
   const contracts = useContracts({ organization: orgId });
   const contract = contracts.data
     ? [...contracts.data].sort((a, b) => {
@@ -660,36 +807,46 @@ function ContratoTab({ orgId }: { orgId: number | string }) {
     if (contracts.error.kind === "sin_acceso") {
       return (
         <EmptyState
-          title="Sin acceso"
-          description="Tu rol de plataforma no da acceso a la facturación de las entidades."
+          title={t("common.noAccess")}
+          description={t("plataforma.entidadFicha.billingNoAccessDescription")}
         />
       );
     }
-    return <ErrorState title="No se pudo cargar el contrato" description={contracts.error.message} />;
+    return (
+      <ErrorState
+        title={t("plataforma.entidadFicha.contractLoadError")}
+        description={errorKindText(contracts.error, CONTRACTS_ERROR_KEYS, t, "errors.contractsQuery.desconocido")}
+      />
+    );
   }
   if (!contracts.data) {
-    return <p className="text-sm text-text-secondary">Cargando…</p>;
+    return <p className="text-sm text-text-secondary">{t("common.loading")}</p>;
   }
   if (!contract) {
-    return <EmptyState title="Sin contrato" description="Esta entidad no tiene ningún contrato registrado." />;
+    return (
+      <EmptyState
+        title={t("plataforma.entidadFicha.noContractTitle")}
+        description={t("plataforma.entidadFicha.noContractDescription")}
+      />
+    );
   }
 
   return (
-    <Card title="Contrato">
+    <Card title={t("plataforma.entidadFicha.tabContrato")}>
       <dl className="grid grid-cols-2 gap-2 text-sm">
-        <dt className="text-text-secondary">Tramo</dt>
+        <dt className="text-text-secondary">{t("plataforma.contratos.tierLabel")}</dt>
         <dd className="text-text-base">{contract.tier.name}</dd>
-        <dt className="text-text-secondary">Vigencia</dt>
+        <dt className="text-text-secondary">{t("plataforma.contratos.validityHeader")}</dt>
         <dd className="text-text-base">
           {formatContractDate(contract.starts_on)} – {formatContractDate(contract.ends_on)}
         </dd>
-        <dt className="text-text-secondary">Estado</dt>
+        <dt className="text-text-secondary">{t("plataforma.reportes.statusLabel")}</dt>
         <dd className="text-text-base">
           <Badge tone={contract.status === "active" ? "success" : contract.status === "ended" ? "info" : "neutral"}>
-            {CONTRACT_STATUS_LABELS[contract.status] ?? contract.status}
+            {t(CONTRACT_STATUS_LABEL_KEYS[contract.status] ?? "plataforma.contratos.statusDraft")}
           </Badge>
         </dd>
-        <dt className="text-text-secondary">Última factura</dt>
+        <dt className="text-text-secondary">{t("plataforma.entidadFicha.lastInvoiceLabel")}</dt>
         <dd className="text-text-base">
           {lastInvoice ? (
             <>
@@ -699,11 +856,11 @@ function ContratoTab({ orgId }: { orgId: number | string }) {
                   lastInvoice.status === "paid" ? "success" : lastInvoice.status === "overdue" ? "error" : "neutral"
                 }
               >
-                {INVOICE_STATUS_LABELS[(lastInvoice.status as InvoiceStatus) ?? "pending"] ?? lastInvoice.status}
+                {t(INVOICE_STATUS_LABEL_KEYS[(lastInvoice.status as InvoiceStatus) ?? "pending"])}
               </Badge>
             </>
           ) : (
-            "Sin facturas"
+            t("plataforma.entidadFicha.noInvoices")
           )}
         </dd>
       </dl>
@@ -712,12 +869,13 @@ function ContratoTab({ orgId }: { orgId: number | string }) {
 }
 
 export function EntidadDetail({ orgId, role }: EntidadDetailProps) {
+  const t = useTranslations();
   const [section, setSection] = useState<Section>("datos");
 
   return (
     <div className="flex flex-col gap-4">
       <fieldset className="flex flex-wrap items-center gap-2">
-        <legend className="sr-only">Secciones de la entidad</legend>
+        <legend className="sr-only">{t("plataforma.entidadFicha.sectionsLegend")}</legend>
         {SECTIONS.map((value) => (
           <Button
             key={value}
@@ -726,7 +884,7 @@ export function EntidadDetail({ orgId, role }: EntidadDetailProps) {
             aria-pressed={section === value}
             onClick={() => setSection(value)}
           >
-            {SECTION_LABELS[value]}
+            {t(SECTION_LABEL_KEYS[value])}
           </Button>
         ))}
       </fieldset>
