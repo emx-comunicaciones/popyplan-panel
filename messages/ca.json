@@ -1036,6 +1036,21 @@
       "invalido": "Indica municipis, comarca o província.",
       "sinPermiso": "Només el titular pot ampliar l'àmbit de l'entitat.",
       "desconocido": "No s'ha pogut ampliar l'àmbit de l'entitat."
+    },
+    "export": {
+      "pdfUnavailable": "L'informe en PDF no està disponible ara mateix. Prova amb CSV o torna-ho a provar més tard.",
+      "forbidden": "No tens permís per exportar informes.",
+      "desconocido": "No s'ha pogut generar l'informe."
+    },
+    "metrics": {
+      "periodoInvalido": "El període triat no és vàlid.",
+      "sinAcceso": "No tens accés a aquestes mètriques.",
+      "desconocido": "No s'han pogut carregar les mètriques."
+    },
+    "compare": {
+      "periodoInvalido": "El període o el desglossament triats no són vàlids.",
+      "sinAcceso": "No tens accés a aquesta comparativa.",
+      "desconocido": "No s'ha pogut carregar la comparativa."
     }
   },
   "reports": {
@@ -1375,6 +1390,120 @@
         ],
         "audience": "Superadmin i suport; suport només consulta."
       }
+    }
+  },
+  "metrics": {
+    "period": {
+      "legend": "Període",
+      "thisMonth": "Aquest mes",
+      "quarter": "Trimestre",
+      "year": "Any",
+      "multiYear": "Plurianual",
+      "custom": "Personalitzat",
+      "from": "Des de",
+      "to": "Fins a",
+      "errors": {
+        "invalidDate": "Introdueix dates vàlides.",
+        "reversedRange": "La data d'inici ha de ser anterior o igual a la de fi.",
+        "tooLong": "El període no pot abastar més de 1461 dies entre les dues dates (uns 4 anys)."
+      }
+    },
+    "table": {
+      "eventsHeader": "Esdeveniments",
+      "peopleHeader": "Persones"
+    },
+    "groupBy": {
+      "comarca": "Comarca",
+      "organization": "Entitat",
+      "place": "Municipi",
+      "province": "Província",
+      "ineCode": "Codi INE"
+    },
+    "stats": {
+      "activePeople": "Persones actives",
+      "newPeople": "Altes",
+      "repeatingPeople": "Repetició",
+      "eventsHeld": "Activitats celebrades",
+      "eventsCancelled": "Activitats cancel·lades",
+      "attendanceRate": "Assistència",
+      "noShows": "No-shows"
+    },
+    "dashboard": {
+      "loadError": "No s'han pogut carregar les mètriques",
+      "loadingWithName": "Carregant mètriques de {orgName}…",
+      "loading": "Carregant mètriques…",
+      "byMunicipioHeading": "Per municipi",
+      "byMunicipioError": "No s'ha pogut carregar el desglossament per municipi",
+      "byMunicipioCaption": "Mètriques per municipi",
+      "byMunicipioEmpty": "Sense municipis amb dades en aquest període",
+      "byEntidadHeading": "Per entitat",
+      "byEntidadError": "No s'ha pogut carregar el desglossament per entitat",
+      "byEntidadCaption": "Mètriques per entitat",
+      "byEntidadEmpty": "Sense entitats amb dades en aquest període",
+      "genericEmpty": "Sense dades per a aquest període",
+      "monthlySeriesHeading": "Sèrie mensual",
+      "yearlySeriesHeading": "Sèrie anual",
+      "seriesError": "No s'ha pogut carregar la sèrie",
+      "monthlySeriesEmpty": "Sense prou dades per a la sèrie mensual",
+      "yearlySeriesEmpty": "Sense prou dades per a la sèrie anual",
+      "comparativaHeading": "Comparativa",
+      "comparativaGroupByLabel": "Desglossament de la comparativa",
+      "comparativaError": "No s'ha pogut carregar la comparativa",
+      "comparativaEmpty": "Sense dades per a aquesta comparativa",
+      "groupedError": "No s'ha pogut carregar el desglossament"
+    },
+    "export": {
+      "title": "Exportar informe",
+      "noNamesNotice": "Els informes no contenen noms de persones.",
+      "groupByLabel": "Desglossament de l'informe",
+      "groupByRegular": "Desglossament habitual",
+      "groupByYear": "Per any (memòria plurianual)",
+      "csv": "Exportar CSV",
+      "pdf": "Exportar PDF",
+      "exporting": "Exportant…"
+    },
+    "comparativa": {
+      "notAvailable": "No disponible pel llindar d'agregació",
+      "scope": "Àmbit",
+      "eventsCurrent": "Activitats (actual)",
+      "eventsPrevious": "Activitats (anterior)",
+      "eventsDelta": "Activitats (Δ)",
+      "peopleCurrent": "Persones (actual)",
+      "peoplePrevious": "Persones (anterior)",
+      "peopleDelta": "Persones (Δ)",
+      "attendanceCurrent": "% assistència (actual)",
+      "attendancePrevious": "% assistència (anterior)",
+      "attendanceDelta": "% assistència (Δ)",
+      "captionPrefix": "Comparativa per {groupBy}",
+      "previousPeriodPrefix": "en comparació amb"
+    },
+    "series": {
+      "monthlyAriaLabel": "Sèrie mensual d'esdeveniments i persones",
+      "yearlyAriaLabel": "Sèrie anual d'esdeveniments i persones"
+    }
+  },
+  "plataforma": {
+    "metricas": {
+      "groupByLegend": "Agrupar per",
+      "groupByTerritorio": "Territori",
+      "noAccessDescription": "El teu rol no té accés a Mètriques.",
+      "heading": "Mètriques"
+    },
+    "contratos": {
+      "tierErrors": {
+        "minNegative": "La població mínima no pot ser negativa.",
+        "maxInvalid": "La població màxima no és vàlida.",
+        "maxBelowMin": "La població màxima no pot ser inferior a la mínima."
+      }
+    }
+  },
+  "paraguas": {
+    "inicio": {
+      "heading": "Inici"
+    },
+    "informes": {
+      "noAccessDescription": "El teu rol no té accés a Informes.",
+      "heading": "Informes"
     }
   }
 }

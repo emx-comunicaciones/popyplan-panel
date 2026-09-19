@@ -281,7 +281,7 @@ describe("PlataformaMetricasPage", () => {
           return {
             data: undefined,
             isError: true,
-            error: new MetricsError("desconocido", "Error de red."),
+            error: new MetricsError("desconocido", "Error de red.", "Error de red."),
           };
         }
         return { data: buildMetricsResponse(), isError: false, error: null };

@@ -8,16 +8,43 @@
  * suprimida es «no disponible», no «menos de 5», así que se pinta «—»,
  * nunca el texto de `formatCount`) y la leyenda legible del periodo
  * anterior.
+ *
+ * **Idioma del formateador** (tarea 5 de i18n, mismo patrón que
+ * `lib/metrics/format.ts`): los formateadores de número y fecha salen de
+ * `lib/i18n/locale.ts`, cacheados por idioma. `previousPeriodLabel` ya no
+ * construye el prefijo «frente a» él mismo (es texto de UI: solo un
+ * componente con `t()` puede traducirlo) — recibe ese prefijo ya
+ * traducido como segundo argumento y solo compone el rango de fechas.
  */
+import { activeLanguage, localeFor } from "@/lib/i18n/locale";
 
-const DELTA_INTEGER_FORMATTER = new Intl.NumberFormat("es-ES", {
-  maximumFractionDigits: 0,
-  useGrouping: "always",
-});
-const DELTA_PERCENT_FORMATTER = new Intl.NumberFormat("es-ES", {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-});
+const deltaIntegerFormatters = new Map<string, Intl.NumberFormat>();
+function deltaIntegerFormatter(): Intl.NumberFormat {
+  const locale = localeFor(activeLanguage());
+  let formatter = deltaIntegerFormatters.get(locale);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(locale, {
+      maximumFractionDigits: 0,
+      useGrouping: "always",
+    });
+    deltaIntegerFormatters.set(locale, formatter);
+  }
+  return formatter;
+}
+
+const deltaPercentFormatters = new Map<string, Intl.NumberFormat>();
+function deltaPercentFormatter(): Intl.NumberFormat {
+  const locale = localeFor(activeLanguage());
+  let formatter = deltaPercentFormatters.get(locale);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(locale, {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+    deltaPercentFormatters.set(locale, formatter);
+  }
+  return formatter;
+}
 
 /** Cadena que pinta una celda de `delta` cuando `suppressed` (nunca «<5», ver arriba). */
 export const DELTA_NOT_AVAILABLE = "—";
@@ -32,7 +59,7 @@ export function formatDeltaCount(value: number | null, suppressed: boolean): str
   if (suppressed || value === null) return DELTA_NOT_AVAILABLE;
   if (value === 0) return "0";
   const sign = value > 0 ? "+" : "-";
-  return `${sign}${DELTA_INTEGER_FORMATTER.format(Math.abs(value))}`;
+  return `${sign}${deltaIntegerFormatter().format(Math.abs(value))}`;
 }
 
 /**
@@ -48,18 +75,37 @@ export function formatDeltaCount(value: number | null, suppressed: boolean): str
 export function formatDeltaPct(value: number | null, suppressed: boolean): string {
   if (suppressed || value === null) return DELTA_NOT_AVAILABLE;
   const points = Math.round(value * 100 * 10) / 10;
-  if (points === 0) return `${DELTA_PERCENT_FORMATTER.format(0)} %`;
+  if (points === 0) return `${deltaPercentFormatter().format(0)} %`;
   const sign = points > 0 ? "+" : "-";
-  return `${sign}${DELTA_PERCENT_FORMATTER.format(Math.abs(points))} %`;
+  return `${sign}${deltaPercentFormatter().format(Math.abs(points))} %`;
 }
 
-const SHORT_DATE = new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "short", timeZone: "UTC" });
-const SHORT_DATE_WITH_YEAR = new Intl.DateTimeFormat("es-ES", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-  timeZone: "UTC",
-});
+const shortDateFormatters = new Map<string, Intl.DateTimeFormat>();
+function shortDateFormatter(): Intl.DateTimeFormat {
+  const locale = localeFor(activeLanguage());
+  let formatter = shortDateFormatters.get(locale);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "UTC" });
+    shortDateFormatters.set(locale, formatter);
+  }
+  return formatter;
+}
+
+const shortDateWithYearFormatters = new Map<string, Intl.DateTimeFormat>();
+function shortDateWithYearFormatter(): Intl.DateTimeFormat {
+  const locale = localeFor(activeLanguage());
+  let formatter = shortDateWithYearFormatters.get(locale);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale, {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      timeZone: "UTC",
+    });
+    shortDateWithYearFormatters.set(locale, formatter);
+  }
+  return formatter;
+}
 
 /**
  * «frente a 1 ene – 31 mar 2026»: leyenda del periodo anterior con el que
@@ -69,24 +115,39 @@ const SHORT_DATE_WITH_YEAR = new Intl.DateTimeFormat("es-ES", {
  * «Año» y «Plurianual» las dos fechas caen en años distintos, y omitir
  * el de la inicial hacía leer un periodo de un año («frente a 17 sept –
  * 17 sept 2025») como si fuera de un día.
+ *
+ * **`prefix`** (tarea 5 de i18n): esta función es `.ts` plano — no puede
+ * llamar a `t()` — así que quien llama (`ComparativaTable.tsx`) le pasa
+ * el equivalente ya traducido de «frente a»
+ * (`t("metrics.comparativa.previousPeriodPrefix")`); la función solo
+ * compone `"<prefix> <rango>"`.
  */
-export function previousPeriodLabel(previous: { since: string; until: string }): string {
+export function previousPeriodLabel(
+  previous: { since: string; until: string },
+  prefix: string,
+): string {
   const sinceDate = new Date(`${previous.since}T00:00:00Z`);
   const untilDate = new Date(`${previous.until}T00:00:00Z`);
   const sameYear = sinceDate.getUTCFullYear() === untilDate.getUTCFullYear();
-  const since = (sameYear ? SHORT_DATE : SHORT_DATE_WITH_YEAR).format(sinceDate);
-  const until = SHORT_DATE_WITH_YEAR.format(untilDate);
-  return `frente a ${since} – ${until}`;
+  const since = (sameYear ? shortDateFormatter() : shortDateWithYearFormatter()).format(sinceDate);
+  const until = shortDateWithYearFormatter().format(untilDate);
+  return `${prefix} ${since} – ${until}`;
 }
 
-const GROUP_BY_LABELS: Record<string, string> = {
-  comarca: "comarca",
-  organization: "entidad",
-  place: "municipio",
-  province: "provincia",
+const GROUP_BY_KEYS: Record<string, string> = {
+  comarca: "metrics.groupBy.comarca",
+  organization: "metrics.groupBy.organization",
+  place: "metrics.groupBy.place",
+  province: "metrics.groupBy.province",
 };
 
-/** Nombre en español del desglose (`comarca`/`organization`/`place`/`province`), para el `<caption>` de la tabla. */
-export function groupByLabel(groupBy: string): string {
-  return GROUP_BY_LABELS[groupBy] ?? groupBy;
+/**
+ * Clave de traducción del nombre del desglose (`comarca`/`organization`/
+ * `place`/`province`), para el `<caption>` de la tabla — `null` para un
+ * valor que el backend añadiera y este módulo no conozca todavía (quien
+ * llama cae entonces al valor crudo, mismo patrón defensivo que
+ * `relationshipLabelKey`/`reasonLabelKey`).
+ */
+export function groupByLabelKey(groupBy: string): string | null {
+  return GROUP_BY_KEYS[groupBy] ?? null;
 }

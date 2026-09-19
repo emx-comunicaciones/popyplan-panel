@@ -27,6 +27,15 @@ const ENTITY_EVENTS_ERROR_KEYS = {
   desconocido: "errors.entityEvents.desconocido",
 } as const;
 
+// `useEntityHome` reutiliza `useMetrics` (tarea W3) tal cual — mismo mapa
+// de claves que `{Paraguas,Plataforma}MetricsDashboard.tsx` (tarea 5 de
+// i18n), sin duplicar el catálogo.
+const METRICS_ERROR_KEYS = {
+  periodo_invalido: "errors.metrics.periodoInvalido",
+  sin_acceso: "errors.metrics.sinAcceso",
+  desconocido: "errors.metrics.desconocido",
+} as const;
+
 /**
  * Inicio de la entidad (tarea W3): actividades de hoy con
  * inscritos/plazas/responsable, avisos de ayuda y reportes pendientes
@@ -137,7 +146,10 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
           {t("monthHeading")}
         </h2>
         {metrics.isError ? (
-          <ErrorState title={t("metricsErrorTitle")} description={metrics.error.message} />
+          <ErrorState
+            title={t("metricsErrorTitle")}
+            description={errorKindText(metrics.error, METRICS_ERROR_KEYS, tErrors, "errors.metrics.desconocido")}
+          />
         ) : !metrics.data ? (
           <p className="text-sm text-text-secondary">{t("loadingMetrics")}</p>
         ) : (

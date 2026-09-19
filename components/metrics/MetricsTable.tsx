@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 import { Table, type TableColumn } from "@/components/ui/Table";
 import type { ByPlaceRow } from "@/lib/api/types";
 import { formatCount } from "@/lib/metrics/format";
@@ -23,13 +25,14 @@ export interface MetricsTableProps {
  * suprime.
  */
 export function MetricsTable({ caption, rows, nameHeader, codeHeader }: MetricsTableProps) {
+  const t = useTranslations("metrics.table");
   const columns: TableColumn<ByPlaceRow>[] = [
     { key: "label", header: nameHeader, render: (row) => row.label },
     ...(codeHeader
       ? [{ key: "key", header: codeHeader, render: (row: ByPlaceRow) => row.key }]
       : []),
-    { key: "events", header: "Eventos", render: (row) => formatCount(row.events, false) },
-    { key: "people", header: "Personas", render: (row) => formatCount(row.people, row.suppressed) },
+    { key: "events", header: t("eventsHeader"), render: (row) => formatCount(row.events, false) },
+    { key: "people", header: t("peopleHeader"), render: (row) => formatCount(row.people, row.suppressed) },
   ];
 
   return <Table caption={caption} columns={columns} rows={rows} getRowKey={(row) => row.key} />;

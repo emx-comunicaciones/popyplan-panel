@@ -30,11 +30,14 @@ export type CompareErrorKind = "periodo_invalido" | "sin_acceso" | "desconocido"
 
 export class CompareError extends Error {
   readonly kind: CompareErrorKind;
+  /** Ver el docstring de `MetricsError.detail` (mismo patrón, mismo motivo). */
+  readonly detail?: string;
 
-  constructor(kind: CompareErrorKind, message: string) {
+  constructor(kind: CompareErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "CompareError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 

@@ -1,13 +1,18 @@
+import { useTranslations } from "next-intl";
+
 import { Table, type TableColumn } from "@/components/ui/Table";
 import type { CompareResponse, CompareRow } from "@/lib/api/types";
-import { formatDeltaCount, formatDeltaPct, groupByLabel, previousPeriodLabel } from "@/lib/metrics/compare";
+import {
+  formatDeltaCount,
+  formatDeltaPct,
+  groupByLabelKey,
+  previousPeriodLabel,
+} from "@/lib/metrics/compare";
 import { formatCount, formatPct } from "@/lib/metrics/format";
 
 export interface ComparativaTableProps {
   data: CompareResponse;
 }
-
-const NOT_AVAILABLE_LABEL = "No disponible por umbral de agregación";
 
 /**
  * Celda de `delta` (`docs/PANEL.md` §11.3): «—» accesible cuando la
@@ -25,14 +30,16 @@ function DeltaCell({
   value,
   suppressed,
   format,
+  notAvailableLabel,
 }: {
   value: number | null;
   suppressed: boolean;
   format: (value: number | null, suppressed: boolean) => string;
+  notAvailableLabel: string;
 }) {
   if (suppressed) {
     return (
-      <span role="img" aria-label={NOT_AVAILABLE_LABEL}>
+      <span role="img" aria-label={notAvailableLabel}>
         —
       </span>
     );
@@ -49,58 +56,74 @@ function DeltaCell({
  * `DeltaCell` arriba.
  */
 export function ComparativaTable({ data }: ComparativaTableProps) {
+  const t = useTranslations();
+  const notAvailableLabel = t("metrics.comparativa.notAvailable");
+  // `metrics.groupBy.*` guarda la forma capitalizada (encabezados de
+  // columna, opciones de `<select>`); dentro de la frase «Comparativa
+  // por…» va en minúscula, igual que el texto original
+  // (`GROUP_BY_LABELS` tenía sus cuatro valores ya en minúscula) — se
+  // pasa por `toLowerCase()` en vez de duplicar la clave en el catálogo.
+  const groupByKey = groupByLabelKey(data.group_by);
+  const groupByName = groupByKey ? t(groupByKey).toLowerCase() : data.group_by;
+
   const columns: TableColumn<CompareRow>[] = [
-    { key: "label", header: "Ámbito", render: (row) => row.label },
+    { key: "label", header: t("metrics.comparativa.scope"), render: (row) => row.label },
     {
       key: "events-current",
-      header: "Actividades (actual)",
+      header: t("metrics.comparativa.eventsCurrent"),
       render: (row) => formatCount(row.current.events, false),
     },
     {
       key: "events-previous",
-      header: "Actividades (anterior)",
+      header: t("metrics.comparativa.eventsPrevious"),
       render: (row) => formatCount(row.previous.events, false),
     },
     {
       key: "events-delta",
-      header: "Actividades (Δ)",
+      header: t("metrics.comparativa.eventsDelta"),
       render: (row) => formatDeltaCount(row.delta.events, false),
     },
     {
       key: "people-current",
-      header: "Personas (actual)",
+      header: t("metrics.comparativa.peopleCurrent"),
       render: (row) => formatCount(row.current.people, row.current.suppressed),
     },
     {
       key: "people-previous",
-      header: "Personas (anterior)",
+      header: t("metrics.comparativa.peoplePrevious"),
       render: (row) => formatCount(row.previous.people, row.previous.suppressed),
     },
     {
       key: "people-delta",
-      header: "Personas (Δ)",
+      header: t("metrics.comparativa.peopleDelta"),
       render: (row) => (
-        <DeltaCell value={row.delta.people} suppressed={row.delta.suppressed} format={formatDeltaCount} />
+        <DeltaCell
+          value={row.delta.people}
+          suppressed={row.delta.suppressed}
+          format={formatDeltaCount}
+          notAvailableLabel={notAvailableLabel}
+        />
       ),
     },
     {
       key: "attendance-current",
-      header: "% asistencia (actual)",
+      header: t("metrics.comparativa.attendanceCurrent"),
       render: (row) => formatPct(row.current.attendance_rate, row.current.suppressed),
     },
     {
       key: "attendance-previous",
-      header: "% asistencia (anterior)",
+      header: t("metrics.comparativa.attendancePrevious"),
       render: (row) => formatPct(row.previous.attendance_rate, row.previous.suppressed),
     },
     {
       key: "attendance-delta",
-      header: "% asistencia (Δ)",
+      header: t("metrics.comparativa.attendanceDelta"),
       render: (row) => (
         <DeltaCell
           value={row.delta.attendance_rate}
           suppressed={row.delta.suppressed}
           format={formatDeltaPct}
+          notAvailableLabel={notAvailableLabel}
         />
       ),
     },
@@ -108,9 +131,11 @@ export function ComparativaTable({ data }: ComparativaTableProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm text-text-secondary">{previousPeriodLabel(data.previous)}</p>
+      <p className="text-sm text-text-secondary">
+        {previousPeriodLabel(data.previous, t("metrics.comparativa.previousPeriodPrefix"))}
+      </p>
       <Table
-        caption={`Comparativa por ${groupByLabel(data.group_by)}`}
+        caption={t("metrics.comparativa.captionPrefix", { groupBy: groupByName })}
         columns={columns}
         rows={data.rows}
         getRowKey={(row) => row.key}

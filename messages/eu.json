@@ -1036,6 +1036,21 @@
       "invalido": "Adierazi udalerriak, eskualdea edo probintzia.",
       "sinPermiso": "Titularrak bakarrik zabal dezake erakundearen eremua.",
       "desconocido": "Ezin izan da erakundearen eremua zabaldu."
+    },
+    "export": {
+      "pdfUnavailable": "PDF txostena ez dago erabilgarri une honetan. Probatu CSVrekin edo saiatu berriro geroago.",
+      "forbidden": "Ez duzu txostenak esportatzeko baimenik.",
+      "desconocido": "Ezin izan da txostena sortu."
+    },
+    "metrics": {
+      "periodoInvalido": "Aukeratutako aldia ez da baliozkoa.",
+      "sinAcceso": "Ez duzu metrika hauetarako sarbiderik.",
+      "desconocido": "Ezin izan dira metrikak kargatu."
+    },
+    "compare": {
+      "periodoInvalido": "Aukeratutako aldia edo banaketa ez da baliozkoa.",
+      "sinAcceso": "Ez duzu konparaketa honetarako sarbiderik.",
+      "desconocido": "Ezin izan da konparaketa kargatu."
     }
   },
   "reports": {
@@ -1375,6 +1390,120 @@
         ],
         "audience": "Superadmin eta laguntza; laguntzak kontsulta bakarrik egin dezake."
       }
+    }
+  },
+  "metrics": {
+    "period": {
+      "legend": "Aldia",
+      "thisMonth": "Hilabete hau",
+      "quarter": "Hiruhilekoa",
+      "year": "Urtea",
+      "multiYear": "Urte anitzekoa",
+      "custom": "Pertsonalizatua",
+      "from": "Noiztik",
+      "to": "Noiz arte",
+      "errors": {
+        "invalidDate": "Sartu baliozko datak.",
+        "reversedRange": "Hasiera-datak amaiera-data baino lehenagokoa edo bera izan behar du.",
+        "tooLong": "Aldiak ezin ditu bi data horien artean 1461 egun baino gehiago hartu (4 urte inguru)."
+      }
+    },
+    "table": {
+      "eventsHeader": "Jarduerak",
+      "peopleHeader": "Pertsonak"
+    },
+    "groupBy": {
+      "comarca": "Eskualdea",
+      "organization": "Erakundea",
+      "place": "Udalerria",
+      "province": "Probintzia",
+      "ineCode": "INE kodea"
+    },
+    "stats": {
+      "activePeople": "Pertsona aktiboak",
+      "newPeople": "Altak",
+      "repeatingPeople": "Errepikapena",
+      "eventsHeld": "Egindako jarduerak",
+      "eventsCancelled": "Bertan behera utzitako jarduerak",
+      "attendanceRate": "Bertaratzea",
+      "noShows": "Ez-agerraldiak"
+    },
+    "dashboard": {
+      "loadError": "Ezin izan dira metrikak kargatu",
+      "loadingWithName": "{orgName} entitatearen metrikak kargatzen…",
+      "loading": "Metrikak kargatzen…",
+      "byMunicipioHeading": "Udalerriz",
+      "byMunicipioError": "Ezin izan da udalerriaren araberako banaketa kargatu",
+      "byMunicipioCaption": "Udalerriaren araberako metrikak",
+      "byMunicipioEmpty": "Ez dago daturik duen udalerririk aldi honetan",
+      "byEntidadHeading": "Erakundez",
+      "byEntidadError": "Ezin izan da erakundearen araberako banaketa kargatu",
+      "byEntidadCaption": "Erakundearen araberako metrikak",
+      "byEntidadEmpty": "Ez dago daturik duen erakunderik aldi honetan",
+      "genericEmpty": "Ez dago daturik aldi honetarako",
+      "monthlySeriesHeading": "Hileko serie",
+      "yearlySeriesHeading": "Urteko serie",
+      "seriesError": "Ezin izan da seriea kargatu",
+      "monthlySeriesEmpty": "Ez dago hileko seriea egiteko adina daturik",
+      "yearlySeriesEmpty": "Ez dago urteko seriea egiteko adina daturik",
+      "comparativaHeading": "Konparaketa",
+      "comparativaGroupByLabel": "Konparaketaren banaketa",
+      "comparativaError": "Ezin izan da konparaketa kargatu",
+      "comparativaEmpty": "Ez dago daturik konparaketa honetarako",
+      "groupedError": "Ezin izan da banaketa kargatu"
+    },
+    "export": {
+      "title": "Txostena esportatu",
+      "noNamesNotice": "Txostenek ez dute pertsonen izenik.",
+      "groupByLabel": "Txostenaren banaketa",
+      "groupByRegular": "Ohiko banaketa",
+      "groupByYear": "Urteka (urte anitzeko memoria)",
+      "csv": "CSV esportatu",
+      "pdf": "PDF esportatu",
+      "exporting": "Esportatzen…"
+    },
+    "comparativa": {
+      "notAvailable": "Ez dago erabilgarri agregazio-atalasea dela eta",
+      "scope": "Eremua",
+      "eventsCurrent": "Jarduerak (unekoa)",
+      "eventsPrevious": "Jarduerak (aurrekoa)",
+      "eventsDelta": "Jarduerak (Δ)",
+      "peopleCurrent": "Pertsonak (unekoa)",
+      "peoplePrevious": "Pertsonak (aurrekoa)",
+      "peopleDelta": "Pertsonak (Δ)",
+      "attendanceCurrent": "% bertaratzea (unekoa)",
+      "attendancePrevious": "% bertaratzea (aurrekoa)",
+      "attendanceDelta": "% bertaratzea (Δ)",
+      "captionPrefix": "{groupBy} arabera konparaketa",
+      "previousPeriodPrefix": "honekin alderatuta:"
+    },
+    "series": {
+      "monthlyAriaLabel": "Jardueren eta pertsonen hileko seriea",
+      "yearlyAriaLabel": "Jardueren eta pertsonen urteko seriea"
+    }
+  },
+  "plataforma": {
+    "metricas": {
+      "groupByLegend": "Taldekatu honen arabera",
+      "groupByTerritorio": "Lurraldea",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Metriketan.",
+      "heading": "Metrikak"
+    },
+    "contratos": {
+      "tierErrors": {
+        "minNegative": "Gutxieneko biztanleria ezin da negatiboa izan.",
+        "maxInvalid": "Gehieneko biztanleria ez da baliozkoa.",
+        "maxBelowMin": "Gehieneko biztanleria ezin da gutxienekoa baino txikiagoa izan."
+      }
+    }
+  },
+  "paraguas": {
+    "inicio": {
+      "heading": "Hasiera"
+    },
+    "informes": {
+      "noAccessDescription": "Zure rolak ez du sarbiderik Txostenetan.",
+      "heading": "Txostenak"
     }
   }
 }

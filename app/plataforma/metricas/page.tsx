@@ -21,13 +21,17 @@ export default async function PlataformaMetricasPage() {
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!plataformaMenuFor(session.platformRole.role).includes("metricas")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Métricas." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("plataforma.metricas.noAccessDescription")} />
+    );
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-text-base">Métricas</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("plataforma.metricas.heading")}</h1>
       <PlataformaMetricsDashboard />
     </div>
   );

@@ -1,22 +1,29 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
-import { useExport, type ExportFormat, type ExportParams } from "@/hooks/useExport";
+import { useExport, type ExportErrorKind, type ExportFormat, type ExportParams } from "@/hooks/useExport";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 
 export interface ExportButtonsProps {
   params: Omit<ExportParams, "format">;
 }
 
-const ERROR_MESSAGES: Record<string, string> = {
-  pdf_unavailable: "El informe en PDF no está disponible ahora mismo. Prueba con CSV o inténtalo más tarde.",
-  forbidden: "No tienes permiso para exportar informes.",
-  desconocido: "No se pudo generar el informe.",
+// `sesion_caducada` no tenía entrada propia en el mapa original (el
+// aviso real de sesión caducada lo pinta `SessionExpiredHandler` a nivel
+// de app): se conserva el mismo comportamiento, cae al texto genérico.
+const EXPORT_ERROR_KEYS: Record<ExportErrorKind, string> = {
+  pdf_unavailable: "errors.export.pdfUnavailable",
+  forbidden: "errors.export.forbidden",
+  sesion_caducada: "errors.export.desconocido",
+  desconocido: "errors.export.desconocido",
 };
 
 /** Botones «Exportar CSV»/«Exportar PDF»: llaman a `useExport().mutate` con el `format` pulsado. */
 export function ExportButtons({ params }: ExportButtonsProps) {
+  const t = useTranslations();
   const { mutate, isPending, error } = useExport();
   const [lastFormat, setLastFormat] = useState<ExportFormat | null>(null);
 
@@ -29,7 +36,7 @@ export function ExportButtons({ params }: ExportButtonsProps) {
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap gap-3">
         <Button type="button" onClick={() => handleExport("csv")} disabled={isPending}>
-          {isPending && lastFormat === "csv" ? "Exportando…" : "Exportar CSV"}
+          {isPending && lastFormat === "csv" ? t("metrics.export.exporting") : t("metrics.export.csv")}
         </Button>
         <Button
           type="button"
@@ -37,12 +44,12 @@ export function ExportButtons({ params }: ExportButtonsProps) {
           onClick={() => handleExport("pdf")}
           disabled={isPending}
         >
-          {isPending && lastFormat === "pdf" ? "Exportando…" : "Exportar PDF"}
+          {isPending && lastFormat === "pdf" ? t("metrics.export.exporting") : t("metrics.export.pdf")}
         </Button>
       </div>
       {error ? (
         <p role="alert" className="text-sm text-error">
-          {ERROR_MESSAGES[error.kind] ?? ERROR_MESSAGES.desconocido}
+          {errorKindText(error, EXPORT_ERROR_KEYS, t, "errors.export.desconocido")}
         </p>
       ) : null}
     </div>

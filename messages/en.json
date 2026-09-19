@@ -1036,6 +1036,21 @@
       "invalido": "Specify municipalities, comarca or province.",
       "sinPermiso": "Only the owner can expand the entity's scope.",
       "desconocido": "Couldn't expand the entity's scope."
+    },
+    "export": {
+      "pdfUnavailable": "The PDF report isn't available right now. Try CSV or try again later.",
+      "forbidden": "You don't have permission to export reports.",
+      "desconocido": "Couldn't generate the report."
+    },
+    "metrics": {
+      "periodoInvalido": "The chosen period isn't valid.",
+      "sinAcceso": "You don't have access to these metrics.",
+      "desconocido": "Couldn't load the metrics."
+    },
+    "compare": {
+      "periodoInvalido": "The chosen period or breakdown isn't valid.",
+      "sinAcceso": "You don't have access to this comparison.",
+      "desconocido": "Couldn't load the comparison."
     }
   },
   "reports": {
@@ -1375,6 +1390,120 @@
         ],
         "audience": "Superadmin and support; support can only view."
       }
+    }
+  },
+  "metrics": {
+    "period": {
+      "legend": "Period",
+      "thisMonth": "This month",
+      "quarter": "Quarter",
+      "year": "Year",
+      "multiYear": "Multi-year",
+      "custom": "Custom",
+      "from": "From",
+      "to": "To",
+      "errors": {
+        "invalidDate": "Enter valid dates.",
+        "reversedRange": "The start date must be before or the same as the end date.",
+        "tooLong": "The period can't span more than 1461 days between the two dates (about 4 years)."
+      }
+    },
+    "table": {
+      "eventsHeader": "Events",
+      "peopleHeader": "People"
+    },
+    "groupBy": {
+      "comarca": "District",
+      "organization": "Entity",
+      "place": "Municipality",
+      "province": "Province",
+      "ineCode": "INE code"
+    },
+    "stats": {
+      "activePeople": "Active people",
+      "newPeople": "New sign-ups",
+      "repeatingPeople": "Repeat participation",
+      "eventsHeld": "Activities held",
+      "eventsCancelled": "Activities cancelled",
+      "attendanceRate": "Attendance",
+      "noShows": "No-shows"
+    },
+    "dashboard": {
+      "loadError": "Couldn't load the metrics",
+      "loadingWithName": "Loading metrics for {orgName}…",
+      "loading": "Loading metrics…",
+      "byMunicipioHeading": "By municipality",
+      "byMunicipioError": "Couldn't load the breakdown by municipality",
+      "byMunicipioCaption": "Metrics by municipality",
+      "byMunicipioEmpty": "No municipalities with data for this period",
+      "byEntidadHeading": "By entity",
+      "byEntidadError": "Couldn't load the breakdown by entity",
+      "byEntidadCaption": "Metrics by entity",
+      "byEntidadEmpty": "No entities with data for this period",
+      "genericEmpty": "No data for this period",
+      "monthlySeriesHeading": "Monthly series",
+      "yearlySeriesHeading": "Yearly series",
+      "seriesError": "Couldn't load the series",
+      "monthlySeriesEmpty": "Not enough data for the monthly series",
+      "yearlySeriesEmpty": "Not enough data for the yearly series",
+      "comparativaHeading": "Comparison",
+      "comparativaGroupByLabel": "Comparison breakdown",
+      "comparativaError": "Couldn't load the comparison",
+      "comparativaEmpty": "No data for this comparison",
+      "groupedError": "Couldn't load the breakdown"
+    },
+    "export": {
+      "title": "Export report",
+      "noNamesNotice": "Reports don't contain people's names.",
+      "groupByLabel": "Report breakdown",
+      "groupByRegular": "Regular breakdown",
+      "groupByYear": "By year (multi-year record)",
+      "csv": "Export CSV",
+      "pdf": "Export PDF",
+      "exporting": "Exporting…"
+    },
+    "comparativa": {
+      "notAvailable": "Not available due to the aggregation threshold",
+      "scope": "Scope",
+      "eventsCurrent": "Activities (current)",
+      "eventsPrevious": "Activities (previous)",
+      "eventsDelta": "Activities (Δ)",
+      "peopleCurrent": "People (current)",
+      "peoplePrevious": "People (previous)",
+      "peopleDelta": "People (Δ)",
+      "attendanceCurrent": "% attendance (current)",
+      "attendancePrevious": "% attendance (previous)",
+      "attendanceDelta": "% attendance (Δ)",
+      "captionPrefix": "Comparison by {groupBy}",
+      "previousPeriodPrefix": "compared with"
+    },
+    "series": {
+      "monthlyAriaLabel": "Monthly series of events and people",
+      "yearlyAriaLabel": "Yearly series of events and people"
+    }
+  },
+  "plataforma": {
+    "metricas": {
+      "groupByLegend": "Group by",
+      "groupByTerritorio": "Territory",
+      "noAccessDescription": "Your role doesn't have access to Metrics.",
+      "heading": "Metrics"
+    },
+    "contratos": {
+      "tierErrors": {
+        "minNegative": "The minimum population can't be negative.",
+        "maxInvalid": "The maximum population isn't valid.",
+        "maxBelowMin": "The maximum population can't be lower than the minimum."
+      }
+    }
+  },
+  "paraguas": {
+    "inicio": {
+      "heading": "Home"
+    },
+    "informes": {
+      "noAccessDescription": "Your role doesn't have access to Reports.",
+      "heading": "Reports"
     }
   }
 }

@@ -1,11 +1,13 @@
 "use client";
 
 import { useId, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { useCompare, type CompareGroupBy } from "@/hooks/useCompare";
-import { useMetrics } from "@/hooks/useMetrics";
+import { useCompare, type CompareErrorKind, type CompareGroupBy } from "@/hooks/useCompare";
+import { useMetrics, type MetricsErrorKind } from "@/hooks/useMetrics";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 import { formatCount, formatPct } from "@/lib/metrics/format";
 import { presetPeriod, type Period, type PeriodPreset } from "@/lib/metrics/period";
 
@@ -22,11 +24,23 @@ export interface ParaguasMetricsDashboardProps {
 
 type ParaguasCompareGroupBy = Extract<CompareGroupBy, "comarca" | "organization" | "place">;
 
-const COMPARE_GROUP_BY_OPTIONS: { value: ParaguasCompareGroupBy; label: string }[] = [
-  { value: "comarca", label: "Comarca" },
-  { value: "organization", label: "Entidad" },
-  { value: "place", label: "Municipio" },
+const COMPARE_GROUP_BY_OPTION_KEYS: { value: ParaguasCompareGroupBy; labelKey: string }[] = [
+  { value: "comarca", labelKey: "metrics.groupBy.comarca" },
+  { value: "organization", labelKey: "metrics.groupBy.organization" },
+  { value: "place", labelKey: "metrics.groupBy.place" },
 ];
+
+const METRICS_ERROR_KEYS: Record<MetricsErrorKind, string> = {
+  periodo_invalido: "errors.metrics.periodoInvalido",
+  sin_acceso: "errors.metrics.sinAcceso",
+  desconocido: "errors.metrics.desconocido",
+};
+
+const COMPARE_ERROR_KEYS: Record<CompareErrorKind, string> = {
+  periodo_invalido: "errors.compare.periodoInvalido",
+  sin_acceso: "errors.compare.sinAcceso",
+  desconocido: "errors.compare.desconocido",
+};
 
 /**
  * Inicio del panel de paraguas (`docs/PANEL.md` §1, ámbito
@@ -46,6 +60,7 @@ const COMPARE_GROUP_BY_OPTIONS: { value: ParaguasCompareGroupBy; label: string }
  * `group_by=month` a `group_by=year` (`SeriesChart` se etiqueta sola).
  */
 export function ParaguasMetricsDashboard({ orgId, orgName }: ParaguasMetricsDashboardProps) {
+  const t = useTranslations();
   const [preset, setPreset] = useState<PeriodPreset>("mes");
   const [period, setPeriod] = useState<Period>(() => presetPeriod("mes"));
   const [compareGroupBy, setCompareGroupBy] = useState<ParaguasCompareGroupBy>("comarca");
@@ -57,11 +72,14 @@ export function ParaguasMetricsDashboard({ orgId, orgName }: ParaguasMetricsDash
   }
 
   const seriesGroupBy = preset === "plurianual" ? "year" : "month";
-  const seriesHeading = preset === "plurianual" ? "Serie anual" : "Serie mensual";
+  const seriesHeading =
+    preset === "plurianual"
+      ? t("metrics.dashboard.yearlySeriesHeading")
+      : t("metrics.dashboard.monthlySeriesHeading");
   const seriesEmptyTitle =
     preset === "plurianual"
-      ? "Sin datos suficientes para la serie anual"
-      : "Sin datos suficientes para la serie mensual";
+      ? t("metrics.dashboard.yearlySeriesEmpty")
+      : t("metrics.dashboard.monthlySeriesEmpty");
 
   const base = useMetrics("paraguas", orgId, period);
   const byMunicipio = useMetrics("paraguas", orgId, period, "place");
@@ -75,82 +93,84 @@ export function ParaguasMetricsDashboard({ orgId, orgName }: ParaguasMetricsDash
 
       {base.isError ? (
         <ErrorState
-          title="No se pudieron cargar las métricas"
-          description={base.error.message}
+          title={t("metrics.dashboard.loadError")}
+          description={errorKindText(base.error, METRICS_ERROR_KEYS, t, "errors.metrics.desconocido")}
         />
       ) : !base.data ? (
-        <p className="text-sm text-text-secondary">Cargando métricas de {orgName}…</p>
+        <p className="text-sm text-text-secondary">
+          {t("metrics.dashboard.loadingWithName", { orgName })}
+        </p>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <StatCard
-              label="Personas activas"
+              label={t("metrics.stats.activePeople")}
               value={formatCount(base.data.people.active, base.data.people.suppressed)}
             />
             <StatCard
-              label="Altas"
+              label={t("metrics.stats.newPeople")}
               value={formatCount(base.data.people.new, base.data.people.suppressed)}
             />
             <StatCard
-              label="Repetición"
+              label={t("metrics.stats.repeatingPeople")}
               value={formatCount(base.data.people.repeating, base.data.people.suppressed)}
             />
             <StatCard
-              label="Actividades celebradas"
+              label={t("metrics.stats.eventsHeld")}
               value={formatCount(base.data.events.held, false)}
             />
             <StatCard
-              label="Actividades canceladas"
+              label={t("metrics.stats.eventsCancelled")}
               value={formatCount(base.data.events.cancelled, false)}
             />
             <StatCard
-              label="Asistencia"
+              label={t("metrics.stats.attendanceRate")}
               value={formatPct(base.data.attendance.rate, base.data.attendance.suppressed)}
             />
             <StatCard
-              label="No-shows"
+              label={t("metrics.stats.noShows")}
               value={formatCount(base.data.attendance.no_show, base.data.attendance.suppressed)}
             />
           </div>
 
           <section aria-labelledby="por-municipio-heading">
             <h2 id="por-municipio-heading" className="mb-2 text-lg font-semibold text-text-base">
-              Por municipio
+              {t("metrics.dashboard.byMunicipioHeading")}
             </h2>
             {byMunicipio.isError ? (
               <ErrorState
-                title="No se pudo cargar el desglose por municipio"
-                description={byMunicipio.error.message}
+                title={t("metrics.dashboard.byMunicipioError")}
+                description={errorKindText(byMunicipio.error, METRICS_ERROR_KEYS, t, "errors.metrics.desconocido")}
               />
             ) : byMunicipio.data && byMunicipio.data.by_place.length > 0 ? (
               <MetricsTable
-                caption="Métricas por municipio"
+                caption={t("metrics.dashboard.byMunicipioCaption")}
                 rows={byMunicipio.data.by_place}
-                nameHeader="Municipio"
-                codeHeader="Código INE"
+                nameHeader={t("metrics.groupBy.place")}
+                codeHeader={t("metrics.groupBy.ineCode")}
               />
             ) : (
-              <EmptyState title="Sin municipios con datos en este periodo" />
+              <EmptyState title={t("metrics.dashboard.byMunicipioEmpty")} />
             )}
           </section>
 
           <section aria-labelledby="por-entidad-heading">
             <h2 id="por-entidad-heading" className="mb-2 text-lg font-semibold text-text-base">
-              Por entidad
+              {t("metrics.dashboard.byEntidadHeading")}
             </h2>
             {byEntidad.isError ? (
               <ErrorState
-                title="No se pudo cargar el desglose por entidad"
-                description={byEntidad.error.message}
+                title={t("metrics.dashboard.byEntidadError")}
+                description={errorKindText(byEntidad.error, METRICS_ERROR_KEYS, t, "errors.metrics.desconocido")}
               />
             ) : byEntidad.data && byEntidad.data.by_place.length > 0 ? (
               <MetricsTable
-                caption="Métricas por entidad"
+                caption={t("metrics.dashboard.byEntidadCaption")}
                 rows={byEntidad.data.by_place}
-                nameHeader="Entidad"
+                nameHeader={t("metrics.groupBy.organization")}
               />
             ) : (
-              <EmptyState title="Sin entidades con datos en este periodo" />
+              <EmptyState title={t("metrics.dashboard.byEntidadEmpty")} />
             )}
           </section>
 
@@ -160,8 +180,8 @@ export function ParaguasMetricsDashboard({ orgId, orgName }: ParaguasMetricsDash
             </h2>
             {series.isError ? (
               <ErrorState
-                title="No se pudo cargar la serie"
-                description={series.error.message}
+                title={t("metrics.dashboard.seriesError")}
+                description={errorKindText(series.error, METRICS_ERROR_KEYS, t, "errors.metrics.desconocido")}
               />
             ) : series.data && series.data.series.length > 0 ? (
               <SeriesChart data={series.data.series} />
@@ -172,14 +192,14 @@ export function ParaguasMetricsDashboard({ orgId, orgName }: ParaguasMetricsDash
 
           <section aria-labelledby="comparativa-heading">
             <h2 id="comparativa-heading" className="mb-2 text-lg font-semibold text-text-base">
-              Comparativa
+              {t("metrics.dashboard.comparativaHeading")}
             </h2>
             <div className="mb-3">
               <label
                 htmlFor={compareSelectId}
                 className="mb-1 block text-sm font-medium text-text-form"
               >
-                Desglose de la comparativa
+                {t("metrics.dashboard.comparativaGroupByLabel")}
               </label>
               <select
                 id={compareSelectId}
@@ -189,22 +209,22 @@ export function ParaguasMetricsDashboard({ orgId, orgName }: ParaguasMetricsDash
                 }
                 className="rounded-md border border-border px-2 py-1 text-sm text-text-base focus-visible:outline-primary-700"
               >
-                {COMPARE_GROUP_BY_OPTIONS.map((option) => (
+                {COMPARE_GROUP_BY_OPTION_KEYS.map((option) => (
                   <option key={option.value} value={option.value}>
-                    {option.label}
+                    {t(option.labelKey)}
                   </option>
                 ))}
               </select>
             </div>
             {compare.isError ? (
               <ErrorState
-                title="No se pudo cargar la comparativa"
-                description={compare.error.message}
+                title={t("metrics.dashboard.comparativaError")}
+                description={errorKindText(compare.error, COMPARE_ERROR_KEYS, t, "errors.compare.desconocido")}
               />
             ) : compare.data && compare.data.rows.length > 0 ? (
               <ComparativaTable data={compare.data} />
             ) : (
-              <EmptyState title="Sin datos para esta comparativa" />
+              <EmptyState title={t("metrics.dashboard.comparativaEmpty")} />
             )}
           </section>
         </>

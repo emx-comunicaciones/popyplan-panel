@@ -9,11 +9,16 @@
  * deja el valor en blanco cuando se teclea algo que no es un número:
  * `noEsNumero` es defensa, no el caso corriente — aquí es donde se
  * prueba, porque a través del formulario no hay forma de provocarlo.
+ *
+ * **i18n (tarea 5 del plan de i18n):** este módulo es `.ts` plano (no
+ * puede llamar a `t()`) — `validateTierRange` devuelve la **clave** de
+ * traducción, o `null` si el rango es válido; `ContratosPanel.tsx::TierForm`
+ * la traduce, mismo patrón que `PROGRAM_ENDS_ON_ERROR_KEY`.
  */
 
-export const TIER_MIN_NEGATIVE_ERROR = "La población mínima no puede ser negativa.";
-export const TIER_MAX_INVALID_ERROR = "La población máxima no es válida.";
-export const TIER_MAX_BELOW_MIN_ERROR = "La población máxima no puede ser menor que la mínima.";
+export const TIER_MIN_NEGATIVE_ERROR_KEY = "plataforma.contratos.tierErrors.minNegative";
+export const TIER_MAX_INVALID_ERROR_KEY = "plataforma.contratos.tierErrors.maxInvalid";
+export const TIER_MAX_BELOW_MIN_ERROR_KEY = "plataforma.contratos.tierErrors.maxBelowMin";
 
 export interface TierRange {
   min: number;
@@ -21,12 +26,12 @@ export interface TierRange {
   max: number | null;
 }
 
-/** `null` si el rango es válido; si no, el mensaje que se pinta bajo los campos. */
+/** `null` si el rango es válido; si no, la clave del mensaje que se pinta bajo los campos. */
 export function validateTierRange({ min, max }: TierRange): string | null {
-  if (!Number.isFinite(min) || min < 0) return TIER_MIN_NEGATIVE_ERROR;
+  if (!Number.isFinite(min) || min < 0) return TIER_MIN_NEGATIVE_ERROR_KEY;
   if (max === null) return null;
-  if (!Number.isFinite(max)) return TIER_MAX_INVALID_ERROR;
-  return max < min ? TIER_MAX_BELOW_MIN_ERROR : null;
+  if (!Number.isFinite(max)) return TIER_MAX_INVALID_ERROR_KEY;
+  return max < min ? TIER_MAX_BELOW_MIN_ERROR_KEY : null;
 }
 
 /** Lee los dos campos del formulario: vacío = `0` para el mínimo, «sin tope» para el máximo. */

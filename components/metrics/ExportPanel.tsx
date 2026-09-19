@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { Card } from "@/components/ui/Card";
 import type { MetricsGroupBy, MetricsScope } from "@/hooks/useMetrics";
@@ -72,6 +73,7 @@ export function ExportPanel({
   preset,
   onPeriodChange,
 }: ExportPanelProps) {
+  const t = useTranslations("metrics.export");
   const [ownPreset, setOwnPreset] = useState<PeriodPreset>("mes");
   const [ownPeriod, setOwnPeriod] = useState<Period>(() => presetPeriod("mes"));
   const [exportGroupBy, setExportGroupBy] = useState<ExportGroupByChoice>("habitual");
@@ -94,14 +96,12 @@ export function ExportPanel({
     exportGroupBy === "year" ? "year" : groupBy;
 
   return (
-    <Card title="Exportar informe">
-      <p className="mb-4 text-sm text-text-secondary">
-        Los informes no contienen nombres de personas.
-      </p>
+    <Card title={t("title")}>
+      <p className="mb-4 text-sm text-text-secondary">{t("noNamesNotice")}</p>
       <PeriodSelector value={effectivePeriod} preset={effectivePreset} onChange={handlePeriodChange} />
       <div className="mt-4">
         <label htmlFor={selectId} className="mb-1 block text-sm font-medium text-text-form">
-          Desglose del informe
+          {t("groupByLabel")}
         </label>
         <select
           id={selectId}
@@ -109,8 +109,8 @@ export function ExportPanel({
           onChange={(event) => setExportGroupBy(event.target.value as ExportGroupByChoice)}
           className="rounded-md border border-border px-2 py-1 text-sm text-text-base focus-visible:outline-primary-700"
         >
-          <option value="habitual">Desglose habitual</option>
-          <option value="year">Por año (memoria plurianual)</option>
+          <option value="habitual">{t("groupByRegular")}</option>
+          <option value="year">{t("groupByYear")}</option>
         </select>
       </div>
       <div className="mt-4">

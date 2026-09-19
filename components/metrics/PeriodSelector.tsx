@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
 import {
@@ -19,28 +20,28 @@ export interface PeriodSelectorProps {
 
 type FixedPreset = Exclude<PeriodPreset, "personalizado">;
 
-const PRESET_LABELS: Record<FixedPreset, string> = {
-  mes: "Este mes",
-  trimestre: "Trimestre",
-  anio: "Año",
-  plurianual: "Plurianual",
+const PRESET_LABEL_KEYS: Record<FixedPreset, string> = {
+  mes: "metrics.period.thisMonth",
+  trimestre: "metrics.period.quarter",
+  anio: "metrics.period.year",
+  plurianual: "metrics.period.multiYear",
 };
 
-const FIXED_PRESETS = Object.keys(PRESET_LABELS) as FixedPreset[];
+const FIXED_PRESETS = Object.keys(PRESET_LABEL_KEYS) as FixedPreset[];
 
-const ERROR_MESSAGES: Record<PeriodValidationError, string> = {
-  fecha_invalida: "Introduce fechas válidas.",
-  rango_invertido: "La fecha de inicio debe ser anterior o igual a la de fin.",
-  // La regla es sobre la **diferencia** entre las dos fechas, igual que
-  // en el backend (`panel/viewsets.py::_periodo`, `(until - since).days >
-  // 1461`): decir «no puede superar 1461 días» hacía leer como rechazado
-  // un periodo de 1462 días contando ambos extremos, que sí se acepta.
-  periodo_demasiado_largo:
-    "El periodo no puede abarcar más de 1461 días entre las dos fechas (unos 4 años).",
+// La regla es sobre la **diferencia** entre las dos fechas, igual que en
+// el backend (`panel/viewsets.py::_periodo`, `(until - since).days >
+// 1461`): decir «no puede superar 1461 días» hacía leer como rechazado
+// un periodo de 1462 días contando ambos extremos, que sí se acepta.
+const ERROR_MESSAGE_KEYS: Record<PeriodValidationError, string> = {
+  fecha_invalida: "metrics.period.errors.invalidDate",
+  rango_invertido: "metrics.period.errors.reversedRange",
+  periodo_demasiado_largo: "metrics.period.errors.tooLong",
 };
 
 /** Selector de periodo: mes/trimestre/año (presets) o rango personalizado. */
 export function PeriodSelector({ value, preset, onChange }: PeriodSelectorProps) {
+  const t = useTranslations();
   const [customSince, setCustomSince] = useState(value.since);
   const [customUntil, setCustomUntil] = useState(value.until);
   const [error, setError] = useState<PeriodValidationError | null>(null);
@@ -80,7 +81,7 @@ export function PeriodSelector({ value, preset, onChange }: PeriodSelectorProps)
 
   return (
     <fieldset className="flex flex-wrap items-end gap-3">
-      <legend className="mb-1 w-full text-sm font-medium text-text-form">Periodo</legend>
+      <legend className="mb-1 w-full text-sm font-medium text-text-form">{t("metrics.period.legend")}</legend>
       {FIXED_PRESETS.map((key) => (
         <Button
           key={key}
@@ -89,13 +90,13 @@ export function PeriodSelector({ value, preset, onChange }: PeriodSelectorProps)
           aria-pressed={preset === key}
           onClick={() => selectPreset(key)}
         >
-          {PRESET_LABELS[key]}
+          {t(PRESET_LABEL_KEYS[key])}
         </Button>
       ))}
       <div className="flex items-end gap-2">
         <div>
           <label htmlFor={sinceId} className="mb-1 block text-xs font-medium text-text-form">
-            Desde
+            {t("metrics.period.from")}
           </label>
           <input
             id={sinceId}
@@ -107,7 +108,7 @@ export function PeriodSelector({ value, preset, onChange }: PeriodSelectorProps)
         </div>
         <div>
           <label htmlFor={untilId} className="mb-1 block text-xs font-medium text-text-form">
-            Hasta
+            {t("metrics.period.to")}
           </label>
           <input
             id={untilId}
@@ -123,12 +124,12 @@ export function PeriodSelector({ value, preset, onChange }: PeriodSelectorProps)
           aria-pressed={preset === "personalizado"}
           onClick={applyCustom}
         >
-          Personalizado
+          {t("metrics.period.custom")}
         </Button>
       </div>
       {error ? (
         <p role="alert" className="w-full text-sm text-error">
-          {ERROR_MESSAGES[error]}
+          {t(ERROR_MESSAGE_KEYS[error])}
         </p>
       ) : null}
     </fieldset>

@@ -9,6 +9,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useTranslations } from "next-intl";
 
 import type { SeriesRow } from "@/lib/api/types";
 import { formatCount } from "@/lib/metrics/format";
@@ -68,10 +69,13 @@ export function formatSeriesTooltipValue(
  * existe, en vez del mes (`"2026-01"`).
  */
 export function SeriesChart({ data }: SeriesChartProps) {
+  const t = useTranslations();
   const chartData = toChartData(data);
   const ariaLabel = isYearSeries(data)
-    ? "Serie anual de eventos y personas"
-    : "Serie mensual de eventos y personas";
+    ? t("metrics.series.yearlyAriaLabel")
+    : t("metrics.series.monthlyAriaLabel");
+  const eventsName = t("metrics.table.eventsHeader");
+  const peopleName = t("metrics.table.peopleHeader");
 
   return (
     <div role="img" aria-label={ariaLabel} style={{ width: "100%", height: 280 }}>
@@ -90,11 +94,11 @@ export function SeriesChart({ data }: SeriesChartProps) {
               )
             }
           />
-          <Line type="monotone" dataKey="events" name="Eventos" stroke="var(--color-primary)" />
+          <Line type="monotone" dataKey="events" name={eventsName} stroke="var(--color-primary)" />
           <Line
             type="monotone"
             dataKey="people"
-            name="Personas"
+            name={peopleName}
             stroke="var(--color-secondary-600)"
             connectNulls={false}
           />

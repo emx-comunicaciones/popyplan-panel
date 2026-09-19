@@ -37,11 +37,21 @@ export type MetricsErrorKind = "periodo_invalido" | "sin_acceso" | "desconocido"
 
 export class MetricsError extends Error {
   readonly kind: MetricsErrorKind;
+  /**
+   * Texto verbatim del backend, cuando lo hay (tarea 5 de i18n, mismo
+   * patrón que el resto de errores tipados del panel): `toMetricsError`
+   * no lo rellena hoy (los tres mensajes son siempre fijos, no hay
+   * `detailOf` que llamar), pero el campo existe para que
+   * `lib/i18n/errorKindText.ts` sepa distinguir un mensaje real del
+   * backend de la traducción genérica por `kind` si algún día lo hay.
+   */
+  readonly detail?: string;
 
-  constructor(kind: MetricsErrorKind, message: string) {
+  constructor(kind: MetricsErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "MetricsError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 

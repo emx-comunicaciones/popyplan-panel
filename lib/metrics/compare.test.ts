@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { formatDeltaCount, formatDeltaPct, groupByLabel, previousPeriodLabel } from "./compare";
+import { formatDeltaCount, formatDeltaPct, groupByLabelKey, previousPeriodLabel } from "./compare";
+
+// `previousPeriodLabel` ya no construye el prefijo «frente a» (tarea 5 de
+// i18n: es texto de UI, lo traduce quien llama). Los tests le pasan el
+// mismo literal que tenía antes para seguir comprobando el mismo texto
+// final.
+const PREFIX = "frente a";
 
 describe("formatDeltaCount", () => {
   it("positivo lleva signo +", () => {
@@ -63,45 +69,51 @@ describe("formatDeltaPct", () => {
 
 describe("previousPeriodLabel", () => {
   it("formatea «frente a 1 ene – 31 mar 2026» (ejemplo del brief)", () => {
-    expect(previousPeriodLabel({ since: "2026-01-01", until: "2026-03-31" })).toBe(
+    expect(previousPeriodLabel({ since: "2026-01-01", until: "2026-03-31" }, PREFIX)).toBe(
       "frente a 1 ene – 31 mar 2026",
     );
   });
 
   it("otro rango, mismo año", () => {
-    expect(previousPeriodLabel({ since: "2026-01-02", until: "2026-03-31" })).toBe(
+    expect(previousPeriodLabel({ since: "2026-01-02", until: "2026-03-31" }, PREFIX)).toBe(
       "frente a 2 ene – 31 mar 2026",
     );
   });
 
   it("si el periodo anterior cruza el año, la fecha inicial también lleva año («Año»)", () => {
-    expect(previousPeriodLabel({ since: "2024-09-17", until: "2025-09-17" })).toBe(
+    expect(previousPeriodLabel({ since: "2024-09-17", until: "2025-09-17" }, PREFIX)).toBe(
       "frente a 17 sept 2024 – 17 sept 2025",
     );
   });
 
   it("un periodo anterior de fin de año lleva los dos años", () => {
-    expect(previousPeriodLabel({ since: "2025-12-31", until: "2026-03-31" })).toBe(
+    expect(previousPeriodLabel({ since: "2025-12-31", until: "2026-03-31" }, PREFIX)).toBe(
       "frente a 31 dic 2025 – 31 mar 2026",
     );
   });
 
   it("un periodo anterior plurianual lleva los dos años", () => {
-    expect(previousPeriodLabel({ since: "2019-01-01", until: "2022-12-31" })).toBe(
+    expect(previousPeriodLabel({ since: "2019-01-01", until: "2022-12-31" }, PREFIX)).toBe(
       "frente a 1 ene 2019 – 31 dic 2022",
+    );
+  });
+
+  it("usa el prefijo que le pasa quien llama, no uno propio", () => {
+    expect(previousPeriodLabel({ since: "2026-01-01", until: "2026-03-31" }, "compared with")).toBe(
+      "compared with 1 ene – 31 mar 2026",
     );
   });
 });
 
-describe("groupByLabel", () => {
-  it("traduce los cuatro desgloses conocidos", () => {
-    expect(groupByLabel("comarca")).toBe("comarca");
-    expect(groupByLabel("organization")).toBe("entidad");
-    expect(groupByLabel("place")).toBe("municipio");
-    expect(groupByLabel("province")).toBe("provincia");
+describe("groupByLabelKey", () => {
+  it("da la clave de traducción de los cuatro desgloses conocidos", () => {
+    expect(groupByLabelKey("comarca")).toBe("metrics.groupBy.comarca");
+    expect(groupByLabelKey("organization")).toBe("metrics.groupBy.organization");
+    expect(groupByLabelKey("place")).toBe("metrics.groupBy.place");
+    expect(groupByLabelKey("province")).toBe("metrics.groupBy.province");
   });
 
-  it("un desglose desconocido se devuelve tal cual (defensivo)", () => {
-    expect(groupByLabel("otro")).toBe("otro");
+  it("un desglose desconocido devuelve null (defensivo, quien llama cae al valor crudo)", () => {
+    expect(groupByLabelKey("otro")).toBeNull();
   });
 });

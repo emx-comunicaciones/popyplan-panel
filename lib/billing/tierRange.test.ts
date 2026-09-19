@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  TIER_MAX_BELOW_MIN_ERROR,
-  TIER_MAX_INVALID_ERROR,
-  TIER_MIN_NEGATIVE_ERROR,
+  TIER_MAX_BELOW_MIN_ERROR_KEY,
+  TIER_MAX_INVALID_ERROR_KEY,
+  TIER_MIN_NEGATIVE_ERROR_KEY,
   tierRangeFromFields,
   validateTierRange,
 } from "./tierRange";
@@ -31,16 +31,16 @@ describe("validateTierRange", () => {
   });
 
   it("mínimo negativo o no numérico", () => {
-    expect(validateTierRange({ min: -1, max: null })).toBe(TIER_MIN_NEGATIVE_ERROR);
-    expect(validateTierRange({ min: Number.NaN, max: null })).toBe(TIER_MIN_NEGATIVE_ERROR);
+    expect(validateTierRange({ min: -1, max: null })).toBe(TIER_MIN_NEGATIVE_ERROR_KEY);
+    expect(validateTierRange({ min: Number.NaN, max: null })).toBe(TIER_MIN_NEGATIVE_ERROR_KEY);
   });
 
   it("máximo no numérico (defensa: el navegador ya lo filtra)", () => {
-    expect(validateTierRange({ min: 0, max: Number.NaN })).toBe(TIER_MAX_INVALID_ERROR);
-    expect(validateTierRange({ min: 0, max: Number.POSITIVE_INFINITY })).toBe(TIER_MAX_INVALID_ERROR);
+    expect(validateTierRange({ min: 0, max: Number.NaN })).toBe(TIER_MAX_INVALID_ERROR_KEY);
+    expect(validateTierRange({ min: 0, max: Number.POSITIVE_INFINITY })).toBe(TIER_MAX_INVALID_ERROR_KEY);
   });
 
   it("máximo por debajo del mínimo", () => {
-    expect(validateTierRange({ min: 20000, max: 5000 })).toBe(TIER_MAX_BELOW_MIN_ERROR);
+    expect(validateTierRange({ min: 20000, max: 5000 })).toBe(TIER_MAX_BELOW_MIN_ERROR_KEY);
   });
 });

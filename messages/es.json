@@ -1036,6 +1036,21 @@
       "invalido": "Indica municipios, comarca o provincia.",
       "sinPermiso": "Solo el titular puede ampliar el ámbito de la entidad.",
       "desconocido": "No se pudo ampliar el ámbito de la entidad."
+    },
+    "export": {
+      "pdfUnavailable": "El informe en PDF no está disponible ahora mismo. Prueba con CSV o inténtalo más tarde.",
+      "forbidden": "No tienes permiso para exportar informes.",
+      "desconocido": "No se pudo generar el informe."
+    },
+    "metrics": {
+      "periodoInvalido": "El periodo elegido no es válido.",
+      "sinAcceso": "No tienes acceso a estas métricas.",
+      "desconocido": "No se pudieron cargar las métricas."
+    },
+    "compare": {
+      "periodoInvalido": "El periodo o el desglose elegidos no son válidos.",
+      "sinAcceso": "No tienes acceso a esta comparativa.",
+      "desconocido": "No se pudo cargar la comparativa."
     }
   },
   "reports": {
@@ -1375,6 +1390,120 @@
         ],
         "audience": "Superadmin y soporte; soporte solo consulta."
       }
+    }
+  },
+  "metrics": {
+    "period": {
+      "legend": "Periodo",
+      "thisMonth": "Este mes",
+      "quarter": "Trimestre",
+      "year": "Año",
+      "multiYear": "Plurianual",
+      "custom": "Personalizado",
+      "from": "Desde",
+      "to": "Hasta",
+      "errors": {
+        "invalidDate": "Introduce fechas válidas.",
+        "reversedRange": "La fecha de inicio debe ser anterior o igual a la de fin.",
+        "tooLong": "El periodo no puede abarcar más de 1461 días entre las dos fechas (unos 4 años)."
+      }
+    },
+    "table": {
+      "eventsHeader": "Eventos",
+      "peopleHeader": "Personas"
+    },
+    "groupBy": {
+      "comarca": "Comarca",
+      "organization": "Entidad",
+      "place": "Municipio",
+      "province": "Provincia",
+      "ineCode": "Código INE"
+    },
+    "stats": {
+      "activePeople": "Personas activas",
+      "newPeople": "Altas",
+      "repeatingPeople": "Repetición",
+      "eventsHeld": "Actividades celebradas",
+      "eventsCancelled": "Actividades canceladas",
+      "attendanceRate": "Asistencia",
+      "noShows": "No-shows"
+    },
+    "dashboard": {
+      "loadError": "No se pudieron cargar las métricas",
+      "loadingWithName": "Cargando métricas de {orgName}…",
+      "loading": "Cargando métricas…",
+      "byMunicipioHeading": "Por municipio",
+      "byMunicipioError": "No se pudo cargar el desglose por municipio",
+      "byMunicipioCaption": "Métricas por municipio",
+      "byMunicipioEmpty": "Sin municipios con datos en este periodo",
+      "byEntidadHeading": "Por entidad",
+      "byEntidadError": "No se pudo cargar el desglose por entidad",
+      "byEntidadCaption": "Métricas por entidad",
+      "byEntidadEmpty": "Sin entidades con datos en este periodo",
+      "genericEmpty": "Sin datos para este periodo",
+      "monthlySeriesHeading": "Serie mensual",
+      "yearlySeriesHeading": "Serie anual",
+      "seriesError": "No se pudo cargar la serie",
+      "monthlySeriesEmpty": "Sin datos suficientes para la serie mensual",
+      "yearlySeriesEmpty": "Sin datos suficientes para la serie anual",
+      "comparativaHeading": "Comparativa",
+      "comparativaGroupByLabel": "Desglose de la comparativa",
+      "comparativaError": "No se pudo cargar la comparativa",
+      "comparativaEmpty": "Sin datos para esta comparativa",
+      "groupedError": "No se pudo cargar el desglose"
+    },
+    "export": {
+      "title": "Exportar informe",
+      "noNamesNotice": "Los informes no contienen nombres de personas.",
+      "groupByLabel": "Desglose del informe",
+      "groupByRegular": "Desglose habitual",
+      "groupByYear": "Por año (memoria plurianual)",
+      "csv": "Exportar CSV",
+      "pdf": "Exportar PDF",
+      "exporting": "Exportando…"
+    },
+    "comparativa": {
+      "notAvailable": "No disponible por umbral de agregación",
+      "scope": "Ámbito",
+      "eventsCurrent": "Actividades (actual)",
+      "eventsPrevious": "Actividades (anterior)",
+      "eventsDelta": "Actividades (Δ)",
+      "peopleCurrent": "Personas (actual)",
+      "peoplePrevious": "Personas (anterior)",
+      "peopleDelta": "Personas (Δ)",
+      "attendanceCurrent": "% asistencia (actual)",
+      "attendancePrevious": "% asistencia (anterior)",
+      "attendanceDelta": "% asistencia (Δ)",
+      "captionPrefix": "Comparativa por {groupBy}",
+      "previousPeriodPrefix": "frente a"
+    },
+    "series": {
+      "monthlyAriaLabel": "Serie mensual de eventos y personas",
+      "yearlyAriaLabel": "Serie anual de eventos y personas"
+    }
+  },
+  "plataforma": {
+    "metricas": {
+      "groupByLegend": "Agrupar por",
+      "groupByTerritorio": "Territorio",
+      "noAccessDescription": "Tu rol no tiene acceso a Métricas.",
+      "heading": "Métricas"
+    },
+    "contratos": {
+      "tierErrors": {
+        "minNegative": "La población mínima no puede ser negativa.",
+        "maxInvalid": "La población máxima no es válida.",
+        "maxBelowMin": "La población máxima no puede ser menor que la mínima."
+      }
+    }
+  },
+  "paraguas": {
+    "inicio": {
+      "heading": "Inicio"
+    },
+    "informes": {
+      "noAccessDescription": "Tu rol no tiene acceso a Informes.",
+      "heading": "Informes"
     }
   }
 }

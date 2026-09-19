@@ -31,13 +31,17 @@ export default async function ParaguasInformesPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!paraguasMenuFor(membership.role).includes("informes")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Informes." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("paraguas.informes.noAccessDescription")} />
+    );
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-text-base">Informes</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("paraguas.informes.heading")}</h1>
       <ExportPanel scope="paraguas" orgId={membership.organization_id} />
     </div>
   );
