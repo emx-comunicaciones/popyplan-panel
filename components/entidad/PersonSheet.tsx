@@ -11,14 +11,83 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { useAssignReferent } from "@/hooks/useAssignReferent";
 import { useOrgMembers } from "@/hooks/useOrgMembers";
 import { usePerson } from "@/hooks/usePerson";
+import { usePersonSupport } from "@/hooks/usePersonSupport";
 import { isAllowedImageSrc } from "@/lib/config/imagePatterns";
 import { presetPeriod } from "@/lib/metrics/period";
+import { relationshipLabel } from "@/lib/support/relationshipLabel";
 
 export interface PersonSheetProps {
   orgId: number | string;
   userId: number | string;
   /** Solo `titular`/`moderador` (`docs/PANEL.md` §1.1, matriz de `entities/permissions.py`). */
   canAssignReferent: boolean;
+  /**
+   * Solo `referente` (`docs/PANEL.md` §14.5): quien no lo es nunca dispara
+   * la petición (`enabled: isReferent`), así un `titular`/`moderador` que
+   * no sea además el referente de esta persona no ve ni pide la red de
+   * apoyo — un 404/403 de esa ruta ni siquiera llega a ocurrir para ellos.
+   */
+  isReferent: boolean;
+}
+
+/**
+ * Sección «Red de apoyo» (`docs/PANEL.md` §14.5), visible solo para el
+ * referente asignado. Invariante 9: solo `public_name`, `relationship` y
+ * el flag de avisos — nunca contacto.
+ */
+function SupportNetworkSection({
+  orgId,
+  userId,
+  isReferent,
+}: {
+  orgId: number | string;
+  userId: number | string;
+  isReferent: boolean;
+}) {
+  const support = usePersonSupport(Number(orgId), String(userId), isReferent);
+
+  if (!isReferent) return null;
+
+  // 404/403 (`kind: 'sin_acceso'`): quien mira no es el referente real de
+  // esta persona (o el backend lo trata como si no existiera). La
+  // sección no se pinta en absoluto, ni con un mensaje: revelar que
+  // existe una red de apoyo sería en sí mismo un dato.
+  if (support.isError && support.error.kind === "sin_acceso") {
+    return null;
+  }
+
+  return (
+    <section aria-labelledby="red-apoyo-heading">
+      <h2 id="red-apoyo-heading" className="mb-2 text-lg font-semibold text-text-base">
+        Red de apoyo
+      </h2>
+      {support.isError ? (
+        <ErrorState
+          title="No se pudo cargar la red de apoyo"
+          description={support.error.message}
+        />
+      ) : !support.data ? (
+        <p className="text-sm text-text-secondary">Cargando red de apoyo…</p>
+      ) : support.data.length === 0 ? (
+        <EmptyState title="Esta persona no tiene red de apoyo activa." />
+      ) : (
+        <>
+          <ul className="flex flex-col gap-1">
+            {support.data.map((row) => (
+              <li key={row.supporter.id} className="text-sm text-text-base">
+                {row.supporter.public_name} · {relationshipLabel(row.relationship)} ·{" "}
+                {row.notify_on_help ? "Recibe avisos" : "Sin avisos"}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-sm text-text-secondary">
+            Solo tú, como referente, ves esta red. Popyplan no guarda teléfonos: contacta con la
+            persona por el chat de la app.
+          </p>
+        </>
+      )}
+    </section>
+  );
 }
 
 function formatDateTime(iso: string): string {
@@ -131,7 +200,7 @@ function AssignReferentForm({
  * estado de asistencia y próxima actividad. **Nunca** email, teléfono,
  * documentos ni notas — no están en `PersonDetail` (invariante 9).
  */
-export function PersonSheet({ orgId, userId, canAssignReferent }: PersonSheetProps) {
+export function PersonSheet({ orgId, userId, canAssignReferent, isReferent }: PersonSheetProps) {
   const period = presetPeriod("mes");
   const person = usePerson(orgId, userId, period);
 
@@ -232,6 +301,8 @@ export function PersonSheet({ orgId, userId, canAssignReferent }: PersonSheetPro
           <EmptyState title="Sin próxima actividad" />
         )}
       </section>
+
+      <SupportNetworkSection orgId={orgId} userId={userId} isReferent={isReferent} />
     </div>
   );
 }

@@ -2,17 +2,21 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
+import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
+import { PERSON_SUPPORT_ROWS } from "@/test-utils/fixtures/support";
 
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 const usePersonMock = vi.hoisted(() => vi.fn());
 const useAssignReferentMock = vi.hoisted(() => vi.fn());
 const useOrgMembersMock = vi.hoisted(() => vi.fn());
+const usePersonSupportMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("@/hooks/usePerson", () => ({ usePerson: usePersonMock }));
 vi.mock("@/hooks/useAssignReferent", () => ({ useAssignReferent: useAssignReferentMock }));
 vi.mock("@/hooks/useOrgMembers", () => ({ useOrgMembers: useOrgMembersMock }));
+vi.mock("@/hooks/usePersonSupport", () => ({ usePersonSupport: usePersonSupportMock }));
 
 import { buildOrgMembershipFull } from "@/test-utils/fixtures/orgMembershipFull";
 
@@ -39,6 +43,7 @@ beforeEach(() => {
     isError: false,
     error: null,
   });
+  usePersonSupportMock.mockReturnValue({ data: undefined, isError: false, error: null });
 });
 
 afterEach(() => {
@@ -46,6 +51,7 @@ afterEach(() => {
   usePersonMock.mockReset();
   useAssignReferentMock.mockReset();
   useOrgMembersMock.mockReset();
+  usePersonSupportMock.mockReset();
   vi.unstubAllEnvs();
 });
 
@@ -63,6 +69,16 @@ async function renderPage(role = "titular", slug = "alfaville", userId = "42") {
 }
 
 describe("EntidadPersonaPage", () => {
+  it("no tiene violaciones de accesibilidad (axe)", async () => {
+    usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
+    useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
+    usePersonSupportMock.mockReturnValue({ data: PERSON_SUPPORT_ROWS, isError: false, error: null });
+
+    const { container } = await renderPage("referente");
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("muestra alias, alta, referente, comunidades, actividades del periodo y próxima actividad", async () => {
     usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
     useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
@@ -254,5 +270,80 @@ describe("EntidadPersonaPage", () => {
 
     expect(container.querySelector("img")).toBeNull();
     expect(screen.getByText("Ana")).toBeInTheDocument();
+  });
+
+  describe("Red de apoyo (solo referente)", () => {
+    it("referente con red de apoyo ve la sección con cada vínculo y el aviso fijo", async () => {
+      usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
+      useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
+      usePersonSupportMock.mockReturnValue({ data: PERSON_SUPPORT_ROWS, isError: false, error: null });
+
+      const { container } = await renderPage("referente");
+
+      expect(usePersonSupportMock).toHaveBeenCalledWith(7, "42", true);
+      expect(screen.getByRole("heading", { name: "Red de apoyo", level: 2 })).toBeInTheDocument();
+      expect(screen.getByText("Miren · Madre o padre · Recibe avisos")).toBeInTheDocument();
+      expect(screen.getByText("Jon · Amistad · Sin avisos")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Solo tú, como referente, ves esta red. Popyplan no guarda teléfonos: contacta con la persona por el chat de la app.",
+        ),
+      ).toBeInTheDocument();
+      expect(container.textContent).not.toMatch(/@/);
+    });
+
+    it("referente sin red de apoyo activa ve el mensaje de vacío", async () => {
+      usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
+      useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
+      usePersonSupportMock.mockReturnValue({ data: [], isError: false, error: null });
+
+      await renderPage("referente");
+
+      expect(screen.getByRole("heading", { name: "Red de apoyo", level: 2 })).toBeInTheDocument();
+      expect(screen.getByText("Esta persona no tiene red de apoyo activa.")).toBeInTheDocument();
+    });
+
+    it("404/403 (kind 'sin_acceso'): la sección no existe, sin mensaje", async () => {
+      usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
+      useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
+      usePersonSupportMock.mockReturnValue({
+        data: undefined,
+        isError: true,
+        error: { kind: "sin_acceso", message: "Sin acceso a la red de apoyo de esta persona." },
+      });
+
+      await renderPage("referente");
+
+      expect(screen.queryByRole("heading", { name: "Red de apoyo" })).not.toBeInTheDocument();
+      expect(screen.queryByText(/Sin acceso a la red de apoyo/)).not.toBeInTheDocument();
+    });
+
+    it("error 'desconocido': ErrorState dentro de la sección, el resto de la ficha sigue", async () => {
+      usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
+      useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
+      usePersonSupportMock.mockReturnValue({
+        data: undefined,
+        isError: true,
+        error: { kind: "desconocido", message: "No se pudo cargar la red de apoyo de esta persona." },
+      });
+
+      await renderPage("referente");
+
+      expect(screen.getByRole("heading", { name: "Red de apoyo", level: 2 })).toBeInTheDocument();
+      expect(screen.getByRole("alert")).toHaveTextContent("No se pudo cargar la red de apoyo de esta persona.");
+      // el resto de la ficha sigue en pie
+      expect(screen.getByText("Ana")).toBeInTheDocument();
+      expect(screen.getByText("Comunidad Uno")).toBeInTheDocument();
+    });
+
+    it("titular no es referente: el hook se llama con enabled false y no hay sección", async () => {
+      usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
+      useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
+
+      await renderPage("titular");
+
+      expect(usePersonSupportMock).toHaveBeenCalledWith(7, "42", false);
+      expect(screen.queryByRole("heading", { name: "Red de apoyo" })).not.toBeInTheDocument();
+    });
   });
 });

@@ -37,6 +37,7 @@ export default async function EntidadPersonaPage({
   }
 
   const canAssignReferent = membership.role === "titular" || membership.role === "moderador";
+  const isReferent = membership.role === "referente";
 
   return (
     <div className="flex flex-col gap-4">
@@ -45,6 +46,7 @@ export default async function EntidadPersonaPage({
         orgId={membership.organization_id}
         userId={userId}
         canAssignReferent={canAssignReferent}
+        isReferent={isReferent}
       />
     </div>
   );
