@@ -15,6 +15,16 @@ export interface MetricsTableProps {
    * legible que mostrar, solo un id interno).
    */
   codeHeader?: string;
+  /**
+   * Con las dos props, la tabla añade al final una columna de acciones
+   * con un botón por fila. Es lo que hace que el mapa de Territorio no
+   * tenga ninguna acción exclusiva: pulsar una burbuja y pulsar este
+   * botón abren la misma ficha, y este sí es alcanzable con el teclado.
+   * Sin ellas, la tabla se comporta exactamente como antes (así la usan
+   * los dos dashboards de paraguas y plataforma).
+   */
+  onSelectRow?: (key: string) => void;
+  selectRowLabel?: string;
 }
 
 /**
@@ -24,8 +34,16 @@ export interface MetricsTableProps {
  * regla de supresión (`<5` cuando `row.suppressed`); `events` nunca se
  * suprime.
  */
-export function MetricsTable({ caption, rows, nameHeader, codeHeader }: MetricsTableProps) {
+export function MetricsTable({
+  caption,
+  rows,
+  nameHeader,
+  codeHeader,
+  onSelectRow,
+  selectRowLabel,
+}: MetricsTableProps) {
   const t = useTranslations("metrics.table");
+  const tCommon = useTranslations("common");
   const columns: TableColumn<ByPlaceRow>[] = [
     { key: "label", header: nameHeader, render: (row) => row.label },
     ...(codeHeader
@@ -33,6 +51,25 @@ export function MetricsTable({ caption, rows, nameHeader, codeHeader }: MetricsT
       : []),
     { key: "events", header: t("eventsHeader"), render: (row) => formatCount(row.events, false) },
     { key: "people", header: t("peopleHeader"), render: (row) => formatCount(row.people, row.suppressed) },
+    ...(onSelectRow && selectRowLabel
+      ? [
+          {
+            key: "actions",
+            // Cabecera solo para lectores de pantalla: una `<th>` vacía
+            // incumple `empty-table-header` de axe (hallazgo B27).
+            header: <span className="sr-only">{tCommon("actions")}</span>,
+            render: (row: ByPlaceRow) => (
+              <button
+                type="button"
+                onClick={() => onSelectRow(row.key)}
+                className="text-primary-700 underline focus-visible:outline-primary-700"
+              >
+                {selectRowLabel}
+              </button>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return <Table caption={caption} columns={columns} rows={rows} getRowKey={(row) => row.key} />;

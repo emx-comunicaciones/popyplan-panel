@@ -31,6 +31,14 @@ export interface DialogProps {
   widthClassName?: string;
   /** Mutación en vuelo: el diálogo no se puede cerrar hasta que termine. */
   pending?: boolean;
+  /**
+   * `"side"` ancla el diálogo al borde derecho y lo estira a toda la
+   * altura: es el «panel lateral» de la ficha de municipio (spec §4.1).
+   * Sigue siendo el mismo diálogo modal, con su foco atrapado, su
+   * `Escape` y su devolución del foco — solo cambia dónde se pinta, para
+   * no duplicar esa mecánica en un componente nuevo de *drawer*.
+   */
+  placement?: "center" | "side";
 }
 
 export function Dialog({
@@ -41,6 +49,7 @@ export function Dialog({
   children,
   widthClassName = "max-w-lg",
   pending = false,
+  placement = "center",
 }: DialogProps) {
   const t = useTranslations("common");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -50,8 +59,16 @@ export function Dialog({
 
   if (!open) return null;
 
+  const overlayPlacement =
+    placement === "side" ? "justify-end" : "justify-center items-center";
+  // El radio va en la rama, no en la clase base: `rounded-none` y
+  // `rounded-lg` juntos dependerían del orden del CSS generado, no del
+  // orden del atributo `class`.
+  const panelPlacement =
+    placement === "side" ? "h-full overflow-y-auto rounded-none" : "rounded-lg";
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div className={`fixed inset-0 z-50 flex ${overlayPlacement} bg-black/40 p-4`}>
       <div
         ref={containerRef}
         role="dialog"
@@ -59,7 +76,7 @@ export function Dialog({
         aria-busy={pending}
         aria-labelledby={titleId}
         tabIndex={-1}
-        className={`w-full ${widthClassName} rounded-lg bg-white p-6 shadow-lg`}
+        className={`w-full ${widthClassName} ${panelPlacement} bg-white p-6 shadow-lg`}
       >
         <div className="mb-4 flex items-center justify-between gap-4">
           <h2 id={titleId} className="text-base font-semibold text-text-base">

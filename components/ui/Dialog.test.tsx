@@ -1,7 +1,7 @@
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-import { render, screen } from "@/test-utils/render";
+import { cleanup, render, screen } from "@/test-utils/render";
 
 import { Dialog } from "./Dialog";
 
@@ -41,6 +41,30 @@ describe("Dialog", () => {
 
     expect(onClose).not.toHaveBeenCalled();
     expect(screen.getByRole("dialog")).toHaveAttribute("aria-busy", "true");
+  });
+
+  // Dos `render()` en vez del `rerender` del brief: `test-utils/render`
+  // envuelve el árbol a mano en `NextIntlClientProvider`, así que el
+  // `rerender` de Testing Library (que solo reusa `options.wrapper`)
+  // volvería a montar el diálogo sin ese contexto.
+  it("por defecto se centra; con placement='side' se ancla al lado", () => {
+    const centered = render(
+      <Dialog open titleId="t" title="Ficha" onClose={vi.fn()}>
+        <p>contenido</p>
+      </Dialog>,
+    );
+    expect(centered.container.firstChild).toHaveClass("justify-center");
+    expect(centered.container.firstChild).toHaveClass("items-center");
+
+    cleanup();
+
+    const side = render(
+      <Dialog open titleId="t" title="Ficha" onClose={vi.fn()} placement="side">
+        <p>contenido</p>
+      </Dialog>,
+    );
+    expect(side.container.firstChild).toHaveClass("justify-end");
+    expect(side.container.firstChild).not.toHaveClass("justify-center");
   });
 
   it("cerrado, no pinta nada", () => {
