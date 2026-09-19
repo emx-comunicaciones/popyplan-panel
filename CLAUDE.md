@@ -1997,16 +1997,33 @@ qué se puede hacer en ella y quién la ve.
      rol del mismo registro.
 - **Accesibilidad**: botón redondo 40×40 con `aria-label="Ayuda: <título>"`,
   `aria-haspopup="dialog"`, `aria-expanded`, el signo «?» en
-  `aria-hidden`; texto y borde en `text-primary-700`/`border-primary-700`
-  (nunca `text-primary` a secas, regla de contraste de este fichero). El
-  diálogo pinta el resumen, un `<h3>Qué puedes hacer aquí</h3>` con la
-  lista de acciones (por debajo del `<h2>` que ya pone `Dialog` en el
-  título, sin saltar de nivel) y «Quién la ve: …». `components/help/PageHelp.test.tsx`
+  `aria-hidden`. **Fondo blanco** (`bg-white text-primary-700 border
+  border-border hover:bg-primary-100`), no `text-primary-700` a secas
+  sobre el fondo de la cabecera: la regla de contraste de este fichero
+  («todo texto usa `primary-700`») está tabulada contra
+  `--color-background` (blanco), y aplicarla directamente sobre el
+  fondo de marca de la cabecera la invertía — con la entidad más común
+  (sin `primary_color` propio, cabecera a `primary-700`) el glifo
+  quedaba del mismo color que su fondo, invisible (1,00:1); revisión
+  final antes de mergear la rama. El botón lleva su propio fondo blanco,
+  igual que «Cerrar sesión» (`Button variant="secondary"`), así
+  funciona sobre cualquier color de cabecera; `components/help/
+  PageHelp.test.tsx` fija `bg-white` en su className para que la
+  regresión no vuelva a colarse (`axe` no la detecta:
+  `test-utils/axe.ts` desactiva `color-contrast`). El diálogo pinta el
+  resumen, un `<h3>Qué puedes hacer aquí</h3>` con la lista de acciones
+  (por debajo del `<h2>` que ya pone `Dialog` en el título, sin saltar
+  de nivel) y «Quién la ve: …», y se cierra solo si cambia el
+  `pathname` (`useEffect(() => setOpen(false), [pathname])`) — sin eso,
+  una navegación con el diálogo abierto (atrás/adelante del navegador,
+  o un enlace dentro del propio diálogo) lo dejaba abierto mostrando ya
+  el contenido de la pantalla nueva. `components/help/PageHelp.test.tsx`
   cubre el caso sin entrada (no renderiza nada), el botón cerrado, abrir
-  el diálogo con su contenido, `Escape` (cierra y devuelve el foco) y
-  `axe` sin violaciones cerrado y abierto; los tres `layout.test.tsx`
-  ganan una aserción del botón (`getByRole('button', {name: /^Ayuda:/})`)
-  fijando `usePathname()` a una ruta con entrada
+  el diálogo con su contenido, cambiar de pathname con el diálogo
+  abierto (se cierra), `Escape` (cierra y devuelve el foco) y `axe` sin
+  violaciones cerrado y abierto; los tres `layout.test.tsx` ganan una
+  aserción del botón (`getByRole('button', {name: /^Ayuda:/})`) fijando
+  `usePathname()` a una ruta con entrada
   (`test-utils/nextNavigationMock.ts::setPathname`, mismo patrón que
   `setSearchParams`).
 

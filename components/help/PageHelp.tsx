@@ -13,7 +13,7 @@
  * el foco vuelve al botón al cerrarse): este componente solo decide
  * cuándo mostrarlo y con qué texto, nunca duplica esa mecánica.
  */
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import { Dialog } from "@/components/ui/Dialog";
@@ -25,6 +25,14 @@ export function PageHelp() {
   const titleId = useId();
   const entry = matchPageHelp(pathname);
 
+  // Cambiar de pantalla (incluida una navegación atrás/adelante del
+  // navegador, que no pasa por el propio botón) cierra el diálogo: si
+  // no, se queda abierto mostrando ya la ayuda de la pantalla nueva,
+  // como si nunca se hubiera navegado.
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   if (!entry) return null;
 
   return (
@@ -35,7 +43,7 @@ export function PageHelp() {
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={`Ayuda: ${entry.title}`}
-        className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-700 text-primary-700 font-semibold focus-visible:outline-primary-700"
+        className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-primary-700 font-semibold hover:bg-primary-100 focus-visible:outline-primary-700"
       >
         <span aria-hidden="true">?</span>
       </button>

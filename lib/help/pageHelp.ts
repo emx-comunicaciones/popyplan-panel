@@ -31,7 +31,7 @@ export const PAGE_HELP: readonly PageHelpEntry[] = [
     summary:
       "Vista general de tu entidad para hoy: actividades del día, avisos pendientes y las métricas del mes en curso.",
     actions: [
-      "Ver las actividades de hoy y entrar en su lista de asistencia",
+      "Ver las actividades de hoy",
       "Ver cuántos avisos de ayuda y reportes hay pendientes (solo quien modera o está de guardia)",
       "Consultar personas, actividades y asistencia del mes",
     ],
@@ -68,7 +68,7 @@ export const PAGE_HELP: readonly PageHelpEntry[] = [
     summary:
       "Las comunidades de tu entidad y sus miembros: quién forma parte, quién modera y las solicitudes de entrada pendientes.",
     actions: [
-      "Crear comunidades y elegir su visibilidad",
+      "Ver cada comunidad, su visibilidad y sus miembros",
       "Aceptar o rechazar solicitudes de entrada",
       "Nombrar moderadores o expulsar a alguien (titular y moderador)",
     ],
@@ -215,10 +215,10 @@ export const PAGE_HELP: readonly PageHelpEntry[] = [
       "Los avisos «hoy lo llevo mal» de las personas de tu entidad y la configuración de quién está de guardia. Popyplan no guarda teléfonos: el contacto es por el chat de la app o a través del referente.",
     actions: [
       "Atender un aviso",
-      "Elegir la persona de guardia y el teléfono de ayuda de la entidad",
+      "Fijar el teléfono de ayuda y ver quién está de guardia",
       "Ver si alguien de la red de apoyo de la persona ya se ha hecho cargo",
     ],
-    audience: "Titular, moderador y la persona de guardia.",
+    audience: "Titular, moderador, dinamizador y la persona de guardia.",
   },
   {
     route: "/entidad/[slug]/informes",
@@ -226,7 +226,7 @@ export const PAGE_HELP: readonly PageHelpEntry[] = [
     summary:
       "Exportación de las métricas de la entidad en CSV o PDF, por periodo y desglose, con la misma regla de agregación que el resto del panel.",
     actions: [
-      "Elegir periodo y desglose (municipio, comarca, mes o año)",
+      "Elegir periodo y desglose (habitual o por año)",
       "Descargar el informe",
     ],
     audience: "Titular, moderador y analista.",
@@ -254,8 +254,7 @@ export const PAGE_HELP: readonly PageHelpEntry[] = [
       "Cambiar el periodo",
       "Comparar comarcas, entidades o municipios con el periodo anterior",
     ],
-    audience:
-      "Todos los roles de la entidad paraguas; las exportaciones, solo titular, moderador y analista.",
+    audience: "Todos los roles de la entidad paraguas.",
   },
   {
     route: "/paraguas/[slug]/informes",
