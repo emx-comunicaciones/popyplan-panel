@@ -7,13 +7,17 @@
  * sin pausa), nunca fechas, contacto ni quién invitó a quién.
  *
  * El permiso de la ruta es `ver_ficha` (deja pasar también a titular,
- * moderador y a los atajos de plataforma), pero la comprobación real de
- * `Reference` va dentro del servicio: titular/moderador que **no** sean
- * el referente de esa persona reciben 404 con el mismo `detail` que la
- * ficha (para no revelar que esa persona tiene red), y `analista` recibe
- * 403 antes de llegar ahí (no está en `ver_ficha`). Este hook traduce
- * ambos a `'sin_acceso'`, mismo criterio que `usePerson.ts` con el 404
- * de `Reference` de la propia ficha.
+ * moderador y a los atajos de plataforma), pero la comprobación real
+ * exige además el rol `referente` vigente en la `OrgMembership` de quien
+ * pregunta (`docs/PANEL.md` §14.5, «defensa en profundidad»): el rol es
+ * condición necesaria en las dos puntas, así que un titular/moderador
+ * que además tuviera la `Reference` hacia esa persona tampoco pasaría —
+ * una `OrgMembership` tiene un solo rol. Ese caso, y el de un
+ * titular/moderador sin `Reference`, reciben 404 con el mismo `detail`
+ * que la ficha (para no revelar que esa persona tiene red); `analista`
+ * recibe 403 antes de llegar ahí (no está en `ver_ficha`). Este hook
+ * traduce ambos a `'sin_acceso'`, mismo criterio que `usePerson.ts` con
+ * el 404 de `Reference` de la propia ficha.
  */
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 

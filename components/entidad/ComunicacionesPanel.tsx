@@ -65,6 +65,14 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [lastSent, setLastSent] = useState<Announcement | null>(null);
   const [templateConfirmOpen, setTemplateConfirmOpen] = useState(false);
+  // Resultado de `applyTemplate` calculado en el clic que abrió el
+  // `ConfirmDialog`: `handleConfirmTemplate` lo reutiliza tal cual en vez
+  // de volver a derivarlo de la constante, para no divergir en silencio
+  // si `applyTemplate` alguna vez transforma el texto (recortar,
+  // interpolar el nombre de la entidad…).
+  const [pendingTemplate, setPendingTemplate] = useState<{ title: string; body: string } | null>(
+    null,
+  );
 
   const audienceValue =
     audienceKind === "members"
@@ -88,6 +96,7 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
   function handleUseTemplateClick() {
     const result = applyTemplate({ title, body }, SUPPORT_WELCOME_TEMPLATE);
     if (result.overwritten) {
+      setPendingTemplate({ title: result.title, body: result.body });
       setTemplateConfirmOpen(true);
       return;
     }
@@ -97,10 +106,13 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
   }
 
   function handleConfirmTemplate() {
-    setTitle(SUPPORT_WELCOME_TEMPLATE.title);
-    setBody(SUPPORT_WELCOME_TEMPLATE.body);
+    if (pendingTemplate) {
+      setTitle(pendingTemplate.title);
+      setBody(pendingTemplate.body);
+    }
     setAudienceKind("families");
     setTemplateConfirmOpen(false);
+    setPendingTemplate(null);
   }
 
   function handleConfirm() {
@@ -258,7 +270,10 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
         description="Se reemplazará el texto actual del título y del cuerpo."
         confirmLabel="Usar plantilla"
         onConfirm={handleConfirmTemplate}
-        onCancel={() => setTemplateConfirmOpen(false)}
+        onCancel={() => {
+          setTemplateConfirmOpen(false);
+          setPendingTemplate(null);
+        }}
       />
     </Card>
   );

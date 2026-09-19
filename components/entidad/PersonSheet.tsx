@@ -23,9 +23,11 @@ export interface PersonSheetProps {
   canAssignReferent: boolean;
   /**
    * Solo `referente` (`docs/PANEL.md` §14.5): quien no lo es nunca dispara
-   * la petición (`enabled: isReferent`), así un `titular`/`moderador` que
-   * no sea además el referente de esta persona no ve ni pide la red de
-   * apoyo — un 404/403 de esa ruta ni siquiera llega a ocurrir para ellos.
+   * la petición (`enabled: isReferent`). El rol `referente` es condición
+   * necesaria en las dos puntas — una `OrgMembership` tiene un solo rol, y
+   * un `titular`/`moderador` que además tuviera la `Reference` hacia esta
+   * persona tampoco vería la sección: el backend también exige el rol
+   * vigente, así que ni siquiera llegaría a un 404/403 de esa ruta.
    */
   isReferent: boolean;
 }
@@ -48,6 +50,11 @@ function SupportNetworkSection({
 
   if (!isReferent) return null;
 
+  // Mientras la consulta está en vuelo no se pinta nada, ni la propia
+  // cabecera: spec §7 / decisión 1 exigen que un 404 no dé ningún
+  // parpadeo visible (montar la sección y retirarla al llegar el 404).
+  if (support.isPending) return null;
+
   // 404/403 (`kind: 'sin_acceso'`): quien mira no es el referente real de
   // esta persona (o el backend lo trata como si no existiera). La
   // sección no se pinta en absoluto, ni con un mensaje: revelar que
@@ -66,8 +73,6 @@ function SupportNetworkSection({
           title="No se pudo cargar la red de apoyo"
           description={support.error.message}
         />
-      ) : !support.data ? (
-        <p className="text-sm text-text-secondary">Cargando red de apoyo…</p>
       ) : support.data.length === 0 ? (
         <EmptyState title="Esta persona no tiene red de apoyo activa." />
       ) : (

@@ -43,7 +43,7 @@ beforeEach(() => {
     isError: false,
     error: null,
   });
-  usePersonSupportMock.mockReturnValue({ data: undefined, isError: false, error: null });
+  usePersonSupportMock.mockReturnValue({ data: undefined, isPending: true, isError: false, error: null });
 });
 
 afterEach(() => {
@@ -344,6 +344,25 @@ describe("EntidadPersonaPage", () => {
 
       expect(usePersonSupportMock).toHaveBeenCalledWith(7, "42", false);
       expect(screen.queryByRole("heading", { name: "Red de apoyo" })).not.toBeInTheDocument();
+    });
+
+    it("consulta en vuelo: no se pinta ni la cabecera (sin parpadeo antes de un posible 404), el resto de la ficha sigue", async () => {
+      usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
+      useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
+      usePersonSupportMock.mockReturnValue({
+        data: undefined,
+        isPending: true,
+        isError: false,
+        error: null,
+      });
+
+      await renderPage("referente");
+
+      expect(screen.queryByRole("heading", { name: "Red de apoyo" })).not.toBeInTheDocument();
+      expect(screen.queryByText(/Cargando red de apoyo/)).not.toBeInTheDocument();
+      // el resto de la ficha sigue en pie
+      expect(screen.getByText("Ana")).toBeInTheDocument();
+      expect(screen.getByText("Comunidad Uno")).toBeInTheDocument();
     });
   });
 });

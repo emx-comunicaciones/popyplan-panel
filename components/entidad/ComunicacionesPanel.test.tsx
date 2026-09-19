@@ -168,6 +168,31 @@ describe("ComunicacionesPanel", () => {
     expect(screen.getByRole("radio", { name: "Familias" })).toBeChecked();
   });
 
+  it("con texto ya escrito, cancelar el diálogo de la plantilla deja título/cuerpo/audiencia intactos", async () => {
+    const user = userEvent.setup();
+    useAnnouncementsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c-1", name: "Familias", space: "families" })],
+      isError: false,
+      error: null,
+    });
+    useSendAnnouncementMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false, error: null });
+
+    render(<ComunicacionesPanel orgId={7} canCompose />);
+
+    await user.type(screen.getByLabelText("Título"), "Borrador propio");
+    await user.type(screen.getByLabelText("Cuerpo"), "Cuerpo propio");
+    await user.click(screen.getByRole("button", { name: "Usar plantilla: Bienvenida a la red de apoyo" }));
+
+    const dialog = screen.getByRole("alertdialog");
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Título")).toHaveValue("Borrador propio");
+    expect(screen.getByLabelText("Cuerpo")).toHaveValue("Cuerpo propio");
+    expect(screen.getByRole("radio", { name: "Todos los miembros" })).toBeChecked();
+  });
+
   it("con una comunidad de familias, 'Familias' se puede elegir y enviar audience: 'families'", async () => {
     const user = userEvent.setup();
     useAnnouncementsMock.mockReturnValue({ data: [], isError: false, error: null });
