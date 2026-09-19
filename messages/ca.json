@@ -1051,6 +1051,36 @@
       "periodoInvalido": "El període o el desglossament triats no són vàlids.",
       "sinAcceso": "No tens accés a aquesta comparativa.",
       "desconocido": "No s'ha pogut carregar la comparativa."
+    },
+    "platformRoles": {
+      "sinAcceso": "Només superadmin veu els rols de plataforma.",
+      "invalido": "Revisa l'id d'usuari i el rol.",
+      "sinPermiso": "No tens permís per a aquesta acció.",
+      "sinPermisoConceder": "Només superadmin concedeix rols de plataforma.",
+      "sinPermisoRevocar": "Només superadmin revoca rols de plataforma.",
+      "noEncontrado": "Aquesta persona no té cap rol de plataforma vigent.",
+      "desconocido": "No s'han pogut carregar els rols de plataforma.",
+      "desconocidoConceder": "No s'ha pogut concedir el rol.",
+      "desconocidoRevocar": "No s'ha pogut revocar el rol."
+    },
+    "decideVerificationReview": {
+      "sinPermiso": "Només verificador o superadmin decideixen revisions.",
+      "desconocido": "No s'ha pogut decidir la revisió."
+    },
+    "verificationReviewsQueue": {
+      "sinAcceso": "El teu rol no té accés a la cua de verificació.",
+      "desconocido": "No s'ha pogut carregar la cua de verificació."
+    },
+    "organizations": {
+      "desconocido": "No s'ha pogut carregar el llistat d'entitats."
+    },
+    "createOrganization": {
+      "invalido": "Revisa les dades: alguna no és vàlida.",
+      "sinPermiso": "Només verificador o superadmin donen d'alta entitats.",
+      "desconocido": "No s'ha pogut donar d'alta l'entitat."
+    },
+    "auditLog": {
+      "desconocido": "No s'ha pogut carregar l'auditoria."
     }
   },
   "reports": {
@@ -1494,7 +1524,161 @@
         "minNegative": "La població mínima no pot ser negativa.",
         "maxInvalid": "La població màxima no és vàlida.",
         "maxBelowMin": "La població màxima no pot ser inferior a la mínima."
-      }
+      },
+      "heading": "Contractes",
+      "noAccessDescription": "Només superadmin i suport veuen la contractació i facturació de plataforma."
+    },
+    "ayuda": {
+      "noOrganization": "Sense entitat",
+      "sinAcceso": "No tens accés als avisos d'ajuda.",
+      "desconocido": "No s'han pogut carregar els avisos d'ajuda.",
+      "loadError": "No s'han pogut carregar els avisos d'ajuda",
+      "loading": "Carregant avisos…",
+      "emptyTitle": "Sense avisos pendents",
+      "emptyDescription": "Cap entitat té avisos d'ajuda sense atendre.",
+      "heading": "Ajuda",
+      "noAccessDescription": "El teu rol no té accés a Ajuda."
+    },
+    "inicio": {
+      "heading": "Inici",
+      "unavailable": "No disponible",
+      "activeUsers": "Usuaris actius",
+      "scheduledEvents": "Activitats programades",
+      "pendingReports": "Informes pendents",
+      "pendingHelpRequests": "Sol·licituds d'ajuda pendents",
+      "verifiedEntities": "Entitats verificades",
+      "pendingEntities": "Entitats pendents de verificar",
+      "activeContracts": "Contractes vigents",
+      "annualValue": "Valor anual contractat",
+      "overdueInvoices": "Factures vençudes"
+    },
+    "entidades": {
+      "heading": "Entitats",
+      "noAccessDescription": "El teu rol no té accés a Entitats.",
+      "verifiedLabel": "Verificació",
+      "verifiedFilterAll": "Totes",
+      "verifiedFilterTrue": "Verificades",
+      "verifiedFilterFalse": "Pendents",
+      "verifiedTrue": "Verificada",
+      "verifiedFalse": "Pendent",
+      "searchLabel": "Cercar per nom",
+      "newEntity": "Nova entitat",
+      "loadError": "No s'ha pogut carregar el llistat d'entitats",
+      "loading": "Carregant entitats…",
+      "emptyTitle": "Sense entitats amb aquest filtre",
+      "tableCaption": "Entitats",
+      "nameHeader": "Nom",
+      "typeHeader": "Tipus",
+      "parentHeader": "Paraigua",
+      "previous": "Anterior",
+      "next": "Següent",
+      "count": "{count, plural, one {# entitat} other {# entitats}}",
+      "orgTypeAsociacion": "Associació",
+      "orgTypeOng": "ONG",
+      "orgTypeAdministracion": "Administració",
+      "slugLabel": "Slug",
+      "cifLabel": "CIF",
+      "parentIdLabel": "Entitat paraigua (id, opcional)",
+      "descriptionLabel": "Descripció",
+      "createAction": "Crear entitat",
+      "created": "Entitat «{name}» creada, sense verificar."
+    },
+    "entidadFicha": {
+      "heading": "Fitxa de l'entitat"
+    },
+    "reportes": {
+      "heading": "Informes",
+      "noAccessDescription": "El teu rol no té accés a Informes.",
+      "statusLabel": "Estat",
+      "statusAll": "Tots",
+      "queueError": "No s'ha pogut carregar la cua d'informes",
+      "loading": "Carregant informes…",
+      "empty": "Sense informes amb aquest filtre",
+      "tableCaption": "Informes de plataforma",
+      "colReason": "Motiu",
+      "colTarget": "Objectiu",
+      "colOrganization": "Entitat",
+      "globalScope": "Global",
+      "colStatus": "Estat",
+      "escalated": "Escalat",
+      "colDate": "Data",
+      "viewDetail": "Veure detall",
+      "count": "{count} informes"
+    },
+    "reporteDetalle": {
+      "heading": "Informe"
+    },
+    "verificaciones": {
+      "heading": "Verificacions",
+      "noAccessDescription": "El teu rol no té accés a Verificacions.",
+      "level2": "Nivell 2 (majoria d'edat)",
+      "level3": "Nivell 3 (identitat)",
+      "levelOther": "Nivell {level}",
+      "accountLabel": "Compte",
+      "levelLabel": "Nivell sol·licitat",
+      "reasonLabel": "Motiu del proveïdor",
+      "appealLabel": "Document de la persona",
+      "noAppeal": "Encara sense document.",
+      "noteLabel": "Nota de la decisió",
+      "approve": "Aprovar",
+      "reject": "Rebutjar",
+      "loadError": "No s'ha pogut carregar la cua de verificació",
+      "loading": "Carregant revisions…",
+      "emptyTitle": "Sense revisions pendents",
+      "previous": "Anterior",
+      "next": "Següent",
+      "count": "{count, plural, one {# revisió} other {# revisions}}"
+    },
+    "roles": {
+      "heading": "Rols",
+      "noAccessDescription": "Només superadmin gestiona els rols de plataforma.",
+      "roleSuperadmin": "Superadmin",
+      "roleVerifier": "Verificador",
+      "roleModerator": "Moderador",
+      "roleSupport": "Suport",
+      "grantTitle": "Concedir rol",
+      "searchLabel": "Cercar compte (correu o usuari)",
+      "userIdLabel": "Id d'usuari",
+      "roleLabel": "Rol",
+      "grantAction": "Concedir",
+      "grantSuccess": "Rol concedit.",
+      "currentTitle": "Rols vigents",
+      "loadError": "No s'han pogut carregar els rols",
+      "emptyTitle": "Sense rols concedits",
+      "revokeAction": "Revocar",
+      "revokeConfirmTitle": "Revocar rol de plataforma",
+      "revokeConfirmDescription": "Aquesta persona perdrà l'accés al panell de plataforma."
+    },
+    "auditoria": {
+      "heading": "Auditoria",
+      "noAccessDescription": "Només superadmin veu l'auditoria de la plataforma.",
+      "actorLabel": "Actor (id)",
+      "actionLabel": "Acció",
+      "targetTypeLabel": "Tipus d'objectiu",
+      "targetIdLabel": "Id d'objectiu",
+      "sinceLabel": "Des de",
+      "untilLabel": "Fins a",
+      "loadError": "No s'ha pogut carregar l'auditoria",
+      "loading": "Carregant auditoria…",
+      "emptyTitle": "Sense entrades amb aquests filtres",
+      "count": "{count, plural, one {# entrada} other {# entrades}}",
+      "exportCsv": "Exportar CSV d'aquesta pàgina",
+      "tableCaption": "Auditoria de plataforma",
+      "colActor": "Actor",
+      "colAction": "Acció",
+      "colTarget": "Objectiu",
+      "colMetadata": "Detall",
+      "colDate": "Data",
+      "previous": "Anterior",
+      "next": "Següent",
+      "exportNotice": "Aquesta exportació és una utilitat del client (les dades ja visibles a la pàgina, en CSV) i no queda auditada per si mateixa. Una exportació auditada de tot el llistat és una ruta de backend a part, fora de l'abast d'aquesta tasca.",
+      "csvId": "id",
+      "csvActor": "actor",
+      "csvAction": "action",
+      "csvTargetType": "target_type",
+      "csvTargetId": "target_id",
+      "csvMetadata": "metadata",
+      "csvCreatedAt": "created_at"
     }
   },
   "paraguas": {

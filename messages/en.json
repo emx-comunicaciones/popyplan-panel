@@ -1051,6 +1051,36 @@
       "periodoInvalido": "The chosen period or breakdown isn't valid.",
       "sinAcceso": "You don't have access to this comparison.",
       "desconocido": "Couldn't load the comparison."
+    },
+    "platformRoles": {
+      "sinAcceso": "Only superadmin sees the platform roles.",
+      "invalido": "Check the user id and the role.",
+      "sinPermiso": "You don't have permission for this action.",
+      "sinPermisoConceder": "Only superadmin grants platform roles.",
+      "sinPermisoRevocar": "Only superadmin revokes platform roles.",
+      "noEncontrado": "That person doesn't have a current platform role.",
+      "desconocido": "Couldn't load the platform roles.",
+      "desconocidoConceder": "Couldn't grant the role.",
+      "desconocidoRevocar": "Couldn't revoke the role."
+    },
+    "decideVerificationReview": {
+      "sinPermiso": "Only verifier or superadmin decide reviews.",
+      "desconocido": "Couldn't decide the review."
+    },
+    "verificationReviewsQueue": {
+      "sinAcceso": "Your role doesn't have access to the verification queue.",
+      "desconocido": "Couldn't load the verification queue."
+    },
+    "organizations": {
+      "desconocido": "Couldn't load the entities list."
+    },
+    "createOrganization": {
+      "invalido": "Check the details: something isn't valid.",
+      "sinPermiso": "Only verifier or superadmin sign up entities.",
+      "desconocido": "Couldn't sign up the entity."
+    },
+    "auditLog": {
+      "desconocido": "Couldn't load the audit log."
     }
   },
   "reports": {
@@ -1494,7 +1524,161 @@
         "minNegative": "The minimum population can't be negative.",
         "maxInvalid": "The maximum population isn't valid.",
         "maxBelowMin": "The maximum population can't be lower than the minimum."
-      }
+      },
+      "heading": "Contracts",
+      "noAccessDescription": "Only superadmin and support see platform contracts and billing."
+    },
+    "ayuda": {
+      "noOrganization": "No entity",
+      "sinAcceso": "You don't have access to the help alerts.",
+      "desconocido": "Couldn't load the help alerts.",
+      "loadError": "Couldn't load the help alerts",
+      "loading": "Loading alerts…",
+      "emptyTitle": "No pending alerts",
+      "emptyDescription": "No entity has unattended help alerts.",
+      "heading": "Help",
+      "noAccessDescription": "Your role doesn't have access to Help."
+    },
+    "inicio": {
+      "heading": "Home",
+      "unavailable": "Not available",
+      "activeUsers": "Active users",
+      "scheduledEvents": "Scheduled activities",
+      "pendingReports": "Pending reports",
+      "pendingHelpRequests": "Pending help requests",
+      "verifiedEntities": "Verified entities",
+      "pendingEntities": "Entities pending verification",
+      "activeContracts": "Active contracts",
+      "annualValue": "Annual contracted value",
+      "overdueInvoices": "Overdue invoices"
+    },
+    "entidades": {
+      "heading": "Entities",
+      "noAccessDescription": "Your role doesn't have access to Entities.",
+      "verifiedLabel": "Verification",
+      "verifiedFilterAll": "All",
+      "verifiedFilterTrue": "Verified",
+      "verifiedFilterFalse": "Pending",
+      "verifiedTrue": "Verified",
+      "verifiedFalse": "Pending",
+      "searchLabel": "Search by name",
+      "newEntity": "New entity",
+      "loadError": "Couldn't load the entities list",
+      "loading": "Loading entities…",
+      "emptyTitle": "No entities with this filter",
+      "tableCaption": "Entities",
+      "nameHeader": "Name",
+      "typeHeader": "Type",
+      "parentHeader": "Umbrella",
+      "previous": "Previous",
+      "next": "Next",
+      "count": "{count, plural, one {# entity} other {# entities}}",
+      "orgTypeAsociacion": "Association",
+      "orgTypeOng": "NGO",
+      "orgTypeAdministracion": "Administration",
+      "slugLabel": "Slug",
+      "cifLabel": "Tax ID",
+      "parentIdLabel": "Umbrella entity (id, optional)",
+      "descriptionLabel": "Description",
+      "createAction": "Create entity",
+      "created": "Entity “{name}” created, not verified."
+    },
+    "entidadFicha": {
+      "heading": "Entity profile"
+    },
+    "reportes": {
+      "heading": "Reports",
+      "noAccessDescription": "Your role doesn't have access to Reports.",
+      "statusLabel": "Status",
+      "statusAll": "All",
+      "queueError": "Couldn't load the reports queue",
+      "loading": "Loading reports…",
+      "empty": "No reports with this filter",
+      "tableCaption": "Platform reports",
+      "colReason": "Reason",
+      "colTarget": "Target",
+      "colOrganization": "Entity",
+      "globalScope": "Global",
+      "colStatus": "Status",
+      "escalated": "Escalated",
+      "colDate": "Date",
+      "viewDetail": "View detail",
+      "count": "{count} reports"
+    },
+    "reporteDetalle": {
+      "heading": "Report"
+    },
+    "verificaciones": {
+      "heading": "Verifications",
+      "noAccessDescription": "Your role doesn't have access to Verifications.",
+      "level2": "Level 2 (adulthood)",
+      "level3": "Level 3 (identity)",
+      "levelOther": "Level {level}",
+      "accountLabel": "Account",
+      "levelLabel": "Requested level",
+      "reasonLabel": "Provider's reason",
+      "appealLabel": "Person's document",
+      "noAppeal": "No document yet.",
+      "noteLabel": "Decision note",
+      "approve": "Approve",
+      "reject": "Reject",
+      "loadError": "Couldn't load the verification queue",
+      "loading": "Loading reviews…",
+      "emptyTitle": "No pending reviews",
+      "previous": "Previous",
+      "next": "Next",
+      "count": "{count, plural, one {# review} other {# reviews}}"
+    },
+    "roles": {
+      "heading": "Roles",
+      "noAccessDescription": "Only superadmin manages platform roles.",
+      "roleSuperadmin": "Superadmin",
+      "roleVerifier": "Verifier",
+      "roleModerator": "Moderator",
+      "roleSupport": "Support",
+      "grantTitle": "Grant role",
+      "searchLabel": "Search account (email or username)",
+      "userIdLabel": "User id",
+      "roleLabel": "Role",
+      "grantAction": "Grant",
+      "grantSuccess": "Role granted.",
+      "currentTitle": "Current roles",
+      "loadError": "Couldn't load the roles",
+      "emptyTitle": "No roles granted",
+      "revokeAction": "Revoke",
+      "revokeConfirmTitle": "Revoke platform role",
+      "revokeConfirmDescription": "This person will lose access to the platform panel."
+    },
+    "auditoria": {
+      "heading": "Audit log",
+      "noAccessDescription": "Only superadmin sees the platform audit log.",
+      "actorLabel": "Actor (id)",
+      "actionLabel": "Action",
+      "targetTypeLabel": "Target type",
+      "targetIdLabel": "Target id",
+      "sinceLabel": "From",
+      "untilLabel": "To",
+      "loadError": "Couldn't load the audit log",
+      "loading": "Loading audit log…",
+      "emptyTitle": "No entries with these filters",
+      "count": "{count, plural, one {# entry} other {# entries}}",
+      "exportCsv": "Export CSV of this page",
+      "tableCaption": "Platform audit log",
+      "colActor": "Actor",
+      "colAction": "Action",
+      "colTarget": "Target",
+      "colMetadata": "Detail",
+      "colDate": "Date",
+      "previous": "Previous",
+      "next": "Next",
+      "exportNotice": "This export is a client-side utility (the data already visible on the page, as CSV) and isn't itself audited. An audited export of the whole listing is a separate backend route, outside this task's scope.",
+      "csvId": "id",
+      "csvActor": "actor",
+      "csvAction": "action",
+      "csvTargetType": "target_type",
+      "csvTargetId": "target_id",
+      "csvMetadata": "metadata",
+      "csvCreatedAt": "created_at"
     }
   },
   "paraguas": {

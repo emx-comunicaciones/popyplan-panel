@@ -9,6 +9,7 @@
  */
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -26,6 +27,7 @@ export interface EntidadesTableProps {
 }
 
 export function EntidadesTable({ canCreate }: EntidadesTableProps) {
+  const t = useTranslations();
   const [verified, setVerified] = useState<"" | "true" | "false">("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -60,7 +62,7 @@ export function EntidadesTable({ canCreate }: EntidadesTableProps) {
         <div className="flex flex-wrap items-end gap-3">
           <div>
             <label htmlFor="entidades-verified" className="mb-1 block text-sm font-medium text-text-form">
-              Verificación
+              {t("plataforma.entidades.verifiedLabel")}
             </label>
             <select
               id="entidades-verified"
@@ -71,14 +73,14 @@ export function EntidadesTable({ canCreate }: EntidadesTableProps) {
               }}
               className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
             >
-              <option value="">Todas</option>
-              <option value="true">Verificadas</option>
-              <option value="false">Pendientes</option>
+              <option value="">{t("plataforma.entidades.verifiedFilterAll")}</option>
+              <option value="true">{t("plataforma.entidades.verifiedFilterTrue")}</option>
+              <option value="false">{t("plataforma.entidades.verifiedFilterFalse")}</option>
             </select>
           </div>
           <div>
             <label htmlFor="entidades-search" className="mb-1 block text-sm font-medium text-text-form">
-              Buscar por nombre
+              {t("plataforma.entidades.searchLabel")}
             </label>
             <input
               id="entidades-search"
@@ -89,42 +91,49 @@ export function EntidadesTable({ canCreate }: EntidadesTableProps) {
             />
           </div>
         </div>
-        {canCreate ? <Button type="button" onClick={() => setShowCreate(true)}>Nueva entidad</Button> : null}
+        {canCreate ? (
+          <Button type="button" onClick={() => setShowCreate(true)}>
+            {t("plataforma.entidades.newEntity")}
+          </Button>
+        ) : null}
       </div>
 
       {organizations.isError ? (
-        <ErrorState title="No se pudo cargar el listado de entidades" description={organizations.error.message} />
+        <ErrorState
+          title={t("plataforma.entidades.loadError")}
+          description={t("errors.organizations.desconocido")}
+        />
       ) : !organizations.data ? (
-        <p className="text-sm text-text-secondary">Cargando entidades…</p>
+        <p className="text-sm text-text-secondary">{t("plataforma.entidades.loading")}</p>
       ) : organizations.data.results.length === 0 ? (
-        <EmptyState title="Sin entidades con este filtro" />
+        <EmptyState title={t("plataforma.entidades.emptyTitle")} />
       ) : (
         <>
           <Table<Organization>
-            caption="Entidades"
+            caption={t("plataforma.entidades.tableCaption")}
             rows={organizations.data.results}
             getRowKey={(org) => String(org.id)}
             columns={[
               {
                 key: "name",
-                header: "Nombre",
+                header: t("plataforma.entidades.nameHeader"),
                 render: (org) => (
                   <Link href={`/plataforma/entidades/${org.id}`} className="font-medium text-primary-700 underline">
                     {org.name}
                   </Link>
                 ),
               },
-              { key: "org_type", header: "Tipo", render: (org) => org.org_type },
+              { key: "org_type", header: t("plataforma.entidades.typeHeader"), render: (org) => org.org_type },
               {
                 key: "verified",
-                header: "Verificación",
+                header: t("plataforma.entidades.verifiedLabel"),
                 render: (org) => (
                   <Badge tone={org.is_verified ? "success" : "neutral"}>
-                    {org.is_verified ? "Verificada" : "Pendiente"}
+                    {org.is_verified ? t("plataforma.entidades.verifiedTrue") : t("plataforma.entidades.verifiedFalse")}
                   </Badge>
                 ),
               },
-              { key: "parent", header: "Paraguas", render: (org) => org.parent ?? "—" },
+              { key: "parent", header: t("plataforma.entidades.parentHeader"), render: (org) => org.parent ?? "—" },
             ]}
           />
 
@@ -135,16 +144,18 @@ export function EntidadesTable({ canCreate }: EntidadesTableProps) {
               disabled={!organizations.data.previous}
               onClick={() => setPage((prev) => Math.max(1, prev - 1))}
             >
-              Anterior
+              {t("plataforma.entidades.previous")}
             </Button>
-            <span className="text-sm text-text-secondary">{organizations.data.count} entidades</span>
+            <span className="text-sm text-text-secondary">
+              {t("plataforma.entidades.count", { count: organizations.data.count })}
+            </span>
             <Button
               type="button"
               variant="secondary"
               disabled={!organizations.data.next}
               onClick={() => setPage((prev) => prev + 1)}
             >
-              Siguiente
+              {t("plataforma.entidades.next")}
             </Button>
           </div>
         </>

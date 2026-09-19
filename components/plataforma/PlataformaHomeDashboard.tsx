@@ -24,6 +24,7 @@
  * donde en realidad no se pudo preguntar.
  */
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import { Card } from "@/components/ui/Card";
 import { useBillingSummary } from "@/hooks/useBilling";
@@ -37,8 +38,6 @@ import { formatEuros } from "@/lib/programs/money";
 export interface PlataformaHomeDashboardProps {
   role: string | null;
 }
-
-const UNAVAILABLE = "No disponible";
 
 function KpiCard({ label, value, href }: { label: string; value: string; href?: string }) {
   const content = (
@@ -65,13 +64,14 @@ function KpiCard({ label, value, href }: { label: string; value: string; href?: 
  * un `superadmin` no fuera `is_staff` en una instalación concreta.
  */
 function EstadisticasCards() {
+  const t = useTranslations("plataforma.inicio");
   const stats = useDashboardStats();
 
   if (stats.isError) {
     return (
       <>
-        <KpiCard label="Usuarios activos" value={UNAVAILABLE} />
-        <KpiCard label="Actividades programadas" value={UNAVAILABLE} />
+        <KpiCard label={t("activeUsers")} value={t("unavailable")} />
+        <KpiCard label={t("scheduledEvents")} value={t("unavailable")} />
       </>
     );
   }
@@ -79,27 +79,29 @@ function EstadisticasCards() {
 
   return (
     <>
-      <KpiCard label="Usuarios activos" value={String(stats.data.users.active)} />
-      <KpiCard label="Actividades programadas" value={String(stats.data.events.scheduled)} />
+      <KpiCard label={t("activeUsers")} value={String(stats.data.users.active)} />
+      <KpiCard label={t("scheduledEvents")} value={String(stats.data.events.scheduled)} />
     </>
   );
 }
 
 function ReportesPendientesCard() {
+  const t = useTranslations("plataforma.inicio");
   const reports = useReportsQueue(undefined, { status: "pending" });
 
   if (reports.isError) {
     if (reports.error.kind === "sin_acceso") return null;
-    return <KpiCard label="Reportes pendientes" value={UNAVAILABLE} href="/plataforma/reportes" />;
+    return <KpiCard label={t("pendingReports")} value={t("unavailable")} href="/plataforma/reportes" />;
   }
   if (!reports.data) return null;
 
   return (
-    <KpiCard label="Reportes pendientes" value={String(reports.data.length)} href="/plataforma/reportes" />
+    <KpiCard label={t("pendingReports")} value={String(reports.data.length)} href="/plataforma/reportes" />
   );
 }
 
 function AyudaPendienteCard() {
+  const t = useTranslations("plataforma.inicio");
   const helpRequests = usePlatformPendingHelpRequests();
 
   if (helpRequests.isError) {
@@ -108,14 +110,14 @@ function AyudaPendienteCard() {
     // avisar con «No disponible».
     if (helpRequests.error.kind === "sin_acceso") return null;
     return (
-      <KpiCard label="Solicitudes de ayuda pendientes" value={UNAVAILABLE} href="/plataforma/ayuda" />
+      <KpiCard label={t("pendingHelpRequests")} value={t("unavailable")} href="/plataforma/ayuda" />
     );
   }
   if (!helpRequests.data) return null;
 
   return (
     <KpiCard
-      label="Solicitudes de ayuda pendientes"
+      label={t("pendingHelpRequests")}
       value={String(helpRequests.data.length)}
       href="/plataforma/ayuda"
     />
@@ -123,6 +125,7 @@ function AyudaPendienteCard() {
 }
 
 function EntidadesCards() {
+  const t = useTranslations("plataforma.inicio");
   const verified = useOrganizations({ verified: true });
   const pending = useOrganizations({ verified: false });
 
@@ -130,15 +133,15 @@ function EntidadesCards() {
     <>
       {verified.isError || verified.data ? (
         <KpiCard
-          label="Entidades verificadas"
-          value={verified.data ? String(verified.data.count) : UNAVAILABLE}
+          label={t("verifiedEntities")}
+          value={verified.data ? String(verified.data.count) : t("unavailable")}
           href="/plataforma/entidades"
         />
       ) : null}
       {pending.isError || pending.data ? (
         <KpiCard
-          label="Entidades pendientes de verificar"
-          value={pending.data ? String(pending.data.count) : UNAVAILABLE}
+          label={t("pendingEntities")}
+          value={pending.data ? String(pending.data.count) : t("unavailable")}
           href="/plataforma/entidades"
         />
       ) : null}
@@ -147,15 +150,16 @@ function EntidadesCards() {
 }
 
 function ContratacionCards() {
+  const t = useTranslations("plataforma.inicio");
   const billing = useBillingSummary();
 
   if (billing.isError) {
     if (billing.error.kind === "sin_acceso") return null;
     return (
       <>
-        <KpiCard label="Contratos vigentes" value={UNAVAILABLE} href="/plataforma/contratos" />
-        <KpiCard label="Valor anual contratado" value={UNAVAILABLE} href="/plataforma/contratos" />
-        <KpiCard label="Facturas vencidas" value={UNAVAILABLE} href="/plataforma/contratos" />
+        <KpiCard label={t("activeContracts")} value={t("unavailable")} href="/plataforma/contratos" />
+        <KpiCard label={t("annualValue")} value={t("unavailable")} href="/plataforma/contratos" />
+        <KpiCard label={t("overdueInvoices")} value={t("unavailable")} href="/plataforma/contratos" />
       </>
     );
   }
@@ -164,17 +168,17 @@ function ContratacionCards() {
   return (
     <>
       <KpiCard
-        label="Contratos vigentes"
+        label={t("activeContracts")}
         value={String(billing.data.active_contracts)}
         href="/plataforma/contratos"
       />
       <KpiCard
-        label="Valor anual contratado"
+        label={t("annualValue")}
         value={formatEuros(billing.data.annual_value_cents)}
         href="/plataforma/contratos"
       />
       <KpiCard
-        label="Facturas vencidas"
+        label={t("overdueInvoices")}
         value={String(billing.data.overdue_invoices)}
         href="/plataforma/contratos"
       />

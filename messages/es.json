@@ -1051,6 +1051,36 @@
       "periodoInvalido": "El periodo o el desglose elegidos no son válidos.",
       "sinAcceso": "No tienes acceso a esta comparativa.",
       "desconocido": "No se pudo cargar la comparativa."
+    },
+    "platformRoles": {
+      "sinAcceso": "Solo superadmin ve los roles de plataforma.",
+      "invalido": "Revisa el id de usuario y el rol.",
+      "sinPermiso": "No tienes permiso para esta acción.",
+      "sinPermisoConceder": "Solo superadmin concede roles de plataforma.",
+      "sinPermisoRevocar": "Solo superadmin revoca roles de plataforma.",
+      "noEncontrado": "Esa persona no tiene un rol de plataforma vigente.",
+      "desconocido": "No se pudieron cargar los roles de plataforma.",
+      "desconocidoConceder": "No se pudo conceder el rol.",
+      "desconocidoRevocar": "No se pudo revocar el rol."
+    },
+    "decideVerificationReview": {
+      "sinPermiso": "Solo verificador o superadmin deciden revisiones.",
+      "desconocido": "No se pudo decidir la revisión."
+    },
+    "verificationReviewsQueue": {
+      "sinAcceso": "Tu rol no tiene acceso a la cola de verificación.",
+      "desconocido": "No se pudo cargar la cola de verificación."
+    },
+    "organizations": {
+      "desconocido": "No se pudo cargar el listado de entidades."
+    },
+    "createOrganization": {
+      "invalido": "Revisa los datos: alguno no es válido.",
+      "sinPermiso": "Solo verificador o superadmin dan de alta entidades.",
+      "desconocido": "No se pudo dar de alta la entidad."
+    },
+    "auditLog": {
+      "desconocido": "No se pudo cargar la auditoría."
     }
   },
   "reports": {
@@ -1494,7 +1524,161 @@
         "minNegative": "La población mínima no puede ser negativa.",
         "maxInvalid": "La población máxima no es válida.",
         "maxBelowMin": "La población máxima no puede ser menor que la mínima."
-      }
+      },
+      "heading": "Contratos",
+      "noAccessDescription": "Solo superadmin y support ven la contratación y facturación de plataforma."
+    },
+    "ayuda": {
+      "noOrganization": "Sin entidad",
+      "sinAcceso": "No tienes acceso a los avisos de ayuda.",
+      "desconocido": "No se pudieron cargar los avisos de ayuda.",
+      "loadError": "No se pudieron cargar los avisos de ayuda",
+      "loading": "Cargando avisos…",
+      "emptyTitle": "Sin avisos pendientes",
+      "emptyDescription": "Ninguna entidad tiene avisos de ayuda sin atender.",
+      "heading": "Ayuda",
+      "noAccessDescription": "Tu rol no tiene acceso a Ayuda."
+    },
+    "inicio": {
+      "heading": "Inicio",
+      "unavailable": "No disponible",
+      "activeUsers": "Usuarios activos",
+      "scheduledEvents": "Actividades programadas",
+      "pendingReports": "Reportes pendientes",
+      "pendingHelpRequests": "Solicitudes de ayuda pendientes",
+      "verifiedEntities": "Entidades verificadas",
+      "pendingEntities": "Entidades pendientes de verificar",
+      "activeContracts": "Contratos vigentes",
+      "annualValue": "Valor anual contratado",
+      "overdueInvoices": "Facturas vencidas"
+    },
+    "entidades": {
+      "heading": "Entidades",
+      "noAccessDescription": "Tu rol no tiene acceso a Entidades.",
+      "verifiedLabel": "Verificación",
+      "verifiedFilterAll": "Todas",
+      "verifiedFilterTrue": "Verificadas",
+      "verifiedFilterFalse": "Pendientes",
+      "verifiedTrue": "Verificada",
+      "verifiedFalse": "Pendiente",
+      "searchLabel": "Buscar por nombre",
+      "newEntity": "Nueva entidad",
+      "loadError": "No se pudo cargar el listado de entidades",
+      "loading": "Cargando entidades…",
+      "emptyTitle": "Sin entidades con este filtro",
+      "tableCaption": "Entidades",
+      "nameHeader": "Nombre",
+      "typeHeader": "Tipo",
+      "parentHeader": "Paraguas",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "count": "{count, plural, one {# entidad} other {# entidades}}",
+      "orgTypeAsociacion": "Asociación",
+      "orgTypeOng": "ONG",
+      "orgTypeAdministracion": "Administración",
+      "slugLabel": "Slug",
+      "cifLabel": "CIF",
+      "parentIdLabel": "Entidad paraguas (id, opcional)",
+      "descriptionLabel": "Descripción",
+      "createAction": "Crear entidad",
+      "created": "Entidad «{name}» creada, sin verificar."
+    },
+    "entidadFicha": {
+      "heading": "Ficha de la entidad"
+    },
+    "reportes": {
+      "heading": "Reportes",
+      "noAccessDescription": "Tu rol no tiene acceso a Reportes.",
+      "statusLabel": "Estado",
+      "statusAll": "Todos",
+      "queueError": "No se pudo cargar la cola de reportes",
+      "loading": "Cargando reportes…",
+      "empty": "Sin reportes con este filtro",
+      "tableCaption": "Reportes de plataforma",
+      "colReason": "Motivo",
+      "colTarget": "Objetivo",
+      "colOrganization": "Entidad",
+      "globalScope": "Global",
+      "colStatus": "Estado",
+      "escalated": "Escalado",
+      "colDate": "Fecha",
+      "viewDetail": "Ver detalle",
+      "count": "{count} reportes"
+    },
+    "reporteDetalle": {
+      "heading": "Reporte"
+    },
+    "verificaciones": {
+      "heading": "Verificaciones",
+      "noAccessDescription": "Tu rol no tiene acceso a Verificaciones.",
+      "level2": "Nivel 2 (mayoría de edad)",
+      "level3": "Nivel 3 (identidad)",
+      "levelOther": "Nivel {level}",
+      "accountLabel": "Cuenta",
+      "levelLabel": "Nivel solicitado",
+      "reasonLabel": "Motivo del proveedor",
+      "appealLabel": "Recurso de la persona",
+      "noAppeal": "Sin recurso todavía.",
+      "noteLabel": "Nota de la decisión",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "loadError": "No se pudo cargar la cola de verificación",
+      "loading": "Cargando revisiones…",
+      "emptyTitle": "Sin revisiones pendientes",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "count": "{count, plural, one {# revisión} other {# revisiones}}"
+    },
+    "roles": {
+      "heading": "Roles",
+      "noAccessDescription": "Solo superadmin gestiona los roles de plataforma.",
+      "roleSuperadmin": "Superadmin",
+      "roleVerifier": "Verificador",
+      "roleModerator": "Moderador",
+      "roleSupport": "Soporte",
+      "grantTitle": "Conceder rol",
+      "searchLabel": "Buscar cuenta (email o usuario)",
+      "userIdLabel": "Id de usuario",
+      "roleLabel": "Rol",
+      "grantAction": "Conceder",
+      "grantSuccess": "Rol concedido.",
+      "currentTitle": "Roles vigentes",
+      "loadError": "No se pudieron cargar los roles",
+      "emptyTitle": "Sin roles concedidos",
+      "revokeAction": "Revocar",
+      "revokeConfirmTitle": "Revocar rol de plataforma",
+      "revokeConfirmDescription": "Esta persona perderá el acceso al panel de plataforma."
+    },
+    "auditoria": {
+      "heading": "Auditoría",
+      "noAccessDescription": "Solo superadmin ve la auditoría de la plataforma.",
+      "actorLabel": "Actor (id)",
+      "actionLabel": "Acción",
+      "targetTypeLabel": "Tipo de objetivo",
+      "targetIdLabel": "Id de objetivo",
+      "sinceLabel": "Desde",
+      "untilLabel": "Hasta",
+      "loadError": "No se pudo cargar la auditoría",
+      "loading": "Cargando auditoría…",
+      "emptyTitle": "Sin entradas con estos filtros",
+      "count": "{count, plural, one {# entrada} other {# entradas}}",
+      "exportCsv": "Exportar CSV de esta página",
+      "tableCaption": "Auditoría de plataforma",
+      "colActor": "Actor",
+      "colAction": "Acción",
+      "colTarget": "Objetivo",
+      "colMetadata": "Detalle",
+      "colDate": "Fecha",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "exportNotice": "Esta exportación es una utilidad del cliente (los datos ya visibles en la página, en CSV) y no queda auditada por sí misma. Una exportación auditada de todo el listado es una ruta de backend aparte, fuera del alcance de esta tarea.",
+      "csvId": "id",
+      "csvActor": "actor",
+      "csvAction": "action",
+      "csvTargetType": "target_type",
+      "csvTargetId": "target_id",
+      "csvMetadata": "metadata",
+      "csvCreatedAt": "created_at"
     }
   },
   "paraguas": {

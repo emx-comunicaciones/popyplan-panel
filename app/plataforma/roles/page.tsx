@@ -21,13 +21,17 @@ export default async function PlataformaRolesPage() {
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!plataformaMenuFor(session.platformRole.role).includes("roles")) {
-    return <EmptyState title="Sin acceso" description="Solo superadmin gestiona los roles de plataforma." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("plataforma.roles.noAccessDescription")} />
+    );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Roles</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("plataforma.roles.heading")}</h1>
       <RolesPanel />
     </div>
   );

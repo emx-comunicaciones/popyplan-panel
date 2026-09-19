@@ -14,10 +14,15 @@ import { ApiError, apiFetch } from "@/lib/api/client";
 import { VERIFICATION } from "@/lib/api/endpoints";
 import type { VerificationReview } from "@/lib/api/types";
 
+export type DecideVerificationReviewErrorKind = "sin_permiso" | "desconocido";
+
 export class DecideVerificationReviewError extends Error {
-  constructor(message: string) {
+  readonly kind: DecideVerificationReviewErrorKind;
+
+  constructor(kind: DecideVerificationReviewErrorKind, message: string) {
     super(message);
     this.name = "DecideVerificationReviewError";
+    this.kind = kind;
   }
 }
 
@@ -43,9 +48,9 @@ export function useDecideVerificationReview(): UseMutationResult<
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 403) {
-          throw new DecideVerificationReviewError("Solo verificador o superadmin deciden revisiones.");
+          throw new DecideVerificationReviewError("sin_permiso", "Solo verificador o superadmin deciden revisiones.");
         }
-        throw new DecideVerificationReviewError("No se pudo decidir la revisión.");
+        throw new DecideVerificationReviewError("desconocido", "No se pudo decidir la revisión.");
       }
     },
     onSuccess: () => {

@@ -20,9 +20,11 @@ export default async function PlataformaInicioPage() {
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Inicio</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("plataforma.inicio.heading")}</h1>
       <PlataformaHomeDashboard role={session.platformRole.role} />
     </div>
   );

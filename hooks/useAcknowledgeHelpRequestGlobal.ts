@@ -19,10 +19,15 @@ import { ApiError, apiFetch } from "@/lib/api/client";
 import { SAFETY } from "@/lib/api/endpoints";
 import type { HelpRequestRow } from "@/lib/api/types";
 
+export type AcknowledgeHelpRequestGlobalErrorKind = "sin_permiso" | "desconocido";
+
 export class AcknowledgeHelpRequestGlobalError extends Error {
-  constructor(message: string) {
+  readonly kind: AcknowledgeHelpRequestGlobalErrorKind;
+
+  constructor(kind: AcknowledgeHelpRequestGlobalErrorKind, message: string) {
     super(message);
     this.name = "AcknowledgeHelpRequestGlobalError";
+    this.kind = kind;
   }
 }
 
@@ -41,9 +46,9 @@ export function useAcknowledgeHelpRequestGlobal(): UseMutationResult<
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 403) {
-          throw new AcknowledgeHelpRequestGlobalError("No tienes permiso para atender este aviso.");
+          throw new AcknowledgeHelpRequestGlobalError("sin_permiso", "No tienes permiso para atender este aviso.");
         }
-        throw new AcknowledgeHelpRequestGlobalError("No se pudo marcar el aviso como atendido.");
+        throw new AcknowledgeHelpRequestGlobalError("desconocido", "No se pudo marcar el aviso como atendido.");
       }
     },
     onSuccess: () => {

@@ -12,16 +12,18 @@
  * ver el informe).
  */
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Table } from "@/components/ui/Table";
-import { useAuditLog } from "@/hooks/useAuditLog";
+import { useAuditLog, type AuditLogErrorKind } from "@/hooks/useAuditLog";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import type { AuditLogEntry } from "@/lib/api/types";
 import { csvBlob } from "@/lib/csv/toCsv";
 import { triggerDownload } from "@/lib/download/triggerDownload";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 
 function formatDateTime(iso: string): string {
   return new Date(iso).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
@@ -33,17 +35,25 @@ function metadataText(entry: AuditLogEntry): string {
   return entries.map(([key, value]) => `${key}=${JSON.stringify(value)}`).join(", ");
 }
 
-const CSV_HEADER = ["id", "actor", "action", "target_type", "target_id", "metadata", "created_at"];
+const AUDIT_LOG_ERROR_KEYS: Record<AuditLogErrorKind, string> = {
+  sin_acceso: "plataforma.auditoria.noAccessDescription",
+  desconocido: "errors.auditLog.desconocido",
+};
 
 /**
  * El CSV lo arma `lib/csv/toCsv.ts`, que entrecomilla toda celda y
  * neutraliza las que una hoja de cálculo leería como fórmula (`=`, `+`,
  * `-`, `@`, tabulador, retorno de carro): `action`, `target_type` y
  * `metadata` los escribe quien genera la acción auditada, no el panel.
+ *
+ * **Cabecera traducida (tarea 5 de i18n):** el array de cabeceras se
+ * recibe ya traducido (`t()` en el momento de la llamada, dentro de
+ * `AuditoriaPanel`) en vez de vivir aquí como constante en español —
+ * esta función es `.ts` plano y no puede llamar a `t()`.
  */
-function downloadCsv(rows: AuditLogEntry[]): void {
+function downloadCsv(rows: AuditLogEntry[], header: string[]): void {
   const blob = csvBlob([
-    CSV_HEADER,
+    header,
     ...rows.map((row) => [
       row.id,
       `${row.actor.public_name} (#${row.actor.id})`,
@@ -83,6 +93,7 @@ const EMPTY_FILTERS: AuditFormFilters = {
 };
 
 export function AuditoriaPanel() {
+  const t = useTranslations();
   const [filters, setFilters] = useState<AuditFormFilters>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
 
@@ -120,7 +131,7 @@ export function AuditoriaPanel() {
       <div className="flex flex-wrap items-end gap-3">
         <div>
           <label htmlFor="audit-actor" className="mb-1 block text-sm font-medium text-text-form">
-            Actor (id)
+            {t("plataforma.auditoria.actorLabel")}
           </label>
           <input
             id="audit-actor"
@@ -132,7 +143,7 @@ export function AuditoriaPanel() {
         </div>
         <div>
           <label htmlFor="audit-action" className="mb-1 block text-sm font-medium text-text-form">
-            Acción
+            {t("plataforma.auditoria.actionLabel")}
           </label>
           <input
             id="audit-action"
@@ -145,7 +156,7 @@ export function AuditoriaPanel() {
         </div>
         <div>
           <label htmlFor="audit-target-type" className="mb-1 block text-sm font-medium text-text-form">
-            Tipo de objetivo
+            {t("plataforma.auditoria.targetTypeLabel")}
           </label>
           <input
             id="audit-target-type"
@@ -158,7 +169,7 @@ export function AuditoriaPanel() {
         </div>
         <div>
           <label htmlFor="audit-target-id" className="mb-1 block text-sm font-medium text-text-form">
-            Id de objetivo
+            {t("plataforma.auditoria.targetIdLabel")}
           </label>
           <input
             id="audit-target-id"
@@ -170,7 +181,7 @@ export function AuditoriaPanel() {
         </div>
         <div>
           <label htmlFor="audit-since" className="mb-1 block text-sm font-medium text-text-form">
-            Desde
+            {t("plataforma.auditoria.sinceLabel")}
           </label>
           <input
             id="audit-since"
@@ -182,7 +193,7 @@ export function AuditoriaPanel() {
         </div>
         <div>
           <label htmlFor="audit-until" className="mb-1 block text-sm font-medium text-text-form">
-            Hasta
+            {t("plataforma.auditoria.untilLabel")}
           </label>
           <input
             id="audit-until"
@@ -196,41 +207,64 @@ export function AuditoriaPanel() {
 
       {audit.isError ? (
         audit.error.kind === "sin_acceso" ? (
-          <EmptyState title="Sin acceso" description="Solo superadmin ve la auditoría de la plataforma." />
+          <EmptyState title={t("common.noAccess")} description={t("plataforma.auditoria.noAccessDescription")} />
         ) : (
-          <ErrorState title="No se pudo cargar la auditoría" description={audit.error.message} />
+          <ErrorState
+            title={t("plataforma.auditoria.loadError")}
+            description={errorKindText(audit.error, AUDIT_LOG_ERROR_KEYS, t, "errors.auditLog.desconocido")}
+          />
         )
       ) : !audit.data ? (
-        <p className="text-sm text-text-secondary">Cargando auditoría…</p>
+        <p className="text-sm text-text-secondary">{t("plataforma.auditoria.loading")}</p>
       ) : audit.data.results.length === 0 ? (
-        <EmptyState title="Sin entradas con estos filtros" />
+        <EmptyState title={t("plataforma.auditoria.emptyTitle")} />
       ) : (
         <>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-text-secondary">{audit.data.count} entradas</span>
-            <Button type="button" variant="secondary" onClick={() => downloadCsv(audit.data!.results)}>
-              Exportar CSV de esta página
+            <span className="text-sm text-text-secondary">
+              {t("plataforma.auditoria.count", { count: audit.data.count })}
+            </span>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() =>
+                downloadCsv(audit.data!.results, [
+                  t("plataforma.auditoria.csvId"),
+                  t("plataforma.auditoria.csvActor"),
+                  t("plataforma.auditoria.csvAction"),
+                  t("plataforma.auditoria.csvTargetType"),
+                  t("plataforma.auditoria.csvTargetId"),
+                  t("plataforma.auditoria.csvMetadata"),
+                  t("plataforma.auditoria.csvCreatedAt"),
+                ])
+              }
+            >
+              {t("plataforma.auditoria.exportCsv")}
             </Button>
           </div>
 
           <Table<AuditLogEntry>
-            caption="Auditoría de plataforma"
+            caption={t("plataforma.auditoria.tableCaption")}
             rows={audit.data.results}
             getRowKey={(entry) => entry.id}
             columns={[
               {
                 key: "actor",
-                header: "Actor",
+                header: t("plataforma.auditoria.colActor"),
                 render: (entry) => `${entry.actor.public_name} (#${entry.actor.id})`,
               },
-              { key: "action", header: "Acción", render: (entry) => entry.action },
+              { key: "action", header: t("plataforma.auditoria.colAction"), render: (entry) => entry.action },
               {
                 key: "target",
-                header: "Objetivo",
+                header: t("plataforma.auditoria.colTarget"),
                 render: (entry) => `${entry.target_type} #${entry.target_id}`,
               },
-              { key: "metadata", header: "Detalle", render: metadataText },
-              { key: "created_at", header: "Fecha", render: (entry) => formatDateTime(entry.created_at) },
+              { key: "metadata", header: t("plataforma.auditoria.colMetadata"), render: metadataText },
+              {
+                key: "created_at",
+                header: t("plataforma.auditoria.colDate"),
+                render: (entry) => formatDateTime(entry.created_at),
+              },
             ]}
           />
 
@@ -241,7 +275,7 @@ export function AuditoriaPanel() {
               disabled={!audit.data.previous}
               onClick={() => setPage((prev) => Math.max(1, prev - 1))}
             >
-              Anterior
+              {t("plataforma.auditoria.previous")}
             </Button>
             <Button
               type="button"
@@ -249,17 +283,13 @@ export function AuditoriaPanel() {
               disabled={!audit.data.next}
               onClick={() => setPage((prev) => prev + 1)}
             >
-              Siguiente
+              {t("plataforma.auditoria.next")}
             </Button>
           </div>
         </>
       )}
 
-      <p className="text-xs text-text-secondary">
-        Esta exportación es una utilidad del cliente (los datos ya visibles en la página, en
-        CSV) y no queda auditada por sí misma. Una exportación auditada de todo el listado es
-        una ruta de backend aparte, fuera del alcance de esta tarea.
-      </p>
+      <p className="text-xs text-text-secondary">{t("plataforma.auditoria.exportNotice")}</p>
     </div>
   );
 }

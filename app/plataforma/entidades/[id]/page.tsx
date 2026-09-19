@@ -38,13 +38,17 @@ export default async function PlataformaEntidadDetailPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!plataformaMenuFor(session.platformRole.role).includes("entidades")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Entidades." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("plataforma.entidades.noAccessDescription")} />
+    );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Ficha de la entidad</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("plataforma.entidadFicha.heading")}</h1>
       <EntidadDetail orgId={id} role={session.platformRole.role} />
     </div>
   );

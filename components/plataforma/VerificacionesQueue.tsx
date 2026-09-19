@@ -9,46 +9,61 @@
  * `EntidadesTable.tsx` (antes solo se veía la primera página).
  */
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { useDecideVerificationReview } from "@/hooks/useDecideVerificationReview";
+import {
+  useDecideVerificationReview,
+  type DecideVerificationReviewErrorKind,
+} from "@/hooks/useDecideVerificationReview";
 import { useVerificationReviewsQueue } from "@/hooks/useVerificationReviewsQueue";
 import type { VerificationReview } from "@/lib/api/types";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 
-const LEVEL_LABELS: Record<number, string> = {
-  2: "Nivel 2 (mayoría de edad)",
-  3: "Nivel 3 (identidad)",
+const DECIDE_ERROR_KEYS: Record<DecideVerificationReviewErrorKind, string> = {
+  sin_permiso: "errors.decideVerificationReview.sinPermiso",
+  desconocido: "errors.decideVerificationReview.desconocido",
 };
 
 function ReviewCard({ review }: { review: VerificationReview }) {
+  const t = useTranslations();
   const decide = useDecideVerificationReview();
   const [note, setNote] = useState("");
+
+  const levelKey =
+    review.level === 2
+      ? "plataforma.verificaciones.level2"
+      : review.level === 3
+        ? "plataforma.verificaciones.level3"
+        : null;
 
   return (
     <li>
       <Card>
         <dl className="grid grid-cols-2 gap-2 text-sm">
-          <dt className="text-text-secondary">Cuenta</dt>
+          <dt className="text-text-secondary">{t("plataforma.verificaciones.accountLabel")}</dt>
           <dd className="text-text-base">
             {review.username} (#{review.user})
           </dd>
-          <dt className="text-text-secondary">Nivel solicitado</dt>
+          <dt className="text-text-secondary">{t("plataforma.verificaciones.levelLabel")}</dt>
           <dd className="text-text-base">
-            <Badge tone="info">{LEVEL_LABELS[review.level] ?? `Nivel ${review.level}`}</Badge>
+            <Badge tone="info">
+              {levelKey ? t(levelKey) : t("plataforma.verificaciones.levelOther", { level: review.level })}
+            </Badge>
           </dd>
-          <dt className="text-text-secondary">Motivo del proveedor</dt>
+          <dt className="text-text-secondary">{t("plataforma.verificaciones.reasonLabel")}</dt>
           <dd className="text-text-base">{review.reason || "—"}</dd>
-          <dt className="text-text-secondary">Recurso de la persona</dt>
-          <dd className="text-text-base">{review.appeal_text || "Sin recurso todavía."}</dd>
+          <dt className="text-text-secondary">{t("plataforma.verificaciones.appealLabel")}</dt>
+          <dd className="text-text-base">{review.appeal_text || t("plataforma.verificaciones.noAppeal")}</dd>
         </dl>
 
         <div className="mt-3 flex flex-col gap-2">
           <label htmlFor={`review-note-${review.id}`} className="block text-sm font-medium text-text-form">
-            Nota de la decisión
+            {t("plataforma.verificaciones.noteLabel")}
           </label>
           <textarea
             id={`review-note-${review.id}`}
@@ -63,7 +78,7 @@ function ReviewCard({ review }: { review: VerificationReview }) {
               disabled={decide.isPending}
               onClick={() => decide.mutate({ reviewId: review.id, approved: true, note })}
             >
-              Aprobar
+              {t("plataforma.verificaciones.approve")}
             </Button>
             <Button
               type="button"
@@ -71,12 +86,12 @@ function ReviewCard({ review }: { review: VerificationReview }) {
               disabled={decide.isPending}
               onClick={() => decide.mutate({ reviewId: review.id, approved: false, note })}
             >
-              Rechazar
+              {t("plataforma.verificaciones.reject")}
             </Button>
           </div>
           {decide.isError ? (
             <p role="alert" className="text-sm text-error">
-              {decide.error.message}
+              {errorKindText(decide.error, DECIDE_ERROR_KEYS, t, "errors.decideVerificationReview.desconocido")}
             </p>
           ) : null}
         </div>
@@ -86,6 +101,7 @@ function ReviewCard({ review }: { review: VerificationReview }) {
 }
 
 export function VerificacionesQueue() {
+  const t = useTranslations();
   const [page, setPage] = useState(1);
   const reviews = useVerificationReviewsQueue({ page });
 
@@ -100,15 +116,25 @@ export function VerificacionesQueue() {
 
   if (reviews.isError) {
     if (reviews.error.kind === "sin_acceso") {
-      return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a la cola de verificación." />;
+      return (
+        <EmptyState
+          title={t("common.noAccess")}
+          description={t("errors.verificationReviewsQueue.sinAcceso")}
+        />
+      );
     }
-    return <ErrorState title="No se pudo cargar la cola de verificación" description={reviews.error.message} />;
+    return (
+      <ErrorState
+        title={t("plataforma.verificaciones.loadError")}
+        description={t("errors.verificationReviewsQueue.desconocido")}
+      />
+    );
   }
   if (!reviews.data) {
-    return <p className="text-sm text-text-secondary">Cargando revisiones…</p>;
+    return <p className="text-sm text-text-secondary">{t("plataforma.verificaciones.loading")}</p>;
   }
   if (reviews.data.results.length === 0) {
-    return <EmptyState title="Sin revisiones pendientes" />;
+    return <EmptyState title={t("plataforma.verificaciones.emptyTitle")} />;
   }
 
   return (
@@ -128,16 +154,18 @@ export function VerificacionesQueue() {
           disabled={!reviews.data.previous}
           onClick={() => setPage((prev) => Math.max(1, prev - 1))}
         >
-          Anterior
+          {t("plataforma.verificaciones.previous")}
         </Button>
-        <span className="text-sm text-text-secondary">{reviews.data.count} revisiones</span>
+        <span className="text-sm text-text-secondary">
+          {t("plataforma.verificaciones.count", { count: reviews.data.count })}
+        </span>
         <Button
           type="button"
           variant="secondary"
           disabled={!reviews.data.next}
           onClick={() => setPage((prev) => prev + 1)}
         >
-          Siguiente
+          {t("plataforma.verificaciones.next")}
         </Button>
       </div>
     </div>

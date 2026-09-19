@@ -9,6 +9,7 @@
  * a la plataforma).
  */
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -16,19 +17,46 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-import { useGrantPlatformRole, usePlatformRoles, useRevokePlatformRole } from "@/hooks/usePlatformRoles";
+import {
+  useGrantPlatformRole,
+  usePlatformRoles,
+  useRevokePlatformRole,
+  type PlatformRolesErrorKind,
+} from "@/hooks/usePlatformRoles";
 import { useUserSearch } from "@/hooks/useUserSearch";
 import type { PlatformRoleName } from "@/lib/api/types";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 
 const ROLE_OPTIONS: PlatformRoleName[] = ["superadmin", "verifier", "moderator", "support"];
-const ROLE_LABELS: Record<PlatformRoleName, string> = {
-  superadmin: "Superadmin",
-  verifier: "Verificador",
-  moderator: "Moderador",
-  support: "Soporte",
+const ROLE_LABEL_KEYS: Record<PlatformRoleName, string> = {
+  superadmin: "plataforma.roles.roleSuperadmin",
+  verifier: "plataforma.roles.roleVerifier",
+  moderator: "plataforma.roles.roleModerator",
+  support: "plataforma.roles.roleSupport",
+};
+
+const ROLES_ERROR_KEYS: Record<PlatformRolesErrorKind, string> = {
+  sin_acceso: "errors.platformRoles.sinAcceso",
+  invalido: "errors.platformRoles.invalido",
+  sin_permiso: "errors.platformRoles.sinPermiso",
+  no_encontrado: "errors.platformRoles.noEncontrado",
+  desconocido: "errors.platformRoles.desconocido",
+};
+
+const GRANT_ERROR_KEYS: Record<PlatformRolesErrorKind, string> = {
+  ...ROLES_ERROR_KEYS,
+  sin_permiso: "errors.platformRoles.sinPermisoConceder",
+  desconocido: "errors.platformRoles.desconocidoConceder",
+};
+
+const REVOKE_ERROR_KEYS: Record<PlatformRolesErrorKind, string> = {
+  ...ROLES_ERROR_KEYS,
+  sin_permiso: "errors.platformRoles.sinPermisoRevocar",
+  desconocido: "errors.platformRoles.desconocidoRevocar",
 };
 
 function GrantRoleForm() {
+  const t = useTranslations();
   const grant = useGrantPlatformRole();
   const [search, setSearch] = useState("");
   const [userId, setUserId] = useState("");
@@ -43,10 +71,10 @@ function GrantRoleForm() {
   const results = useUserSearch(debouncedSearch);
 
   return (
-    <Card title="Conceder rol">
+    <Card title={t("plataforma.roles.grantTitle")}>
       <div className="mb-3">
         <label htmlFor="roles-search" className="mb-1 block text-sm font-medium text-text-form">
-          Buscar cuenta (email o usuario)
+          {t("plataforma.roles.searchLabel")}
         </label>
         <input
           id="roles-search"
@@ -90,7 +118,7 @@ function GrantRoleForm() {
       >
         <div>
           <label htmlFor="roles-user-id" className="mb-1 block text-sm font-medium text-text-form">
-            Id de usuario
+            {t("plataforma.roles.userIdLabel")}
           </label>
           <input
             id="roles-user-id"
@@ -102,7 +130,7 @@ function GrantRoleForm() {
         </div>
         <div>
           <label htmlFor="roles-role" className="mb-1 block text-sm font-medium text-text-form">
-            Rol
+            {t("plataforma.roles.roleLabel")}
           </label>
           <select
             id="roles-role"
@@ -112,26 +140,27 @@ function GrantRoleForm() {
           >
             {ROLE_OPTIONS.map((value) => (
               <option key={value} value={value}>
-                {ROLE_LABELS[value]}
+                {t(ROLE_LABEL_KEYS[value])}
               </option>
             ))}
           </select>
         </div>
         <Button type="submit" disabled={!userId || grant.isPending}>
-          Conceder
+          {t("plataforma.roles.grantAction")}
         </Button>
       </form>
       {grant.isError ? (
         <p role="alert" className="mt-2 text-sm text-error">
-          {grant.error.message}
+          {errorKindText(grant.error, GRANT_ERROR_KEYS, t, "errors.platformRoles.desconocidoConceder")}
         </p>
       ) : null}
-      {grant.isSuccess ? <p className="mt-2 text-sm text-success">Rol concedido.</p> : null}
+      {grant.isSuccess ? <p className="mt-2 text-sm text-success">{t("plataforma.roles.grantSuccess")}</p> : null}
     </Card>
   );
 }
 
 export function RolesPanel() {
+  const t = useTranslations();
   const roles = usePlatformRoles();
   const revoke = useRevokePlatformRole();
   const [toRevoke, setToRevoke] = useState<number | null>(null);
@@ -140,22 +169,25 @@ export function RolesPanel() {
     <div className="flex flex-col gap-6">
       <GrantRoleForm />
 
-      <Card title="Roles vigentes">
+      <Card title={t("plataforma.roles.currentTitle")}>
         {roles.isError ? (
-          <ErrorState title="No se pudieron cargar los roles" description={roles.error.message} />
+          <ErrorState
+            title={t("plataforma.roles.loadError")}
+            description={errorKindText(roles.error, ROLES_ERROR_KEYS, t, "errors.platformRoles.desconocido")}
+          />
         ) : !roles.data ? (
-          <p className="text-sm text-text-secondary">Cargando…</p>
+          <p className="text-sm text-text-secondary">{t("common.loading")}</p>
         ) : roles.data.length === 0 ? (
-          <EmptyState title="Sin roles concedidos" />
+          <EmptyState title={t("plataforma.roles.emptyTitle")} />
         ) : (
           <ul className="flex flex-col gap-2 text-sm">
             {roles.data.map((entry) => (
               <li key={entry.user} className="flex items-center justify-between gap-2">
                 <span>
-                  {entry.username} (#{entry.user}) — {ROLE_LABELS[entry.role]}
+                  {entry.username} (#{entry.user}) — {t(ROLE_LABEL_KEYS[entry.role])}
                 </span>
                 <Button type="button" variant="danger" onClick={() => setToRevoke(entry.user)}>
-                  Revocar
+                  {t("plataforma.roles.revokeAction")}
                 </Button>
               </li>
             ))}
@@ -163,16 +195,16 @@ export function RolesPanel() {
         )}
         {revoke.isError ? (
           <p role="alert" className="mt-2 text-sm text-error">
-            {revoke.error.message}
+            {errorKindText(revoke.error, REVOKE_ERROR_KEYS, t, "errors.platformRoles.desconocidoRevocar")}
           </p>
         ) : null}
       </Card>
 
       <ConfirmDialog
         open={toRevoke !== null}
-        title="Revocar rol de plataforma"
-        description="Esta persona perderá el acceso al panel de plataforma."
-        confirmLabel="Revocar"
+        title={t("plataforma.roles.revokeConfirmTitle")}
+        description={t("plataforma.roles.revokeConfirmDescription")}
+        confirmLabel={t("plataforma.roles.revokeAction")}
         pending={revoke.isPending}
         onCancel={() => setToRevoke(null)}
         onConfirm={() => {

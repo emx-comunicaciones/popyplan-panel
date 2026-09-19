@@ -13,10 +13,29 @@ import { detailOf } from "@/lib/api/drfError";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import type { Organization, OrganizationCreateRequest, PaginatedOrganizationList } from "@/lib/api/types";
 
+/**
+ * **i18n (tarea 5 del plan de i18n):** `kind`/`detail` cubren las tres
+ * mutaciones (`useCreateOrganization`/`useVerifyOrganization`/
+ * `useSetOrganizationParent`) con la unión de sus estados posibles —
+ * cada componente que las consume traduce con su propio
+ * `Record<OrganizationsErrorKind, string>` (los textos de `invalido`/
+ * `sin_permiso`/`desconocido` difieren genuinamente por acción, mismo
+ * patrón que `ProgramMutationError`). `useOrganizations` (el listado) no
+ * tiene más que un mensaje fijo — se deja sin `kind`, mismo criterio que
+ * `useOrganization`: el componente ignora `.message` y pinta una clave
+ * fija.
+ */
+export type OrganizationsErrorKind = "invalido" | "sin_permiso" | "desconocido";
+
 export class OrganizationsError extends Error {
-  constructor(message: string) {
+  readonly kind?: OrganizationsErrorKind;
+  readonly detail?: string;
+
+  constructor(message: string, kind?: OrganizationsErrorKind, detail?: string) {
     super(message);
     this.name = "OrganizationsError";
+    this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -92,12 +111,13 @@ export function useCreateOrganization(): UseMutationResult<
         return await apiFetch<Organization>(ORGANIZATIONS.LIST(), { method: "POST", body: input });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
-          throw new OrganizationsError(detailOf(error) ?? "Revisa los datos: alguno no es válido.");
+          const detail = detailOf(error);
+          throw new OrganizationsError(detail ?? "Revisa los datos: alguno no es válido.", "invalido", detail);
         }
         if (error instanceof ApiError && error.status === 403) {
-          throw new OrganizationsError("Solo verificador o superadmin dan de alta entidades.");
+          throw new OrganizationsError("Solo verificador o superadmin dan de alta entidades.", "sin_permiso");
         }
-        throw new OrganizationsError("No se pudo dar de alta la entidad.");
+        throw new OrganizationsError("No se pudo dar de alta la entidad.", "desconocido");
       }
     },
     onSuccess: () => invalidateOrganizations(queryClient),
@@ -113,9 +133,9 @@ export function useVerifyOrganization(): UseMutationResult<Organization, Organiz
         return await apiFetch<Organization>(ORGANIZATIONS.VERIFY(orgId), { method: "POST" });
       } catch (error) {
         if (error instanceof ApiError && error.status === 403) {
-          throw new OrganizationsError("Solo verificador o superadmin verifican entidades.");
+          throw new OrganizationsError("Solo verificador o superadmin verifican entidades.", "sin_permiso");
         }
-        throw new OrganizationsError("No se pudo verificar la entidad.");
+        throw new OrganizationsError("No se pudo verificar la entidad.", "desconocido");
       }
     },
     onSuccess: (_data, orgId) => {
@@ -153,14 +173,17 @@ export function useSetOrganizationParent(): UseMutationResult<
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
+          const detail = detailOf(error);
           throw new OrganizationsError(
-            detailOf(error) ?? "Esa entidad paraguas no es válida (crearía un ciclo).",
+            detail ?? "Esa entidad paraguas no es válida (crearía un ciclo).",
+            "invalido",
+            detail,
           );
         }
         if (error instanceof ApiError && error.status === 403) {
-          throw new OrganizationsError("Solo superadmin cambia la entidad paraguas.");
+          throw new OrganizationsError("Solo superadmin cambia la entidad paraguas.", "sin_permiso");
         }
-        throw new OrganizationsError("No se pudo cambiar la entidad paraguas.");
+        throw new OrganizationsError("No se pudo cambiar la entidad paraguas.", "desconocido");
       }
     },
     onSuccess: (_data, { orgId }) => {

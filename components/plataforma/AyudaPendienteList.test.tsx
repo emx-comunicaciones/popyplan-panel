@@ -185,7 +185,7 @@ describe("AyudaPendienteList", () => {
       mutate: vi.fn(),
       isPending: false,
       isError: true,
-      error: new Error("No tienes permiso para atender este aviso."),
+      error: { message: "No tienes permiso para atender este aviso.", kind: "sin_permiso" },
     });
 
     render(<AyudaPendienteList />);

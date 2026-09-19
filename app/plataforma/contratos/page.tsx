@@ -28,18 +28,20 @@ export default async function PlataformaContratosPage() {
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!plataformaMenuFor(session.platformRole.role).includes("contratos")) {
     return (
       <EmptyState
-        title="Sin acceso"
-        description="Solo superadmin y support ven la contratación y facturación de plataforma."
+        title={t("common.noAccess")}
+        description={t("plataforma.contratos.noAccessDescription")}
       />
     );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Contratos</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("plataforma.contratos.heading")}</h1>
       <ContratosPanel role={session.platformRole.role} />
     </div>
   );

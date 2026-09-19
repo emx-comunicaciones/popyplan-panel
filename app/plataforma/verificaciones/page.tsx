@@ -21,13 +21,17 @@ export default async function PlataformaVerificacionesPage() {
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!plataformaMenuFor(session.platformRole.role).includes("verificaciones")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Verificaciones." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("plataforma.verificaciones.noAccessDescription")} />
+    );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Verificaciones</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("plataforma.verificaciones.heading")}</h1>
       <VerificacionesQueue />
     </div>
   );

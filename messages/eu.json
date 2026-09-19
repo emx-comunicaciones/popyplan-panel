@@ -1051,6 +1051,36 @@
       "periodoInvalido": "Aukeratutako aldia edo banaketa ez da baliozkoa.",
       "sinAcceso": "Ez duzu konparaketa honetarako sarbiderik.",
       "desconocido": "Ezin izan da konparaketa kargatu."
+    },
+    "platformRoles": {
+      "sinAcceso": "Superadminek bakarrik ikusten ditu plataformaren rolak.",
+      "invalido": "Berrikusi erabiltzailearen id-a eta rola.",
+      "sinPermiso": "Ez duzu ekintza honetarako baimenik.",
+      "sinPermisoConceder": "Superadminek bakarrik ematen ditu plataformaren rolak.",
+      "sinPermisoRevocar": "Superadminek bakarrik baliogabetzen ditu plataformaren rolak.",
+      "noEncontrado": "Pertsona horrek ez du indarreko plataforma-rolik.",
+      "desconocido": "Ezin izan dira plataformaren rolak kargatu.",
+      "desconocidoConceder": "Ezin izan da rola eman.",
+      "desconocidoRevocar": "Ezin izan da rola baliogabetu."
+    },
+    "decideVerificationReview": {
+      "sinPermiso": "Egiaztatzaileak edo superadminek bakarrik erabakitzen dituzte berrikuspenak.",
+      "desconocido": "Ezin izan da berrikuspena erabaki."
+    },
+    "verificationReviewsQueue": {
+      "sinAcceso": "Zure rolak ez du sarbiderik egiaztapen-ilaran.",
+      "desconocido": "Ezin izan da egiaztapen-ilara kargatu."
+    },
+    "organizations": {
+      "desconocido": "Ezin izan da erakundeen zerrenda kargatu."
+    },
+    "createOrganization": {
+      "invalido": "Berrikusi datuak: bat ez da baliozkoa.",
+      "sinPermiso": "Egiaztatzaileak edo superadminek bakarrik ematen dute erakundeen alta.",
+      "desconocido": "Ezin izan da erakundearen alta eman."
+    },
+    "auditLog": {
+      "desconocido": "Ezin izan da auditoria kargatu."
     }
   },
   "reports": {
@@ -1494,7 +1524,161 @@
         "minNegative": "Gutxieneko biztanleria ezin da negatiboa izan.",
         "maxInvalid": "Gehieneko biztanleria ez da baliozkoa.",
         "maxBelowMin": "Gehieneko biztanleria ezin da gutxienekoa baino txikiagoa izan."
-      }
+      },
+      "heading": "Kontratuak",
+      "noAccessDescription": "Superadminek eta laguntzak bakarrik ikusten dute plataformaren kontratazioa eta fakturazioa."
+    },
+    "ayuda": {
+      "noOrganization": "Erakunderik gabe",
+      "sinAcceso": "Ez duzu laguntza-abisuetarako sarbiderik.",
+      "desconocido": "Ezin izan dira laguntza-abisuak kargatu.",
+      "loadError": "Ezin izan dira laguntza-abisuak kargatu",
+      "loading": "Abisuak kargatzen…",
+      "emptyTitle": "Ez dago abisu zainik",
+      "emptyDescription": "Erakunde batek ere ez du erantzun gabeko laguntza-abisurik.",
+      "heading": "Laguntza",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Laguntzan."
+    },
+    "inicio": {
+      "heading": "Hasiera",
+      "unavailable": "Ez dago erabilgarri",
+      "activeUsers": "Erabiltzaile aktiboak",
+      "scheduledEvents": "Programatutako jarduerak",
+      "pendingReports": "Zain dauden salaketak",
+      "pendingHelpRequests": "Zain dauden laguntza-eskaerak",
+      "verifiedEntities": "Egiaztatutako erakundeak",
+      "pendingEntities": "Egiaztatzeke dauden erakundeak",
+      "activeContracts": "Indarreko kontratuak",
+      "annualValue": "Kontratatutako urteko balioa",
+      "overdueInvoices": "Mugaeguna igarota duten fakturak"
+    },
+    "entidades": {
+      "heading": "Erakundeak",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Erakundeetan.",
+      "verifiedLabel": "Egiaztapena",
+      "verifiedFilterAll": "Denak",
+      "verifiedFilterTrue": "Egiaztatuak",
+      "verifiedFilterFalse": "Zain daudenak",
+      "verifiedTrue": "Egiaztatuta",
+      "verifiedFalse": "Zain",
+      "searchLabel": "Izenez bilatu",
+      "newEntity": "Erakunde berria",
+      "loadError": "Ezin izan da erakundeen zerrenda kargatu",
+      "loading": "Erakundeak kargatzen…",
+      "emptyTitle": "Ez dago iragazki honekin erakunderik",
+      "tableCaption": "Erakundeak",
+      "nameHeader": "Izena",
+      "typeHeader": "Mota",
+      "parentHeader": "Aterkia",
+      "previous": "Aurrekoa",
+      "next": "Hurrengoa",
+      "count": "{count, plural, one {erakunde #} other {# erakunde}}",
+      "orgTypeAsociacion": "Elkartea",
+      "orgTypeOng": "GKE",
+      "orgTypeAdministracion": "Administrazioa",
+      "slugLabel": "Slug",
+      "cifLabel": "IFK",
+      "parentIdLabel": "Erakunde aterkia (id-a, aukerakoa)",
+      "descriptionLabel": "Deskribapena",
+      "createAction": "Erakundea sortu",
+      "created": "«{name}» erakundea sortuta, egiaztatu gabe."
+    },
+    "entidadFicha": {
+      "heading": "Erakundearen fitxa"
+    },
+    "reportes": {
+      "heading": "Salaketak",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Salaketetan.",
+      "statusLabel": "Egoera",
+      "statusAll": "Denak",
+      "queueError": "Ezin izan da salaketen ilara kargatu",
+      "loading": "Salaketak kargatzen…",
+      "empty": "Ez dago iragazki honekin salaketarik",
+      "tableCaption": "Plataformaren salaketak",
+      "colReason": "Arrazoia",
+      "colTarget": "Helburua",
+      "colOrganization": "Erakundea",
+      "globalScope": "Globala",
+      "colStatus": "Egoera",
+      "escalated": "Igoa",
+      "colDate": "Data",
+      "viewDetail": "Xehetasuna ikusi",
+      "count": "{count} salaketa"
+    },
+    "reporteDetalle": {
+      "heading": "Salaketa"
+    },
+    "verificaciones": {
+      "heading": "Egiaztapenak",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Egiaztapenetan.",
+      "level2": "2. maila (adin nagusitasuna)",
+      "level3": "3. maila (identitatea)",
+      "levelOther": "{level}. maila",
+      "accountLabel": "Kontua",
+      "levelLabel": "Eskatutako maila",
+      "reasonLabel": "Hornitzailearen arrazoia",
+      "appealLabel": "Pertsonaren dokumentua",
+      "noAppeal": "Oraindik dokumenturik gabe.",
+      "noteLabel": "Erabakiaren oharra",
+      "approve": "Onartu",
+      "reject": "Ezetsi",
+      "loadError": "Ezin izan da egiaztapen-ilara kargatu",
+      "loading": "Berrikuspenak kargatzen…",
+      "emptyTitle": "Ez dago berrikuspen zainik",
+      "previous": "Aurrekoa",
+      "next": "Hurrengoa",
+      "count": "{count, plural, one {berrikuspen #} other {# berrikuspen}}"
+    },
+    "roles": {
+      "heading": "Rolak",
+      "noAccessDescription": "Superadminek bakarrik kudeatzen ditu plataformaren rolak.",
+      "roleSuperadmin": "Superadmin",
+      "roleVerifier": "Egiaztatzailea",
+      "roleModerator": "Moderatzailea",
+      "roleSupport": "Laguntza",
+      "grantTitle": "Rola eman",
+      "searchLabel": "Kontua bilatu (emaila edo erabiltzaile-izena)",
+      "userIdLabel": "Erabiltzailearen id-a",
+      "roleLabel": "Rola",
+      "grantAction": "Eman",
+      "grantSuccess": "Rola emanda.",
+      "currentTitle": "Indarreko rolak",
+      "loadError": "Ezin izan dira rolak kargatu",
+      "emptyTitle": "Ez dago emandako rolik",
+      "revokeAction": "Baliogabetu",
+      "revokeConfirmTitle": "Plataforma-rola baliogabetu",
+      "revokeConfirmDescription": "Pertsona honek plataformaren panelerako sarbidea galduko du."
+    },
+    "auditoria": {
+      "heading": "Auditoria",
+      "noAccessDescription": "Superadminek bakarrik ikusten du plataformaren auditoria.",
+      "actorLabel": "Egilea (id-a)",
+      "actionLabel": "Ekintza",
+      "targetTypeLabel": "Helburu mota",
+      "targetIdLabel": "Helburuaren id-a",
+      "sinceLabel": "Noiztik",
+      "untilLabel": "Noiz arte",
+      "loadError": "Ezin izan da auditoria kargatu",
+      "loading": "Auditoria kargatzen…",
+      "emptyTitle": "Ez dago sarrerarik iragazki hauekin",
+      "count": "{count, plural, one {sarrera #} other {# sarrera}}",
+      "exportCsv": "Orrialde honen CSVa esportatu",
+      "tableCaption": "Plataformaren auditoria",
+      "colActor": "Egilea",
+      "colAction": "Ekintza",
+      "colTarget": "Helburua",
+      "colMetadata": "Xehetasuna",
+      "colDate": "Data",
+      "previous": "Aurrekoa",
+      "next": "Hurrengoa",
+      "exportNotice": "Esportazio hau bezeroaren tresna bat da (orrialdean dagoeneko ikusgai dauden datuak, CSV gisa) eta ez da bere kabuz auditatzen. Zerrenda osoaren esportazio auditatua backend-eko bide bereizi bat da, ataza honen esparrutik kanpo.",
+      "csvId": "id",
+      "csvActor": "actor",
+      "csvAction": "action",
+      "csvTargetType": "target_type",
+      "csvTargetId": "target_id",
+      "csvMetadata": "metadata",
+      "csvCreatedAt": "created_at"
     }
   },
   "paraguas": {

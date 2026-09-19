@@ -21,13 +21,17 @@ export default async function PlataformaAyudaPage() {
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!plataformaMenuFor(session.platformRole.role).includes("ayuda")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Ayuda." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("plataforma.ayuda.noAccessDescription")} />
+    );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Ayuda</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("plataforma.ayuda.heading")}</h1>
       <AyudaPendienteList />
     </div>
   );

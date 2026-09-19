@@ -21,15 +21,19 @@ export default async function PlataformaEntidadesPage() {
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!plataformaMenuFor(session.platformRole.role).includes("entidades")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Entidades." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("plataforma.entidades.noAccessDescription")} />
+    );
   }
 
   const canCreate = session.platformRole.role === "verifier" || session.platformRole.role === "superadmin";
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Entidades</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("plataforma.entidades.heading")}</h1>
       <EntidadesTable canCreate={canCreate} />
     </div>
   );

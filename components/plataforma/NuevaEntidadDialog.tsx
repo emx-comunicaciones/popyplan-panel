@@ -8,23 +8,32 @@
  * la entidad.
  */
 import { useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
-import { useCreateOrganization } from "@/hooks/useOrganizations";
+import { useCreateOrganization, type OrganizationsErrorKind } from "@/hooks/useOrganizations";
 import type { OrgTypeEnum } from "@/lib/api/types";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 
 export interface NuevaEntidadDialogProps {
   onClose: () => void;
 }
 
-const ORG_TYPE_LABELS: Record<OrgTypeEnum, string> = {
-  asociacion: "Asociación",
-  ong: "ONG",
-  administracion: "Administración",
+const ORG_TYPE_LABEL_KEYS: Record<OrgTypeEnum, string> = {
+  asociacion: "plataforma.entidades.orgTypeAsociacion",
+  ong: "plataforma.entidades.orgTypeOng",
+  administracion: "plataforma.entidades.orgTypeAdministracion",
+};
+
+const CREATE_ORGANIZATION_ERROR_KEYS: Record<OrganizationsErrorKind, string> = {
+  invalido: "errors.createOrganization.invalido",
+  sin_permiso: "errors.createOrganization.sinPermiso",
+  desconocido: "errors.createOrganization.desconocido",
 };
 
 export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
+  const t = useTranslations();
   const create = useCreateOrganization();
 
   const [name, setName] = useState("");
@@ -72,11 +81,11 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
   }
 
   return (
-    <Dialog open titleId="nueva-entidad-title" title="Nueva entidad" onClose={handleClose}>
+    <Dialog open titleId="nueva-entidad-title" title={t("plataforma.entidades.newEntity")} onClose={handleClose}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div>
           <label htmlFor="nueva-entidad-name" className="mb-1 block text-sm font-medium text-text-form">
-            Nombre
+            {t("plataforma.entidades.nameHeader")}
           </label>
           <input
             id="nueva-entidad-name"
@@ -88,7 +97,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
         </div>
         <div>
           <label htmlFor="nueva-entidad-slug" className="mb-1 block text-sm font-medium text-text-form">
-            Slug
+            {t("plataforma.entidades.slugLabel")}
           </label>
           <input
             id="nueva-entidad-slug"
@@ -100,7 +109,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
         </div>
         <div>
           <label htmlFor="nueva-entidad-tipo" className="mb-1 block text-sm font-medium text-text-form">
-            Tipo
+            {t("plataforma.entidades.typeHeader")}
           </label>
           <select
             id="nueva-entidad-tipo"
@@ -108,16 +117,16 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
             onChange={(event) => setOrgType(event.target.value as OrgTypeEnum)}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
-            {(Object.keys(ORG_TYPE_LABELS) as OrgTypeEnum[]).map((value) => (
+            {(Object.keys(ORG_TYPE_LABEL_KEYS) as OrgTypeEnum[]).map((value) => (
               <option key={value} value={value}>
-                {ORG_TYPE_LABELS[value]}
+                {t(ORG_TYPE_LABEL_KEYS[value])}
               </option>
             ))}
           </select>
         </div>
         <div>
           <label htmlFor="nueva-entidad-cif" className="mb-1 block text-sm font-medium text-text-form">
-            CIF
+            {t("plataforma.entidades.cifLabel")}
           </label>
           <input
             id="nueva-entidad-cif"
@@ -129,7 +138,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
         </div>
         <div>
           <label htmlFor="nueva-entidad-parent" className="mb-1 block text-sm font-medium text-text-form">
-            Entidad paraguas (id, opcional)
+            {t("plataforma.entidades.parentIdLabel")}
           </label>
           <input
             id="nueva-entidad-parent"
@@ -141,7 +150,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
         </div>
         <div>
           <label htmlFor="nueva-entidad-description" className="mb-1 block text-sm font-medium text-text-form">
-            Descripción
+            {t("plataforma.entidades.descriptionLabel")}
           </label>
           <textarea
             id="nueva-entidad-description"
@@ -154,19 +163,21 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
 
         <div className="flex gap-2">
           <Button type="submit" disabled={!canSubmit || create.isPending}>
-            Crear entidad
+            {t("plataforma.entidades.createAction")}
           </Button>
           <Button type="button" variant="secondary" onClick={handleClose}>
-            Cerrar
+            {t("common.close")}
           </Button>
         </div>
 
         {create.isError ? (
           <p role="alert" className="text-sm text-error">
-            {create.error.message}
+            {errorKindText(create.error, CREATE_ORGANIZATION_ERROR_KEYS, t, "errors.createOrganization.desconocido")}
           </p>
         ) : null}
-        {created ? <p className="text-sm text-success">Entidad «{created}» creada, sin verificar.</p> : null}
+        {created ? (
+          <p className="text-sm text-success">{t("plataforma.entidades.created", { name: created })}</p>
+        ) : null}
       </form>
     </Dialog>
   );

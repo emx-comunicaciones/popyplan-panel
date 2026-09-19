@@ -5,19 +5,42 @@
  * todas las entidades a la vez (`usePlatformPendingHelpRequests`, ruta
  * agregada del backend desde la tarea P7, `docs/PANEL.md` §10.1).
  */
+import { useTranslations } from "next-intl";
+
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { useAcknowledgeHelpRequestGlobal } from "@/hooks/useAcknowledgeHelpRequestGlobal";
-import { usePlatformPendingHelpRequests } from "@/hooks/usePlatformPendingHelpRequests";
+import {
+  useAcknowledgeHelpRequestGlobal,
+  type AcknowledgeHelpRequestGlobalErrorKind,
+} from "@/hooks/useAcknowledgeHelpRequestGlobal";
+import {
+  usePlatformPendingHelpRequests,
+  type PlatformHelpRequestsErrorKind,
+} from "@/hooks/usePlatformPendingHelpRequests";
 import type { HelpRequestRow } from "@/lib/api/types";
-import { NO_PHONE_NOTICE } from "@/lib/help/noPhoneNotice";
+import { NO_PHONE_NOTICE_KEY } from "@/lib/help/noPhoneNotice";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 
 function formatDateTime(iso: string): string {
   return new Date(iso).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
 }
+
+// Mismo texto que `GuardiaPanel.tsx` (`useAcknowledgeHelpRequest`,
+// `errors.acknowledgeHelpRequest.*`): los dos hooks llaman al mismo
+// endpoint y devuelven los mismos dos mensajes, solo cambia el ámbito
+// (una entidad / todas). Se reutiliza la clave en vez de duplicarla.
+const ACKNOWLEDGE_ERROR_KEYS: Record<AcknowledgeHelpRequestGlobalErrorKind, string> = {
+  sin_permiso: "errors.acknowledgeHelpRequest.sinPermiso",
+  desconocido: "errors.acknowledgeHelpRequest.desconocido",
+};
+
+const HELP_REQUESTS_ERROR_KEYS: Record<PlatformHelpRequestsErrorKind, string> = {
+  sin_acceso: "plataforma.ayuda.sinAcceso",
+  desconocido: "plataforma.ayuda.desconocido",
+};
 
 /**
  * Igual que `GuardiaPanel::HelpRequestCard` en cuanto a `is_member`/
@@ -28,6 +51,7 @@ function formatDateTime(iso: string): string {
  * a la entidad» sigue siendo útil sin el enlace.
  */
 function HelpRequestCard({ request }: { request: HelpRequestRow }) {
+  const t = useTranslations();
   const acknowledge = useAcknowledgeHelpRequestGlobal();
   const { is_member: isMember, public_name: publicName, referent } = request.user_display;
 
@@ -38,32 +62,34 @@ function HelpRequestCard({ request }: { request: HelpRequestRow }) {
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <p className="font-medium text-text-base">{publicName}</p>
-              {isMember ? null : <Badge tone="info">No pertenece a la entidad</Badge>}
+              {isMember ? null : <Badge tone="info">{t("entidad.guardia.notMember")}</Badge>}
             </div>
             {referent ? (
-              <p className="text-sm text-text-secondary">Referente: {referent.public_name}</p>
+              <p className="text-sm text-text-secondary">
+                {t("entidad.guardia.referent", { name: referent.public_name })}
+              </p>
             ) : null}
             <p className="text-sm text-text-secondary">
-              {request.organization_display ? request.organization_display.name : "Sin entidad"}
+              {request.organization_display ? request.organization_display.name : t("plataforma.ayuda.noOrganization")}
               {request.community_display ? ` · ${request.community_display.name}` : ""}
             </p>
             <p className="text-xs text-text-secondary">{formatDateTime(request.created_at)}</p>
           </div>
           {request.acknowledged_at ? (
-            <Badge tone="success">Atendido</Badge>
+            <Badge tone="success">{t("entidad.guardia.acknowledged")}</Badge>
           ) : (
             <Button
               type="button"
               disabled={acknowledge.isPending}
               onClick={() => acknowledge.mutate(request.id)}
             >
-              He contactado
+              {t("entidad.guardia.acknowledgeAction")}
             </Button>
           )}
         </div>
         {acknowledge.isError ? (
           <p role="alert" className="mt-2 text-sm text-error">
-            {acknowledge.error.message}
+            {errorKindText(acknowledge.error, ACKNOWLEDGE_ERROR_KEYS, t, "errors.acknowledgeHelpRequest.desconocido")}
           </p>
         ) : null}
       </Card>
@@ -72,19 +98,25 @@ function HelpRequestCard({ request }: { request: HelpRequestRow }) {
 }
 
 function AvisosBody() {
+  const t = useTranslations();
   const requests = usePlatformPendingHelpRequests();
 
   if (requests.isError) {
-    return <ErrorState title="No se pudieron cargar los avisos de ayuda" description={requests.error.message} />;
+    return (
+      <ErrorState
+        title={t("plataforma.ayuda.loadError")}
+        description={errorKindText(requests.error, HELP_REQUESTS_ERROR_KEYS, t, "plataforma.ayuda.desconocido")}
+      />
+    );
   }
   if (!requests.data) {
-    return <p className="text-sm text-text-secondary">Cargando avisos…</p>;
+    return <p className="text-sm text-text-secondary">{t("plataforma.ayuda.loading")}</p>;
   }
   if (requests.data.length === 0) {
     return (
       <EmptyState
-        title="Sin avisos pendientes"
-        description="Ninguna entidad tiene avisos de ayuda sin atender."
+        title={t("plataforma.ayuda.emptyTitle")}
+        description={t("plataforma.ayuda.emptyDescription")}
       />
     );
   }
@@ -98,17 +130,18 @@ function AvisosBody() {
 }
 
 export function AyudaPendienteList() {
+  const t = useTranslations();
   return (
     <div className="flex flex-col gap-3">
       <AvisosBody />
       {/*
         Mismo recordatorio que la guardia de la entidad
-        (`GuardiaPanel.tsx`), de la misma constante y en todos los estados
+        (`GuardiaPanel.tsx`), de la misma clave y en todos los estados
         (cargando, error, sin avisos y con avisos): quien atiende desde
         plataforma tampoco tiene un teléfono al que llamar, y saberlo no
         depende de que la consulta haya ido bien.
       */}
-      <p className="text-sm text-text-secondary">{NO_PHONE_NOTICE}</p>
+      <p className="text-sm text-text-secondary">{t(NO_PHONE_NOTICE_KEY)}</p>
     </div>
   );
 }

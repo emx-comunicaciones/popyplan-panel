@@ -11,47 +11,18 @@
  * `lib/api/types.generated.ts`. Un valor que el panel no conozca —porque
  * el backend añada uno— se pinta tal cual en vez de quedarse en blanco.
  *
- * **i18n (tarea 4 del plan de i18n):** `reasonLabelKey`/`statusLabelKey`
- * devuelven la **clave** de traducción bajo `reports.reason.*`/
- * `reports.status.*` (o `null` para un valor que el panel no conoce —el
- * llamador pinta el valor crudo, mismo criterio que
- * `lib/support/relationshipLabel.ts::relationshipLabelKey`), en vez del
- * texto ya resuelto: este fichero es `.ts` plano y no puede llamar a
- * `t()`. `reasonLabel`/`statusLabel` (las funciones de texto a secas) se
- * quedan **tal cual** porque `ReportesQueuePlataforma.tsx` (área de
- * plataforma, tarea 5 de este mismo plan) sigue llamándolas — el día que
- * esa tarea traduzca esa pantalla, cambia a las nuevas y estas dos
- * quedan sin consumidores.
+ * **i18n (tarea 4 del plan de i18n, puente cerrado en la tarea 5):**
+ * `reasonLabelKey`/`statusLabelKey` devuelven la **clave** de traducción
+ * bajo `reports.reason.*`/`reports.status.*` (o `null` para un valor que
+ * el panel no conoce —el llamador pinta el valor crudo, mismo criterio
+ * que `lib/support/relationshipLabel.ts::relationshipLabelKey`), en vez
+ * del texto ya resuelto: este fichero es `.ts` plano y no puede llamar a
+ * `t()`. Las funciones de texto a secas (`reasonLabel`/`statusLabel`,
+ * con `REASON_LABELS`/`STATUS_LABELS`) existieron mientras
+ * `ReportesQueuePlataforma.tsx` no estaba traducida — esa tarea (la 5)
+ * ya las usa por clave, así que se han borrado al quedarse sin
+ * consumidor.
  */
-export const REASON_LABELS: Record<string, string> = {
-  harassment: "Acoso",
-  hate: "Odio",
-  spam: "Spam",
-  scam: "Estafa",
-  underage: "Menor de edad",
-  self_harm_risk: "Riesgo de autolesión",
-  drugs_sale: "Venta de sustancias",
-  other: "Otro",
-};
-
-export const STATUS_LABELS: Record<string, string> = {
-  pending: "Pendiente",
-  in_review: "En revisión",
-  resolved: "Resuelto",
-};
-
-// TODO(tarea 5 de i18n): cuando `components/plataforma/
-// ReportesQueuePlataforma.tsx` traduzca su pantalla, cambia a
-// `reasonLabelKey`/`statusLabelKey` y borra `reasonLabel`/`statusLabel`
-// (con `REASON_LABELS`/`STATUS_LABELS`) — es su único consumidor restante.
-export function reasonLabel(reason: string): string {
-  return REASON_LABELS[reason] ?? reason;
-}
-
-export function statusLabel(status: string): string {
-  return STATUS_LABELS[status] ?? status;
-}
-
 export const REASON_LABEL_KEYS: Record<string, string> = {
   harassment: "reports.reason.harassment",
   hate: "reports.reason.hate",
