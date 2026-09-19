@@ -1049,17 +1049,30 @@
     "export": {
       "pdfUnavailable": "PDF txostena ez dago erabilgarri une honetan. Probatu CSVrekin edo saiatu berriro geroago.",
       "forbidden": "Ez duzu txostenak esportatzeko baimenik.",
+      "sinTerritorio": "Administrazio honek ez du lurralderik adierazita.",
       "desconocido": "Ezin izan da txostena sortu."
     },
     "metrics": {
       "periodoInvalido": "Aukeratutako aldia ez da baliozkoa.",
       "sinAcceso": "Ez duzu metrika hauetarako sarbiderik.",
+      "sinTerritorio": "Administrazio honek ez du lurralderik adierazita.",
       "desconocido": "Ezin izan dira metrikak kargatu."
     },
     "compare": {
       "periodoInvalido": "Aukeratutako aldia edo banaketa ez da baliozkoa.",
       "sinAcceso": "Ez duzu konparaketa honetarako sarbiderik.",
+      "sinTerritorio": "Administrazio honek ez du lurralderik adierazita.",
       "desconocido": "Ezin izan da konparaketa kargatu."
+    },
+    "placeSheet": {
+      "fueraDeTerritorio": "Udalerri hori ez dago administrazio honen lurraldean.",
+      "sinAcceso": "Ez duzu udalerri honen fitxarako sarbiderik.",
+      "sinTerritorio": "Administrazio honek ez du lurralderik adierazita.",
+      "desconocido": "Ezin izan da udalerriaren fitxa kargatu."
+    },
+    "places": {
+      "demasiadasPaginas": "Udalerri gehiegi daude denak kargatzeko; jarri harremanetan Popyplanekin.",
+      "desconocido": "Ezin izan da udalerrien zerrenda kargatu."
     },
     "platformRoles": {
       "sinAcceso": "Superadminek bakarrik ikusten ditu plataformaren rolak.",

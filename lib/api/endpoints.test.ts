@@ -10,8 +10,10 @@ import {
   METRICS,
   ORGANIZATIONS,
   PANEL,
+  PLACES,
   PROGRAMS,
   SAFETY,
+  TERRITORIO,
   USERS,
   VERIFICATION,
 } from "./endpoints";
@@ -300,5 +302,25 @@ describe("endpoints", () => {
 
   it("BILLING.SUMMARY() apunta a /api/plataforma/billing/summary/", () => {
     expect(BILLING.SUMMARY()).toBe("/api/plataforma/billing/summary/");
+  });
+
+  it("METRICS.TERRITORIO(orgId) apunta a /api/panel/territorio/{orgId}/metrics/", () => {
+    expect(METRICS.TERRITORIO(3)).toBe("/api/panel/territorio/3/metrics/");
+  });
+
+  it("METRICS.COMPARE_TERRITORIO(orgId) apunta a /api/panel/territorio/{orgId}/compare/", () => {
+    expect(METRICS.COMPARE_TERRITORIO(3)).toBe("/api/panel/territorio/3/compare/");
+  });
+
+  it("EXPORT.TERRITORIO(orgId) apunta a /api/panel/territorio/{orgId}/export/", () => {
+    expect(EXPORT.TERRITORIO(3)).toBe("/api/panel/territorio/3/export/");
+  });
+
+  it("TERRITORIO.PLACE_SHEET(orgId, ineCode) apunta a /api/panel/territorio/{orgId}/places/{ineCode}/", () => {
+    expect(TERRITORIO.PLACE_SHEET(3, "20069")).toBe("/api/panel/territorio/3/places/20069/");
+  });
+
+  it("PLACES.LIST() apunta a /api/places/", () => {
+    expect(PLACES.LIST()).toBe("/api/places/");
   });
 });

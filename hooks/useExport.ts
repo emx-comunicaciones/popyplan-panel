@@ -20,6 +20,8 @@
  * Mapeo de errores (`ApiError` de `fetchWithAuth` → `ExportError`):
  * 503 (WeasyPrint no disponible) → `ExportError('pdf_unavailable')`;
  * 403 (sin `exportar_informes`) → `ExportError('forbidden')`;
+ * 409 (solo el ámbito `territorio`, spec §3.1: administración sin
+ * territorio declarado) → `ExportError('sin_territorio')`;
  * 401 (el refresco también falló: sesión caducada de verdad, avisada
  * por el `SessionExpiredHandler` global) → `ExportError('sesion_caducada')`;
  * cualquier otro estado → `ExportError('desconocido')`.
@@ -41,6 +43,7 @@ export type ExportFormat = "csv" | "pdf";
 export type ExportErrorKind =
   | "pdf_unavailable"
   | "forbidden"
+  | "sin_territorio"
   | "sesion_caducada"
   | "desconocido";
 
@@ -76,6 +79,11 @@ function endpointFor(scope: MetricsScope, orgId?: number | string): string {
       return EXPORT.PARAGUAS(orgId);
     case "plataforma":
       return EXPORT.PLATAFORMA();
+    case "territorio":
+      if (orgId === undefined) {
+        throw new Error("useExport: falta orgId para el ámbito 'territorio'");
+      }
+      return EXPORT.TERRITORIO(orgId);
   }
 }
 
@@ -99,6 +107,12 @@ function toExportError(error: unknown): ExportError {
     }
     if (error.status === 403) {
       return new ExportError("forbidden", "No tienes permiso para exportar informes.");
+    }
+    if (error.status === 409) {
+      return new ExportError(
+        "sin_territorio",
+        detailOf(error) ?? "Esta administración no tiene territorio declarado.",
+      );
     }
     if (error.status === 401) {
       return new ExportError("sesion_caducada", error.message || SESSION_EXPIRED_MESSAGE);

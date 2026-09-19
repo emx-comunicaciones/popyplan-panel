@@ -14,15 +14,24 @@
  * dejar escapar el `ApiError` genérico: los componentes de
  * `components/metrics/*` deciden qué mensaje pintar mirando `kind`, no
  * el código HTTP.
+ *
+ * El ámbito `territorio` (spec de diseño
+ * `2026-09-19-territorio-administraciones-design.md` §3.1) es el único
+ * que además puede responder **409**: una administración sin territorio
+ * declarado, que no es un fallo del panel sino una configuración que
+ * falta, así que se traduce a su propio `kind` (`sin_territorio`) en vez
+ * de a `sin_acceso`. El `detail` se conserva literal porque ya viene
+ * traducido por `Accept-Language`.
  */
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { METRICS } from "@/lib/api/endpoints";
 import type { MetricsResponse } from "@/lib/api/types";
 import type { Period } from "@/lib/metrics/period";
 
-export type MetricsScope = "entidad" | "paraguas" | "plataforma";
+export type MetricsScope = "entidad" | "paraguas" | "plataforma" | "territorio";
 
 export type MetricsGroupBy =
   | "place"
@@ -33,7 +42,11 @@ export type MetricsGroupBy =
   | "month"
   | "year";
 
-export type MetricsErrorKind = "periodo_invalido" | "sin_acceso" | "desconocido";
+export type MetricsErrorKind =
+  | "periodo_invalido"
+  | "sin_acceso"
+  | "sin_territorio"
+  | "desconocido";
 
 export class MetricsError extends Error {
   readonly kind: MetricsErrorKind;
@@ -69,6 +82,11 @@ function endpointFor(scope: MetricsScope, orgId?: number | string): string {
       return METRICS.PARAGUAS(orgId);
     case "plataforma":
       return METRICS.PLATAFORMA();
+    case "territorio":
+      if (orgId === undefined) {
+        throw new Error("useMetrics: falta orgId para el ámbito 'territorio'");
+      }
+      return METRICS.TERRITORIO(orgId);
   }
 }
 
@@ -85,6 +103,17 @@ function toMetricsError(error: unknown): MetricsError {
     }
     if (error.status === 403) {
       return new MetricsError("sin_acceso", "No tienes acceso a estas métricas.");
+    }
+    if (error.status === 409) {
+      // Solo el ámbito `territorio` responde 409 (spec §3.1): una
+      // administración sin territorio declarado, que no es un fallo sino
+      // una configuración que falta.
+      const detail = detailOf(error);
+      return new MetricsError(
+        "sin_territorio",
+        detail ?? "Esta administración no tiene territorio declarado.",
+        detail,
+      );
     }
   }
   return new MetricsError("desconocido", "No se pudieron cargar las métricas.");

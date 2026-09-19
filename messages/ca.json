@@ -1049,17 +1049,30 @@
     "export": {
       "pdfUnavailable": "L'informe en PDF no està disponible ara mateix. Prova amb CSV o torna-ho a provar més tard.",
       "forbidden": "No tens permís per exportar informes.",
+      "sinTerritorio": "Aquesta administració no té territori declarat.",
       "desconocido": "No s'ha pogut generar l'informe."
     },
     "metrics": {
       "periodoInvalido": "El període triat no és vàlid.",
       "sinAcceso": "No tens accés a aquestes mètriques.",
+      "sinTerritorio": "Aquesta administració no té territori declarat.",
       "desconocido": "No s'han pogut carregar les mètriques."
     },
     "compare": {
       "periodoInvalido": "El període o el desglossament triats no són vàlids.",
       "sinAcceso": "No tens accés a aquesta comparativa.",
+      "sinTerritorio": "Aquesta administració no té territori declarat.",
       "desconocido": "No s'ha pogut carregar la comparativa."
+    },
+    "placeSheet": {
+      "fueraDeTerritorio": "Aquest municipi no és al territori d'aquesta administració.",
+      "sinAcceso": "No tens accés a la fitxa d'aquest municipi.",
+      "sinTerritorio": "Aquesta administració no té territori declarat.",
+      "desconocido": "No s'ha pogut carregar la fitxa del municipi."
+    },
+    "places": {
+      "demasiadasPaginas": "Hi ha massa municipis per carregar-los tots; contacta amb Popyplan.",
+      "desconocido": "No s'ha pogut carregar la llista de municipis."
     },
     "platformRoles": {
       "sinAcceso": "Només superadmin veu els rols de plataforma.",

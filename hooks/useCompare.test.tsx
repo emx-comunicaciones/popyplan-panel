@@ -95,4 +95,36 @@ describe("useCompare", () => {
       renderHook(() => useCompare("paraguas", undefined, PERIOD, "comarca"), { wrapper }),
     ).toThrow("falta orgId para el ámbito 'paraguas'");
   });
+
+  it("territorio: pide la ruta de territorio con el periodo y el desglose", async () => {
+    apiFetchMock.mockResolvedValueOnce(buildCompareResponse());
+
+    const { result } = renderHook(() => useCompare("territorio", 3, PERIOD, "place"), { wrapper });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(apiFetchMock).toHaveBeenCalledWith(
+      "/api/panel/territorio/3/compare/?since=2026-04-01&until=2026-06-30&group_by=place",
+    );
+  });
+
+  it("territorio sin orgId lanza (error de programación)", () => {
+    expect(() =>
+      renderHook(() => useCompare("territorio", undefined, PERIOD, "comarca"), { wrapper }),
+    ).toThrow("falta orgId para el ámbito 'territorio'");
+  });
+
+  it("un 409 se traduce a kind 'sin_territorio' con el detail literal del backend", async () => {
+    apiFetchMock.mockRejectedValueOnce(
+      new ApiError(409, { detail: "Esta administración no tiene territorio declarado." }),
+    );
+
+    const { result } = renderHook(() => useCompare("territorio", 3, PERIOD, "comarca"), { wrapper });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect((result.current.error as CompareError).kind).toBe("sin_territorio");
+    expect((result.current.error as CompareError).detail).toBe(
+      "Esta administración no tiene territorio declarado.",
+    );
+  });
 });

@@ -229,6 +229,55 @@ describe("downloadExport", () => {
     expect((error as ExportError).kind).toBe("forbidden");
   });
 
+  it("territorio: pide la ruta de territorio con el periodo y el desglose", async () => {
+    fetchMock.mockResolvedValueOnce(fakeResponse({ ok: true, status: 200 }));
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => undefined);
+
+    await downloadExport({
+      scope: "territorio",
+      orgId: 3,
+      period: PERIOD,
+      format: "csv",
+      groupBy: "place",
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://localhost:8001/api/panel/territorio/3/export/?format=csv&since=2026-01-01&until=2026-01-31&group_by=place",
+      expect.anything(),
+    );
+
+    clickSpy.mockRestore();
+  });
+
+  it("territorio sin orgId lanza (error de programación)", async () => {
+    await expect(
+      downloadExport({ scope: "territorio", period: PERIOD, format: "csv" }),
+    ).rejects.toThrow("falta orgId para el ámbito 'territorio'");
+  });
+
+  it("409 (administración sin territorio) lanza ExportError con kind 'sin_territorio' y el detail literal", async () => {
+    fetchMock.mockResolvedValueOnce(
+      fakeResponse({
+        ok: false,
+        status: 409,
+        json: { detail: "Esta administración no tiene territorio declarado." },
+      }),
+    );
+
+    const error = await downloadExport({
+      scope: "territorio",
+      orgId: 3,
+      period: PERIOD,
+      format: "csv",
+    }).catch((caught) => caught);
+
+    expect(error).toBeInstanceOf(ExportError);
+    expect((error as ExportError).kind).toBe("sin_territorio");
+    expect((error as ExportError).message).toBe(
+      "Esta administración no tiene territorio declarado.",
+    );
+  });
+
   it("cualquier otro error de estado lanza ExportError con kind 'desconocido'", async () => {
     fetchMock.mockResolvedValueOnce(fakeResponse({ ok: false, status: 500 }));
 

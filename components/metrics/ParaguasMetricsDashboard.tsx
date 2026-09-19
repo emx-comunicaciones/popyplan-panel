@@ -33,12 +33,14 @@ const COMPARE_GROUP_BY_OPTION_KEYS: { value: ParaguasCompareGroupBy; labelKey: s
 const METRICS_ERROR_KEYS: Record<MetricsErrorKind, string> = {
   periodo_invalido: "errors.metrics.periodoInvalido",
   sin_acceso: "errors.metrics.sinAcceso",
+  sin_territorio: "errors.metrics.sinTerritorio",
   desconocido: "errors.metrics.desconocido",
 };
 
 const COMPARE_ERROR_KEYS: Record<CompareErrorKind, string> = {
   periodo_invalido: "errors.compare.periodoInvalido",
   sin_acceso: "errors.compare.sinAcceso",
+  sin_territorio: "errors.compare.sinTerritorio",
   desconocido: "errors.compare.desconocido",
 };
 

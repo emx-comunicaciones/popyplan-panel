@@ -294,6 +294,24 @@ export const METRICS = {
    * `COMPARE_PARAGUAS`, sin `org_id`.
    */
   COMPARE_PLATAFORMA: () => `/api/panel/plataforma/compare/`,
+  /**
+   * `GET /api/panel/territorio/{org_id}/metrics/?since&until&group_by=
+   * place|comarca|province|month|year` (spec de diseño
+   * `2026-09-19-territorio-administraciones-design.md` §3.1): mismo
+   * esquema fijo que paraguas, pero sobre `scope_territorio(org)` —
+   * todo lo que ocurre en los municipios del `OrgScope`, sea de la
+   * entidad que sea. `group_by=organization` **no** se ofrece aquí a
+   * propósito: listar por nombre entidades que la administración no
+   * financia sería exponer a terceros (§3.1). 403 si la organización no
+   * es una administración; 409 si no tiene territorio declarado.
+   */
+  TERRITORIO: (orgId: number | string) => `/api/panel/territorio/${orgId}/metrics/`,
+  /**
+   * `GET /api/panel/territorio/{org_id}/compare/?since&until&group_by=
+   * place|comarca|province` (§3.1). `group_by` obligatorio, igual que en
+   * las otras dos rutas de comparativa.
+   */
+  COMPARE_TERRITORIO: (orgId: number | string) => `/api/panel/territorio/${orgId}/compare/`,
 } as const;
 
 /** Exportación de informes (CSV/PDF), `docs/PANEL.md` §2. */
@@ -304,6 +322,8 @@ export const EXPORT = {
   PARAGUAS: (orgId: number | string) => `/api/panel/paraguas/${orgId}/export/`,
   /** `GET /api/panel/plataforma/export/?format=csv|pdf&since&until&group_by`. */
   PLATAFORMA: () => `/api/panel/plataforma/export/`,
+  /** `GET /api/panel/territorio/{org_id}/export/?format=csv|pdf&since&until&group_by` (spec §3.1). */
+  TERRITORIO: (orgId: number | string) => `/api/panel/territorio/${orgId}/export/`,
 } as const;
 
 /**
@@ -387,4 +407,42 @@ export const BILLING = {
  */
 export const DASHBOARD = {
   STATS: () => "/api/admin/dashboard-stats/",
+} as const;
+
+/**
+ * Observatorio de territorio (spec de diseño
+ * `2026-09-19-territorio-administraciones-design.md` §3.2). Las
+ * métricas, la comparativa y la exportación viven en `METRICS`/`EXPORT`
+ * junto a las de los otros ámbitos; aquí solo la ficha de municipio, que
+ * no tiene equivalente en paraguas.
+ */
+export const TERRITORIO = {
+  /**
+   * `GET /api/panel/territorio/{org_id}/places/{ine_code}/?since&until`:
+   * ficha agregada de un municipio del territorio. 404 si el municipio
+   * no pertenece al territorio de esa administración (nunca se revela
+   * nada de un municipio de fuera). Permiso `ver_panel` + administración.
+   */
+  PLACE_SHEET: (orgId: number | string, ineCode: string) =>
+    `/api/panel/territorio/${orgId}/places/${ineCode}/`,
+} as const;
+
+/**
+ * Catálogo de municipios (spec §3.3): solo lectura, autenticado,
+ * paginado y limitado a `is_active`, sin ningún dato personal. El panel
+ * lo usa para dos cosas: las coordenadas del mapa de Territorio
+ * (`?ine_code=a,b`) y el buscador de sede de plataforma y de
+ * Configuración (`?search=`).
+ */
+export const PLACES = {
+  /**
+   * `GET /api/places/?ine_code=&search=&ccaa_code=&prov_code=
+   * &comarca_code=&page=`. Los tres filtros de código son de
+   * coincidencia exacta y combinables con `search`/`ine_code`; el
+   * `count` de la respuesta paginada es el total del filtro, que es lo
+   * que usa la vista previa «N municipios» del formulario de territorio
+   * (`components/plataforma/TerritorioForm.tsx`) para no traerse las
+   * filas.
+   */
+  LIST: () => "/api/places/",
 } as const;

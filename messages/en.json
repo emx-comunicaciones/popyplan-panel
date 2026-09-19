@@ -1049,17 +1049,30 @@
     "export": {
       "pdfUnavailable": "The PDF report isn't available right now. Try CSV or try again later.",
       "forbidden": "You don't have permission to export reports.",
+      "sinTerritorio": "This administration has no declared territory yet.",
       "desconocido": "Couldn't generate the report."
     },
     "metrics": {
       "periodoInvalido": "The chosen period isn't valid.",
       "sinAcceso": "You don't have access to these metrics.",
+      "sinTerritorio": "This administration has no declared territory yet.",
       "desconocido": "Couldn't load the metrics."
     },
     "compare": {
       "periodoInvalido": "The chosen period or breakdown isn't valid.",
       "sinAcceso": "You don't have access to this comparison.",
+      "sinTerritorio": "This administration has no declared territory yet.",
       "desconocido": "Couldn't load the comparison."
+    },
+    "placeSheet": {
+      "fueraDeTerritorio": "That municipality is not in this administration's territory.",
+      "sinAcceso": "You don't have access to this municipality's details.",
+      "sinTerritorio": "This administration has no declared territory yet.",
+      "desconocido": "The municipality details could not be loaded."
+    },
+    "places": {
+      "demasiadasPaginas": "There are too many municipalities to load them all; get in touch with Popyplan.",
+      "desconocido": "The list of municipalities could not be loaded."
     },
     "platformRoles": {
       "sinAcceso": "Only superadmin sees the platform roles.",

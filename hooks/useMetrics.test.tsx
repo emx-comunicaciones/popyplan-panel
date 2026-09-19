@@ -121,4 +121,35 @@ describe("useMetrics", () => {
       "falta orgId para el ámbito 'paraguas'",
     );
   });
+
+  it("el ámbito 'territorio' pide la ruta de territorio con el periodo y el desglose", async () => {
+    apiFetchMock.mockResolvedValueOnce(buildMetricsResponse());
+
+    const { result } = renderHook(() => useMetrics("territorio", 3, PERIOD, "place"), { wrapper });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(apiFetchMock).toHaveBeenCalledWith(
+      "/api/panel/territorio/3/metrics/?since=2026-01-01&until=2026-01-31&group_by=place",
+    );
+  });
+
+  it("el ámbito 'territorio' sin orgId es un error de programación", () => {
+    expect(() =>
+      renderHook(() => useMetrics("territorio", undefined, PERIOD), { wrapper }),
+    ).toThrow("falta orgId para el ámbito 'territorio'");
+  });
+
+  it("un 409 se traduce a kind 'sin_territorio' con el detail literal del backend", async () => {
+    apiFetchMock.mockRejectedValueOnce(
+      new ApiError(409, { detail: "Esta administración no tiene territorio declarado." }),
+    );
+
+    const { result } = renderHook(() => useMetrics("territorio", 3, PERIOD), { wrapper });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect((result.current.error as MetricsError).kind).toBe("sin_territorio");
+    expect((result.current.error as MetricsError).detail).toBe(
+      "Esta administración no tiene territorio declarado.",
+    );
+  });
 });

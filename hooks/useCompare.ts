@@ -14,19 +14,30 @@
  * Un 400 (grupo o periodo inválidos) y un 403 (sin `ver_panel` sobre la
  * propia paraguas, o sin rol de plataforma) se traducen a `CompareError`
  * con un `kind` tipado, igual que `useMetrics`/`MetricsError`.
+ *
+ * El ámbito `territorio` (spec de diseño
+ * `2026-09-19-territorio-administraciones-design.md` §3.1) también
+ * puede responder **409** (administración sin territorio declarado),
+ * traducido a su propio `kind` (`sin_territorio`), igual que
+ * `useMetrics`.
  */
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
+import { detailOf } from "@/lib/api/drfError";
 import { METRICS } from "@/lib/api/endpoints";
 import type { CompareResponse } from "@/lib/api/types";
 import type { Period } from "@/lib/metrics/period";
 
-export type CompareScope = "paraguas" | "plataforma";
+export type CompareScope = "paraguas" | "plataforma" | "territorio";
 
 export type CompareGroupBy = "comarca" | "organization" | "place" | "province";
 
-export type CompareErrorKind = "periodo_invalido" | "sin_acceso" | "desconocido";
+export type CompareErrorKind =
+  | "periodo_invalido"
+  | "sin_acceso"
+  | "sin_territorio"
+  | "desconocido";
 
 export class CompareError extends Error {
   readonly kind: CompareErrorKind;
@@ -50,6 +61,11 @@ function endpointFor(scope: CompareScope, orgId?: number | string): string {
       return METRICS.COMPARE_PARAGUAS(orgId);
     case "plataforma":
       return METRICS.COMPARE_PLATAFORMA();
+    case "territorio":
+      if (orgId === undefined) {
+        throw new Error("useCompare: falta orgId para el ámbito 'territorio'");
+      }
+      return METRICS.COMPARE_TERRITORIO(orgId);
   }
 }
 
@@ -72,6 +88,16 @@ function toCompareError(error: unknown): CompareError {
     }
     if (error.status === 403) {
       return new CompareError("sin_acceso", "No tienes acceso a esta comparativa.");
+    }
+    if (error.status === 409) {
+      // Solo el ámbito `territorio` responde 409 (spec §3.1): una
+      // administración sin territorio declarado.
+      const detail = detailOf(error);
+      return new CompareError(
+        "sin_territorio",
+        detail ?? "Esta administración no tiene territorio declarado.",
+        detail,
+      );
     }
   }
   return new CompareError("desconocido", "No se pudo cargar la comparativa.");

@@ -17,6 +17,7 @@ export interface ExportButtonsProps {
 const EXPORT_ERROR_KEYS: Record<ExportErrorKind, string> = {
   pdf_unavailable: "errors.export.pdfUnavailable",
   forbidden: "errors.export.forbidden",
+  sin_territorio: "errors.export.sinTerritorio",
   sesion_caducada: "errors.export.desconocido",
   desconocido: "errors.export.desconocido",
 };

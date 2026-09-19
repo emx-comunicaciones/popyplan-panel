@@ -34,6 +34,10 @@ const ENTITY_EVENTS_ERROR_KEYS = {
 const METRICS_ERROR_KEYS = {
   periodo_invalido: "errors.metrics.periodoInvalido",
   sin_acceso: "errors.metrics.sinAcceso",
+  // Este dashboard nunca pide el ámbito `territorio` (tarea 3 del plan de
+  // territorio); la clave existe solo para que el mapa siga siendo
+  // exhaustivo sobre `MetricsErrorKind`, que la tarea 3 amplió.
+  sin_territorio: "errors.metrics.sinTerritorio",
   desconocido: "errors.metrics.desconocido",
 } as const;
 

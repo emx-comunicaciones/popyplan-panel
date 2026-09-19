@@ -98,6 +98,9 @@ const PROGRAM_REPORT_ERROR_KEYS: Record<ProgramReportErrorKind, string> = {
 const METRICS_ERROR_KEYS: Record<MetricsErrorKind, string> = {
   periodo_invalido: "errors.metrics.periodoInvalido",
   sin_acceso: "errors.metrics.sinAcceso",
+  // Un programa nunca pide el ámbito `territorio` (tarea 3 del plan de
+  // territorio); la clave existe solo para que el mapa siga exhaustivo.
+  sin_territorio: "errors.metrics.sinTerritorio",
   desconocido: "errors.metrics.desconocido",
 };
 

@@ -1049,17 +1049,30 @@
     "export": {
       "pdfUnavailable": "El informe en PDF no está disponible ahora mismo. Prueba con CSV o inténtalo más tarde.",
       "forbidden": "No tienes permiso para exportar informes.",
+      "sinTerritorio": "Esta administración no tiene territorio declarado.",
       "desconocido": "No se pudo generar el informe."
     },
     "metrics": {
       "periodoInvalido": "El periodo elegido no es válido.",
       "sinAcceso": "No tienes acceso a estas métricas.",
+      "sinTerritorio": "Esta administración no tiene territorio declarado.",
       "desconocido": "No se pudieron cargar las métricas."
     },
     "compare": {
       "periodoInvalido": "El periodo o el desglose elegidos no son válidos.",
       "sinAcceso": "No tienes acceso a esta comparativa.",
+      "sinTerritorio": "Esta administración no tiene territorio declarado.",
       "desconocido": "No se pudo cargar la comparativa."
+    },
+    "placeSheet": {
+      "fueraDeTerritorio": "Ese municipio no está en el territorio de esta administración.",
+      "sinAcceso": "No tienes acceso a la ficha de este municipio.",
+      "sinTerritorio": "Esta administración no tiene territorio declarado.",
+      "desconocido": "No se pudo cargar la ficha del municipio."
+    },
+    "places": {
+      "demasiadasPaginas": "Hay demasiados municipios para cargarlos todos; contacta con Popyplan.",
+      "desconocido": "No se pudo cargar el listado de municipios."
     },
     "platformRoles": {
       "sinAcceso": "Solo superadmin ve los roles de plataforma.",

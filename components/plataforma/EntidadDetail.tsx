@@ -173,6 +173,7 @@ const ENTITY_EVENTS_ERROR_KEYS: Record<EntityEventsErrorKind, string> = {
 const METRICS_ERROR_KEYS: Record<MetricsErrorKind, string> = {
   periodo_invalido: "errors.metrics.periodoInvalido",
   sin_acceso: "errors.metrics.sinAcceso",
+  sin_territorio: "errors.metrics.sinTerritorio",
   desconocido: "errors.metrics.desconocido",
 };
 
