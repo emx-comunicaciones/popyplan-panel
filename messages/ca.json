@@ -1570,6 +1570,14 @@
     "series": {
       "monthlyAriaLabel": "Sèrie mensual d'esdeveniments i persones",
       "yearlyAriaLabel": "Sèrie anual d'esdeveniments i persones"
+    },
+    "map": {
+      "ariaLabel": "{count, plural, one {Mapa del territori: # municipi amb activitat en el període} other {Mapa del territori: # municipis amb activitat en el període}}",
+      "bubbleLabel": "{place}: {events} activitats, {people} persones",
+      "empty": "Cap municipi del territori té activitat en aquest període.",
+      "attribution": "© Col·laboradors d'OpenStreetMap",
+      "heading": "Mapa del territori",
+      "legend": "La mida de la bombolla indica les activitats; el color, les persones, en gris quan el grup és per sota del llindar d'agregació."
     }
   },
   "plataforma": {

@@ -1570,6 +1570,14 @@
     "series": {
       "monthlyAriaLabel": "Monthly series of events and people",
       "yearlyAriaLabel": "Yearly series of events and people"
+    },
+    "map": {
+      "ariaLabel": "{count, plural, one {Territory map: # municipality with activity in the period} other {Territory map: # municipalities with activity in the period}}",
+      "bubbleLabel": "{place}: {events} activities, {people} people",
+      "empty": "No municipality in the territory had activity in this period.",
+      "attribution": "© OpenStreetMap contributors",
+      "heading": "Map of the territory",
+      "legend": "Bubble size shows activities; colour shows people, grey when the group is under the aggregation threshold."
     }
   },
   "plataforma": {

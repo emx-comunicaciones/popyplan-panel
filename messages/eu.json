@@ -1570,6 +1570,14 @@
     "series": {
       "monthlyAriaLabel": "Jardueren eta pertsonen hileko seriea",
       "yearlyAriaLabel": "Jardueren eta pertsonen urteko seriea"
+    },
+    "map": {
+      "ariaLabel": "{count, plural, one {Lurraldearen mapa: # udalerri jarduerarekin aldi honetan} other {Lurraldearen mapa: # udalerri jarduerarekin aldi honetan}}",
+      "bubbleLabel": "{place}: {events} jarduera, {people} pertsona",
+      "empty": "Lurraldeko udalerri batek ere ez du jarduerarik aldi honetan.",
+      "attribution": "© OpenStreetMap-eko laguntzaileak",
+      "heading": "Lurraldearen mapa",
+      "legend": "Burbuilaren tamainak jarduerak adierazten ditu; koloreak, pertsonak, eta grisa taldea agregazio-atalasetik behera dagoenean."
     }
   },
   "plataforma": {

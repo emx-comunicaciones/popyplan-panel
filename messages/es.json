@@ -1570,6 +1570,14 @@
     "series": {
       "monthlyAriaLabel": "Serie mensual de eventos y personas",
       "yearlyAriaLabel": "Serie anual de eventos y personas"
+    },
+    "map": {
+      "ariaLabel": "{count, plural, one {Mapa del territorio: # municipio con actividad en el periodo} other {Mapa del territorio: # municipios con actividad en el periodo}}",
+      "bubbleLabel": "{place}: {events} actividades, {people} personas",
+      "empty": "Ningún municipio del territorio tiene actividad en este periodo.",
+      "attribution": "© Colaboradores de OpenStreetMap",
+      "heading": "Mapa del territorio",
+      "legend": "El tamaño de la burbuja indica las actividades; el color, las personas, en gris cuando el grupo está por debajo del umbral de agregación."
     }
   },
   "plataforma": {

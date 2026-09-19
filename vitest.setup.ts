@@ -113,6 +113,54 @@ vi.mock("recharts", async () => {
   };
 });
 
+/**
+ * `react-leaflet` monta un mapa real de `leaflet` sobre el DOM: mide el
+ * contenedor, carga teselas por red y usa APIs de canvas/SVG que jsdom no
+ * implementa. Mismo problema y misma solución que `ResponsiveContainer`
+ * de `recharts` (arriba): se sustituyen las cuatro primitivas que usa
+ * `components/metrics/TerritoryMapCanvas.tsx` por elementos planos que sí
+ * se pueden inspeccionar desde un test.
+ *
+ * `CircleMarker` se sustituye por un `<button>` **de verdad** —no un
+ * `<div>`— porque lo que hay que poder probar es que pulsar una burbuja
+ * abre la ficha de ese municipio; en el mapa real, el `eventHandlers`
+ * de `CircleMarker` hace ese mismo papel. Sus hijos (`<Tooltip>`) se
+ * pintan dentro, así que el nombre accesible del botón es el texto del
+ * tooltip.
+ */
+/**
+ * `TerritoryMapCanvas.tsx` importa `leaflet/dist/leaflet.css` a nivel de
+ * módulo (necesario para que los `CircleMarker`/`Tooltip` reales se vean
+ * bien fuera de test). Bajo Vitest, ese `.css` pasa por el `postcss.config.mjs`
+ * real del proyecto (`@tailwindcss/postcss`), que no es válido fuera del
+ * pipeline de build de Next y hace fallar la transformación de Vite —
+ * mismo problema, mismo remedio que `app/layout.test.tsx` mockeando
+ * `./globals.css`. Sin este mock, el `import()` diferido de
+ * `next/dynamic` rechaza en silencio y el mapa se queda «cargando» para
+ * siempre en los tests.
+ */
+vi.mock("leaflet/dist/leaflet.css", () => ({}));
+
+vi.mock("react-leaflet", () => ({
+  MapContainer: ({ children }: { children: React.ReactNode }) =>
+    React.createElement("div", { "data-testid": "map-container" }, children),
+  TileLayer: () => React.createElement("div", { "data-testid": "tile-layer" }),
+  CircleMarker: ({
+    children,
+    eventHandlers,
+  }: {
+    children?: React.ReactNode;
+    eventHandlers?: { click?: () => void };
+  }) =>
+    React.createElement(
+      "button",
+      { type: "button", onClick: () => eventHandlers?.click?.() },
+      children,
+    ),
+  Tooltip: ({ children }: { children: React.ReactNode }) =>
+    React.createElement("span", null, children),
+}));
+
 afterEach(() => {
   // Vitest no expone `afterEach` en `globalThis` sin `test.globals: true`,
   // así que Testing Library no engancha su cleanup automático: se llama
