@@ -48,7 +48,7 @@ describe("PlataformaLayout", () => {
       "Roles",
       "Auditoría",
       "Métricas",
-      "Contratos",
+      "Suscripciones",
     ]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
@@ -67,12 +67,12 @@ describe("PlataformaLayout", () => {
     for (const label of ["Inicio", "Reportes", "Ayuda", "Métricas"]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
-    for (const label of ["Entidades", "Verificaciones", "Roles", "Auditoría", "Contratos"]) {
+    for (const label of ["Entidades", "Verificaciones", "Roles", "Auditoría", "Suscripciones"]) {
       expect(screen.queryByRole("link", { name: label })).not.toBeInTheDocument();
     }
   });
 
-  it("support ve inicio, reportes, ayuda, métricas y contratos (W4: lectura de facturación)", async () => {
+  it("support ve inicio, reportes, ayuda, métricas y suscripciones (W4: lectura de facturación)", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",
       me: buildMe({ org_memberships: [] }),
@@ -82,7 +82,7 @@ describe("PlataformaLayout", () => {
     const element = await PlataformaLayout({ children: <p>contenido</p> });
     render(element);
 
-    for (const label of ["Inicio", "Reportes", "Ayuda", "Métricas", "Contratos"]) {
+    for (const label of ["Inicio", "Reportes", "Ayuda", "Métricas", "Suscripciones"]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
     for (const label of ["Entidades", "Verificaciones", "Roles", "Auditoría"]) {

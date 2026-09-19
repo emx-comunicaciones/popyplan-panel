@@ -494,7 +494,7 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
           </ul>
         )}
         <Link
-          href={`/entidad/${slug}/recursos`}
+          href={`/entidad/${slug}/biblioteca`}
           className="mt-2 inline-block text-sm font-medium text-primary-700 underline"
         >
           {t("entidad.familias.goToResources")}

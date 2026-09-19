@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 import { imageRemotePatterns } from "./lib/config/imagePatterns";
+import { permanentRedirects } from "./lib/config/redirects";
 import { securityHeaders } from "./lib/config/securityHeaders";
 
 /**
@@ -33,6 +34,9 @@ const nextConfig: NextConfig = {
         headers: securityHeaders(),
       },
     ];
+  },
+  async redirects() {
+    return permanentRedirects();
   },
 };
 

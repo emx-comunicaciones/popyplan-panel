@@ -28,7 +28,7 @@ describe("entidadMenuFor", () => {
     const menu = entidadMenuFor("dinamizador");
 
     expect(menu).toContain("encuestas");
-    expect(menu).toContain("recursos");
+    expect(menu).toContain("biblioteca");
   });
 
   it("dinamizador ve Familias, ya con página real (ronda final de Fase 5)", () => {

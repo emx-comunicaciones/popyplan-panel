@@ -20,8 +20,8 @@ test("superadmin crea un tramo de precio y un contrato con ese tramo", async ({ 
   await page.getByRole("button", { name: "Entrar" }).click();
   await expect(page).toHaveURL(/\/plataforma/);
 
-  await page.getByRole("link", { name: "Contratos", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Contratos" })).toBeVisible();
+  await page.getByRole("link", { name: "Suscripciones", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Suscripciones" })).toBeVisible();
 
   // Tramos: nuevo tramo de precio.
   await page.getByRole("button", { name: "Tramos", exact: true }).click();

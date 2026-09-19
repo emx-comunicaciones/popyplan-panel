@@ -8,18 +8,20 @@ import { isPlatformRole, plataformaMenuFor } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("pages.plataforma.contratos");
+  const t = await getTranslations("pages.plataforma.suscripciones");
   return { title: t("title") };
 }
 
 /**
- * Contratos y facturación (`docs/PANEL.md` §13, tarea B4 backend / W4
- * panel): visible en el menú solo para `superadmin`/`support`
- * (`lib/auth/plataformaMenu.ts`, lectura de `billing`); la escritura la
- * acota el propio `ContratosPanel.tsx` a `superadmin` (botones ocultos
- * para `support`, no deshabilitados).
+ * Suscripciones (contratos y facturación, `docs/PANEL.md` §13, tarea B4
+ * backend / W4 panel; renombrada a «Suscripciones» en el bloque 1 de
+ * territorio, §4.5 — el objeto de dominio sigue siendo `Contract`, ver
+ * `lib/auth/plataformaMenu.ts`): visible en el menú solo para
+ * `superadmin`/`support` (lectura de `billing`); la escritura la acota
+ * el propio `ContratosPanel.tsx` a `superadmin` (botones ocultos para
+ * `support`, no deshabilitados).
  */
-export default async function PlataformaContratosPage() {
+export default async function PlataformaSuscripcionesPage() {
   const session = await getServerSession();
   if (!session) {
     redirect("/login");
@@ -30,7 +32,7 @@ export default async function PlataformaContratosPage() {
 
   const t = await getTranslations();
 
-  if (!plataformaMenuFor(session.platformRole.role).includes("contratos")) {
+  if (!plataformaMenuFor(session.platformRole.role).includes("suscripciones")) {
     return (
       <EmptyState
         title={t("common.noAccess")}

@@ -33,6 +33,13 @@
  * en las ocho rutas de `billing`, lectura para los dos; la escritura la
  * acota el propio `ContratosPanel.tsx`, no el menú). `moderator` y
  * `verifier` no la ven: ninguno de los dos tiene lectura de facturación.
+ *
+ * Bloque 1 de territorio (spec §4.5): la sección pasa a llamarse
+ * «Suscripciones» y su ruta a `/plataforma/suscripciones` (la vieja
+ * redirige con 308, ver `lib/config/redirects.ts`). El objeto de dominio
+ * sigue siendo `Contract` (app `billing`, sin cambios de API): la
+ * pestaña «Contratos» de dentro del panel (`ContratosPanel.tsx`) no se
+ * toca, solo el nombre visible de la sección y su ruta.
  */
 export const PLATAFORMA_MENU_ITEMS = [
   "inicio",
@@ -43,7 +50,7 @@ export const PLATAFORMA_MENU_ITEMS = [
   "roles",
   "auditoria",
   "metricas",
-  "contratos",
+  "suscripciones",
 ] as const;
 
 export type PlataformaMenuItem = (typeof PLATAFORMA_MENU_ITEMS)[number];
@@ -64,7 +71,7 @@ export const PLATAFORMA_MENU_LABELS: Record<PlataformaMenuItem, string> = {
   roles: "menu.plataforma.roles",
   auditoria: "menu.plataforma.auditoria",
   metricas: "menu.plataforma.metricas",
-  contratos: "menu.plataforma.contratos",
+  suscripciones: "menu.plataforma.suscripciones",
 };
 
 /**
@@ -107,7 +114,7 @@ const SUPPORT_VISIBLE: readonly PlataformaMenuItem[] = [
   "reportes",
   "ayuda",
   "metricas",
-  "contratos",
+  "suscripciones",
 ];
 
 export function plataformaMenuFor(role: string | null | undefined): PlataformaMenuItem[] {

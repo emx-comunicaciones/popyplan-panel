@@ -172,7 +172,7 @@ describe("FamiliasPanel", () => {
     );
     expect(screen.getByRole("link", { name: "Ir a Recursos" })).toHaveAttribute(
       "href",
-      "/entidad/alfaville/recursos",
+      "/entidad/alfaville/biblioteca",
     );
     expect(screen.getByRole("link", { name: "Ver todas las actividades" })).toHaveAttribute(
       "href",

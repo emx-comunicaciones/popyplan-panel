@@ -44,7 +44,7 @@ export const PAGE_HELP: readonly PageHelpEntry[] = [
   { route: "/entidad/[slug]/comunicaciones", key: "entidad.comunicaciones" },
   { route: "/entidad/[slug]/encuestas", key: "entidad.encuestas" },
   { route: "/entidad/[slug]/encuestas/[surveyId]", key: "entidad.encuestaResultados" },
-  { route: "/entidad/[slug]/recursos", key: "entidad.recursos" },
+  { route: "/entidad/[slug]/biblioteca", key: "entidad.biblioteca" },
   { route: "/entidad/[slug]/familias", key: "entidad.familias" },
   { route: "/entidad/[slug]/programas", key: "entidad.programas" },
   { route: "/entidad/[slug]/programas/[programId]", key: "entidad.programaFicha" },
@@ -69,7 +69,7 @@ export const PAGE_HELP: readonly PageHelpEntry[] = [
   { route: "/plataforma/roles", key: "plataforma.roles" },
   { route: "/plataforma/auditoria", key: "plataforma.auditoria" },
   { route: "/plataforma/metricas", key: "plataforma.metricas" },
-  { route: "/plataforma/contratos", key: "plataforma.contratos" },
+  { route: "/plataforma/suscripciones", key: "plataforma.suscripciones" },
 ];
 
 /** Segmentos entre `[` y `]`, p. ej. `[slug]`, `[userId]`, `[eventId]`. */

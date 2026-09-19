@@ -77,7 +77,7 @@ describe("PlataformaEntidadDetailPage", () => {
     const element = await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) });
     render(element);
 
-    await user.click(screen.getByRole("button", { name: "Contrato" }));
+    await user.click(screen.getByRole("button", { name: "Suscripción" }));
 
     await waitFor(() => expect(screen.getByText("Municipio pequeño")).toBeInTheDocument());
     expect(screen.getByText("Vigente")).toBeInTheDocument();

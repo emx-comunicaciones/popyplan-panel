@@ -44,7 +44,7 @@ vi.mock("@/hooks/useDeleteResource", async () => {
   return { ...actual, useDeleteResource: useDeleteResourceMock };
 });
 
-import EntidadRecursosPage, { generateMetadata } from "./page";
+import EntidadBibliotecaPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   getServerSessionMock.mockReset();
@@ -77,13 +77,13 @@ async function renderPage(role = "titular", slug = "alfaville") {
     platformRole: { role: null },
   });
 
-  const element = await EntidadRecursosPage({ params: Promise.resolve({ slug }) });
+  const element = await EntidadBibliotecaPage({ params: Promise.resolve({ slug }) });
   render(element);
 }
 
-describe("EntidadRecursosPage", () => {
+describe("EntidadBibliotecaPage", () => {
   it("expone el título de la página vía generateMetadata", async () => {
-    expect((await generateMetadata()).title).toBe("Recursos");
+    expect((await generateMetadata()).title).toBe("Biblioteca de la entidad");
   });
 
   it("titular ve la lista agrupada por categoría con destacados y el botón de nuevo recurso", async () => {
@@ -99,7 +99,7 @@ describe("EntidadRecursosPage", () => {
 
     await renderPage("titular");
 
-    expect(screen.getByRole("heading", { name: "Recursos", level: 1 })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Biblioteca", level: 1 })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Ayuda" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Formación" })).toBeInTheDocument();
     expect(screen.getByText("Guía de acogida")).toBeInTheDocument();
@@ -598,7 +598,7 @@ describe("EntidadRecursosPage", () => {
     getServerSessionMock.mockResolvedValue(null);
 
     await expect(
-      EntidadRecursosPage({ params: Promise.resolve({ slug: "alfaville" }) }),
+      EntidadBibliotecaPage({ params: Promise.resolve({ slug: "alfaville" }) }),
     ).rejects.toEqual(expect.objectContaining({ url: "/login" } satisfies Partial<NextRedirectSignal>));
   });
 
@@ -612,7 +612,7 @@ describe("EntidadRecursosPage", () => {
     });
 
     await expect(
-      EntidadRecursosPage({ params: Promise.resolve({ slug: "otra-entidad" }) }),
+      EntidadBibliotecaPage({ params: Promise.resolve({ slug: "otra-entidad" }) }),
     ).rejects.toEqual(expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>));
   });
 });

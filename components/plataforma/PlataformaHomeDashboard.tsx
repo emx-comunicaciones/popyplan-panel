@@ -157,9 +157,9 @@ function ContratacionCards() {
     if (billing.error.kind === "sin_acceso") return null;
     return (
       <>
-        <KpiCard label={t("activeContracts")} value={t("unavailable")} href="/plataforma/contratos" />
-        <KpiCard label={t("annualValue")} value={t("unavailable")} href="/plataforma/contratos" />
-        <KpiCard label={t("overdueInvoices")} value={t("unavailable")} href="/plataforma/contratos" />
+        <KpiCard label={t("activeContracts")} value={t("unavailable")} href="/plataforma/suscripciones" />
+        <KpiCard label={t("annualValue")} value={t("unavailable")} href="/plataforma/suscripciones" />
+        <KpiCard label={t("overdueInvoices")} value={t("unavailable")} href="/plataforma/suscripciones" />
       </>
     );
   }
@@ -170,17 +170,17 @@ function ContratacionCards() {
       <KpiCard
         label={t("activeContracts")}
         value={String(billing.data.active_contracts)}
-        href="/plataforma/contratos"
+        href="/plataforma/suscripciones"
       />
       <KpiCard
         label={t("annualValue")}
         value={formatEuros(billing.data.annual_value_cents)}
-        href="/plataforma/contratos"
+        href="/plataforma/suscripciones"
       />
       <KpiCard
         label={t("overdueInvoices")}
         value={String(billing.data.overdue_invoices)}
-        href="/plataforma/contratos"
+        href="/plataforma/suscripciones"
       />
     </>
   );
@@ -195,7 +195,7 @@ export function PlataformaHomeDashboard({ role }: PlataformaHomeDashboardProps) 
       {menu.includes("reportes") ? <ReportesPendientesCard /> : null}
       {menu.includes("ayuda") ? <AyudaPendienteCard /> : null}
       {menu.includes("entidades") ? <EntidadesCards /> : null}
-      {menu.includes("contratos") ? <ContratacionCards /> : null}
+      {menu.includes("suscripciones") ? <ContratacionCards /> : null}
     </div>
   );
 }

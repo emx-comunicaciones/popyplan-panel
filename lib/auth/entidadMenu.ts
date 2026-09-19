@@ -52,6 +52,14 @@
  * acotado a `titular`/`moderador` (`gestionar_programas`), comprobado por
  * `ProgramasPanel`/`ProgramaDetalle` (`canManage`), igual patrón que
  * Familias/Recursos/Comunicaciones.
+ *
+ * Bloque 1 de territorio (spec §4.5): «Recursos» pasa a llamarse
+ * «Biblioteca» en toda la interfaz y su ruta es
+ * `/entidad/[slug]/biblioteca` (la vieja redirige con 308, ver
+ * `lib/config/redirects.ts`). El nombre de la API no cambia
+ * (`/api/panel/entidad/{id}/resources/`), ni el del componente
+ * (`components/entidad/RecursosPanel.tsx`), ni el namespace de catálogo
+ * `entidad.recursos.*`: solo el nombre visible y la ruta.
  */
 import type { EntidadPanelRole } from "./area";
 
@@ -63,7 +71,7 @@ export const ENTIDAD_MENU_ITEMS = [
   "asistencia",
   "comunicaciones",
   "encuestas",
-  "recursos",
+  "biblioteca",
   "familias",
   "programas",
   "reportes",
@@ -90,7 +98,7 @@ export const ENTIDAD_MENU_LABELS: Record<EntidadMenuItem, string> = {
   asistencia: "menu.entidad.asistencia",
   comunicaciones: "menu.entidad.comunicaciones",
   encuestas: "menu.entidad.encuestas",
-  recursos: "menu.entidad.recursos",
+  biblioteca: "menu.entidad.biblioteca",
   familias: "menu.entidad.familias",
   programas: "menu.entidad.programas",
   reportes: "menu.entidad.reportes",

@@ -69,4 +69,23 @@ describe("next.config", () => {
       value: "max-age=63072000; includeSubDomains",
     });
   });
+
+  it("mantiene vivas las rutas anteriores a los renombres del bloque de territorio", async () => {
+    const config = await loadConfig();
+
+    const rules = await config.redirects?.();
+
+    expect(rules).toEqual([
+      {
+        source: "/entidad/:slug/recursos",
+        destination: "/entidad/:slug/biblioteca",
+        permanent: true,
+      },
+      {
+        source: "/plataforma/contratos",
+        destination: "/plataforma/suscripciones",
+        permanent: true,
+      },
+    ]);
+  });
 });

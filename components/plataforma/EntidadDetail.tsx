@@ -780,9 +780,11 @@ function formatContractDate(iso: string, locale: string): string {
 }
 
 /**
- * Bloque «Contrato» (tarea W4, `docs/PANEL.md` §13): tramo, vigencia y
- * último estado de factura, de solo lectura (la gestión completa vive en
- * `/plataforma/contratos`, `ContratosPanel.tsx`). Lectura acotada a
+ * Bloque «Suscripción» (tarea W4, `docs/PANEL.md` §13; pestaña renombrada
+ * en el bloque 1 de territorio, spec §4.5): tramo, vigencia y último
+ * estado de factura, de solo lectura (la gestión completa vive en
+ * `/plataforma/suscripciones`, `ContratosPanel.tsx` — el componente y el
+ * objeto de dominio `Contract` no cambian de nombre). Lectura acotada a
  * `superadmin`/`support` (mismo permiso que el resto de `billing`): un
  * `verifier` sin esa lectura ve «Sin acceso», igual que Equipo/Métricas
  * más arriba en este mismo fichero para roles insuficientes. Con varios

@@ -57,7 +57,7 @@
       "asistencia": "Assistència",
       "comunicaciones": "Comunicacions",
       "encuestas": "Enquestes",
-      "recursos": "Recursos",
+      "biblioteca": "Biblioteca",
       "familias": "Famílies",
       "programas": "Programes",
       "reportes": "Informes (moderació)",
@@ -80,7 +80,7 @@
       "roles": "Rols",
       "auditoria": "Auditoria",
       "metricas": "Mètriques",
-      "contratos": "Contractes"
+      "suscripciones": "Subscripcions"
     }
   },
   "layout": {
@@ -163,8 +163,8 @@
       "encuestaResultados": {
         "title": "Resultats de l'enquesta"
       },
-      "recursos": {
-        "title": "Recursos"
+      "biblioteca": {
+        "title": "Biblioteca de l'entitat"
       },
       "familias": {
         "title": "Famílies"
@@ -230,8 +230,8 @@
       "metricas": {
         "title": "Mètriques de la plataforma"
       },
-      "contratos": {
-        "title": "Contractes"
+      "suscripciones": {
+        "title": "Subscripcions"
       }
     }
   },
@@ -532,8 +532,8 @@
       "responsesTotal": "{count, plural, one {# resposta} other {# respostes}} en total."
     },
     "recursos": {
-      "heading": "Recursos",
-      "noAccessDescription": "El teu rol no té accés a Recursos.",
+      "heading": "Biblioteca",
+      "noAccessDescription": "El teu rol no té accés a la Biblioteca.",
       "newResource": "Nou recurs",
       "editResource": "Editar recurs",
       "titleLabel": "Títol",
@@ -1260,8 +1260,8 @@
         ],
         "audience": "Titular, moderador i dinamitzador."
       },
-      "recursos": {
-        "title": "Recursos",
+      "biblioteca": {
+        "title": "Biblioteca",
         "summary": "La biblioteca de continguts de l'entitat: textos, PDF, vídeos, àudios i enllaços, organitzats per categoria i adreçats a membres, famílies o a qualsevol.",
         "actions": [
           "Crear, editar o esborrar recursos (titular i moderador)",
@@ -1456,9 +1456,9 @@
         ],
         "audience": "Superadmin, moderador i suport."
       },
-      "contratos": {
-        "title": "Contractes",
-        "summary": "Contractes de Popyplan amb cada entitat, trams de preu i factures.",
+      "suscripciones": {
+        "title": "Subscripcions",
+        "summary": "Subscripcions de Popyplan amb cada entitat: contractes, trams de preu i factures.",
         "actions": [
           "Crear i activar contractes, trams i factures (superadmin)",
           "Marcar factures com a pagades"
@@ -1570,7 +1570,7 @@
         "maxInvalid": "La població màxima no és vàlida.",
         "maxBelowMin": "La població màxima no pot ser inferior a la mínima."
       },
-      "heading": "Contractes",
+      "heading": "Subscripcions",
       "noAccessDescription": "Només superadmin i suport veuen la contractació i facturació de plataforma.",
       "chooseOrganization": "Tria una entitat…",
       "tierLabel": "Tram",
@@ -1703,7 +1703,7 @@
       "tabAmbito": "Àmbit",
       "tabEquipo": "Equip",
       "tabComunidades": "Comunitats i activitats",
-      "tabContrato": "Contracte",
+      "tabContrato": "Subscripció",
       "sectionsLegend": "Seccions de l'entitat",
       "loadError": "No s'ha pogut carregar la fitxa",
       "dataCardTitle": "Dades de l'entitat",

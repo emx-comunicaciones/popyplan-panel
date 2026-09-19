@@ -9,11 +9,11 @@ import { entidadMenuFor } from "@/lib/auth/entidadMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("pages.entidad.recursos");
+  const t = await getTranslations("pages.entidad.biblioteca");
   return { title: t("title") };
 }
 
-export default async function EntidadRecursosPage({
+export default async function EntidadBibliotecaPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -33,7 +33,7 @@ export default async function EntidadRecursosPage({
 
   const t = await getTranslations();
 
-  if (!entidadMenuFor(membership.role).includes("recursos")) {
+  if (!entidadMenuFor(membership.role).includes("biblioteca")) {
     return (
       <EmptyState title={t("common.noAccess")} description={t("entidad.recursos.noAccessDescription")} />
     );

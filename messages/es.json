@@ -57,7 +57,7 @@
       "asistencia": "Asistencia",
       "comunicaciones": "Comunicaciones",
       "encuestas": "Encuestas",
-      "recursos": "Recursos",
+      "biblioteca": "Biblioteca",
       "familias": "Familias",
       "programas": "Programas",
       "reportes": "Reportes",
@@ -80,7 +80,7 @@
       "roles": "Roles",
       "auditoria": "Auditoría",
       "metricas": "Métricas",
-      "contratos": "Contratos"
+      "suscripciones": "Suscripciones"
     }
   },
   "layout": {
@@ -163,8 +163,8 @@
       "encuestaResultados": {
         "title": "Resultados de la encuesta"
       },
-      "recursos": {
-        "title": "Recursos"
+      "biblioteca": {
+        "title": "Biblioteca de la entidad"
       },
       "familias": {
         "title": "Familias"
@@ -230,8 +230,8 @@
       "metricas": {
         "title": "Métricas de plataforma"
       },
-      "contratos": {
-        "title": "Contratos"
+      "suscripciones": {
+        "title": "Suscripciones"
       }
     }
   },
@@ -532,8 +532,8 @@
       "responsesTotal": "{count, plural, one {# respuesta} other {# respuestas}} en total."
     },
     "recursos": {
-      "heading": "Recursos",
-      "noAccessDescription": "Tu rol no tiene acceso a Recursos.",
+      "heading": "Biblioteca",
+      "noAccessDescription": "Tu rol no tiene acceso a la Biblioteca.",
       "newResource": "Nuevo recurso",
       "editResource": "Editar recurso",
       "titleLabel": "Título",
@@ -1260,8 +1260,8 @@
         ],
         "audience": "Titular, moderador y dinamizador."
       },
-      "recursos": {
-        "title": "Recursos",
+      "biblioteca": {
+        "title": "Biblioteca",
         "summary": "La biblioteca de contenidos de la entidad: textos, PDF, vídeos, audios y enlaces, organizados por categoría y dirigidos a miembros, familias o a cualquiera.",
         "actions": [
           "Crear, editar o borrar recursos (titular y moderador)",
@@ -1456,9 +1456,9 @@
         ],
         "audience": "Superadmin, moderador y soporte."
       },
-      "contratos": {
-        "title": "Contratos",
-        "summary": "Contratos de Popyplan con cada entidad, tramos de precio y facturas.",
+      "suscripciones": {
+        "title": "Suscripciones",
+        "summary": "Suscripciones de Popyplan con cada entidad: contratos, tramos de precio y facturas.",
         "actions": [
           "Crear y activar contratos, tramos y facturas (superadmin)",
           "Marcar facturas como pagadas"
@@ -1570,7 +1570,7 @@
         "maxInvalid": "La población máxima no es válida.",
         "maxBelowMin": "La población máxima no puede ser menor que la mínima."
       },
-      "heading": "Contratos",
+      "heading": "Suscripciones",
       "noAccessDescription": "Solo superadmin y support ven la contratación y facturación de plataforma.",
       "chooseOrganization": "Elige una entidad…",
       "tierLabel": "Tramo",
@@ -1703,7 +1703,7 @@
       "tabAmbito": "Ámbito",
       "tabEquipo": "Equipo",
       "tabComunidades": "Comunidades y actividades",
-      "tabContrato": "Contrato",
+      "tabContrato": "Suscripción",
       "sectionsLegend": "Secciones de la entidad",
       "loadError": "No se pudo cargar la ficha",
       "dataCardTitle": "Datos de la entidad",

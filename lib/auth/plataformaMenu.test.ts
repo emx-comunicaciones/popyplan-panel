@@ -19,7 +19,7 @@ describe("plataformaMenuFor", () => {
       "roles",
       "auditoria",
       "metricas",
-      "contratos",
+      "suscripciones",
     ]);
   });
 
@@ -31,8 +31,8 @@ describe("plataformaMenuFor", () => {
     expect(plataformaMenuFor("moderator")).toEqual(["inicio", "reportes", "ayuda", "metricas"]);
   });
 
-  it("support ve lo mismo que moderator más Contratos (lectura de facturación, W4)", () => {
-    expect(plataformaMenuFor("support")).toEqual(["inicio", "reportes", "ayuda", "metricas", "contratos"]);
+  it("support ve lo mismo que moderator más Suscripciones (lectura de facturación, W4)", () => {
+    expect(plataformaMenuFor("support")).toEqual(["inicio", "reportes", "ayuda", "metricas", "suscripciones"]);
   });
 
   it("sin rol, sin menú", () => {

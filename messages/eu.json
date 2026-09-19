@@ -57,7 +57,7 @@
       "asistencia": "Bertaratzea",
       "comunicaciones": "Jakinarazpenak",
       "encuestas": "Inkestak",
-      "recursos": "Baliabideak",
+      "biblioteca": "Liburutegia",
       "familias": "Familiak",
       "programas": "Programak",
       "reportes": "Salaketak",
@@ -80,7 +80,7 @@
       "roles": "Rolak",
       "auditoria": "Auditoria",
       "metricas": "Metrikak",
-      "contratos": "Kontratuak"
+      "suscripciones": "Harpidetzak"
     }
   },
   "layout": {
@@ -163,8 +163,8 @@
       "encuestaResultados": {
         "title": "Inkestaren emaitzak"
       },
-      "recursos": {
-        "title": "Baliabideak"
+      "biblioteca": {
+        "title": "Erakundearen liburutegia"
       },
       "familias": {
         "title": "Familiak"
@@ -230,8 +230,8 @@
       "metricas": {
         "title": "Plataformaren metrikak"
       },
-      "contratos": {
-        "title": "Kontratuak"
+      "suscripciones": {
+        "title": "Harpidetzak"
       }
     }
   },
@@ -532,8 +532,8 @@
       "responsesTotal": "{count, plural, one {# erantzun} other {# erantzun}} guztira."
     },
     "recursos": {
-      "heading": "Baliabideak",
-      "noAccessDescription": "Zure rolak ez du sarbiderik Baliabideetan.",
+      "heading": "Liburutegia",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Liburutegian.",
       "newResource": "Baliabide berria",
       "editResource": "Baliabidea editatu",
       "titleLabel": "Izenburua",
@@ -1260,8 +1260,8 @@
         ],
         "audience": "Titularra, moderatzailea eta dinamizatzailea."
       },
-      "recursos": {
-        "title": "Baliabideak",
+      "biblioteca": {
+        "title": "Liburutegia",
         "summary": "Erakundearen edukien liburutegia: testuak, PDFak, bideoak, audioak eta estekak, kategoriaka antolatuta eta kideei, familiei edo edonori zuzenduta.",
         "actions": [
           "Baliabideak sortu, editatu edo ezabatu (titularra eta moderatzailea)",
@@ -1456,9 +1456,9 @@
         ],
         "audience": "Superadmin, moderatzailea eta laguntza."
       },
-      "contratos": {
-        "title": "Kontratuak",
-        "summary": "Popyplanek erakunde bakoitzarekin dituen kontratuak, prezio-tarteak eta fakturak.",
+      "suscripciones": {
+        "title": "Harpidetzak",
+        "summary": "Popyplanek erakunde bakoitzarekin dituen harpidetzak: kontratuak, prezio-tarteak eta fakturak.",
         "actions": [
           "Kontratuak, tarteak eta fakturak sortu eta aktibatu (superadmin)",
           "Fakturak ordainduta gisa markatu"
@@ -1570,7 +1570,7 @@
         "maxInvalid": "Gehieneko biztanleria ez da baliozkoa.",
         "maxBelowMin": "Gehieneko biztanleria ezin da gutxienekoa baino txikiagoa izan."
       },
-      "heading": "Kontratuak",
+      "heading": "Harpidetzak",
       "noAccessDescription": "Superadminek eta laguntzak bakarrik ikusten dute plataformaren kontratazioa eta fakturazioa.",
       "chooseOrganization": "Aukeratu erakunde bat…",
       "tierLabel": "Tartea",
@@ -1703,7 +1703,7 @@
       "tabAmbito": "Eremua",
       "tabEquipo": "Taldea",
       "tabComunidades": "Komunitateak eta jarduerak",
-      "tabContrato": "Kontratua",
+      "tabContrato": "Harpidetza",
       "sectionsLegend": "Erakundearen atalak",
       "loadError": "Ezin izan da fitxa kargatu",
       "dataCardTitle": "Erakundearen datuak",

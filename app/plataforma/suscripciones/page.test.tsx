@@ -19,7 +19,7 @@ import { buildOrganization } from "@/test-utils/fixtures/organization";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import { buildContract, buildInvoice, buildPricingTier } from "@/test-utils/fixtures/billing";
 
-import PlataformaContratosPage, { generateMetadata } from "./page";
+import PlataformaSuscripcionesPage, { generateMetadata } from "./page";
 
 const CONTRACT = buildContract({
   id: 3,
@@ -54,13 +54,13 @@ async function renderPage(role: string | null = "superadmin") {
     platformRole: buildPlatformRole(role),
   });
 
-  const element = await PlataformaContratosPage();
+  const element = await PlataformaSuscripcionesPage();
   return render(element);
 }
 
-describe("PlataformaContratosPage", () => {
+describe("PlataformaSuscripcionesPage", () => {
   it("expone el título de la página vía generateMetadata", async () => {
-    expect((await generateMetadata()).title).toBe("Contratos");
+    expect((await generateMetadata()).title).toBe("Suscripciones");
   });
 
   it("no tiene violaciones de accesibilidad (axe)", async () => {
@@ -75,7 +75,7 @@ describe("PlataformaContratosPage", () => {
     mockApiFetch();
     await renderPage("superadmin");
 
-    expect(screen.getByRole("heading", { name: "Contratos", level: 1 })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Suscripciones", level: 1 })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Nuevo contrato" })).toBeInTheDocument();
 
     await waitFor(() => expect(screen.getByRole("button", { name: "Activar" })).toBeInTheDocument());
@@ -299,7 +299,7 @@ describe("PlataformaContratosPage", () => {
   it("sin sesión redirige a /login", async () => {
     getServerSessionMock.mockResolvedValue(null);
 
-    await expect(PlataformaContratosPage()).rejects.toEqual(
+    await expect(PlataformaSuscripcionesPage()).rejects.toEqual(
       expect.objectContaining({ url: "/login" } satisfies Partial<NextRedirectSignal>),
     );
   });
@@ -311,7 +311,7 @@ describe("PlataformaContratosPage", () => {
       platformRole: buildPlatformRole(null),
     });
 
-    await expect(PlataformaContratosPage()).rejects.toEqual(
+    await expect(PlataformaSuscripcionesPage()).rejects.toEqual(
       expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>),
     );
   });

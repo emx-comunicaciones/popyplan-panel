@@ -57,7 +57,7 @@
       "asistencia": "Attendance",
       "comunicaciones": "Announcements",
       "encuestas": "Surveys",
-      "recursos": "Resources",
+      "biblioteca": "Library",
       "familias": "Families",
       "programas": "Programs",
       "reportes": "Reports",
@@ -80,7 +80,7 @@
       "roles": "Roles",
       "auditoria": "Audit log",
       "metricas": "Metrics",
-      "contratos": "Contracts"
+      "suscripciones": "Subscriptions"
     }
   },
   "layout": {
@@ -163,8 +163,8 @@
       "encuestaResultados": {
         "title": "Survey results"
       },
-      "recursos": {
-        "title": "Resources"
+      "biblioteca": {
+        "title": "Entity library"
       },
       "familias": {
         "title": "Families"
@@ -230,8 +230,8 @@
       "metricas": {
         "title": "Platform metrics"
       },
-      "contratos": {
-        "title": "Contracts"
+      "suscripciones": {
+        "title": "Subscriptions"
       }
     }
   },
@@ -532,8 +532,8 @@
       "responsesTotal": "{count, plural, one {# response} other {# responses}} in total."
     },
     "recursos": {
-      "heading": "Resources",
-      "noAccessDescription": "Your role doesn't have access to Resources.",
+      "heading": "Library",
+      "noAccessDescription": "Your role doesn't have access to the Library.",
       "newResource": "New resource",
       "editResource": "Edit resource",
       "titleLabel": "Title",
@@ -1260,8 +1260,8 @@
         ],
         "audience": "Owner, moderator and facilitator."
       },
-      "recursos": {
-        "title": "Resources",
+      "biblioteca": {
+        "title": "Library",
         "summary": "The entity's content library: text, PDFs, videos, audio and links, organised by category and aimed at members, families or anyone.",
         "actions": [
           "Create, edit or delete resources (owner and moderator)",
@@ -1456,9 +1456,9 @@
         ],
         "audience": "Superadmin, moderator and support."
       },
-      "contratos": {
-        "title": "Contracts",
-        "summary": "Popyplan's contracts with each entity, pricing tiers and invoices.",
+      "suscripciones": {
+        "title": "Subscriptions",
+        "summary": "Popyplan's subscriptions with each entity: contracts, pricing tiers and invoices.",
         "actions": [
           "Create and activate contracts, tiers and invoices (superadmin)",
           "Mark invoices as paid"
@@ -1570,7 +1570,7 @@
         "maxInvalid": "The maximum population isn't valid.",
         "maxBelowMin": "The maximum population can't be lower than the minimum."
       },
-      "heading": "Contracts",
+      "heading": "Subscriptions",
       "noAccessDescription": "Only superadmin and support see platform contracts and billing.",
       "chooseOrganization": "Choose an entity…",
       "tierLabel": "Tier",
@@ -1703,7 +1703,7 @@
       "tabAmbito": "Scope",
       "tabEquipo": "Team",
       "tabComunidades": "Communities and activities",
-      "tabContrato": "Contract",
+      "tabContrato": "Subscription",
       "sectionsLegend": "Entity sections",
       "loadError": "Couldn't load the profile",
       "dataCardTitle": "Entity details",
