@@ -173,18 +173,27 @@ describe("paridad de catálogos (en/es/eu/ca)", () => {
    * con cifra — el resto del catálogo eu (p. ej. `# kide`) sí antepone
    * el numeral en las dos ramas.
    */
-  it("eu antepone el numeral en las dos ramas de sus plurales «uno» (M18)", () => {
-    const keys = [
-      "entidad.encuestas.questionCount",
-      "entidad.encuestaResultados.responsesTotal",
-      "entidad.comunicaciones.sentOn",
-    ];
-    for (const key of keys) {
-      const value = flattened.eu[key];
-      const oneMatch = value.match(/one \{([^}]*)\}/);
-      expect(oneMatch, `${key} debería tener una rama "one"`).not.toBeNull();
-      expect(oneMatch![1].trim().startsWith("#"), `${key}: "${oneMatch![1]}" no antepone el numeral`).toBe(true);
+  it("eu antepone el numeral en todas las ramas de sus plurales (M18)", () => {
+    // Recorre todo el catálogo eu, no solo las tres claves de la revisión:
+    // la re-revisión encontró el mismo patrón en otras siete (`hartzaile #`,
+    // `erakunde #`, `Pertsona #-i`…). Cualquier rama `one`/`other` con una
+    // `#` final o con sufijo pegado («galdera 1», «#-i») falla.
+    const checked: string[] = [];
+    for (const [key, value] of Object.entries(flattened.eu)) {
+      if (!value.includes("plural,")) continue;
+      for (const branch of value.matchAll(/\b(?:one|other) \{([^}]*)\}/g)) {
+        checked.push(key);
+        // Un «#» tiene que ir seguido del sustantivo («# hartzaile»); si va
+        // al final de la rama o pegado a un sufijo («hartzaile #», «#-i»)
+        // es que el numeral se ha pospuesto.
+        expect(
+          /#(?! [A-Za-zñÑ])/.test(branch[1]),
+          `${key}: "${branch[1]}" pospone el numeral`,
+        ).toBe(false);
+      }
     }
+    expect(checked).toContain("entidad.encuestas.questionCount");
+    expect(checked).toContain("entidad.familias.announcementSentOn");
   });
 
   it("las cabeceras del CSV de Auditoría valen lo mismo en los cuatro idiomas (M16)", () => {

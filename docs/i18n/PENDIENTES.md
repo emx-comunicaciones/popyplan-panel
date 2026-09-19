@@ -99,7 +99,13 @@ La Tarea 6 (cierre) anota tres puntos, ninguno de redacción en español:
   elemento JSX). `eslint.config.mjs::no-restricted-syntax` añade esa
   guarda acotada a los cinco atributos que llevan texto de interfaz, sin
   reabrir los 1835 falsos positivos de `ignoreProps: false` — ya no
-  queda ningún atributo de texto sin blindar.
+  queda ningún atributo de texto sin blindar. **Límite conocido de la
+  guarda**: el selector solo casa con un `Literal` hijo directo del
+  atributo, así que un texto movido a una constante y pasado como
+  `placeholder={CONSTANTE}` se le escapa (así es como
+  `AuditoriaPanel.tsx` pasa sus dos ejemplos técnicos a propósito). No
+  es hermética contra un literal sin traducir aliado en una `const`; la
+  red para eso sigue siendo la revisión.
 - **`app/entidad/[slug]/informes/page.tsx` con dos literales sin
   extraer** (`"Sin acceso"`/`"Tu rol no tiene acceso a Informes."`/
   `"Informes"`): la única extracción de contenido real que hizo falta
