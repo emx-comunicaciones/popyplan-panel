@@ -153,6 +153,42 @@ describe("EntidadConfiguracionPage", () => {
     );
   });
 
+  it("el titular puede cambiar la sede de su entidad", async () => {
+    setDefaultMocks();
+    useOrganizationMock.mockReturnValue({
+      data: buildOrganization({ place: "20069" }),
+      isError: false,
+      error: null,
+    });
+
+    await renderPage("titular");
+
+    expect(screen.getByLabelText("Municipio de la sede")).toBeInTheDocument();
+    expect(screen.getByLabelText("Municipio de la sede")).toHaveValue("20069");
+  });
+
+  it("guardar la sede manda `place` junto al resto de la lista blanca", async () => {
+    setDefaultMocks();
+    useOrganizationMock.mockReturnValue({
+      data: buildOrganization({ place: "20069" }),
+      isError: false,
+      error: null,
+    });
+    const updateMutate = vi.fn();
+    useUpdateOrganizationMock.mockReturnValue({
+      mutate: updateMutate,
+      isPending: false,
+      isError: false,
+      isSuccess: false,
+    });
+    const user = userEvent.setup();
+
+    await renderPage("titular");
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(updateMutate).toHaveBeenCalledWith(expect.objectContaining({ place: "20069" }));
+  });
+
   it("añadir miembro al equipo llama a la mutación con user y role", async () => {
     setDefaultMocks();
     const addMutate = vi.fn();

@@ -71,6 +71,21 @@ describe("useUpdateOrganization", () => {
   });
 });
 
+describe("useUpdateOrganization (sede)", () => {
+  it("manda la sede junto al resto de la lista blanca del titular", async () => {
+    apiFetchMock.mockResolvedValueOnce(buildOrganization());
+
+    const { result } = renderHook(() => useUpdateOrganization(7), { wrapper });
+    result.current.mutate({ description: "Hola", place: "20069" });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(apiFetchMock).toHaveBeenCalledWith("/api/organizations/7/", {
+      method: "PATCH",
+      body: { description: "Hola", place: "20069" },
+    });
+  });
+});
+
 /**
  * `lib/api/drfError.ts::detailOf`: el 400 por campo de DRF
  * (`{campo: ["mensaje"]}`) se pinta con el mensaje del backend, no con el

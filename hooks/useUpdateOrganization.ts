@@ -44,6 +44,14 @@ export interface UpdateOrganizationInput {
   primary_color?: string;
   secondary_color?: string;
   on_call_user?: number | null;
+  /**
+   * Código INE de la sede. El `titular` sí la edita desde Configuración
+   * (spec §2.3: «`place` sí lo puede editar el titular de la entidad en
+   * su configuración, porque es un dato propio»), a diferencia de
+   * `admin_level`/`territory_*`, que son solo de plataforma y van por
+   * `hooks/useSetOrganizationTerritory.ts`.
+   */
+  place?: string | null;
 }
 
 export function useUpdateOrganization(

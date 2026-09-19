@@ -1147,6 +1147,11 @@
       "invalido": "Esa entidad paraguas no es válida (crearía un ciclo).",
       "sinPermiso": "Solo superadmin cambia la entidad paraguas.",
       "desconocido": "No se pudo cambiar la entidad paraguas."
+    },
+    "setOrganizationTerritory": {
+      "invalido": "Revisa el territorio: alguno de los datos no es válido.",
+      "sinPermiso": "Solo superadmin declara el territorio.",
+      "desconocido": "No se pudo guardar el territorio."
     }
   },
   "reports": {
@@ -1916,6 +1921,40 @@
       "csvTargetId": "target_id",
       "csvMetadata": "metadata",
       "csvCreatedAt": "created_at"
+    },
+    "sede": {
+      "label": "Municipio de la sede",
+      "searchLabel": "Buscar un municipio",
+      "header": "Sede",
+      "none": "Sin municipio",
+      "missing": "Sede sin municipio",
+      "current": "Municipio actual (INE {ineCode})",
+      "option": "{name} ({province}) · {ineCode}",
+      "searchError": "No se pudo buscar el municipio.",
+      "requiredHint": "La sede es obligatoria para dar de alta una entidad."
+    },
+    "territorio": {
+      "cardTitle": "Territorio declarado",
+      "adminLevelLabel": "Nivel administrativo",
+      "adminLevelNone": "No es una administración",
+      "adminLevelAyuntamiento": "Ayuntamiento",
+      "adminLevelMancomunidad": "Mancomunidad",
+      "adminLevelDiputacion": "Diputación",
+      "adminLevelGobierno": "Gobierno",
+      "kindLabel": "Tipo de territorio",
+      "kindNone": "Sin territorio",
+      "kindCcaa": "Comunidad autónoma",
+      "kindProvincia": "Provincia",
+      "kindComarca": "Comarca",
+      "kindMunicipios": "Lista de municipios",
+      "codeLabelShortcut": "Código del territorio",
+      "codeLabelMunicipios": "Códigos INE separados por comas",
+      "previewTyped": "{count, plural, one {# municipio en la lista escrita} other {# municipios en la lista escrita}}",
+      "previewFilter": "{count, plural, one {# municipio en el código escrito} other {# municipios en el código escrito}}",
+      "previewSaved": "{count, plural, one {# municipio en el territorio guardado} other {# municipios en el territorio guardado}}",
+      "previewLoading": "Contando municipios…",
+      "previewError": "No se pudo contar los municipios de ese código.",
+      "placesCountLabel": "Municipios en el territorio declarado"
     }
   },
   "paraguas": {

@@ -1147,6 +1147,11 @@
       "invalido": "Aterki erakunde hori ez da baliozkoa (zikloa sortuko luke).",
       "sinPermiso": "Superadminek bakarrik aldatzen du erakunde aterkia.",
       "desconocido": "Ezin izan da erakunde aterkia aldatu."
+    },
+    "setOrganizationTerritory": {
+      "invalido": "Berrikusi lurraldea: datuetakoren bat ez da baliozkoa.",
+      "sinPermiso": "Superadminak baino ezin du lurraldea adierazi.",
+      "desconocido": "Ezin izan da lurraldea gorde."
     }
   },
   "reports": {
@@ -1916,6 +1921,40 @@
       "csvTargetId": "target_id",
       "csvMetadata": "metadata",
       "csvCreatedAt": "created_at"
+    },
+    "sede": {
+      "label": "Egoitzaren udalerria",
+      "searchLabel": "Udalerri bat bilatu",
+      "header": "Egoitza",
+      "none": "Udalerririk gabe",
+      "missing": "Egoitza udalerririk gabe",
+      "current": "Egungo udalerria (INE {ineCode})",
+      "option": "{name} ({province}) · {ineCode}",
+      "searchError": "Ezin izan da udalerria bilatu.",
+      "requiredHint": "Egoitza derrigorrezkoa da erakunde bat alta emateko."
+    },
+    "territorio": {
+      "cardTitle": "Adierazitako lurraldea",
+      "adminLevelLabel": "Administrazio-maila",
+      "adminLevelNone": "Ez da administrazio bat",
+      "adminLevelAyuntamiento": "Udala",
+      "adminLevelMancomunidad": "Mankomunitatea",
+      "adminLevelDiputacion": "Foru aldundia",
+      "adminLevelGobierno": "Gobernua",
+      "kindLabel": "Lurralde mota",
+      "kindNone": "Lurralderik gabe",
+      "kindCcaa": "Autonomia erkidegoa",
+      "kindProvincia": "Probintzia",
+      "kindComarca": "Eskualdea",
+      "kindMunicipios": "Udalerrien zerrenda",
+      "codeLabelShortcut": "Lurraldearen kodea",
+      "codeLabelMunicipios": "INE kodeak komaz bereizita",
+      "previewTyped": "{count, plural, one {udalerri # idatzitako zerrendan} other {# udalerri idatzitako zerrendan}}",
+      "previewFilter": "{count, plural, one {udalerri # idatzitako kodean} other {# udalerri idatzitako kodean}}",
+      "previewSaved": "{count, plural, one {udalerri # gordetako lurraldean} other {# udalerri gordetako lurraldean}}",
+      "previewLoading": "Udalerriak zenbatzen…",
+      "previewError": "Ezin izan dira kode horretako udalerriak zenbatu.",
+      "placesCountLabel": "Adierazitako lurraldeko udalerriak"
     }
   },
   "paraguas": {

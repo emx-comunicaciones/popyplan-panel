@@ -1147,6 +1147,11 @@
       "invalido": "Aquesta entitat paraigua no és vàlida (crearia un cicle).",
       "sinPermiso": "Només superadmin canvia l'entitat paraigua.",
       "desconocido": "No s'ha pogut canviar l'entitat paraigua."
+    },
+    "setOrganizationTerritory": {
+      "invalido": "Revisa el territori: alguna de les dades no és vàlida.",
+      "sinPermiso": "Només un superadmin declara el territori.",
+      "desconocido": "No s'ha pogut desar el territori."
     }
   },
   "reports": {
@@ -1916,6 +1921,40 @@
       "csvTargetId": "target_id",
       "csvMetadata": "metadata",
       "csvCreatedAt": "created_at"
+    },
+    "sede": {
+      "label": "Municipi de la seu",
+      "searchLabel": "Cercar un municipi",
+      "header": "Seu",
+      "none": "Sense municipi",
+      "missing": "Seu sense municipi",
+      "current": "Municipi actual (INE {ineCode})",
+      "option": "{name} ({province}) · {ineCode}",
+      "searchError": "No s'ha pogut cercar el municipi.",
+      "requiredHint": "La seu és obligatòria per donar d'alta una entitat."
+    },
+    "territorio": {
+      "cardTitle": "Territori declarat",
+      "adminLevelLabel": "Nivell d'administració",
+      "adminLevelNone": "No és una administració",
+      "adminLevelAyuntamiento": "Ajuntament",
+      "adminLevelMancomunidad": "Mancomunitat",
+      "adminLevelDiputacion": "Diputació",
+      "adminLevelGobierno": "Govern",
+      "kindLabel": "Tipus de territori",
+      "kindNone": "Sense territori",
+      "kindCcaa": "Comunitat autònoma",
+      "kindProvincia": "Provincia",
+      "kindComarca": "Comarca",
+      "kindMunicipios": "Llista de municipis",
+      "codeLabelShortcut": "Codi del territori",
+      "codeLabelMunicipios": "Codis INE separats per comes",
+      "previewTyped": "{count, plural, one {# municipi a la llista escrita} other {# municipis a la llista escrita}}",
+      "previewFilter": "{count, plural, one {# municipi per al codi escrit} other {# municipis per al codi escrit}}",
+      "previewSaved": "{count, plural, one {# municipi al territori desat} other {# municipis al territori desat}}",
+      "previewLoading": "Comptant municipis…",
+      "previewError": "No s'han pogut comptar els municipis d'aquest codi.",
+      "placesCountLabel": "Municipis al territori declarat"
     }
   },
   "paraguas": {

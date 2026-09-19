@@ -125,6 +125,12 @@ export function EntidadesTable({ canCreate }: EntidadesTableProps) {
               },
               { key: "org_type", header: t("plataforma.entidades.typeHeader"), render: (org) => org.org_type },
               {
+                key: "place",
+                header: t("plataforma.sede.header"),
+                render: (org) =>
+                  org.place ? org.place : <Badge tone="neutral">{t("plataforma.sede.missing")}</Badge>,
+              },
+              {
                 key: "verified",
                 header: t("plataforma.entidades.verifiedLabel"),
                 render: (org) => (

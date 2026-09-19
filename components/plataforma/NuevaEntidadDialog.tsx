@@ -16,6 +16,8 @@ import { useCreateOrganization, type OrganizationsErrorKind } from "@/hooks/useO
 import type { OrgTypeEnum } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 
+import { SedeSelector } from "./SedeSelector";
+
 export interface NuevaEntidadDialogProps {
   onClose: () => void;
 }
@@ -42,9 +44,15 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
   const [cif, setCif] = useState("");
   const [parent, setParent] = useState("");
   const [description, setDescription] = useState("");
+  const [place, setPlace] = useState<string | null>(null);
   const [created, setCreated] = useState<string | null>(null);
 
-  const canSubmit = name.trim().length > 0 && slug.trim().length > 0 && cif.trim().length > 0;
+  // Sede obligatoria (spec §4.3, «Alta de entidad: sede obligatoria»):
+  // `OrganizationCreateInput.place` no es opcional, así que el botón se
+  // queda deshabilitado hasta que se elige un municipio, igual que con
+  // el resto de campos obligatorios de este formulario.
+  const canSubmit =
+    name.trim().length > 0 && slug.trim().length > 0 && cif.trim().length > 0 && place !== null;
 
   function handleClose() {
     create.reset();
@@ -53,7 +61,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!canSubmit) return;
+    if (!canSubmit || place === null) return;
     // El aviso de la última alta correcta se borra al empezar otra: si el
     // nuevo envío falla, quedarían en pantalla el error y un «creada» que
     // no corresponde a lo que se acaba de enviar.
@@ -66,6 +74,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
         cif: cif.trim(),
         parent: parent ? Number(parent) : null,
         description: description.trim() || undefined,
+        place,
       },
       {
         onSuccess: (org) => {
@@ -75,6 +84,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
           setCif("");
           setParent("");
           setDescription("");
+          setPlace(null);
         },
       },
     );
@@ -123,6 +133,10 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
               </option>
             ))}
           </select>
+        </div>
+        <div>
+          <SedeSelector id="nueva-entidad-sede" value={place} onChange={setPlace} />
+          <p className="mt-1 text-xs text-text-secondary">{t("plataforma.sede.requiredHint")}</p>
         </div>
         <div>
           <label htmlFor="nueva-entidad-cif" className="mb-1 block text-sm font-medium text-text-form">

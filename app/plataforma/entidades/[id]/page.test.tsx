@@ -240,6 +240,86 @@ describe("PlataformaEntidadDetailPage", () => {
     expect(container.textContent).not.toMatch(/`/);
   });
 
+  it("superadmin ve y edita sede, nivel y territorio de una administración", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") {
+        return buildOrganization({
+          id: 9,
+          org_type: "administracion",
+          place: "20069",
+          admin_level: "diputacion",
+        });
+      }
+      return { count: 0, next: null, previous: null, results: [] };
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const element = await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) });
+    render(element);
+
+    await waitFor(() => expect(screen.getByLabelText("Municipio de la sede")).toBeInTheDocument());
+    expect(screen.getByLabelText("Nivel administrativo")).toHaveValue("diputacion");
+    expect(screen.getByLabelText("Tipo de territorio")).toBeInTheDocument();
+  });
+
+  it("verifier ve la sede y el territorio en solo lectura, ningún control editable", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") {
+        return buildOrganization({
+          id: 9,
+          org_type: "administracion",
+          place: "20069",
+          admin_level: "diputacion",
+          territory_kind: "provincia",
+          territory_code: "20",
+          territory_places_count: 88,
+        });
+      }
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("verifier"),
+    });
+
+    const element = await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) });
+    render(element);
+
+    await waitFor(() => expect(screen.getByText("20069")).toBeInTheDocument());
+    expect(screen.queryByLabelText("Municipio de la sede")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Tipo de territorio")).not.toBeInTheDocument();
+    // Solo lectura, pero no oculto: el nivel y el territorio siguen
+    // siendo visibles para un rol de plataforma sin permiso de gestión.
+    expect(screen.getByText("Diputación")).toBeInTheDocument();
+    expect(screen.getByText("Provincia")).toBeInTheDocument();
+    expect(screen.getByText("88")).toBeInTheDocument();
+  });
+
+  it("una asociación no tiene nivel ni territorio, ni siquiera para superadmin", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") {
+        return buildOrganization({ id: 9, org_type: "asociacion", place: "20069" });
+      }
+      return { count: 0, next: null, previous: null, results: [] };
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const element = await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) });
+    render(element);
+
+    await waitFor(() => expect(screen.getByLabelText("Municipio de la sede")).toBeInTheDocument());
+    expect(screen.queryByLabelText("Tipo de territorio")).not.toBeInTheDocument();
+  });
+
   it("moderator ve «Sin acceso»", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",

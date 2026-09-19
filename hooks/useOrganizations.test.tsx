@@ -68,6 +68,7 @@ describe("useCreateOrganization", () => {
       slug: "ayto",
       org_type: "administracion",
       cif: "A1",
+      place: "20069",
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(apiFetchMock).toHaveBeenCalledWith(
@@ -79,7 +80,7 @@ describe("useCreateOrganization", () => {
   it("400 con detail lo muestra literal", async () => {
     apiFetchMock.mockRejectedValueOnce(new ApiError(400, { detail: "Slug repetido." }));
     const { result } = renderHook(() => useCreateOrganization(), { wrapper });
-    result.current.mutate({ name: "x", slug: "x", org_type: "asociacion", cif: "x" });
+    result.current.mutate({ name: "x", slug: "x", org_type: "asociacion", cif: "x", place: "20069" });
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error?.message).toBe("Slug repetido.");
   });
@@ -87,7 +88,7 @@ describe("useCreateOrganization", () => {
   it("403 sin permiso", async () => {
     apiFetchMock.mockRejectedValueOnce(new ApiError(403, null));
     const { result } = renderHook(() => useCreateOrganization(), { wrapper });
-    result.current.mutate({ name: "x", slug: "x", org_type: "asociacion", cif: "x" });
+    result.current.mutate({ name: "x", slug: "x", org_type: "asociacion", cif: "x", place: "20069" });
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error).toBeInstanceOf(OrganizationsError);
   });
@@ -95,7 +96,7 @@ describe("useCreateOrganization", () => {
   it("cualquier otro fallo", async () => {
     apiFetchMock.mockRejectedValueOnce(new Error("caído"));
     const { result } = renderHook(() => useCreateOrganization(), { wrapper });
-    result.current.mutate({ name: "x", slug: "x", org_type: "asociacion", cif: "x" });
+    result.current.mutate({ name: "x", slug: "x", org_type: "asociacion", cif: "x", place: "20069" });
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error).toBeInstanceOf(OrganizationsError);
   });
@@ -176,7 +177,7 @@ describe("useCreateOrganization/useSetOrganizationParent (400 por campo)", () =>
   it("useCreateOrganization muestra el mensaje del campo", async () => {
     apiFetchMock.mockRejectedValueOnce(new ApiError(400, { cif: ["Ya existe una entidad con ese CIF."] }));
     const { result } = renderHook(() => useCreateOrganization(), { wrapper });
-    result.current.mutate({ name: "x", slug: "x", org_type: "asociacion", cif: "x" });
+    result.current.mutate({ name: "x", slug: "x", org_type: "asociacion", cif: "x", place: "20069" });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error?.message).toBe("Ya existe una entidad con ese CIF.");

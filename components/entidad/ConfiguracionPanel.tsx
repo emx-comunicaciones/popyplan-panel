@@ -26,6 +26,8 @@ import { useUpdateOrganization } from "@/hooks/useUpdateOrganization";
 import type { OrgMembershipFull, OrgMembershipRole, Reference } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 
+import { SedeSelector } from "@/components/plataforma/SedeSelector";
+
 const ADD_ORG_MEMBER_ERROR_KEYS: Record<OrgMembersErrorKind, string> = {
   invalido: "errors.addOrgMember.invalido",
   sin_acceso: "errors.addOrgMember.sinAcceso",
@@ -95,6 +97,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
     website: string;
     primary_color: string;
     secondary_color: string;
+    place: string | null;
   } | null>(null);
 
   if (organization.isError) {
@@ -116,6 +119,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
     website: organization.data.website ?? "",
     primary_color: organization.data.primary_color ?? "#1FB3AE",
     secondary_color: organization.data.secondary_color ?? "#72C9EE",
+    place: organization.data.place ?? null,
   };
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -176,6 +180,11 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
             />
           </div>
         </div>
+        <SedeSelector
+          id="config-sede"
+          value={data.place}
+          onChange={(place) => setForm({ ...data, place })}
+        />
         <div className="flex flex-wrap gap-3">
           <div>
             <label htmlFor="config-primary-color" className="mb-1 block text-sm font-medium text-text-form">

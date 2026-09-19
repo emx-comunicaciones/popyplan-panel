@@ -23,8 +23,20 @@ const useMetricsMock = vi.hoisted(() => vi.fn());
 const useCompareMock = vi.hoisted(() => vi.fn());
 const usePlacesByIneMock = vi.hoisted(() => vi.fn());
 const usePlaceSheetMock = vi.hoisted(() => vi.fn());
+const realParaguasMenuForRef = vi.hoisted(() => ({
+  current: (undefined as unknown) as (role: string) => string[],
+}));
+const paraguasMenuForMock = vi.hoisted(() =>
+  vi.fn((role: string) => realParaguasMenuForRef.current(role)),
+);
 
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
+vi.mock("@/lib/auth/paraguasMenu", async () => {
+  const actual =
+    await vi.importActual<typeof import("@/lib/auth/paraguasMenu")>("@/lib/auth/paraguasMenu");
+  realParaguasMenuForRef.current = actual.paraguasMenuFor;
+  return { ...actual, paraguasMenuFor: paraguasMenuForMock };
+});
 vi.mock("@/lib/api/serverFetch", () => ({ serverFetch: serverFetchMock }));
 vi.mock("@/hooks/useMetrics", async () => {
   const actual = await vi.importActual<typeof import("@/hooks/useMetrics")>("@/hooks/useMetrics");
@@ -304,6 +316,15 @@ describe("ParaguasTerritorioPage", () => {
     await expect(
       ParaguasTerritorioPage({ params: Promise.resolve({ slug: "diputacion-demo" }) }),
     ).rejects.toEqual(expect.objectContaining({ url: "/login" }));
+  });
+
+  it("sin la sección en el menú de plataforma para ese rol, pinta el aviso de sin acceso", async () => {
+    paraguasMenuForMock.mockReturnValueOnce(["inicio", "red-financiada", "informes"]);
+
+    await renderPage();
+
+    expect(screen.getByText("Sin acceso")).toBeInTheDocument();
+    expect(screen.getByText("Tu rol no tiene acceso a Territorio.")).toBeInTheDocument();
   });
 
   it("una cuenta sin membresía de panel en esa entidad va a la raíz", async () => {

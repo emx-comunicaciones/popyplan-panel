@@ -11,7 +11,7 @@ import { useMutation, useQuery, useQueryClient, type UseMutationResult, type Use
 import { ApiError, apiFetch } from "@/lib/api/client";
 import { detailOf } from "@/lib/api/drfError";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
-import type { Organization, OrganizationCreateRequest, PaginatedOrganizationList } from "@/lib/api/types";
+import type { Organization, OrganizationCreateInput, PaginatedOrganizationList } from "@/lib/api/types";
 
 /**
  * **i18n (tarea 5 del plan de i18n):** `kind`/`detail` cubren las tres
@@ -101,11 +101,11 @@ function invalidateOrganizations(queryClient: ReturnType<typeof useQueryClient>)
 export function useCreateOrganization(): UseMutationResult<
   Organization,
   OrganizationsError,
-  OrganizationCreateRequest
+  OrganizationCreateInput
 > {
   const queryClient = useQueryClient();
 
-  return useMutation<Organization, OrganizationsError, OrganizationCreateRequest>({
+  return useMutation<Organization, OrganizationsError, OrganizationCreateInput>({
     mutationFn: async (input) => {
       try {
         return await apiFetch<Organization>(ORGANIZATIONS.LIST(), { method: "POST", body: input });

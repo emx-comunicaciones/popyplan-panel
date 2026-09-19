@@ -16,6 +16,7 @@ import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildOrganization } from "@/test-utils/fixtures/organization";
+import { buildPlaceRow } from "@/test-utils/fixtures/places";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 
 import PlataformaEntidadesPage, { generateMetadata } from "./page";
@@ -79,6 +80,9 @@ describe("PlataformaEntidadesPage", () => {
   it("el aviso de «creada» desaparece al reintentar: no se queda de un alta anterior", async () => {
     const created = buildOrganization({ id: 12, name: "Asociación Bidasoa" });
     apiFetchMock.mockImplementation(async (path: string, options?: { method?: string }) => {
+      if (path.startsWith("/api/places/")) {
+        return { count: 1, next: null, previous: null, results: [buildPlaceRow()] };
+      }
       if (options?.method === "POST") {
         if (apiFetchMock.mock.calls.filter((call) => call[1]?.method === "POST").length > 1) {
           throw new ApiError(400, { slug: ["Ya existe una entidad con este slug."] });
@@ -101,6 +105,11 @@ describe("PlataformaEntidadesPage", () => {
     await user.type(screen.getByLabelText("Nombre"), "Asociación Bidasoa");
     await user.type(screen.getByLabelText("Slug"), "asociacion-bidasoa");
     await user.type(screen.getByLabelText("CIF"), "G12345678");
+    await user.type(screen.getByLabelText("Buscar un municipio"), "irun");
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Irun (Gipuzkoa) · 20069" })).toBeInTheDocument(),
+    );
+    await user.selectOptions(screen.getByLabelText("Municipio de la sede"), "20069");
     await user.click(screen.getByRole("button", { name: "Crear entidad" }));
 
     await waitFor(() =>
@@ -108,16 +117,63 @@ describe("PlataformaEntidadesPage", () => {
     );
 
     // Segundo intento, que falla: el aviso de la primera alta no puede
-    // seguir en pantalla junto al error del segundo envío.
+    // seguir en pantalla junto al error del segundo envío. La sede se
+    // limpió al tener éxito el primer alta, así que hay que volver a
+    // elegirla.
     await user.type(screen.getByLabelText("Nombre"), "Asociación Bidasoa");
     await user.type(screen.getByLabelText("Slug"), "asociacion-bidasoa");
     await user.type(screen.getByLabelText("CIF"), "G12345678");
+    await user.type(screen.getByLabelText("Buscar un municipio"), "irun");
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Irun (Gipuzkoa) · 20069" })).toBeInTheDocument(),
+    );
+    await user.selectOptions(screen.getByLabelText("Municipio de la sede"), "20069");
     await user.click(screen.getByRole("button", { name: "Crear entidad" }));
 
     await waitFor(() => expect(screen.getByRole("alert")).toBeInTheDocument());
     expect(
       screen.queryByText("Entidad «Asociación Bidasoa» creada, sin verificar."),
     ).not.toBeInTheDocument();
+  });
+
+  it("no deja crear una entidad sin sede", async () => {
+    apiFetchMock.mockResolvedValue({ count: 0, next: null, previous: null, results: [] });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+    const user = userEvent.setup();
+
+    const element = await PlataformaEntidadesPage();
+    render(element);
+
+    await user.click(screen.getByRole("button", { name: "Nueva entidad" }));
+    await user.type(screen.getByLabelText("Nombre"), "Ayuntamiento de Irun");
+    await user.type(screen.getByLabelText("Slug"), "ayto-irun");
+    await user.type(screen.getByLabelText("CIF"), "P2000000A");
+
+    expect(screen.getByRole("button", { name: "Crear entidad" })).toBeDisabled();
+    expect(screen.getByText("La sede es obligatoria para dar de alta una entidad.")).toBeInTheDocument();
+  });
+
+  it("avisa de las entidades sin sede", async () => {
+    apiFetchMock.mockResolvedValue({
+      count: 1,
+      next: null,
+      previous: null,
+      results: [buildOrganization({ id: 9, name: "Ayuntamiento de Irun", place: null })],
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const element = await PlataformaEntidadesPage();
+    render(element);
+
+    await waitFor(() => expect(screen.getByText("Sede sin municipio")).toBeInTheDocument());
   });
 
   /**

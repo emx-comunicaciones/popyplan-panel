@@ -48,6 +48,10 @@ import { useEntityCommunities, type EntityCommunitiesErrorKind } from "@/hooks/u
 import { useEntityEvents, type EntityEventsErrorKind } from "@/hooks/useEntityEvents";
 import { useContracts, useInvoices, type BillingErrorKind } from "@/hooks/useBilling";
 import { useMetrics, type MetricsErrorKind } from "@/hooks/useMetrics";
+import {
+  useUpdateOrganization,
+  type UpdateOrganizationErrorKind,
+} from "@/hooks/useUpdateOrganization";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 import { localeForUseLocale } from "@/lib/i18n/locale";
 import { formatCount, formatPct } from "@/lib/metrics/format";
@@ -60,6 +64,9 @@ import type {
   OrgMembershipRole,
   Reference,
 } from "@/lib/api/types";
+
+import { SedeSelector } from "./SedeSelector";
+import { ADMIN_LEVEL_LABEL_KEYS, TERRITORY_KIND_LABEL_KEYS, TerritorioForm } from "./TerritorioForm";
 
 export interface EntidadDetailProps {
   orgId: number | string;
@@ -159,6 +166,12 @@ const SET_PARENT_ERROR_KEYS: Record<OrganizationsErrorKind, string> = {
   desconocido: "errors.setOrganizationParent.desconocido",
 };
 
+const UPDATE_SEDE_ERROR_KEYS: Record<UpdateOrganizationErrorKind, string> = {
+  invalido: "errors.updateOrganization.invalido",
+  sin_permiso: "errors.updateOrganization.sinPermiso",
+  desconocido: "errors.updateOrganization.desconocido",
+};
+
 const ENTITY_COMMUNITIES_ERROR_KEYS: Record<EntityCommunitiesErrorKind, string> = {
   demasiadas_paginas: "errors.entityCommunities.demasiadasPaginas",
   desconocido: "errors.entityCommunities.desconocido",
@@ -190,11 +203,29 @@ const CONTRACTS_ERROR_KEYS: Record<BillingErrorKind, string> = {
   desconocido: "errors.contractsQuery.desconocido",
 };
 
+/**
+ * Pestaña «Datos»: sede, nivel administrativo y territorio son solo de
+ * `superadmin` (decisión 4 del plan, spec §2.3: «Solo la plataforma
+ * (`superadmin`), desde la ficha de entidad, como hoy cambia `parent`»);
+ * el `titular` edita su propia sede desde Configuración de la entidad
+ * (`components/entidad/ConfiguracionPanel.tsx`), no desde aquí. La sede
+ * se ve (`org.place`, texto plano) para cualquier rol que llegue a esta
+ * ficha; el buscador editable (`SedeSelector`) y el formulario de
+ * territorio (`TerritorioForm`) solo se montan para `superadmin`. Un rol
+ * de plataforma sin ese permiso (`verifier`, `moderator`, `support`) ve
+ * el nivel y el territorio de una administración en solo lectura, dentro
+ * de la propia `<dl>` — nunca oculto sin más: el dato existe y el
+ * backend ya lo expone en la ficha, así que esconderlo del todo sería
+ * fingir que no hay territorio declarado.
+ */
 function DatosTab({ orgId, role }: { orgId: number | string; role: string | null }) {
   const t = useTranslations();
   const organization = useOrganization(orgId);
   const verify = useVerifyOrganization();
+  const updateSede = useUpdateOrganization(orgId);
   const canVerify = role === "verifier" || role === "superadmin";
+  const canManageTerritory = role === "superadmin";
+  const [sede, setSede] = useState<string | null>(null);
 
   if (organization.isError) {
     return (
@@ -209,40 +240,88 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
   }
 
   const org = organization.data;
+  const isAdministration = org.org_type === "administracion";
+  const sedeValue = sede === null ? (org.place ?? null) : sede;
 
   return (
-    <Card title={t("plataforma.entidadFicha.dataCardTitle")}>
-      <dl className="grid grid-cols-2 gap-2 text-sm">
-        <dt className="text-text-secondary">{t("plataforma.entidades.nameHeader")}</dt>
-        <dd className="text-text-base">{org.name}</dd>
-        <dt className="text-text-secondary">{t("plataforma.entidades.slugLabel")}</dt>
-        <dd className="text-text-base">{org.slug}</dd>
-        <dt className="text-text-secondary">{t("plataforma.entidades.typeHeader")}</dt>
-        <dd className="text-text-base">{org.org_type}</dd>
-        <dt className="text-text-secondary">{t("plataforma.entidades.verifiedLabel")}</dt>
-        <dd className="text-text-base">
-          <Badge tone={org.is_verified ? "success" : "neutral"}>
-            {org.is_verified ? t("plataforma.entidades.verifiedTrue") : t("plataforma.entidades.verifiedFalse")}
-          </Badge>
-        </dd>
-        <dt className="text-text-secondary">{t("plataforma.entidades.descriptionLabel")}</dt>
-        <dd className="text-text-base">{org.description || "—"}</dd>
-        <dt className="text-text-secondary">{t("plataforma.entidadFicha.contactLabel")}</dt>
-        <dd className="text-text-base">{org.contact_email || "—"}</dd>
-      </dl>
-      {!org.is_verified && canVerify ? (
-        <div className="mt-3">
-          <Button type="button" disabled={verify.isPending} onClick={() => verify.mutate(orgId)}>
-            {t("plataforma.entidadFicha.verifyAction")}
-          </Button>
-          {verify.isError ? (
-            <p role="alert" className="mt-1 text-sm text-error">
-              {errorKindText(verify.error, VERIFY_ORGANIZATION_ERROR_KEYS, t, "errors.verifyOrganization.desconocido")}
+    <div className="flex flex-col gap-4">
+      <Card title={t("plataforma.entidadFicha.dataCardTitle")}>
+        <dl className="grid grid-cols-2 gap-2 text-sm">
+          <dt className="text-text-secondary">{t("plataforma.entidades.nameHeader")}</dt>
+          <dd className="text-text-base">{org.name}</dd>
+          <dt className="text-text-secondary">{t("plataforma.entidades.slugLabel")}</dt>
+          <dd className="text-text-base">{org.slug}</dd>
+          <dt className="text-text-secondary">{t("plataforma.entidades.typeHeader")}</dt>
+          <dd className="text-text-base">{org.org_type}</dd>
+          <dt className="text-text-secondary">{t("plataforma.entidades.verifiedLabel")}</dt>
+          <dd className="text-text-base">
+            <Badge tone={org.is_verified ? "success" : "neutral"}>
+              {org.is_verified ? t("plataforma.entidades.verifiedTrue") : t("plataforma.entidades.verifiedFalse")}
+            </Badge>
+          </dd>
+          <dt className="text-text-secondary">{t("plataforma.entidades.descriptionLabel")}</dt>
+          <dd className="text-text-base">{org.description || "—"}</dd>
+          <dt className="text-text-secondary">{t("plataforma.entidadFicha.contactLabel")}</dt>
+          <dd className="text-text-base">{org.contact_email || "—"}</dd>
+          <dt className="text-text-secondary">{t("plataforma.sede.header")}</dt>
+          <dd className="text-text-base">{org.place || t("plataforma.sede.missing")}</dd>
+          {/* Solo lectura para quien no gestiona el territorio: la
+              editable (`TerritorioForm`) ya la pinta más abajo, así que
+              duplicarla aquí para `superadmin` sería redundante. */}
+          {isAdministration && !canManageTerritory ? (
+            <>
+              <dt className="text-text-secondary">{t("plataforma.territorio.adminLevelLabel")}</dt>
+              <dd className="text-text-base">
+                {t(ADMIN_LEVEL_LABEL_KEYS[org.admin_level ?? ""])}
+              </dd>
+              <dt className="text-text-secondary">{t("plataforma.territorio.kindLabel")}</dt>
+              <dd className="text-text-base">
+                {t(TERRITORY_KIND_LABEL_KEYS[org.territory_kind ?? ""])}
+              </dd>
+              <dt className="text-text-secondary">{t("plataforma.territorio.placesCountLabel")}</dt>
+              <dd className="text-text-base">{org.territory_places_count ?? 0}</dd>
+            </>
+          ) : null}
+        </dl>
+        {!org.is_verified && canVerify ? (
+          <div className="mt-3">
+            <Button type="button" disabled={verify.isPending} onClick={() => verify.mutate(orgId)}>
+              {t("plataforma.entidadFicha.verifyAction")}
+            </Button>
+            {verify.isError ? (
+              <p role="alert" className="mt-1 text-sm text-error">
+                {errorKindText(verify.error, VERIFY_ORGANIZATION_ERROR_KEYS, t, "errors.verifyOrganization.desconocido")}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+      </Card>
+
+      {canManageTerritory ? (
+        <Card title={t("plataforma.sede.header")}>
+          <SedeSelector id="entidad-sede" value={sedeValue} onChange={setSede} />
+          <div className="mt-3">
+            <Button
+              type="button"
+              disabled={updateSede.isPending}
+              onClick={() => updateSede.mutate({ place: sedeValue })}
+            >
+              {t("common.save")}
+            </Button>
+          </div>
+          {updateSede.isError ? (
+            <p role="alert" className="mt-2 text-sm text-error">
+              {errorKindText(updateSede.error, UPDATE_SEDE_ERROR_KEYS, t, "errors.updateOrganization.desconocido")}
             </p>
           ) : null}
-        </div>
+          {updateSede.isSuccess ? (
+            <p className="mt-2 text-sm text-success">{t("plataforma.entidadFicha.saved")}</p>
+          ) : null}
+        </Card>
       ) : null}
-    </Card>
+
+      {canManageTerritory && isAdministration ? <TerritorioForm organization={org} /> : null}
+    </div>
   );
 }
 
