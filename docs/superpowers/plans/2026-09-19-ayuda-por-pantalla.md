@@ -78,7 +78,7 @@ Entidad (`/entidad/[slug]/…`):
 - `/entidad/[slug]/configuracion` — **Configuración** — «Datos de la entidad, equipo con sus roles y referencias entre referentes y personas.» — acciones: «Dar de alta o baja a alguien del equipo (solo titular)», «Asignar referencias», «Ajustar los datos y colores de la entidad» — audiencia: «Titular y moderador; el equipo solo lo ve el titular.»
 
 Paraguas (`/paraguas/[slug]/…`):
-- `/paraguas/[slug]` — **Inicio del paraguas** — «Métricas agregadas de todas las entidades de tu territorio: personas, actividades y asistencia por municipio, por entidad y por mes, y la comparativa con el periodo anterior. Nunca ves personas: cualquier grupo con menos de cinco se muestra como “<5”.» — acciones: «Cambiar el periodo», «Comparar comarcas, entidades o municipios con el periodo anterior» — audiencia: «Titular, moderador y analista de la entidad paraguas.»
+- `/paraguas/[slug]` — **Inicio del paraguas** — «Métricas agregadas de todas las entidades de tu territorio: personas, actividades y asistencia por municipio, por entidad y por mes, y la comparativa con el periodo anterior. Nunca ves personas: cualquier grupo con menos de cinco se muestra como “<5”.» — acciones: «Cambiar el periodo», «Comparar comarcas, entidades o municipios con el periodo anterior» — audiencia: «Todos los roles de la entidad paraguas; las exportaciones, solo titular, moderador y analista.»
 - `/paraguas/[slug]/informes` — **Informes del paraguas** — «Exportación agregada del territorio en CSV o PDF.» — acciones: «Elegir periodo y desglose», «Descargar el informe» — audiencia: «Titular, moderador y analista.»
 
 Plataforma (`/plataforma/…`):
