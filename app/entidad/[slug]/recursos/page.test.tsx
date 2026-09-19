@@ -104,6 +104,31 @@ describe("EntidadRecursosPage", () => {
     expect(screen.getByRole("button", { name: "Nuevo recurso" })).toBeInTheDocument();
   });
 
+  it("un recurso de categoría 'accompany' aparece bajo «Cómo acompañar» tras «Familias», y el select la ofrece", async () => {
+    mockDefaults();
+    useResourcesMock.mockReturnValue({
+      data: [
+        buildEntityResource({ id: 1, title: "Guía para acompañantes", category: "accompany" }),
+        buildEntityResource({ id: 2, title: "Recurso de familias", category: "families" }),
+      ],
+      isError: false,
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    const headings = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
+    expect(headings.indexOf("Familias")).toBeLessThan(headings.indexOf("Cómo acompañar"));
+    expect(screen.getByText("Guía para acompañantes")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Nuevo recurso" }));
+    const categorySelect = screen.getByLabelText("Categoría") as HTMLSelectElement;
+    expect(
+      Array.from(categorySelect.options).some((o) => o.value === "accompany" && o.text === "Cómo acompañar"),
+    ).toBe(true);
+  });
+
   it("si las comunidades fallan, el formulario lo avisa bajo «Audiencia»", async () => {
     mockDefaults();
     useResourcesMock.mockReturnValue({ data: [], isError: false, error: null });

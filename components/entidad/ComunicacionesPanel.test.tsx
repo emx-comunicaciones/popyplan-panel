@@ -1,7 +1,7 @@
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { render, screen } from "@/test-utils/render";
+import { render, screen, within } from "@/test-utils/render";
 import { buildAnnouncement } from "@/test-utils/fixtures/announcement";
 import { buildEntityCommunityRow } from "@/test-utils/fixtures/community";
 
@@ -106,6 +106,66 @@ describe("ComunicacionesPanel", () => {
 
     expect(screen.getByRole("radio", { name: "Familias" })).toBeDisabled();
     expect(screen.getByText("Disponible cuando exista el espacio de familias.")).toBeInTheDocument();
+  });
+
+  it("sin comunidades de familias, el botón de plantilla no aparece", () => {
+    useAnnouncementsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({ data: [], isError: false, error: null });
+    useSendAnnouncementMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false, error: null });
+
+    render(<ComunicacionesPanel orgId={7} canCompose />);
+
+    expect(
+      screen.queryByRole("button", { name: "Usar plantilla: Bienvenida a la red de apoyo" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("con comunidad de familias y el formulario vacío, la plantilla rellena título/cuerpo/audiencia sin confirmar", async () => {
+    const user = userEvent.setup();
+    useAnnouncementsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c-1", name: "Familias", space: "families" })],
+      isError: false,
+      error: null,
+    });
+    useSendAnnouncementMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false, error: null });
+
+    render(<ComunicacionesPanel orgId={7} canCompose />);
+
+    await user.click(screen.getByRole("button", { name: "Usar plantilla: Bienvenida a la red de apoyo" }));
+
+    expect(screen.getByLabelText("Título")).toHaveValue("Bienvenida a la red de apoyo");
+    expect(screen.getByLabelText("Cuerpo")).toHaveValue(
+      "Gracias por acompañar a alguien de nuestra entidad. En este espacio de familias encontrarás actividades, formación y recursos pensados para ti. Recuerda: no verás las conversaciones, la actividad privada ni la ubicación de la persona a la que acompañas; solo lo que ella decida compartir con su red. Si necesitas hablar con la entidad, escribe a su referente desde la app.",
+    );
+    expect(screen.getByRole("radio", { name: "Familias" })).toBeChecked();
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+  });
+
+  it("con texto ya escrito, la plantilla pide confirmación y solo rellena tras confirmar", async () => {
+    const user = userEvent.setup();
+    useAnnouncementsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c-1", name: "Familias", space: "families" })],
+      isError: false,
+      error: null,
+    });
+    useSendAnnouncementMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false, error: null });
+
+    render(<ComunicacionesPanel orgId={7} canCompose />);
+
+    await user.type(screen.getByLabelText("Título"), "Borrador propio");
+    await user.click(screen.getByRole("button", { name: "Usar plantilla: Bienvenida a la red de apoyo" }));
+
+    const dialog = screen.getByRole("alertdialog");
+    expect(dialog).toHaveTextContent("Usar la plantilla");
+    expect(dialog).toHaveTextContent("Se reemplazará el texto actual del título y del cuerpo.");
+    expect(screen.getByLabelText("Título")).toHaveValue("Borrador propio");
+
+    await user.click(within(dialog).getByRole("button", { name: /usar/i }));
+
+    expect(screen.getByLabelText("Título")).toHaveValue("Bienvenida a la red de apoyo");
+    expect(screen.getByRole("radio", { name: "Familias" })).toBeChecked();
   });
 
   it("con una comunidad de familias, 'Familias' se puede elegir y enviar audience: 'families'", async () => {

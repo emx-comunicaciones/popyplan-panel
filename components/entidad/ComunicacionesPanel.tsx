@@ -28,6 +28,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { useAnnouncements } from "@/hooks/useAnnouncements";
 import { useEntityCommunities } from "@/hooks/useEntityCommunities";
 import { useSendAnnouncement } from "@/hooks/useSendAnnouncement";
+import { SUPPORT_WELCOME_TEMPLATE, applyTemplate } from "@/lib/communications/templates";
 import type { Announcement, EntityCommunityRow } from "@/lib/api/types";
 
 export interface ComunicacionesPanelProps {
@@ -63,6 +64,7 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
   const [communityId, setCommunityId] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [lastSent, setLastSent] = useState<Announcement | null>(null);
+  const [templateConfirmOpen, setTemplateConfirmOpen] = useState(false);
 
   const audienceValue =
     audienceKind === "members"
@@ -81,6 +83,24 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
     event.preventDefault();
     if (!canSubmit) return;
     setConfirmOpen(true);
+  }
+
+  function handleUseTemplateClick() {
+    const result = applyTemplate({ title, body }, SUPPORT_WELCOME_TEMPLATE);
+    if (result.overwritten) {
+      setTemplateConfirmOpen(true);
+      return;
+    }
+    setTitle(result.title);
+    setBody(result.body);
+    setAudienceKind("families");
+  }
+
+  function handleConfirmTemplate() {
+    setTitle(SUPPORT_WELCOME_TEMPLATE.title);
+    setBody(SUPPORT_WELCOME_TEMPLATE.body);
+    setAudienceKind("families");
+    setTemplateConfirmOpen(false);
   }
 
   function handleConfirm() {
@@ -129,6 +149,13 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
             required
           />
         </div>
+        {hasFamilies ? (
+          <div>
+            <Button type="button" variant="secondary" onClick={handleUseTemplateClick}>
+              Usar plantilla: Bienvenida a la red de apoyo
+            </Button>
+          </div>
+        ) : null}
         <fieldset>
           <legend className="mb-1 text-sm font-medium text-text-form">Audiencia</legend>
           <div className="flex flex-col gap-2">
@@ -223,6 +250,15 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
         pending={sendAnnouncement.isPending}
         onConfirm={handleConfirm}
         onCancel={() => setConfirmOpen(false)}
+      />
+
+      <ConfirmDialog
+        open={templateConfirmOpen}
+        title="Usar la plantilla"
+        description="Se reemplazará el texto actual del título y del cuerpo."
+        confirmLabel="Usar plantilla"
+        onConfirm={handleConfirmTemplate}
+        onCancel={() => setTemplateConfirmOpen(false)}
       />
     </Card>
   );
