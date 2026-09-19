@@ -197,6 +197,9 @@
       "inicio": {
         "title": "Inicio del paraguas"
       },
+      "territorio": {
+        "title": "Observatorio del territorio"
+      },
       "informes": {
         "title": "Informes del paraguas"
       }
@@ -1371,6 +1374,16 @@
         ],
         "audience": "Todos los roles de la entidad paraguas."
       },
+      "territorio": {
+        "title": "Territorio",
+        "summary": "Observatorio de tu territorio declarado: todo lo que ocurre en sus municipios, sea de la entidad que sea. Mapa de burbujas, tabla por municipio, serie mensual y comparativa con el periodo anterior. Nunca ves personas: cualquier grupo con menos de cinco se muestra como «<5».",
+        "actions": [
+          "Cambiar el periodo",
+          "Abrir un municipio para ver su ficha agregada",
+          "Comparar comarcas, municipios o provincias con el periodo anterior"
+        ],
+        "audience": "Todos los roles de la administración."
+      },
       "informes": {
         "title": "Informes del paraguas",
         "summary": "Exportación agregada del territorio en CSV o PDF.",
@@ -1579,6 +1592,19 @@
       "heading": "Mapa del territorio",
       "legend": "El tamaño de la burbuja indica las actividades; el color, las personas, en gris cuando el grupo está por debajo del umbral de agregación.",
       "loading": "Cargando mapa…"
+    },
+    "placeSheet": {
+      "loadingTitle": "Municipio",
+      "loadError": "No se pudo cargar la ficha del municipio",
+      "location": "{comarca} · {province} · Código INE {ineCode}",
+      "noComarca": "Sin comarca",
+      "eventsHeld": "Actividades celebradas",
+      "eventsUpcoming": "Próximas actividades",
+      "people": "Personas",
+      "attendance": "Asistencia",
+      "communities": "Comunidades",
+      "organizationsBasedHere": "Entidades con sede aquí",
+      "noNamesNotice": "Esta ficha solo muestra agregados: nunca nombres de personas ni de las entidades con sede aquí."
     }
   },
   "plataforma": {
@@ -1877,6 +1903,16 @@
   "paraguas": {
     "inicio": {
       "heading": "Inicio"
+    },
+    "territorio": {
+      "heading": "Territorio",
+      "noAccessDescription": "Tu rol no tiene acceso a Territorio.",
+      "noTerritoryHint": "La plataforma declara el territorio de cada administración desde su ficha de entidad.",
+      "communitiesStat": "Comunidades activas",
+      "openSheet": "Ver ficha",
+      "placesError": "No se pudieron cargar las coordenadas del mapa",
+      "tooManyPlaces": "No se puede dibujar el mapa de este periodo",
+      "tooManyPlacesHint": "Hay demasiados municipios con actividad para situarlos todos en el mapa. Acota el periodo para verlo; la tabla de abajo sigue completa."
     },
     "informes": {
       "noAccessDescription": "Tu rol no tiene acceso a Informes.",

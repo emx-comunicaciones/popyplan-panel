@@ -197,6 +197,9 @@
       "inicio": {
         "title": "Inici de l'entitat paraigua"
       },
+      "territorio": {
+        "title": "Observatori del territori"
+      },
       "informes": {
         "title": "Informes de l'entitat paraigua"
       }
@@ -1371,6 +1374,16 @@
         ],
         "audience": "Tots els rols de l'entitat paraigua."
       },
+      "territorio": {
+        "title": "Territori",
+        "summary": "Observatori del teu territori declarat: tot el que passa als seus municipis, sigui de l'entitat que sigui. Mapa de bombolles, taula per municipi, sèrie mensual i comparativa amb el període anterior. Mai veus persones: qualsevol grup amb menys de cinc es mostra com a «<5».",
+        "actions": [
+          "Canviar el període",
+          "Obrir un municipi per veure'n la fitxa agregada",
+          "Comparar comarques, municipis o províncies amb el període anterior"
+        ],
+        "audience": "Tots els rols de l'administració."
+      },
       "informes": {
         "title": "Informes del paraigua",
         "summary": "Exportació agregada del territori en CSV o PDF.",
@@ -1579,6 +1592,19 @@
       "heading": "Mapa del territori",
       "legend": "La mida de la bombolla indica les activitats; el color, les persones, en gris quan el grup és per sota del llindar d'agregació.",
       "loading": "Carregant el mapa…"
+    },
+    "placeSheet": {
+      "loadingTitle": "Municipi",
+      "loadError": "No s'ha pogut carregar la fitxa del municipi",
+      "location": "{comarca} · {province} · Codi INE {ineCode}",
+      "noComarca": "Sense comarca",
+      "eventsHeld": "Activitats fetes",
+      "eventsUpcoming": "Properes activitats",
+      "people": "Persones",
+      "attendance": "Assistència",
+      "communities": "Comunitats",
+      "organizationsBasedHere": "Entitats amb seu aquí",
+      "noNamesNotice": "Aquesta fitxa només mostra dades agregades: mai noms de persones ni de les entitats amb seu aquí."
     }
   },
   "plataforma": {
@@ -1877,6 +1903,16 @@
   "paraguas": {
     "inicio": {
       "heading": "Inici"
+    },
+    "territorio": {
+      "heading": "Territori",
+      "noAccessDescription": "El teu rol no té accés a Territori.",
+      "noTerritoryHint": "La plataforma declara el territori de cada administració des de la seva fitxa d'entitat.",
+      "communitiesStat": "Comunitats actives",
+      "openSheet": "Veure fitxa",
+      "placesError": "No s'han pogut carregar les coordenades del mapa",
+      "tooManyPlaces": "No es pot dibuixar el mapa d'aquest període",
+      "tooManyPlacesHint": "Hi ha massa municipis amb activitat per situar-los tots al mapa. Acota el període per veure'l; la taula de sota continua completa."
     },
     "informes": {
       "noAccessDescription": "El teu rol no té accés a Informes.",

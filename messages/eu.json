@@ -197,6 +197,9 @@
       "inicio": {
         "title": "Erakunde aterkiaren hasiera"
       },
+      "territorio": {
+        "title": "Lurraldearen behatokia"
+      },
       "informes": {
         "title": "Erakunde aterkiaren txostenak"
       }
@@ -1371,6 +1374,16 @@
         ],
         "audience": "Erakunde aterkiko rol guztiak."
       },
+      "territorio": {
+        "title": "Lurraldea",
+        "summary": "Adierazitako zure lurraldearen behatokia: bere udalerrietan gertatzen den guztia, edozein erakunderena dela ere. Burbuila-mapa, udalerrika banatutako taula, hileko seriea eta aurreko aldiarekiko konparaketa. Inoiz ez dituzu pertsonak ikusten: bost baino gutxiagoko talde oro «<5» gisa erakusten da.",
+        "actions": [
+          "Aldia aldatu",
+          "Udalerri bat ireki bere fitxa agregatua ikusteko",
+          "Eskualdeak, udalerriak edo probintziak aurreko aldiarekin konparatu"
+        ],
+        "audience": "Administrazioko rol guztiak."
+      },
       "informes": {
         "title": "Aterkiaren txostenak",
         "summary": "Lurraldearen esportazio agregatua CSV edo PDF gisa.",
@@ -1579,6 +1592,19 @@
       "heading": "Lurraldearen mapa",
       "legend": "Burbuilaren tamainak jarduerak adierazten ditu; koloreak, pertsonak, eta grisa taldea agregazio-atalasetik behera dagoenean.",
       "loading": "Mapa kargatzen…"
+    },
+    "placeSheet": {
+      "loadingTitle": "Udalerria",
+      "loadError": "Ezin izan da udalerriaren fitxa kargatu",
+      "location": "{comarca} · {province} · INE kodea {ineCode}",
+      "noComarca": "Eskualderik gabe",
+      "eventsHeld": "Egindako jarduerak",
+      "eventsUpcoming": "Hurrengo jarduerak",
+      "people": "Pertsonak",
+      "attendance": "Bertaratzea",
+      "communities": "Komunitateak",
+      "organizationsBasedHere": "Hemen egoitza duten erakundeak",
+      "noNamesNotice": "Fitxa honek datu agregatuak baino ez ditu erakusten: inoiz ez pertsonen izenak, ezta hemen egoitza duten erakundeenak ere."
     }
   },
   "plataforma": {
@@ -1877,6 +1903,16 @@
   "paraguas": {
     "inicio": {
       "heading": "Hasiera"
+    },
+    "territorio": {
+      "heading": "Lurraldea",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Lurraldean.",
+      "noTerritoryHint": "Plataformak administrazio bakoitzaren lurraldea bere erakunde-fitxatik adierazten du.",
+      "communitiesStat": "Komunitate aktiboak",
+      "openSheet": "Fitxa ikusi",
+      "placesError": "Ezin izan dira maparen koordenatuak kargatu",
+      "tooManyPlaces": "Ezin da aldi honetako mapa marraztu",
+      "tooManyPlacesHint": "Jarduera duten udalerri gehiegi daude denak mapan kokatzeko. Murriztu aldia mapa ikusteko; beheko taula osorik dago."
     },
     "informes": {
       "noAccessDescription": "Zure rolak ez du sarbiderik Txostenetan.",

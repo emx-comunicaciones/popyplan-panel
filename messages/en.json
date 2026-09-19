@@ -197,6 +197,9 @@
       "inicio": {
         "title": "Umbrella entity home"
       },
+      "territorio": {
+        "title": "Territory observatory"
+      },
       "informes": {
         "title": "Umbrella entity reports (export)"
       }
@@ -1371,6 +1374,16 @@
         ],
         "audience": "All roles of the umbrella entity."
       },
+      "territorio": {
+        "title": "Territory",
+        "summary": "Observatory of your declared territory: everything that happens in its municipalities, whoever runs it. Bubble map, table by municipality, monthly series and comparison against the previous period. You never see people: any group of fewer than five shows as “<5”.",
+        "actions": [
+          "Change the period",
+          "Open a municipality to see its aggregated details",
+          "Compare districts, municipalities or provinces against the previous period"
+        ],
+        "audience": "All roles of the administration."
+      },
       "informes": {
         "title": "Umbrella reports & exports",
         "summary": "Aggregated export for the territory as CSV or PDF.",
@@ -1579,6 +1592,19 @@
       "heading": "Map of the territory",
       "legend": "Bubble size shows activities; colour shows people, grey when the group is under the aggregation threshold.",
       "loading": "Loading map…"
+    },
+    "placeSheet": {
+      "loadingTitle": "Municipality",
+      "loadError": "The municipality details could not be loaded",
+      "location": "{comarca} · {province} · INE code {ineCode}",
+      "noComarca": "No district",
+      "eventsHeld": "Activities held",
+      "eventsUpcoming": "Upcoming activities",
+      "people": "People",
+      "attendance": "Attendance",
+      "communities": "Communities",
+      "organizationsBasedHere": "Entities based here",
+      "noNamesNotice": "This sheet only shows aggregates: never the names of people or of the entities based here."
     }
   },
   "plataforma": {
@@ -1877,6 +1903,16 @@
   "paraguas": {
     "inicio": {
       "heading": "Home"
+    },
+    "territorio": {
+      "heading": "Territory",
+      "noAccessDescription": "Your role doesn't have access to Territory.",
+      "noTerritoryHint": "The platform declares each administration's territory from its entity record.",
+      "communitiesStat": "Active communities",
+      "openSheet": "View details",
+      "placesError": "The map coordinates could not be loaded",
+      "tooManyPlaces": "The map can't be drawn for this period",
+      "tooManyPlacesHint": "There are too many municipalities with activity to place them all on the map. Narrow the period to see it; the table below is still complete."
     },
     "informes": {
       "noAccessDescription": "Your role doesn't have access to Reports.",
