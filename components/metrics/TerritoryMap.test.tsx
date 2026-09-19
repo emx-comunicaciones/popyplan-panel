@@ -33,6 +33,22 @@ const BUBBLES: MapBubble[] = [
 ];
 
 describe("TerritoryMap", () => {
+  // Tiene que ser el primer test del fichero, y sin `await`: `dynamic()`
+  // de `next/dynamic` crea su `LoadableComponent` (con su `subscription`
+  // de estado) una sola vez, a nivel de módulo, cuando se importa
+  // `TerritoryMap.tsx` — algo que Vitest solo hace una vez por fichero de
+  // test, no por `it()`. Una vez el `import()` diferido se resuelve en
+  // cualquier test anterior, esa misma promesa resuelta queda cacheada
+  // para todos los montajes siguientes del mismo fichero, así que un
+  // `render()` posterior ya no pasa nunca por el estado «cargando». Este
+  // test comprueba justo ese estado inicial, antes de que ningún otro se
+  // adelante y lo resuelva.
+  it("muestra un texto de carga mientras el mapa diferido se resuelve, nunca una caja vacía", () => {
+    render(<TerritoryMap bubbles={BUBBLES} onSelect={vi.fn()} />);
+
+    expect(screen.getByText("Cargando mapa…")).toBeInTheDocument();
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     const { container } = render(<TerritoryMap bubbles={BUBBLES} onSelect={vi.fn()} />);
 
@@ -72,5 +88,22 @@ describe("TerritoryMap", () => {
     expect(
       await screen.findByText("Ningún municipio del territorio tiene actividad en este periodo."),
     ).toBeInTheDocument();
+  });
+
+  it("desactiva el control de atribución de leaflet (evitaría una trampa de teclado dentro del role=img)", async () => {
+    render(<TerritoryMap bubbles={BUBBLES} onSelect={vi.fn()} />);
+
+    const mapContainer = await screen.findByTestId("map-container");
+    expect(mapContainer.dataset.attributionControl).toBe("false");
+  });
+
+  it("pinta la atribución de OpenStreetMap fuera del área de imagen, como enlace real", async () => {
+    render(<TerritoryMap bubbles={BUBBLES} onSelect={vi.fn()} />);
+
+    const image = await screen.findByRole("img", { name: /Mapa del territorio/ });
+    const link = screen.getByRole("link", { name: "Colaboradores de OpenStreetMap" });
+
+    expect(image).not.toContainElement(link);
+    expect(link).toHaveAttribute("href", "https://www.openstreetmap.org/copyright");
   });
 });

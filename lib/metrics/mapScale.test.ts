@@ -63,6 +63,14 @@ describe("bubbleColor", () => {
     expect(high).toBe("var(--color-primary-700)");
     expect(low).toBe("var(--color-primary-100)");
   });
+
+  it("con personas y máximo en cero (o negativo), usa el tono más claro sin dividir por cero", () => {
+    // maxPeople inválido (<=0) cae a `people` como `safeMax`; con `people`
+    // también en 0 (o negativo), `safeMax <= 0` — la rama que evita el
+    // `0/0` de la fórmula de proporción.
+    expect(bubbleColor(0, false, 0)).toBe("var(--color-primary-100)");
+    expect(bubbleColor(0, false, -3)).toBe("var(--color-primary-100)");
+  });
 });
 
 describe("toBubbles", () => {

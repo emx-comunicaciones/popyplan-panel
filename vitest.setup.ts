@@ -127,6 +127,14 @@ vi.mock("recharts", async () => {
  * de `CircleMarker` hace ese mismo papel. Sus hijos (`<Tooltip>`) se
  * pintan dentro, así que el nombre accesible del botón es el texto del
  * tooltip.
+ *
+ * **Fix round 1 (revisión del coordinador de la tarea 4):** `MapContainer`
+ * expone ahora `attributionControl` como `data-attribution-control` en el
+ * `<div>` mockeado, para poder comprobar desde un test que
+ * `TerritoryMapCanvas.tsx` lo pasa a `false` — sin eso, el control de
+ * atribución real de Leaflet monta un `<a href="https://leafletjs.com">`
+ * enfocable dentro del `role="img"` de `TerritoryMap.tsx`, una trampa de
+ * teclado en un contenedor que se declara no interactivo.
  */
 /**
  * `TerritoryMapCanvas.tsx` importa `leaflet/dist/leaflet.css` a nivel de
@@ -142,8 +150,18 @@ vi.mock("recharts", async () => {
 vi.mock("leaflet/dist/leaflet.css", () => ({}));
 
 vi.mock("react-leaflet", () => ({
-  MapContainer: ({ children }: { children: React.ReactNode }) =>
-    React.createElement("div", { "data-testid": "map-container" }, children),
+  MapContainer: ({
+    children,
+    attributionControl,
+  }: {
+    children: React.ReactNode;
+    attributionControl?: boolean;
+  }) =>
+    React.createElement(
+      "div",
+      { "data-testid": "map-container", "data-attribution-control": String(attributionControl) },
+      children,
+    ),
   TileLayer: () => React.createElement("div", { "data-testid": "tile-layer" }),
   CircleMarker: ({
     children,
@@ -152,9 +170,21 @@ vi.mock("react-leaflet", () => ({
     children?: React.ReactNode;
     eventHandlers?: { click?: () => void };
   }) =>
+    // `<span role="button">`, no `<button>` (fix round 1): un
+    // `CircleMarker` real de Leaflet es una forma SVG con un manejador de
+    // clic propio, nunca un elemento nativamente enfocable — y
+    // `TerritoryMap.tsx` declara su contenedor `role="img"` sin ningún
+    // descendiente enfocable. Un `<button>` real (incluso con
+    // `tabIndex={-1}`, probado y rechazado: axe avisa de que la tecnología
+    // de asistencia puede enfocarlo igual) sí lo es, y disparaba
+    // «nested-interactive» en cuanto la carga diferida se resolvía antes
+    // del `axe()` del test. `role="button"` conserva `getByRole("button",
+    // …)` y el clic con `userEvent`/`fireEvent` (que no exige que el
+    // elemento sea focalizable) sin añadir un descendiente focalizable de
+    // verdad — el mismo comportamiento del `CircleMarker` real.
     React.createElement(
-      "button",
-      { type: "button", onClick: () => eventHandlers?.click?.() },
+      "span",
+      { role: "button", onClick: () => eventHandlers?.click?.() },
       children,
     ),
   Tooltip: ({ children }: { children: React.ReactNode }) =>
