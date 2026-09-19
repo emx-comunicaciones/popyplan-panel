@@ -2122,10 +2122,21 @@ tarea 1, para que las tareas 2-6 no tengan que inventarlo cada vez):
   `vitest.setup.ts` mockea **todo** el módulo `next-intl/server`, igual
   patrón que el mock ya existente de `next/navigation`: resuelve
   `getLocale`/`getMessages` a `es`/`messages/es.json` y `getTranslations`
-  a un traductor que busca la clave en ese mismo catálogo real (nunca
-  cadenas inventadas, para que una clave que falte rompa el test que la
-  usa) — sin soporte de plurales ICU todavía, se amplía si una tarea
-  futura lo necesita.
+  a un traductor construido con `createTranslator` de `use-intl/core`
+  contra ese mismo catálogo real (nunca cadenas inventadas, y `onError`
+  relanza el error, para que una clave que falte rompa el test que la
+  usa) — **fix round 1** (revisión del coordinador de la tarea 1): la
+  primera versión interpolaba `{name}` a mano con una expresión regular y
+  no entendía ICU `plural`/`select`, así que un mensaje como
+  `"{count, plural, one {# elemento} other {# elementos}}"`
+  (`messages/*.json::common.items`, añadida como caso de prueba) se
+  habría visto crudo en un Server Component de las tareas 3-5;
+  `createTranslator` es la misma pieza que usa `next-intl` tanto en
+  `getTranslations` real como en `useTranslations`/`NextIntlClientProvider`
+  del lado de cliente (que sí corre de verdad en los tests, ver el punto
+  siguiente), así que el formateo ICU del mock es idéntico al del
+  runtime. `test-utils/render.test.tsx` prueba el plural extremo a
+  extremo (`count: 1` → «1 elemento», `count: 3` → «3 elementos»).
 - Un componente de **cliente** con `useTranslations` se prueba con
   `render()` normal (`test-utils/render.tsx`): envuelve en
   `NextIntlClientProvider locale="es" messages={es}` con el catálogo real
@@ -2189,7 +2200,8 @@ en CI lo gate el job `e2e`).
   (red de apoyo, revisión final incluida): **99,86 %** (2225/2228
   líneas, 1418 tests, 162 ficheros). Tras la Tarea 1 de i18n
   (infraestructura `next-intl`, sin extraer literales todavía): **99,86 %**
-  (2287/2290 líneas, 1542 tests, 173 ficheros). El umbral fijado sigue en
+  (2287/2290 líneas, 1544 tests tras el fix round 1 del mock de
+  `next-intl/server`, 173 ficheros). El umbral fijado sigue en
   99,7 porque real menos 0,3 (99,56) queda por debajo, así que el ratchet
   no sube.
 - Test de consumo portado del móvil

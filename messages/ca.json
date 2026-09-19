@@ -7,7 +7,8 @@
     "retry": "Torna-ho a provar",
     "loading": "Carregant…",
     "noAccess": "Sense accés",
-    "backHome": "Torna a l'inici"
+    "backHome": "Torna a l'inici",
+    "items": "{count, plural, one {# element} other {# elements}}"
   },
   "language": {
     "title": "Idioma",

@@ -7,7 +7,8 @@
     "retry": "Saiatu berriro",
     "loading": "Kargatzen…",
     "noAccess": "Sarbiderik ez",
-    "backHome": "Itzuli hasierara"
+    "backHome": "Itzuli hasierara",
+    "items": "{count, plural, one {# elementu} other {# elementu}}"
   },
   "language": {
     "title": "Hizkuntza",
