@@ -240,6 +240,18 @@ export type HelpRequestRow = Omit<components["schemas"]["HelpRequest"], "user_di
 };
 
 /**
+ * `HelpRequestRow.support_responses` (`docs/PANEL.md` §14.4, tarea 1 del
+ * plan de red de apoyo): un apoyo de la red de la persona que ya
+ * respondió «me encargo» (`POST /api/support/help-requests/{id}/respond/`,
+ * `support.SupportHelpNotice`). **Solo los que respondieron** — a quién
+ * más se avisó es cosa de la persona, no de la entidad (invariante 9: solo
+ * `{id, public_name}`, nunca contacto). Sin consumidor todavía: exportado
+ * para que `GuardiaPanel.tsx`/`AyudaPendienteList.tsx` puedan pintar «X,
+ * de su red, se encarga» sin tener que repetir el índice del array.
+ */
+export type SupportResponse = HelpRequestRow["support_responses"][number];
+
+/**
  * `GET /api/communities/{id}/members/`, `.../pending-requests/` y las
  * respuestas de `approve`/`reject`/`role` (`CommunityMemberSerializer`,
  * `communities/serializers.py`). `docs/schema.yaml` documenta mal estas
