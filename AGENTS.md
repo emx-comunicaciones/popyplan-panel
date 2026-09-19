@@ -2158,12 +2158,6 @@ tarea 1, para que las tareas 2-6 no tengan que inventarlo cada vez):
   ramas `one`/`other` de un plural, así no se confunde con otro
   parámetro). Verde al final de cada tarea de extracción (2-6).
 
-**Cuando el contrato del backend traiga `preferred_language`
-(`GET/PATCH /api/users/users/me/`, decisión 2 del diseño), la tarea 6 lo
-consume** (`hooks/useAuth.ts` al entrar; el selector de idioma hace el
-`PATCH`) — no está aquí todavía: la Tarea 1 solo monta la infraestructura
-del lado del panel.
-
 **Errores de `hooks/` (patrón fijado en la tarea 3, para las tareas 4-6):**
 un hook de datos es `.ts` plano — no puede llamar a `useTranslations`, un
 hook de React — así que sigue construyendo su clase de error con `kind`
@@ -2227,6 +2221,113 @@ backend manda una relación nueva) en vez del texto, y
 (`ImportFileErrorKind`) en vez del mensaje — mismo criterio en los dos
 casos, quien llama (el componente) traduce.
 
+## Cierre de i18n: selector, idioma de la cuenta y regla ESLint (tarea 6)
+
+Última tarea del plan (`docs/superpowers/plans/2026-09-19-i18n-panel.md`):
+el selector visible, la sincronización con la cuenta (decisión 2 del
+diseño), la regla ESLint que impide literales de UI nuevos (decisión 8)
+y el e2e del propio selector. Con esto las seis tareas del plan quedan
+cerradas.
+
+- **Selector** (`components/layout/LanguageSwitcher.tsx`, decisión 7):
+  tres `Button` («ES»/«EU»/«CA», `lang.toUpperCase()`, nunca un literal
+  de catálogo — el código de dos letras es el mismo en los tres idiomas
+  por ser ISO, no una palabra) con `aria-pressed` según `useLocale()` de
+  `next-intl` (no `document.documentElement.lang`: `useLocale()` sale
+  del mismo `NextIntlClientProvider` que fija `app/layout.tsx` en el
+  servidor, así que el valor coincide entre el render de servidor y el
+  primer render de cliente, sin riesgo de desajuste de hidratación) y
+  `aria-label` con el nombre completo del idioma (`language.es/eu/ca`,
+  ya traducido desde la Tarea 1). Un clic: `POST /api/lang {lang}`
+  (fija la cookie `pp_lang`) → si hay sesión (`lib/auth/tokenStore.ts
+  ::getAccessToken()`), `hooks/useUpdatePreferredLanguage.ts` intenta
+  guardar la preferencia en la cuenta (tolera cualquier fallo: la
+  mutación del `.catch()` cubre lo que el hook no traduce ya a `null`) →
+  `router.refresh()` para que todo el árbol de Server Components
+  (incluido `<html lang>`) se repinte con el idioma nuevo. Presente en
+  las tres cabeceras de área, junto a `PageHelp`
+  (`app/{entidad,paraguas,plataforma}/**/layout.tsx`), y en
+  `LoginForm.tsx` (arriba del formulario). **Cambio de orden de
+  tabulación en `/login`** (`e2e/accesibilidad.spec.ts`, actualizado en
+  esta tarea): el primer `Tab` ya no cae en el campo de usuario, sino en
+  el primer botón del selector — decisión consciente, no un descuido:
+  quien navega solo con teclado también tiene que poder cambiar de
+  idioma antes de rellenar sus credenciales.
+- **Idioma de la cuenta al entrar** (`PATCH /api/users/users/update_profile/
+  {preferred_language}`, `MeUpdateSerializer`, decisión 2 del diseño):
+  `hooks/useAuth.ts::applyAccountLanguage(user)` compara
+  `user.preferred_language` (no vacío) con la cookie `pp_lang` actual
+  (leída de `document.cookie`, no de `useLocale()`: esta función es
+  código plano, no un componente); si difiere, fija la cookie
+  (`POST /api/lang`, mismo route handler que el selector) y devuelve
+  `true` para que quien la llama decida si hace falta
+  `router.refresh()` — la propia función nunca tiene un `useRouter()` a
+  mano. Dos llamadas, una por cada camino de entrada a la sesión:
+  `LoginForm.tsx` la llama tras `login()` y, si cambia, refresca antes
+  de `router.replace()` al área que corresponda; `app/providers.tsx` la
+  llama en un `useEffect` tras `bootRestoreSession()` (recarga completa
+  de página), para que una cuenta con idioma guardado también lo
+  recupere al volver sin haber pasado por el formulario de login.
+  **La cuenta manda sobre lo elegido segundos antes en el propio
+  login**: si `preferred_language` ya tiene un valor guardado, pisa
+  cualquier idioma que se acabara de pulsar en el selector de
+  `/login` justo antes de enviar el formulario — es la lectura literal
+  de la decisión 2 («el idioma de la cuenta manda al entrar»), no un
+  error. `e2e/idioma.spec.ts` lo documenta explícitamente: como el
+  backend local persiste entre ejecuciones (a diferencia del SQLite
+  efímero de CI), el spec resetea `preferred_language` a `""` por API
+  antes de cada ejecución, porque su propio último paso («volver a ES»
+  estando ya autenticado) deja esa preferencia guardada de verdad para
+  la próxima vez.
+- **`lib/api/types.ts::Me`** se ensancha a mano con
+  `preferred_language: string` (el backend ya lo sirve —
+  `users/models.py::User.preferred_language`, `users/profile_serializers.py
+  ::MeSerializer`— pero `docs/schema.yaml` no se ha regenerado todavía
+  para esta tarea, que es trabajo del propio repo backend) y
+  `lib/api/types.ts::UpdatePreferredLanguageResponse` documenta un
+  mismatch de contrato más: `update_profile` declara `responses={200:
+  MeSerializer}` en su `@extend_schema`, pero el código real devuelve
+  `Response(serializer.data)` de `MeUpdateSerializer` (el serializer de
+  **escritura**, sin `id`/`org_memberships`), así que el tipo manual se
+  limita al único campo que el panel necesita. `lib/api/endpoints.ts
+  ::USERS.UPDATE_PROFILE` es la constante nueva.
+- **Regla ESLint `react/jsx-no-literals`** (`eslint.config.mjs`, decisión
+  8), sobre `app/**/*.tsx` y `components/**/*.tsx` sin tests, con
+  `ignoreProps: true` — **desviación deliberada** de la nota de la
+  tarea, que pedía `ignoreProps: false`: probado tal cual sobre este
+  árbol, `false` marca *cualquier* valor de atributo JSX literal sin
+  distinguir un texto de interfaz (`aria-label="Cerrar"`) de marcado
+  técnico (`className`, `type`, `htmlFor`…) — 1835 errores, casi todos
+  `className`, porque el propio código de la regla (`JSXAttribute`
+  visitor de `eslint-plugin-react`) no puede acotar por nombre de
+  atributo. Con `ignoreProps: true` la regla sigue marcando lo que de
+  verdad importa (un literal como **hijo** de un elemento JSX) y el
+  resultado real —10 literales en todo `app/`+`components/`— confirma
+  que las tareas 2-5 ya habían extraído casi todo: el único hueco de
+  contenido real era `app/entidad/[slug]/informes/page.tsx`
+  (`entidad.informes.*`, nuevo, copiado literal de `paraguas.informes`),
+  que ninguna tarea anterior había tocado. El resto de literales que
+  quedaron son separadores/glifos decorativos añadidos a
+  `allowedStrings` (`–`, `#`, `(#`, `) —`, `?`, `×` — ver el comentario
+  del propio fichero para el porqué de cada uno). Detalle completo en
+  `docs/i18n/PENDIENTES.md`.
+- **`<html lang>` dinámico** (decisión 3): ya lo hacía `app/layout.tsx`
+  desde la Tarea 1 (`getLocale()`); esta tarea no lo toca, solo lo
+  ejercita de verdad a través del selector y de `router.refresh()`.
+- **`e2e/idioma.spec.ts`**: en `/login`, pulsar «EU» cambia el botón de
+  entrar a «Sartu»; tras entrar como titular de Asociación Bidasoa, la
+  cabecera, el menú y «Cerrar sesión» siguen en euskera sin recargar a
+  mano; pulsar «ES» estando ya dentro los vuelve a español. Dos logins
+  (uno de API para el reinicio de `preferred_language`, uno de UI),
+  dentro del límite de 5/60s/IP.
+- **Cobertura tras esta tarea (cierre del plan de i18n)**: **99,58 %**
+  sentencias / **99,88 %** líneas (2502/2505), 1716 tests, 176 ficheros —
+  el umbral fijado en `vitest.config.ts` sigue en 99,7 sobre líneas
+  (2502/2505 lo supera). `docs/i18n/ESTADO.md` recoge el borrador de
+  cada tarea, pendiente de que el propietario revise `eu`/`ca` (decisión
+  9); `docs/i18n/PENDIENTES.md` recoge lo que no se corrigió por ser una
+  migración de infraestructura, no una revisión de contenido.
+
 ## Comandos
 
 - `npm run dev` / `npm run build` / `npm run start`
@@ -2281,9 +2382,14 @@ en CI lo gate el job `e2e`).
   catálogos — cierra los puentes de `noPhoneNotice`/`reports/labels`
   que dejó la Tarea 4): **99,87 %** (2470/2473 líneas, 1693 tests, 174
   ficheros — mismo número de ficheros: ningún fichero nuevo, solo
-  hooks/componentes/tests ya existentes tocados). El umbral fijado
-  sigue en 99,7 porque real menos 0,3 (99,57) queda por debajo, así que
-  el ratchet no sube.
+  hooks/componentes/tests ya existentes tocados). Tras la Tarea 6
+  (cierre: selector de idioma, idioma de la cuenta, regla ESLint y e2e —
+  ver «Cierre de i18n» arriba): **99,88 %** (2502/2505 líneas, 1716
+  tests, 176 ficheros — dos ficheros nuevos con test propio,
+  `components/layout/LanguageSwitcher.tsx` y
+  `hooks/useUpdatePreferredLanguage.ts`). El umbral fijado sigue en 99,7
+  porque real menos 0,3 (99,58) queda por debajo, así que el ratchet no
+  sube.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la

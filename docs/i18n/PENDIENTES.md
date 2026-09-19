@@ -72,3 +72,39 @@ La Tarea 5 anota dos puntos, ninguno de redacción en español:
   nuevo). No es una redacción pendiente — es el mismo comportamiento
   defensivo que ya tenía el código en español, documentado aquí porque
   el `??` ya no cae a un valor crudo sino a una clave fija.
+
+La Tarea 6 (cierre) anota tres puntos, ninguno de redacción en español:
+
+- **`eslint.config.mjs::react/jsx-no-literals` con `ignoreProps: true`,
+  no `false`** (la nota de la propia tarea pedía `false`): probado tal
+  cual sobre `app/**`/`components/**`, `ignoreProps: false` marca
+  **cualquier** valor de atributo JSX literal sin distinguir texto de
+  interfaz de marcado técnico — 1835 errores, la inmensa mayoría
+  `className`. El código de la regla
+  (`eslint-plugin-react/lib/rules/jsx-no-literals.js`, visitor
+  `JSXAttribute`) no tiene forma de acotar por nombre de atributo, así
+  que no hay una lista de `allowedStrings` razonable que lo arregle. Con
+  `ignoreProps: true` la regla sigue marcando lo que de verdad importa
+  para esta tarea (un literal como **hijo** de un elemento JSX, el caso
+  real que «impide literales nuevos» pretende impedir) y deja en paz los
+  atributos; el resultado (10 literales reales en todo `app/`+
+  `components/`) confirma que las tareas 2-5 ya habían extraído
+  prácticamente todo — nada de esto es una redacción pendiente, es una
+  decisión de configuración de la herramienta, documentada también en
+  `eslint.config.mjs` con el conteo exacto.
+- **`app/entidad/[slug]/informes/page.tsx` con dos literales sin
+  extraer** (`"Sin acceso"`/`"Tu rol no tiene acceso a Informes."`/
+  `"Informes"`): la única extracción de contenido real que hizo falta
+  para llegar a 0 errores con la regla activa — ni la Tarea 2 (páginas
+  sueltas) ni ninguna posterior había tocado este fichero, a diferencia
+  de su gemelo `app/paraguas/[slug]/informes/page.tsx`, que sí estaba
+  traducido. Corregido reusando literalmente las claves de
+  `paraguas.informes` en un `entidad.informes` nuevo (mismo texto exacto
+  en español, `eu` y `ca`), sin inventar redacción nueva.
+- **`components/layout/LanguageSwitcher.tsx` sin catálogo propio**: sus
+  tres botones («ES»/«EU»/«CA») y sus `aria-label` (nombre completo del
+  idioma) reutilizan `language.*`, ya traducido en la Tarea 1 — el
+  código en mayúsculas del botón (`lang.toUpperCase()`) no es una cadena
+  de catálogo, es la propia clave del idioma (`es`/`eu`/`ca`)
+  transformada en JavaScript, igual en los tres idiomas de interfaz por
+  ser un código ISO, no una palabra.
