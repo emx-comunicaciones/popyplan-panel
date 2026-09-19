@@ -31,15 +31,19 @@ export default async function EntidadEncuestasPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!entidadMenuFor(membership.role).includes("encuestas")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Encuestas." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("entidad.encuestas.noAccessDescription")} />
+    );
   }
 
   const canCreate = membership.role === "titular" || membership.role === "moderador";
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Encuestas</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.encuestas.heading")}</h1>
       <EncuestasPanel orgId={membership.organization_id} slug={slug} canCreate={canCreate} />
     </div>
   );

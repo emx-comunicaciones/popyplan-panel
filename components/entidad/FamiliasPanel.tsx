@@ -13,6 +13,11 @@
  * nadie declara ser familiar de nadie, `communities/services/visibility
  * .py::espacio_bloqueado_para`).
  *
+ * **Cadena fija del contrato (i18n, tarea 4 del plan):** la clave
+ * `entidad.familias.banner` es la única fuente del texto «Las
+ * comunidades de familias están separadas…» — se pinta siempre, sea cual
+ * sea el estado de la consulta con datos.
+ *
  * **Regla de supresión** (`members_count`, mismo patrón que
  * `lib/metrics/format.ts`): el fix de backend que suprime el recuento de
  * personas para quien no tiene `ver_lista_nominal` llega en paralelo a
@@ -34,6 +39,7 @@
  */
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -43,10 +49,15 @@ import { Dialog } from "@/components/ui/Dialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { StatCard } from "@/components/metrics/StatCard";
-import { useCreateFamiliesCommunity } from "@/hooks/useCreateFamiliesCommunity";
+import {
+  useCreateFamiliesCommunity,
+  type CreateFamiliesCommunityErrorKind,
+} from "@/hooks/useCreateFamiliesCommunity";
 import { useFamiliesSummary } from "@/hooks/useFamiliesSummary";
-import { useToggleCrossSpace } from "@/hooks/useToggleCrossSpace";
+import { useToggleCrossSpace, type ToggleCrossSpaceErrorKind } from "@/hooks/useToggleCrossSpace";
 import type { FamiliesSummaryCommunityRow } from "@/lib/api/types";
+import { errorKindText } from "@/lib/i18n/errorKindText";
+import { localeFor, activeLanguage } from "@/lib/i18n/locale";
 import { formatCount } from "@/lib/metrics/format";
 
 export interface FamiliasPanelProps {
@@ -59,23 +70,23 @@ function isSuppressed(row: { members_count: number | null; suppressed?: boolean 
   return row.members_count === null || row.suppressed === true;
 }
 
-/**
- * Aviso de apoyos a la espera de la comunidad de familias
- * (`missing_families_space_supporters`, `docs/PANEL.md` §14.5): cuenta
- * apoyos distintos, sin umbral de supresión (no describe personas, describe
- * una tarea pendiente de la propia entidad), así que siempre es un número
- * exacto. Singular con 1, nunca se lista quién acompaña a quién.
- */
-function missingSupportersNotice(count: number): string {
-  if (count === 1) {
-    return "1 persona de la red de apoyo espera a que crees la comunidad de familias.";
-  }
-  return `${count} personas de la red de apoyo esperan a que crees la comunidad de familias.`;
+function formatDateTime(iso: string): string {
+  return new Date(iso).toLocaleString(localeFor(activeLanguage()), {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
 }
 
-function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
-}
+const TOGGLE_CROSS_SPACE_ERROR_KEYS: Record<ToggleCrossSpaceErrorKind, string> = {
+  sin_permiso: "errors.toggleCrossSpace.sinPermiso",
+  desconocido: "errors.toggleCrossSpace.desconocido",
+};
+
+const CREATE_FAMILIES_COMMUNITY_ERROR_KEYS: Record<CreateFamiliesCommunityErrorKind, string> = {
+  invalido: "errors.createFamiliesCommunity.invalido",
+  sin_permiso: "errors.createFamiliesCommunity.sinPermiso",
+  desconocido: "errors.createFamiliesCommunity.desconocido",
+};
 
 function NuevaComunidadDialog({
   orgId,
@@ -86,6 +97,7 @@ function NuevaComunidadDialog({
   open: boolean;
   onClose: () => void;
 }) {
+  const t = useTranslations();
   const createCommunity = useCreateFamiliesCommunity();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -127,14 +139,14 @@ function NuevaComunidadDialog({
     <Dialog
       open={open}
       titleId="nueva-comunidad-familias-title"
-      title="Nueva comunidad de familias"
+      title={t("entidad.familias.newCommunityTitle")}
       pending={createCommunity.isPending}
       onClose={handleClose}
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div>
           <label htmlFor="familias-nombre" className="mb-1 block text-sm font-medium text-text-form">
-            Nombre
+            {t("entidad.familias.nameLabel")}
           </label>
           <input
             id="familias-nombre"
@@ -146,7 +158,7 @@ function NuevaComunidadDialog({
         </div>
         <div>
           <label htmlFor="familias-descripcion" className="mb-1 block text-sm font-medium text-text-form">
-            Descripción
+            {t("entidad.familias.descriptionLabel")}
           </label>
           <textarea
             id="familias-descripcion"
@@ -158,7 +170,7 @@ function NuevaComunidadDialog({
         </div>
         <div>
           <label htmlFor="familias-visibilidad" className="mb-1 block text-sm font-medium text-text-form">
-            Visibilidad
+            {t("entidad.familias.visibilityLabel")}
           </label>
           <select
             id="familias-visibilidad"
@@ -168,14 +180,14 @@ function NuevaComunidadDialog({
             }
             className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
-            <option value="open">Abierta</option>
-            <option value="on_request">Con solicitud</option>
-            <option value="private">Privada</option>
+            <option value="open">{t("entidad.familias.visibilityOpen")}</option>
+            <option value="on_request">{t("entidad.familias.visibilityOnRequest")}</option>
+            <option value="private">{t("entidad.familias.visibilityPrivate")}</option>
           </select>
         </div>
         <div>
           <label htmlFor="familias-codigo" className="mb-1 block text-sm font-medium text-text-form">
-            Código de conducta
+            {t("entidad.familias.codeOfConductLabel")}
           </label>
           <textarea
             id="familias-codigo"
@@ -187,7 +199,7 @@ function NuevaComunidadDialog({
         </div>
         <div className="flex gap-2">
           <Button type="submit" disabled={!canSubmit || createCommunity.isPending}>
-            Crear comunidad
+            {t("entidad.familias.createCommunity")}
           </Button>
           <Button
             type="button"
@@ -195,12 +207,17 @@ function NuevaComunidadDialog({
             onClick={handleClose}
             disabled={createCommunity.isPending}
           >
-            Cancelar
+            {t("common.cancel")}
           </Button>
         </div>
         {createCommunity.isError ? (
           <p role="alert" className="text-sm text-error">
-            {createCommunity.error.message}
+            {errorKindText(
+              createCommunity.error,
+              CREATE_FAMILIES_COMMUNITY_ERROR_KEYS,
+              t,
+              "errors.createFamiliesCommunity.desconocido",
+            )}
           </p>
         ) : null}
       </form>
@@ -217,6 +234,7 @@ function CommunityRow({
   community: FamiliesSummaryCommunityRow;
   canManage: boolean;
 }) {
+  const t = useTranslations();
   const toggle = useToggleCrossSpace();
   const [confirmingValue, setConfirmingValue] = useState<boolean | null>(null);
 
@@ -240,10 +258,14 @@ function CommunityRow({
             <p className="font-medium text-text-base">{community.name}</p>
             <div className="mt-1 flex flex-wrap gap-2">
               <Badge tone="info">
-                {formatCount(community.members_count, isSuppressed(community))} personas
+                {t("entidad.familias.peopleCount", {
+                  count: formatCount(community.members_count, isSuppressed(community)),
+                })}
               </Badge>
               <Badge tone={community.allow_cross_space ? "success" : "neutral"}>
-                {community.allow_cross_space ? "Cruce de espacios activado" : "Espacios separados"}
+                {community.allow_cross_space
+                  ? t("entidad.familias.crossSpaceOn")
+                  : t("entidad.familias.crossSpaceOff")}
               </Badge>
             </div>
           </div>
@@ -255,25 +277,30 @@ function CommunityRow({
                 disabled={toggle.isPending}
                 onChange={(event) => requestToggle(event.target.checked)}
               />
-              Permitir cruce de espacios
+              {t("entidad.familias.allowCrossSpace")}
             </label>
           ) : null}
         </div>
         {toggle.isError ? (
           <p role="alert" className="mt-2 text-xs text-error">
-            {toggle.error.message}
+            {errorKindText(
+              toggle.error,
+              TOGGLE_CROSS_SPACE_ERROR_KEYS,
+              t,
+              "errors.toggleCrossSpace.desconocido",
+            )}
           </p>
         ) : null}
       </Card>
       <ConfirmDialog
         open={confirmingValue !== null}
-        title="Cambiar la separación de espacios"
+        title={t("entidad.familias.toggleConfirmTitle")}
         description={
           confirmingValue
-            ? `«${community.name}» pasará a verse también desde el espacio de miembros de la entidad (y viceversa), rompiendo la separación por defecto entre familias y miembros. ¿Continuar?`
-            : `«${community.name}» dejará de verse desde el otro espacio: volverá a la separación por defecto (nadie declara ser familiar de nadie). ¿Continuar?`
+            ? t("entidad.familias.toggleOnDescription", { name: community.name })
+            : t("entidad.familias.toggleOffDescription", { name: community.name })
         }
-        confirmLabel="Confirmar"
+        confirmLabel={t("common.confirm")}
         pending={toggle.isPending}
         onConfirm={handleConfirm}
         onCancel={() => setConfirmingValue(null)}
@@ -283,20 +310,21 @@ function CommunityRow({
 }
 
 export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
+  const t = useTranslations();
   const summary = useFamiliesSummary(orgId);
   const [creating, setCreating] = useState(false);
 
   if (summary.isError) {
     return (
       <ErrorState
-        title="No se pudo cargar el espacio de Familias"
-        description={summary.error.message}
+        title={t("entidad.familias.loadError")}
+        description={t("entidad.familias.loadErrorDescription")}
       />
     );
   }
 
   if (!summary.data) {
-    return <p className="text-sm text-text-secondary">Cargando el espacio de Familias…</p>;
+    return <p className="text-sm text-text-secondary">{t("entidad.familias.loading")}</p>;
   }
 
   const data = summary.data;
@@ -304,31 +332,39 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
   return (
     <div className="flex flex-col gap-6">
       <p className="rounded-md border border-border bg-category-light p-3 text-sm text-text-form">
-        Las comunidades de familias están separadas de las de miembros; nadie declara ser familiar
-        de nadie.
+        {t("entidad.familias.banner")}
       </p>
 
       <section aria-labelledby="familias-resumen-heading">
         <h2 id="familias-resumen-heading" className="sr-only">
-          Resumen de Familias
+          {t("entidad.familias.summaryHeading")}
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <StatCard label="Comunidades de familias" value={formatCount(data.communities.length)} />
-          <StatCard label="Personas" value={formatCount(data.members_count, isSuppressed(data))} />
-          <StatCard label="Próximas actividades" value={formatCount(data.upcoming_events.length)} />
           <StatCard
-            label="Personas con red de apoyo"
+            label={t("entidad.familias.communitiesCount")}
+            value={formatCount(data.communities.length)}
+          />
+          <StatCard
+            label={t("entidad.familias.people")}
+            value={formatCount(data.members_count, isSuppressed(data))}
+          />
+          <StatCard
+            label={t("entidad.familias.upcomingEvents")}
+            value={formatCount(data.upcoming_events.length)}
+          />
+          <StatCard
+            label={t("entidad.familias.peopleWithSupportNetwork")}
             value={formatCount(
               data.people_with_support_network.value,
               data.people_with_support_network.suppressed,
             )}
           />
           <StatCard
-            label="Apoyos activos"
+            label={t("entidad.familias.activeSupporters")}
             value={formatCount(data.active_supporters.value, data.active_supporters.suppressed)}
           />
           <StatCard
-            label="Apoyos que reciben avisos"
+            label={t("entidad.familias.supportersNotified")}
             value={formatCount(
               data.supporters_notified_on_help.value,
               data.supporters_notified_on_help.suppressed,
@@ -341,24 +377,26 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
         {data.missing_families_space_supporters > 0 ? (
           <p role="status" className="mb-3 rounded-md border border-border bg-category-light p-3 text-sm text-text-form">
             {data.communities.length === 0
-              ? missingSupportersNotice(data.missing_families_space_supporters)
-              : "El alta en la comunidad de familias se completará automáticamente."}
+              ? t("entidad.familias.missingSupportersNotice", {
+                  count: data.missing_families_space_supporters,
+                })
+              : t("entidad.familias.pendingAutoJoinNotice")}
           </p>
         ) : null}
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <h2 id="familias-comunidades-heading" className="text-lg font-semibold text-text-base">
-            Comunidades de familias
+            {t("entidad.familias.communitiesHeading")}
           </h2>
           {canManage ? (
             <Button type="button" onClick={() => setCreating(true)}>
-              Nueva comunidad de familias
+              {t("entidad.familias.newCommunityTitle")}
             </Button>
           ) : null}
         </div>
         {data.communities.length === 0 ? (
           <EmptyState
-            title="Sin comunidades de familias todavía"
-            description="Esta entidad todavía no tiene ninguna comunidad marcada como espacio de familias."
+            title={t("entidad.familias.communitiesEmpty")}
+            description={t("entidad.familias.communitiesEmptyDescription")}
           />
         ) : (
           <ul className="flex flex-col gap-3">
@@ -376,10 +414,10 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
 
       <section aria-labelledby="familias-actividades-heading">
         <h2 id="familias-actividades-heading" className="mb-2 text-lg font-semibold text-text-base">
-          Próximas actividades
+          {t("entidad.familias.upcomingEventsHeading")}
         </h2>
         {data.upcoming_events.length === 0 ? (
-          <EmptyState title="Sin actividades próximas" />
+          <EmptyState title={t("entidad.familias.upcomingEventsEmpty")} />
         ) : (
           <ul className="flex flex-col gap-2">
             {data.upcoming_events.map((event) => (
@@ -398,16 +436,16 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
           href={`/entidad/${slug}/actividades`}
           className="mt-2 inline-block text-sm font-medium text-primary-700 underline"
         >
-          Ver todas las actividades
+          {t("entidad.familias.viewAllActivities")}
         </Link>
       </section>
 
       <section aria-labelledby="familias-comunicaciones-heading">
         <h2 id="familias-comunicaciones-heading" className="mb-2 text-lg font-semibold text-text-base">
-          Comunicaciones recientes
+          {t("entidad.familias.recentAnnouncementsHeading")}
         </h2>
         {data.announcements.length === 0 ? (
-          <EmptyState title="Sin comunicaciones para familias todavía" />
+          <EmptyState title={t("entidad.familias.recentAnnouncementsEmpty")} />
         ) : (
           <ul className="flex flex-col gap-2">
             {data.announcements.map((announcement) => (
@@ -415,8 +453,10 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
                 <Card>
                   <p className="font-medium text-text-base">{announcement.title}</p>
                   <p className="text-sm text-text-secondary">
-                    {formatDateTime(announcement.sent_at)} · {announcement.recipients_count}{" "}
-                    {announcement.recipients_count === 1 ? "destinatario" : "destinatarios"}
+                    {t("entidad.familias.announcementSentOn", {
+                      date: formatDateTime(announcement.sent_at),
+                      count: announcement.recipients_count,
+                    })}
                   </p>
                 </Card>
               </li>
@@ -427,16 +467,16 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
           href={`/entidad/${slug}/comunicaciones`}
           className="mt-2 inline-block text-sm font-medium text-primary-700 underline"
         >
-          Ir a Comunicaciones
+          {t("entidad.familias.goToAnnouncements")}
         </Link>
       </section>
 
       <section aria-labelledby="familias-recursos-heading">
         <h2 id="familias-recursos-heading" className="mb-2 text-lg font-semibold text-text-base">
-          Recursos recientes
+          {t("entidad.familias.recentResourcesHeading")}
         </h2>
         {data.resources.length === 0 ? (
-          <EmptyState title="Sin recursos para familias todavía" />
+          <EmptyState title={t("entidad.familias.recentResourcesEmpty")} />
         ) : (
           <ul className="flex flex-col gap-2">
             {data.resources.map((resource) => (
@@ -444,7 +484,9 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
                 <Card>
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="font-medium text-text-base">{resource.title}</p>
-                    {resource.is_featured ? <Badge tone="success">Destacado</Badge> : null}
+                    {resource.is_featured ? (
+                      <Badge tone="success">{t("entidad.recursos.featured")}</Badge>
+                    ) : null}
                   </div>
                 </Card>
               </li>
@@ -455,7 +497,7 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
           href={`/entidad/${slug}/recursos`}
           className="mt-2 inline-block text-sm font-medium text-primary-700 underline"
         >
-          Ir a Recursos
+          {t("entidad.familias.goToResources")}
         </Link>
       </section>
 

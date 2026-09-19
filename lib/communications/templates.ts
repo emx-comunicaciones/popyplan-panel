@@ -2,24 +2,31 @@
  * Plantillas de comunicaciones oficiales (tarea 4 de «red de apoyo»,
  * `docs/PANEL.md` §14): hoy solo la de bienvenida a quien acompaña, que
  * `ComunicacionesPanel.tsx::ComposeForm` ofrece cuando la entidad tiene
- * espacio de familias. El texto es literal (verificado con el brief):
- * quien lo edite debe hacerlo aquí, la única fuente de esa cadena.
+ * espacio de familias.
+ *
+ * **i18n (tarea 4 del plan de i18n):** el texto ya no vive aquí como
+ * cadena a secas — este fichero es `.ts` plano (no puede llamar a
+ * `t()`), así que `SUPPORT_WELCOME_TEMPLATE_KEYS` guarda las **claves**
+ * de traducción (`entidad.comunicaciones.template.*`); quien llama
+ * (`ComposeForm`, que sí tiene `t()`) resuelve el texto real antes de
+ * pasárselo a `applyTemplate`, cuya forma no cambia: sigue recibiendo un
+ * `{title, body}` ya resuelto y no sabe nada de i18n.
  */
-export const SUPPORT_WELCOME_TEMPLATE = {
-  title: "Bienvenida a la red de apoyo",
-  body: "Gracias por acompañar a alguien de nuestra entidad. En este espacio de familias encontrarás actividades, formación y recursos pensados para ti. Recuerda: no verás las conversaciones, la actividad privada ni la ubicación de la persona a la que acompañas; solo lo que ella decida compartir con su red. Si necesitas hablar con la entidad, escribe a su referente desde la app.",
+export const SUPPORT_WELCOME_TEMPLATE_KEYS = {
+  title: "entidad.comunicaciones.template.title",
+  body: "entidad.comunicaciones.template.body",
 } as const;
 
 /**
- * Aplica la plantilla al título/cuerpo actuales del formulario.
- * `overwritten` indica si había texto no vacío antes de sustituirlo —
- * quien la llama lo usa para pedir confirmación (`ConfirmDialog`) antes
- * de perder un borrador en curso.
+ * Aplica la plantilla (ya traducida por quien llama) al título/cuerpo
+ * actuales del formulario. `overwritten` indica si había texto no vacío
+ * antes de sustituirlo — quien la llama lo usa para pedir confirmación
+ * (`ConfirmDialog`) antes de perder un borrador en curso.
  */
 export function applyTemplate(
   current: { title: string; body: string },
-  t: typeof SUPPORT_WELCOME_TEMPLATE,
+  template: { title: string; body: string },
 ): { title: string; body: string; overwritten: boolean } {
   const overwritten = current.title.trim().length > 0 || current.body.trim().length > 0;
-  return { title: t.title, body: t.body, overwritten };
+  return { title: template.title, body: template.body, overwritten };
 }

@@ -21,11 +21,13 @@ export type SendAnnouncementErrorKind = "invalido" | "sin_permiso" | "desconocid
 
 export class SendAnnouncementError extends Error {
   readonly kind: SendAnnouncementErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: SendAnnouncementErrorKind, message: string) {
+  constructor(kind: SendAnnouncementErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "SendAnnouncementError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -49,9 +51,11 @@ export function useSendAnnouncement(
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
+          const detail = detailOf(error);
           throw new SendAnnouncementError(
             "invalido",
-            detailOf(error) ?? "Revisa los datos: la audiencia no es válida.",
+            detail ?? "Revisa los datos: la audiencia no es válida.",
+            detail,
           );
         }
         if (error instanceof ApiError && error.status === 403) {

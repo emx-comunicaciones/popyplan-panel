@@ -18,10 +18,15 @@ import { ApiError, apiFetch } from "@/lib/api/client";
 import { COMMUNITIES } from "@/lib/api/endpoints";
 import type { EntityCommunityRow } from "@/lib/api/types";
 
+export type ToggleCrossSpaceErrorKind = "sin_permiso" | "desconocido";
+
 export class ToggleCrossSpaceError extends Error {
-  constructor(message: string) {
+  readonly kind: ToggleCrossSpaceErrorKind;
+
+  constructor(kind: ToggleCrossSpaceErrorKind, message: string) {
     super(message);
     this.name = "ToggleCrossSpaceError";
+    this.kind = kind;
   }
 }
 
@@ -48,10 +53,11 @@ export function useToggleCrossSpace(): UseMutationResult<
       } catch (error) {
         if (error instanceof ApiError && error.status === 403) {
           throw new ToggleCrossSpaceError(
+            "sin_permiso",
             "Solo titular o moderador pueden cambiar la separación de espacios.",
           );
         }
-        throw new ToggleCrossSpaceError("No se pudo cambiar la separación de espacios.");
+        throw new ToggleCrossSpaceError("desconocido", "No se pudo cambiar la separación de espacios.");
       }
     },
     onSuccess: (_data, variables) => {

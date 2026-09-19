@@ -31,15 +31,22 @@ export default async function EntidadComunicacionesPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!entidadMenuFor(membership.role).includes("comunicaciones")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Comunicaciones." />;
+    return (
+      <EmptyState
+        title={t("common.noAccess")}
+        description={t("entidad.comunicaciones.noAccessDescription")}
+      />
+    );
   }
 
   const canCompose = membership.role === "titular" || membership.role === "moderador";
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Comunicaciones</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.comunicaciones.heading")}</h1>
       <ComunicacionesPanel orgId={membership.organization_id} canCompose={canCompose} />
     </div>
   );

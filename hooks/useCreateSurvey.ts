@@ -18,11 +18,13 @@ export type CreateSurveyErrorKind = "invalido" | "sin_permiso" | "desconocido";
 
 export class CreateSurveyError extends Error {
   readonly kind: CreateSurveyErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: CreateSurveyErrorKind, message: string) {
+  constructor(kind: CreateSurveyErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "CreateSurveyError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -37,9 +39,11 @@ export function useCreateSurvey(
         return await apiFetch<Survey>(PANEL.SURVEYS(orgId), { method: "POST", body: input });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
+          const detail = detailOf(error);
           throw new CreateSurveyError(
             "invalido",
-            detailOf(error) ?? "Revisa los datos: alguna pregunta no es válida.",
+            detail ?? "Revisa los datos: alguna pregunta no es válida.",
+            detail,
           );
         }
         if (error instanceof ApiError && error.status === 403) {

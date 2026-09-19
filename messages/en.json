@@ -10,7 +10,8 @@
     "backHome": "Back to home",
     "items": "{count, plural, one {# item} other {# items}}",
     "confirm": "Confirm",
-    "noPhoneNotice": "Popyplan does not store phone numbers: contact the person through the app chat or through their referent."
+    "noPhoneNotice": "Popyplan does not store phone numbers: contact the person through the app chat or through their referent.",
+    "actions": "Actions"
   },
   "language": {
     "title": "Language",
@@ -447,6 +448,341 @@
       "cancelled": "Cancelled",
       "attended": "Attended",
       "noShow": "No-show"
+    },
+    "comunicaciones": {
+      "heading": "Announcements",
+      "noAccessDescription": "Your role doesn't have access to Announcements.",
+      "composeTitle": "Write an announcement",
+      "titleLabel": "Title",
+      "bodyLabel": "Body",
+      "useTemplate": "Use template: Welcome to the support network",
+      "audienceLegend": "Audience",
+      "audienceMembers": "All members",
+      "audienceCommunity": "A community",
+      "communitySelectLabel": "Community",
+      "communitySelectPlaceholder": "Choose a community",
+      "audienceFamilies": "Families",
+      "audienceCommunityNamed": "Community: {name}",
+      "communitiesError": "Couldn't load the communities.",
+      "familiesHint": "Available once the families space exists.",
+      "send": "Send announcement",
+      "sentTo": "Sent to {count, plural, one {# person} other {# people}}.",
+      "sendConfirmDescription": "Send this announcement to: {audience}?",
+      "sendConfirmLabel": "Send",
+      "templateConfirmTitle": "Use the template",
+      "templateConfirmDescription": "This will replace the current title and body text.",
+      "templateConfirmLabel": "Use template",
+      "historyError": "Couldn't load the history",
+      "historyLoading": "Loading announcements…",
+      "historyEmpty": "No announcements yet",
+      "sentOn": "Sent on {date} · {count, plural, one {# recipient} other {# recipients}}",
+      "readOnlyNotice": "Only the owner or moderator can write announcements. You can view the history here.",
+      "historyHeading": "History",
+      "template": {
+        "title": "Welcome to the support network",
+        "body": "Thank you for supporting someone from our entity. In this families space you'll find activities, training and resources designed for you. Remember: you won't see the conversations, private activity or location of the person you support; only what they decide to share with their network. If you need to talk to the entity, message their referent from the app."
+      }
+    },
+    "encuestas": {
+      "heading": "Surveys",
+      "noAccessDescription": "Your role doesn't have access to Surveys.",
+      "newSurveyTitle": "New periodic survey",
+      "titleLabel": "Title",
+      "opensAtLabel": "Opens on",
+      "closesAtLabel": "Closes on",
+      "questionsLegend": "Questions",
+      "questionKindLabel": "Type",
+      "questionTextLabel": "Question",
+      "removeQuestion": "Remove",
+      "addQuestion": "Add question",
+      "createSurvey": "Create survey",
+      "createSuccess": "Survey created.",
+      "listError": "Couldn't load the surveys",
+      "loading": "Loading surveys…",
+      "empty": "No surveys yet",
+      "open": "Open",
+      "closed": "Closed",
+      "questionCount": "{count, plural, one {# question} other {# questions}}",
+      "viewResults": "View results",
+      "listHeading": "Surveys",
+      "questionKind": {
+        "stars": "Stars (1-5)",
+        "scale": "Scale (1-4)",
+        "text": "Short text"
+      },
+      "surveyKind": {
+        "postEvent": "Post-activity",
+        "periodic": "Periodic"
+      }
+    },
+    "encuestaResultados": {
+      "heading": "Survey results",
+      "anonymityBanner": "Responses are anonymous and aggregated.",
+      "distributionLabel": "Response distribution",
+      "responsesSeries": "Responses",
+      "suppressed": "Not enough data to show the result (fewer than 5 responses).",
+      "noAnswers": "No responses yet.",
+      "mean": "Mean:",
+      "loadError": "Couldn't load the results",
+      "loading": "Loading results…",
+      "noQuestions": "No questions",
+      "responsesTotal": "{count, plural, one {# response} other {# responses}} in total."
+    },
+    "recursos": {
+      "heading": "Resources",
+      "noAccessDescription": "Your role doesn't have access to Resources.",
+      "newResource": "New resource",
+      "editResource": "Edit resource",
+      "titleLabel": "Title",
+      "categoryLabel": "Category",
+      "kindLabel": "Type",
+      "bodyLabel": "Text",
+      "urlLabel": "Link",
+      "fileLabel": "File",
+      "keepCurrentFile": "Leave empty to keep the current file.",
+      "audienceLabel": "Audience",
+      "communitiesError": "Couldn't load the communities.",
+      "familiesHint": "“Families” will be available once the families space exists.",
+      "featured": "Featured",
+      "openLink": "Open link",
+      "downloadFile": "Download file",
+      "edit": "Edit",
+      "delete": "Delete",
+      "loadError": "Couldn't load the resources",
+      "loadErrorDescription": "Couldn't load the resources.",
+      "loading": "Loading resources…",
+      "empty": "No resources yet",
+      "deleteTitle": "Delete resource",
+      "deleteConfirmDescription": "Delete “{title}”? This action can't be undone.",
+      "category": {
+        "help": "Help",
+        "training": "Training",
+        "families": "Families",
+        "accompany": "How to support",
+        "habits": "Habits",
+        "activities": "Activities",
+        "about": "About the entity"
+      },
+      "kind": {
+        "text": "Text",
+        "pdf": "PDF",
+        "video": "Video",
+        "audio": "Audio",
+        "link": "Link",
+        "document": "Document"
+      },
+      "audience": {
+        "members": "Members",
+        "families": "Families",
+        "public": "Public"
+      },
+      "fileErrors": {
+        "tipoNoPermitido": "File type not allowed. Use one of: {extensions}.",
+        "demasiadoGrande": "The file exceeds the {max} MB limit."
+      }
+    },
+    "familias": {
+      "heading": "Families",
+      "noAccessDescription": "Your role doesn't have access to Families.",
+      "newCommunityTitle": "New families community",
+      "nameLabel": "Name",
+      "descriptionLabel": "Description",
+      "visibilityLabel": "Visibility",
+      "visibilityOpen": "Open",
+      "visibilityOnRequest": "By request",
+      "visibilityPrivate": "Private",
+      "codeOfConductLabel": "Code of conduct",
+      "createCommunity": "Create community",
+      "peopleCount": "{count} people",
+      "crossSpaceOn": "Cross-space viewing enabled",
+      "crossSpaceOff": "Spaces kept separate",
+      "allowCrossSpace": "Allow cross-space viewing",
+      "toggleConfirmTitle": "Change space separation",
+      "toggleOnDescription": "“{name}” will also become visible from the entity's members space (and vice versa), breaking the default separation between families and members. Continue?",
+      "toggleOffDescription": "“{name}” will stop being visible from the other space: it will go back to the default separation (nobody declares being family to anyone). Continue?",
+      "loadError": "Couldn't load the Families space",
+      "loadErrorDescription": "Couldn't load the Families summary.",
+      "loading": "Loading the Families space…",
+      "banner": "Families communities are kept separate from member communities; nobody declares being family to anyone.",
+      "summaryHeading": "Families summary",
+      "communitiesCount": "Families communities",
+      "people": "People",
+      "upcomingEvents": "Upcoming activities",
+      "peopleWithSupportNetwork": "People with a support network",
+      "activeSupporters": "Active supporters",
+      "supportersNotified": "Supporters who receive alerts",
+      "missingSupportersNotice": "{count, plural, one {# person from the support network is waiting for you to create the families community.} other {# people from the support network are waiting for you to create the families community.}}",
+      "pendingAutoJoinNotice": "Joining the families community will complete automatically.",
+      "communitiesHeading": "Families communities",
+      "communitiesEmpty": "No families communities yet",
+      "communitiesEmptyDescription": "This entity doesn't have any community marked as a families space yet.",
+      "upcomingEventsHeading": "Upcoming activities",
+      "upcomingEventsEmpty": "No upcoming activities",
+      "viewAllActivities": "View all activities",
+      "recentAnnouncementsHeading": "Recent announcements",
+      "recentAnnouncementsEmpty": "No announcements for families yet",
+      "announcementSentOn": "Sent on {date} · {count, plural, one {# recipient} other {# recipients}}",
+      "goToAnnouncements": "Go to Announcements",
+      "recentResourcesHeading": "Recent resources",
+      "recentResourcesEmpty": "No resources for families yet",
+      "goToResources": "Go to Resources"
+    },
+    "programas": {
+      "heading": "Programs",
+      "noAccessDescription": "Your role doesn't have access to Programs.",
+      "loadError": "Couldn't load the programs",
+      "loadErrorDescription": "Couldn't load the programs.",
+      "loading": "Loading programs…",
+      "newProgram": "New program",
+      "empty": "No programs yet"
+    },
+    "programaFicha": {
+      "heading": "Program record",
+      "nameLabel": "Name",
+      "funderLabel": "Funder",
+      "descriptionLabel": "Description",
+      "startsOnLabel": "Start",
+      "endsOnLabel": "End",
+      "budgetLabel": "Budget (€)",
+      "loadError": "Couldn't load the program",
+      "loading": "Loading program…",
+      "closingNotes": "Closing notes: {notes}",
+      "edit": "Edit",
+      "activate": "Activate",
+      "close": "Close program",
+      "downloadCsv": "Download CSV report",
+      "downloadPdf": "Download PDF report",
+      "editDialogTitle": "Edit program",
+      "closeWarning": "A closed program can't be edited or reactivated.",
+      "closingNotesLabel": "Closing notes",
+      "metricsHeading": "Metrics for the period",
+      "metricsError": "Couldn't load the metrics",
+      "metricsLoading": "Loading metrics…",
+      "activePeople": "Active people",
+      "heldEvents": "Activities held",
+      "attendance": "Attendance",
+      "activeCommunities": "Active communities",
+      "byPlaceCaption": "By municipality",
+      "byPlaceNameHeader": "Municipality",
+      "byPlaceCodeHeader": "INE code",
+      "noDataInPeriod": "No data for this period"
+    },
+    "reportes": {
+      "heading": "Reports",
+      "noAccessDescription": "Your role doesn't have access to Reports.",
+      "statusLabel": "Status",
+      "statusAll": "All",
+      "queueError": "Couldn't load the reports queue",
+      "loading": "Loading reports…",
+      "empty": "No reports with this filter",
+      "tableCaption": "Entity reports",
+      "colReason": "Reason",
+      "colTarget": "Target",
+      "colStatus": "Status",
+      "colDate": "Date",
+      "viewDetail": "View detail",
+      "count": "{count} reports"
+    },
+    "reporteDetalle": {
+      "heading": "Report",
+      "noAccessDescription": "You don't have access to this report.",
+      "loadError": "Couldn't load the report",
+      "loading": "Loading report…",
+      "detailTitle": "Detail",
+      "reason": "Reason",
+      "target": "Target",
+      "description": "Description",
+      "status": "Status",
+      "assignedTo": "Assigned to",
+      "assignedToSomeone": "Assigned to a team member",
+      "unassigned": "Unassigned",
+      "organization": "Entity",
+      "organizationGlobal": "Global",
+      "escalated": "Escalated",
+      "escalatedBadge": "Escalated to platform",
+      "assignToMe": "Assign to me",
+      "resolveTitle": "Resolve",
+      "resolutionLabel": "Resolution",
+      "resolutionNoteLabel": "Resolution note",
+      "resolve": "Resolve",
+      "escalateTitle": "Escalate to platform",
+      "escalateNoteLabel": "Note for platform",
+      "escalate": "Escalate"
+    },
+    "guardia": {
+      "heading": "On-call",
+      "noAccessDescription": "Your role doesn't have access to On-call.",
+      "settingsTitle": "On-call settings",
+      "settingsError": "Couldn't load the on-call settings",
+      "settingsErrorDescription": "Couldn't load the entity record.",
+      "helpPhoneLabel": "Help phone number",
+      "onCallHint": "Current on-call person: {onCall}. Setting it requires the id of a person with a role in this entity (`on_call_user`); there's no people finder in the panel yet — see this task's report.",
+      "onCallUnassigned": "unassigned",
+      "saved": "Saved.",
+      "pendingHeading": "Pending alerts",
+      "pendingNoAccessDescription": "You don't have access to the help alerts.",
+      "pendingError": "Couldn't load the alerts",
+      "pendingErrorDescription": "Couldn't load the help alerts.",
+      "pendingLoading": "Loading alerts…",
+      "pendingEmpty": "No pending alerts",
+      "notMember": "Not a member of the entity",
+      "joinedWithoutMembership": "Joined the activity without being a member.",
+      "referent": "Referent: {name}",
+      "noCommunity": "No community",
+      "acknowledged": "Attended to",
+      "acknowledgeAction": "I've contacted them"
+    },
+    "configuracion": {
+      "heading": "Settings",
+      "noAccessDescription": "Your role doesn't have access to Settings.",
+      "dataTitle": "Entity details",
+      "descriptionLabel": "Description",
+      "contactEmailLabel": "Contact email",
+      "contactPhoneLabel": "Contact phone",
+      "websiteLabel": "Website",
+      "primaryColorLabel": "Primary color",
+      "secondaryColorLabel": "Secondary color",
+      "logoAlt": "Entity logo",
+      "logoUploadHint": "Uploading a new logo isn't available in the panel yet: the real contract expects a file (multipart), not a URL — see this task's report.",
+      "saved": "Saved.",
+      "dataLoadError": "Couldn't load the entity record",
+      "dataLoadErrorDescription": "Couldn't load the entity record.",
+      "loading": "Loading…",
+      "teamTitle": "Team",
+      "userIdLabel": "User id",
+      "roleLabel": "Role",
+      "addButton": "Add",
+      "teamLoadError": "Couldn't load the team",
+      "teamEmpty": "No team yet",
+      "teamTableCaption": "Entity team",
+      "colUser": "User",
+      "colRole": "Role",
+      "remove": "Remove",
+      "removeFromTeamTitle": "Remove from team",
+      "removeFromTeamDescription": "Remove “{name}” from the entity's team? They'll lose their role in the panel.",
+      "selfRemovalWarning": "You're about to remove yourself from the team and you'll lose access to the panel.",
+      "referencesTitle": "References",
+      "personIdLabel": "Person (id)",
+      "referentIdLabel": "Referent (id)",
+      "assignButton": "Assign",
+      "referencesLoadError": "Couldn't load the referents",
+      "referencesLoadErrorDescription": "Couldn't load the entity's referents.",
+      "referencesEmpty": "No references yet",
+      "referentLoading": "Referent…",
+      "referentUnavailable": "Referent not available",
+      "referentNoName": "Referent with no name",
+      "referentWithName": "Referent: {name}",
+      "removeReferenceTitle": "Remove reference",
+      "removeReferenceDescription": "Remove the referent for “{name}”? This person will be left without a referent in the entity.",
+      "scopeTitle": "Scope",
+      "scopeTypeLabel": "Type",
+      "scopeTypePlaces": "Municipalities (INE codes)",
+      "scopeTypeComarca": "Comarca",
+      "scopeTypeProvince": "Province",
+      "scopeValuePlacesLabel": "INE codes, comma-separated",
+      "scopeValueCodeLabel": "Code",
+      "expandScope": "Expand scope",
+      "scopeSuccess": "Added {added} municipalities (total scope: {total})."
     }
   },
   "people": {
@@ -580,6 +916,159 @@
       "reject": "Couldn't reject the request.",
       "kick": "Couldn't remove the person.",
       "changeRole": "Couldn't change the role."
+    },
+    "announcements": {
+      "sinAcceso": "You don't have access to this entity's announcements.",
+      "desconocido": "Couldn't load the announcements."
+    },
+    "sendAnnouncement": {
+      "invalido": "Check the details: the audience isn't valid.",
+      "sinPermiso": "Only the owner or moderator can send announcements.",
+      "desconocido": "Couldn't send the announcement."
+    },
+    "surveys": {
+      "sinAcceso": "You don't have access to this entity's surveys.",
+      "desconocido": "Couldn't load the surveys."
+    },
+    "createSurvey": {
+      "invalido": "Check the details: a question isn't valid.",
+      "sinPermiso": "Only the owner or moderator can create surveys.",
+      "desconocido": "Couldn't create the survey."
+    },
+    "surveyResults": {
+      "sinAcceso": "You don't have access to this survey's results.",
+      "noEncontrada": "This survey doesn't exist.",
+      "desconocido": "Couldn't load the results."
+    },
+    "createResource": {
+      "invalido": "Check the details: something isn't valid.",
+      "sinPermiso": "Only the owner or moderator can create resources.",
+      "desconocido": "Couldn't create the resource."
+    },
+    "updateResource": {
+      "invalido": "Check the details: something isn't valid.",
+      "sinPermiso": "Only the owner or moderator can edit resources.",
+      "noEncontrado": "This resource doesn't exist.",
+      "desconocido": "Couldn't save the resource."
+    },
+    "deleteResource": {
+      "sinPermiso": "Only the owner or moderator can delete resources.",
+      "noEncontrado": "This resource doesn't exist.",
+      "desconocido": "Couldn't delete the resource."
+    },
+    "toggleCrossSpace": {
+      "sinPermiso": "Only the owner or moderator can change space separation.",
+      "desconocido": "Couldn't change space separation."
+    },
+    "createFamiliesCommunity": {
+      "invalido": "Check the details: something isn't valid.",
+      "sinPermiso": "Only the owner or moderator can create a families community.",
+      "desconocido": "Couldn't create the families community."
+    },
+    "programMutation": {
+      "invalido": "Check the details: something isn't valid.",
+      "sinPermiso": "Only the owner or moderator can manage programs.",
+      "noEncontrado": "This program doesn't exist.",
+      "conflicto": "This program doesn't allow that action.",
+      "desconocidoCrear": "Couldn't create the program.",
+      "desconocidoGuardar": "Couldn't save the program.",
+      "desconocidoActivar": "Couldn't activate the program.",
+      "desconocidoCerrar": "Couldn't close the program."
+    },
+    "programReport": {
+      "pdfUnavailable": "The PDF report isn't available right now.",
+      "forbidden": "You don't have permission to export reports.",
+      "sesionCaducada": "Your session has expired.",
+      "desconocido": "Couldn't generate the report."
+    },
+    "program": {
+      "sinAcceso": "You don't have access to this program.",
+      "noEncontrado": "This program doesn't exist.",
+      "desconocido": "Couldn't load the program."
+    },
+    "reportsQueue": {
+      "sinAcceso": "You don't have access to the reports queue.",
+      "desconocido": "Couldn't load the reports queue."
+    },
+    "report": {
+      "sinAcceso": "You don't have access to this report.",
+      "noEncontrado": "This report doesn't exist.",
+      "desconocido": "Couldn't load the report."
+    },
+    "reportAction": {
+      "sinPermiso": "You don't have permission to act on this report.",
+      "desconocidoAsignar": "Couldn't assign the report.",
+      "desconocidoResolver": "Couldn't resolve the report.",
+      "desconocidoEscalar": "Couldn't escalate the report."
+    },
+    "acknowledgeHelpRequest": {
+      "sinPermiso": "You don't have permission to attend to this alert.",
+      "desconocido": "Couldn't mark the alert as attended to."
+    },
+    "updateOrganization": {
+      "invalido": "Check the details: something isn't valid.",
+      "sinPermiso": "Only the owner can edit the entity record.",
+      "desconocido": "Couldn't save the entity record."
+    },
+    "addOrgMember": {
+      "invalido": "That person already has a role in this entity, or the role isn't valid.",
+      "sinAcceso": "Only the owner can add people to the team.",
+      "desconocido": "Couldn't add the person."
+    },
+    "removeOrgMember": {
+      "invalido": "Couldn't remove the person from the team.",
+      "sinAcceso": "Only the owner can remove people from the team.",
+      "desconocido": "Couldn't remove the person from the team."
+    },
+    "orgMembers": {
+      "sinAcceso": "Only the owner can view the entity's team.",
+      "desconocido": "Couldn't load the entity's team."
+    },
+    "createOrgReference": {
+      "invalido": "Check the details: that person already has a referent, or the person you're assigning isn't a referent.",
+      "desconocido": "Couldn't assign the referent."
+    },
+    "removeOrgReference": {
+      "invalido": "Couldn't remove the referent.",
+      "desconocido": "Couldn't remove the referent."
+    },
+    "orgScope": {
+      "invalido": "Specify municipalities, comarca or province.",
+      "sinPermiso": "Only the owner can expand the entity's scope.",
+      "desconocido": "Couldn't expand the entity's scope."
+    }
+  },
+  "reports": {
+    "reason": {
+      "harassment": "Harassment",
+      "hate": "Hate",
+      "spam": "Spam",
+      "scam": "Scam",
+      "underage": "Underage",
+      "selfHarmRisk": "Self-harm risk",
+      "drugsSale": "Drug sale",
+      "other": "Other"
+    },
+    "status": {
+      "pending": "Pending",
+      "inReview": "In review",
+      "resolved": "Resolved"
+    },
+    "resolution": {
+      "dismissed": "Dismiss",
+      "warned": "Warn the person",
+      "contentRemoved": "Remove the content",
+      "userSuspended": "Suspend the person (3 months)"
+    }
+  },
+  "programs": {
+    "status": {
+      "draft": "Draft",
+      "active": "Active",
+      "closed": "Closed"
+    },
+    "errors": {
+      "endsOnBeforeStartsOn": "The end date can't be earlier than the start date."
     }
   }
 }

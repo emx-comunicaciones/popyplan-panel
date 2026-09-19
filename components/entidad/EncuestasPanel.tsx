@@ -11,14 +11,16 @@
  */
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { useCreateSurvey } from "@/hooks/useCreateSurvey";
-import { useSurveys } from "@/hooks/useSurveys";
+import { useCreateSurvey, type CreateSurveyErrorKind } from "@/hooks/useCreateSurvey";
+import { useSurveys, type SurveysErrorKind } from "@/hooks/useSurveys";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 import type { Survey, SurveyQuestionInput, SurveyQuestionKind } from "@/lib/api/types";
 
 export interface EncuestasPanelProps {
@@ -27,15 +29,26 @@ export interface EncuestasPanelProps {
   canCreate: boolean;
 }
 
-const QUESTION_KIND_LABELS: Record<SurveyQuestionKind, string> = {
-  stars_1_5: "Estrellas (1-5)",
-  scale_4: "Escala (1-4)",
-  text_short: "Texto corto",
+const QUESTION_KIND_KEYS: Record<SurveyQuestionKind, string> = {
+  stars_1_5: "entidad.encuestas.questionKind.stars",
+  scale_4: "entidad.encuestas.questionKind.scale",
+  text_short: "entidad.encuestas.questionKind.text",
 };
 
-const SURVEY_KIND_LABELS: Record<Survey["kind"], string> = {
-  post_event: "Post-actividad",
-  periodic: "Periódica",
+const SURVEY_KIND_KEYS: Record<Survey["kind"], string> = {
+  post_event: "entidad.encuestas.surveyKind.postEvent",
+  periodic: "entidad.encuestas.surveyKind.periodic",
+};
+
+const SURVEYS_ERROR_KEYS: Record<SurveysErrorKind, string> = {
+  sin_acceso: "errors.surveys.sinAcceso",
+  desconocido: "errors.surveys.desconocido",
+};
+
+const CREATE_SURVEY_ERROR_KEYS: Record<CreateSurveyErrorKind, string> = {
+  invalido: "errors.createSurvey.invalido",
+  sin_permiso: "errors.createSurvey.sinPermiso",
+  desconocido: "errors.createSurvey.desconocido",
 };
 
 export function isSurveyOpen(survey: Pick<Survey, "opens_at" | "closes_at">, now: Date = new Date()): boolean {
@@ -51,6 +64,7 @@ function toIso(localDateTime: string): string | undefined {
 }
 
 function CreateSurveyForm({ orgId }: { orgId: number | string }) {
+  const t = useTranslations();
   const createSurvey = useCreateSurvey(orgId);
   const [title, setTitle] = useState("");
   const [opensAt, setOpensAt] = useState("");
@@ -97,11 +111,11 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
   }
 
   return (
-    <Card title="Nueva encuesta periódica">
+    <Card title={t("entidad.encuestas.newSurveyTitle")}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div>
           <label htmlFor="survey-title" className="mb-1 block text-sm font-medium text-text-form">
-            Título
+            {t("entidad.encuestas.titleLabel")}
           </label>
           <input
             id="survey-title"
@@ -115,7 +129,7 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
         <div className="flex flex-wrap gap-3">
           <div>
             <label htmlFor="survey-opens-at" className="mb-1 block text-sm font-medium text-text-form">
-              Abre el
+              {t("entidad.encuestas.opensAtLabel")}
             </label>
             <input
               id="survey-opens-at"
@@ -127,7 +141,7 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
           </div>
           <div>
             <label htmlFor="survey-closes-at" className="mb-1 block text-sm font-medium text-text-form">
-              Cierra el
+              {t("entidad.encuestas.closesAtLabel")}
             </label>
             <input
               id="survey-closes-at"
@@ -140,7 +154,9 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
         </div>
 
         <fieldset className="flex flex-col gap-3">
-          <legend className="mb-1 text-sm font-medium text-text-form">Preguntas</legend>
+          <legend className="mb-1 text-sm font-medium text-text-form">
+            {t("entidad.encuestas.questionsLegend")}
+          </legend>
           {questions.map((question, index) => (
             <div key={index} className="flex flex-wrap items-end gap-2 rounded-md border border-border-light p-2">
               <div>
@@ -148,7 +164,7 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
                   htmlFor={`survey-question-kind-${index}`}
                   className="mb-1 block text-xs font-medium text-text-form"
                 >
-                  Tipo
+                  {t("entidad.encuestas.questionKindLabel")}
                 </label>
                 <select
                   id={`survey-question-kind-${index}`}
@@ -158,9 +174,9 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
                   }
                   className="rounded-md border border-border px-2 py-1 text-sm focus-visible:outline-primary-700"
                 >
-                  {(Object.keys(QUESTION_KIND_LABELS) as SurveyQuestionKind[]).map((kind) => (
+                  {(Object.keys(QUESTION_KIND_KEYS) as SurveyQuestionKind[]).map((kind) => (
                     <option key={kind} value={kind}>
-                      {QUESTION_KIND_LABELS[kind]}
+                      {t(QUESTION_KIND_KEYS[kind])}
                     </option>
                   ))}
                 </select>
@@ -170,7 +186,7 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
                   htmlFor={`survey-question-text-${index}`}
                   className="mb-1 block text-xs font-medium text-text-form"
                 >
-                  Pregunta
+                  {t("entidad.encuestas.questionTextLabel")}
                 </label>
                 <input
                   id={`survey-question-text-${index}`}
@@ -187,44 +203,57 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
                 onClick={() => removeQuestion(index)}
                 disabled={questions.length === 1}
               >
-                Quitar
+                {t("entidad.encuestas.removeQuestion")}
               </Button>
             </div>
           ))}
           <div>
             <Button type="button" variant="secondary" onClick={addQuestion}>
-              Añadir pregunta
+              {t("entidad.encuestas.addQuestion")}
             </Button>
           </div>
         </fieldset>
 
         <div>
           <Button type="submit" disabled={!canSubmit || createSurvey.isPending}>
-            Crear encuesta
+            {t("entidad.encuestas.createSurvey")}
           </Button>
         </div>
         {createSurvey.isError ? (
           <p role="alert" className="text-sm text-error">
-            {createSurvey.error.message}
+            {errorKindText(
+              createSurvey.error,
+              CREATE_SURVEY_ERROR_KEYS,
+              t,
+              "errors.createSurvey.desconocido",
+            )}
           </p>
         ) : null}
-        {createSurvey.isSuccess ? <p className="text-sm text-success">Encuesta creada.</p> : null}
+        {createSurvey.isSuccess ? (
+          <p className="text-sm text-success">{t("entidad.encuestas.createSuccess")}</p>
+        ) : null}
       </form>
     </Card>
   );
 }
 
 function SurveyList({ orgId, slug }: { orgId: number | string; slug: string }) {
+  const t = useTranslations();
   const surveys = useSurveys(orgId);
 
   if (surveys.isError) {
-    return <ErrorState title="No se pudieron cargar las encuestas" description={surveys.error.message} />;
+    return (
+      <ErrorState
+        title={t("entidad.encuestas.listError")}
+        description={errorKindText(surveys.error, SURVEYS_ERROR_KEYS, t, "errors.surveys.desconocido")}
+      />
+    );
   }
   if (!surveys.data) {
-    return <p className="text-sm text-text-secondary">Cargando encuestas…</p>;
+    return <p className="text-sm text-text-secondary">{t("entidad.encuestas.loading")}</p>;
   }
   if (surveys.data.length === 0) {
-    return <EmptyState title="Sin encuestas todavía" />;
+    return <EmptyState title={t("entidad.encuestas.empty")} />;
   }
 
   return (
@@ -236,12 +265,14 @@ function SurveyList({ orgId, slug }: { orgId: number | string; slug: string }) {
               <div>
                 <p className="font-medium text-text-base">{survey.title}</p>
                 <div className="mt-1 flex flex-wrap gap-2">
-                  <Badge tone="info">{SURVEY_KIND_LABELS[survey.kind]}</Badge>
+                  <Badge tone="info">{t(SURVEY_KIND_KEYS[survey.kind])}</Badge>
                   <Badge tone={isSurveyOpen(survey) ? "success" : "neutral"}>
-                    {isSurveyOpen(survey) ? "Abierta" : "Cerrada"}
+                    {isSurveyOpen(survey)
+                      ? t("entidad.encuestas.open")
+                      : t("entidad.encuestas.closed")}
                   </Badge>
                   <Badge tone="neutral">
-                    {survey.questions.length} {survey.questions.length === 1 ? "pregunta" : "preguntas"}
+                    {t("entidad.encuestas.questionCount", { count: survey.questions.length })}
                   </Badge>
                 </div>
               </div>
@@ -249,7 +280,7 @@ function SurveyList({ orgId, slug }: { orgId: number | string; slug: string }) {
                 href={`/entidad/${slug}/encuestas/${survey.id}`}
                 className="text-sm font-medium text-primary-700 underline-offset-2 hover:underline"
               >
-                Ver resultados
+                {t("entidad.encuestas.viewResults")}
               </Link>
             </div>
           </Card>
@@ -260,12 +291,13 @@ function SurveyList({ orgId, slug }: { orgId: number | string; slug: string }) {
 }
 
 export function EncuestasPanel({ orgId, slug, canCreate }: EncuestasPanelProps) {
+  const t = useTranslations();
   return (
     <div className="flex flex-col gap-6">
       {canCreate ? <CreateSurveyForm orgId={orgId} /> : null}
       <section aria-labelledby="encuestas-heading">
         <h2 id="encuestas-heading" className="mb-2 text-lg font-semibold text-text-base">
-          Encuestas
+          {t("entidad.encuestas.listHeading")}
         </h2>
         <SurveyList orgId={orgId} slug={slug} />
       </section>

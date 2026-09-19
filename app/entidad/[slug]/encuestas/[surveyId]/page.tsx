@@ -31,13 +31,17 @@ export default async function EntidadSurveyResultsPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!entidadMenuFor(membership.role).includes("encuestas")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Encuestas." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("entidad.encuestas.noAccessDescription")} />
+    );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Resultados de la encuesta</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.encuestaResultados.heading")}</h1>
       <SurveyResultsView orgId={membership.organization_id} surveyId={surveyId} />
     </div>
   );

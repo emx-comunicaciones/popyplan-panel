@@ -31,15 +31,19 @@ export default async function EntidadRecursosPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!entidadMenuFor(membership.role).includes("recursos")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Recursos." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("entidad.recursos.noAccessDescription")} />
+    );
   }
 
   const canManage = membership.role === "titular" || membership.role === "moderador";
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Recursos</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.recursos.heading")}</h1>
       <RecursosPanel orgId={membership.organization_id} canManage={canManage} />
     </div>
   );

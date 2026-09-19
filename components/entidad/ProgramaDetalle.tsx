@@ -19,6 +19,7 @@
  * entonces.
  */
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { MetricsTable } from "@/components/metrics/MetricsTable";
 import { SeriesChart } from "@/components/metrics/SeriesChart";
@@ -31,14 +32,21 @@ import { Dialog } from "@/components/ui/Dialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useMetrics } from "@/hooks/useMetrics";
-import { useActivateProgram, useCloseProgram } from "@/hooks/useProgramMutations";
-import { useProgram } from "@/hooks/useProgram";
-import { useProgramReport } from "@/hooks/useProgramReport";
+import {
+  useActivateProgram,
+  useCloseProgram,
+  type ProgramMutationErrorKind,
+} from "@/hooks/useProgramMutations";
+import { useProgram, type ProgramErrorKind } from "@/hooks/useProgram";
+import { useProgramReport, type ProgramReportErrorKind } from "@/hooks/useProgramReport";
 import type { Program, ProgramStatus } from "@/lib/api/types";
+import { errorKindText } from "@/lib/i18n/errorKindText";
+import { localeFor, activeLanguage } from "@/lib/i18n/locale";
 import { formatCount, formatPct } from "@/lib/metrics/format";
 import { formatEuros } from "@/lib/programs/money";
 
 import { ProgramaForm } from "./ProgramaForm";
+import { PROGRAM_STATUS_KEYS } from "./ProgramasPanel";
 
 export interface ProgramaDetalleProps {
   orgId: number | string;
@@ -49,23 +57,47 @@ export interface ProgramaDetalleProps {
   canExport: boolean;
 }
 
-const STATUS_LABELS: Record<ProgramStatus, string> = {
-  draft: "Borrador",
-  active: "En curso",
-  closed: "Cerrado",
-};
-
 const STATUS_TONES: Record<ProgramStatus, BadgeTone> = {
   draft: "neutral",
   active: "success",
   closed: "info",
 };
 
+const PROGRAM_ERROR_KEYS: Record<ProgramErrorKind, string> = {
+  sin_acceso: "errors.program.sinAcceso",
+  no_encontrado: "errors.program.noEncontrado",
+  desconocido: "errors.program.desconocido",
+};
+
+// Mismo criterio que `ProgramaForm.tsx`: solo cambia el «desconocido»
+// según la acción, el resto de mensajes son idénticos venga de activar o
+// de cerrar.
+const ACTIVATE_PROGRAM_ERROR_KEYS: Record<ProgramMutationErrorKind, string> = {
+  invalido: "errors.programMutation.invalido",
+  sin_permiso: "errors.programMutation.sinPermiso",
+  no_encontrado: "errors.programMutation.noEncontrado",
+  conflicto: "errors.programMutation.conflicto",
+  desconocido: "errors.programMutation.desconocidoActivar",
+};
+
+const CLOSE_PROGRAM_ERROR_KEYS: Record<ProgramMutationErrorKind, string> = {
+  ...ACTIVATE_PROGRAM_ERROR_KEYS,
+  desconocido: "errors.programMutation.desconocidoCerrar",
+};
+
+const PROGRAM_REPORT_ERROR_KEYS: Record<ProgramReportErrorKind, string> = {
+  pdf_unavailable: "errors.programReport.pdfUnavailable",
+  forbidden: "errors.programReport.forbidden",
+  sesion_caducada: "errors.programReport.sesionCaducada",
+  desconocido: "errors.programReport.desconocido",
+};
+
 function formatDate(iso: string): string {
-  return new Date(`${iso}T00:00:00`).toLocaleDateString("es-ES");
+  return new Date(`${iso}T00:00:00`).toLocaleDateString(localeFor(activeLanguage()));
 }
 
 function ProgramaMetrics({ orgId, program }: { orgId: number | string; program: Program }) {
+  const t = useTranslations();
   const metrics = useMetrics(
     "entidad",
     orgId,
@@ -76,38 +108,47 @@ function ProgramaMetrics({ orgId, program }: { orgId: number | string; program: 
   return (
     <section aria-labelledby="programa-metricas-heading">
       <h2 id="programa-metricas-heading" className="mb-2 text-lg font-semibold text-text-base">
-        Métricas del periodo
+        {t("entidad.programaFicha.metricsHeading")}
       </h2>
       {metrics.isError ? (
-        <ErrorState title="No se pudieron cargar las métricas" description={metrics.error.message} />
+        <ErrorState
+          title={t("entidad.programaFicha.metricsError")}
+          description={metrics.error.message}
+        />
       ) : !metrics.data ? (
-        <p className="text-sm text-text-secondary">Cargando métricas…</p>
+        <p className="text-sm text-text-secondary">{t("entidad.programaFicha.metricsLoading")}</p>
       ) : (
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <StatCard
-              label="Personas activas"
+              label={t("entidad.programaFicha.activePeople")}
               value={formatCount(metrics.data.people.active, metrics.data.people.suppressed)}
             />
-            <StatCard label="Actividades celebradas" value={formatCount(metrics.data.events.held, false)} />
             <StatCard
-              label="Asistencia"
+              label={t("entidad.programaFicha.heldEvents")}
+              value={formatCount(metrics.data.events.held, false)}
+            />
+            <StatCard
+              label={t("entidad.programaFicha.attendance")}
               value={formatPct(metrics.data.attendance.rate, metrics.data.attendance.suppressed)}
             />
-            <StatCard label="Comunidades activas" value={formatCount(metrics.data.communities.active, false)} />
+            <StatCard
+              label={t("entidad.programaFicha.activeCommunities")}
+              value={formatCount(metrics.data.communities.active, false)}
+            />
           </div>
           {metrics.data.by_place.length > 0 ? (
             <MetricsTable
-              caption="Por municipio"
+              caption={t("entidad.programaFicha.byPlaceCaption")}
               rows={metrics.data.by_place}
-              nameHeader="Municipio"
-              codeHeader="Código INE"
+              nameHeader={t("entidad.programaFicha.byPlaceNameHeader")}
+              codeHeader={t("entidad.programaFicha.byPlaceCodeHeader")}
             />
           ) : null}
           {metrics.data.series.length > 0 ? (
             <SeriesChart data={metrics.data.series} />
           ) : (
-            <EmptyState title="Sin datos en este periodo" />
+            <EmptyState title={t("entidad.programaFicha.noDataInPeriod")} />
           )}
         </div>
       )}
@@ -116,6 +157,7 @@ function ProgramaMetrics({ orgId, program }: { orgId: number | string; program: 
 }
 
 export function ProgramaDetalle({ orgId, programId, canManage, canExport }: ProgramaDetalleProps) {
+  const t = useTranslations();
   const program = useProgram(orgId, programId);
   const activateProgram = useActivateProgram(orgId);
   const closeProgram = useCloseProgram(orgId);
@@ -126,10 +168,15 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
   const [closingNotes, setClosingNotes] = useState("");
 
   if (program.isError) {
-    return <ErrorState title="No se pudo cargar el programa" description={program.error.message} />;
+    return (
+      <ErrorState
+        title={t("entidad.programaFicha.loadError")}
+        description={errorKindText(program.error, PROGRAM_ERROR_KEYS, t, "errors.program.desconocido")}
+      />
+    );
   }
   if (!program.data) {
-    return <p className="text-sm text-text-secondary">Cargando programa…</p>;
+    return <p className="text-sm text-text-secondary">{t("entidad.programaFicha.loading")}</p>;
   }
 
   const data = program.data;
@@ -141,7 +188,7 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-lg font-semibold text-text-base">{data.name}</h2>
-              <Badge tone={STATUS_TONES[data.status]}>{STATUS_LABELS[data.status]}</Badge>
+              <Badge tone={STATUS_TONES[data.status]}>{t(PROGRAM_STATUS_KEYS[data.status])}</Badge>
             </div>
             <p className="mt-1 text-sm text-text-secondary">
               {formatDate(data.starts_on)} – {formatDate(data.ends_on)}
@@ -150,14 +197,16 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
             {data.description ? <p className="mt-2 text-sm text-text-base">{data.description}</p> : null}
             <p className="mt-2 text-base font-semibold text-text-base">{formatEuros(data.budget_cents)}</p>
             {data.status === "closed" && data.closing_notes ? (
-              <p className="mt-2 text-sm text-text-secondary">Notas de cierre: {data.closing_notes}</p>
+              <p className="mt-2 text-sm text-text-secondary">
+                {t("entidad.programaFicha.closingNotes", { notes: data.closing_notes })}
+              </p>
             ) : null}
           </div>
 
           <div className="flex flex-wrap gap-2">
             {canManage && data.status !== "closed" ? (
               <Button type="button" variant="secondary" onClick={() => setEditing(true)}>
-                Editar
+                {t("entidad.programaFicha.edit")}
               </Button>
             ) : null}
             {canManage && data.status === "draft" ? (
@@ -166,7 +215,7 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
                 onClick={() => activateProgram.mutate(data.id)}
                 disabled={activateProgram.isPending}
               >
-                Activar
+                {t("entidad.programaFicha.activate")}
               </Button>
             ) : null}
             {canManage && data.status === "active" ? (
@@ -178,7 +227,7 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
                   setClosing(true);
                 }}
               >
-                Cerrar programa
+                {t("entidad.programaFicha.close")}
               </Button>
             ) : null}
             {canExport ? (
@@ -189,7 +238,7 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
                   onClick={() => programReport.mutate({ orgId, programId, format: "csv" })}
                   disabled={programReport.isPending}
                 >
-                  Descargar informe CSV
+                  {t("entidad.programaFicha.downloadCsv")}
                 </Button>
                 <Button
                   type="button"
@@ -197,7 +246,7 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
                   onClick={() => programReport.mutate({ orgId, programId, format: "pdf" })}
                   disabled={programReport.isPending}
                 >
-                  Descargar informe PDF
+                  {t("entidad.programaFicha.downloadPdf")}
                 </Button>
               </>
             ) : null}
@@ -206,12 +255,22 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
 
         {activateProgram.isError ? (
           <p role="alert" className="mt-2 text-sm text-error">
-            {activateProgram.error.message}
+            {errorKindText(
+              activateProgram.error,
+              ACTIVATE_PROGRAM_ERROR_KEYS,
+              t,
+              "errors.programMutation.desconocidoActivar",
+            )}
           </p>
         ) : null}
         {programReport.isError ? (
           <p role="alert" className="mt-2 text-sm text-error">
-            {programReport.error.message}
+            {errorKindText(
+              programReport.error,
+              PROGRAM_REPORT_ERROR_KEYS,
+              t,
+              "errors.programReport.desconocido",
+            )}
           </p>
         ) : null}
       </Card>
@@ -221,7 +280,7 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
       <Dialog
         open={editing}
         titleId="editar-programa-title"
-        title="Editar programa"
+        title={t("entidad.programaFicha.editDialogTitle")}
         pending={editPending}
         onClose={() => setEditing(false)}
       >
@@ -235,12 +294,12 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
 
       <ConfirmDialog
         open={closing}
-        title="Cerrar programa"
+        title={t("entidad.programaFicha.close")}
         description={
           <div className="flex flex-col gap-2 text-left">
-            <p>Un programa cerrado no se puede volver a editar ni reactivar.</p>
+            <p>{t("entidad.programaFicha.closeWarning")}</p>
             <label htmlFor="programa-closing-notes" className="text-sm font-medium text-text-form">
-              Notas de cierre
+              {t("entidad.programaFicha.closingNotesLabel")}
             </label>
             <textarea
               id="programa-closing-notes"
@@ -254,12 +313,17 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
                 diálogo solo se cierra si el cierre sale bien. */}
             {closeProgram.isError ? (
               <p role="alert" className="text-error">
-                {closeProgram.error.message}
+                {errorKindText(
+                  closeProgram.error,
+                  CLOSE_PROGRAM_ERROR_KEYS,
+                  t,
+                  "errors.programMutation.desconocidoCerrar",
+                )}
               </p>
             ) : null}
           </div>
         }
-        confirmLabel="Cerrar programa"
+        confirmLabel={t("entidad.programaFicha.close")}
         pending={closeProgram.isPending}
         onConfirm={() => {
           closeProgram.mutate(

@@ -24,3 +24,26 @@ nueva de esta tarea):
   calificador entre paréntesis; se ha dejado la traducción literal del
   glosario por ahora, sin inventar un término de dominio nuevo sin que
   el propietario lo revise.
+
+La Tarea 4 anota dos puntos, ninguno de redacción en español:
+
+- **`errors.programReport.sesionCaducada`** (`hooks/useProgramReport.ts`):
+  el hook real construye ese mensaje como
+  `error.message || SESSION_EXPIRED_MESSAGE` (texto potencialmente
+  dinámico de la propia `ApiError`, no siempre la constante fija) —
+  `ProgramaDetalle.tsx` lo traduce igual que el resto de `kind` de ese
+  hook (texto fijo por clave), así que en el caso poco frecuente de que
+  `error.message` traiga algo distinto de
+  `SESSION_EXPIRED_MESSAGE` (`"Tu sesión ha caducado."`), la traducción
+  mostraría la cadena fija del catálogo en vez de ese texto puntual. No
+  se ha añadido un campo `detail` al hook para esta única rama (el resto
+  de `ProgramReportError` no lo necesita) porque el caso real casi
+  siempre coincide con la constante; anotado por si alguien lo revisa al
+  tocar sesión/expiración.
+- **`lib/reports/labels.ts` con cuatro funciones a la vez**
+  (`reasonLabel`/`statusLabel` de texto, `reasonLabelKey`/`statusLabelKey`
+  de clave): no es una redacción pendiente, es una convivencia temporal
+  — `components/plataforma/ReportesQueuePlataforma.tsx` (tarea 5) sigue
+  llamando a las de texto; cuando esa tarea traduzca esa pantalla debe
+  cambiar a las de clave y las dos funciones de texto quedan sin
+  consumidor (borrarlas entonces, no antes).

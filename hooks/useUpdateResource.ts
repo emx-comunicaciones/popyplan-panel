@@ -19,11 +19,13 @@ export type UpdateResourceErrorKind = "invalido" | "sin_permiso" | "no_encontrad
 
 export class UpdateResourceError extends Error {
   readonly kind: UpdateResourceErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: UpdateResourceErrorKind, message: string) {
+  constructor(kind: UpdateResourceErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "UpdateResourceError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -45,9 +47,11 @@ export function useUpdateResource(
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
+          const detail = detailOf(error);
           throw new UpdateResourceError(
             "invalido",
-            detailOf(error) ?? "Revisa los datos: alguno no es válido.",
+            detail ?? "Revisa los datos: alguno no es válido.",
+            detail,
           );
         }
         if (error instanceof ApiError && error.status === 403) {

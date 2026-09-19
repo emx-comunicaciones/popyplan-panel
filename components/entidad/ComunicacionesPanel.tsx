@@ -18,6 +18,7 @@
  * entidad, se queda deshabilitada con la misma pista de siempre.
  */
 import { useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -25,10 +26,12 @@ import { Card } from "@/components/ui/Card";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { useAnnouncements } from "@/hooks/useAnnouncements";
+import { useAnnouncements, type AnnouncementsErrorKind } from "@/hooks/useAnnouncements";
 import { useEntityCommunities } from "@/hooks/useEntityCommunities";
-import { useSendAnnouncement } from "@/hooks/useSendAnnouncement";
-import { SUPPORT_WELCOME_TEMPLATE, applyTemplate } from "@/lib/communications/templates";
+import { useSendAnnouncement, type SendAnnouncementErrorKind } from "@/hooks/useSendAnnouncement";
+import { SUPPORT_WELCOME_TEMPLATE_KEYS, applyTemplate } from "@/lib/communications/templates";
+import { errorKindText } from "@/lib/i18n/errorKindText";
+import { localeFor, activeLanguage } from "@/lib/i18n/locale";
 import type { Announcement, EntityCommunityRow } from "@/lib/api/types";
 
 export interface ComunicacionesPanelProps {
@@ -39,21 +42,42 @@ export interface ComunicacionesPanelProps {
 type AudienceKind = "members" | "community" | "families";
 
 function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
+  return new Date(iso).toLocaleString(localeFor(activeLanguage()), {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
 }
 
-export function describeAudience(audience: string, communities: EntityCommunityRow[]): string {
-  if (audience === "members") return "Todos los miembros";
-  if (audience === "families") return "Familias";
+export function describeAudience(
+  audience: string,
+  communities: EntityCommunityRow[],
+  t: (key: string, values?: Record<string, string>) => string,
+): string {
+  if (audience === "members") return t("entidad.comunicaciones.audienceMembers");
+  if (audience === "families") return t("entidad.comunicaciones.audienceFamilies");
   if (audience.startsWith("community:")) {
     const communityId = audience.slice("community:".length);
     const community = communities.find((c) => c.id === communityId);
-    return community ? `Comunidad: ${community.name}` : "Una comunidad";
+    return community
+      ? t("entidad.comunicaciones.audienceCommunityNamed", { name: community.name })
+      : t("entidad.comunicaciones.audienceCommunity");
   }
   return audience;
 }
 
+const ANNOUNCEMENTS_ERROR_KEYS: Record<AnnouncementsErrorKind, string> = {
+  sin_acceso: "errors.announcements.sinAcceso",
+  desconocido: "errors.announcements.desconocido",
+};
+
+const SEND_ANNOUNCEMENT_ERROR_KEYS: Record<SendAnnouncementErrorKind, string> = {
+  invalido: "errors.sendAnnouncement.invalido",
+  sin_permiso: "errors.sendAnnouncement.sinPermiso",
+  desconocido: "errors.sendAnnouncement.desconocido",
+};
+
 function ComposeForm({ orgId }: { orgId: number | string }) {
+  const t = useTranslations();
   const communities = useEntityCommunities(orgId);
   const sendAnnouncement = useSendAnnouncement(orgId);
   const hasFamilies = (communities.data ?? []).some((community) => community.space === "families");
@@ -81,7 +105,7 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
         ? "families"
         : (`community:${communityId}` as const);
 
-  const audienceLabel = describeAudience(audienceValue, communities.data ?? []);
+  const audienceLabel = describeAudience(audienceValue, communities.data ?? [], t);
   const canSubmit =
     title.trim().length > 0 &&
     body.trim().length > 0 &&
@@ -94,7 +118,11 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
   }
 
   function handleUseTemplateClick() {
-    const result = applyTemplate({ title, body }, SUPPORT_WELCOME_TEMPLATE);
+    const template = {
+      title: t(SUPPORT_WELCOME_TEMPLATE_KEYS.title),
+      body: t(SUPPORT_WELCOME_TEMPLATE_KEYS.body),
+    };
+    const result = applyTemplate({ title, body }, template);
     if (result.overwritten) {
       setPendingTemplate({ title: result.title, body: result.body });
       setTemplateConfirmOpen(true);
@@ -133,11 +161,11 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
   }
 
   return (
-    <Card title="Redactar comunicación">
+    <Card title={t("entidad.comunicaciones.composeTitle")}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div>
           <label htmlFor="comunicacion-title" className="mb-1 block text-sm font-medium text-text-form">
-            Título
+            {t("entidad.comunicaciones.titleLabel")}
           </label>
           <input
             id="comunicacion-title"
@@ -150,7 +178,7 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
         </div>
         <div>
           <label htmlFor="comunicacion-body" className="mb-1 block text-sm font-medium text-text-form">
-            Cuerpo
+            {t("entidad.comunicaciones.bodyLabel")}
           </label>
           <textarea
             id="comunicacion-body"
@@ -164,12 +192,14 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
         {hasFamilies ? (
           <div>
             <Button type="button" variant="secondary" onClick={handleUseTemplateClick}>
-              Usar plantilla: Bienvenida a la red de apoyo
+              {t("entidad.comunicaciones.useTemplate")}
             </Button>
           </div>
         ) : null}
         <fieldset>
-          <legend className="mb-1 text-sm font-medium text-text-form">Audiencia</legend>
+          <legend className="mb-1 text-sm font-medium text-text-form">
+            {t("entidad.comunicaciones.audienceLegend")}
+          </legend>
           <div className="flex flex-col gap-2">
             <label className="flex items-center gap-2 text-sm text-text-base">
               <input
@@ -179,7 +209,7 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
                 checked={audienceKind === "members"}
                 onChange={() => setAudienceKind("members")}
               />
-              Todos los miembros
+              {t("entidad.comunicaciones.audienceMembers")}
             </label>
             <label className="flex items-center gap-2 text-sm text-text-base">
               <input
@@ -189,17 +219,17 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
                 checked={audienceKind === "community"}
                 onChange={() => setAudienceKind("community")}
               />
-              Una comunidad
+              {t("entidad.comunicaciones.audienceCommunity")}
             </label>
             {audienceKind === "community" ? (
               <select
-                aria-label="Comunidad"
+                aria-label={t("entidad.comunicaciones.communitySelectLabel")}
                 value={communityId}
                 onChange={(event) => setCommunityId(event.target.value)}
                 aria-describedby={communities.isError ? "comunicacion-comunidades-error" : undefined}
                 className="ml-6 rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
               >
-                <option value="">Elige una comunidad</option>
+                <option value="">{t("entidad.comunicaciones.communitySelectPlaceholder")}</option>
                 {(communities.data ?? []).map((community) => (
                   <option key={community.id} value={community.id}>
                     {community.name}
@@ -219,7 +249,7 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
                 onChange={() => setAudienceKind("families")}
                 aria-describedby={communities.isError ? "comunicacion-comunidades-error" : undefined}
               />
-              Familias
+              {t("entidad.comunicaciones.audienceFamilies")}
             </label>
             {communities.isError ? (
               // Sin el listado no se puede saber si la entidad tiene
@@ -227,38 +257,42 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
               // El mismo aviso describe los dos controles afectados (el
               // select de comunidad y la opción «Familias»).
               <p id="comunicacion-comunidades-error" role="alert" className="ml-6 text-xs text-error">
-                No se pudieron cargar las comunidades.
+                {t("entidad.comunicaciones.communitiesError")}
               </p>
             ) : !hasFamilies ? (
               <p className="ml-6 text-xs text-text-secondary">
-                Disponible cuando exista el espacio de familias.
+                {t("entidad.comunicaciones.familiesHint")}
               </p>
             ) : null}
           </div>
         </fieldset>
         <div>
           <Button type="submit" disabled={!canSubmit || sendAnnouncement.isPending}>
-            Enviar comunicación
+            {t("entidad.comunicaciones.send")}
           </Button>
         </div>
         {sendAnnouncement.isError ? (
           <p role="alert" className="text-sm text-error">
-            {sendAnnouncement.error.message}
+            {errorKindText(
+              sendAnnouncement.error,
+              SEND_ANNOUNCEMENT_ERROR_KEYS,
+              t,
+              "errors.sendAnnouncement.desconocido",
+            )}
           </p>
         ) : null}
         {lastSent ? (
           <p className="text-sm text-success">
-            Enviada a {lastSent.recipients_count}{" "}
-            {lastSent.recipients_count === 1 ? "persona" : "personas"}.
+            {t("entidad.comunicaciones.sentTo", { count: lastSent.recipients_count })}
           </p>
         ) : null}
       </form>
 
       <ConfirmDialog
         open={confirmOpen}
-        title="Enviar comunicación"
-        description={`¿Enviar esta comunicación a: ${audienceLabel}?`}
-        confirmLabel="Enviar"
+        title={t("entidad.comunicaciones.send")}
+        description={t("entidad.comunicaciones.sendConfirmDescription", { audience: audienceLabel })}
+        confirmLabel={t("entidad.comunicaciones.sendConfirmLabel")}
         pending={sendAnnouncement.isPending}
         onConfirm={handleConfirm}
         onCancel={() => setConfirmOpen(false)}
@@ -266,9 +300,9 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
 
       <ConfirmDialog
         open={templateConfirmOpen}
-        title="Usar la plantilla"
-        description="Se reemplazará el texto actual del título y del cuerpo."
-        confirmLabel="Usar plantilla"
+        title={t("entidad.comunicaciones.templateConfirmTitle")}
+        description={t("entidad.comunicaciones.templateConfirmDescription")}
+        confirmLabel={t("entidad.comunicaciones.templateConfirmLabel")}
         onConfirm={handleConfirmTemplate}
         onCancel={() => {
           setTemplateConfirmOpen(false);
@@ -280,17 +314,28 @@ function ComposeForm({ orgId }: { orgId: number | string }) {
 }
 
 function Historial({ orgId }: { orgId: number | string }) {
+  const t = useTranslations();
   const announcements = useAnnouncements(orgId);
   const communities = useEntityCommunities(orgId);
 
   if (announcements.isError) {
-    return <ErrorState title="No se pudo cargar el historial" description={announcements.error.message} />;
+    return (
+      <ErrorState
+        title={t("entidad.comunicaciones.historyError")}
+        description={errorKindText(
+          announcements.error,
+          ANNOUNCEMENTS_ERROR_KEYS,
+          t,
+          "errors.announcements.desconocido",
+        )}
+      />
+    );
   }
   if (!announcements.data) {
-    return <p className="text-sm text-text-secondary">Cargando comunicaciones…</p>;
+    return <p className="text-sm text-text-secondary">{t("entidad.comunicaciones.historyLoading")}</p>;
   }
   if (announcements.data.length === 0) {
-    return <EmptyState title="Sin comunicaciones todavía" />;
+    return <EmptyState title={t("entidad.comunicaciones.historyEmpty")} />;
   }
 
   return (
@@ -303,11 +348,15 @@ function Historial({ orgId }: { orgId: number | string }) {
                 <p className="font-medium text-text-base">{announcement.title}</p>
                 <p className="mt-1 text-sm text-text-secondary">{announcement.body}</p>
               </div>
-              <Badge tone="info">{describeAudience(announcement.audience, communities.data ?? [])}</Badge>
+              <Badge tone="info">
+                {describeAudience(announcement.audience, communities.data ?? [], t)}
+              </Badge>
             </div>
             <p className="mt-2 text-xs text-text-secondary">
-              Enviada el {formatDateTime(announcement.sent_at)} · {announcement.recipients_count}{" "}
-              {announcement.recipients_count === 1 ? "destinatario" : "destinatarios"}
+              {t("entidad.comunicaciones.sentOn", {
+                date: formatDateTime(announcement.sent_at),
+                count: announcement.recipients_count,
+              })}
             </p>
           </Card>
         </li>
@@ -317,18 +366,17 @@ function Historial({ orgId }: { orgId: number | string }) {
 }
 
 export function ComunicacionesPanel({ orgId, canCompose }: ComunicacionesPanelProps) {
+  const t = useTranslations();
   return (
     <div className="flex flex-col gap-6">
       {canCompose ? (
         <ComposeForm orgId={orgId} />
       ) : (
-        <p className="text-sm text-text-secondary">
-          Solo titular o moderador pueden redactar comunicaciones. Aquí puedes ver el historial.
-        </p>
+        <p className="text-sm text-text-secondary">{t("entidad.comunicaciones.readOnlyNotice")}</p>
       )}
       <section aria-labelledby="historial-heading">
         <h2 id="historial-heading" className="mb-2 text-lg font-semibold text-text-base">
-          Historial
+          {t("entidad.comunicaciones.historyHeading")}
         </h2>
         <Historial orgId={orgId} />
       </section>

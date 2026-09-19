@@ -31,13 +31,17 @@ export default async function EntidadGuardiaPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!entidadMenuFor(membership.role).includes("guardia")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Guardia." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("entidad.guardia.noAccessDescription")} />
+    );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Guardia</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.guardia.heading")}</h1>
       <GuardiaPanel orgId={membership.organization_id} slug={slug} />
     </div>
   );

@@ -10,7 +10,8 @@
     "backHome": "Torna a l'inici",
     "items": "{count, plural, one {# element} other {# elements}}",
     "confirm": "Confirma",
-    "noPhoneNotice": "Popyplan no guarda telèfons: contacta amb la persona pel xat de l'app o a través del seu referent."
+    "noPhoneNotice": "Popyplan no guarda telèfons: contacta amb la persona pel xat de l'app o a través del seu referent.",
+    "actions": "Accions"
   },
   "language": {
     "title": "Idioma",
@@ -447,6 +448,341 @@
       "cancelled": "Cancel·lada",
       "attended": "Ha assistit",
       "noShow": "No ha assistit"
+    },
+    "comunicaciones": {
+      "heading": "Comunicacions",
+      "noAccessDescription": "El teu rol no té accés a Comunicacions.",
+      "composeTitle": "Redactar comunicació",
+      "titleLabel": "Títol",
+      "bodyLabel": "Cos",
+      "useTemplate": "Utilitza la plantilla: Benvinguda a la xarxa de suport",
+      "audienceLegend": "Audiència",
+      "audienceMembers": "Tots els membres",
+      "audienceCommunity": "Una comunitat",
+      "communitySelectLabel": "Comunitat",
+      "communitySelectPlaceholder": "Tria una comunitat",
+      "audienceFamilies": "Famílies",
+      "audienceCommunityNamed": "Comunitat: {name}",
+      "communitiesError": "No s'han pogut carregar les comunitats.",
+      "familiesHint": "Disponible quan existeixi l'espai de famílies.",
+      "send": "Enviar comunicació",
+      "sentTo": "Enviada a {count, plural, one {# persona} other {# persones}}.",
+      "sendConfirmDescription": "Vols enviar aquesta comunicació a: {audience}?",
+      "sendConfirmLabel": "Enviar",
+      "templateConfirmTitle": "Utilitzar la plantilla",
+      "templateConfirmDescription": "Es reemplaçarà el text actual del títol i del cos.",
+      "templateConfirmLabel": "Utilitzar plantilla",
+      "historyError": "No s'ha pogut carregar l'historial",
+      "historyLoading": "Carregant comunicacions…",
+      "historyEmpty": "Encara no hi ha comunicacions",
+      "sentOn": "Enviada el {date} · {count, plural, one {# destinatari} other {# destinataris}}",
+      "readOnlyNotice": "Només el titular o el moderador poden redactar comunicacions. Aquí pots veure l'historial.",
+      "historyHeading": "Historial",
+      "template": {
+        "title": "Benvinguda a la xarxa de suport",
+        "body": "Gràcies per acompanyar algú de la nostra entitat. En aquest espai de famílies trobaràs activitats, formació i recursos pensats per a tu. Recorda: no veuràs les converses, l'activitat privada ni la ubicació de la persona que acompanyes; només allò que ella decideixi compartir amb la seva xarxa. Si necessites parlar amb l'entitat, escriu al seu referent des de l'app."
+      }
+    },
+    "encuestas": {
+      "heading": "Enquestes",
+      "noAccessDescription": "El teu rol no té accés a Enquestes.",
+      "newSurveyTitle": "Nova enquesta periòdica",
+      "titleLabel": "Títol",
+      "opensAtLabel": "Obre el",
+      "closesAtLabel": "Tanca el",
+      "questionsLegend": "Preguntes",
+      "questionKindLabel": "Tipus",
+      "questionTextLabel": "Pregunta",
+      "removeQuestion": "Treure",
+      "addQuestion": "Afegir pregunta",
+      "createSurvey": "Crear enquesta",
+      "createSuccess": "Enquesta creada.",
+      "listError": "No s'han pogut carregar les enquestes",
+      "loading": "Carregant enquestes…",
+      "empty": "Encara no hi ha enquestes",
+      "open": "Oberta",
+      "closed": "Tancada",
+      "questionCount": "{count, plural, one {# pregunta} other {# preguntes}}",
+      "viewResults": "Veure resultats",
+      "listHeading": "Enquestes",
+      "questionKind": {
+        "stars": "Estrelles (1-5)",
+        "scale": "Escala (1-4)",
+        "text": "Text curt"
+      },
+      "surveyKind": {
+        "postEvent": "Post-activitat",
+        "periodic": "Periòdica"
+      }
+    },
+    "encuestaResultados": {
+      "heading": "Resultats de l'enquesta",
+      "anonymityBanner": "Les respostes són anònimes i agregades.",
+      "distributionLabel": "Distribució de respostes",
+      "responsesSeries": "Respostes",
+      "suppressed": "Dades insuficients per mostrar el resultat (menys de 5 respostes).",
+      "noAnswers": "Encara no hi ha respostes.",
+      "mean": "Mitjana:",
+      "loadError": "No s'han pogut carregar els resultats",
+      "loading": "Carregant resultats…",
+      "noQuestions": "Sense preguntes",
+      "responsesTotal": "{count, plural, one {# resposta} other {# respostes}} en total."
+    },
+    "recursos": {
+      "heading": "Recursos",
+      "noAccessDescription": "El teu rol no té accés a Recursos.",
+      "newResource": "Nou recurs",
+      "editResource": "Editar recurs",
+      "titleLabel": "Títol",
+      "categoryLabel": "Categoria",
+      "kindLabel": "Tipus",
+      "bodyLabel": "Text",
+      "urlLabel": "Enllaç",
+      "fileLabel": "Fitxer",
+      "keepCurrentFile": "Deixa-ho buit per conservar el fitxer actual.",
+      "audienceLabel": "Audiència",
+      "communitiesError": "No s'han pogut carregar les comunitats.",
+      "familiesHint": "«Famílies» estarà disponible quan existeixi l'espai de famílies.",
+      "featured": "Destacat",
+      "openLink": "Obrir enllaç",
+      "downloadFile": "Descarregar fitxer",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "loadError": "No s'han pogut carregar els recursos",
+      "loadErrorDescription": "No s'han pogut carregar els recursos.",
+      "loading": "Carregant recursos…",
+      "empty": "Encara no hi ha recursos",
+      "deleteTitle": "Eliminar recurs",
+      "deleteConfirmDescription": "Vols eliminar «{title}»? Aquesta acció no es pot desfer.",
+      "category": {
+        "help": "Ajuda",
+        "training": "Formació",
+        "families": "Famílies",
+        "accompany": "Com acompanyar",
+        "habits": "Hàbits",
+        "activities": "Activitats",
+        "about": "Sobre l'entitat"
+      },
+      "kind": {
+        "text": "Text",
+        "pdf": "PDF",
+        "video": "Vídeo",
+        "audio": "Àudio",
+        "link": "Enllaç",
+        "document": "Document"
+      },
+      "audience": {
+        "members": "Membres",
+        "families": "Famílies",
+        "public": "Públic"
+      },
+      "fileErrors": {
+        "tipoNoPermitido": "Tipus de fitxer no permès. Fes servir un d'aquests: {extensions}.",
+        "demasiadoGrande": "El fitxer supera el límit de {max} MB."
+      }
+    },
+    "familias": {
+      "heading": "Famílies",
+      "noAccessDescription": "El teu rol no té accés a Famílies.",
+      "newCommunityTitle": "Nova comunitat de famílies",
+      "nameLabel": "Nom",
+      "descriptionLabel": "Descripció",
+      "visibilityLabel": "Visibilitat",
+      "visibilityOpen": "Oberta",
+      "visibilityOnRequest": "Amb sol·licitud",
+      "visibilityPrivate": "Privada",
+      "codeOfConductLabel": "Codi de conducta",
+      "createCommunity": "Crear comunitat",
+      "peopleCount": "{count} persones",
+      "crossSpaceOn": "Encreuament d'espais activat",
+      "crossSpaceOff": "Espais separats",
+      "allowCrossSpace": "Permetre l'encreuament d'espais",
+      "toggleConfirmTitle": "Canviar la separació d'espais",
+      "toggleOnDescription": "«{name}» passarà a veure's també des de l'espai de membres de l'entitat (i viceversa), trencant la separació per defecte entre famílies i membres. Vols continuar?",
+      "toggleOffDescription": "«{name}» deixarà de veure's des de l'altre espai: tornarà a la separació per defecte (ningú declara ser familiar de ningú). Vols continuar?",
+      "loadError": "No s'ha pogut carregar l'espai de Famílies",
+      "loadErrorDescription": "No s'ha pogut carregar el resum de Famílies.",
+      "loading": "Carregant l'espai de Famílies…",
+      "banner": "Les comunitats de famílies estan separades de les de membres; ningú declara ser familiar de ningú.",
+      "summaryHeading": "Resum de Famílies",
+      "communitiesCount": "Comunitats de famílies",
+      "people": "Persones",
+      "upcomingEvents": "Properes activitats",
+      "peopleWithSupportNetwork": "Persones amb xarxa de suport",
+      "activeSupporters": "Suports actius",
+      "supportersNotified": "Suports que reben avisos",
+      "missingSupportersNotice": "{count, plural, one {# persona de la xarxa de suport espera que creïs la comunitat de famílies.} other {# persones de la xarxa de suport esperen que creïs la comunitat de famílies.}}",
+      "pendingAutoJoinNotice": "L'alta a la comunitat de famílies es completarà automàticament.",
+      "communitiesHeading": "Comunitats de famílies",
+      "communitiesEmpty": "Encara no hi ha comunitats de famílies",
+      "communitiesEmptyDescription": "Aquesta entitat encara no té cap comunitat marcada com a espai de famílies.",
+      "upcomingEventsHeading": "Properes activitats",
+      "upcomingEventsEmpty": "Sense properes activitats",
+      "viewAllActivities": "Veure totes les activitats",
+      "recentAnnouncementsHeading": "Comunicacions recents",
+      "recentAnnouncementsEmpty": "Encara no hi ha comunicacions per a famílies",
+      "announcementSentOn": "Enviada el {date} · {count, plural, one {# destinatari} other {# destinataris}}",
+      "goToAnnouncements": "Anar a Comunicacions",
+      "recentResourcesHeading": "Recursos recents",
+      "recentResourcesEmpty": "Encara no hi ha recursos per a famílies",
+      "goToResources": "Anar a Recursos"
+    },
+    "programas": {
+      "heading": "Programes",
+      "noAccessDescription": "El teu rol no té accés a Programes.",
+      "loadError": "No s'han pogut carregar els programes",
+      "loadErrorDescription": "No s'han pogut carregar els programes.",
+      "loading": "Carregant programes…",
+      "newProgram": "Nou programa",
+      "empty": "Encara no hi ha programes"
+    },
+    "programaFicha": {
+      "heading": "Fitxa del programa",
+      "nameLabel": "Nom",
+      "funderLabel": "Finançador",
+      "descriptionLabel": "Descripció",
+      "startsOnLabel": "Inici",
+      "endsOnLabel": "Fi",
+      "budgetLabel": "Pressupost (€)",
+      "loadError": "No s'ha pogut carregar el programa",
+      "loading": "Carregant programa…",
+      "closingNotes": "Notes de tancament: {notes}",
+      "edit": "Editar",
+      "activate": "Activar",
+      "close": "Tancar programa",
+      "downloadCsv": "Descarregar informe CSV",
+      "downloadPdf": "Descarregar informe PDF",
+      "editDialogTitle": "Editar programa",
+      "closeWarning": "Un programa tancat no es pot tornar a editar ni reactivar.",
+      "closingNotesLabel": "Notes de tancament",
+      "metricsHeading": "Mètriques del període",
+      "metricsError": "No s'han pogut carregar les mètriques",
+      "metricsLoading": "Carregant mètriques…",
+      "activePeople": "Persones actives",
+      "heldEvents": "Activitats celebrades",
+      "attendance": "Assistència",
+      "activeCommunities": "Comunitats actives",
+      "byPlaceCaption": "Per municipi",
+      "byPlaceNameHeader": "Municipi",
+      "byPlaceCodeHeader": "Codi INE",
+      "noDataInPeriod": "Sense dades en aquest període"
+    },
+    "reportes": {
+      "heading": "Informes",
+      "noAccessDescription": "El teu rol no té accés a Informes.",
+      "statusLabel": "Estat",
+      "statusAll": "Tots",
+      "queueError": "No s'ha pogut carregar la cua d'informes",
+      "loading": "Carregant informes…",
+      "empty": "Sense informes amb aquest filtre",
+      "tableCaption": "Informes de l'entitat",
+      "colReason": "Motiu",
+      "colTarget": "Objectiu",
+      "colStatus": "Estat",
+      "colDate": "Data",
+      "viewDetail": "Veure detall",
+      "count": "{count} informes"
+    },
+    "reporteDetalle": {
+      "heading": "Informe",
+      "noAccessDescription": "No tens accés a aquest informe.",
+      "loadError": "No s'ha pogut carregar l'informe",
+      "loading": "Carregant informe…",
+      "detailTitle": "Detall",
+      "reason": "Motiu",
+      "target": "Objectiu",
+      "description": "Descripció",
+      "status": "Estat",
+      "assignedTo": "Assignat a",
+      "assignedToSomeone": "Assignat a una persona de l'equip",
+      "unassigned": "Sense assignar",
+      "organization": "Entitat",
+      "organizationGlobal": "Global",
+      "escalated": "Escalat",
+      "escalatedBadge": "Escalat a plataforma",
+      "assignToMe": "Assignar-me",
+      "resolveTitle": "Resoldre",
+      "resolutionLabel": "Resolució",
+      "resolutionNoteLabel": "Nota de resolució",
+      "resolve": "Resoldre",
+      "escalateTitle": "Escalar a plataforma",
+      "escalateNoteLabel": "Nota per a plataforma",
+      "escalate": "Escalar"
+    },
+    "guardia": {
+      "heading": "Guàrdia",
+      "noAccessDescription": "El teu rol no té accés a Guàrdia.",
+      "settingsTitle": "Ajustos de guàrdia",
+      "settingsError": "No s'han pogut carregar els ajustos de guàrdia",
+      "settingsErrorDescription": "No s'ha pogut carregar la fitxa de l'entitat.",
+      "helpPhoneLabel": "Telèfon d'ajuda",
+      "onCallHint": "Persona de guàrdia actual: {onCall}. Per fixar-la cal l'id d'una persona amb rol en aquesta entitat (`on_call_user`); encara no hi ha cap cercador de persones al panell — vegeu l'informe d'aquesta tasca.",
+      "onCallUnassigned": "sense assignar",
+      "saved": "Desat.",
+      "pendingHeading": "Avisos pendents",
+      "pendingNoAccessDescription": "No tens accés als avisos d'ajuda.",
+      "pendingError": "No s'han pogut carregar els avisos",
+      "pendingErrorDescription": "No s'han pogut carregar els avisos d'ajuda.",
+      "pendingLoading": "Carregant avisos…",
+      "pendingEmpty": "Sense avisos pendents",
+      "notMember": "No pertany a l'entitat",
+      "joinedWithoutMembership": "Es va apuntar a l'activitat sense ser membre.",
+      "referent": "Referent: {name}",
+      "noCommunity": "Sense comunitat",
+      "acknowledged": "Atès",
+      "acknowledgeAction": "He contactat"
+    },
+    "configuracion": {
+      "heading": "Configuració",
+      "noAccessDescription": "El teu rol no té accés a Configuració.",
+      "dataTitle": "Dades de l'entitat",
+      "descriptionLabel": "Descripció",
+      "contactEmailLabel": "Correu de contacte",
+      "contactPhoneLabel": "Telèfon de contacte",
+      "websiteLabel": "Web",
+      "primaryColorLabel": "Color primari",
+      "secondaryColorLabel": "Color secundari",
+      "logoAlt": "Logotip de l'entitat",
+      "logoUploadHint": "Pujar un logotip nou encara no està disponible al panell: el contracte real espera un fitxer (multipart), no una URL — vegeu l'informe d'aquesta tasca.",
+      "saved": "Desat.",
+      "dataLoadError": "No s'ha pogut carregar la fitxa de l'entitat",
+      "dataLoadErrorDescription": "No s'ha pogut carregar la fitxa de l'entitat.",
+      "loading": "Carregant…",
+      "teamTitle": "Equip",
+      "userIdLabel": "Id d'usuari",
+      "roleLabel": "Rol",
+      "addButton": "Afegir",
+      "teamLoadError": "No s'ha pogut carregar l'equip",
+      "teamEmpty": "Encara no hi ha equip",
+      "teamTableCaption": "Equip de l'entitat",
+      "colUser": "Usuari",
+      "colRole": "Rol",
+      "remove": "Treure",
+      "removeFromTeamTitle": "Treure de l'equip",
+      "removeFromTeamDescription": "Vols treure «{name}» de l'equip de l'entitat? Deixarà de tenir rol al panell.",
+      "selfRemovalWarning": "Estàs a punt de treure't a tu mateix de l'equip i perdràs l'accés al panell.",
+      "referencesTitle": "Referències",
+      "personIdLabel": "Persona (id)",
+      "referentIdLabel": "Referent (id)",
+      "assignButton": "Assignar",
+      "referencesLoadError": "No s'han pogut carregar els referents",
+      "referencesLoadErrorDescription": "No s'han pogut carregar els referents de l'entitat.",
+      "referencesEmpty": "Encara no hi ha referències",
+      "referentLoading": "Referent…",
+      "referentUnavailable": "Referent no disponible",
+      "referentNoName": "Referent sense nom",
+      "referentWithName": "Referent: {name}",
+      "removeReferenceTitle": "Treure referència",
+      "removeReferenceDescription": "Vols treure el referent de «{name}»? Aquesta persona es quedarà sense referent a l'entitat.",
+      "scopeTitle": "Àmbit",
+      "scopeTypeLabel": "Tipus",
+      "scopeTypePlaces": "Municipis (codis INE)",
+      "scopeTypeComarca": "Comarca",
+      "scopeTypeProvince": "Província",
+      "scopeValuePlacesLabel": "Codis INE, separats per comes",
+      "scopeValueCodeLabel": "Codi",
+      "expandScope": "Ampliar àmbit",
+      "scopeSuccess": "Afegits {added} municipis (àmbit total: {total})."
     }
   },
   "people": {
@@ -580,6 +916,159 @@
       "reject": "No s'ha pogut rebutjar la sol·licitud.",
       "kick": "No s'ha pogut expulsar la persona.",
       "changeRole": "No s'ha pogut canviar el rol."
+    },
+    "announcements": {
+      "sinAcceso": "No tens accés a les comunicacions d'aquesta entitat.",
+      "desconocido": "No s'han pogut carregar les comunicacions."
+    },
+    "sendAnnouncement": {
+      "invalido": "Revisa les dades: l'audiència no és vàlida.",
+      "sinPermiso": "Només el titular o el moderador poden enviar comunicacions.",
+      "desconocido": "No s'ha pogut enviar la comunicació."
+    },
+    "surveys": {
+      "sinAcceso": "No tens accés a les enquestes d'aquesta entitat.",
+      "desconocido": "No s'han pogut carregar les enquestes."
+    },
+    "createSurvey": {
+      "invalido": "Revisa les dades: alguna pregunta no és vàlida.",
+      "sinPermiso": "Només el titular o el moderador poden crear enquestes.",
+      "desconocido": "No s'ha pogut crear l'enquesta."
+    },
+    "surveyResults": {
+      "sinAcceso": "No tens accés als resultats d'aquesta enquesta.",
+      "noEncontrada": "Aquesta enquesta no existeix.",
+      "desconocido": "No s'han pogut carregar els resultats."
+    },
+    "createResource": {
+      "invalido": "Revisa les dades: alguna no és vàlida.",
+      "sinPermiso": "Només el titular o el moderador poden crear recursos.",
+      "desconocido": "No s'ha pogut crear el recurs."
+    },
+    "updateResource": {
+      "invalido": "Revisa les dades: alguna no és vàlida.",
+      "sinPermiso": "Només el titular o el moderador poden editar recursos.",
+      "noEncontrado": "Aquest recurs no existeix.",
+      "desconocido": "No s'ha pogut desar el recurs."
+    },
+    "deleteResource": {
+      "sinPermiso": "Només el titular o el moderador poden eliminar recursos.",
+      "noEncontrado": "Aquest recurs no existeix.",
+      "desconocido": "No s'ha pogut eliminar el recurs."
+    },
+    "toggleCrossSpace": {
+      "sinPermiso": "Només el titular o el moderador poden canviar la separació d'espais.",
+      "desconocido": "No s'ha pogut canviar la separació d'espais."
+    },
+    "createFamiliesCommunity": {
+      "invalido": "Revisa les dades: alguna no és vàlida.",
+      "sinPermiso": "Només el titular o el moderador poden crear una comunitat de famílies.",
+      "desconocido": "No s'ha pogut crear la comunitat de famílies."
+    },
+    "programMutation": {
+      "invalido": "Revisa les dades: alguna no és vàlida.",
+      "sinPermiso": "Només el titular o el moderador poden gestionar programes.",
+      "noEncontrado": "Aquest programa no existeix.",
+      "conflicto": "Aquest programa no admet aquesta acció.",
+      "desconocidoCrear": "No s'ha pogut crear el programa.",
+      "desconocidoGuardar": "No s'ha pogut desar el programa.",
+      "desconocidoActivar": "No s'ha pogut activar el programa.",
+      "desconocidoCerrar": "No s'ha pogut tancar el programa."
+    },
+    "programReport": {
+      "pdfUnavailable": "L'informe en PDF no està disponible ara mateix.",
+      "forbidden": "No tens permís per exportar informes.",
+      "sesionCaducada": "La teva sessió ha caducat.",
+      "desconocido": "No s'ha pogut generar l'informe."
+    },
+    "program": {
+      "sinAcceso": "No tens accés a aquest programa.",
+      "noEncontrado": "Aquest programa no existeix.",
+      "desconocido": "No s'ha pogut carregar el programa."
+    },
+    "reportsQueue": {
+      "sinAcceso": "No tens accés a la cua d'informes.",
+      "desconocido": "No s'ha pogut carregar la cua d'informes."
+    },
+    "report": {
+      "sinAcceso": "No tens accés a aquest informe.",
+      "noEncontrado": "Aquest informe no existeix.",
+      "desconocido": "No s'ha pogut carregar l'informe."
+    },
+    "reportAction": {
+      "sinPermiso": "No tens permís per actuar sobre aquest informe.",
+      "desconocidoAsignar": "No s'ha pogut assignar l'informe.",
+      "desconocidoResolver": "No s'ha pogut resoldre l'informe.",
+      "desconocidoEscalar": "No s'ha pogut escalar l'informe."
+    },
+    "acknowledgeHelpRequest": {
+      "sinPermiso": "No tens permís per atendre aquest avís.",
+      "desconocido": "No s'ha pogut marcar l'avís com atès."
+    },
+    "updateOrganization": {
+      "invalido": "Revisa les dades: alguna no és vàlida.",
+      "sinPermiso": "Només el titular pot editar la fitxa de l'entitat.",
+      "desconocido": "No s'ha pogut desar la fitxa de l'entitat."
+    },
+    "addOrgMember": {
+      "invalido": "Aquesta persona ja té un rol en aquesta entitat, o el rol no és vàlid.",
+      "sinAcceso": "Només el titular pot donar d'alta l'equip.",
+      "desconocido": "No s'ha pogut donar d'alta la persona."
+    },
+    "removeOrgMember": {
+      "invalido": "No s'ha pogut treure la persona de l'equip.",
+      "sinAcceso": "Només el titular pot treure de l'equip.",
+      "desconocido": "No s'ha pogut treure la persona de l'equip."
+    },
+    "orgMembers": {
+      "sinAcceso": "Només el titular pot veure l'equip de l'entitat.",
+      "desconocido": "No s'ha pogut carregar l'equip de l'entitat."
+    },
+    "createOrgReference": {
+      "invalido": "Revisa les dades: aquesta persona ja té referent, o qui assignes no és referent.",
+      "desconocido": "No s'ha pogut assignar el referent."
+    },
+    "removeOrgReference": {
+      "invalido": "No s'ha pogut treure el referent.",
+      "desconocido": "No s'ha pogut treure el referent."
+    },
+    "orgScope": {
+      "invalido": "Indica municipis, comarca o província.",
+      "sinPermiso": "Només el titular pot ampliar l'àmbit de l'entitat.",
+      "desconocido": "No s'ha pogut ampliar l'àmbit de l'entitat."
+    }
+  },
+  "reports": {
+    "reason": {
+      "harassment": "Assetjament",
+      "hate": "Odi",
+      "spam": "Spam",
+      "scam": "Estafa",
+      "underage": "Menor d'edat",
+      "selfHarmRisk": "Risc d'autolesió",
+      "drugsSale": "Venda de substàncies",
+      "other": "Altre"
+    },
+    "status": {
+      "pending": "Pendent",
+      "inReview": "En revisió",
+      "resolved": "Resolt"
+    },
+    "resolution": {
+      "dismissed": "Descartar",
+      "warned": "Avisar la persona",
+      "contentRemoved": "Retirar el contingut",
+      "userSuspended": "Suspendre la persona (3 mesos)"
+    }
+  },
+  "programs": {
+    "status": {
+      "draft": "Esborrany",
+      "active": "En curs",
+      "closed": "Tancat"
+    },
+    "errors": {
+      "endsOnBeforeStartsOn": "La data de fi no pot ser anterior a la d'inici."
     }
   }
 }

@@ -248,7 +248,11 @@ describe("EntidadConfiguracionPage", () => {
     useRemoveOrgMemberMock.mockReturnValue({
       ...idleMutation(),
       isError: true,
-      error: new Error("Solo el titular puede quitar del equipo."),
+      error: {
+        message: "Solo el titular puede quitar del equipo.",
+        kind: "sin_acceso",
+        detail: "Solo el titular puede quitar del equipo.",
+      },
     });
     const user = userEvent.setup();
 

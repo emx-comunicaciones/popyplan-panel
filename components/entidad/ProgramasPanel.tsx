@@ -8,6 +8,7 @@
  */
 import Link from "next/link";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -17,6 +18,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { usePrograms } from "@/hooks/usePrograms";
 import type { ProgramStatus } from "@/lib/api/types";
+import { localeFor, activeLanguage } from "@/lib/i18n/locale";
 import { formatEuros } from "@/lib/programs/money";
 
 import { ProgramaForm } from "./ProgramaForm";
@@ -27,10 +29,10 @@ export interface ProgramasPanelProps {
   canManage: boolean;
 }
 
-const STATUS_LABELS: Record<ProgramStatus, string> = {
-  draft: "Borrador",
-  active: "En curso",
-  closed: "Cerrado",
+export const PROGRAM_STATUS_KEYS: Record<ProgramStatus, string> = {
+  draft: "programs.status.draft",
+  active: "programs.status.active",
+  closed: "programs.status.closed",
 };
 
 const STATUS_TONES: Record<ProgramStatus, BadgeTone> = {
@@ -40,21 +42,25 @@ const STATUS_TONES: Record<ProgramStatus, BadgeTone> = {
 };
 
 function formatDate(iso: string): string {
-  return new Date(`${iso}T00:00:00`).toLocaleDateString("es-ES");
+  return new Date(`${iso}T00:00:00`).toLocaleDateString(localeFor(activeLanguage()));
 }
 
 export function ProgramasPanel({ orgId, slug, canManage }: ProgramasPanelProps) {
+  const t = useTranslations();
   const programs = usePrograms(orgId);
   const [creating, setCreating] = useState(false);
   const [createPending, setCreatePending] = useState(false);
 
   if (programs.isError) {
     return (
-      <ErrorState title="No se pudieron cargar los programas" description={programs.error.message} />
+      <ErrorState
+        title={t("entidad.programas.loadError")}
+        description={t("entidad.programas.loadErrorDescription")}
+      />
     );
   }
   if (!programs.data) {
-    return <p className="text-sm text-text-secondary">Cargando programas…</p>;
+    return <p className="text-sm text-text-secondary">{t("entidad.programas.loading")}</p>;
   }
 
   return (
@@ -62,13 +68,13 @@ export function ProgramasPanel({ orgId, slug, canManage }: ProgramasPanelProps) 
       {canManage ? (
         <div>
           <Button type="button" onClick={() => setCreating(true)}>
-            Nuevo programa
+            {t("entidad.programas.newProgram")}
           </Button>
         </div>
       ) : null}
 
       {programs.data.length === 0 ? (
-        <EmptyState title="Sin programas todavía" />
+        <EmptyState title={t("entidad.programas.empty")} />
       ) : (
         <ul className="flex flex-col gap-3">
           {programs.data.map((program) => (
@@ -89,7 +95,7 @@ export function ProgramasPanel({ orgId, slug, canManage }: ProgramasPanelProps) 
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-text-base">{formatEuros(program.budget_cents)}</span>
-                    <Badge tone={STATUS_TONES[program.status]}>{STATUS_LABELS[program.status]}</Badge>
+                    <Badge tone={STATUS_TONES[program.status]}>{t(PROGRAM_STATUS_KEYS[program.status])}</Badge>
                   </div>
                 </div>
               </Card>
@@ -101,7 +107,7 @@ export function ProgramasPanel({ orgId, slug, canManage }: ProgramasPanelProps) 
       <Dialog
         open={creating}
         titleId="nuevo-programa-title"
-        title="Nuevo programa"
+        title={t("entidad.programas.newProgram")}
         pending={createPending}
         onClose={() => setCreating(false)}
       >

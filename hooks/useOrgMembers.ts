@@ -16,10 +16,17 @@ import { detailOf } from "@/lib/api/drfError";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import type { OrgMembershipFull, OrgMembershipRole } from "@/lib/api/types";
 
+export type OrgMembersErrorKind = "invalido" | "sin_acceso" | "desconocido";
+
 export class OrgMembersError extends Error {
-  constructor(message: string) {
+  readonly kind: OrgMembersErrorKind;
+  readonly detail?: string;
+
+  constructor(kind: OrgMembersErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "OrgMembersError";
+    this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -33,9 +40,9 @@ export function useOrgMembers(
         return await apiFetch<OrgMembershipFull[]>(ORGANIZATIONS.MEMBERS(orgId));
       } catch (error) {
         if (error instanceof ApiError && error.status === 403) {
-          throw new OrgMembersError("Solo el titular puede ver el equipo de la entidad.");
+          throw new OrgMembersError("sin_acceso", "Solo el titular puede ver el equipo de la entidad.");
         }
-        throw new OrgMembersError("No se pudo cargar el equipo de la entidad.");
+        throw new OrgMembersError("desconocido", "No se pudo cargar el equipo de la entidad.");
       }
     },
   });
@@ -74,14 +81,17 @@ export function useAddOrgMember(
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
+          const detail = detailOf(error);
           throw new OrgMembersError(
-            detailOf(error) ?? "Esa persona ya tiene un rol en esta entidad, o el rol no es válido.",
+            "invalido",
+            detail ?? "Esa persona ya tiene un rol en esta entidad, o el rol no es válido.",
+            detail,
           );
         }
         if (error instanceof ApiError && error.status === 403) {
-          throw new OrgMembersError("Solo el titular puede dar de alta al equipo.");
+          throw new OrgMembersError("sin_acceso", "Solo el titular puede dar de alta al equipo.");
         }
-        throw new OrgMembersError("No se pudo dar de alta a la persona.");
+        throw new OrgMembersError("desconocido", "No se pudo dar de alta a la persona.");
       }
     },
     onSuccess: () => invalidateMembers(queryClient, orgId),
@@ -104,14 +114,22 @@ export function useRemoveOrgMember(
         // por qué no se puede (p. ej. dejar la entidad sin titular) mejor
         // que el genérico de aquí.
         if (error instanceof ApiError && error.status === 403) {
-          throw new OrgMembersError(detailOf(error) ?? "Solo el titular puede quitar del equipo.");
-        }
-        if (error instanceof ApiError && (error.status === 400 || error.status === 409)) {
+          const detail = detailOf(error);
           throw new OrgMembersError(
-            detailOf(error) ?? "No se pudo quitar a la persona del equipo.",
+            "sin_acceso",
+            detail ?? "Solo el titular puede quitar del equipo.",
+            detail,
           );
         }
-        throw new OrgMembersError("No se pudo quitar a la persona del equipo.");
+        if (error instanceof ApiError && (error.status === 400 || error.status === 409)) {
+          const detail = detailOf(error);
+          throw new OrgMembersError(
+            "invalido",
+            detail ?? "No se pudo quitar a la persona del equipo.",
+            detail,
+          );
+        }
+        throw new OrgMembersError("desconocido", "No se pudo quitar a la persona del equipo.");
       }
     },
     onSuccess: () => {

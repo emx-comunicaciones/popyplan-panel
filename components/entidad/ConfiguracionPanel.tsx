@@ -1,18 +1,64 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { useAddOrgMember, useOrgMembers, useRemoveOrgMember } from "@/hooks/useOrgMembers";
-import { useCreateOrgReference, useOrgReferences, useRemoveOrgReference } from "@/hooks/useOrgReferences";
+import {
+  useAddOrgMember,
+  useOrgMembers,
+  useRemoveOrgMember,
+  type OrgMembersErrorKind,
+} from "@/hooks/useOrgMembers";
+import {
+  useCreateOrgReference,
+  useOrgReferences,
+  useRemoveOrgReference,
+  type OrgReferencesErrorKind,
+} from "@/hooks/useOrgReferences";
 import { useOrganization } from "@/hooks/useOrganization";
-import { useOrgScope } from "@/hooks/useOrgScope";
+import { useOrgScope, type OrgScopeErrorKind } from "@/hooks/useOrgScope";
 import { useUpdateOrganization } from "@/hooks/useUpdateOrganization";
 import type { OrgMembershipFull, OrgMembershipRole, Reference } from "@/lib/api/types";
+import { errorKindText } from "@/lib/i18n/errorKindText";
+
+const ADD_ORG_MEMBER_ERROR_KEYS: Record<OrgMembersErrorKind, string> = {
+  invalido: "errors.addOrgMember.invalido",
+  sin_acceso: "errors.addOrgMember.sinAcceso",
+  desconocido: "errors.addOrgMember.desconocido",
+};
+
+const REMOVE_ORG_MEMBER_ERROR_KEYS: Record<OrgMembersErrorKind, string> = {
+  invalido: "errors.removeOrgMember.invalido",
+  sin_acceso: "errors.removeOrgMember.sinAcceso",
+  desconocido: "errors.removeOrgMember.desconocido",
+};
+
+const ORG_MEMBERS_QUERY_ERROR_KEYS: Record<OrgMembersErrorKind, string> = {
+  invalido: "errors.orgMembers.desconocido",
+  sin_acceso: "errors.orgMembers.sinAcceso",
+  desconocido: "errors.orgMembers.desconocido",
+};
+
+const CREATE_ORG_REFERENCE_ERROR_KEYS: Record<OrgReferencesErrorKind, string> = {
+  invalido: "errors.createOrgReference.invalido",
+  desconocido: "errors.createOrgReference.desconocido",
+};
+
+const REMOVE_ORG_REFERENCE_ERROR_KEYS: Record<OrgReferencesErrorKind, string> = {
+  invalido: "errors.removeOrgReference.invalido",
+  desconocido: "errors.removeOrgReference.desconocido",
+};
+
+const ORG_SCOPE_ERROR_KEYS: Record<OrgScopeErrorKind, string> = {
+  invalido: "errors.orgScope.invalido",
+  sin_permiso: "errors.orgScope.sinPermiso",
+  desconocido: "errors.orgScope.desconocido",
+};
 
 export interface ConfiguracionPanelProps {
   orgId: number | string;
@@ -39,6 +85,7 @@ const ROLE_OPTIONS: OrgMembershipRole[] = [
 ];
 
 function DatosEntidad({ orgId }: { orgId: number | string }) {
+  const t = useTranslations();
   const organization = useOrganization(orgId);
   const updateOrganization = useUpdateOrganization(orgId);
   const [form, setForm] = useState<{
@@ -51,10 +98,15 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
   } | null>(null);
 
   if (organization.isError) {
-    return <ErrorState title="No se pudo cargar la ficha de la entidad" description={organization.error.message} />;
+    return (
+      <ErrorState
+        title={t("entidad.configuracion.dataLoadError")}
+        description={t("entidad.configuracion.dataLoadErrorDescription")}
+      />
+    );
   }
   if (!organization.data) {
-    return <p className="text-sm text-text-secondary">Cargando…</p>;
+    return <p className="text-sm text-text-secondary">{t("entidad.configuracion.loading")}</p>;
   }
 
   const data = form ?? {
@@ -72,11 +124,11 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
   }
 
   return (
-    <Card title="Datos de la entidad">
+    <Card title={t("entidad.configuracion.dataTitle")}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div>
           <label htmlFor="config-description" className="mb-1 block text-sm font-medium text-text-form">
-            Descripción
+            {t("entidad.configuracion.descriptionLabel")}
           </label>
           <textarea
             id="config-description"
@@ -89,7 +141,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
         <div className="flex flex-wrap gap-3">
           <div>
             <label htmlFor="config-email" className="mb-1 block text-sm font-medium text-text-form">
-              Email de contacto
+              {t("entidad.configuracion.contactEmailLabel")}
             </label>
             <input
               id="config-email"
@@ -101,7 +153,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
           </div>
           <div>
             <label htmlFor="config-phone" className="mb-1 block text-sm font-medium text-text-form">
-              Teléfono de contacto
+              {t("entidad.configuracion.contactPhoneLabel")}
             </label>
             <input
               id="config-phone"
@@ -113,7 +165,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
           </div>
           <div>
             <label htmlFor="config-website" className="mb-1 block text-sm font-medium text-text-form">
-              Web
+              {t("entidad.configuracion.websiteLabel")}
             </label>
             <input
               id="config-website"
@@ -127,7 +179,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
         <div className="flex flex-wrap gap-3">
           <div>
             <label htmlFor="config-primary-color" className="mb-1 block text-sm font-medium text-text-form">
-              Color primario
+              {t("entidad.configuracion.primaryColorLabel")}
             </label>
             <input
               id="config-primary-color"
@@ -139,7 +191,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
           </div>
           <div>
             <label htmlFor="config-secondary-color" className="mb-1 block text-sm font-medium text-text-form">
-              Color secundario
+              {t("entidad.configuracion.secondaryColorLabel")}
             </label>
             <input
               id="config-secondary-color"
@@ -152,29 +204,37 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
         </div>
         {organization.data.logo ? (
           // eslint-disable-next-line @next/next/no-img-element -- logo remoto de origen variable, ver Image en el layout
-          <img src={organization.data.logo} alt="Logo de la entidad" className="h-16 w-16 rounded-full object-contain" />
+          <img
+            src={organization.data.logo}
+            alt={t("entidad.configuracion.logoAlt")}
+            className="h-16 w-16 rounded-full object-contain"
+          />
         ) : null}
-        <p className="text-xs text-text-secondary">
-          Subir un logo nuevo todavía no está disponible en el panel: el contrato real espera un fichero
-          (multipart), no una URL — ver el informe de esta tarea.
-        </p>
+        <p className="text-xs text-text-secondary">{t("entidad.configuracion.logoUploadHint")}</p>
         <div>
           <Button type="submit" disabled={updateOrganization.isPending}>
-            Guardar
+            {t("common.save")}
           </Button>
         </div>
         {updateOrganization.isError ? (
           <p role="alert" className="text-sm text-error">
-            {updateOrganization.error.message}
+            {errorKindText(updateOrganization.error, {
+            invalido: "errors.updateOrganization.invalido",
+            sin_permiso: "errors.updateOrganization.sinPermiso",
+            desconocido: "errors.updateOrganization.desconocido",
+          }, t, "errors.updateOrganization.desconocido")}
           </p>
         ) : null}
-        {updateOrganization.isSuccess ? <p className="text-sm text-success">Guardado.</p> : null}
+        {updateOrganization.isSuccess ? (
+          <p className="text-sm text-success">{t("entidad.configuracion.saved")}</p>
+        ) : null}
       </form>
     </Card>
   );
 }
 
 function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserId: number }) {
+  const t = useTranslations();
   const members = useOrgMembers(orgId);
   const addMember = useAddOrgMember(orgId);
   const removeMember = useRemoveOrgMember(orgId);
@@ -191,11 +251,11 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
   }
 
   return (
-    <Card title="Equipo">
+    <Card title={t("entidad.configuracion.teamTitle")}>
       <form onSubmit={handleSubmit} className="mb-4 flex flex-wrap items-end gap-3">
         <div>
           <label htmlFor="equipo-user-id" className="mb-1 block text-sm font-medium text-text-form">
-            Id de usuario
+            {t("entidad.configuracion.userIdLabel")}
           </label>
           <input
             id="equipo-user-id"
@@ -207,7 +267,7 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
         </div>
         <div>
           <label htmlFor="equipo-role" className="mb-1 block text-sm font-medium text-text-form">
-            Rol
+            {t("entidad.configuracion.roleLabel")}
           </label>
           <select
             id="equipo-role"
@@ -223,31 +283,38 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
           </select>
         </div>
         <Button type="submit" disabled={addMember.isPending}>
-          Añadir
+          {t("entidad.configuracion.addButton")}
         </Button>
       </form>
       {addMember.isError ? (
         <p role="alert" className="mb-2 text-sm text-error">
-          {addMember.error.message}
+          {errorKindText(addMember.error, ADD_ORG_MEMBER_ERROR_KEYS, t, "errors.addOrgMember.desconocido")}
         </p>
       ) : null}
 
       {members.isError ? (
-        <ErrorState title="No se pudo cargar el equipo" description={members.error.message} />
+        <ErrorState
+          title={t("entidad.configuracion.teamLoadError")}
+          description={errorKindText(members.error, ORG_MEMBERS_QUERY_ERROR_KEYS, t, "errors.orgMembers.desconocido")}
+        />
       ) : !members.data ? (
-        <p className="text-sm text-text-secondary">Cargando…</p>
+        <p className="text-sm text-text-secondary">{t("entidad.configuracion.loading")}</p>
       ) : members.data.length === 0 ? (
-        <EmptyState title="Sin equipo todavía" />
+        <EmptyState title={t("entidad.configuracion.teamEmpty")} />
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <caption className="sr-only">Equipo de la entidad</caption>
+            <caption className="sr-only">{t("entidad.configuracion.teamTableCaption")}</caption>
             <thead>
               <tr className="border-b border-border text-text-secondary">
-                <th scope="col" className="px-3 py-2 font-semibold">Usuario</th>
-                <th scope="col" className="px-3 py-2 font-semibold">Rol</th>
                 <th scope="col" className="px-3 py-2 font-semibold">
-                  <span className="sr-only">Acciones</span>
+                  {t("entidad.configuracion.colUser")}
+                </th>
+                <th scope="col" className="px-3 py-2 font-semibold">
+                  {t("entidad.configuracion.colRole")}
+                </th>
+                <th scope="col" className="px-3 py-2 font-semibold">
+                  <span className="sr-only">{t("common.actions")}</span>
                 </th>
               </tr>
             </thead>
@@ -265,7 +332,7 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
                         setRemoving(member);
                       }}
                     >
-                      Quitar
+                      {t("entidad.configuracion.remove")}
                     </Button>
                   </td>
                 </tr>
@@ -277,7 +344,7 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
 
       <ConfirmDialog
         open={removing !== null}
-        title="Quitar del equipo"
+        title={t("entidad.configuracion.removeFromTeamTitle")}
         description={
           // Mismo patrón que «Revocar» en `PersonasTable`: el error de la
           // baja se lee dentro del diálogo, que solo se cierra si la
@@ -285,22 +352,20 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
           <div className="flex flex-col gap-2">
             <p>
               {removing
-                ? `¿Quitar a «${removing.public_name}» del equipo de la entidad? Dejará de tener rol en el panel.`
+                ? t("entidad.configuracion.removeFromTeamDescription", { name: removing.public_name })
                 : ""}
             </p>
             {removing && removing.user === currentUserId ? (
-              <p className="font-medium text-text-base">
-                Vas a quitarte a ti mismo del equipo y perderás el acceso al panel.
-              </p>
+              <p className="font-medium text-text-base">{t("entidad.configuracion.selfRemovalWarning")}</p>
             ) : null}
             {removeMember.isError ? (
               <p role="alert" className="text-error">
-                {removeMember.error.message}
+                {errorKindText(removeMember.error, REMOVE_ORG_MEMBER_ERROR_KEYS, t, "errors.removeOrgMember.desconocido")}
               </p>
             ) : null}
           </div>
         }
-        confirmLabel="Quitar"
+        confirmLabel={t("entidad.configuracion.remove")}
         pending={removeMember.isPending}
         onConfirm={() => {
           if (!removing) return;
@@ -332,19 +397,27 @@ function ReferentName({
   orgId: number | string;
   referentUserId: number;
 }) {
+  const t = useTranslations();
   const members = useOrgMembers(orgId);
   // Los tres estados se distinguen: mientras el equipo carga, «sin
   // nombre» sería mentira (todavía puede aparecer), y si la consulta
   // falla, la referencia sí tiene referente pero no se ha podido
   // resolver — que no es lo mismo que no encontrarlo en una lista ya
   // cargada.
-  if (members.isError) return <>Referente no disponible</>;
-  if (!members.data) return <>Referente…</>;
+  if (members.isError) return <>{t("entidad.configuracion.referentUnavailable")}</>;
+  if (!members.data) return <>{t("entidad.configuracion.referentLoading")}</>;
   const member = members.data.find((m) => m.user === referentUserId);
-  return <>{member ? `Referente: ${member.public_name}` : "Referente sin nombre"}</>;
+  return (
+    <>
+      {member
+        ? t("entidad.configuracion.referentWithName", { name: member.public_name })
+        : t("entidad.configuracion.referentNoName")}
+    </>
+  );
 }
 
 function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam: boolean }) {
+  const t = useTranslations();
   const references = useOrgReferences(orgId);
   const createReference = useCreateOrgReference(orgId);
   const removeReference = useRemoveOrgReference(orgId);
@@ -368,11 +441,11 @@ function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam
   }
 
   return (
-    <Card title="Referencias">
+    <Card title={t("entidad.configuracion.referencesTitle")}>
       <form onSubmit={handleSubmit} className="mb-4 flex flex-wrap items-end gap-3">
         <div>
           <label htmlFor="referencia-user-id" className="mb-1 block text-sm font-medium text-text-form">
-            Persona (id)
+            {t("entidad.configuracion.personIdLabel")}
           </label>
           <input
             id="referencia-user-id"
@@ -384,7 +457,7 @@ function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam
         </div>
         <div>
           <label htmlFor="referencia-referent-id" className="mb-1 block text-sm font-medium text-text-form">
-            Referente (id)
+            {t("entidad.configuracion.referentIdLabel")}
           </label>
           <input
             id="referencia-referent-id"
@@ -395,21 +468,24 @@ function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam
           />
         </div>
         <Button type="submit" disabled={createReference.isPending}>
-          Asignar
+          {t("entidad.configuracion.assignButton")}
         </Button>
       </form>
       {createReference.isError ? (
         <p role="alert" className="mb-2 text-sm text-error">
-          {createReference.error.message}
+          {errorKindText(createReference.error, CREATE_ORG_REFERENCE_ERROR_KEYS, t, "errors.createOrgReference.desconocido")}
         </p>
       ) : null}
 
       {references.isError ? (
-        <ErrorState title="No se pudieron cargar los referentes" description={references.error.message} />
+        <ErrorState
+          title={t("entidad.configuracion.referencesLoadError")}
+          description={t("entidad.configuracion.referencesLoadErrorDescription")}
+        />
       ) : !references.data ? (
-        <p className="text-sm text-text-secondary">Cargando…</p>
+        <p className="text-sm text-text-secondary">{t("entidad.configuracion.loading")}</p>
       ) : references.data.length === 0 ? (
-        <EmptyState title="Sin referencias todavía" />
+        <EmptyState title={t("entidad.configuracion.referencesEmpty")} />
       ) : (
         <ul className="flex flex-col gap-2 text-sm">
           {references.data.map((reference) => (
@@ -419,7 +495,7 @@ function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam
                 {canSeeTeam ? (
                   <ReferentName orgId={orgId} referentUserId={reference.referent} />
                 ) : (
-                  "Referente sin nombre"
+                  t("entidad.configuracion.referentNoName")
                 )}
               </span>
               <Button
@@ -430,7 +506,7 @@ function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam
                   setRemoving(reference);
                 }}
               >
-                Quitar
+                {t("entidad.configuracion.remove")}
               </Button>
             </li>
           ))}
@@ -439,22 +515,22 @@ function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam
 
       <ConfirmDialog
         open={removing !== null}
-        title="Quitar referencia"
+        title={t("entidad.configuracion.removeReferenceTitle")}
         description={
           <div className="flex flex-col gap-2">
             <p>
               {removing
-                ? `¿Quitar el referente de «${removing.public_name}»? Esta persona se quedará sin referente en la entidad.`
+                ? t("entidad.configuracion.removeReferenceDescription", { name: removing.public_name })
                 : ""}
             </p>
             {removeReference.isError ? (
               <p role="alert" className="text-error">
-                {removeReference.error.message}
+                {errorKindText(removeReference.error, REMOVE_ORG_REFERENCE_ERROR_KEYS, t, "errors.removeOrgReference.desconocido")}
               </p>
             ) : null}
           </div>
         }
-        confirmLabel="Quitar"
+        confirmLabel={t("entidad.configuracion.remove")}
         pending={removeReference.isPending}
         onConfirm={() => {
           if (!removing) return;
@@ -470,6 +546,7 @@ function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam
 }
 
 function Ambito({ orgId }: { orgId: number | string }) {
+  const t = useTranslations();
   const scope = useOrgScope(orgId);
   const [kind, setKind] = useState<"places" | "comarca" | "province">("places");
   const [value, setValue] = useState("");
@@ -487,11 +564,11 @@ function Ambito({ orgId }: { orgId: number | string }) {
   }
 
   return (
-    <Card title="Ámbito">
+    <Card title={t("entidad.configuracion.scopeTitle")}>
       <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
         <div>
           <label htmlFor="ambito-kind" className="mb-1 block text-sm font-medium text-text-form">
-            Tipo
+            {t("entidad.configuracion.scopeTypeLabel")}
           </label>
           <select
             id="ambito-kind"
@@ -499,14 +576,16 @@ function Ambito({ orgId }: { orgId: number | string }) {
             onChange={(event) => setKind(event.target.value as typeof kind)}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
-            <option value="places">Municipios (códigos INE)</option>
-            <option value="comarca">Comarca</option>
-            <option value="province">Provincia</option>
+            <option value="places">{t("entidad.configuracion.scopeTypePlaces")}</option>
+            <option value="comarca">{t("entidad.configuracion.scopeTypeComarca")}</option>
+            <option value="province">{t("entidad.configuracion.scopeTypeProvince")}</option>
           </select>
         </div>
         <div>
           <label htmlFor="ambito-value" className="mb-1 block text-sm font-medium text-text-form">
-            {kind === "places" ? "Códigos INE, separados por coma" : "Código"}
+            {kind === "places"
+              ? t("entidad.configuracion.scopeValuePlacesLabel")
+              : t("entidad.configuracion.scopeValueCodeLabel")}
           </label>
           <input
             id="ambito-value"
@@ -517,17 +596,17 @@ function Ambito({ orgId }: { orgId: number | string }) {
           />
         </div>
         <Button type="submit" disabled={scope.isPending}>
-          Ampliar ámbito
+          {t("entidad.configuracion.expandScope")}
         </Button>
       </form>
       {scope.isError ? (
         <p role="alert" className="mt-2 text-sm text-error">
-          {scope.error.message}
+          {errorKindText(scope.error, ORG_SCOPE_ERROR_KEYS, t, "errors.orgScope.desconocido")}
         </p>
       ) : null}
       {scope.isSuccess ? (
         <p className="mt-2 text-sm text-success">
-          Añadidos {scope.data.added} municipios (ámbito total: {scope.data.total}).
+          {t("entidad.configuracion.scopeSuccess", { added: scope.data.added, total: scope.data.total })}
         </p>
       ) : null}
     </Card>

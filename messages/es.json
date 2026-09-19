@@ -10,7 +10,8 @@
     "backHome": "Volver al inicio",
     "items": "{count, plural, one {# elemento} other {# elementos}}",
     "confirm": "Confirmar",
-    "noPhoneNotice": "Popyplan no guarda teléfonos: contacta con la persona por el chat de la app o a través de su referente."
+    "noPhoneNotice": "Popyplan no guarda teléfonos: contacta con la persona por el chat de la app o a través de su referente.",
+    "actions": "Acciones"
   },
   "language": {
     "title": "Idioma",
@@ -447,6 +448,341 @@
       "cancelled": "Cancelada",
       "attended": "Asistió",
       "noShow": "No asistió"
+    },
+    "comunicaciones": {
+      "heading": "Comunicaciones",
+      "noAccessDescription": "Tu rol no tiene acceso a Comunicaciones.",
+      "composeTitle": "Redactar comunicación",
+      "titleLabel": "Título",
+      "bodyLabel": "Cuerpo",
+      "useTemplate": "Usar plantilla: Bienvenida a la red de apoyo",
+      "audienceLegend": "Audiencia",
+      "audienceMembers": "Todos los miembros",
+      "audienceCommunity": "Una comunidad",
+      "communitySelectLabel": "Comunidad",
+      "communitySelectPlaceholder": "Elige una comunidad",
+      "audienceFamilies": "Familias",
+      "audienceCommunityNamed": "Comunidad: {name}",
+      "communitiesError": "No se pudieron cargar las comunidades.",
+      "familiesHint": "Disponible cuando exista el espacio de familias.",
+      "send": "Enviar comunicación",
+      "sentTo": "Enviada a {count, plural, one {# persona} other {# personas}}.",
+      "sendConfirmDescription": "¿Enviar esta comunicación a: {audience}?",
+      "sendConfirmLabel": "Enviar",
+      "templateConfirmTitle": "Usar la plantilla",
+      "templateConfirmDescription": "Se reemplazará el texto actual del título y del cuerpo.",
+      "templateConfirmLabel": "Usar plantilla",
+      "historyError": "No se pudo cargar el historial",
+      "historyLoading": "Cargando comunicaciones…",
+      "historyEmpty": "Sin comunicaciones todavía",
+      "sentOn": "Enviada el {date} · {count, plural, one {# destinatario} other {# destinatarios}}",
+      "readOnlyNotice": "Solo titular o moderador pueden redactar comunicaciones. Aquí puedes ver el historial.",
+      "historyHeading": "Historial",
+      "template": {
+        "title": "Bienvenida a la red de apoyo",
+        "body": "Gracias por acompañar a alguien de nuestra entidad. En este espacio de familias encontrarás actividades, formación y recursos pensados para ti. Recuerda: no verás las conversaciones, la actividad privada ni la ubicación de la persona a la que acompañas; solo lo que ella decida compartir con su red. Si necesitas hablar con la entidad, escribe a su referente desde la app."
+      }
+    },
+    "encuestas": {
+      "heading": "Encuestas",
+      "noAccessDescription": "Tu rol no tiene acceso a Encuestas.",
+      "newSurveyTitle": "Nueva encuesta periódica",
+      "titleLabel": "Título",
+      "opensAtLabel": "Abre el",
+      "closesAtLabel": "Cierra el",
+      "questionsLegend": "Preguntas",
+      "questionKindLabel": "Tipo",
+      "questionTextLabel": "Pregunta",
+      "removeQuestion": "Quitar",
+      "addQuestion": "Añadir pregunta",
+      "createSurvey": "Crear encuesta",
+      "createSuccess": "Encuesta creada.",
+      "listError": "No se pudieron cargar las encuestas",
+      "loading": "Cargando encuestas…",
+      "empty": "Sin encuestas todavía",
+      "open": "Abierta",
+      "closed": "Cerrada",
+      "questionCount": "{count, plural, one {# pregunta} other {# preguntas}}",
+      "viewResults": "Ver resultados",
+      "listHeading": "Encuestas",
+      "questionKind": {
+        "stars": "Estrellas (1-5)",
+        "scale": "Escala (1-4)",
+        "text": "Texto corto"
+      },
+      "surveyKind": {
+        "postEvent": "Post-actividad",
+        "periodic": "Periódica"
+      }
+    },
+    "encuestaResultados": {
+      "heading": "Resultados de la encuesta",
+      "anonymityBanner": "Las respuestas son anónimas y agregadas.",
+      "distributionLabel": "Distribución de respuestas",
+      "responsesSeries": "Respuestas",
+      "suppressed": "Datos insuficientes para mostrar el resultado (menos de 5 respuestas).",
+      "noAnswers": "Sin respuestas todavía.",
+      "mean": "Media:",
+      "loadError": "No se pudieron cargar los resultados",
+      "loading": "Cargando resultados…",
+      "noQuestions": "Sin preguntas",
+      "responsesTotal": "{count, plural, one {# respuesta} other {# respuestas}} en total."
+    },
+    "recursos": {
+      "heading": "Recursos",
+      "noAccessDescription": "Tu rol no tiene acceso a Recursos.",
+      "newResource": "Nuevo recurso",
+      "editResource": "Editar recurso",
+      "titleLabel": "Título",
+      "categoryLabel": "Categoría",
+      "kindLabel": "Tipo",
+      "bodyLabel": "Texto",
+      "urlLabel": "Enlace",
+      "fileLabel": "Fichero",
+      "keepCurrentFile": "Deja vacío para conservar el fichero actual.",
+      "audienceLabel": "Audiencia",
+      "communitiesError": "No se pudieron cargar las comunidades.",
+      "familiesHint": "«Familias» estará disponible cuando exista el espacio de familias.",
+      "featured": "Destacado",
+      "openLink": "Abrir enlace",
+      "downloadFile": "Descargar fichero",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "loadError": "No se pudieron cargar los recursos",
+      "loadErrorDescription": "No se pudieron cargar los recursos.",
+      "loading": "Cargando recursos…",
+      "empty": "Sin recursos todavía",
+      "deleteTitle": "Eliminar recurso",
+      "deleteConfirmDescription": "¿Eliminar «{title}»? Esta acción no se puede deshacer.",
+      "category": {
+        "help": "Ayuda",
+        "training": "Formación",
+        "families": "Familias",
+        "accompany": "Cómo acompañar",
+        "habits": "Hábitos",
+        "activities": "Actividades",
+        "about": "Sobre la entidad"
+      },
+      "kind": {
+        "text": "Texto",
+        "pdf": "PDF",
+        "video": "Vídeo",
+        "audio": "Audio",
+        "link": "Enlace",
+        "document": "Documento"
+      },
+      "audience": {
+        "members": "Miembros",
+        "families": "Familias",
+        "public": "Público"
+      },
+      "fileErrors": {
+        "tipoNoPermitido": "Tipo de fichero no permitido. Usa uno de: {extensions}.",
+        "demasiadoGrande": "El fichero supera el límite de {max} MB."
+      }
+    },
+    "familias": {
+      "heading": "Familias",
+      "noAccessDescription": "Tu rol no tiene acceso a Familias.",
+      "newCommunityTitle": "Nueva comunidad de familias",
+      "nameLabel": "Nombre",
+      "descriptionLabel": "Descripción",
+      "visibilityLabel": "Visibilidad",
+      "visibilityOpen": "Abierta",
+      "visibilityOnRequest": "Con solicitud",
+      "visibilityPrivate": "Privada",
+      "codeOfConductLabel": "Código de conducta",
+      "createCommunity": "Crear comunidad",
+      "peopleCount": "{count} personas",
+      "crossSpaceOn": "Cruce de espacios activado",
+      "crossSpaceOff": "Espacios separados",
+      "allowCrossSpace": "Permitir cruce de espacios",
+      "toggleConfirmTitle": "Cambiar la separación de espacios",
+      "toggleOnDescription": "«{name}» pasará a verse también desde el espacio de miembros de la entidad (y viceversa), rompiendo la separación por defecto entre familias y miembros. ¿Continuar?",
+      "toggleOffDescription": "«{name}» dejará de verse desde el otro espacio: volverá a la separación por defecto (nadie declara ser familiar de nadie). ¿Continuar?",
+      "loadError": "No se pudo cargar el espacio de Familias",
+      "loadErrorDescription": "No se pudo cargar el resumen de Familias.",
+      "loading": "Cargando el espacio de Familias…",
+      "banner": "Las comunidades de familias están separadas de las de miembros; nadie declara ser familiar de nadie.",
+      "summaryHeading": "Resumen de Familias",
+      "communitiesCount": "Comunidades de familias",
+      "people": "Personas",
+      "upcomingEvents": "Próximas actividades",
+      "peopleWithSupportNetwork": "Personas con red de apoyo",
+      "activeSupporters": "Apoyos activos",
+      "supportersNotified": "Apoyos que reciben avisos",
+      "missingSupportersNotice": "{count, plural, one {# persona de la red de apoyo espera a que crees la comunidad de familias.} other {# personas de la red de apoyo esperan a que crees la comunidad de familias.}}",
+      "pendingAutoJoinNotice": "El alta en la comunidad de familias se completará automáticamente.",
+      "communitiesHeading": "Comunidades de familias",
+      "communitiesEmpty": "Sin comunidades de familias todavía",
+      "communitiesEmptyDescription": "Esta entidad todavía no tiene ninguna comunidad marcada como espacio de familias.",
+      "upcomingEventsHeading": "Próximas actividades",
+      "upcomingEventsEmpty": "Sin actividades próximas",
+      "viewAllActivities": "Ver todas las actividades",
+      "recentAnnouncementsHeading": "Comunicaciones recientes",
+      "recentAnnouncementsEmpty": "Sin comunicaciones para familias todavía",
+      "announcementSentOn": "Enviada el {date} · {count, plural, one {# destinatario} other {# destinatarios}}",
+      "goToAnnouncements": "Ir a Comunicaciones",
+      "recentResourcesHeading": "Recursos recientes",
+      "recentResourcesEmpty": "Sin recursos para familias todavía",
+      "goToResources": "Ir a Recursos"
+    },
+    "programas": {
+      "heading": "Programas",
+      "noAccessDescription": "Tu rol no tiene acceso a Programas.",
+      "loadError": "No se pudieron cargar los programas",
+      "loadErrorDescription": "No se pudieron cargar los programas.",
+      "loading": "Cargando programas…",
+      "newProgram": "Nuevo programa",
+      "empty": "Sin programas todavía"
+    },
+    "programaFicha": {
+      "heading": "Ficha del programa",
+      "nameLabel": "Nombre",
+      "funderLabel": "Financiador",
+      "descriptionLabel": "Descripción",
+      "startsOnLabel": "Inicio",
+      "endsOnLabel": "Fin",
+      "budgetLabel": "Presupuesto (€)",
+      "loadError": "No se pudo cargar el programa",
+      "loading": "Cargando programa…",
+      "closingNotes": "Notas de cierre: {notes}",
+      "edit": "Editar",
+      "activate": "Activar",
+      "close": "Cerrar programa",
+      "downloadCsv": "Descargar informe CSV",
+      "downloadPdf": "Descargar informe PDF",
+      "editDialogTitle": "Editar programa",
+      "closeWarning": "Un programa cerrado no se puede volver a editar ni reactivar.",
+      "closingNotesLabel": "Notas de cierre",
+      "metricsHeading": "Métricas del periodo",
+      "metricsError": "No se pudieron cargar las métricas",
+      "metricsLoading": "Cargando métricas…",
+      "activePeople": "Personas activas",
+      "heldEvents": "Actividades celebradas",
+      "attendance": "Asistencia",
+      "activeCommunities": "Comunidades activas",
+      "byPlaceCaption": "Por municipio",
+      "byPlaceNameHeader": "Municipio",
+      "byPlaceCodeHeader": "Código INE",
+      "noDataInPeriod": "Sin datos en este periodo"
+    },
+    "reportes": {
+      "heading": "Reportes",
+      "noAccessDescription": "Tu rol no tiene acceso a Reportes.",
+      "statusLabel": "Estado",
+      "statusAll": "Todos",
+      "queueError": "No se pudo cargar la cola de reportes",
+      "loading": "Cargando reportes…",
+      "empty": "Sin reportes con este filtro",
+      "tableCaption": "Reportes de la entidad",
+      "colReason": "Motivo",
+      "colTarget": "Objetivo",
+      "colStatus": "Estado",
+      "colDate": "Fecha",
+      "viewDetail": "Ver detalle",
+      "count": "{count} reportes"
+    },
+    "reporteDetalle": {
+      "heading": "Reporte",
+      "noAccessDescription": "No tienes acceso a este reporte.",
+      "loadError": "No se pudo cargar el reporte",
+      "loading": "Cargando reporte…",
+      "detailTitle": "Detalle",
+      "reason": "Motivo",
+      "target": "Objetivo",
+      "description": "Descripción",
+      "status": "Estado",
+      "assignedTo": "Asignado a",
+      "assignedToSomeone": "Asignado a una persona del equipo",
+      "unassigned": "Sin asignar",
+      "organization": "Entidad",
+      "organizationGlobal": "Global",
+      "escalated": "Escalado",
+      "escalatedBadge": "Escalado a plataforma",
+      "assignToMe": "Asignarme",
+      "resolveTitle": "Resolver",
+      "resolutionLabel": "Resolución",
+      "resolutionNoteLabel": "Nota de resolución",
+      "resolve": "Resolver",
+      "escalateTitle": "Escalar a plataforma",
+      "escalateNoteLabel": "Nota para plataforma",
+      "escalate": "Escalar"
+    },
+    "guardia": {
+      "heading": "Guardia",
+      "noAccessDescription": "Tu rol no tiene acceso a Guardia.",
+      "settingsTitle": "Ajustes de guardia",
+      "settingsError": "No se pudieron cargar los ajustes de guardia",
+      "settingsErrorDescription": "No se pudo cargar la ficha de la entidad.",
+      "helpPhoneLabel": "Teléfono de ayuda",
+      "onCallHint": "Persona de guardia actual: {onCall}. Fijarla exige el id de una persona con rol en esta entidad (`on_call_user`); todavía no hay un buscador de personas en el panel — ver el informe de esta tarea.",
+      "onCallUnassigned": "sin asignar",
+      "saved": "Guardado.",
+      "pendingHeading": "Avisos pendientes",
+      "pendingNoAccessDescription": "No tienes acceso a los avisos de ayuda.",
+      "pendingError": "No se pudieron cargar los avisos",
+      "pendingErrorDescription": "No se pudieron cargar los avisos de ayuda.",
+      "pendingLoading": "Cargando avisos…",
+      "pendingEmpty": "Sin avisos pendientes",
+      "notMember": "No pertenece a la entidad",
+      "joinedWithoutMembership": "Se apuntó a la actividad sin ser miembro.",
+      "referent": "Referente: {name}",
+      "noCommunity": "Sin comunidad",
+      "acknowledged": "Atendido",
+      "acknowledgeAction": "He contactado"
+    },
+    "configuracion": {
+      "heading": "Configuración",
+      "noAccessDescription": "Tu rol no tiene acceso a Configuración.",
+      "dataTitle": "Datos de la entidad",
+      "descriptionLabel": "Descripción",
+      "contactEmailLabel": "Email de contacto",
+      "contactPhoneLabel": "Teléfono de contacto",
+      "websiteLabel": "Web",
+      "primaryColorLabel": "Color primario",
+      "secondaryColorLabel": "Color secundario",
+      "logoAlt": "Logo de la entidad",
+      "logoUploadHint": "Subir un logo nuevo todavía no está disponible en el panel: el contrato real espera un fichero (multipart), no una URL — ver el informe de esta tarea.",
+      "saved": "Guardado.",
+      "dataLoadError": "No se pudo cargar la ficha de la entidad",
+      "dataLoadErrorDescription": "No se pudo cargar la ficha de la entidad.",
+      "loading": "Cargando…",
+      "teamTitle": "Equipo",
+      "userIdLabel": "Id de usuario",
+      "roleLabel": "Rol",
+      "addButton": "Añadir",
+      "teamLoadError": "No se pudo cargar el equipo",
+      "teamEmpty": "Sin equipo todavía",
+      "teamTableCaption": "Equipo de la entidad",
+      "colUser": "Usuario",
+      "colRole": "Rol",
+      "remove": "Quitar",
+      "removeFromTeamTitle": "Quitar del equipo",
+      "removeFromTeamDescription": "¿Quitar a «{name}» del equipo de la entidad? Dejará de tener rol en el panel.",
+      "selfRemovalWarning": "Vas a quitarte a ti mismo del equipo y perderás el acceso al panel.",
+      "referencesTitle": "Referencias",
+      "personIdLabel": "Persona (id)",
+      "referentIdLabel": "Referente (id)",
+      "assignButton": "Asignar",
+      "referencesLoadError": "No se pudieron cargar los referentes",
+      "referencesLoadErrorDescription": "No se pudieron cargar los referentes de la entidad.",
+      "referencesEmpty": "Sin referencias todavía",
+      "referentLoading": "Referente…",
+      "referentUnavailable": "Referente no disponible",
+      "referentNoName": "Referente sin nombre",
+      "referentWithName": "Referente: {name}",
+      "removeReferenceTitle": "Quitar referencia",
+      "removeReferenceDescription": "¿Quitar el referente de «{name}»? Esta persona se quedará sin referente en la entidad.",
+      "scopeTitle": "Ámbito",
+      "scopeTypeLabel": "Tipo",
+      "scopeTypePlaces": "Municipios (códigos INE)",
+      "scopeTypeComarca": "Comarca",
+      "scopeTypeProvince": "Provincia",
+      "scopeValuePlacesLabel": "Códigos INE, separados por coma",
+      "scopeValueCodeLabel": "Código",
+      "expandScope": "Ampliar ámbito",
+      "scopeSuccess": "Añadidos {added} municipios (ámbito total: {total})."
     }
   },
   "people": {
@@ -580,6 +916,159 @@
       "reject": "No se pudo rechazar la solicitud.",
       "kick": "No se pudo expulsar a la persona.",
       "changeRole": "No se pudo cambiar el rol."
+    },
+    "announcements": {
+      "sinAcceso": "No tienes acceso a las comunicaciones de esta entidad.",
+      "desconocido": "No se pudieron cargar las comunicaciones."
+    },
+    "sendAnnouncement": {
+      "invalido": "Revisa los datos: la audiencia no es válida.",
+      "sinPermiso": "Solo titular o moderador pueden enviar comunicaciones.",
+      "desconocido": "No se pudo enviar la comunicación."
+    },
+    "surveys": {
+      "sinAcceso": "No tienes acceso a las encuestas de esta entidad.",
+      "desconocido": "No se pudieron cargar las encuestas."
+    },
+    "createSurvey": {
+      "invalido": "Revisa los datos: alguna pregunta no es válida.",
+      "sinPermiso": "Solo titular o moderador pueden crear encuestas.",
+      "desconocido": "No se pudo crear la encuesta."
+    },
+    "surveyResults": {
+      "sinAcceso": "No tienes acceso a los resultados de esta encuesta.",
+      "noEncontrada": "Esta encuesta no existe.",
+      "desconocido": "No se pudieron cargar los resultados."
+    },
+    "createResource": {
+      "invalido": "Revisa los datos: alguno no es válido.",
+      "sinPermiso": "Solo titular o moderador pueden crear recursos.",
+      "desconocido": "No se pudo crear el recurso."
+    },
+    "updateResource": {
+      "invalido": "Revisa los datos: alguno no es válido.",
+      "sinPermiso": "Solo titular o moderador pueden editar recursos.",
+      "noEncontrado": "Este recurso no existe.",
+      "desconocido": "No se pudo guardar el recurso."
+    },
+    "deleteResource": {
+      "sinPermiso": "Solo titular o moderador pueden eliminar recursos.",
+      "noEncontrado": "Este recurso no existe.",
+      "desconocido": "No se pudo eliminar el recurso."
+    },
+    "toggleCrossSpace": {
+      "sinPermiso": "Solo titular o moderador pueden cambiar la separación de espacios.",
+      "desconocido": "No se pudo cambiar la separación de espacios."
+    },
+    "createFamiliesCommunity": {
+      "invalido": "Revisa los datos: alguno no es válido.",
+      "sinPermiso": "Solo titular o moderador pueden crear una comunidad de familias.",
+      "desconocido": "No se pudo crear la comunidad de familias."
+    },
+    "programMutation": {
+      "invalido": "Revisa los datos: alguno no es válido.",
+      "sinPermiso": "Solo titular o moderador pueden gestionar programas.",
+      "noEncontrado": "Este programa no existe.",
+      "conflicto": "Este programa no admite esa acción.",
+      "desconocidoCrear": "No se pudo crear el programa.",
+      "desconocidoGuardar": "No se pudo guardar el programa.",
+      "desconocidoActivar": "No se pudo activar el programa.",
+      "desconocidoCerrar": "No se pudo cerrar el programa."
+    },
+    "programReport": {
+      "pdfUnavailable": "El informe en PDF no está disponible ahora mismo.",
+      "forbidden": "No tienes permiso para exportar informes.",
+      "sesionCaducada": "Tu sesión ha caducado.",
+      "desconocido": "No se pudo generar el informe."
+    },
+    "program": {
+      "sinAcceso": "No tienes acceso a este programa.",
+      "noEncontrado": "Este programa no existe.",
+      "desconocido": "No se pudo cargar el programa."
+    },
+    "reportsQueue": {
+      "sinAcceso": "No tienes acceso a la cola de reportes.",
+      "desconocido": "No se pudo cargar la cola de reportes."
+    },
+    "report": {
+      "sinAcceso": "No tienes acceso a este reporte.",
+      "noEncontrado": "Este reporte no existe.",
+      "desconocido": "No se pudo cargar el reporte."
+    },
+    "reportAction": {
+      "sinPermiso": "No tienes permiso para actuar sobre este reporte.",
+      "desconocidoAsignar": "No se pudo asignar el reporte.",
+      "desconocidoResolver": "No se pudo resolver el reporte.",
+      "desconocidoEscalar": "No se pudo escalar el reporte."
+    },
+    "acknowledgeHelpRequest": {
+      "sinPermiso": "No tienes permiso para atender este aviso.",
+      "desconocido": "No se pudo marcar el aviso como atendido."
+    },
+    "updateOrganization": {
+      "invalido": "Revisa los datos: alguno no es válido.",
+      "sinPermiso": "Solo el titular puede editar la ficha de la entidad.",
+      "desconocido": "No se pudo guardar la ficha de la entidad."
+    },
+    "addOrgMember": {
+      "invalido": "Esa persona ya tiene un rol en esta entidad, o el rol no es válido.",
+      "sinAcceso": "Solo el titular puede dar de alta al equipo.",
+      "desconocido": "No se pudo dar de alta a la persona."
+    },
+    "removeOrgMember": {
+      "invalido": "No se pudo quitar a la persona del equipo.",
+      "sinAcceso": "Solo el titular puede quitar del equipo.",
+      "desconocido": "No se pudo quitar a la persona del equipo."
+    },
+    "orgMembers": {
+      "sinAcceso": "Solo el titular puede ver el equipo de la entidad.",
+      "desconocido": "No se pudo cargar el equipo de la entidad."
+    },
+    "createOrgReference": {
+      "invalido": "Revisa los datos: esa persona ya tiene referente, o quien asignas no es referente.",
+      "desconocido": "No se pudo asignar el referente."
+    },
+    "removeOrgReference": {
+      "invalido": "No se pudo quitar el referente.",
+      "desconocido": "No se pudo quitar el referente."
+    },
+    "orgScope": {
+      "invalido": "Indica municipios, comarca o provincia.",
+      "sinPermiso": "Solo el titular puede ampliar el ámbito de la entidad.",
+      "desconocido": "No se pudo ampliar el ámbito de la entidad."
+    }
+  },
+  "reports": {
+    "reason": {
+      "harassment": "Acoso",
+      "hate": "Odio",
+      "spam": "Spam",
+      "scam": "Estafa",
+      "underage": "Menor de edad",
+      "selfHarmRisk": "Riesgo de autolesión",
+      "drugsSale": "Venta de sustancias",
+      "other": "Otro"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "inReview": "En revisión",
+      "resolved": "Resuelto"
+    },
+    "resolution": {
+      "dismissed": "Descartar",
+      "warned": "Avisar a la persona",
+      "contentRemoved": "Retirar el contenido",
+      "userSuspended": "Suspender a la persona (3 meses)"
+    }
+  },
+  "programs": {
+    "status": {
+      "draft": "Borrador",
+      "active": "En curso",
+      "closed": "Cerrado"
+    },
+    "errors": {
+      "endsOnBeforeStartsOn": "La fecha de fin no puede ser anterior a la de inicio."
     }
   }
 }

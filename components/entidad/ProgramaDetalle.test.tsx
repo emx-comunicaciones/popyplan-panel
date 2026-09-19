@@ -85,7 +85,7 @@ describe("ProgramaDetalle", () => {
     useProgramMock.mockReturnValue({
       data: undefined,
       isError: true,
-      error: new Error("Este programa no existe."),
+      error: { message: "Este programa no existe.", kind: "no_encontrado" },
     });
 
     render(<ProgramaDetalle orgId={7} programId={3} canManage canExport />);
@@ -187,7 +187,14 @@ describe("ProgramaDetalle", () => {
   it("el error de cerrar programa se pinta dentro del diálogo, que sigue abierto", async () => {
     mockDefaults();
     useCloseProgramMock.mockReturnValue(
-      mutationDefaults({ isError: true, error: new Error("Un programa cerrado no se modifica.") }),
+      mutationDefaults({
+        isError: true,
+        error: {
+          message: "Un programa cerrado no se modifica.",
+          kind: "conflicto",
+          detail: "Un programa cerrado no se modifica.",
+        },
+      }),
     );
     useProgramMock.mockReturnValue({
       data: buildProgram({ id: 9, status: "active" }),

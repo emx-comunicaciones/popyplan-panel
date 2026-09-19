@@ -25,11 +25,13 @@ export type UpdateOrganizationErrorKind = "invalido" | "sin_permiso" | "desconoc
 
 export class UpdateOrganizationError extends Error {
   readonly kind: UpdateOrganizationErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: UpdateOrganizationErrorKind, message: string) {
+  constructor(kind: UpdateOrganizationErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "UpdateOrganizationError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -58,9 +60,11 @@ export function useUpdateOrganization(
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
+          const detail = detailOf(error);
           throw new UpdateOrganizationError(
             "invalido",
-            detailOf(error) ?? "Revisa los datos: alguno no es válido.",
+            detail ?? "Revisa los datos: alguno no es válido.",
+            detail,
           );
         }
         if (error instanceof ApiError && error.status === 403) {

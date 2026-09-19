@@ -37,15 +37,19 @@ export default async function EntidadProgramasPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!entidadMenuFor(membership.role).includes("programas")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Programas." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("entidad.programas.noAccessDescription")} />
+    );
   }
 
   const canManage = membership.role === "titular" || membership.role === "moderador";
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Programas</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.programas.heading")}</h1>
       <ProgramasPanel orgId={membership.organization_id} slug={slug} canManage={canManage} />
     </div>
   );

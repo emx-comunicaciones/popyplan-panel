@@ -11,12 +11,36 @@
  * `editing` es `"new"` (crear) o un `Program` (editar, `PATCH` parcial).
  */
 import { useEffect, useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
-import { useCreateProgram, useUpdateProgram } from "@/hooks/useProgramMutations";
+import {
+  useCreateProgram,
+  useUpdateProgram,
+  type ProgramMutationErrorKind,
+} from "@/hooks/useProgramMutations";
 import type { Program } from "@/lib/api/types";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 import { eurosToCents } from "@/lib/programs/money";
 import { validateProgramDates } from "@/lib/programs/validation";
+
+// `ProgramMutationError` es la misma clase para crear/editar/activar/
+// cerrar (`useProgramMutations.ts`); solo el mensaje de «desconocido»
+// varía según la acción (el backend nunca lo distingue por campo, es el
+// texto de repuesto de cada `mutate` del hook) — dos mapas completos en
+// vez de uno para no perder esa distinción real.
+const CREATE_PROGRAM_ERROR_KEYS: Record<ProgramMutationErrorKind, string> = {
+  invalido: "errors.programMutation.invalido",
+  sin_permiso: "errors.programMutation.sinPermiso",
+  no_encontrado: "errors.programMutation.noEncontrado",
+  conflicto: "errors.programMutation.conflicto",
+  desconocido: "errors.programMutation.desconocidoCrear",
+};
+
+const UPDATE_PROGRAM_ERROR_KEYS: Record<ProgramMutationErrorKind, string> = {
+  ...CREATE_PROGRAM_ERROR_KEYS,
+  desconocido: "errors.programMutation.desconocidoGuardar",
+};
 
 export interface ProgramaFormProps {
   orgId: number | string;
@@ -56,6 +80,7 @@ function formFromProgram(program: Program): ProgramFormState {
 }
 
 export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: ProgramaFormProps) {
+  const t = useTranslations();
   const createProgram = useCreateProgram(orgId);
   const updateProgram = useUpdateProgram(orgId);
   const [form, setForm] = useState<ProgramFormState>(
@@ -73,7 +98,7 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
     return () => onPendingChange?.(false);
   }, [isPending, onPendingChange]);
 
-  const dateError = validateProgramDates(form.startsOn, form.endsOn);
+  const dateErrorKey = validateProgramDates(form.startsOn, form.endsOn);
   const budgetCents = eurosToCents(form.budgetEuros);
   const canSubmit =
     form.name.trim().length > 0 &&
@@ -82,7 +107,7 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
     form.budgetEuros.trim().length > 0 &&
     !Number.isNaN(budgetCents) &&
     budgetCents >= 0 &&
-    !dateError;
+    !dateErrorKey;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -108,7 +133,7 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <div>
         <label htmlFor="programa-name" className="mb-1 block text-sm font-medium text-text-form">
-          Nombre
+          {t("entidad.programaFicha.nameLabel")}
         </label>
         <input
           id="programa-name"
@@ -121,7 +146,7 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
 
       <div>
         <label htmlFor="programa-funder" className="mb-1 block text-sm font-medium text-text-form">
-          Financiador
+          {t("entidad.programaFicha.funderLabel")}
         </label>
         <input
           id="programa-funder"
@@ -134,7 +159,7 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
 
       <div>
         <label htmlFor="programa-description" className="mb-1 block text-sm font-medium text-text-form">
-          Descripción
+          {t("entidad.programaFicha.descriptionLabel")}
         </label>
         <textarea
           id="programa-description"
@@ -148,7 +173,7 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
       <div className="flex flex-wrap gap-3">
         <div>
           <label htmlFor="programa-starts-on" className="mb-1 block text-sm font-medium text-text-form">
-            Inicio
+            {t("entidad.programaFicha.startsOnLabel")}
           </label>
           <input
             id="programa-starts-on"
@@ -160,7 +185,7 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
         </div>
         <div>
           <label htmlFor="programa-ends-on" className="mb-1 block text-sm font-medium text-text-form">
-            Fin
+            {t("entidad.programaFicha.endsOnLabel")}
           </label>
           <input
             id="programa-ends-on"
@@ -172,7 +197,7 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
         </div>
         <div>
           <label htmlFor="programa-budget" className="mb-1 block text-sm font-medium text-text-form">
-            Presupuesto (€)
+            {t("entidad.programaFicha.budgetLabel")}
           </label>
           <input
             id="programa-budget"
@@ -186,23 +211,35 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
         </div>
       </div>
 
-      {dateError ? (
+      {dateErrorKey ? (
         <p role="alert" className="text-sm text-error">
-          {dateError}
+          {t(dateErrorKey)}
         </p>
       ) : null}
 
       <div className="flex gap-2">
         <Button type="submit" disabled={!canSubmit || isPending}>
-          Guardar
+          {t("common.save")}
         </Button>
         <Button type="button" variant="secondary" onClick={onDone} disabled={isPending}>
-          Cancelar
+          {t("common.cancel")}
         </Button>
       </div>
       {mutation.isError ? (
         <p role="alert" className="text-sm text-error">
-          {mutation.error.message}
+          {editing === "new"
+            ? errorKindText(
+                createProgram.error,
+                CREATE_PROGRAM_ERROR_KEYS,
+                t,
+                "errors.programMutation.desconocidoCrear",
+              )
+            : errorKindText(
+                updateProgram.error,
+                UPDATE_PROGRAM_ERROR_KEYS,
+                t,
+                "errors.programMutation.desconocidoGuardar",
+              )}
         </p>
       ) : null}
     </form>

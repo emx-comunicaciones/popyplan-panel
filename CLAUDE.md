@@ -2267,9 +2267,13 @@ en CI lo gate el job `e2e`).
   `next-intl/server`, 173 ficheros). Tras la Tarea 3 de i18n (personas,
   comunidades, actividades y asistencia desde catálogos — la Tarea 2 no
   dejó su propio número en esta lista): **99,87 %** (2372/2375 líneas,
-  1585 tests, 174 ficheros). El umbral fijado sigue en
-  99,7 porque real menos 0,3 (99,56) queda por debajo, así que el ratchet
-  no sube.
+  1585 tests, 174 ficheros). Tras la Tarea 4 de i18n (comunicaciones,
+  encuestas, recursos, familias, programas, reportes, guardia y
+  configuración desde catálogos): **99,87 %** (2416/2419 líneas, 1590
+  tests, 174 ficheros — mismo número de ficheros que la Tarea 3: ningún
+  fichero nuevo, solo hooks/componentes/tests ya existentes tocados). El
+  umbral fijado sigue en 99,7 porque real menos 0,3 (99,57) queda por
+  debajo, así que el ratchet no sube.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la

@@ -22,14 +22,12 @@ describe("validateResourceFile", () => {
   });
 
   it("rechaza una extensión no permitida", () => {
-    expect(validateResourceFile({ name: "virus.exe", size: 10 })).toMatch(
-      /Tipo de fichero no permitido/,
-    );
+    expect(validateResourceFile({ name: "virus.exe", size: 10 })).toBe("tipo_no_permitido");
   });
 
   it("rechaza un fichero por encima del límite de tamaño", () => {
     const tooLarge = RESOURCE_MAX_MB * 1024 * 1024 + 1;
-    expect(validateResourceFile({ name: "video.mp4", size: tooLarge })).toMatch(/supera el límite/);
+    expect(validateResourceFile({ name: "video.mp4", size: tooLarge })).toBe("demasiado_grande");
   });
 
   it("acepta justo en el límite de tamaño", () => {

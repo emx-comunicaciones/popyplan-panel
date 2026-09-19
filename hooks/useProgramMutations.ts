@@ -25,11 +25,13 @@ export type ProgramMutationErrorKind =
 
 export class ProgramMutationError extends Error {
   readonly kind: ProgramMutationErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: ProgramMutationErrorKind, message: string) {
+  constructor(kind: ProgramMutationErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "ProgramMutationError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -44,9 +46,11 @@ export class ProgramMutationError extends Error {
 function toProgramMutationError(error: unknown, fallback: string): ProgramMutationError {
   if (error instanceof ApiError) {
     if (error.status === 400) {
+      const detail = detailOf(error);
       return new ProgramMutationError(
         "invalido",
-        detailOf(error) ?? "Revisa los datos: alguno no es válido.",
+        detail ?? "Revisa los datos: alguno no es válido.",
+        detail,
       );
     }
     if (error.status === 403) {
@@ -59,9 +63,11 @@ function toProgramMutationError(error: unknown, fallback: string): ProgramMutati
       return new ProgramMutationError("no_encontrado", "Este programa no existe.");
     }
     if (error.status === 409) {
+      const detail = detailOf(error);
       return new ProgramMutationError(
         "conflicto",
-        detailOf(error) ?? "Este programa no admite esa acción.",
+        detail ?? "Este programa no admite esa acción.",
+        detail,
       );
     }
   }

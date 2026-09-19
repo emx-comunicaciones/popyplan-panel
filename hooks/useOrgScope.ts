@@ -13,10 +13,17 @@ import { detailOf } from "@/lib/api/drfError";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import type { OrgScopeRequest, OrgScopeResponse } from "@/lib/api/types";
 
+export type OrgScopeErrorKind = "invalido" | "sin_permiso" | "desconocido";
+
 export class OrgScopeError extends Error {
-  constructor(message: string) {
+  readonly kind: OrgScopeErrorKind;
+  readonly detail?: string;
+
+  constructor(kind: OrgScopeErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "OrgScopeError";
+    this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -32,12 +39,13 @@ export function useOrgScope(
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
-          throw new OrgScopeError(detailOf(error) ?? "Indica municipios, comarca o provincia.");
+          const detail = detailOf(error);
+          throw new OrgScopeError("invalido", detail ?? "Indica municipios, comarca o provincia.", detail);
         }
         if (error instanceof ApiError && error.status === 403) {
-          throw new OrgScopeError("Solo el titular puede ampliar el ámbito de la entidad.");
+          throw new OrgScopeError("sin_permiso", "Solo el titular puede ampliar el ámbito de la entidad.");
         }
-        throw new OrgScopeError("No se pudo ampliar el ámbito de la entidad.");
+        throw new OrgScopeError("desconocido", "No se pudo ampliar el ámbito de la entidad.");
       }
     },
   });

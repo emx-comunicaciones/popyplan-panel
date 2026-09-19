@@ -34,13 +34,20 @@ export default async function EntidadConfiguracionPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!entidadMenuFor(membership.role).includes("configuracion")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Configuración." />;
+    return (
+      <EmptyState
+        title={t("common.noAccess")}
+        description={t("entidad.configuracion.noAccessDescription")}
+      />
+    );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Configuración</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.configuracion.heading")}</h1>
       <ConfiguracionPanel
         orgId={membership.organization_id}
         role={membership.role}

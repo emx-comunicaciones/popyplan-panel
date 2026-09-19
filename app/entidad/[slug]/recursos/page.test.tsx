@@ -332,7 +332,12 @@ describe("EntidadRecursosPage", () => {
       mutate: vi.fn(),
       isPending: false,
       isError: true,
-      error: new Error("Solo titular o moderador pueden borrar recursos."),
+      // `kind` es lo que ahora decide el texto (`errorKindText`); el
+      // mensaje real del hook para `sin_permiso` es «…eliminar recursos.»
+      // (`hooks/useDeleteResource.ts`) — antes este mock usaba «borrar»,
+      // una palabra que el hook nunca emite, porque el componente se
+      // limitaba a pintar `.message` tal cual.
+      error: { message: "Solo titular o moderador pueden eliminar recursos.", kind: "sin_permiso" },
       reset: vi.fn(),
     });
     useResourcesMock.mockReturnValue({
@@ -348,7 +353,7 @@ describe("EntidadRecursosPage", () => {
     const dialog = screen.getByRole("alertdialog");
 
     expect(within(dialog).getByRole("alert")).toHaveTextContent(
-      "Solo titular o moderador pueden borrar recursos.",
+      "Solo titular o moderador pueden eliminar recursos.",
     );
   });
 

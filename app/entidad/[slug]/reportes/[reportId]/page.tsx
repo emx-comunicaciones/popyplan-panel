@@ -31,13 +31,17 @@ export default async function EntidadReporteDetailPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!entidadMenuFor(membership.role).includes("reportes")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Reportes." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("entidad.reportes.noAccessDescription")} />
+    );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Reporte</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.reporteDetalle.heading")}</h1>
       <ReporteDetail reportId={reportId} />
     </div>
   );

@@ -10,7 +10,8 @@
     "backHome": "Itzuli hasierara",
     "items": "{count, plural, one {# elementu} other {# elementu}}",
     "confirm": "Berretsi",
-    "noPhoneNotice": "Popyplanek ez du telefonorik gordetzen: jarri harremanetan pertsonarekin appeko txatetik edo bere erreferentearen bidez."
+    "noPhoneNotice": "Popyplanek ez du telefonorik gordetzen: jarri harremanetan pertsonarekin appeko txatetik edo bere erreferentearen bidez.",
+    "actions": "Ekintzak"
   },
   "language": {
     "title": "Hizkuntza",
@@ -447,6 +448,341 @@
       "cancelled": "Bertan behera utzita",
       "attended": "Joan da",
       "noShow": "Ez da joan"
+    },
+    "comunicaciones": {
+      "heading": "Jakinarazpenak",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Jakinarazpenetan.",
+      "composeTitle": "Jakinarazpena idatzi",
+      "titleLabel": "Izenburua",
+      "bodyLabel": "Testua",
+      "useTemplate": "Erabili txantiloia: Ongietorria laguntza-sarera",
+      "audienceLegend": "Hartzaileak",
+      "audienceMembers": "Kide guztiak",
+      "audienceCommunity": "Komunitate bat",
+      "communitySelectLabel": "Komunitatea",
+      "communitySelectPlaceholder": "Aukeratu komunitate bat",
+      "audienceFamilies": "Familiak",
+      "audienceCommunityNamed": "Komunitatea: {name}",
+      "communitiesError": "Ezin izan dira komunitateak kargatu.",
+      "familiesHint": "Familien espazioa dagoenean egongo da eskuragarri.",
+      "send": "Jakinarazpena bidali",
+      "sentTo": "{count, plural, one {Pertsona #-i} other {# pertsonari}} bidalita.",
+      "sendConfirmDescription": "Jakinarazpen hau bidali nahi diozu honi: {audience}?",
+      "sendConfirmLabel": "Bidali",
+      "templateConfirmTitle": "Txantiloia erabili",
+      "templateConfirmDescription": "Izenburuko eta testuko uneko edukia ordeztuko da.",
+      "templateConfirmLabel": "Txantiloia erabili",
+      "historyError": "Ezin izan da historia kargatu",
+      "historyLoading": "Jakinarazpenak kargatzen…",
+      "historyEmpty": "Ez dago jakinarazpenik oraindik",
+      "sentOn": "{date}(e)an bidalita · {count, plural, one {hartzaile #} other {# hartzaile}}",
+      "readOnlyNotice": "Titularrak edo moderatzaileak bakarrik idatz ditzakete jakinarazpenak. Hemen historia ikus dezakezu.",
+      "historyHeading": "Historia",
+      "template": {
+        "title": "Ongietorria laguntza-sarera",
+        "body": "Eskerrik asko gure erakundeko norbaiti laguntzeagatik. Familien espazio honetan zuretzat pentsatutako jarduerak, prestakuntza eta baliabideak aurkituko dituzu. Gogoan izan: ez dituzu ikusiko laguntzen duzun pertsonaren elkarrizketak, jarduera pribatua ezta kokapena ere; berak bere sarearekin partekatzea erabakitzen duena bakarrik. Erakundearekin hitz egin behar baduzu, idatzi bere erreferenteari aplikaziotik."
+      }
+    },
+    "encuestas": {
+      "heading": "Inkestak",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Inkestetan.",
+      "newSurveyTitle": "Aldizkako inkesta berria",
+      "titleLabel": "Izenburua",
+      "opensAtLabel": "Irekitzen da",
+      "closesAtLabel": "Ixten da",
+      "questionsLegend": "Galderak",
+      "questionKindLabel": "Mota",
+      "questionTextLabel": "Galdera",
+      "removeQuestion": "Kendu",
+      "addQuestion": "Galdera gehitu",
+      "createSurvey": "Inkesta sortu",
+      "createSuccess": "Inkesta sortu da.",
+      "listError": "Ezin izan dira inkestak kargatu",
+      "loading": "Inkestak kargatzen…",
+      "empty": "Ez dago inkestarik oraindik",
+      "open": "Irekita",
+      "closed": "Itxita",
+      "questionCount": "{count, plural, one {galdera #} other {# galdera}}",
+      "viewResults": "Emaitzak ikusi",
+      "listHeading": "Inkestak",
+      "questionKind": {
+        "stars": "Izarrak (1-5)",
+        "scale": "Eskala (1-4)",
+        "text": "Testu laburra"
+      },
+      "surveyKind": {
+        "postEvent": "Jarduera ondorengoa",
+        "periodic": "Aldizkakoa"
+      }
+    },
+    "encuestaResultados": {
+      "heading": "Inkestaren emaitzak",
+      "anonymityBanner": "Erantzunak anonimoak eta bilduak dira.",
+      "distributionLabel": "Erantzunen banaketa",
+      "responsesSeries": "Erantzunak",
+      "suppressed": "Ez dago nahikoa daturik emaitza erakusteko (5 erantzun baino gutxiago).",
+      "noAnswers": "Ez dago erantzunik oraindik.",
+      "mean": "Batez bestekoa:",
+      "loadError": "Ezin izan dira emaitzak kargatu",
+      "loading": "Emaitzak kargatzen…",
+      "noQuestions": "Ez dago galderarik",
+      "responsesTotal": "{count, plural, one {erantzun #} other {# erantzun}} guztira."
+    },
+    "recursos": {
+      "heading": "Baliabideak",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Baliabideetan.",
+      "newResource": "Baliabide berria",
+      "editResource": "Baliabidea editatu",
+      "titleLabel": "Izenburua",
+      "categoryLabel": "Kategoria",
+      "kindLabel": "Mota",
+      "bodyLabel": "Testua",
+      "urlLabel": "Esteka",
+      "fileLabel": "Fitxategia",
+      "keepCurrentFile": "Utzi hutsik uneko fitxategia mantentzeko.",
+      "audienceLabel": "Hartzaileak",
+      "communitiesError": "Ezin izan dira komunitateak kargatu.",
+      "familiesHint": "«Familiak» familien espazioa dagoenean egongo da eskuragarri.",
+      "featured": "Nabarmendua",
+      "openLink": "Esteka ireki",
+      "downloadFile": "Fitxategia deskargatu",
+      "edit": "Editatu",
+      "delete": "Ezabatu",
+      "loadError": "Ezin izan dira baliabideak kargatu",
+      "loadErrorDescription": "Ezin izan dira baliabideak kargatu.",
+      "loading": "Baliabideak kargatzen…",
+      "empty": "Ez dago baliabiderik oraindik",
+      "deleteTitle": "Baliabidea ezabatu",
+      "deleteConfirmDescription": "«{title}» ezabatu? Ekintza hau ezin da desegin.",
+      "category": {
+        "help": "Laguntza",
+        "training": "Prestakuntza",
+        "families": "Familiak",
+        "accompany": "Nola lagundu",
+        "habits": "Ohiturak",
+        "activities": "Jarduerak",
+        "about": "Erakundeari buruz"
+      },
+      "kind": {
+        "text": "Testua",
+        "pdf": "PDF",
+        "video": "Bideoa",
+        "audio": "Audioa",
+        "link": "Esteka",
+        "document": "Dokumentua"
+      },
+      "audience": {
+        "members": "Kideak",
+        "families": "Familiak",
+        "public": "Publikoa"
+      },
+      "fileErrors": {
+        "tipoNoPermitido": "Fitxategi mota ez da onartzen. Erabili hauetako bat: {extensions}.",
+        "demasiadoGrande": "Fitxategiak {max} MB-ko muga gainditzen du."
+      }
+    },
+    "familias": {
+      "heading": "Familiak",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Familietan.",
+      "newCommunityTitle": "Familien komunitate berria",
+      "nameLabel": "Izena",
+      "descriptionLabel": "Deskribapena",
+      "visibilityLabel": "Ikusgaitasuna",
+      "visibilityOpen": "Irekia",
+      "visibilityOnRequest": "Eskaera bidez",
+      "visibilityPrivate": "Pribatua",
+      "codeOfConductLabel": "Jokabide-kodea",
+      "createCommunity": "Komunitatea sortu",
+      "peopleCount": "{count} pertsona",
+      "crossSpaceOn": "Espazioen arteko gurutzaketa aktibatuta",
+      "crossSpaceOff": "Espazioak bereizita",
+      "allowCrossSpace": "Espazioen arteko gurutzaketa baimendu",
+      "toggleConfirmTitle": "Espazioen bereizketa aldatu",
+      "toggleOnDescription": "«{name}» erakundeko kideen espaziotik ere ikusgai egongo da (eta alderantziz), familien eta kideen arteko bereizketa lehenetsia hautsiz. Jarraitu?",
+      "toggleOffDescription": "«{name}» ez da beste espaziotik ikusgai egongo: bereizketa lehenetsira itzuliko da (inork ez du bere burua inoren familiartzat aitortzen). Jarraitu?",
+      "loadError": "Ezin izan da Familien espazioa kargatu",
+      "loadErrorDescription": "Ezin izan da Familien laburpena kargatu.",
+      "loading": "Familien espazioa kargatzen…",
+      "banner": "Familien komunitateak kideenetatik bereizita daude; inork ez du bere burua inoren familiartzat aitortzen.",
+      "summaryHeading": "Familien laburpena",
+      "communitiesCount": "Familien komunitateak",
+      "people": "Pertsonak",
+      "upcomingEvents": "Datozen jarduerak",
+      "peopleWithSupportNetwork": "Laguntza-sarea duten pertsonak",
+      "activeSupporters": "Laguntzaile aktiboak",
+      "supportersNotified": "Abisuak jasotzen dituzten laguntzaileak",
+      "missingSupportersNotice": "{count, plural, one {Laguntza-sareko pertsona # zain dago familien komunitatea sor dezazun.} other {Laguntza-sareko # pertsona zain daude familien komunitatea sor dezazun.}}",
+      "pendingAutoJoinNotice": "Familien komunitatean alta automatikoki osatuko da.",
+      "communitiesHeading": "Familien komunitateak",
+      "communitiesEmpty": "Ez dago familien komunitaterik oraindik",
+      "communitiesEmptyDescription": "Erakunde honek ez du oraindik familien espazio gisa markatutako komunitaterik.",
+      "upcomingEventsHeading": "Datozen jarduerak",
+      "upcomingEventsEmpty": "Ez dago datozen jarduerarik",
+      "viewAllActivities": "Jarduera guztiak ikusi",
+      "recentAnnouncementsHeading": "Azken jakinarazpenak",
+      "recentAnnouncementsEmpty": "Ez dago familientzako jakinarazpenik oraindik",
+      "announcementSentOn": "{date}(e)an bidalita · {count, plural, one {hartzaile #} other {# hartzaile}}",
+      "goToAnnouncements": "Jakinarazpenetara joan",
+      "recentResourcesHeading": "Azken baliabideak",
+      "recentResourcesEmpty": "Ez dago familientzako baliabiderik oraindik",
+      "goToResources": "Baliabideetara joan"
+    },
+    "programas": {
+      "heading": "Programak",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Programetan.",
+      "loadError": "Ezin izan dira programak kargatu",
+      "loadErrorDescription": "Ezin izan dira programak kargatu.",
+      "loading": "Programak kargatzen…",
+      "newProgram": "Programa berria",
+      "empty": "Ez dago programarik oraindik"
+    },
+    "programaFicha": {
+      "heading": "Programaren fitxa",
+      "nameLabel": "Izena",
+      "funderLabel": "Finantzatzailea",
+      "descriptionLabel": "Deskribapena",
+      "startsOnLabel": "Hasiera",
+      "endsOnLabel": "Amaiera",
+      "budgetLabel": "Aurrekontua (€)",
+      "loadError": "Ezin izan da programa kargatu",
+      "loading": "Programa kargatzen…",
+      "closingNotes": "Itxiera-oharrak: {notes}",
+      "edit": "Editatu",
+      "activate": "Aktibatu",
+      "close": "Programa itxi",
+      "downloadCsv": "CSV txostena deskargatu",
+      "downloadPdf": "PDF txostena deskargatu",
+      "editDialogTitle": "Programa editatu",
+      "closeWarning": "Itxitako programa bat ezin da berriro editatu ezta berraktibatu ere.",
+      "closingNotesLabel": "Itxiera-oharrak",
+      "metricsHeading": "Aldiko metrikak",
+      "metricsError": "Ezin izan dira metrikak kargatu",
+      "metricsLoading": "Metrikak kargatzen…",
+      "activePeople": "Pertsona aktiboak",
+      "heldEvents": "Egindako jarduerak",
+      "attendance": "Bertaratzea",
+      "activeCommunities": "Komunitate aktiboak",
+      "byPlaceCaption": "Udalerriaren arabera",
+      "byPlaceNameHeader": "Udalerria",
+      "byPlaceCodeHeader": "INE kodea",
+      "noDataInPeriod": "Ez dago daturik aldi honetan"
+    },
+    "reportes": {
+      "heading": "Salaketak",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Salaketetan.",
+      "statusLabel": "Egoera",
+      "statusAll": "Guztiak",
+      "queueError": "Ezin izan da salaketen ilara kargatu",
+      "loading": "Salaketak kargatzen…",
+      "empty": "Ez dago salaketarik iragazki honekin",
+      "tableCaption": "Erakundearen salaketak",
+      "colReason": "Arrazoia",
+      "colTarget": "Xedea",
+      "colStatus": "Egoera",
+      "colDate": "Data",
+      "viewDetail": "Xehetasuna ikusi",
+      "count": "{count} salaketa"
+    },
+    "reporteDetalle": {
+      "heading": "Salaketa",
+      "noAccessDescription": "Ez duzu sarbiderik salaketa honetan.",
+      "loadError": "Ezin izan da salaketa kargatu",
+      "loading": "Salaketa kargatzen…",
+      "detailTitle": "Xehetasuna",
+      "reason": "Arrazoia",
+      "target": "Xedea",
+      "description": "Deskribapena",
+      "status": "Egoera",
+      "assignedTo": "Honi esleituta",
+      "assignedToSomeone": "Taldeko pertsona bati esleituta",
+      "unassigned": "Esleitu gabe",
+      "organization": "Erakundea",
+      "organizationGlobal": "Orokorra",
+      "escalated": "Eskalatuta",
+      "escalatedBadge": "Plataformara eskalatuta",
+      "assignToMe": "Niri esleitu",
+      "resolveTitle": "Ebatzi",
+      "resolutionLabel": "Ebazpena",
+      "resolutionNoteLabel": "Ebazpen-oharra",
+      "resolve": "Ebatzi",
+      "escalateTitle": "Plataformara eskalatu",
+      "escalateNoteLabel": "Plataformarako oharra",
+      "escalate": "Eskalatu"
+    },
+    "guardia": {
+      "heading": "Txanda",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Txandan.",
+      "settingsTitle": "Txandaren ezarpenak",
+      "settingsError": "Ezin izan dira txandaren ezarpenak kargatu",
+      "settingsErrorDescription": "Ezin izan da erakundearen fitxa kargatu.",
+      "helpPhoneLabel": "Laguntza-telefonoa",
+      "onCallHint": "Uneko txandako pertsona: {onCall}. Ezartzeko, erakunde honetan rola duen pertsona baten id-a behar da (`on_call_user`); panelean oraindik ez dago pertsonak bilatzeko modurik — ikusi zeregin honen txostena.",
+      "onCallUnassigned": "esleitu gabe",
+      "saved": "Gorde da.",
+      "pendingHeading": "Abisu zain daudenak",
+      "pendingNoAccessDescription": "Ez duzu sarbiderik laguntza-abisuetan.",
+      "pendingError": "Ezin izan dira abisuak kargatu",
+      "pendingErrorDescription": "Ezin izan dira laguntza-abisuak kargatu.",
+      "pendingLoading": "Abisuak kargatzen…",
+      "pendingEmpty": "Ez dago abisu zain daudenik",
+      "notMember": "Ez da erakundeko kidea",
+      "joinedWithoutMembership": "Jarduerara izena eman du kide izan gabe.",
+      "referent": "Erreferentea: {name}",
+      "noCommunity": "Komunitaterik ez",
+      "acknowledged": "Artatuta",
+      "acknowledgeAction": "Harremanetan jarri naiz"
+    },
+    "configuracion": {
+      "heading": "Konfigurazioa",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Konfigurazioan.",
+      "dataTitle": "Erakundearen datuak",
+      "descriptionLabel": "Deskribapena",
+      "contactEmailLabel": "Kontaktu-emaila",
+      "contactPhoneLabel": "Kontaktu-telefonoa",
+      "websiteLabel": "Web orria",
+      "primaryColorLabel": "Kolore nagusia",
+      "secondaryColorLabel": "Bigarren mailako kolorea",
+      "logoAlt": "Erakundearen logoa",
+      "logoUploadHint": "Logo berria igotzea oraindik ez dago eskuragarri panelean: kontratu errealak fitxategi bat espero du (multipart), ez URL bat — ikusi zeregin honen txostena.",
+      "saved": "Gorde da.",
+      "dataLoadError": "Ezin izan da erakundearen fitxa kargatu",
+      "dataLoadErrorDescription": "Ezin izan da erakundearen fitxa kargatu.",
+      "loading": "Kargatzen…",
+      "teamTitle": "Taldea",
+      "userIdLabel": "Erabiltzailearen id-a",
+      "roleLabel": "Rola",
+      "addButton": "Gehitu",
+      "teamLoadError": "Ezin izan da taldea kargatu",
+      "teamEmpty": "Ez dago talderik oraindik",
+      "teamTableCaption": "Erakundearen taldea",
+      "colUser": "Erabiltzailea",
+      "colRole": "Rola",
+      "remove": "Kendu",
+      "removeFromTeamTitle": "Taldetik kendu",
+      "removeFromTeamDescription": "«{name}» erakundearen taldetik kendu? Panelerako rola galduko du.",
+      "selfRemovalWarning": "Zeure burua taldetik kentzera zoaz eta panelerako sarbidea galduko duzu.",
+      "referencesTitle": "Erreferentziak",
+      "personIdLabel": "Pertsona (id)",
+      "referentIdLabel": "Erreferentea (id)",
+      "assignButton": "Esleitu",
+      "referencesLoadError": "Ezin izan dira erreferenteak kargatu",
+      "referencesLoadErrorDescription": "Ezin izan dira erakundearen erreferenteak kargatu.",
+      "referencesEmpty": "Ez dago erreferentziarik oraindik",
+      "referentLoading": "Erreferentea…",
+      "referentUnavailable": "Erreferentea ez dago eskuragarri",
+      "referentNoName": "Erreferenteak ez du izenik",
+      "referentWithName": "Erreferentea: {name}",
+      "removeReferenceTitle": "Erreferentzia kendu",
+      "removeReferenceDescription": "«{name}»(r)en erreferentea kendu? Pertsona hori erakundean erreferenterik gabe geratuko da.",
+      "scopeTitle": "Eremua",
+      "scopeTypeLabel": "Mota",
+      "scopeTypePlaces": "Udalerriak (INE kodeak)",
+      "scopeTypeComarca": "Eskualdea",
+      "scopeTypeProvince": "Probintzia",
+      "scopeValuePlacesLabel": "INE kodeak, komaz bereizita",
+      "scopeValueCodeLabel": "Kodea",
+      "expandScope": "Eremua zabaldu",
+      "scopeSuccess": "{added} udalerri gehitu dira (eremua guztira: {total})."
     }
   },
   "people": {
@@ -580,6 +916,159 @@
       "reject": "Ezin izan da eskaera ukatu.",
       "kick": "Ezin izan da pertsona kanporatu.",
       "changeRole": "Ezin izan da rola aldatu."
+    },
+    "announcements": {
+      "sinAcceso": "Ez duzu sarbiderik erakunde honetako jakinarazpenetan.",
+      "desconocido": "Ezin izan dira jakinarazpenak kargatu."
+    },
+    "sendAnnouncement": {
+      "invalido": "Berrikusi datuak: hartzaileak ez du balio.",
+      "sinPermiso": "Titularrak edo moderatzaileak bakarrik bidal ditzakete jakinarazpenak.",
+      "desconocido": "Ezin izan da jakinarazpena bidali."
+    },
+    "surveys": {
+      "sinAcceso": "Ez duzu sarbiderik erakunde honetako inkestetan.",
+      "desconocido": "Ezin izan dira inkestak kargatu."
+    },
+    "createSurvey": {
+      "invalido": "Berrikusi datuak: galderaren bat ez da baliozkoa.",
+      "sinPermiso": "Titularrak edo moderatzaileak bakarrik sor ditzakete inkestak.",
+      "desconocido": "Ezin izan da inkesta sortu."
+    },
+    "surveyResults": {
+      "sinAcceso": "Ez duzu sarbiderik inkesta honen emaitzetan.",
+      "noEncontrada": "Inkesta hau ez da existitzen.",
+      "desconocido": "Ezin izan dira emaitzak kargatu."
+    },
+    "createResource": {
+      "invalido": "Berrikusi datuak: badago baliozkoa ez den bat.",
+      "sinPermiso": "Titularrak edo moderatzaileak bakarrik sor ditzakete baliabideak.",
+      "desconocido": "Ezin izan da baliabidea sortu."
+    },
+    "updateResource": {
+      "invalido": "Berrikusi datuak: badago baliozkoa ez den bat.",
+      "sinPermiso": "Titularrak edo moderatzaileak bakarrik editatu ditzakete baliabideak.",
+      "noEncontrado": "Baliabide hau ez da existitzen.",
+      "desconocido": "Ezin izan da baliabidea gorde."
+    },
+    "deleteResource": {
+      "sinPermiso": "Titularrak edo moderatzaileak bakarrik ezaba ditzakete baliabideak.",
+      "noEncontrado": "Baliabide hau ez da existitzen.",
+      "desconocido": "Ezin izan da baliabidea ezabatu."
+    },
+    "toggleCrossSpace": {
+      "sinPermiso": "Titularrak edo moderatzaileak bakarrik alda dezakete espazioen bereizketa.",
+      "desconocido": "Ezin izan da espazioen bereizketa aldatu."
+    },
+    "createFamiliesCommunity": {
+      "invalido": "Berrikusi datuak: badago baliozkoa ez den bat.",
+      "sinPermiso": "Titularrak edo moderatzaileak bakarrik sor dezakete familien komunitate bat.",
+      "desconocido": "Ezin izan da familien komunitatea sortu."
+    },
+    "programMutation": {
+      "invalido": "Berrikusi datuak: badago baliozkoa ez den bat.",
+      "sinPermiso": "Titularrak edo moderatzaileak bakarrik kudea ditzakete programak.",
+      "noEncontrado": "Programa hau ez da existitzen.",
+      "conflicto": "Programa honek ez du ekintza hori onartzen.",
+      "desconocidoCrear": "Ezin izan da programa sortu.",
+      "desconocidoGuardar": "Ezin izan da programa gorde.",
+      "desconocidoActivar": "Ezin izan da programa aktibatu.",
+      "desconocidoCerrar": "Ezin izan da programa itxi."
+    },
+    "programReport": {
+      "pdfUnavailable": "PDF txostena ez dago eskuragarri une honetan.",
+      "forbidden": "Ez duzu baimenik txostenak esportatzeko.",
+      "sesionCaducada": "Zure saioa iraungi da.",
+      "desconocido": "Ezin izan da txostena sortu."
+    },
+    "program": {
+      "sinAcceso": "Ez duzu sarbiderik programa honetan.",
+      "noEncontrado": "Programa hau ez da existitzen.",
+      "desconocido": "Ezin izan da programa kargatu."
+    },
+    "reportsQueue": {
+      "sinAcceso": "Ez duzu sarbiderik salaketen ilaran.",
+      "desconocido": "Ezin izan da salaketen ilara kargatu."
+    },
+    "report": {
+      "sinAcceso": "Ez duzu sarbiderik salaketa honetan.",
+      "noEncontrado": "Salaketa hau ez da existitzen.",
+      "desconocido": "Ezin izan da salaketa kargatu."
+    },
+    "reportAction": {
+      "sinPermiso": "Ez duzu baimenik salaketa honetan jarduteko.",
+      "desconocidoAsignar": "Ezin izan da salaketa esleitu.",
+      "desconocidoResolver": "Ezin izan da salaketa ebatzi.",
+      "desconocidoEscalar": "Ezin izan da salaketa eskalatu."
+    },
+    "acknowledgeHelpRequest": {
+      "sinPermiso": "Ez duzu baimenik abisu honi erantzuteko.",
+      "desconocido": "Ezin izan da abisua artatutzat markatu."
+    },
+    "updateOrganization": {
+      "invalido": "Berrikusi datuak: badago baliozkoa ez den bat.",
+      "sinPermiso": "Titularrak bakarrik editatu dezake erakundearen fitxa.",
+      "desconocido": "Ezin izan da erakundearen fitxa gorde."
+    },
+    "addOrgMember": {
+      "invalido": "Pertsona horrek jada badu rol bat erakunde honetan, edo rola ez da baliozkoa.",
+      "sinAcceso": "Titularrak bakarrik eman dezake taldean alta.",
+      "desconocido": "Ezin izan da pertsona alta eman."
+    },
+    "removeOrgMember": {
+      "invalido": "Ezin izan da pertsona taldetik kendu.",
+      "sinAcceso": "Titularrak bakarrik kendu dezake taldetik.",
+      "desconocido": "Ezin izan da pertsona taldetik kendu."
+    },
+    "orgMembers": {
+      "sinAcceso": "Titularrak bakarrik ikus dezake erakundearen taldea.",
+      "desconocido": "Ezin izan da erakundearen taldea kargatu."
+    },
+    "createOrgReference": {
+      "invalido": "Berrikusi datuak: pertsona horrek jada badu erreferentea, edo esleitzen ari zarena ez da erreferentea.",
+      "desconocido": "Ezin izan da erreferentea esleitu."
+    },
+    "removeOrgReference": {
+      "invalido": "Ezin izan da erreferentea kendu.",
+      "desconocido": "Ezin izan da erreferentea kendu."
+    },
+    "orgScope": {
+      "invalido": "Adierazi udalerriak, eskualdea edo probintzia.",
+      "sinPermiso": "Titularrak bakarrik zabal dezake erakundearen eremua.",
+      "desconocido": "Ezin izan da erakundearen eremua zabaldu."
+    }
+  },
+  "reports": {
+    "reason": {
+      "harassment": "Jazarpena",
+      "hate": "Gorrotoa",
+      "spam": "Spam-a",
+      "scam": "Iruzurra",
+      "underage": "Adin txikikoa",
+      "selfHarmRisk": "Norbere buruari kalte egiteko arriskua",
+      "drugsSale": "Substantzien salmenta",
+      "other": "Beste bat"
+    },
+    "status": {
+      "pending": "Zain",
+      "inReview": "Berrikuspenean",
+      "resolved": "Ebatzita"
+    },
+    "resolution": {
+      "dismissed": "Baztertu",
+      "warned": "Pertsonari abisatu",
+      "contentRemoved": "Edukia kendu",
+      "userSuspended": "Pertsona bertan behera utzi (3 hilabetez)"
+    }
+  },
+  "programs": {
+    "status": {
+      "draft": "Zirriborroa",
+      "active": "Martxan",
+      "closed": "Itxita"
+    },
+    "errors": {
+      "endsOnBeforeStartsOn": "Amaiera data ezin da hasiera data baino lehenagokoa izan."
     }
   }
 }

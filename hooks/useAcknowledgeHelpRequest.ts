@@ -16,10 +16,15 @@ import { ApiError, apiFetch } from "@/lib/api/client";
 import { SAFETY } from "@/lib/api/endpoints";
 import type { HelpRequestRow } from "@/lib/api/types";
 
+export type AcknowledgeHelpRequestErrorKind = "sin_permiso" | "desconocido";
+
 export class AcknowledgeHelpRequestError extends Error {
-  constructor(message: string) {
+  readonly kind: AcknowledgeHelpRequestErrorKind;
+
+  constructor(kind: AcknowledgeHelpRequestErrorKind, message: string) {
     super(message);
     this.name = "AcknowledgeHelpRequestError";
+    this.kind = kind;
   }
 }
 
@@ -36,9 +41,9 @@ export function useAcknowledgeHelpRequest(
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 403) {
-          throw new AcknowledgeHelpRequestError("No tienes permiso para atender este aviso.");
+          throw new AcknowledgeHelpRequestError("sin_permiso", "No tienes permiso para atender este aviso.");
         }
-        throw new AcknowledgeHelpRequestError("No se pudo marcar el aviso como atendido.");
+        throw new AcknowledgeHelpRequestError("desconocido", "No se pudo marcar el aviso como atendido.");
       }
     },
     onSuccess: () => {

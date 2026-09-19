@@ -16,10 +16,17 @@ import { detailOf } from "@/lib/api/drfError";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
 import type { Reference, ReferenceList } from "@/lib/api/types";
 
+export type OrgReferencesErrorKind = "invalido" | "desconocido";
+
 export class OrgReferencesError extends Error {
-  constructor(message: string) {
+  readonly kind?: OrgReferencesErrorKind;
+  readonly detail?: string;
+
+  constructor(message: string, kind?: OrgReferencesErrorKind, detail?: string) {
     super(message);
     this.name = "OrgReferencesError";
+    this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -69,12 +76,14 @@ export function useCreateOrgReference(
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
+          const detail = detailOf(error);
           throw new OrgReferencesError(
-            detailOf(error) ??
-              "Revisa los datos: esa persona ya tiene referente, o quien asignas no es referente.",
+            detail ?? "Revisa los datos: esa persona ya tiene referente, o quien asignas no es referente.",
+            "invalido",
+            detail,
           );
         }
-        throw new OrgReferencesError("No se pudo asignar el referente.");
+        throw new OrgReferencesError("No se pudo asignar el referente.", "desconocido");
       }
     },
     onSuccess: () => invalidateReferences(queryClient, orgId),
@@ -99,9 +108,10 @@ export function useRemoveOrgReference(
           error instanceof ApiError &&
           (error.status === 400 || error.status === 403 || error.status === 409)
         ) {
-          throw new OrgReferencesError(detailOf(error) ?? "No se pudo quitar el referente.");
+          const detail = detailOf(error);
+          throw new OrgReferencesError(detail ?? "No se pudo quitar el referente.", "invalido", detail);
         }
-        throw new OrgReferencesError("No se pudo quitar el referente.");
+        throw new OrgReferencesError("No se pudo quitar el referente.", "desconocido");
       }
     },
     onSuccess: () => invalidateReferences(queryClient, orgId),

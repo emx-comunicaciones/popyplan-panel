@@ -31,13 +31,17 @@ export default async function EntidadReportesPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!entidadMenuFor(membership.role).includes("reportes")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Reportes." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("entidad.reportes.noAccessDescription")} />
+    );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Reportes</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.reportes.heading")}</h1>
       <ReportesQueue orgId={membership.organization_id} slug={slug} />
     </div>
   );

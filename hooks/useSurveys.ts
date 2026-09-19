@@ -13,10 +13,15 @@ import { ApiError, apiFetch } from "@/lib/api/client";
 import { PANEL } from "@/lib/api/endpoints";
 import type { Survey } from "@/lib/api/types";
 
+export type SurveysErrorKind = "sin_acceso" | "desconocido";
+
 export class SurveysError extends Error {
-  constructor(message: string) {
+  readonly kind: SurveysErrorKind;
+
+  constructor(kind: SurveysErrorKind, message: string) {
     super(message);
     this.name = "SurveysError";
+    this.kind = kind;
   }
 }
 
@@ -28,9 +33,9 @@ export function useSurveys(orgId: number | string): UseQueryResult<Survey[], Sur
         return await apiFetch<Survey[]>(PANEL.SURVEYS(orgId));
       } catch (error) {
         if (error instanceof ApiError && error.status === 403) {
-          throw new SurveysError("No tienes acceso a las encuestas de esta entidad.");
+          throw new SurveysError("sin_acceso", "No tienes acceso a las encuestas de esta entidad.");
         }
-        throw new SurveysError("No se pudieron cargar las encuestas.");
+        throw new SurveysError("desconocido", "No se pudieron cargar las encuestas.");
       }
     },
   });

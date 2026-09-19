@@ -1,9 +1,26 @@
 import userEvent from "@testing-library/user-event";
+import { createTranslator } from "use-intl/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import esMessages from "@/messages/es.json";
 import { render, screen, within } from "@/test-utils/render";
 import { buildAnnouncement } from "@/test-utils/fixtures/announcement";
 import { buildEntityCommunityRow } from "@/test-utils/fixtures/community";
+
+// `describeAudience` recibe ahora la función `t` de `useTranslations` (no
+// puede resolver texto por sí sola, es una función pura fuera de un
+// componente): estos tests unitarios usan el mismo `createTranslator`
+// contra el catálogo real que usa el mock global de `next-intl/server`
+// (`vitest.setup.ts`), para no reinventar el formateo ICU a mano. El cast
+// deshace la especialización de tipos que hace `createTranslator` al
+// recibir `messages` como literal (`NamespacedMessageKeys<...>` en vez de
+// `string`) — la propia `useTranslations()` de un componente no
+// especializa así (no hay augmentation de `IntlMessages` en este
+// proyecto), así que es solo un ajuste del test, no del comportamiento.
+const t = createTranslator({ locale: "es", messages: esMessages }) as (
+  key: string,
+  values?: Record<string, string>,
+) => string;
 
 const useAnnouncementsMock = vi.hoisted(() => vi.fn());
 const useSendAnnouncementMock = vi.hoisted(() => vi.fn());
@@ -227,11 +244,11 @@ describe("ComunicacionesPanel", () => {
 
 describe("describeAudience", () => {
   it("'members' se describe como Todos los miembros", () => {
-    expect(describeAudience("members", [])).toBe("Todos los miembros");
+    expect(describeAudience("members", [], t)).toBe("Todos los miembros");
   });
 
   it("'families' se describe como Familias", () => {
-    expect(describeAudience("families", [])).toBe("Familias");
+    expect(describeAudience("families", [], t)).toBe("Familias");
   });
 
   it("'community:<uuid>' resuelve el nombre si la comunidad está en la lista", () => {
@@ -241,10 +258,10 @@ describe("describeAudience", () => {
         name: "Comunidad de costura",
       },
     ] as never;
-    expect(describeAudience("community:c-1", communities)).toBe("Comunidad: Comunidad de costura");
+    expect(describeAudience("community:c-1", communities, t)).toBe("Comunidad: Comunidad de costura");
   });
 
   it("'community:<uuid>' desconocida cae a un texto genérico", () => {
-    expect(describeAudience("community:c-9", [])).toBe("Una comunidad");
+    expect(describeAudience("community:c-9", [], t)).toBe("Una comunidad");
   });
 });

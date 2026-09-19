@@ -21,11 +21,13 @@ export type CreateResourceErrorKind = "invalido" | "sin_permiso" | "desconocido"
 
 export class CreateResourceError extends Error {
   readonly kind: CreateResourceErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: CreateResourceErrorKind, message: string) {
+  constructor(kind: CreateResourceErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "CreateResourceError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -50,9 +52,11 @@ export function useCreateResource(
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
+          const detail = detailOf(error);
           throw new CreateResourceError(
             "invalido",
-            detailOf(error) ?? "Revisa los datos: alguno no es válido.",
+            detail ?? "Revisa los datos: alguno no es válido.",
+            detail,
           );
         }
         if (error instanceof ApiError && error.status === 403) {

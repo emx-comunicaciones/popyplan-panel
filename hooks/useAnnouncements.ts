@@ -14,10 +14,15 @@ import { ApiError, apiFetch } from "@/lib/api/client";
 import { PANEL } from "@/lib/api/endpoints";
 import type { Announcement } from "@/lib/api/types";
 
+export type AnnouncementsErrorKind = "sin_acceso" | "desconocido";
+
 export class AnnouncementsError extends Error {
-  constructor(message: string) {
+  readonly kind: AnnouncementsErrorKind;
+
+  constructor(kind: AnnouncementsErrorKind, message: string) {
     super(message);
     this.name = "AnnouncementsError";
+    this.kind = kind;
   }
 }
 
@@ -31,9 +36,12 @@ export function useAnnouncements(
         return await apiFetch<Announcement[]>(PANEL.ANNOUNCEMENTS(orgId));
       } catch (error) {
         if (error instanceof ApiError && error.status === 403) {
-          throw new AnnouncementsError("No tienes acceso a las comunicaciones de esta entidad.");
+          throw new AnnouncementsError(
+            "sin_acceso",
+            "No tienes acceso a las comunicaciones de esta entidad.",
+          );
         }
-        throw new AnnouncementsError("No se pudieron cargar las comunicaciones.");
+        throw new AnnouncementsError("desconocido", "No se pudieron cargar las comunicaciones.");
       }
     },
   });
