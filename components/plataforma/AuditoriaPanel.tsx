@@ -12,7 +12,7 @@
  * ver el informe).
  */
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -24,9 +24,10 @@ import type { AuditLogEntry } from "@/lib/api/types";
 import { csvBlob } from "@/lib/csv/toCsv";
 import { triggerDownload } from "@/lib/download/triggerDownload";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { localeForUseLocale } from "@/lib/i18n/locale";
 
-function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
+function formatDateTime(iso: string, locale: string): string {
+  return new Date(iso).toLocaleString(localeForUseLocale(locale), { dateStyle: "short", timeStyle: "short" });
 }
 
 function metadataText(entry: AuditLogEntry): string {
@@ -92,8 +93,21 @@ const EMPTY_FILTERS: AuditFormFilters = {
   until: "",
 };
 
+// Ejemplos técnicos del contrato (identificadores de `AuditLogEntry.action`/
+// `.target_type`, nunca prosa) — la guardia de atributos de texto
+// (`eslint.config.mjs::no-restricted-syntax`, hallazgo I4) marca un
+// `Literal` como hijo directo del atributo (`placeholder="…"`), así que
+// salen a una constante y se pasan como expresión (`placeholder={…}`):
+// comprobado que el selector de la regla no baja a un `Literal` anidado
+// dentro de un `JSXExpressionContainer`, así que esto basta sin
+// `eslint-disable-next-line` — no hace falta traducirlos como si fueran
+// texto de interfaz, son valores de ejemplo del contrato.
+const ACTION_PLACEHOLDER = "organization.created";
+const TARGET_TYPE_PLACEHOLDER = "entities.organization";
+
 export function AuditoriaPanel() {
   const t = useTranslations();
+  const locale = useLocale();
   const [filters, setFilters] = useState<AuditFormFilters>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
 
@@ -149,7 +163,7 @@ export function AuditoriaPanel() {
             id="audit-action"
             type="text"
             value={filters.action}
-            placeholder="organization.created"
+            placeholder={ACTION_PLACEHOLDER}
             onChange={(event) => updateFilter("action", event.target.value)}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
@@ -162,7 +176,7 @@ export function AuditoriaPanel() {
             id="audit-target-type"
             type="text"
             value={filters.target_type}
-            placeholder="entities.organization"
+            placeholder={TARGET_TYPE_PLACEHOLDER}
             onChange={(event) => updateFilter("target_type", event.target.value)}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           />
@@ -263,7 +277,7 @@ export function AuditoriaPanel() {
               {
                 key: "created_at",
                 header: t("plataforma.auditoria.colDate"),
-                render: (entry) => formatDateTime(entry.created_at),
+                render: (entry) => formatDateTime(entry.created_at, locale),
               },
             ]}
           />

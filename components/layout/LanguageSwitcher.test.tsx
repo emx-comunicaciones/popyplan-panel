@@ -39,6 +39,22 @@ function renderWithLocale(locale: string) {
   );
 }
 
+/** Igual que `renderWithLocale`, pero expone el `queryClient` (M12: hace
+ * falta para comprobar `getQueryState(...).isInvalidated` tras un
+ * cambio de idioma, mismo patrón que `hooks/useMarkAttendance.test.tsx`).
+ */
+function renderWithQueryClient() {
+  const queryClient = createTestQueryClient();
+  rtlRenderUnwrapped(
+    <QueryClientProvider client={queryClient}>
+      <NextIntlClientProvider locale="es" messages={es}>
+        <LanguageSwitcher />
+      </NextIntlClientProvider>
+    </QueryClientProvider>,
+  );
+  return queryClient;
+}
+
 beforeEach(() => {
   vi.stubGlobal("fetch", fetchMock);
   fetchMock.mockResolvedValue({ ok: true, status: 204 });
@@ -150,5 +166,71 @@ describe("LanguageSwitcher", () => {
     const { container } = render(<LanguageSwitcher />);
 
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  /**
+   * I3 de la revisión final de la rama: el botón activo usaba
+   * `variant="primary"` (`bg-primary-700`), invisible sobre la cabecera
+   * de entidad por defecto (también `primary-700`, 1,00:1 de contraste
+   * de superficie). Mismo arreglo que `PageHelp.tsx` en `a41bde5`: fondo
+   * blanco fijo para los tres botones, y el activo se distingue por algo
+   * más que el color (aquí `font-semibold` + un borde marcado, además de
+   * `aria-pressed`, que ya era correcto).
+   */
+  it("los tres botones tienen fondo blanco (I3): el activo no se confunde con la cabecera de marca", () => {
+    render(<LanguageSwitcher />);
+
+    const esButton = screen.getByRole("button", { name: "Español" });
+    const euButton = screen.getByRole("button", { name: "Euskara" });
+    const caButton = screen.getByRole("button", { name: "Català" });
+
+    expect(esButton.className).toContain("bg-white");
+    expect(euButton.className).toContain("bg-white");
+    expect(caButton.className).toContain("bg-white");
+  });
+
+  it("el botón activo se distingue del resto por algo más que el color (I3)", () => {
+    render(<LanguageSwitcher />);
+
+    const esButton = screen.getByRole("button", { name: "Español" });
+    const euButton = screen.getByRole("button", { name: "Euskara" });
+
+    expect(esButton.className).toContain("font-semibold");
+    expect(euButton.className).not.toContain("font-semibold");
+  });
+
+  /**
+   * M12 de la revisión final de la rama: cambiar de idioma solo hacía
+   * `router.refresh()` (Server Components), sin tocar la caché de
+   * TanStack Query — los `detail` verbatim del backend que
+   * `errorKindText` prioriza (y que con la i18n del backend llegarán
+   * traducidos) se quedaban en el idioma anterior hasta que la query se
+   * refrescara por otro motivo.
+   */
+  it("al cambiar de idioma con éxito, invalida la caché de TanStack Query antes de refrescar (M12)", async () => {
+    const queryClient = renderWithQueryClient();
+    const someKey = ["panel-entity-events", 7, "since=2026-01-01&until=2026-01-31"];
+    queryClient.setQueryData(someKey, []);
+    expect(queryClient.getQueryState(someKey)?.isInvalidated).toBe(false);
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Euskara" }));
+
+    await vi.waitFor(() => {
+      expect(queryClient.getQueryState(someKey)?.isInvalidated).toBe(true);
+    });
+    expect(routerMock.refresh).toHaveBeenCalledTimes(1);
+  });
+
+  it("un fallo al fijar la cookie no invalida la caché (no hay nada que refrescar)", async () => {
+    fetchMock.mockRejectedValueOnce(new Error("red caída"));
+    const queryClient = renderWithQueryClient();
+    const someKey = ["panel-entity-events", 7, "since=2026-01-01&until=2026-01-31"];
+    queryClient.setQueryData(someKey, []);
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Euskara" }));
+
+    expect(queryClient.getQueryState(someKey)?.isInvalidated).toBe(false);
   });
 });

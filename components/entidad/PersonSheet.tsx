@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, type FormEvent } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -15,6 +15,7 @@ import { usePerson } from "@/hooks/usePerson";
 import { usePersonSupport } from "@/hooks/usePersonSupport";
 import { isAllowedImageSrc } from "@/lib/config/imagePatterns";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { localeForUseLocale } from "@/lib/i18n/locale";
 import { presetPeriod } from "@/lib/metrics/period";
 import { relationshipLabelKey } from "@/lib/support/relationshipLabel";
 
@@ -122,13 +123,13 @@ function SupportNetworkSection({
   );
 }
 
-function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
+function formatDateTime(iso: string, locale: string): string {
+  return new Date(iso).toLocaleString(localeForUseLocale(locale), { dateStyle: "short", timeStyle: "short" });
 }
 
-function formatDate(iso: string | null): string {
+function formatDate(iso: string | null, locale: string): string {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("es-ES");
+  return new Date(iso).toLocaleDateString(localeForUseLocale(locale));
 }
 
 /**
@@ -245,6 +246,7 @@ export function PersonSheet({ orgId, userId, canAssignReferent, isReferent }: Pe
   const tCommon = useTranslations("common");
   const tPersonas = useTranslations("entidad.personas");
   const tAll = useTranslations();
+  const locale = useLocale();
 
   if (person.isError && person.error.kind === "sin_acceso") {
     return <EmptyState title={tCommon("noAccess")} description={t("sinAccesoDescription")} />;
@@ -287,7 +289,7 @@ export function PersonSheet({ orgId, userId, canAssignReferent, isReferent }: Pe
           <div>
             <p className="text-lg font-semibold text-text-base">{data.public_name}</p>
             <p className="text-sm text-text-secondary">
-              {t("headerInfo", { date: formatDate(data.joined_at), level: verificationLevelText })}
+              {t("headerInfo", { date: formatDate(data.joined_at, locale), level: verificationLevelText })}
             </p>
             <p className="text-sm text-text-secondary">
               {t("referentLine", { name: data.referent ? data.referent.public_name : tPersonas("noReferent") })}
@@ -326,7 +328,7 @@ export function PersonSheet({ orgId, userId, canAssignReferent, isReferent }: Pe
             {data.events.map((event) => (
               <li key={event.id} className="flex items-center justify-between gap-2 text-sm text-text-base">
                 <span>
-                  {event.title} · {formatDateTime(event.starts_at)}
+                  {event.title} · {formatDateTime(event.starts_at, locale)}
                 </span>
                 <Badge>
                   {ATTENDANCE_STATUS_KEYS[event.attendance_status]
@@ -345,7 +347,7 @@ export function PersonSheet({ orgId, userId, canAssignReferent, isReferent }: Pe
         </h2>
         {data.next_event ? (
           <p className="text-sm text-text-base">
-            {data.next_event.title} · {formatDateTime(data.next_event.starts_at)}
+            {data.next_event.title} · {formatDateTime(data.next_event.starts_at, locale)}
           </p>
         ) : (
           <EmptyState title={t("noNextEvent")} />

@@ -86,6 +86,30 @@ const eslintConfig = [
       ],
     },
   },
+  // Guarda de atributos de texto (revisión final de la rama de i18n,
+  // hallazgo I4): `react/jsx-no-literals` con `ignoreProps: true` (arriba)
+  // deja en paz los **atributos** JSX a propósito — es lo que evita 1835
+  // falsos positivos de `className`/`type`/`htmlFor` — pero eso también
+  // deja pasar un `aria-label="Cerrar"` sin traducir, que es justo el
+  // caso más fácil de olvidar (un atributo no se ve en pantalla) y el que
+  // la decisión 9 del diseño pedía blindar. Esta regla solo mira los
+  // cinco atributos que sí llevan texto de interfaz —nunca `className`,
+  // `type`, `id`, `htmlFor`…— y solo cuando el literal tiene alguna letra
+  // (así un `placeholder="123"` puramente numérico, o vacío, no salta).
+  {
+    files: ["app/**/*.tsx", "components/**/*.tsx"],
+    ignores: ["**/*.test.tsx"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "JSXAttribute[name.name=/^(aria-label|aria-description|placeholder|title|alt)$/] > Literal[value=/[A-Za-zÁÉÍÓÚÑáéíóúñ]/]",
+          message: "Traduce este atributo con t(); no literales de texto en atributos.",
+        },
+      ],
+    },
+  },
   {
     ignores: [
       "node_modules/**",

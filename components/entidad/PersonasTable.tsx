@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { AddPersonDialog } from "@/components/people/AddPersonDialog";
 import { ImportPeopleDialog } from "@/components/people/ImportPeopleDialog";
@@ -19,6 +19,7 @@ import { useResendInvitation } from "@/hooks/useResendInvitation";
 import { useRevokeInvitation } from "@/hooks/useRevokeInvitation";
 import type { InvitedPersonRow } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { localeForUseLocale } from "@/lib/i18n/locale";
 import { isInvitedPersonRow } from "@/lib/people/invitedRow";
 import { presetPeriod } from "@/lib/metrics/period";
 
@@ -45,9 +46,9 @@ const EMPTY_FILTERS: PersonasFilters = {
   joinedSince: "",
 };
 
-function formatDate(iso: string | null): string {
+function formatDate(iso: string | null, locale: string): string {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("es-ES");
+  return new Date(iso).toLocaleDateString(localeForUseLocale(locale));
 }
 
 const RESEND_INVITATION_ERROR_KEYS = {
@@ -118,6 +119,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
   const communities = useEntityCommunities(orgId);
   const t = useTranslations("entidad.personas");
   const tAll = useTranslations();
+  const locale = useLocale();
 
   /**
    * Los campos que se teclean (búsqueda, referente y las dos fechas) se
@@ -338,7 +340,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
                         <td className="px-3 py-2 text-text-secondary">—</td>
                         <td className="px-3 py-2 text-text-secondary">—</td>
                         <td className="px-3 py-2 text-text-secondary">—</td>
-                        <td className="px-3 py-2 text-text-base">{formatDate(row.invited_at)}</td>
+                        <td className="px-3 py-2 text-text-base">{formatDate(row.invited_at, locale)}</td>
                         <td className="px-3 py-2 text-text-secondary">—</td>
                         {canManage ? (
                           <td className="px-3 py-2">
@@ -386,7 +388,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
                       <td className="px-3 py-2 text-text-base">{row.communities_count}</td>
                       <td className="px-3 py-2 text-text-base">{row.events_period}</td>
                       <td className="px-3 py-2 text-text-base">{row.attended_period}</td>
-                      <td className="px-3 py-2 text-text-base">{formatDate(row.joined_at)}</td>
+                      <td className="px-3 py-2 text-text-base">{formatDate(row.joined_at, locale)}</td>
                       <td className="px-3 py-2 text-text-base">
                         {row.referent ? row.referent.public_name : t("noReferent")}
                       </td>

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { activeLanguage, localeFor } from "./locale";
+import { activeLanguage, localeFor, localeForUseLocale } from "./locale";
 
 describe("localeFor", () => {
   it("es → es-ES", () => {
@@ -50,5 +50,23 @@ describe("activeLanguage", () => {
     } finally {
       vi.unstubAllGlobals();
     }
+  });
+});
+
+describe("localeForUseLocale", () => {
+  it("es → es-ES", () => {
+    expect(localeForUseLocale("es")).toBe("es-ES");
+  });
+
+  it("eu → eu-ES", () => {
+    expect(localeForUseLocale("eu")).toBe("eu-ES");
+  });
+
+  it("ca → ca-ES", () => {
+    expect(localeForUseLocale("ca")).toBe("ca-ES");
+  });
+
+  it("con un valor no soportado cae a es-ES", () => {
+    expect(localeForUseLocale("en")).toBe("es-ES");
   });
 });

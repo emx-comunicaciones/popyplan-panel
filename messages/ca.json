@@ -99,6 +99,9 @@
     }
   },
   "pages": {
+    "root": {
+      "description": "Tauler web d'entitats, entitats paraigua i plataforma de Popyplan"
+    },
     "home": {
       "noAccessTitle": "No tens accés a cap àrea del tauler",
       "noAccessDescription": "El teu compte no té cap rol de plataforma ni d'entitat amb tauler assignat. Contacta amb qui gestiona la teva entitat o amb Popyplan."
@@ -245,7 +248,7 @@
     "nonAccessible": {
       "heading": "Contingut no accessible",
       "intro": "A data d'aquesta declaració, les pàgines següents del tauler encara no tenen una prova automàtica d'accessibilitat (axe) dedicada — la cobertura triada fins ara és representativa de les tres àrees i dels patrons compartits (taules, diàlegs amb focus atrapat, gràfics, formularis), però no exhaustiva:",
-      "list": "Comunitats, Activitats, Informes, Guàrdia, Configuració, Comunicacions, Enquestes i Recursos del tauler d'entitat; Informes del tauler d'entitat paraigua; i Auditoria, Ajuda, Verificacions, Rols, Informes, Mètriques i fitxa d'entitat del tauler de plataforma. Ampliar aquesta cobertura és feina mecànica, documentada a <code>CLAUDE.md</code> («Accessibilitat»)."
+      "list": "Comunitats, Activitats, Informes (moderació), Guàrdia, Configuració, Comunicacions, Enquestes i Recursos del tauler d'entitat; Informes del tauler d'entitat paraigua; i Auditoria, Ajuda, Verificacions, Rols, Informes (moderació), Mètriques i fitxa d'entitat del tauler de plataforma. Ampliar aquesta cobertura és feina mecànica, documentada a <code>CLAUDE.md</code> («Accessibilitat»)."
     },
     "preparation": {
       "heading": "Preparació de la declaració",
@@ -716,7 +719,7 @@
       "settingsError": "No s'han pogut carregar els ajustos de guàrdia",
       "settingsErrorDescription": "No s'ha pogut carregar la fitxa de l'entitat.",
       "helpPhoneLabel": "Telèfon d'ajuda",
-      "onCallHint": "Persona de guàrdia actual: {onCall}. Per fixar-la cal l'id d'una persona amb rol en aquesta entitat (`on_call_user`); encara no hi ha cap cercador de persones al panell — vegeu l'informe d'aquesta tasca.",
+      "onCallHint": "Persona de guàrdia actual: {onCall}. Per fixar-la cal l'id d'una persona amb rol en aquesta entitat (`on_call_user`); encara no hi ha cap cercador de persones al tauler — vegeu l'informe d'aquesta tasca.",
       "onCallUnassigned": "sense assignar",
       "saved": "Desat.",
       "pendingHeading": "Avisos pendents",
@@ -747,7 +750,7 @@
       "primaryColorLabel": "Color primari",
       "secondaryColorLabel": "Color secundari",
       "logoAlt": "Logotip de l'entitat",
-      "logoUploadHint": "Pujar un logotip nou encara no està disponible al panell: el contracte real espera un fitxer (multipart), no una URL — vegeu l'informe d'aquesta tasca.",
+      "logoUploadHint": "Pujar un logotip nou encara no està disponible al tauler: el contracte real espera un fitxer (multipart), no una URL — vegeu l'informe d'aquesta tasca.",
       "saved": "Desat.",
       "dataLoadError": "No s'ha pogut carregar la fitxa de l'entitat",
       "dataLoadErrorDescription": "No s'ha pogut carregar la fitxa de l'entitat.",
@@ -763,8 +766,8 @@
       "colRole": "Rol",
       "remove": "Treure",
       "removeFromTeamTitle": "Treure de l'equip",
-      "removeFromTeamDescription": "Vols treure «{name}» de l'equip de l'entitat? Deixarà de tenir rol al panell.",
-      "selfRemovalWarning": "Estàs a punt de treure't a tu mateix de l'equip i perdràs l'accés al panell.",
+      "removeFromTeamDescription": "Vols treure «{name}» de l'equip de l'entitat? Deixarà de tenir rol al tauler.",
+      "selfRemovalWarning": "Estàs a punt de treure't a tu mateix de l'equip i perdràs l'accés al tauler.",
       "referencesTitle": "Referències",
       "personIdLabel": "Persona (id)",
       "referentIdLabel": "Referent (id)",
@@ -1325,7 +1328,7 @@
       },
       "informes": {
         "title": "Informes",
-        "summary": "Exportació de les mètriques de l'entitat en CSV o PDF, per període i desglossament, amb la mateixa regla d'agregació que la resta del panell.",
+        "summary": "Exportació de les mètriques de l'entitat en CSV o PDF, per període i desglossament, amb la mateixa regla d'agregació que la resta del tauler.",
         "actions": [
           "Triar període i desglossament (habitual o per any)",
           "Descarregar l'informe"
@@ -1597,7 +1600,7 @@
       "viewInvoices": "Veure factures",
       "endContractAction": "Finalitzar",
       "endContractConfirmTitle": "Finalitzar contracte",
-      "endContractDescription": "L'entitat deixa de facturar-se per aquest contracte. No afecta el seu funcionament al panell: continua operant igual.",
+      "endContractDescription": "L'entitat deixa de facturar-se per aquest contracte. No afecta el seu funcionament al tauler: continua operant igual.",
       "sectionsLegend": "Seccions de contractació",
       "tabContratos": "Contractes",
       "tabTramos": "Trams",
@@ -1734,7 +1737,7 @@
       "referencesEmpty": "Encara no hi ha referències",
       "referenceRow": "{name} — referent #{referentId}",
       "removeMemberConfirmTitle": "Treure de l'equip",
-      "removeMemberConfirmDescription": "Vols treure «{name}» de l'equip de l'entitat? Deixarà de tenir rol al panell.",
+      "removeMemberConfirmDescription": "Vols treure «{name}» de l'equip de l'entitat? Deixarà de tenir rol al tauler.",
       "removeReferenceConfirmTitle": "Treure la referència",
       "removeReferenceConfirmDescription": "Vols treure el referent assignat a «{name}»?",
       "metricsNoAccessDescription": "El teu rol de plataforma no et dona accés a les mètriques d'aquesta entitat. Fes servir el menú «Mètriques» de plataforma, agrupat per entitat, per veure les seves xifres agregades.",
@@ -1783,8 +1786,8 @@
       "accountLabel": "Compte",
       "levelLabel": "Nivell sol·licitat",
       "reasonLabel": "Motiu del proveïdor",
-      "appealLabel": "Document de la persona",
-      "noAppeal": "Encara sense document.",
+      "appealLabel": "Al·legació de la persona",
+      "noAppeal": "Encara sense al·legació.",
       "noteLabel": "Nota de la decisió",
       "approve": "Aprovar",
       "reject": "Rebutjar",
@@ -1813,7 +1816,7 @@
       "emptyTitle": "Sense rols concedits",
       "revokeAction": "Revocar",
       "revokeConfirmTitle": "Revocar rol de plataforma",
-      "revokeConfirmDescription": "Aquesta persona perdrà l'accés al panell de plataforma."
+      "revokeConfirmDescription": "Aquesta persona perdrà l'accés al tauler de plataforma."
     },
     "auditoria": {
       "heading": "Auditoria",

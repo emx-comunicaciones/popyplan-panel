@@ -117,4 +117,94 @@ describe("paridad de catálogos (en/es/eu/ca)", () => {
       }
     }
   });
+
+  /**
+   * I5 de la revisión final de la rama: `messages/eu.json` usaba la
+   * palabra castellana «pendiente»/«pendienteak» en 11 claves («Abisu
+   * pendienteak», «Gonbidatua (pendiente)»…) en vez del batua «zain».
+   * Guarda de regresión léxica, no de estructura — el resto del test de
+   * este fichero no mira el contenido de las cadenas, solo su forma.
+   */
+  it("eu no usa el castellanismo «pendiente» (I5)", () => {
+    const values = Object.values(flattened.eu);
+    const withPendiente = values.filter((value) => /pendient/i.test(value));
+    expect(withPendiente).toEqual([]);
+  });
+
+  /**
+   * M7 de la revisión final de la rama: `ca.json` mezclaba «tauler» (11
+   * claves) y «panell» (8 claves) para *panel* — el glosario
+   * (`docs/i18n/glosario.md`) fija «tauler», que es el término que usa
+   * el texto legal (`accessibility.*`).
+   */
+  it("ca no mezcla «panell» y «tauler» para «panel» (M7)", () => {
+    const values = Object.values(flattened.ca);
+    const withPanell = values.filter((value) => /\bpanell\b/i.test(value));
+    expect(withPanell).toEqual([]);
+  });
+
+  /**
+   * M9 de la revisión final de la rama:
+   * `accessibility.nonAccessible.list` en catalán decía «Informes» para
+   * tres conceptos distintos — la cola de moderación (dos veces) y la
+   * exportación de métricas (una vez) — cuando el propio glosario
+   * distingue los dos («Informes (moderació)» en `menu.entidad.reportes`
+   * frente a «Informes» a secas en `menu.entidad.informes`). Las dos
+   * ocurrencias de moderación pasan a llevar el mismo calificador; la de
+   * exportación (paraguas) se queda como estaba.
+   */
+  it("ca distingue Reportes (moderación) de Informes (exportación) en la declaración de accesibilidad (M9)", () => {
+    const list = flattened.ca["accessibility.nonAccessible.list"];
+    expect((list.match(/Informes \(moderació\)/g) ?? []).length).toBe(2);
+    expect(list).toContain("Informes del tauler d'entitat paraigua");
+  });
+
+  /**
+   * M16 de la revisión final de la rama: las siete cabeceras del CSV de
+   * Auditoría son identificadores del contrato, no prosa —
+   * `docs/i18n/PENDIENTES.md` dice que se mantienen iguales en los
+   * cuatro idiomas a propósito, para que un traductor que abra `ca.json`
+   * no las «corrija». Sin este test, nada más lo garantiza.
+   */
+  /**
+   * M18 de la revisión final de la rama: las ramas `one` de tres
+   * plurales en euskera posponían el numeral («galdera #», que se lee
+   * «galdera 1»), imitando «galdera bat» pero sin ser lo que se escribe
+   * con cifra — el resto del catálogo eu (p. ej. `# kide`) sí antepone
+   * el numeral en las dos ramas.
+   */
+  it("eu antepone el numeral en las dos ramas de sus plurales «uno» (M18)", () => {
+    const keys = [
+      "entidad.encuestas.questionCount",
+      "entidad.encuestaResultados.responsesTotal",
+      "entidad.comunicaciones.sentOn",
+    ];
+    for (const key of keys) {
+      const value = flattened.eu[key];
+      const oneMatch = value.match(/one \{([^}]*)\}/);
+      expect(oneMatch, `${key} debería tener una rama "one"`).not.toBeNull();
+      expect(oneMatch![1].trim().startsWith("#"), `${key}: "${oneMatch![1]}" no antepone el numeral`).toBe(true);
+    }
+  });
+
+  it("las cabeceras del CSV de Auditoría valen lo mismo en los cuatro idiomas (M16)", () => {
+    const csvKeys = [
+      "plataforma.auditoria.csvId",
+      "plataforma.auditoria.csvActor",
+      "plataforma.auditoria.csvAction",
+      "plataforma.auditoria.csvTargetType",
+      "plataforma.auditoria.csvTargetId",
+      "plataforma.auditoria.csvMetadata",
+      "plataforma.auditoria.csvCreatedAt",
+    ];
+
+    for (const key of csvKeys) {
+      const valuesByLang = Object.entries(flattened).map(([lang, messages]) => [lang, messages[key]] as const);
+      const [, referenceValue] = valuesByLang[0];
+      expect(referenceValue, `${key} no debería estar vacío`).toBeTruthy();
+      for (const [lang, value] of valuesByLang) {
+        expect(value, `${key} en ${lang}`).toBe(referenceValue);
+      }
+    }
+  });
 });

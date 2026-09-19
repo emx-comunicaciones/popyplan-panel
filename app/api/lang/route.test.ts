@@ -30,11 +30,18 @@ describe("POST /api/lang", () => {
     expect(cookie?.maxAge).toBe(60 * 60 * 24 * 365);
   });
 
-  it("con un idioma no soportado responde 400 con detail, sin fijar cookie", async () => {
+  /**
+   * M10 de la revisión final de la rama: el `detail` era prosa en
+   * español («Idioma no soportado.») en vez de un código estable — nadie
+   * lo pinta hoy (`LanguageSwitcher` solo mira `response.ok`), pero era
+   * la única cadena en castellano que quedaba en un route handler nuevo
+   * de esta rama.
+   */
+  it("con un idioma no soportado responde 400 con un detail estable, sin fijar cookie", async () => {
     const res = await POST(langRequest({ lang: "xx" }));
 
     expect(res.status).toBe(400);
-    expect(await res.json()).toEqual({ detail: "Idioma no soportado." });
+    expect(await res.json()).toEqual({ detail: "unsupported_language" });
     expect(res.cookies.get(LANG_COOKIE_NAME)).toBeUndefined();
   });
 

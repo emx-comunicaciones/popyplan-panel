@@ -16,7 +16,7 @@
  * membresía real insuficiente — no es ya el caso general.
  */
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -49,6 +49,7 @@ import { useEntityEvents, type EntityEventsErrorKind } from "@/hooks/useEntityEv
 import { useContracts, useInvoices, type BillingErrorKind } from "@/hooks/useBilling";
 import { useMetrics, type MetricsErrorKind } from "@/hooks/useMetrics";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { localeForUseLocale } from "@/lib/i18n/locale";
 import { formatCount, formatPct } from "@/lib/metrics/format";
 import { presetPeriod } from "@/lib/metrics/period";
 import { formatEuros } from "@/lib/programs/money";
@@ -774,8 +775,8 @@ function ComunidadesTab({ orgId }: { orgId: number | string }) {
   );
 }
 
-function formatContractDate(iso: string): string {
-  return new Date(`${iso}T00:00:00`).toLocaleDateString("es-ES");
+function formatContractDate(iso: string, locale: string): string {
+  return new Date(`${iso}T00:00:00`).toLocaleDateString(localeForUseLocale(locale));
 }
 
 /**
@@ -790,6 +791,7 @@ function formatContractDate(iso: string): string {
  */
 function ContratoTab({ orgId }: { orgId: number | string }) {
   const t = useTranslations();
+  const locale = useLocale();
   const contracts = useContracts({ organization: orgId });
   const contract = contracts.data
     ? [...contracts.data].sort((a, b) => {
@@ -838,7 +840,7 @@ function ContratoTab({ orgId }: { orgId: number | string }) {
         <dd className="text-text-base">{contract.tier.name}</dd>
         <dt className="text-text-secondary">{t("plataforma.contratos.validityHeader")}</dt>
         <dd className="text-text-base">
-          {formatContractDate(contract.starts_on)} – {formatContractDate(contract.ends_on)}
+          {formatContractDate(contract.starts_on, locale)} – {formatContractDate(contract.ends_on, locale)}
         </dd>
         <dt className="text-text-secondary">{t("plataforma.reportes.statusLabel")}</dt>
         <dd className="text-text-base">

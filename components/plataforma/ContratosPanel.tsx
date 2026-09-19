@@ -23,7 +23,7 @@
  * equipo o «Revocar» una invitación.
  */
 import { useState, type FormEvent } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -49,6 +49,7 @@ import { useOrganizations } from "@/hooks/useOrganizations";
 import type { Contract, ContractStatus, Invoice, InvoiceStatus, PricingTier } from "@/lib/api/types";
 import { tierRangeFromFields, validateTierRange } from "@/lib/billing/tierRange";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { localeForUseLocale } from "@/lib/i18n/locale";
 import { eurosToCents, formatEuros } from "@/lib/programs/money";
 
 import { ContratoForm } from "./ContratoForm";
@@ -146,8 +147,8 @@ function invoiceStatus(invoice: Invoice): InvoiceStatus {
     : "pending";
 }
 
-function formatDate(iso: string): string {
-  return new Date(`${iso}T00:00:00`).toLocaleDateString("es-ES");
+function formatDate(iso: string, locale: string): string {
+  return new Date(`${iso}T00:00:00`).toLocaleDateString(localeForUseLocale(locale));
 }
 
 /* ---------------------------------------------------------------------- */
@@ -161,6 +162,7 @@ interface ContratosTabProps {
 
 function ContratosTab({ canManage, onViewInvoices }: ContratosTabProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const organizations = useOrganizations();
   const [filters, setFilters] = useState<ContractsFilters>({});
   const contracts = useContracts(filters);
@@ -243,7 +245,7 @@ function ContratosTab({ canManage, onViewInvoices }: ContratosTabProps) {
             {
               key: "vigencia",
               header: t("plataforma.contratos.validityHeader"),
-              render: (c) => `${formatDate(c.starts_on)} – ${formatDate(c.ends_on)}`,
+              render: (c) => `${formatDate(c.starts_on, locale)} – ${formatDate(c.ends_on, locale)}`,
             },
             {
               key: "estado",
@@ -596,6 +598,7 @@ interface FacturasTabProps {
 
 function FacturasTab({ canManage, selectedContractId, onSelectContract }: FacturasTabProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const contracts = useContracts();
   const invoices = useInvoices(selectedContractId ?? undefined);
   const payInvoice = usePayInvoice();
@@ -619,8 +622,8 @@ function FacturasTab({ canManage, selectedContractId, onSelectContract }: Factur
           <option value="">{t("plataforma.contratos.chooseContract")}</option>
           {contracts.data?.map((contract) => (
             <option key={contract.id} value={contract.id}>
-              {contract.organization.name} — {contract.tier.name} ({formatDate(contract.starts_on)} –{" "}
-              {formatDate(contract.ends_on)})
+              {contract.organization.name} — {contract.tier.name} ({formatDate(contract.starts_on, locale)} –{" "}
+              {formatDate(contract.ends_on, locale)})
             </option>
           ))}
         </select>
@@ -655,12 +658,16 @@ function FacturasTab({ canManage, selectedContractId, onSelectContract }: Factur
               columns={[
                 { key: "number", header: t("plataforma.contratos.invoiceNumberLabel"), render: (i) => i.number },
                 { key: "amount", header: t("plataforma.contratos.colAmount"), render: (i) => formatEuros(i.amount_cents) },
-                { key: "issued", header: t("plataforma.contratos.colIssued"), render: (i) => formatDate(i.issued_on) },
-                { key: "due", header: t("plataforma.contratos.colDue"), render: (i) => formatDate(i.due_on) },
+                {
+                  key: "issued",
+                  header: t("plataforma.contratos.colIssued"),
+                  render: (i) => formatDate(i.issued_on, locale),
+                },
+                { key: "due", header: t("plataforma.contratos.colDue"), render: (i) => formatDate(i.due_on, locale) },
                 {
                   key: "paid",
                   header: t("plataforma.contratos.colPaid"),
-                  render: (i) => (i.paid_on ? formatDate(i.paid_on) : "—"),
+                  render: (i) => (i.paid_on ? formatDate(i.paid_on, locale) : "—"),
                 },
                 {
                   key: "status",

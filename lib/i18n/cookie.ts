@@ -16,6 +16,7 @@ const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 
 export interface LangCookieOptions {
   httpOnly: boolean;
+  secure: boolean;
   sameSite: "lax";
   path: "/";
   maxAge: number;
@@ -24,6 +25,7 @@ export interface LangCookieOptions {
 export function langCookieOptions(): LangCookieOptions {
   return {
     httpOnly: false,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: ONE_YEAR_SECONDS,
@@ -39,16 +41,34 @@ export interface ResolveLanguageInput {
  * Idioma de una petición (decisión 1 del diseño): cookie `pp_lang` →
  * `Accept-Language` del navegador → `es`. `Accept-Language` puede traer
  * varios idiomas con calidad (`eu-ES,eu;q=0.9,es;q=0.8`); se toma el
- * primero cuyo idioma base (antes del `-` de región) esté entre los tres
- * soportados, ignorando los que no lo estén (p. ej. `de`).
+ * primero, ordenado por `;q=` **descendente** (M2 de la revisión final
+ * de la rama de i18n: antes se tomaba el primero en orden de
+ * *aparición*, sin mirar `q` — los navegadores ya mandan la cabecera
+ * ordenada por calidad, así que en la práctica no fallaba, pero un
+ * cliente que no ordene, o un proxy que reescriba la cabecera, obtenía
+ * el idioma equivocado), cuyo idioma base (antes del `-` de región) esté
+ * entre los tres soportados, ignorando los que no lo estén (p. ej. `de`).
+ * Sin `q` explícito, la calidad es 1 (RFC 9110 §12.5.1); el orden es
+ * estable, así que dos idiomas con la misma calidad conservan su orden
+ * de aparición original.
  */
 export function resolveLanguage(input: ResolveLanguageInput): Language {
   if (isSupportedLanguage(input.cookie)) return input.cookie;
 
   const acceptLanguage = input.acceptLanguage;
   if (acceptLanguage) {
-    for (const part of acceptLanguage.split(",")) {
-      const tag = part.split(";")[0]?.trim();
+    const entries = acceptLanguage
+      .split(",")
+      .map((part, index) => {
+        const [tagPart, ...params] = part.split(";");
+        const tag = tagPart?.trim();
+        const qParam = params.map((p) => p.trim()).find((p) => p.startsWith("q="));
+        const quality = qParam ? Number.parseFloat(qParam.slice(2)) : 1;
+        return { tag, quality: Number.isFinite(quality) ? quality : 1, index };
+      })
+      .sort((a, b) => b.quality - a.quality || a.index - b.index);
+
+    for (const { tag } of entries) {
       const base = tag?.split("-")[0]?.toLowerCase();
       if (isSupportedLanguage(base)) return base;
     }

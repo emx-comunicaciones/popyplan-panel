@@ -91,7 +91,15 @@ La Tarea 6 (cierre) anota tres puntos, ninguno de redacción en español:
   `components/`) confirma que las tareas 2-5 ya habían extraído
   prácticamente todo — nada de esto es una redacción pendiente, es una
   decisión de configuración de la herramienta, documentada también en
-  `eslint.config.mjs` con el conteo exacto.
+  `eslint.config.mjs` con el conteo exacto. **Cerrado en la ronda final
+  de correcciones** (hallazgo I4 de `final-review-report.md`): con
+  `ignoreProps: true`, un `aria-label`/`placeholder`/`title`/`alt` sin
+  traducir en una pantalla nueva no habría saltado en el lint (los
+  atributos quedaban sin blindar, solo el contenido como hijo de un
+  elemento JSX). `eslint.config.mjs::no-restricted-syntax` añade esa
+  guarda acotada a los cinco atributos que llevan texto de interfaz, sin
+  reabrir los 1835 falsos positivos de `ignoreProps: false` — ya no
+  queda ningún atributo de texto sin blindar.
 - **`app/entidad/[slug]/informes/page.tsx` con dos literales sin
   extraer** (`"Sin acceso"`/`"Tu rol no tiene acceso a Informes."`/
   `"Informes"`): la única extracción de contenido real que hizo falta
@@ -108,3 +116,39 @@ La Tarea 6 (cierre) anota tres puntos, ninguno de redacción en español:
   de catálogo, es la propia clave del idioma (`es`/`eu`/`ca`)
   transformada en JavaScript, igual en los tres idiomas de interfaz por
   ser un código ISO, no una palabra.
+
+## Ronda final de correcciones (revisión de `feature/i18n-es-eu-ca`)
+
+Aparcado a propósito por `final-fix-brief.md` (no es redacción en
+español, y no se toca en esta ronda):
+
+- **Tamaño del catálogo que viaja al cliente (M3 de `final-review-report.md`)**:
+  `app/layout.tsx` serializa el catálogo entero (`getMessages()` +
+  `NextIntlClientProvider messages={messages}`) en el payload RSC de
+  **todas** las rutas — unos 80 KB (~19 KB gzip) por `messages/<locale>.json`.
+  El namespace `help.*` (203 cadenas del registro de ayuda por pantalla,
+  `lib/help/pageHelp.ts`) es solo el ~40 % de ese fichero y solo hace
+  falta cuando alguien abre el diálogo de `PageHelp.tsx`. Arreglo
+  propuesto (no aplicado aquí, es arquitectónico): pasar un subconjunto
+  con `pick` de next-intl (todo menos `help`) y montar `help` en un
+  `NextIntlClientProvider` anidado dentro de `PageHelp`, o cargarlo con
+  `import()` al abrir el diálogo.
+- **E2E del idioma de la cuenta distinto del navegador (M11 de
+  `final-review-report.md`)**: `e2e/idioma.spec.ts` resetea
+  `preferred_language` a `""` antes de cada ejecución (necesario para que
+  el spec sea determinista contra un backend local que persiste entre
+  ejecuciones), así que la rama real de la decisión 2 del diseño («el
+  idioma de la cuenta manda al entrar, aunque el selector de `/login`
+  acabe de marcar otro justo antes de enviar el formulario») está
+  cubierta a nivel unidad (`app/(auth)/login/page.test.tsx`,
+  `app/providers.test.tsx`) pero **nunca** se ejercita de extremo a
+  extremo contra Next. Caso pendiente para quien retome el e2e: dejar
+  `preferred_language: "ca"` en un segundo caso del spec y comprobar que,
+  tras entrar con el navegador en otro idioma, `html[lang="ca"]` gana —
+  o, más robusto, sustituir la combinación `router.refresh()` +
+  `router.replace()` de `LoginForm.tsx` por `window.location.assign(...)`
+  cuando el idioma de la cuenta difiere del recién elegido, que garantiza
+  un documento nuevo en vez de depender del orden de asentamiento de las
+  dos llamadas de Next. No se ha tocado el e2e en esta ronda (fuera de
+  alcance: la tarea solo permite lectura/documentación del hueco, no
+  ejecutar `npm run e2e`).

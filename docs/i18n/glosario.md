@@ -15,6 +15,7 @@ extracción de este repo (2-6).
 | en | es | eu | ca |
 |---|---|---|---|
 | entity | entidad | erakunde | entitat |
+| panel | panel | panel | tauler |
 | umbrella entity | entidad paraguas | erakunde aterki | entitat paraigua |
 | community | comunidad | komunitate | comunitat |
 | plan / activity | plan / actividad | plana / jarduera | pla / activitat |
@@ -31,6 +32,7 @@ extracción de este repo (2-6).
 | resource | recurso | baliabidea | recurs |
 | program | programa | programa | programa |
 | report (moderation) | reporte | salaketa | informe (moderació) |
+| appeal | recurso | errekurtsoa | al·legació |
 | help request | solicitud de ayuda | laguntza-eskaera | sol·licitud d'ajuda |
 | invitation | invitación | gonbidapena | invitació |
 | code (verification/check-in) | código | kodea | codi |
@@ -43,6 +45,7 @@ extracción de este repo (2-6).
 | retry | reintentar | saiatu berriro | torna-ho a provar |
 | loading | cargando | kargatzen | carregant |
 | no access | sin acceso | sarbiderik ez | sense accés |
+| pending | pendiente | zain | pendent |
 | back to home | volver al inicio | itzuli hasierara | torna a l'inici |
 | language | idioma | hizkuntza | idioma |
 | Spanish (the language) | español | gaztelania | castellà |

@@ -99,6 +99,9 @@
     }
   },
   "pages": {
+    "root": {
+      "description": "Panel web de entidades, paraguas y plataforma de Popyplan"
+    },
     "home": {
       "noAccessTitle": "No tienes acceso a ningún área del panel",
       "noAccessDescription": "Tu cuenta no tiene ningún rol de plataforma ni de entidad con panel asignado. Contacta con quien gestiona tu entidad o con Popyplan."

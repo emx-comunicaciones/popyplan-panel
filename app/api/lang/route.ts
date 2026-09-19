@@ -19,7 +19,11 @@ export async function POST(request: NextRequest) {
   const lang = body?.lang;
 
   if (typeof lang !== "string" || !isSupportedLanguage(lang)) {
-    return NextResponse.json({ detail: "Idioma no soportado." }, { status: 400 });
+    // Código estable, no prosa (M10 de la revisión final de la rama de
+    // i18n): nadie lo pinta hoy (`LanguageSwitcher` solo mira
+    // `response.ok`), pero era la única cadena en castellano que quedaba
+    // en un route handler nuevo de esta rama.
+    return NextResponse.json({ detail: "unsupported_language" }, { status: 400 });
   }
 
   const response = new NextResponse(null, { status: 204 });

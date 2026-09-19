@@ -31,7 +31,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Dialog } from "@/components/ui/Dialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { useMetrics } from "@/hooks/useMetrics";
+import { useMetrics, type MetricsErrorKind } from "@/hooks/useMetrics";
 import {
   useActivateProgram,
   useCloseProgram,
@@ -92,6 +92,15 @@ const PROGRAM_REPORT_ERROR_KEYS: Record<ProgramReportErrorKind, string> = {
   desconocido: "errors.programReport.desconocido",
 };
 
+// `useMetrics` reutilizado tal cual — mismo mapa de claves que
+// `EntityHomeDashboard.tsx`/`{Paraguas,Plataforma}MetricsDashboard.tsx`
+// (tarea 5 de i18n), sin duplicar el catálogo.
+const METRICS_ERROR_KEYS: Record<MetricsErrorKind, string> = {
+  periodo_invalido: "errors.metrics.periodoInvalido",
+  sin_acceso: "errors.metrics.sinAcceso",
+  desconocido: "errors.metrics.desconocido",
+};
+
 function formatDate(iso: string): string {
   return new Date(`${iso}T00:00:00`).toLocaleDateString(localeFor(activeLanguage()));
 }
@@ -113,7 +122,7 @@ function ProgramaMetrics({ orgId, program }: { orgId: number | string; program: 
       {metrics.isError ? (
         <ErrorState
           title={t("entidad.programaFicha.metricsError")}
-          description={metrics.error.message}
+          description={errorKindText(metrics.error, METRICS_ERROR_KEYS, t, "errors.metrics.desconocido")}
         />
       ) : !metrics.data ? (
         <p className="text-sm text-text-secondary">{t("entidad.programaFicha.metricsLoading")}</p>

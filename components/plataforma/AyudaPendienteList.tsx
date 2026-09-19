@@ -5,7 +5,7 @@
  * todas las entidades a la vez (`usePlatformPendingHelpRequests`, ruta
  * agregada del backend desde la tarea P7, `docs/PANEL.md` §10.1).
  */
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -23,9 +23,10 @@ import {
 import type { HelpRequestRow } from "@/lib/api/types";
 import { NO_PHONE_NOTICE_KEY } from "@/lib/help/noPhoneNotice";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { localeForUseLocale } from "@/lib/i18n/locale";
 
-function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
+function formatDateTime(iso: string, locale: string): string {
+  return new Date(iso).toLocaleString(localeForUseLocale(locale), { dateStyle: "short", timeStyle: "short" });
 }
 
 // Mismo texto que `GuardiaPanel.tsx` (`useAcknowledgeHelpRequest`,
@@ -52,6 +53,7 @@ const HELP_REQUESTS_ERROR_KEYS: Record<PlatformHelpRequestsErrorKind, string> = 
  */
 function HelpRequestCard({ request }: { request: HelpRequestRow }) {
   const t = useTranslations();
+  const locale = useLocale();
   const acknowledge = useAcknowledgeHelpRequestGlobal();
   const { is_member: isMember, public_name: publicName, referent } = request.user_display;
 
@@ -73,7 +75,7 @@ function HelpRequestCard({ request }: { request: HelpRequestRow }) {
               {request.organization_display ? request.organization_display.name : t("plataforma.ayuda.noOrganization")}
               {request.community_display ? ` · ${request.community_display.name}` : ""}
             </p>
-            <p className="text-xs text-text-secondary">{formatDateTime(request.created_at)}</p>
+            <p className="text-xs text-text-secondary">{formatDateTime(request.created_at, locale)}</p>
           </div>
           {request.acknowledged_at ? (
             <Badge tone="success">{t("entidad.guardia.acknowledged")}</Badge>

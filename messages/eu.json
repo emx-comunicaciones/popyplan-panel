@@ -99,6 +99,9 @@
     }
   },
   "pages": {
+    "root": {
+      "description": "Popyplanen erakundeen, erakunde aterkien eta plataformaren web panela"
+    },
     "home": {
       "noAccessTitle": "Ez duzu panelaren atal batera ere sarbiderik",
       "noAccessDescription": "Zure kontuak ez du plataformako rolik ez eta panela duen erakunde-rolik ere esleituta. Jarri harremanetan zure erakundea kudeatzen duenarekin edo Popyplanekin."
@@ -270,11 +273,11 @@
       "todayErrorTitle": "Ezin izan dira gaurko jarduerak kargatu",
       "eventRegistered": "{count, plural, one {# izena emanda} other {# izena emanda}}",
       "eventCapacity": "{count, plural, one {# plaza} other {# plaza}}",
-      "pendingAlertsHeading": "Abisu pendienteak",
-      "pendingHelpRequests": "Laguntza-eskaera pendienteak",
+      "pendingAlertsHeading": "Zain dauden abisuak",
+      "pendingHelpRequests": "Zain dauden laguntza-eskaerak",
       "goToGuardia": "Txandara joan",
       "helpRequestsError": "Ezin izan dira laguntza-eskaerak kargatu.",
-      "pendingReports": "Salaketa pendienteak",
+      "pendingReports": "Zain dauden salaketak",
       "goToReportes": "Salaketetara joan",
       "reportsError": "Ezin izan dira salaketak kargatu.",
       "programsHeading": "Programak",
@@ -308,7 +311,7 @@
       "joinedSinceLabel": "Alta honezkero",
       "includeInvited": "Gonbidatuak sartu",
       "invitationsCountError": "Ezin izan da gonbidapen kopurua kargatu.",
-      "pendingInvitations": "{count, plural, one {# gonbidapen pendiente} other {# gonbidapen pendiente}}",
+      "pendingInvitations": "{count, plural, one {# gonbidapen zain} other {# gonbidapen zain}}",
       "resentTo": "Gonbidapena berbidali zaio {email} helbideari.",
       "loadError": "Ezin izan dira pertsonak kargatu",
       "loadingPeople": "Pertsonak kargatzen…",
@@ -321,7 +324,7 @@
       "colJoined": "Alta",
       "colReferent": "Erreferentea",
       "colActions": "Ekintzak",
-      "invitedBadge": "Gonbidatua (pendiente)",
+      "invitedBadge": "Gonbidatua (zain)",
       "resend": "Berbidali",
       "revoke": "Baliogabetu",
       "noReferent": "Erreferenterik gabe",
@@ -379,11 +382,11 @@
       "kickConfirm": "«{name}» komunitate honetatik kanporatu? Bere jarduerak ikusteari utziko dio eta berriro eskatu beharko du sartzeko.",
       "approve": "Onartu",
       "reject": "Ukatu",
-      "pendingHeading": "Eskaera pendienteak",
+      "pendingHeading": "Zain dauden eskaerak",
       "pendingError": "Ezin izan dira eskaerak kargatu",
       "loading": "Kargatzen…",
-      "noPending": "Ez dago eskaera pendienterik",
-      "pendingTableCaption": "Komunitatearen eskaera pendienteak",
+      "noPending": "Ez dago zain dagoen eskaerarik",
+      "pendingTableCaption": "Komunitatearen zain dauden eskaerak",
       "colPerson": "Pertsona",
       "colActions": "Ekintzak",
       "membersHeading": "Kideak",
@@ -475,7 +478,7 @@
       "historyError": "Ezin izan da historia kargatu",
       "historyLoading": "Jakinarazpenak kargatzen…",
       "historyEmpty": "Ez dago jakinarazpenik oraindik",
-      "sentOn": "{date}(e)an bidalita · {count, plural, one {hartzaile #} other {# hartzaile}}",
+      "sentOn": "{date}(e)an bidalita · {count, plural, one {# hartzaile} other {# hartzaile}}",
       "readOnlyNotice": "Titularrak edo moderatzaileak bakarrik idatz ditzakete jakinarazpenak. Hemen historia ikus dezakezu.",
       "historyHeading": "Historia",
       "template": {
@@ -502,7 +505,7 @@
       "empty": "Ez dago inkestarik oraindik",
       "open": "Irekita",
       "closed": "Itxita",
-      "questionCount": "{count, plural, one {galdera #} other {# galdera}}",
+      "questionCount": "{count, plural, one {# galdera} other {# galdera}}",
       "viewResults": "Emaitzak ikusi",
       "listHeading": "Inkestak",
       "questionKind": {
@@ -526,7 +529,7 @@
       "loadError": "Ezin izan dira emaitzak kargatu",
       "loading": "Emaitzak kargatzen…",
       "noQuestions": "Ez dago galderarik",
-      "responsesTotal": "{count, plural, one {erantzun #} other {# erantzun}} guztira."
+      "responsesTotal": "{count, plural, one {# erantzun} other {# erantzun}} guztira."
     },
     "recursos": {
       "heading": "Baliabideak",
@@ -889,13 +892,13 @@
       "desconocido": "Ezin izan da fitxategia inportatu."
     },
     "resendInvitation": {
-      "invalido": "Gonbidapen hau jada ez dago pendiente.",
+      "invalido": "Gonbidapen hau jada ez dago zain.",
       "sinPermiso": "Titularrak edo moderatzaileak bakarrik berbidal ditzakete gonbidapenak.",
       "noEncontrada": "Gonbidapen hori ez dago.",
       "desconocido": "Ezin izan da gonbidapena berbidali."
     },
     "revokeInvitation": {
-      "invalido": "Gonbidapen hau jada ez dago pendiente.",
+      "invalido": "Gonbidapen hau jada ez dago zain.",
       "sinPermiso": "Titularrak edo moderatzaileak bakarrik baliogabetu ditzakete gonbidapenak.",
       "noEncontrada": "Gonbidapen hori ez dago.",
       "desconocido": "Ezin izan da gonbidapena baliogabetu."
@@ -913,7 +916,7 @@
       "desconocido": "Ezin izan dira komunitatearen kideak kargatu."
     },
     "communityPendingRequests": {
-      "desconocido": "Ezin izan dira eskaera pendienteak kargatu."
+      "desconocido": "Ezin izan dira zain dauden eskaerak kargatu."
     },
     "communityMemberAction": {
       "approve": "Ezin izan da eskaera onartu.",
@@ -1783,8 +1786,8 @@
       "accountLabel": "Kontua",
       "levelLabel": "Eskatutako maila",
       "reasonLabel": "Hornitzailearen arrazoia",
-      "appealLabel": "Pertsonaren dokumentua",
-      "noAppeal": "Oraindik dokumenturik gabe.",
+      "appealLabel": "Pertsonaren errekurtsoa",
+      "noAppeal": "Oraindik errekurtsorik gabe.",
       "noteLabel": "Erabakiaren oharra",
       "approve": "Onartu",
       "reject": "Ezetsi",

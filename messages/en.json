@@ -99,6 +99,9 @@
     }
   },
   "pages": {
+    "root": {
+      "description": "Popyplan's web panel for entities, umbrella entities and platform"
+    },
     "home": {
       "noAccessTitle": "You don't have access to any panel area",
       "noAccessDescription": "Your account has no platform role or entity role with panel access assigned. Contact whoever manages your entity or Popyplan."
@@ -1783,8 +1786,8 @@
       "accountLabel": "Account",
       "levelLabel": "Requested level",
       "reasonLabel": "Provider's reason",
-      "appealLabel": "Person's document",
-      "noAppeal": "No document yet.",
+      "appealLabel": "Person's appeal",
+      "noAppeal": "No appeal yet.",
       "noteLabel": "Decision note",
       "approve": "Approve",
       "reject": "Reject",

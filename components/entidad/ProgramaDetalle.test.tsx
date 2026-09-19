@@ -1,9 +1,14 @@
 import userEvent from "@testing-library/user-event";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { render as rtlRenderUnwrapped } from "@testing-library/react";
+import { NextIntlClientProvider } from "next-intl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { render, screen, within } from "@/test-utils/render";
+import { createTestQueryClient, render, screen, within } from "@/test-utils/render";
 import { buildProgram } from "@/test-utils/fixtures/program";
 import { buildMetricsResponse } from "@/test-utils/fixtures/metrics";
+import { MetricsError } from "@/hooks/useMetrics";
+import eu from "@/messages/eu.json";
 
 const useProgramMock = vi.hoisted(() => vi.fn());
 const useActivateProgramMock = vi.hoisted(() => vi.fn());
@@ -383,5 +388,33 @@ describe("ProgramaDetalle", () => {
     render(<ProgramaDetalle orgId={7} programId={3} canManage canExport />);
 
     expect(screen.getAllByRole("alert").some((el) => el.textContent?.includes("métricas"))).toBe(true);
+  });
+
+  it("error de métricas con kind 'sin_acceso': traduce con errorKindText (eu), no pinta el `.message` en español", () => {
+    mockDefaults();
+    useMetricsMock.mockReturnValue({
+      data: undefined,
+      isError: true,
+      error: new MetricsError("sin_acceso", "No tienes acceso a estas métricas."),
+    });
+    useProgramMock.mockReturnValue({ data: buildProgram(), isError: false, error: null });
+
+    const queryClient = createTestQueryClient();
+    rtlRenderUnwrapped(
+      <QueryClientProvider client={queryClient}>
+        <NextIntlClientProvider locale="eu" messages={eu}>
+          <ProgramaDetalle orgId={7} programId={3} canManage canExport />
+        </NextIntlClientProvider>
+      </QueryClientProvider>,
+    );
+
+    expect(
+      screen
+        .getAllByRole("alert")
+        .some((el) => el.textContent?.includes("Ez duzu metrika hauetarako sarbiderik.")),
+    ).toBe(true);
+    expect(
+      screen.queryAllByText((_, el) => el?.textContent === "No tienes acceso a estas métricas." || false),
+    ).toHaveLength(0);
   });
 });

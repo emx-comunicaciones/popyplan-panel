@@ -30,7 +30,14 @@ integrado.
   `<code>`/`<email>`/`<rd>` resueltas con `t.rich()`. **Prioridad alta**
   de revisión en euskera y catalán — es contenido legal con valor
   probatorio (procedimiento de reclamación, artículo 13 del RD
-  1112/2018), no una cadena de interfaz cualquiera.
+  1112/2018), no una cadena de interfaz cualquiera. **Corregido en la
+  ronda final de correcciones** (M9 de `final-review-report.md`):
+  `accessibility.nonAccessible.list` en catalán decía «Informes» para
+  tres conceptos distintos (la cola de moderación dos veces, la
+  exportación de métricas una) — las dos ocurrencias de moderación pasan
+  a «Informes (moderació)», coherente con `menu.entidad.reportes`.
+  Sigue pendiente que un hablante nativo confirme el resto de la
+  redacción.
 - **Formulario de login y sus mensajes de error** (`auth.login.*`):
   segunda prioridad — es el primer texto que ve cualquier persona que
   entra al panel en euskera o catalán.

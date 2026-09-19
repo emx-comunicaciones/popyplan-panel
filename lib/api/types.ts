@@ -20,22 +20,33 @@ import type { components } from "./types.generated";
  * patrón de ensanche manual que `FamiliesSummary`/`PeopleMetrics` en
  * otras rondas de este fichero; se puede quitar en cuanto
  * `npm run gen:types` lo traiga solo.
+ *
+ * **Opcional, no obligatorio** (M6 de la revisión final de la rama de
+ * i18n): un backend desplegado antes de esta tarea (o un `/me/` real
+ * contra ese backend, plan decisión 2) no trae el campo en absoluto —
+ * `hooks/useAuth.ts::applyAccountLanguage` ya lo trata como ausente con
+ * `isSupportedLanguage(undefined) === false`, así que declararlo
+ * obligatorio hacía mentir al tipo en runtime sin que ningún consumidor
+ * lo necesitara así.
  */
 export type Me = components["schemas"]["Me"] & {
-  preferred_language: string;
+  preferred_language?: string;
 };
 
 /**
  * `PATCH /api/users/users/update_profile/`
- * (`users/unified_viewset.py::UsersViewSet.update_profile`). Mismatch
- * de contrato: el `@extend_schema` de la vista declara
- * `responses={200: MeSerializer}`, pero el código devuelve
- * `Response(serializer.data)` de `MeUpdateSerializer` (el serializer de
- * **escritura** — sin `id`/`org_memberships`/etc., solo los campos que
- * `MeUpdateSerializer` declara). El panel solo necesita confirmar que
- * `preferred_language` se guardó (`hooks/useUpdatePreferredLanguage.ts`),
- * así que el tipo manual se limita a ese campo en vez de fingir un
- * `Me` completo que la respuesta real no trae.
+ * (`users/unified_viewset.py::UsersViewSet.update_profile`). **No hay
+ * mismatch de contrato aquí** (corregido en M5 de la revisión final de
+ * la rama de i18n — la nota anterior sí lo afirmaba, y era falsa): el
+ * `@extend_schema` de la vista declara `responses={200: MeSerializer}`
+ * y el código real lo cumple —
+ * `users/profile_serializers.py::MeUpdateSerializer.to_representation`
+ * delega en `MeSerializer(user, context=self.context).data`—, así que
+ * la vista devuelve un `Me` completo de verdad (`id`/`org_memberships`
+ * incluidos). Este tipo se limita a `preferred_language` porque es el
+ * único campo que el panel necesita confirmar
+ * (`hooks/useUpdatePreferredLanguage.ts`), no porque la respuesta real
+ * traiga menos.
  */
 export interface UpdatePreferredLanguageResponse {
   preferred_language: string;

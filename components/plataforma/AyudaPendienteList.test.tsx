@@ -1,8 +1,12 @@
+import { QueryClientProvider } from "@tanstack/react-query";
+import { render as rtlRenderUnwrapped } from "@testing-library/react";
+import { NextIntlClientProvider } from "next-intl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { axe } from "@/test-utils/axe";
 import { buildHelpRequest, buildHelpRequestUserDisplay } from "@/test-utils/fixtures/helpRequest";
-import { render, screen } from "@/test-utils/render";
+import { createTestQueryClient, render, screen } from "@/test-utils/render";
+import eu from "@/messages/eu.json";
 
 const usePlatformPendingHelpRequestsMock = vi.hoisted(() => vi.fn());
 const useAcknowledgeHelpRequestGlobalMock = vi.hoisted(() => vi.fn());
@@ -173,6 +177,30 @@ describe("AyudaPendienteList", () => {
 
     expect(screen.getByText("Invitado X.")).toBeInTheDocument();
     expect(screen.getByText("No pertenece a la entidad")).toBeInTheDocument();
+  });
+
+  it("con el panel en euskera, la fecha del aviso se pinta en formato eu-ES (I2)", () => {
+    usePlatformPendingHelpRequestsMock.mockReturnValue({
+      data: [buildHelpRequest({ created_at: "2026-09-01T18:30:00Z" })],
+      isError: false,
+      error: null,
+    });
+    useAcknowledgeHelpRequestGlobalMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
+
+    const queryClient = createTestQueryClient();
+    rtlRenderUnwrapped(
+      <QueryClientProvider client={queryClient}>
+        <NextIntlClientProvider locale="eu" messages={eu}>
+          <AyudaPendienteList />
+        </NextIntlClientProvider>
+      </QueryClientProvider>,
+    );
+
+    // `toLocaleString("eu-ES", {dateStyle:"short", timeStyle:"short"})` da
+    // "26/9/1 (20:30)" (año/mes/día, hora entre paréntesis) para esa fecha
+    // en Europe/Madrid — distinto del formato es-ES ("1/9/26, 20:30").
+    expect(screen.getByText("26/9/1 (20:30)")).toBeInTheDocument();
+    expect(screen.queryByText("1/9/26, 20:30")).not.toBeInTheDocument();
   });
 
   it("acuse de recibo fallido: el mensaje de error se pinta con role=alert", () => {

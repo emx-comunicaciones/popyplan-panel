@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useEntityEvents, type EntityEventStatus } from "@/hooks/useEntityEvents";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { localeForUseLocale } from "@/lib/i18n/locale";
 import { presetPeriod } from "@/lib/metrics/period";
 
 export interface ActividadesTableProps {
@@ -37,8 +38,8 @@ const STATUS_KEYS: Record<EntityEventStatus, string> = {
   completed: "entidad.actividades.statusCompleted",
 };
 
-function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
+function formatDateTime(iso: string, locale: string): string {
+  return new Date(iso).toLocaleString(localeForUseLocale(locale), { dateStyle: "short", timeStyle: "short" });
 }
 
 /**
@@ -52,6 +53,7 @@ export function ActividadesTable({ orgId, slug, canOpenAttendance }: Actividades
   const period = presetPeriod("mes");
   const t = useTranslations("entidad.actividades");
   const tAll = useTranslations();
+  const locale = useLocale();
 
   const events = useEntityEvents(orgId, period, status || undefined);
 
@@ -116,7 +118,7 @@ export function ActividadesTable({ orgId, slug, canOpenAttendance }: Actividades
                     ) : (
                       <span className="font-medium">{event.title}</span>
                     )}
-                    <div className="text-xs text-text-secondary">{formatDateTime(event.starts_at)}</div>
+                    <div className="text-xs text-text-secondary">{formatDateTime(event.starts_at, locale)}</div>
                   </td>
                   <td className="px-3 py-2 text-text-base">
                     {(() => {

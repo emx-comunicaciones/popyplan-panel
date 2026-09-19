@@ -2072,6 +2072,12 @@ y los e2e no cambian de estructura. `i18n/request.ts`
 `next/headers` → `es`) y carga `messages/<locale>.json`. `app/layout.tsx`
 (Server Component) llama a `getLocale()`/`getMessages()` para
 `<html lang>` y envolver `children` en `NextIntlClientProvider`.
+**`getServerLanguage()` llama a `cookies()`/`headers()`** (M15 de la
+revisión final de la rama de i18n), así que ninguna ruta que pase por
+`i18n/request.ts` puede prerenderizarse estáticamente — `/accesibilidad`
+incluida, pese a ser pública y sin sesión. Es el precio esperado de
+«idioma por cookie sin prefijo de URL»; no hay alternativa simple sin
+volver a un segmento `[locale]`.
 
 **Cookie de idioma** (`lib/i18n/cookie.ts`, decisión 2): `pp_lang`, **no**
 `httpOnly` (el selector de idioma y `document.documentElement.lang` la
@@ -2213,7 +2219,10 @@ mensaje que ningún componente muestra no tenía sentido) y
 `hooks/useOrgMembers.ts` (sus únicos consumidores que leen `.message`,
 `ConfiguracionPanel.tsx`/`EntidadDetail.tsx`, son de las tareas 4/5; los
 dos consumidores de la tarea 3, `AddPersonDialog`/`PersonSheet`, solo
-miran `.isError`). Función pura fuera de un hook con el mismo problema
+miran `.isError`) — **cerrado en la tarea 5 de i18n**: `useOrgMembers.ts`
+ya gana `kind` (`OrgMembersErrorKind = "invalido" | "sin_acceso" |
+"desconocido"`), así que esta excepción es histórica, no vigente; la de
+`useInvitations.ts` sigue en pie. Función pura fuera de un hook con el mismo problema
 (no puede llamar a `t()`): `lib/support/relationshipLabel.ts` devuelve
 ahora la **clave** de traducción (`relationshipLabelKey`, `null` si el
 backend manda una relación nueva) en vez del texto, y
@@ -2311,6 +2320,23 @@ cerradas.
   `allowedStrings` (`–`, `#`, `(#`, `) —`, `?`, `×` — ver el comentario
   del propio fichero para el porqué de cada uno). Detalle completo en
   `docs/i18n/PENDIENTES.md`.
+- **Guarda de atributos de texto** (`eslint.config.mjs::no-restricted-syntax`,
+  ronda final de correcciones tras la revisión de la rama, hallazgo I4):
+  `ignoreProps: true` de la regla de arriba deja en paz los **atributos**
+  JSX a propósito (evita los 1835 falsos positivos de `className`/`type`/
+  `htmlFor`), pero eso también dejaba pasar un `aria-label="Cerrar"` sin
+  traducir — el caso más fácil de olvidar, porque un atributo no se ve en
+  pantalla, y justo lo que la decisión 9 pedía blindar. La regla nueva
+  marca cualquier `Literal` con alguna letra como hijo directo de
+  `aria-label`/`aria-description`/`placeholder`/`title`/`alt` (nunca
+  `className`, `type`, `id`…). Los dos únicos literales que atrapó al
+  añadirla, `placeholder="organization.created"`/`"entities.organization"`
+  de `AuditoriaPanel.tsx` (ejemplos técnicos del contrato, no prosa), pasan
+  a una constante (`ACTION_PLACEHOLDER`/`TARGET_TYPE_PLACEHOLDER`) referida
+  como expresión (`placeholder={ACTION_PLACEHOLDER}`) — comprobado que el
+  selector de la regla no baja a un `Literal` anidado dentro de un
+  `JSXExpressionContainer`, así que basta con eso, sin
+  `eslint-disable-next-line`.
 - **`<html lang>` dinámico** (decisión 3): ya lo hacía `app/layout.tsx`
   desde la Tarea 1 (`getLocale()`); esta tarea no lo toca, solo lo
   ejercita de verdad a través del selector y de `router.refresh()`.
@@ -2387,9 +2413,13 @@ en CI lo gate el job `e2e`).
   ver «Cierre de i18n» arriba): **99,88 %** (2502/2505 líneas, 1716
   tests, 176 ficheros — dos ficheros nuevos con test propio,
   `components/layout/LanguageSwitcher.tsx` y
-  `hooks/useUpdatePreferredLanguage.ts`). El umbral fijado sigue en 99,7
-  porque real menos 0,3 (99,58) queda por debajo, así que el ratchet no
-  sube.
+  `hooks/useUpdatePreferredLanguage.ts`). Tras la ronda final de
+  correcciones sobre la revisión de la rama (`final-review-report.md`,
+  Important I1-I5 y Minor M1-M2/M4-M10/M12-M13/M15-M19): **99,88 %**
+  (2516/2519 líneas, 1738 tests, 177 ficheros — un fichero nuevo,
+  `app/layout.test.tsx`, que prueba `generateMetadata` y el propio
+  `RootLayout`). El umbral fijado sigue en 99,7 porque real menos 0,3
+  (99,58) queda por debajo, así que el ratchet no sube.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la

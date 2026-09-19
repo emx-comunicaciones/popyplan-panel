@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -15,16 +15,27 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Popyplan · Panel",
-    // Cada página pone su propio título (accesibilidad: cada ruta debe
-    // tener un `<title>` único, ver CLAUDE.md «Accesibilidad»); esta
-    // plantilla añade el sufijo común a todos.
-    template: "%s · Popyplan",
-  },
-  description: "Panel web de entidades, paraguas y plataforma de Popyplan",
-};
+/**
+ * M17 de la revisión final de la rama de i18n: `description` era un
+ * literal fijo en español, el único `metadata` sin traducir (los 34
+ * títulos de página ya pasaron a `generateMetadata` con `getTranslations`
+ * en tareas anteriores). El `title.default`/`template` se quedan como
+ * objeto estático — no dependen del idioma (el sufijo « · Popyplan» y la
+ * marca son iguales en los tres, ver `auth.login.brand`).
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("pages.root");
+  return {
+    title: {
+      default: "Popyplan · Panel",
+      // Cada página pone su propio título (accesibilidad: cada ruta debe
+      // tener un `<title>` único, ver CLAUDE.md «Accesibilidad»); esta
+      // plantilla añade el sufijo común a todos.
+      template: "%s · Popyplan",
+    },
+    description: t("description"),
+  };
+}
 
 export default async function RootLayout({
   children,

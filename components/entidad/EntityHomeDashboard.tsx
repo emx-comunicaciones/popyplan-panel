@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
@@ -10,6 +10,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { StatCard } from "@/components/metrics/StatCard";
 import { useEntityHome } from "@/hooks/useEntityHome";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { localeForUseLocale } from "@/lib/i18n/locale";
 import { formatCount, formatPct } from "@/lib/metrics/format";
 
 export interface EntityHomeDashboardProps {
@@ -17,8 +18,8 @@ export interface EntityHomeDashboardProps {
   slug: string;
 }
 
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+function formatTime(iso: string, locale: string): string {
+  return new Date(iso).toLocaleTimeString(localeForUseLocale(locale), { hour: "2-digit", minute: "2-digit" });
 }
 
 const ENTITY_EVENTS_ERROR_KEYS = {
@@ -47,6 +48,7 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
   const { today, pendingReports, pendingHelpRequests, metrics, activePrograms } = useEntityHome(orgId);
   const t = useTranslations("entidad.inicio");
   const tErrors = useTranslations();
+  const locale = useLocale();
 
   return (
     <div className="flex flex-col gap-6">
@@ -77,7 +79,7 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
                     <div>
                       <p className="font-medium text-text-base">{event.title}</p>
                       <p className="text-sm text-text-secondary">
-                        {formatTime(event.starts_at)}
+                        {formatTime(event.starts_at, locale)}
                         {event.organizer ? ` · ${event.organizer.public_name}` : ""}
                       </p>
                     </div>

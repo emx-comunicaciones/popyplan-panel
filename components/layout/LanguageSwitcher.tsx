@@ -11,7 +11,11 @@
  *    guardar la preferencia en la cuenta
  *    (`hooks/useUpdatePreferredLanguage.ts`, tolera cualquier fallo — la
  *    cookie ya decide el idioma de la interfaz).
- * 3. `router.refresh()` para que `app/layout.tsx` recoja el idioma nuevo
+ * 3. Invalida toda la caché de TanStack Query (M12 de la revisión final
+ *    de la rama: sin esto, un `detail` verbatim del backend ya en caché
+ *    se quedaba en el idioma anterior hasta que la query se refrescara
+ *    por otro motivo).
+ * 4. `router.refresh()` para que `app/layout.tsx` recoja el idioma nuevo
  *    de `getLocale()` (cookie → `Accept-Language` → `es`) y todo el
  *    árbol de Server Components (incluido `<html lang>`) se repinte sin
  *    una recarga completa.
@@ -27,6 +31,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/Button";
 import { getAccessToken } from "@/lib/auth/tokenStore";
@@ -38,6 +43,7 @@ export function LanguageSwitcher() {
   const locale = useLocale();
   const t = useTranslations("language");
   const updatePreferredLanguage = useUpdatePreferredLanguage();
+  const queryClient = useQueryClient();
   const [pending, setPending] = useState<Language | null>(null);
 
   async function handleClick(lang: Language) {
@@ -58,6 +64,13 @@ export function LanguageSwitcher() {
         // que refrescar.
         await updatePreferredLanguage.mutateAsync(lang).catch(() => null);
       }
+      // M12 de la revisión final de la rama: sin esto, los `detail`
+      // verbatim del backend que `errorKindText` prioriza (y que con la
+      // i18n del backend llegarán ya traducidos) se quedaban en el
+      // idioma anterior hasta que la query se refrescara por otro
+      // motivo. Antes de `router.refresh()`, que solo repinta el árbol
+      // de Server Components.
+      await queryClient.invalidateQueries();
       router.refresh();
     } catch {
       // La cookie no se pudo fijar (red caída): no hay nada que
@@ -69,20 +82,33 @@ export function LanguageSwitcher() {
 
   return (
     <div role="group" aria-label={t("title")} className="flex items-center gap-1">
-      {SUPPORTED_LANGUAGES.map((lang) => (
-        <Button
-          key={lang}
-          type="button"
-          variant={lang === locale ? "primary" : "secondary"}
-          aria-pressed={lang === locale}
-          aria-label={t(lang)}
-          disabled={pending !== null}
-          onClick={() => handleClick(lang)}
-          className="h-10 px-3 text-xs font-semibold uppercase"
-        >
-          {lang.toUpperCase()}
-        </Button>
-      ))}
+      {SUPPORTED_LANGUAGES.map((lang) => {
+        const isActive = lang === locale;
+        return (
+          <Button
+            key={lang}
+            type="button"
+            // Fondo blanco fijo para los tres (hallazgo I3 de la
+            // revisión final de la rama de i18n): `variant="primary"`
+            // en el botón activo (`bg-primary-700`) se confundía con la
+            // cabecera de la entidad por defecto, que también usa
+            // `primary-700` — mismo arreglo que `PageHelp.tsx` en
+            // `a41bde5`. El activo se distingue por `font-semibold` y un
+            // borde marcado, no solo por color, además de
+            // `aria-pressed` (que ya era correcto).
+            variant="secondary"
+            aria-pressed={isActive}
+            aria-label={t(lang)}
+            disabled={pending !== null}
+            onClick={() => handleClick(lang)}
+            className={`h-10 px-3 text-xs uppercase ${
+              isActive ? "border-2 border-primary-700 font-semibold" : "font-medium"
+            }`}
+          >
+            {lang.toUpperCase()}
+          </Button>
+        );
+      })}
     </div>
   );
 }
