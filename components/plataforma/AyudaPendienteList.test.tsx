@@ -196,11 +196,18 @@ describe("AyudaPendienteList", () => {
       </QueryClientProvider>,
     );
 
-    // `toLocaleString("eu-ES", {dateStyle:"short", timeStyle:"short"})` da
-    // "26/9/1 (20:30)" (año/mes/día, hora entre paréntesis) para esa fecha
-    // en Europe/Madrid — distinto del formato es-ES ("1/9/26, 20:30").
-    expect(screen.getByText("26/9/1 (20:30)")).toBeInTheDocument();
-    expect(screen.queryByText("1/9/26, 20:30")).not.toBeInTheDocument();
+    // El formato exacto de eu-ES (año/mes/día, hora entre paréntesis en
+    // Node 24: "26/9/1 (20:30)") depende de los datos ICU de la versión de
+    // Node — Node 20 en CI lo escribe distinto —, así que el valor esperado
+    // se calcula con la misma API en vez de fijarlo a mano; lo que se fija
+    // es que difiere del formato es-ES de la misma fecha.
+    const date = new Date("2026-09-01T18:30:00Z");
+    const options = { dateStyle: "short", timeStyle: "short" } as const;
+    const expectedEu = date.toLocaleString("eu-ES", options);
+    const expectedEs = date.toLocaleString("es-ES", options);
+    expect(expectedEu).not.toBe(expectedEs);
+    expect(screen.getByText(expectedEu)).toBeInTheDocument();
+    expect(screen.queryByText(expectedEs)).not.toBeInTheDocument();
   });
 
   it("acuse de recibo fallido: el mensaje de error se pinta con role=alert", () => {
