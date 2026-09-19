@@ -159,7 +159,7 @@ describe("EntidadAsistenciaPage", () => {
     useAttendeesMock.mockReturnValue({ data: [ATTENDEE], isError: false, error: null });
     useMarkAttendanceMock.mockReturnValue({ mutate: vi.fn(), isPending: false, variables: undefined });
     const mutate = vi.fn((_vars, options) =>
-      options?.onError?.({ message: "Fuera de la ventana de check-in de esta actividad." }),
+      options?.onError?.({ kind: "fuera_de_ventana", message: "Fuera de la ventana de check-in de esta actividad." }),
     );
     useCheckinMock.mockReturnValue({ mutate, isPending: false });
     const user = userEvent.setup();

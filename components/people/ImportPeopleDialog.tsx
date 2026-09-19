@@ -13,12 +13,14 @@
  * dice explícitamente en la vista previa.
  */
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { useImportPeople } from "@/hooks/useImportPeople";
 import type { ImportPeopleResult } from "@/lib/api/types";
-import { validateImportFile } from "@/lib/people/validateImportFile";
+import { errorKindText } from "@/lib/i18n/errorKindText";
+import { IMPORT_MAX_MB, validateImportFile, type ImportFileErrorKind } from "@/lib/people/validateImportFile";
 
 export interface ImportPeopleDialogProps {
   orgId: number | string;
@@ -27,37 +29,50 @@ export interface ImportPeopleDialogProps {
 
 type Phase = "select" | "preview" | "done";
 
+const IMPORT_PEOPLE_ERROR_KEYS = {
+  invalido: "errors.importPeople.invalido",
+  sin_permiso: "errors.importPeople.sinPermiso",
+  desconocido: "errors.importPeople.desconocido",
+} as const;
+
+const IMPORT_FILE_ERROR_KEYS: Record<ImportFileErrorKind, string> = {
+  tipo_no_permitido: "people.importDialog.errors.tipoNoPermitido",
+  demasiado_grande: "people.importDialog.errors.demasiadoGrande",
+};
+
 function ResultSummary({ result }: { result: ImportPeopleResult }) {
+  const t = useTranslations("people.importDialog");
+
   return (
     <div className="flex flex-col gap-2">
       <ul className="flex flex-wrap gap-4 text-sm text-text-base">
         <li>
-          Creadas: <strong>{result.created}</strong>
+          {t("summaryCreated")} <strong>{result.created}</strong>
         </li>
         <li>
-          Reenviadas: <strong>{result.resent}</strong>
+          {t("summaryResent")} <strong>{result.resent}</strong>
         </li>
         <li>
-          Ya eran miembros: <strong>{result.already_members}</strong>
+          {t("summaryAlreadyMembers")} <strong>{result.already_members}</strong>
         </li>
         <li>
-          Errores: <strong>{result.errors.length}</strong>
+          {t("summaryErrors")} <strong>{result.errors.length}</strong>
         </li>
       </ul>
       {result.errors.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <caption className="sr-only">Errores por fila</caption>
+            <caption className="sr-only">{t("errorsTableCaption")}</caption>
             <thead>
               <tr className="border-b border-border text-text-secondary">
                 <th scope="col" className="px-2 py-1 font-semibold">
-                  Fila
+                  {t("colRow")}
                 </th>
                 <th scope="col" className="px-2 py-1 font-semibold">
-                  Email
+                  {t("colEmail")}
                 </th>
                 <th scope="col" className="px-2 py-1 font-semibold">
-                  Motivo
+                  {t("colReason")}
                 </th>
               </tr>
             </thead>
@@ -80,10 +95,12 @@ function ResultSummary({ result }: { result: ImportPeopleResult }) {
 export function ImportPeopleDialog({ orgId, onClose }: ImportPeopleDialogProps) {
   const importPeople = useImportPeople(orgId);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations("people.importDialog");
+  const tAll = useTranslations();
 
   const [phase, setPhase] = useState<Phase>("select");
   const [file, setFile] = useState<File | null>(null);
-  const [fileError, setFileError] = useState<string | null>(null);
+  const [fileError, setFileError] = useState<ImportFileErrorKind | null>(null);
   const [preview, setPreview] = useState<ImportPeopleResult | null>(null);
   const [finalResult, setFinalResult] = useState<ImportPeopleResult | null>(null);
 
@@ -145,7 +162,7 @@ export function ImportPeopleDialog({ orgId, onClose }: ImportPeopleDialogProps) 
     <Dialog
       open
       titleId="import-people-title"
-      title="Importar personas"
+      title={t("title")}
       pending={importPeople.isPending}
       onClose={handleClose}
     >
@@ -155,14 +172,14 @@ export function ImportPeopleDialog({ orgId, onClose }: ImportPeopleDialogProps) 
           download
           className="text-sm text-primary-700 underline underline-offset-2"
         >
-          Descargar plantilla
+          {t("downloadTemplate")}
         </a>
 
         {phase === "select" ? (
           <div className="flex flex-col gap-3">
             <div>
               <label htmlFor="import-people-file" className="mb-1 block text-sm font-medium text-text-form">
-                Fichero (.xlsx o .csv)
+                {t("fileLabel")}
               </label>
               <input
                 id="import-people-file"
@@ -174,13 +191,15 @@ export function ImportPeopleDialog({ orgId, onClose }: ImportPeopleDialogProps) 
               />
               {fileError ? (
                 <p role="alert" className="mt-1 text-xs text-error">
-                  {fileError}
+                  {fileError === "demasiado_grande"
+                    ? tAll(IMPORT_FILE_ERROR_KEYS[fileError], { max: IMPORT_MAX_MB })
+                    : tAll(IMPORT_FILE_ERROR_KEYS[fileError])}
                 </p>
               ) : null}
             </div>
             <div className="flex gap-2">
               <Button type="button" onClick={handlePreview} disabled={!file || importPeople.isPending}>
-                Vista previa
+                {t("preview")}
               </Button>
               <Button
                 type="button"
@@ -188,7 +207,7 @@ export function ImportPeopleDialog({ orgId, onClose }: ImportPeopleDialogProps) 
                 onClick={handleClose}
                 disabled={importPeople.isPending}
               >
-                Cancelar
+                {tAll("common.cancel")}
               </Button>
             </div>
           </div>
@@ -198,14 +217,11 @@ export function ImportPeopleDialog({ orgId, onClose }: ImportPeopleDialogProps) 
           <div className="flex flex-col gap-3">
             <ResultSummary result={preview} />
             {preview.errors.length > 0 ? (
-              <p className="text-sm text-text-secondary">
-                Las filas con error no se importarán; el resto de filas válidas se puede
-                confirmar igual.
-              </p>
+              <p className="text-sm text-text-secondary">{t("errorsNotBlocking")}</p>
             ) : null}
             <div className="flex gap-2">
               <Button type="button" onClick={handleConfirm} disabled={importPeople.isPending}>
-                Confirmar importación
+                {t("confirm")}
               </Button>
               {/* Volver a la selección olvida el fichero y la vista previa:
                   dejarlos puestos hacía que «Vista previa» reenviara el
@@ -216,7 +232,7 @@ export function ImportPeopleDialog({ orgId, onClose }: ImportPeopleDialogProps) 
                 onClick={resetAll}
                 disabled={importPeople.isPending}
               >
-                Elegir otro fichero
+                {t("chooseAnotherFile")}
               </Button>
               <Button
                 type="button"
@@ -224,7 +240,7 @@ export function ImportPeopleDialog({ orgId, onClose }: ImportPeopleDialogProps) 
                 onClick={handleClose}
                 disabled={importPeople.isPending}
               >
-                Cancelar
+                {tAll("common.cancel")}
               </Button>
             </div>
           </div>
@@ -232,11 +248,11 @@ export function ImportPeopleDialog({ orgId, onClose }: ImportPeopleDialogProps) 
 
         {phase === "done" && finalResult ? (
           <div className="flex flex-col gap-3">
-            <p className="text-sm text-success">Importación confirmada.</p>
+            <p className="text-sm text-success">{t("confirmed")}</p>
             <ResultSummary result={finalResult} />
             <div>
               <Button type="button" onClick={handleClose}>
-                Cerrar
+                {tAll("common.close")}
               </Button>
             </div>
           </div>
@@ -244,7 +260,12 @@ export function ImportPeopleDialog({ orgId, onClose }: ImportPeopleDialogProps) 
 
         {importPeople.isError ? (
           <p role="alert" className="text-sm text-error">
-            {importPeople.error.message}
+            {errorKindText(
+              importPeople.error,
+              IMPORT_PEOPLE_ERROR_KEYS,
+              tAll,
+              "errors.importPeople.desconocido",
+            )}
           </p>
         ) : null}
       </div>

@@ -2163,6 +2163,69 @@ consume** (`hooks/useAuth.ts` al entrar; el selector de idioma hace el
 `PATCH`) — no está aquí todavía: la Tarea 1 solo monta la infraestructura
 del lado del panel.
 
+**Errores de `hooks/` (patrón fijado en la tarea 3, para las tareas 4-6):**
+un hook de datos es `.ts` plano — no puede llamar a `useTranslations`, un
+hook de React — así que sigue construyendo su clase de error con `kind`
+(el código corto que ya tenía, p. ej. `sin_acceso`/`desconocido`) y
+`message` en español tal cual (nunca se quita: lo comprueban los tests
+del propio hook, y algunos componentes de otras tareas todavía no
+traducidos siguen leyéndolo). El componente, que sí tiene `t()`, es quien
+decide qué texto pintar: `lib/i18n/errorKindText.ts::errorKindText(error,
+keys, t, fallbackKey)` — `keys` es un `Record<Kind, string>` de claves de
+traducción (el mapa explícito que permite la regla de «sin claves
+dinámicas»), y `fallbackKey` cubre un `kind` sin reconocer (un mock de
+test que solo pone `.message`, o un valor nuevo que el mapa todavía no
+cubre). Cuando el hook combina el `detail` verbatim del backend
+(`detailOf(error)`) con un mensaje de repuesto propio (los que ya seguían
+el patrón `detailOf(error) ?? "<mensaje del hook>"`), la clase de error
+gana un campo `detail?: string` **además** de `message` (nunca lo
+sustituye) — se rellena solo cuando `detailOf` encontró algo, y
+`errorKindText` le da prioridad sobre la traducción por `kind`: el texto
+del backend nunca se traduce ni se sustituye. Ejemplo
+(`hooks/useMarkAttendance.ts`):
+
+```ts
+const detail = detailOf(error);
+return new MarkAttendanceError("invalido", detail ?? "No se pudo marcar la asistencia.", detail);
+```
+
+y en el componente (`components/entidad/AttendanceView.tsx`):
+
+```ts
+const MARK_ATTENDANCE_ERROR_KEYS = {
+  invalido: "errors.markAttendance.invalido",
+  no_inscrita: "errors.markAttendance.noInscrita",
+  sin_permiso: "errors.markAttendance.sinPermiso",
+  desconocido: "errors.markAttendance.desconocido",
+} as const;
+// …
+errorKindText(error, MARK_ATTENDANCE_ERROR_KEYS, t, "errors.markAttendance.desconocido")
+```
+
+Las claves de estos hooks viven bajo `errors.<hook>.<kindEnCamelCase>`
+(namespace nuevo de la tarea 3, junto a `entidad.<screen>.*` y
+`people.*`) — un hook compartido entre componentes de varias tareas
+(p. ej. `useEntityCommunities`, que también consumen `ComunicacionesPanel`/
+`RecursosPanel`/`FamiliasPanel`, todavía sin tocar) puede ganar su `kind`
+en una tarea y que otro componente lo traduzca en la suya, sin romper
+nada mientras tanto — el componente no tocado sigue leyendo `.message`
+tal cual (en español, hasta que le llegue su turno). Dos hooks quedan
+**deliberadamente fuera** de este patrón por ahora, con literales en
+español todavía sin extraer: `hooks/useInvitations.ts` (sus dos mensajes
+no los pinta nadie — `PersonasTable.tsx::PendingInvitationsHint` tiene su
+propio texto estático de error, ignora `.message`, así que traducir un
+mensaje que ningún componente muestra no tenía sentido) y
+`hooks/useOrgMembers.ts` (sus únicos consumidores que leen `.message`,
+`ConfiguracionPanel.tsx`/`EntidadDetail.tsx`, son de las tareas 4/5; los
+dos consumidores de la tarea 3, `AddPersonDialog`/`PersonSheet`, solo
+miran `.isError`). Función pura fuera de un hook con el mismo problema
+(no puede llamar a `t()`): `lib/support/relationshipLabel.ts` devuelve
+ahora la **clave** de traducción (`relationshipLabelKey`, `null` si el
+backend manda una relación nueva) en vez del texto, y
+`lib/people/validateImportFile.ts` devuelve un `kind` corto
+(`ImportFileErrorKind`) en vez del mensaje — mismo criterio en los dos
+casos, quien llama (el componente) traduce.
+
 ## Comandos
 
 - `npm run dev` / `npm run build` / `npm run start`
@@ -2201,7 +2264,10 @@ en CI lo gate el job `e2e`).
   líneas, 1418 tests, 162 ficheros). Tras la Tarea 1 de i18n
   (infraestructura `next-intl`, sin extraer literales todavía): **99,86 %**
   (2287/2290 líneas, 1544 tests tras el fix round 1 del mock de
-  `next-intl/server`, 173 ficheros). El umbral fijado sigue en
+  `next-intl/server`, 173 ficheros). Tras la Tarea 3 de i18n (personas,
+  comunidades, actividades y asistencia desde catálogos — la Tarea 2 no
+  dejó su propio número en esta lista): **99,87 %** (2372/2375 líneas,
+  1585 tests, 174 ficheros). El umbral fijado sigue en
   99,7 porque real menos 0,3 (99,56) queda por debajo, así que el ratchet
   no sube.
 - Test de consumo portado del móvil

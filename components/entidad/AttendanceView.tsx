@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -11,6 +12,7 @@ import { useAttendees } from "@/hooks/useAttendees";
 import { useCheckin } from "@/hooks/useCheckin";
 import { useMarkAttendance } from "@/hooks/useMarkAttendance";
 import type { Attendee } from "@/lib/api/types";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 
 export interface AttendanceViewProps {
   eventId: string;
@@ -23,13 +25,32 @@ export interface AttendanceViewProps {
   orgId: number | string;
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  registered: "Inscrito",
-  waitlisted: "Lista de espera",
-  cancelled: "Cancelada",
-  attended: "Asistió",
-  no_show: "No asistió",
+const STATUS_KEYS: Record<string, string> = {
+  registered: "entidad.attendanceStatus.registered",
+  waitlisted: "entidad.attendanceStatus.waitlisted",
+  cancelled: "entidad.attendanceStatus.cancelled",
+  attended: "entidad.attendanceStatus.attended",
+  no_show: "entidad.attendanceStatus.noShow",
 };
+
+const CHECKIN_ERROR_KEYS = {
+  token_desconocido: "errors.checkin.tokenDesconocido",
+  fuera_de_ventana: "errors.checkin.fueraDeVentana",
+  sin_permiso: "errors.checkin.sinPermiso",
+  desconocido: "errors.checkin.desconocido",
+} as const;
+
+const MARK_ATTENDANCE_ERROR_KEYS = {
+  invalido: "errors.markAttendance.invalido",
+  no_inscrita: "errors.markAttendance.noInscrita",
+  sin_permiso: "errors.markAttendance.sinPermiso",
+  desconocido: "errors.markAttendance.desconocido",
+} as const;
+
+const ATTENDEES_ERROR_KEYS = {
+  sin_permiso: "errors.attendees.sinPermiso",
+  desconocido: "errors.attendees.desconocido",
+} as const;
 
 /** `popyplan://checkin/<token>` (`qr_payload` de `GET .../my-checkin/`). */
 function extractToken(scanned: string): string {
@@ -46,6 +67,8 @@ function CheckinBox({ eventId, orgId }: { eventId: string; orgId: number | strin
   const [scanning, setScanning] = useState(false);
   const barcodeDetectorAvailable =
     typeof window !== "undefined" && "BarcodeDetector" in window;
+  const t = useTranslations("entidad.asistencia");
+  const tAll = useTranslations();
 
   function submitToken(value: string) {
     const parsed = extractToken(value.trim());
@@ -56,13 +79,16 @@ function CheckinBox({ eventId, orgId }: { eventId: string; orgId: number | strin
         onSuccess: (data) => {
           setMessage(
             data.already
-              ? { kind: "already", text: "Este token ya se había usado (check-in ya dado)." }
-              : { kind: "ok", text: "Check-in correcto." },
+              ? { kind: "already", text: t("alreadyUsed") }
+              : { kind: "ok", text: t("checkinOk") },
           );
           setToken("");
         },
         onError: (error) => {
-          setMessage({ kind: "error", text: error.message });
+          setMessage({
+            kind: "error",
+            text: errorKindText(error, CHECKIN_ERROR_KEYS, tAll, "errors.checkin.desconocido"),
+          });
         },
       },
     );
@@ -104,7 +130,7 @@ function CheckinBox({ eventId, orgId }: { eventId: string; orgId: number | strin
     } catch {
       streamRef.current = null;
       setScanning(false);
-      setMessage({ kind: "error", text: "No se pudo acceder a la cámara para escanear." });
+      setMessage({ kind: "error", text: t("cameraDenied") });
       return;
     }
     attachStream();
@@ -166,11 +192,11 @@ function CheckinBox({ eventId, orgId }: { eventId: string; orgId: number | strin
   }, [scanning]);
 
   return (
-    <Card title="Check-in por QR">
+    <Card title={t("checkinTitle")}>
       <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
         <div>
           <label htmlFor="checkin-token" className="mb-1 block text-sm font-medium text-text-form">
-            Token
+            {t("tokenLabel")}
           </label>
           <input
             id="checkin-token"
@@ -181,16 +207,16 @@ function CheckinBox({ eventId, orgId }: { eventId: string; orgId: number | strin
           />
         </div>
         <Button type="submit" disabled={checkin.isPending || !token}>
-          Dar entrada
+          {t("giveEntry")}
         </Button>
         {barcodeDetectorAvailable ? (
           scanning ? (
             <Button type="button" variant="secondary" onClick={stopScanning}>
-              Dejar de escanear
+              {t("stopScanning")}
             </Button>
           ) : (
             <Button type="button" variant="secondary" onClick={startScanning}>
-              Escanear con la cámara
+              {t("startScanning")}
             </Button>
           )
         ) : null}
@@ -198,7 +224,7 @@ function CheckinBox({ eventId, orgId }: { eventId: string; orgId: number | strin
       {scanning ? (
         <video
           ref={videoRef}
-          aria-label="Vista de la cámara para escanear el QR"
+          aria-label={t("cameraViewLabel")}
           muted
           className="mt-2 w-full max-w-xs"
         >
@@ -226,12 +252,19 @@ function AttendeeRow({
   const markAttendance = useMarkAttendance(eventId, orgId);
   const [rowMessage, setRowMessage] = useState<string | null>(null);
   const isPendingThisRow = markAttendance.isPending && markAttendance.variables?.userId === attendee.user.id;
+  const t = useTranslations("entidad.asistencia");
+  const tAll = useTranslations();
 
   function mark(attended: boolean) {
     setRowMessage(null);
     markAttendance.mutate(
       { userId: attendee.user.id, attended },
-      { onError: (error) => setRowMessage(error.message) },
+      {
+        onError: (error) =>
+          setRowMessage(
+            errorKindText(error, MARK_ATTENDANCE_ERROR_KEYS, tAll, "errors.markAttendance.desconocido"),
+          ),
+      },
     );
   }
 
@@ -239,16 +272,16 @@ function AttendeeRow({
     <tr className="border-b border-border-light">
       <td className="px-3 py-2 text-text-base">{attendee.public_name}</td>
       <td className="px-3 py-2 text-text-base">
-        <Badge>{STATUS_LABELS[attendee.status] ?? attendee.status}</Badge>
+        <Badge>{STATUS_KEYS[attendee.status] ? tAll(STATUS_KEYS[attendee.status]) : attendee.status}</Badge>
       </td>
       <td className="px-3 py-2 text-text-base">{attendee.guests}</td>
       <td className="px-3 py-2 text-text-base">
         <div className="flex flex-wrap gap-2">
           <Button type="button" disabled={isPendingThisRow} onClick={() => mark(true)}>
-            Marcar asistió
+            {t("markAttended")}
           </Button>
           <Button type="button" variant="secondary" disabled={isPendingThisRow} onClick={() => mark(false)}>
-            Marcar no asistió
+            {t("markNotAttended")}
           </Button>
         </div>
         {rowMessage ? (
@@ -269,6 +302,8 @@ function AttendeeRow({
  */
 export function AttendanceView({ eventId, orgId }: AttendanceViewProps) {
   const attendees = useAttendees(eventId);
+  const t = useTranslations("entidad.asistencia");
+  const tAll = useTranslations();
 
   return (
     <div className="flex flex-col gap-4">
@@ -276,27 +311,32 @@ export function AttendanceView({ eventId, orgId }: AttendanceViewProps) {
 
       <section aria-labelledby="asistentes-heading">
         <h2 id="asistentes-heading" className="mb-2 text-lg font-semibold text-text-base">
-          Asistentes
+          {t("attendeesHeading")}
         </h2>
         {attendees.isError ? (
           <ErrorState
-            title="No se pudo cargar la lista de asistentes"
-            description={attendees.error.message}
+            title={t("attendeesLoadErrorTitle")}
+            description={errorKindText(
+              attendees.error,
+              ATTENDEES_ERROR_KEYS,
+              tAll,
+              "errors.attendees.desconocido",
+            )}
           />
         ) : !attendees.data ? (
-          <p className="text-sm text-text-secondary">Cargando asistentes…</p>
+          <p className="text-sm text-text-secondary">{t("loadingAttendees")}</p>
         ) : attendees.data.length === 0 ? (
-          <EmptyState title="Sin inscritos en esta actividad" />
+          <EmptyState title={t("noAttendees")} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <caption className="sr-only">Asistentes de la actividad</caption>
+              <caption className="sr-only">{t("attendeesTableCaption")}</caption>
               <thead>
                 <tr className="border-b border-border text-text-secondary">
-                  <th scope="col" className="px-3 py-2 font-semibold">Persona</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">Estado</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">Acompañantes</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">Marcar</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">{t("colPerson")}</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">{t("colStatus")}</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">{t("colGuests")}</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">{t("colMark")}</th>
                 </tr>
               </thead>
               <tbody>

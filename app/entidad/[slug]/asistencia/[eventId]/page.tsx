@@ -41,13 +41,17 @@ export default async function EntidadAsistenciaPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!entidadMenuFor(membership.role).includes("asistencia")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Asistencia." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("entidad.asistencia.noAccessDescription")} />
+    );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Asistencia</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.asistencia.heading")}</h1>
       <AttendanceView eventId={eventId} orgId={membership.organization_id} />
     </div>
   );

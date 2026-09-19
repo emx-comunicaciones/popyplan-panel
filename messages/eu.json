@@ -9,7 +9,8 @@
     "noAccess": "Sarbiderik ez",
     "backHome": "Itzuli hasierara",
     "items": "{count, plural, one {# elementu} other {# elementu}}",
-    "confirm": "Berretsi"
+    "confirm": "Berretsi",
+    "noPhoneNotice": "Popyplanek ez du telefonorik gordetzen: jarri harremanetan pertsonarekin appeko txatetik edo bere erreferentearen bidez."
   },
   "language": {
     "title": "Hizkuntza",
@@ -40,7 +41,8 @@
       "errors": {
         "invalidCredentials": "Erabiltzailea edo pasahitza ez dira zuzenak.",
         "tooManyAttempts": "Saiakera gehiegi; itxaron minutu bat.",
-        "generic": "Ezin izan da saioa hasi. Saiatu berriro."
+        "generic": "Ezin izan da saioa hasi. Saiatu berriro.",
+        "sessionExpired": "Zure saioa iraungi da."
       }
     }
   },
@@ -255,6 +257,329 @@
     "procedure": {
       "heading": "Aplikazio-prozedura",
       "body": "Kontaktu-helbidera idatzi ondoren erantzunik jasotzen ez baduzu edo jasotakoarekin ados ez bazaude, desadostasun-kexa edo -erreklamazio bat aurkez dezakezu, <rd>1112/2018 Errege Dekretuaren</rd> 13. artikuluaren arabera."
+    }
+  },
+  "entidad": {
+    "inicio": {
+      "heading": "Hasiera",
+      "panelSubtitle": "{orgName} erakundearen panela.",
+      "todayHeading": "Gaurko jarduerak",
+      "loadingToday": "Jarduerak kargatzen…",
+      "noEventsToday": "Ez dago gaurko jarduerarik",
+      "todayErrorTitle": "Ezin izan dira gaurko jarduerak kargatu",
+      "eventRegistered": "{count, plural, one {# izena emanda} other {# izena emanda}}",
+      "eventCapacity": "{count, plural, one {# plaza} other {# plaza}}",
+      "pendingAlertsHeading": "Abisu pendienteak",
+      "pendingHelpRequests": "Laguntza-eskaera pendienteak",
+      "goToGuardia": "Txandara joan",
+      "helpRequestsError": "Ezin izan dira laguntza-eskaerak kargatu.",
+      "pendingReports": "Salaketa pendienteak",
+      "goToReportes": "Salaketetara joan",
+      "reportsError": "Ezin izan dira salaketak kargatu.",
+      "programsHeading": "Programak",
+      "activePrograms": "Abian diren programak",
+      "goToProgramas": "Programetara joan",
+      "programsError": "Ezin izan dira programak kargatu.",
+      "monthHeading": "Hilabete honetan",
+      "loadingMetrics": "Metrikak kargatzen…",
+      "metricsErrorTitle": "Ezin izan dira metrikak kargatu",
+      "statActivePeople": "Pertsona aktiboak",
+      "statNew": "Altak",
+      "statEventsHeld": "Egindako jarduerak",
+      "statEventsCancelled": "Bertan behera utzitako jarduerak",
+      "statAttendance": "Bertaratzea",
+      "statNoShows": "Ez-agertzeak",
+      "statActiveCommunities": "Komunitate aktiboak",
+      "statCommunityMembers": "Komunitateetako pertsonak"
+    },
+    "personas": {
+      "heading": "Pertsonak",
+      "noAccessDescription": "Zure rolak ez du Pertsonak atalerako sarbiderik.",
+      "addPerson": "Pertsona gehitu",
+      "importExcelCsv": "Excel/CSV inportatu",
+      "filtersLabel": "Pertsonen iragazkiak",
+      "searchLabel": "Bilatu",
+      "communityLabel": "Komunitatea",
+      "communityAll": "Guztiak",
+      "communitiesError": "Ezin izan dira komunitateak kargatu.",
+      "referentLabel": "Erreferentea",
+      "activeSinceLabel": "Parte-hartzen honezkero",
+      "joinedSinceLabel": "Alta honezkero",
+      "includeInvited": "Gonbidatuak sartu",
+      "invitationsCountError": "Ezin izan da gonbidapen kopurua kargatu.",
+      "pendingInvitations": "{count, plural, one {# gonbidapen pendiente} other {# gonbidapen pendiente}}",
+      "resentTo": "Gonbidapena berbidali zaio {email} helbideari.",
+      "loadError": "Ezin izan dira pertsonak kargatu",
+      "loadingPeople": "Pertsonak kargatzen…",
+      "emptyFiltered": "Ez dago iragazki hauekin pertsonarik",
+      "tableCaption": "Erakundeko pertsonak",
+      "colName": "Izena",
+      "colCommunities": "Komunitateak",
+      "colEventsPeriod": "Jarduerak (aldia)",
+      "colAttendedPeriod": "Joan da (aldia)",
+      "colJoined": "Alta",
+      "colReferent": "Erreferentea",
+      "colActions": "Ekintzak",
+      "invitedBadge": "Gonbidatua (pendiente)",
+      "resend": "Berbidali",
+      "revoke": "Baliogabetu",
+      "noReferent": "Erreferenterik gabe",
+      "previous": "Aurrekoa",
+      "next": "Hurrengoa",
+      "countLabel": "{count, plural, one {# pertsona} other {# pertsona}}",
+      "revokeTitle": "Gonbidapena baliogabetu",
+      "revokeConfirm": "«{name}»(r)i egindako gonbidapena baliogabetu? Ekintza hau ezin da desegin."
+    },
+    "personaFicha": {
+      "heading": "Pertsonaren fitxa",
+      "sinAccesoDescription": "Ez duzu pertsona honen fitxarako sarbiderik.",
+      "loadErrorTitle": "Ezin izan da pertsona honen fitxa kargatu",
+      "loading": "Fitxa kargatzen…",
+      "headerInfo": "Alta: {date} · Egiaztapen-maila: {level}",
+      "referentLine": "Erreferentea: {name}",
+      "verificationLevel": {
+        "unverified": "Egiaztatu gabe",
+        "phoneVerified": "Telefonoa egiaztatuta",
+        "adult": "Adin nagusitasuna",
+        "fullIdentity": "Nortasun osoa"
+      },
+      "assignReferentTitle": "Erreferentea esleitu",
+      "referentSelectLabel": "Erreferente pertsona",
+      "selectAPerson": "Aukeratu pertsona bat",
+      "assigning": "Esleitzen…",
+      "assigned": "Erreferentea esleitu da.",
+      "communitiesHeading": "Komunitateak",
+      "noCommunities": "Ez dago komunitaterik erakunde honetan",
+      "eventsHeading": "Aldiko jarduerak",
+      "noEvents": "Ez dago jarduerarik aldi honetan",
+      "nextEventHeading": "Hurrengo jarduera",
+      "noNextEvent": "Ez dago hurrengo jarduerarik",
+      "supportHeading": "Laguntza-sarea",
+      "supportLoadErrorTitle": "Ezin izan da laguntza-sarea kargatu",
+      "noSupportNetwork": "Pertsona honek ez du laguntza-sare aktiborik.",
+      "notifyYes": "Abisuak jasotzen ditu",
+      "notifyNo": "Abisurik gabe",
+      "supportFooter": "Zuk bakarrik, erreferente gisa, ikusten duzu sare hau. Popyplanek ez du telefonorik gordetzen: jarri harremanetan pertsonarekin appeko txatetik."
+    },
+    "comunidades": {
+      "heading": "Komunitateak",
+      "noAccessDescription": "Zure rolak ez du Komunitateak atalerako sarbiderik.",
+      "visibilityOpen": "Irekia",
+      "visibilityOnRequest": "Eskaera bidez",
+      "visibilityPrivate": "Pribatua",
+      "membersBadge": "{count, plural, one {# kide} other {# kide}}",
+      "activeMembersBadge": "{count, plural, one {# aktibo} other {# aktibo}}",
+      "upcomingEventsBadge": "{count, plural, one {# hurrengo jarduera} other {# hurrengo jarduera}}",
+      "makeModerator": "Moderatzaile egin",
+      "removeModeration": "Moderazioa kendu",
+      "kick": "Kanporatu",
+      "owner": "Jabea",
+      "kickTitle": "Komunitatetik kanporatu",
+      "kickConfirm": "«{name}» komunitate honetatik kanporatu? Bere jarduerak ikusteari utziko dio eta berriro eskatu beharko du sartzeko.",
+      "approve": "Onartu",
+      "reject": "Ukatu",
+      "pendingHeading": "Eskaera pendienteak",
+      "pendingError": "Ezin izan dira eskaerak kargatu",
+      "loading": "Kargatzen…",
+      "noPending": "Ez dago eskaera pendienterik",
+      "pendingTableCaption": "Komunitatearen eskaera pendienteak",
+      "colPerson": "Pertsona",
+      "colActions": "Ekintzak",
+      "membersHeading": "Kideak",
+      "membersError": "Ezin izan dira kideak kargatu",
+      "noMembers": "Kiderik ez",
+      "membersTableCaption": "Komunitateko kideak",
+      "colRole": "Rola",
+      "loadError": "Ezin izan dira komunitateak kargatu",
+      "loadingCommunities": "Komunitateak kargatzen…",
+      "empty": "Komunitaterik ez",
+      "emptyDescription": "Erakunde honek oraindik ez du bere zigilua duen komunitaterik.",
+      "choose": "Aukeratu komunitate bat",
+      "chooseDescription": "Aukeratu zerrendako komunitate bat bere kideak eta eskaerak ikusteko."
+    },
+    "actividades": {
+      "heading": "Jarduerak",
+      "noAccessDescription": "Zure rolak ez du Jarduerak atalerako sarbiderik.",
+      "statusLabel": "Egoera",
+      "statusAll": "Guztiak",
+      "statusScheduled": "Programatua",
+      "statusCancelled": "Bertan behera utzita",
+      "statusCompleted": "Eginda",
+      "loadError": "Ezin izan dira jarduerak kargatu",
+      "loading": "Jarduerak kargatzen…",
+      "empty": "Ez dago jarduerarik aldi honetan",
+      "tableCaption": "Erakundeko jarduerak",
+      "colActivity": "Jarduera",
+      "colStatus": "Egoera",
+      "colResponsible": "Arduraduna",
+      "colRegistered": "Izena emanda",
+      "colAttended": "Joan da",
+      "colNoShow": "Ez da joan"
+    },
+    "asistencia": {
+      "heading": "Bertaratzea",
+      "noAccessDescription": "Zure rolak ez du Bertaratzea atalerako sarbiderik.",
+      "chooseActivity": "Aukeratu jarduera bat bere bertaratzea kudeatzeko.",
+      "checkinTitle": "QR bidezko check-in-a",
+      "tokenLabel": "Tokena",
+      "giveEntry": "Sarrera eman",
+      "stopScanning": "Eskaneatzeari utzi",
+      "startScanning": "Kamerarekin eskaneatu",
+      "cameraViewLabel": "QRa eskaneatzeko kameraren ikuspegia",
+      "cameraDenied": "Ezin izan da kamerara sartu eskaneatzeko.",
+      "alreadyUsed": "Token hau erabilita zegoen jada (check-in-a emanda).",
+      "checkinOk": "Check-in zuzena.",
+      "attendeesHeading": "Bertaratuak",
+      "attendeesLoadErrorTitle": "Ezin izan da bertaratuen zerrenda kargatu",
+      "loadingAttendees": "Bertaratuak kargatzen…",
+      "noAttendees": "Jarduera honetan ez dago izena emanda",
+      "attendeesTableCaption": "Jardueraren bertaratuak",
+      "colPerson": "Pertsona",
+      "colStatus": "Egoera",
+      "colGuests": "Laguntzaileak",
+      "colMark": "Markatu",
+      "markAttended": "Joan dela markatu",
+      "markNotAttended": "Joan ez dela markatu"
+    },
+    "attendanceStatus": {
+      "registered": "Izena emanda",
+      "waitlisted": "Itxaron-zerrendan",
+      "cancelled": "Bertan behera utzita",
+      "attended": "Joan da",
+      "noShow": "Ez da joan"
+    }
+  },
+  "people": {
+    "addDialog": {
+      "title": "Pertsona gehitu",
+      "nameLabel": "Izena",
+      "emailLabel": "Emaila",
+      "emailInvalid": "Sartu baliozko emaila.",
+      "phoneLabel": "Telefonoa",
+      "communityLabel": "Komunitatea",
+      "communityNone": "Komunitaterik gabe («Orokorra»n alta)",
+      "communitiesError": "Ezin izan dira komunitateak kargatu.",
+      "referentLabel": "Erreferentea",
+      "referentNone": "Erreferenterik gabe",
+      "submit": "Gonbidapena bidali",
+      "sentTo": "Gonbidapena bidali zaio {email} helbideari."
+    },
+    "referentsLoadError": "Ezin izan dira erreferenteak kargatu.",
+    "importDialog": {
+      "title": "Pertsonak inportatu",
+      "downloadTemplate": "Txantiloia deskargatu",
+      "fileLabel": "Fitxategia (.xlsx edo .csv)",
+      "preview": "Aurrebista",
+      "confirm": "Inportazioa berretsi",
+      "chooseAnotherFile": "Beste fitxategi bat aukeratu",
+      "confirmed": "Inportazioa berretsi da.",
+      "errorsNotBlocking": "Errorea duten lerroak ez dira inportatuko; gainerako lerro baliodunak berdin berretsi daitezke.",
+      "summaryCreated": "Sortuak:",
+      "summaryResent": "Berbidalitakoak:",
+      "summaryAlreadyMembers": "Jada kide zirenak:",
+      "summaryErrors": "Erroreak:",
+      "errorsTableCaption": "Lerroka erroreak",
+      "colRow": "Lerroa",
+      "colEmail": "Emaila",
+      "colReason": "Arrazoia",
+      "errors": {
+        "tipoNoPermitido": "Fitxategi mota ez da onartzen. Erabili .csv edo .xlsx bat.",
+        "demasiadoGrande": "Fitxategiak {max} MBko muga gainditzen du."
+      }
+    }
+  },
+  "support": {
+    "relationship": {
+      "parent": "Ama edo aita",
+      "partner": "Bikotekidea",
+      "sibling": "Anaia edo arreba",
+      "relative": "Beste senide bat",
+      "friend": "Adiskidetasuna",
+      "legalGuardian": "Tutore legala",
+      "trustedOther": "Konfiantzazko beste pertsona bat",
+      "unspecified": "Zehaztu gabe"
+    }
+  },
+  "errors": {
+    "entityEvents": {
+      "periodoInvalido": "Aukeratutako aldia edo iragazkia ez da baliozkoa.",
+      "sinAcceso": "Ez duzu erakunde honen jarduerarako sarbiderik.",
+      "desconocido": "Ezin izan dira jarduerak kargatu."
+    },
+    "people": {
+      "periodoInvalido": "Aukeratutako iragazkiak ez dira baliozkoak.",
+      "sinAcceso": "Ez duzu pertsonen zerrendarako sarbiderik.",
+      "paginaInexistente": "Zerrendaren orrialde hori ez dago jada.",
+      "desconocido": "Ezin izan da pertsonen zerrenda kargatu."
+    },
+    "person": {
+      "periodoInvalido": "Aukeratutako aldia ez da baliozkoa.",
+      "sinAcceso": "Fitxa honetarako sarbiderik ez.",
+      "desconocido": "Ezin izan da pertsona honen fitxa kargatu."
+    },
+    "personSupport": {
+      "sinAcceso": "Pertsona honen laguntza-sarerako sarbiderik ez.",
+      "desconocido": "Ezin izan da pertsona honen laguntza-sarea kargatu."
+    },
+    "attendees": {
+      "sinPermiso": "Ez zara jarduera honen antolatzailea.",
+      "desconocido": "Ezin izan da bertaratuen zerrenda kargatu."
+    },
+    "markAttendance": {
+      "invalido": "Ezin izan da bertaratzea markatu.",
+      "noInscrita": "Pertsona hori ez dago izena emanda.",
+      "sinPermiso": "Ez zara jarduera honen antolatzailea.",
+      "desconocido": "Ezin izan da bertaratzea markatu."
+    },
+    "checkin": {
+      "tokenDesconocido": "Jarduera honetarako token ezezaguna.",
+      "fueraDeVentana": "Jarduera honen check-in leihoaren kanpoan.",
+      "sinPermiso": "Ez zara jarduera honen antolatzailea.",
+      "desconocido": "Ezin izan da check-ina eman."
+    },
+    "invite": {
+      "invalido": "Berrikusi datuak: badago baliozkoa ez den bat.",
+      "sinPermiso": "Titularrak edo moderatzaileak bakarrik gonbida ditzakete pertsonak.",
+      "yaEsMiembro": "Pertsona hori jada erakundeko kidea da.",
+      "desconocido": "Ezin izan da gonbidapena bidali."
+    },
+    "importPeople": {
+      "invalido": "Berrikusi fitxategia: badago baliozkoa ez den lerroren bat.",
+      "sinPermiso": "Titularrak edo moderatzaileak bakarrik inporta ditzakete pertsonak.",
+      "desconocido": "Ezin izan da fitxategia inportatu."
+    },
+    "resendInvitation": {
+      "invalido": "Gonbidapen hau jada ez dago pendiente.",
+      "sinPermiso": "Titularrak edo moderatzaileak bakarrik berbidal ditzakete gonbidapenak.",
+      "noEncontrada": "Gonbidapen hori ez dago.",
+      "desconocido": "Ezin izan da gonbidapena berbidali."
+    },
+    "revokeInvitation": {
+      "invalido": "Gonbidapen hau jada ez dago pendiente.",
+      "sinPermiso": "Titularrak edo moderatzaileak bakarrik baliogabetu ditzakete gonbidapenak.",
+      "noEncontrada": "Gonbidapen hori ez dago.",
+      "desconocido": "Ezin izan da gonbidapena baliogabetu."
+    },
+    "assignReferent": {
+      "invalido": "Ezin izan da erreferentea esleitu: berrikusi datuak.",
+      "sinPermiso": "Ez duzu erreferenteak esleitzeko baimenik.",
+      "desconocido": "Ezin izan da erreferentea esleitu."
+    },
+    "entityCommunities": {
+      "demasiadasPaginas": "Komunitate gehiegi daude denak kargatzeko; jarri harremanetan Popyplanekin.",
+      "desconocido": "Ezin izan dira erakundearen komunitateak kargatu."
+    },
+    "communityMembers": {
+      "desconocido": "Ezin izan dira komunitatearen kideak kargatu."
+    },
+    "communityPendingRequests": {
+      "desconocido": "Ezin izan dira eskaera pendienteak kargatu."
+    },
+    "communityMemberAction": {
+      "approve": "Ezin izan da eskaera onartu.",
+      "reject": "Ezin izan da eskaera ukatu.",
+      "kick": "Ezin izan da pertsona kanporatu.",
+      "changeRole": "Ezin izan da rola aldatu."
     }
   }
 }

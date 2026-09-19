@@ -15,13 +15,22 @@ import type { EntityInvitation } from "@/lib/api/types";
 
 export type ResendInvitationErrorKind = "invalido" | "sin_permiso" | "no_encontrada" | "desconocido";
 
+/**
+ * `kind` (+ `detail`, el texto verbatim del backend cuando lo hay) es lo
+ * que traduce `components/entidad/PersonasTable.tsx` (tarea 3 de i18n,
+ * `lib/i18n/errorKindText.ts`) — este hook, plano `.ts`, no puede llamar
+ * a `t()`, así que `message` sigue en español tal cual (compatibilidad de
+ * los tests que ya lo comprueban).
+ */
 export class ResendInvitationError extends Error {
   readonly kind: ResendInvitationErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: ResendInvitationErrorKind, message: string) {
+  constructor(kind: ResendInvitationErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "ResendInvitationError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -38,9 +47,11 @@ export function useResendInvitation(
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
+          const detail = detailOf(error);
           throw new ResendInvitationError(
             "invalido",
-            detailOf(error) ?? "Esta invitación ya no está pendiente.",
+            detail ?? "Esta invitación ya no está pendiente.",
+            detail,
           );
         }
         if (error instanceof ApiError && error.status === 403) {

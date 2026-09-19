@@ -16,6 +16,10 @@ import type { Attendee } from "@/lib/api/types";
 
 export type AttendeesErrorKind = "sin_permiso" | "desconocido";
 
+/**
+ * `kind` es lo único que necesita `components/entidad/AttendanceView.tsx`
+ * para traducir (tarea 3 de i18n) — `message` sigue en español tal cual.
+ */
 export class AttendeesError extends Error {
   readonly kind: AttendeesErrorKind;
 

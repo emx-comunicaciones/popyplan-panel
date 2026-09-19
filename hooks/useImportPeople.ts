@@ -18,13 +18,22 @@ import type { ImportPeopleResult } from "@/lib/api/types";
 
 export type ImportPeopleErrorKind = "invalido" | "sin_permiso" | "desconocido";
 
+/**
+ * `kind` (+ `detail`, el texto verbatim del backend cuando lo hay) es lo
+ * que traduce `components/people/ImportPeopleDialog.tsx` (tarea 3 de
+ * i18n, `lib/i18n/errorKindText.ts`) — este hook, plano `.ts`, no puede
+ * llamar a `t()`, así que `message` sigue en español tal cual
+ * (compatibilidad de los tests que ya lo comprueban).
+ */
 export class ImportPeopleError extends Error {
   readonly kind: ImportPeopleErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: ImportPeopleErrorKind, message: string) {
+  constructor(kind: ImportPeopleErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "ImportPeopleError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -49,9 +58,11 @@ export function useImportPeople(
         );
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
+          const detail = detailOf(error);
           throw new ImportPeopleError(
             "invalido",
-            detailOf(error) ?? "Revisa el fichero: alguna fila no es válida.",
+            detail ?? "Revisa el fichero: alguna fila no es válida.",
+            detail,
           );
         }
         if (error instanceof ApiError && error.status === 403) {

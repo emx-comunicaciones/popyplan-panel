@@ -23,10 +23,22 @@ import { apiFetch } from "@/lib/api/client";
 import { COMMUNITIES } from "@/lib/api/endpoints";
 import type { EntityCommunityRow, PaginatedCommunityList } from "@/lib/api/types";
 
+export type EntityCommunitiesErrorKind = "demasiadas_paginas" | "desconocido";
+
+/**
+ * `kind` es lo único que necesita `components/entidad/ComunidadesPanel.tsx`
+ * para traducir (tarea 3 de i18n) — `message` sigue en español tal cual
+ * (compatibilidad de los tests, y de los componentes de otras tareas
+ * —`ComunicacionesPanel`/`RecursosPanel`/`FamiliasPanel`— que todavía
+ * pintan `.message` directamente hasta que su propia tarea los traduzca).
+ */
 export class EntityCommunitiesError extends Error {
-  constructor(message: string) {
+  readonly kind: EntityCommunitiesErrorKind;
+
+  constructor(kind: EntityCommunitiesErrorKind, message: string) {
     super(message);
     this.name = "EntityCommunitiesError";
+    this.kind = kind;
   }
 }
 
@@ -48,6 +60,7 @@ async function fetchAllPages(): Promise<EntityCommunityRow[]> {
 
   if (next) {
     throw new EntityCommunitiesError(
+      "demasiadas_paginas",
       "Hay demasiadas comunidades para cargarlas todas; contacta con Popyplan.",
     );
   }
@@ -70,7 +83,7 @@ export function useEntityCommunities(
         // El aviso de «demasiadas páginas» ya trae su propio mensaje: solo
         // los fallos de red o del backend caen al genérico.
         if (error instanceof EntityCommunitiesError) throw error;
-        throw new EntityCommunitiesError("No se pudieron cargar las comunidades de la entidad.");
+        throw new EntityCommunitiesError("desconocido", "No se pudieron cargar las comunidades de la entidad.");
       }
     },
     // El listado es **global** y hay que recorrerlo página a página (hasta

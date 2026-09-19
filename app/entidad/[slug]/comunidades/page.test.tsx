@@ -199,7 +199,10 @@ describe("EntidadComunidadesPage", () => {
     useKickCommunityMemberMock.mockReturnValue({
       ...idleMutation(),
       isError: true,
-      error: new Error("No se pudo expulsar a esa persona."),
+      error: Object.assign(new Error("No se pudo expulsar a esa persona."), {
+        kind: "kick",
+        detail: "No se pudo expulsar a esa persona.",
+      }),
     });
     useChangeCommunityMemberRoleMock.mockReturnValue(idleMutation());
 

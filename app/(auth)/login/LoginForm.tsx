@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Footer } from "@/components/layout/Footer";
 import { ApiError } from "@/lib/api/client";
 import { resolveArea } from "@/lib/auth/area";
-import { consumeSessionExpiredMessage } from "@/lib/auth/sessionEvents";
+import { consumeSessionExpiredMessage, SESSION_EXPIRED_MESSAGE } from "@/lib/auth/sessionEvents";
 import { safeReturnTo } from "@/lib/auth/returnTo";
 import { login } from "@/hooks/useAuth";
 
@@ -62,9 +62,22 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   // Si venimos de un cierre de sesión forzado (`SessionExpiredHandler`,
   // refresco fallido en `lib/api/client.ts`), pinta ese mensaje de entrada,
-  // igual que cualquier otro error de este formulario.
-  const [error, setError] = useState<string | null>(() => consumeSessionExpiredMessage());
+  // igual que cualquier otro error de este formulario. `lib/auth/
+  // sessionEvents.ts` es código plano, sin acceso a `t()`: el único
+  // emisor real (`lib/api/client.ts`) siempre manda el mensaje por
+  // defecto (`SESSION_EXPIRED_MESSAGE`), así que se compara con esa
+  // constante para traducirlo aquí; un mensaje a medida (soportado por
+  // `notifySessionExpired`, aunque hoy nadie lo usa) se pinta tal cual.
+  const [sessionExpiredMessage] = useState<string | null>(() => consumeSessionExpiredMessage());
+  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const displayedError =
+    error ??
+    (sessionExpiredMessage
+      ? sessionExpiredMessage === SESSION_EXPIRED_MESSAGE
+        ? tErrors("sessionExpired")
+        : sessionExpiredMessage
+      : null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -117,9 +130,9 @@ export function LoginForm() {
                 className="w-full rounded-md border border-border px-3 py-2 text-sm text-text-base focus-visible:outline-primary-700"
               />
             </div>
-            {error ? (
+            {displayedError ? (
               <p role="alert" className="mb-4 text-sm text-error">
-                {error}
+                {displayedError}
               </p>
             ) : null}
             <Button type="submit" disabled={submitting} className="w-full">

@@ -9,7 +9,8 @@
     "noAccess": "No access",
     "backHome": "Back to home",
     "items": "{count, plural, one {# item} other {# items}}",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "noPhoneNotice": "Popyplan does not store phone numbers: contact the person through the app chat or through their referent."
   },
   "language": {
     "title": "Language",
@@ -40,7 +41,8 @@
       "errors": {
         "invalidCredentials": "Incorrect username or password.",
         "tooManyAttempts": "Too many attempts; wait a minute.",
-        "generic": "Could not log in. Please try again."
+        "generic": "Could not log in. Please try again.",
+        "sessionExpired": "Your session has expired."
       }
     }
   },
@@ -255,6 +257,329 @@
     "procedure": {
       "heading": "Enforcement procedure",
       "body": "If after contacting us you don't get a response or aren't satisfied with it, you can file a complaint under article 13 of <rd>Royal Decree 1112/2018</rd>."
+    }
+  },
+  "entidad": {
+    "inicio": {
+      "heading": "Home",
+      "panelSubtitle": "{orgName} panel.",
+      "todayHeading": "Today's activities",
+      "loadingToday": "Loading activities…",
+      "noEventsToday": "No activities today",
+      "todayErrorTitle": "Couldn't load today's activities",
+      "eventRegistered": "{count, plural, one {# registered} other {# registered}}",
+      "eventCapacity": "{count, plural, one {# slot} other {# slots}}",
+      "pendingAlertsHeading": "Pending alerts",
+      "pendingHelpRequests": "Pending help requests",
+      "goToGuardia": "Go to On-call",
+      "helpRequestsError": "Couldn't load the help requests.",
+      "pendingReports": "Pending reports",
+      "goToReportes": "Go to Reports",
+      "reportsError": "Couldn't load the reports.",
+      "programsHeading": "Programs",
+      "activePrograms": "Programs under way",
+      "goToProgramas": "Go to Programs",
+      "programsError": "Couldn't load the programs.",
+      "monthHeading": "This month",
+      "loadingMetrics": "Loading metrics…",
+      "metricsErrorTitle": "Couldn't load the metrics",
+      "statActivePeople": "Active people",
+      "statNew": "New sign-ups",
+      "statEventsHeld": "Activities held",
+      "statEventsCancelled": "Cancelled activities",
+      "statAttendance": "Attendance",
+      "statNoShows": "No-shows",
+      "statActiveCommunities": "Active communities",
+      "statCommunityMembers": "People in communities"
+    },
+    "personas": {
+      "heading": "People",
+      "noAccessDescription": "Your role doesn't have access to People.",
+      "addPerson": "Add person",
+      "importExcelCsv": "Import Excel/CSV",
+      "filtersLabel": "People filters",
+      "searchLabel": "Search",
+      "communityLabel": "Community",
+      "communityAll": "All",
+      "communitiesError": "Couldn't load the communities.",
+      "referentLabel": "Referent",
+      "activeSinceLabel": "Participating since",
+      "joinedSinceLabel": "Joined since",
+      "includeInvited": "Include invited",
+      "invitationsCountError": "Couldn't load the invitation count.",
+      "pendingInvitations": "{count, plural, one {# pending invitation} other {# pending invitations}}",
+      "resentTo": "Invitation resent to {email}.",
+      "loadError": "Couldn't load the people",
+      "loadingPeople": "Loading people…",
+      "emptyFiltered": "No people match these filters",
+      "tableCaption": "People of the entity",
+      "colName": "Name",
+      "colCommunities": "Communities",
+      "colEventsPeriod": "Activities (period)",
+      "colAttendedPeriod": "Attended (period)",
+      "colJoined": "Joined",
+      "colReferent": "Referent",
+      "colActions": "Actions",
+      "invitedBadge": "Invited (pending)",
+      "resend": "Resend",
+      "revoke": "Revoke",
+      "noReferent": "No referent",
+      "previous": "Previous",
+      "next": "Next",
+      "countLabel": "{count, plural, one {# person} other {# people}}",
+      "revokeTitle": "Revoke invitation",
+      "revokeConfirm": "Revoke the invitation to «{name}»? This action can't be undone."
+    },
+    "personaFicha": {
+      "heading": "Person profile",
+      "sinAccesoDescription": "You don't have access to this person's profile.",
+      "loadErrorTitle": "Couldn't load this person's profile",
+      "loading": "Loading profile…",
+      "headerInfo": "Joined on {date} · Verification level: {level}",
+      "referentLine": "Referent: {name}",
+      "verificationLevel": {
+        "unverified": "Not verified",
+        "phoneVerified": "Phone verified",
+        "adult": "Adult age",
+        "fullIdentity": "Full identity"
+      },
+      "assignReferentTitle": "Assign referent",
+      "referentSelectLabel": "Referent person",
+      "selectAPerson": "Select a person",
+      "assigning": "Assigning…",
+      "assigned": "Referent assigned.",
+      "communitiesHeading": "Communities",
+      "noCommunities": "No communities in this entity",
+      "eventsHeading": "Activities in this period",
+      "noEvents": "No activities in this period",
+      "nextEventHeading": "Next activity",
+      "noNextEvent": "No upcoming activity",
+      "supportHeading": "Support network",
+      "supportLoadErrorTitle": "Couldn't load the support network",
+      "noSupportNetwork": "This person doesn't have an active support network.",
+      "notifyYes": "Receives alerts",
+      "notifyNo": "No alerts",
+      "supportFooter": "Only you, as the referent, see this network. Popyplan does not store phone numbers: contact the person through the app chat."
+    },
+    "comunidades": {
+      "heading": "Communities",
+      "noAccessDescription": "Your role doesn't have access to Communities.",
+      "visibilityOpen": "Open",
+      "visibilityOnRequest": "By request",
+      "visibilityPrivate": "Private",
+      "membersBadge": "{count, plural, one {# member} other {# members}}",
+      "activeMembersBadge": "{count, plural, one {# active} other {# active}}",
+      "upcomingEventsBadge": "{count, plural, one {# upcoming activity} other {# upcoming activities}}",
+      "makeModerator": "Make moderator",
+      "removeModeration": "Remove moderation",
+      "kick": "Remove",
+      "owner": "Owner",
+      "kickTitle": "Remove from community",
+      "kickConfirm": "Remove «{name}» from this community? They will stop seeing its activities and will have to request to join again.",
+      "approve": "Approve",
+      "reject": "Reject",
+      "pendingHeading": "Pending requests",
+      "pendingError": "Couldn't load the requests",
+      "loading": "Loading…",
+      "noPending": "No pending requests",
+      "pendingTableCaption": "Pending requests of the community",
+      "colPerson": "Person",
+      "colActions": "Actions",
+      "membersHeading": "Members",
+      "membersError": "Couldn't load the members",
+      "noMembers": "No members",
+      "membersTableCaption": "Members of the community",
+      "colRole": "Role",
+      "loadError": "Couldn't load the communities",
+      "loadingCommunities": "Loading communities…",
+      "empty": "No communities",
+      "emptyDescription": "This entity doesn't have any communities with its seal yet.",
+      "choose": "Choose a community",
+      "chooseDescription": "Select a community from the list to see its members and requests."
+    },
+    "actividades": {
+      "heading": "Activities",
+      "noAccessDescription": "Your role doesn't have access to Activities.",
+      "statusLabel": "Status",
+      "statusAll": "All",
+      "statusScheduled": "Scheduled",
+      "statusCancelled": "Cancelled",
+      "statusCompleted": "Held",
+      "loadError": "Couldn't load the activities",
+      "loading": "Loading activities…",
+      "empty": "No activities in this period",
+      "tableCaption": "Activities of the entity",
+      "colActivity": "Activity",
+      "colStatus": "Status",
+      "colResponsible": "Organizer",
+      "colRegistered": "Registered",
+      "colAttended": "Attended",
+      "colNoShow": "No-show"
+    },
+    "asistencia": {
+      "heading": "Attendance",
+      "noAccessDescription": "Your role doesn't have access to Attendance.",
+      "chooseActivity": "Choose an activity to manage its attendance.",
+      "checkinTitle": "QR check-in",
+      "tokenLabel": "Token",
+      "giveEntry": "Check in",
+      "stopScanning": "Stop scanning",
+      "startScanning": "Scan with the camera",
+      "cameraViewLabel": "Camera view to scan the QR",
+      "cameraDenied": "Couldn't access the camera to scan.",
+      "alreadyUsed": "This token had already been used (check-in already given).",
+      "checkinOk": "Check-in successful.",
+      "attendeesHeading": "Attendees",
+      "attendeesLoadErrorTitle": "Couldn't load the list of attendees",
+      "loadingAttendees": "Loading attendees…",
+      "noAttendees": "No one registered for this activity",
+      "attendeesTableCaption": "Attendees of the activity",
+      "colPerson": "Person",
+      "colStatus": "Status",
+      "colGuests": "Guests",
+      "colMark": "Mark",
+      "markAttended": "Mark attended",
+      "markNotAttended": "Mark not attended"
+    },
+    "attendanceStatus": {
+      "registered": "Registered",
+      "waitlisted": "Waitlisted",
+      "cancelled": "Cancelled",
+      "attended": "Attended",
+      "noShow": "No-show"
+    }
+  },
+  "people": {
+    "addDialog": {
+      "title": "Add person",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "emailInvalid": "Enter a valid email address.",
+      "phoneLabel": "Phone",
+      "communityLabel": "Community",
+      "communityNone": "No community (join «General»)",
+      "communitiesError": "Couldn't load the communities.",
+      "referentLabel": "Referent",
+      "referentNone": "No referent",
+      "submit": "Send invitation",
+      "sentTo": "Invitation sent to {email}."
+    },
+    "referentsLoadError": "Couldn't load the referents.",
+    "importDialog": {
+      "title": "Import people",
+      "downloadTemplate": "Download template",
+      "fileLabel": "File (.xlsx or .csv)",
+      "preview": "Preview",
+      "confirm": "Confirm import",
+      "chooseAnotherFile": "Choose another file",
+      "confirmed": "Import confirmed.",
+      "errorsNotBlocking": "Rows with errors will not be imported; the rest of the valid rows can still be confirmed.",
+      "summaryCreated": "Created:",
+      "summaryResent": "Resent:",
+      "summaryAlreadyMembers": "Already members:",
+      "summaryErrors": "Errors:",
+      "errorsTableCaption": "Errors by row",
+      "colRow": "Row",
+      "colEmail": "Email",
+      "colReason": "Reason",
+      "errors": {
+        "tipoNoPermitido": "File type not allowed. Use a .csv or .xlsx file.",
+        "demasiadoGrande": "The file exceeds the {max} MB limit."
+      }
+    }
+  },
+  "support": {
+    "relationship": {
+      "parent": "Parent",
+      "partner": "Partner",
+      "sibling": "Sibling",
+      "relative": "Other relative",
+      "friend": "Friendship",
+      "legalGuardian": "Legal guardian",
+      "trustedOther": "Other trusted person",
+      "unspecified": "Not specified"
+    }
+  },
+  "errors": {
+    "entityEvents": {
+      "periodoInvalido": "The chosen period or filter is not valid.",
+      "sinAcceso": "You don't have access to this entity's activities.",
+      "desconocido": "Couldn't load the activities."
+    },
+    "people": {
+      "periodoInvalido": "The chosen filters are not valid.",
+      "sinAcceso": "You don't have access to the people list.",
+      "paginaInexistente": "That page of the list no longer exists.",
+      "desconocido": "Couldn't load the people list."
+    },
+    "person": {
+      "periodoInvalido": "The chosen period is not valid.",
+      "sinAcceso": "No access to this profile.",
+      "desconocido": "Couldn't load this person's profile."
+    },
+    "personSupport": {
+      "sinAcceso": "No access to this person's support network.",
+      "desconocido": "Couldn't load this person's support network."
+    },
+    "attendees": {
+      "sinPermiso": "You don't organize this activity.",
+      "desconocido": "Couldn't load the list of attendees."
+    },
+    "markAttendance": {
+      "invalido": "Couldn't mark the attendance.",
+      "noInscrita": "That person isn't registered.",
+      "sinPermiso": "You don't organize this activity.",
+      "desconocido": "Couldn't mark the attendance."
+    },
+    "checkin": {
+      "tokenDesconocido": "Unknown check-in token for this activity.",
+      "fueraDeVentana": "Outside this activity's check-in window.",
+      "sinPermiso": "You don't organize this activity.",
+      "desconocido": "Couldn't check in."
+    },
+    "invite": {
+      "invalido": "Check the details: something isn't valid.",
+      "sinPermiso": "Only the owner or moderator can invite people.",
+      "yaEsMiembro": "This person is already a member of the entity.",
+      "desconocido": "Couldn't send the invitation."
+    },
+    "importPeople": {
+      "invalido": "Check the file: some row isn't valid.",
+      "sinPermiso": "Only the owner or moderator can import people.",
+      "desconocido": "Couldn't import the file."
+    },
+    "resendInvitation": {
+      "invalido": "This invitation is no longer pending.",
+      "sinPermiso": "Only the owner or moderator can resend invitations.",
+      "noEncontrada": "This invitation doesn't exist.",
+      "desconocido": "Couldn't resend the invitation."
+    },
+    "revokeInvitation": {
+      "invalido": "This invitation is no longer pending.",
+      "sinPermiso": "Only the owner or moderator can revoke invitations.",
+      "noEncontrada": "This invitation doesn't exist.",
+      "desconocido": "Couldn't revoke the invitation."
+    },
+    "assignReferent": {
+      "invalido": "Couldn't assign the referent: check the details.",
+      "sinPermiso": "You don't have permission to assign referents.",
+      "desconocido": "Couldn't assign the referent."
+    },
+    "entityCommunities": {
+      "demasiadasPaginas": "There are too many communities to load them all; contact Popyplan.",
+      "desconocido": "Couldn't load the entity's communities."
+    },
+    "communityMembers": {
+      "desconocido": "Couldn't load the community's members."
+    },
+    "communityPendingRequests": {
+      "desconocido": "Couldn't load the pending requests."
+    },
+    "communityMemberAction": {
+      "approve": "Couldn't approve the request.",
+      "reject": "Couldn't reject the request.",
+      "kick": "Couldn't remove the person.",
+      "changeRole": "Couldn't change the role."
     }
   }
 }

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { AddPersonDialog } from "@/components/people/AddPersonDialog";
 import { ImportPeopleDialog } from "@/components/people/ImportPeopleDialog";
@@ -17,6 +18,7 @@ import { useEntityCommunities } from "@/hooks/useEntityCommunities";
 import { useResendInvitation } from "@/hooks/useResendInvitation";
 import { useRevokeInvitation } from "@/hooks/useRevokeInvitation";
 import type { InvitedPersonRow } from "@/lib/api/types";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 import { isInvitedPersonRow } from "@/lib/people/invitedRow";
 import { presetPeriod } from "@/lib/metrics/period";
 
@@ -48,6 +50,27 @@ function formatDate(iso: string | null): string {
   return new Date(iso).toLocaleDateString("es-ES");
 }
 
+const RESEND_INVITATION_ERROR_KEYS = {
+  invalido: "errors.resendInvitation.invalido",
+  sin_permiso: "errors.resendInvitation.sinPermiso",
+  no_encontrada: "errors.resendInvitation.noEncontrada",
+  desconocido: "errors.resendInvitation.desconocido",
+} as const;
+
+const REVOKE_INVITATION_ERROR_KEYS = {
+  invalido: "errors.revokeInvitation.invalido",
+  sin_permiso: "errors.revokeInvitation.sinPermiso",
+  no_encontrada: "errors.revokeInvitation.noEncontrada",
+  desconocido: "errors.revokeInvitation.desconocido",
+} as const;
+
+const PEOPLE_ERROR_KEYS = {
+  periodo_invalido: "errors.people.periodoInvalido",
+  sin_acceso: "errors.people.sinAcceso",
+  pagina_inexistente: "errors.people.paginaInexistente",
+  desconocido: "errors.people.desconocido",
+} as const;
+
 /**
  * Recuento de invitaciones `pending` junto al checkbox «Incluir
  * invitadas» (tarea W3b): componente aparte para que `useInvitations`
@@ -58,20 +81,17 @@ function formatDate(iso: string | null): string {
  */
 function PendingInvitationsHint({ orgId }: { orgId: number | string }) {
   const invitations = useInvitations(orgId, "pending");
+  const t = useTranslations("entidad.personas");
   if (invitations.isError) {
     return (
       <span role="status" className="text-xs text-error">
-        No se pudo cargar el recuento de invitaciones.
+        {t("invitationsCountError")}
       </span>
     );
   }
   if (!invitations.data) return null;
   const count = invitations.data.length;
-  return (
-    <span className="text-xs text-text-secondary">
-      {count} invitación{count === 1 ? "" : "es"} pendiente{count === 1 ? "" : "s"}
-    </span>
-  );
+  return <span className="text-xs text-text-secondary">{t("pendingInvitations", { count })}</span>;
 }
 
 /**
@@ -96,6 +116,8 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
   const [resentTo, setResentTo] = useState<string | null>(null);
   const period = presetPeriod("mes");
   const communities = useEntityCommunities(orgId);
+  const t = useTranslations("entidad.personas");
+  const tAll = useTranslations();
 
   /**
    * Los campos que se teclean (búsqueda, referente y las dos fechas) se
@@ -156,18 +178,18 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
       {canManage ? (
         <div className="flex flex-wrap gap-2">
           <Button type="button" onClick={() => setAddOpen(true)}>
-            Añadir persona
+            {t("addPerson")}
           </Button>
           <Button type="button" variant="secondary" onClick={() => setImportOpen(true)}>
-            Importar Excel/CSV
+            {t("importExcelCsv")}
           </Button>
         </div>
       ) : null}
 
-      <form aria-label="Filtros de personas" className="flex flex-wrap items-end gap-3">
+      <form aria-label={t("filtersLabel")} className="flex flex-wrap items-end gap-3">
         <div>
           <label htmlFor="personas-search" className="mb-1 block text-sm font-medium text-text-form">
-            Buscar
+            {t("searchLabel")}
           </label>
           <input
             id="personas-search"
@@ -179,7 +201,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
         </div>
         <div>
           <label htmlFor="personas-community" className="mb-1 block text-sm font-medium text-text-form">
-            Comunidad
+            {t("communityLabel")}
           </label>
           <select
             id="personas-community"
@@ -191,7 +213,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
             aria-describedby={communities.isError ? "personas-community-error" : undefined}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
-            <option value="">Todas</option>
+            <option value="">{t("communityAll")}</option>
             {(communities.data ?? []).map((community) => (
               <option key={community.id} value={community.id}>
                 {community.name}
@@ -200,13 +222,13 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
           </select>
           {communities.isError ? (
             <p id="personas-community-error" role="alert" className="mt-1 text-xs text-error">
-              No se pudieron cargar las comunidades.
+              {t("communitiesError")}
             </p>
           ) : null}
         </div>
         <div>
           <label htmlFor="personas-referent" className="mb-1 block text-sm font-medium text-text-form">
-            Referente
+            {t("referentLabel")}
           </label>
           <input
             id="personas-referent"
@@ -218,7 +240,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
         </div>
         <div>
           <label htmlFor="personas-active-since" className="mb-1 block text-sm font-medium text-text-form">
-            Participación desde
+            {t("activeSinceLabel")}
           </label>
           <input
             id="personas-active-since"
@@ -230,7 +252,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
         </div>
         <div>
           <label htmlFor="personas-joined-since" className="mb-1 block text-sm font-medium text-text-form">
-            De alta desde
+            {t("joinedSinceLabel")}
           </label>
           <input
             id="personas-joined-since"
@@ -250,7 +272,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
                 setPage(1);
               }}
             />
-            Incluir invitadas
+            {t("includeInvited")}
           </label>
           {includeInvited ? <PendingInvitationsHint orgId={orgId} /> : null}
         </div>
@@ -258,36 +280,44 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
 
       {resendInvitation.isError ? (
         <p role="alert" className="text-sm text-error">
-          {resendInvitation.error.message}
+          {errorKindText(
+            resendInvitation.error,
+            RESEND_INVITATION_ERROR_KEYS,
+            tAll,
+            "errors.resendInvitation.desconocido",
+          )}
         </p>
       ) : null}
       {resentTo ? (
         <p role="status" className="text-sm text-success">
-          Invitación reenviada a {resentTo}.
+          {t("resentTo", { email: resentTo })}
         </p>
       ) : null}
 
       {people.isError ? (
-        <ErrorState title="No se pudieron cargar las personas" description={people.error.message} />
+        <ErrorState
+          title={t("loadError")}
+          description={errorKindText(people.error, PEOPLE_ERROR_KEYS, tAll, "errors.people.desconocido")}
+        />
       ) : !people.data ? (
-        <p className="text-sm text-text-secondary">Cargando personas…</p>
+        <p className="text-sm text-text-secondary">{t("loadingPeople")}</p>
       ) : people.data.results.length === 0 ? (
-        <EmptyState title="Sin personas con estos filtros" />
+        <EmptyState title={t("emptyFiltered")} />
       ) : (
         <>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <caption className="sr-only">Personas de la entidad</caption>
+              <caption className="sr-only">{t("tableCaption")}</caption>
               <thead>
                 <tr className="border-b border-border text-text-secondary">
-                  <th scope="col" className="px-3 py-2 font-semibold">Nombre</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">Comunidades</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">Actividades (periodo)</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">Asistió (periodo)</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">De alta</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">Referente</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">{t("colName")}</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">{t("colCommunities")}</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">{t("colEventsPeriod")}</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">{t("colAttendedPeriod")}</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">{t("colJoined")}</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">{t("colReferent")}</th>
                   {canManage ? (
-                    <th scope="col" className="px-3 py-2 font-semibold">Acciones</th>
+                    <th scope="col" className="px-3 py-2 font-semibold">{t("colActions")}</th>
                   ) : null}
                 </tr>
               </thead>
@@ -301,7 +331,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
                       >
                         <td className="px-3 py-2 text-text-base">
                           <div className="flex flex-wrap items-center gap-2">
-                            <Badge tone="info">Invitada (pendiente)</Badge>
+                            <Badge tone="info">{t("invitedBadge")}</Badge>
                             <span className="font-medium">{row.display_name}</span>
                           </div>
                         </td>
@@ -324,7 +354,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
                                   });
                                 }}
                               >
-                                Reenviar
+                                {t("resend")}
                               </Button>
                               <Button
                                 type="button"
@@ -334,7 +364,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
                                   setRevoking(row);
                                 }}
                               >
-                                Revocar
+                                {t("revoke")}
                               </Button>
                             </div>
                           </td>
@@ -358,7 +388,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
                       <td className="px-3 py-2 text-text-base">{row.attended_period}</td>
                       <td className="px-3 py-2 text-text-base">{formatDate(row.joined_at)}</td>
                       <td className="px-3 py-2 text-text-base">
-                        {row.referent ? row.referent.public_name : "Sin referente"}
+                        {row.referent ? row.referent.public_name : t("noReferent")}
                       </td>
                       {canManage ? <td className="px-3 py-2 text-text-secondary">—</td> : null}
                     </tr>
@@ -378,9 +408,9 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
                 setPage((prev) => Math.max(1, prev - 1));
               }}
             >
-              Anterior
+              {t("previous")}
             </Button>
-            <span className="text-sm text-text-secondary">{people.data.count} personas</span>
+            <span className="text-sm text-text-secondary">{t("countLabel", { count: people.data.count })}</span>
             <Button
               type="button"
               variant="secondary"
@@ -390,7 +420,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
                 setPage((prev) => prev + 1);
               }}
             >
-              Siguiente
+              {t("next")}
             </Button>
           </div>
         </>
@@ -401,25 +431,26 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
 
       <ConfirmDialog
         open={revoking !== null}
-        title="Revocar invitación"
+        title={t("revokeTitle")}
         description={
           // El error de la revocación se lee aquí dentro: el diálogo solo
           // se cierra si la llamada sale bien, así que quien acaba de
           // pulsar «Revocar» ve el motivo sin perder el contexto.
           <div className="flex flex-col gap-2">
-            <p>
-              {revoking
-                ? `¿Revocar la invitación a «${revoking.display_name}»? Esta acción no se puede deshacer.`
-                : ""}
-            </p>
+            <p>{revoking ? t("revokeConfirm", { name: revoking.display_name }) : ""}</p>
             {revokeInvitation.isError ? (
               <p role="alert" className="text-error">
-                {revokeInvitation.error.message}
+                {errorKindText(
+                  revokeInvitation.error,
+                  REVOKE_INVITATION_ERROR_KEYS,
+                  tAll,
+                  "errors.revokeInvitation.desconocido",
+                )}
               </p>
             ) : null}
           </div>
         }
-        confirmLabel="Revocar"
+        confirmLabel={t("revoke")}
         pending={revokeInvitation.isPending}
         onConfirm={() => {
           if (!revoking) return;

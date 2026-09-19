@@ -32,11 +32,12 @@ export default async function EntidadInicioPage({
 
   const orgResult = await getServerOrganization(membership.organization_id, session.token);
   const orgName = orgResult.ok ? orgResult.data.name : membership.organization_name;
+  const t = await getTranslations("entidad.inicio");
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Inicio</h1>
-      <p className="text-sm text-text-secondary">Panel de {orgName}.</p>
+      <h1 className="text-2xl font-semibold text-text-base">{t("heading")}</h1>
+      <p className="text-sm text-text-secondary">{t("panelSubtitle", { orgName })}</p>
       <EntityHomeDashboard orgId={membership.organization_id} slug={slug} />
     </div>
   );

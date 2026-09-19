@@ -36,8 +36,12 @@ export default async function EntidadPersonaPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!entidadMenuFor(membership.role).includes("personas")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Personas." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("entidad.personas.noAccessDescription")} />
+    );
   }
 
   const canAssignReferent = membership.role === "titular" || membership.role === "moderador";
@@ -45,7 +49,7 @@ export default async function EntidadPersonaPage({
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Ficha de la persona</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.personaFicha.heading")}</h1>
       <PersonSheet
         orgId={membership.organization_id}
         userId={userId}

@@ -195,7 +195,11 @@ describe("EntidadPersonaPage", () => {
       isPending: false,
       isSuccess: false,
       isError: true,
-      error: { message: "Esa persona ya tiene un referente asignado." },
+      error: {
+        kind: "invalido",
+        detail: "Esa persona ya tiene un referente asignado.",
+        message: "Esa persona ya tiene un referente asignado.",
+      },
     });
 
     await renderPage("titular");

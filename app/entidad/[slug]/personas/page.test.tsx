@@ -495,7 +495,7 @@ describe("EntidadPersonasPage", () => {
       mutate: vi.fn(),
       isPending: false,
       isError: true,
-      error: { message: "Esta persona ya es miembro de la entidad." },
+      error: { kind: "ya_es_miembro", message: "Esta persona ya es miembro de la entidad." },
       reset: vi.fn(),
     });
 
@@ -708,7 +708,9 @@ describe("EntidadPersonasPage", () => {
       mutate: vi.fn(),
       isPending: false,
       isError: true,
-      error: new Error("Solo titular o moderador pueden revocar invitaciones."),
+      error: Object.assign(new Error("Solo titular o moderador pueden revocar invitaciones."), {
+        kind: "sin_permiso",
+      }),
       reset: vi.fn(),
     });
     usePeopleMock.mockReturnValue({

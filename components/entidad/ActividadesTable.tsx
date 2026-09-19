@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useEntityEvents, type EntityEventStatus } from "@/hooks/useEntityEvents";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 import { presetPeriod } from "@/lib/metrics/period";
 
 export interface ActividadesTableProps {
@@ -23,10 +25,16 @@ export interface ActividadesTableProps {
   canOpenAttendance: boolean;
 }
 
-const STATUS_LABELS: Record<EntityEventStatus, string> = {
-  scheduled: "Programada",
-  cancelled: "Cancelada",
-  completed: "Celebrada",
+const ENTITY_EVENTS_ERROR_KEYS = {
+  periodo_invalido: "errors.entityEvents.periodoInvalido",
+  sin_acceso: "errors.entityEvents.sinAcceso",
+  desconocido: "errors.entityEvents.desconocido",
+} as const;
+
+const STATUS_KEYS: Record<EntityEventStatus, string> = {
+  scheduled: "entidad.actividades.statusScheduled",
+  cancelled: "entidad.actividades.statusCancelled",
+  completed: "entidad.actividades.statusCompleted",
 };
 
 function formatDateTime(iso: string): string {
@@ -42,6 +50,8 @@ function formatDateTime(iso: string): string {
 export function ActividadesTable({ orgId, slug, canOpenAttendance }: ActividadesTableProps) {
   const [status, setStatus] = useState<EntityEventStatus | "">("");
   const period = presetPeriod("mes");
+  const t = useTranslations("entidad.actividades");
+  const tAll = useTranslations();
 
   const events = useEntityEvents(orgId, period, status || undefined);
 
@@ -49,7 +59,7 @@ export function ActividadesTable({ orgId, slug, canOpenAttendance }: Actividades
     <div className="flex flex-col gap-4">
       <div>
         <label htmlFor="actividades-status" className="mb-1 block text-sm font-medium text-text-form">
-          Estado
+          {t("statusLabel")}
         </label>
         <select
           id="actividades-status"
@@ -57,31 +67,39 @@ export function ActividadesTable({ orgId, slug, canOpenAttendance }: Actividades
           onChange={(event) => setStatus(event.target.value as EntityEventStatus | "")}
           className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
         >
-          <option value="">Todas</option>
-          <option value="scheduled">Programada</option>
-          <option value="cancelled">Cancelada</option>
-          <option value="completed">Celebrada</option>
+          <option value="">{t("statusAll")}</option>
+          <option value="scheduled">{t("statusScheduled")}</option>
+          <option value="cancelled">{t("statusCancelled")}</option>
+          <option value="completed">{t("statusCompleted")}</option>
         </select>
       </div>
 
       {events.isError ? (
-        <ErrorState title="No se pudieron cargar las actividades" description={events.error.message} />
+        <ErrorState
+          title={t("loadError")}
+          description={errorKindText(
+            events.error,
+            ENTITY_EVENTS_ERROR_KEYS,
+            tAll,
+            "errors.entityEvents.desconocido",
+          )}
+        />
       ) : !events.data ? (
-        <p className="text-sm text-text-secondary">Cargando actividades…</p>
+        <p className="text-sm text-text-secondary">{t("loading")}</p>
       ) : events.data.length === 0 ? (
-        <EmptyState title="Sin actividades en este periodo" />
+        <EmptyState title={t("empty")} />
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <caption className="sr-only">Actividades de la entidad</caption>
+            <caption className="sr-only">{t("tableCaption")}</caption>
             <thead>
               <tr className="border-b border-border text-text-secondary">
-                <th scope="col" className="px-3 py-2 font-semibold">Actividad</th>
-                <th scope="col" className="px-3 py-2 font-semibold">Estado</th>
-                <th scope="col" className="px-3 py-2 font-semibold">Responsable</th>
-                <th scope="col" className="px-3 py-2 font-semibold">Inscritos</th>
-                <th scope="col" className="px-3 py-2 font-semibold">Asistió</th>
-                <th scope="col" className="px-3 py-2 font-semibold">No asistió</th>
+                <th scope="col" className="px-3 py-2 font-semibold">{t("colActivity")}</th>
+                <th scope="col" className="px-3 py-2 font-semibold">{t("colStatus")}</th>
+                <th scope="col" className="px-3 py-2 font-semibold">{t("colResponsible")}</th>
+                <th scope="col" className="px-3 py-2 font-semibold">{t("colRegistered")}</th>
+                <th scope="col" className="px-3 py-2 font-semibold">{t("colAttended")}</th>
+                <th scope="col" className="px-3 py-2 font-semibold">{t("colNoShow")}</th>
               </tr>
             </thead>
             <tbody>
@@ -100,7 +118,12 @@ export function ActividadesTable({ orgId, slug, canOpenAttendance }: Actividades
                     )}
                     <div className="text-xs text-text-secondary">{formatDateTime(event.starts_at)}</div>
                   </td>
-                  <td className="px-3 py-2 text-text-base">{STATUS_LABELS[event.status as EntityEventStatus] ?? event.status}</td>
+                  <td className="px-3 py-2 text-text-base">
+                    {(() => {
+                      const key = STATUS_KEYS[event.status as EntityEventStatus];
+                      return key ? tAll(key) : event.status;
+                    })()}
+                  </td>
                   <td className="px-3 py-2 text-text-base">
                     {event.organizer ? event.organizer.public_name : "—"}
                   </td>

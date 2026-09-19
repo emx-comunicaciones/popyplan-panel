@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -17,10 +18,23 @@ import {
 import { useCommunityMembers, useCommunityPendingRequests } from "@/hooks/useCommunityMembers";
 import { useEntityCommunities } from "@/hooks/useEntityCommunities";
 import type { CommunityMember, EntityCommunityRow } from "@/lib/api/types";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 
 export interface ComunidadesPanelProps {
   orgId: number | string;
 }
+
+const MEMBER_ACTION_ERROR_KEYS = {
+  approve: "errors.communityMemberAction.approve",
+  reject: "errors.communityMemberAction.reject",
+  kick: "errors.communityMemberAction.kick",
+  changeRole: "errors.communityMemberAction.changeRole",
+} as const;
+
+const ENTITY_COMMUNITIES_ERROR_KEYS = {
+  demasiadas_paginas: "errors.entityCommunities.demasiadasPaginas",
+  desconocido: "errors.entityCommunities.desconocido",
+} as const;
 
 function CommunityCard({
   community,
@@ -31,6 +45,8 @@ function CommunityCard({
   selected: boolean;
   onSelect: () => void;
 }) {
+  const t = useTranslations("entidad.comunidades");
+
   return (
     <li>
       <button
@@ -44,15 +60,15 @@ function CommunityCard({
         <p className="font-medium text-text-base">{community.name}</p>
         <p className="mt-1 text-xs text-text-secondary">
           {community.visibility === "open"
-            ? "Abierta"
+            ? t("visibilityOpen")
             : community.visibility === "on_request"
-              ? "Con solicitud"
-              : "Privada"}
+              ? t("visibilityOnRequest")
+              : t("visibilityPrivate")}
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
-          <Badge tone="info">{community.members_count} miembros</Badge>
-          <Badge tone="neutral">{community.active_members_count} activos</Badge>
-          <Badge tone="neutral">{community.upcoming_events_count} actividades próximas</Badge>
+          <Badge tone="info">{t("membersBadge", { count: community.members_count })}</Badge>
+          <Badge tone="neutral">{t("activeMembersBadge", { count: community.active_members_count })}</Badge>
+          <Badge tone="neutral">{t("upcomingEventsBadge", { count: community.upcoming_events_count })}</Badge>
         </div>
       </button>
     </li>
@@ -69,6 +85,8 @@ function MemberRow({
   const changeRole = useChangeCommunityMemberRole();
   const kick = useKickCommunityMember();
   const [confirmingKick, setConfirmingKick] = useState(false);
+  const t = useTranslations("entidad.comunidades");
+  const tAll = useTranslations();
 
   return (
     <tr className="border-b border-border-light">
@@ -87,7 +105,7 @@ function MemberRow({
                     changeRole.mutate({ communityId, memberId: member.id, role: "moderator" })
                   }
                 >
-                  Hacer moderador
+                  {t("makeModerator")}
                 </Button>
               ) : (
                 <Button
@@ -96,7 +114,7 @@ function MemberRow({
                   disabled={changeRole.isPending}
                   onClick={() => changeRole.mutate({ communityId, memberId: member.id, role: "member" })}
                 >
-                  Quitar moderación
+                  {t("removeModeration")}
                 </Button>
               )}
               <Button
@@ -107,39 +125,36 @@ function MemberRow({
                   setConfirmingKick(true);
                 }}
               >
-                Expulsar
+                {t("kick")}
               </Button>
             </>
           ) : (
-            <span className="text-xs text-text-secondary">Propietario</span>
+            <span className="text-xs text-text-secondary">{t("owner")}</span>
           )}
         </div>
         {changeRole.isError ? (
           <p role="alert" className="mt-1 text-xs text-error">
-            {changeRole.error.message}
+            {errorKindText(changeRole.error, MEMBER_ACTION_ERROR_KEYS, tAll, "errors.communityMemberAction.changeRole")}
           </p>
         ) : null}
 
         <ConfirmDialog
           open={confirmingKick}
-          title="Expulsar de la comunidad"
+          title={t("kickTitle")}
           description={
             // Mismo patrón que «Revocar» en `PersonasTable`: el error se
             // lee dentro del diálogo, que solo se cierra si la expulsión
             // llega a hacerse.
             <div className="flex flex-col gap-2">
-              <p>
-                ¿Expulsar a «{member.full_name}» de esta comunidad? Dejará de ver sus actividades y
-                tendrá que volver a solicitar la entrada.
-              </p>
+              <p>{t("kickConfirm", { name: member.full_name })}</p>
               {kick.isError ? (
                 <p role="alert" className="text-error">
-                  {kick.error.message}
+                  {errorKindText(kick.error, MEMBER_ACTION_ERROR_KEYS, tAll, "errors.communityMemberAction.kick")}
                 </p>
               ) : null}
             </div>
           }
-          confirmLabel="Expulsar"
+          confirmLabel={t("kick")}
           pending={kick.isPending}
           onConfirm={() =>
             kick.mutate(
@@ -160,6 +175,8 @@ function MemberRow({
 function PendingRow({ member, communityId }: { member: CommunityMember; communityId: string }) {
   const approve = useApproveCommunityMember();
   const reject = useRejectCommunityMember();
+  const t = useTranslations("entidad.comunidades");
+  const tAll = useTranslations();
 
   return (
     <tr className="border-b border-border-light">
@@ -171,7 +188,7 @@ function PendingRow({ member, communityId }: { member: CommunityMember; communit
             disabled={approve.isPending}
             onClick={() => approve.mutate({ communityId, memberId: member.id })}
           >
-            Aprobar
+            {t("approve")}
           </Button>
           <Button
             type="button"
@@ -179,17 +196,17 @@ function PendingRow({ member, communityId }: { member: CommunityMember; communit
             disabled={reject.isPending}
             onClick={() => reject.mutate({ communityId, memberId: member.id })}
           >
-            Rechazar
+            {t("reject")}
           </Button>
         </div>
         {approve.isError ? (
           <p role="alert" className="mt-1 text-xs text-error">
-            {approve.error.message}
+            {errorKindText(approve.error, MEMBER_ACTION_ERROR_KEYS, tAll, "errors.communityMemberAction.approve")}
           </p>
         ) : null}
         {reject.isError ? (
           <p role="alert" className="mt-1 text-xs text-error">
-            {reject.error.message}
+            {errorKindText(reject.error, MEMBER_ACTION_ERROR_KEYS, tAll, "errors.communityMemberAction.reject")}
           </p>
         ) : null}
       </td>
@@ -200,27 +217,29 @@ function PendingRow({ member, communityId }: { member: CommunityMember; communit
 function CommunityDetail({ communityId }: { communityId: string }) {
   const members = useCommunityMembers(communityId);
   const pending = useCommunityPendingRequests(communityId);
+  const t = useTranslations("entidad.comunidades");
+  const tAll = useTranslations();
 
   return (
     <div className="flex flex-col gap-6">
       <section aria-labelledby="pendientes-heading">
         <h2 id="pendientes-heading" className="mb-2 text-base font-semibold text-text-base">
-          Solicitudes pendientes
+          {t("pendingHeading")}
         </h2>
         {pending.isError ? (
-          <ErrorState title="No se pudieron cargar las solicitudes" description={pending.error.message} />
+          <ErrorState title={t("pendingError")} description={tAll("errors.communityPendingRequests.desconocido")} />
         ) : !pending.data ? (
-          <p className="text-sm text-text-secondary">Cargando…</p>
+          <p className="text-sm text-text-secondary">{t("loading")}</p>
         ) : pending.data.length === 0 ? (
-          <EmptyState title="Sin solicitudes pendientes" />
+          <EmptyState title={t("noPending")} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <caption className="sr-only">Solicitudes pendientes de la comunidad</caption>
+              <caption className="sr-only">{t("pendingTableCaption")}</caption>
               <thead>
                 <tr className="border-b border-border text-text-secondary">
-                  <th scope="col" className="px-3 py-2 font-semibold">Persona</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">Acciones</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">{t("colPerson")}</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">{t("colActions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -235,23 +254,23 @@ function CommunityDetail({ communityId }: { communityId: string }) {
 
       <section aria-labelledby="miembros-heading">
         <h2 id="miembros-heading" className="mb-2 text-base font-semibold text-text-base">
-          Miembros
+          {t("membersHeading")}
         </h2>
         {members.isError ? (
-          <ErrorState title="No se pudieron cargar los miembros" description={members.error.message} />
+          <ErrorState title={t("membersError")} description={tAll("errors.communityMembers.desconocido")} />
         ) : !members.data ? (
-          <p className="text-sm text-text-secondary">Cargando…</p>
+          <p className="text-sm text-text-secondary">{t("loading")}</p>
         ) : members.data.length === 0 ? (
-          <EmptyState title="Sin miembros" />
+          <EmptyState title={t("noMembers")} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <caption className="sr-only">Miembros de la comunidad</caption>
+              <caption className="sr-only">{t("membersTableCaption")}</caption>
               <thead>
                 <tr className="border-b border-border text-text-secondary">
-                  <th scope="col" className="px-3 py-2 font-semibold">Persona</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">Rol</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">Acciones</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">{t("colPerson")}</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">{t("colRole")}</th>
+                  <th scope="col" className="px-3 py-2 font-semibold">{t("colActions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -283,27 +302,29 @@ function CommunityDetail({ communityId }: { communityId: string }) {
 export function ComunidadesPanel({ orgId }: ComunidadesPanelProps) {
   const communities = useEntityCommunities(orgId);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const t = useTranslations("entidad.comunidades");
+  const tAll = useTranslations();
 
   if (communities.isError) {
     return (
       <ErrorState
-        title="No se pudieron cargar las comunidades"
-        description={communities.error.message}
+        title={t("loadError")}
+        description={errorKindText(
+          communities.error,
+          ENTITY_COMMUNITIES_ERROR_KEYS,
+          tAll,
+          "errors.entityCommunities.desconocido",
+        )}
       />
     );
   }
 
   if (!communities.data) {
-    return <p className="text-sm text-text-secondary">Cargando comunidades…</p>;
+    return <p className="text-sm text-text-secondary">{t("loadingCommunities")}</p>;
   }
 
   if (communities.data.length === 0) {
-    return (
-      <EmptyState
-        title="Sin comunidades"
-        description="Esta entidad todavía no tiene comunidades con su sello."
-      />
-    );
+    return <EmptyState title={t("empty")} description={t("emptyDescription")} />;
   }
 
   return (
@@ -324,7 +345,7 @@ export function ComunidadesPanel({ orgId }: ComunidadesPanelProps) {
             <CommunityDetail communityId={selectedId} />
           </Card>
         ) : (
-          <EmptyState title="Elige una comunidad" description="Selecciona una comunidad de la lista para ver sus miembros y solicitudes." />
+          <EmptyState title={t("choose")} description={t("chooseDescription")} />
         )}
       </div>
     </div>

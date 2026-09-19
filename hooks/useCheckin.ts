@@ -16,6 +16,10 @@ import type { CheckinResponse } from "@/lib/api/types";
 
 export type CheckinErrorKind = "token_desconocido" | "fuera_de_ventana" | "sin_permiso" | "desconocido";
 
+/**
+ * `kind` es lo único que necesita `components/entidad/AttendanceView.tsx`
+ * para traducir (tarea 3 de i18n) — `message` sigue en español tal cual.
+ */
 export class CheckinError extends Error {
   readonly kind: CheckinErrorKind;
 

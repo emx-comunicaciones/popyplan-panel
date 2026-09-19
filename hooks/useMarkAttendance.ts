@@ -17,32 +17,37 @@ import type { AttendanceMarkResponse } from "@/lib/api/types";
 
 export type MarkAttendanceErrorKind = "invalido" | "no_inscrita" | "sin_permiso" | "desconocido";
 
+/**
+ * `kind` (+ `detail`, el texto verbatim del backend cuando lo hay) es lo
+ * que traduce `components/entidad/AttendanceView.tsx` (tarea 3 de i18n,
+ * `lib/i18n/errorKindText.ts`) — este hook, plano `.ts`, no puede llamar
+ * a `t()`, así que `message` sigue en español tal cual (compatibilidad de
+ * los tests que ya lo comprueban).
+ */
 export class MarkAttendanceError extends Error {
   readonly kind: MarkAttendanceErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: MarkAttendanceErrorKind, message: string) {
+  constructor(kind: MarkAttendanceErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "MarkAttendanceError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
 function toMarkAttendanceError(error: unknown): MarkAttendanceError {
   if (error instanceof ApiError) {
     if (error.status === 400) {
-      return new MarkAttendanceError(
-        "invalido",
-        detailOf(error) ?? "No se pudo marcar la asistencia.",
-      );
+      const detail = detailOf(error);
+      return new MarkAttendanceError("invalido", detail ?? "No se pudo marcar la asistencia.", detail);
     }
     if (error.status === 403) {
       return new MarkAttendanceError("sin_permiso", "No organizas esta actividad.");
     }
     if (error.status === 404) {
-      return new MarkAttendanceError(
-        "no_inscrita",
-        detailOf(error) ?? "Esa persona no está apuntada.",
-      );
+      const detail = detailOf(error);
+      return new MarkAttendanceError("no_inscrita", detail ?? "Esa persona no está apuntada.", detail);
     }
   }
   return new MarkAttendanceError("desconocido", "No se pudo marcar la asistencia.");

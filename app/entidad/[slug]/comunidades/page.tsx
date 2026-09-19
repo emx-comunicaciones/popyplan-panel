@@ -31,13 +31,17 @@ export default async function EntidadComunidadesPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!entidadMenuFor(membership.role).includes("comunidades")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Comunidades." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("entidad.comunidades.noAccessDescription")} />
+    );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Comunidades</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.comunidades.heading")}</h1>
       <ComunidadesPanel orgId={membership.organization_id} />
     </div>
   );

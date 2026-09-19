@@ -18,6 +18,14 @@ export type EntityEventStatus = "scheduled" | "cancelled" | "completed";
 
 export type EntityEventsErrorKind = "periodo_invalido" | "sin_acceso" | "desconocido";
 
+/**
+ * `kind` es lo único que necesita el componente para traducir (tarea 3 de
+ * i18n, `CLAUDE.md`): este hook, plano `.ts`, no puede llamar a `t()`, así
+ * que sigue construyendo `message` en español tal cual (compatibilidad de
+ * los tests que ya lo comprueban) — `components/entidad/{EntityHomeDashboard,
+ * ActividadesTable}.tsx` lo ignoran y traducen por `kind`
+ * (`lib/i18n/errorKindText.ts`).
+ */
 export class EntityEventsError extends Error {
   readonly kind: EntityEventsErrorKind;
 

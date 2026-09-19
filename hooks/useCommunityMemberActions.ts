@@ -15,18 +15,37 @@ import { detailOf } from "@/lib/api/drfError";
 import { COMMUNITIES } from "@/lib/api/endpoints";
 import type { CommunityMember } from "@/lib/api/types";
 
+export type CommunityMemberActionKind = "approve" | "reject" | "kick" | "changeRole";
+
+/**
+ * `kind` (+ `detail`, el texto verbatim del backend cuando lo hay) es lo
+ * que traduce `components/entidad/ComunidadesPanel.tsx` (tarea 3 de i18n,
+ * `lib/i18n/errorKindText.ts`) — este hook, plano `.ts`, no puede llamar
+ * a `t()`, así que `message` sigue en español tal cual (compatibilidad de
+ * los tests que ya lo comprueban).
+ */
 export class CommunityMemberActionError extends Error {
-  constructor(message: string) {
+  readonly kind: CommunityMemberActionKind;
+  readonly detail?: string;
+
+  constructor(kind: CommunityMemberActionKind, message: string, detail?: string) {
     super(message);
     this.name = "CommunityMemberActionError";
+    this.kind = kind;
+    this.detail = detail;
   }
 }
 
-function toActionError(error: unknown, fallback: string): CommunityMemberActionError {
+function toActionError(
+  kind: CommunityMemberActionKind,
+  error: unknown,
+  fallback: string,
+): CommunityMemberActionError {
   if (error instanceof ApiError) {
-    return new CommunityMemberActionError(detailOf(error) ?? fallback);
+    const detail = detailOf(error);
+    return new CommunityMemberActionError(kind, detail ?? fallback, detail);
   }
-  return new CommunityMemberActionError(fallback);
+  return new CommunityMemberActionError(kind, fallback);
 }
 
 function invalidate(
@@ -55,7 +74,7 @@ export function useApproveCommunityMember(): UseMutationResult<
           method: "POST",
         });
       } catch (error) {
-        throw toActionError(error, "No se pudo aprobar la solicitud.");
+        throw toActionError("approve", error, "No se pudo aprobar la solicitud.");
       }
     },
     onSuccess: (_data, variables) => invalidate(queryClient, variables.communityId),
@@ -73,7 +92,7 @@ export function useRejectCommunityMember(): UseMutationResult<
       try {
         await apiFetch<void>(COMMUNITIES.REJECT_MEMBER(communityId, memberId), { method: "POST" });
       } catch (error) {
-        throw toActionError(error, "No se pudo rechazar la solicitud.");
+        throw toActionError("reject", error, "No se pudo rechazar la solicitud.");
       }
     },
     onSuccess: (_data, variables) => invalidate(queryClient, variables.communityId),
@@ -91,7 +110,7 @@ export function useKickCommunityMember(): UseMutationResult<
       try {
         await apiFetch<void>(COMMUNITIES.KICK_MEMBER(communityId, memberId), { method: "POST" });
       } catch (error) {
-        throw toActionError(error, "No se pudo expulsar a la persona.");
+        throw toActionError("kick", error, "No se pudo expulsar a la persona.");
       }
     },
     onSuccess: (_data, variables) => invalidate(queryClient, variables.communityId),
@@ -116,7 +135,7 @@ export function useChangeCommunityMemberRole(): UseMutationResult<
           body: { role },
         });
       } catch (error) {
-        throw toActionError(error, "No se pudo cambiar el rol.");
+        throw toActionError("changeRole", error, "No se pudo cambiar el rol.");
       }
     },
     onSuccess: (_data, variables) => invalidate(queryClient, variables.communityId),

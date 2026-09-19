@@ -14,13 +14,22 @@ import { ORGANIZATIONS } from "@/lib/api/endpoints";
 
 export type RevokeInvitationErrorKind = "invalido" | "sin_permiso" | "no_encontrada" | "desconocido";
 
+/**
+ * `kind` (+ `detail`, el texto verbatim del backend cuando lo hay) es lo
+ * que traduce `components/entidad/PersonasTable.tsx` (tarea 3 de i18n,
+ * `lib/i18n/errorKindText.ts`) — este hook, plano `.ts`, no puede llamar
+ * a `t()`, así que `message` sigue en español tal cual (compatibilidad de
+ * los tests que ya lo comprueban).
+ */
 export class RevokeInvitationError extends Error {
   readonly kind: RevokeInvitationErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: RevokeInvitationErrorKind, message: string) {
+  constructor(kind: RevokeInvitationErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "RevokeInvitationError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -35,9 +44,11 @@ export function useRevokeInvitation(
         await apiFetch<void>(ORGANIZATIONS.INVITATION(orgId, invitationId), { method: "DELETE" });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
+          const detail = detailOf(error);
           throw new RevokeInvitationError(
             "invalido",
-            detailOf(error) ?? "Esta invitación ya no está pendiente.",
+            detail ?? "Esta invitación ya no está pendiente.",
+            detail,
           );
         }
         if (error instanceof ApiError && error.status === 403) {

@@ -36,14 +36,18 @@ export default async function EntidadAsistenciaIndexPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!entidadMenuFor(membership.role).includes("asistencia")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Asistencia." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("entidad.asistencia.noAccessDescription")} />
+    );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Asistencia</h1>
-      <p className="text-sm text-text-secondary">Elige una actividad para gestionar su asistencia.</p>
+      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.asistencia.heading")}</h1>
+      <p className="text-sm text-text-secondary">{t("entidad.asistencia.chooseActivity")}</p>
       {/* Siempre `true`: esta página ya está gateada por `asistencia`. */}
       <ActividadesTable orgId={membership.organization_id} slug={slug} canOpenAttendance />
     </div>

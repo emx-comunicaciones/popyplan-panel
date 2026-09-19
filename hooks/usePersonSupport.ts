@@ -28,13 +28,22 @@ import type { PersonSupportRow } from "@/lib/api/types";
 
 export type PersonSupportErrorKind = "sin_acceso" | "desconocido";
 
+/**
+ * `kind` (+ `detail`, el texto verbatim del backend cuando lo hay) es lo
+ * que traduce `components/entidad/PersonSheet.tsx` (tarea 3 de i18n,
+ * `lib/i18n/errorKindText.ts`) — este hook, plano `.ts`, no puede llamar
+ * a `t()`, así que `message` sigue en español tal cual (compatibilidad de
+ * los tests que ya lo comprueban).
+ */
 export class PersonSupportError extends Error {
   readonly kind: PersonSupportErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: PersonSupportErrorKind, message: string) {
+  constructor(kind: PersonSupportErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "PersonSupportError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -43,9 +52,11 @@ function toPersonSupportError(error: unknown): PersonSupportError {
     if (error.status === 403 || error.status === 404) {
       return new PersonSupportError("sin_acceso", "Sin acceso a la red de apoyo de esta persona.");
     }
+    const detail = detailOf(error);
     return new PersonSupportError(
       "desconocido",
-      detailOf(error) ?? "No se pudo cargar la red de apoyo de esta persona.",
+      detail ?? "No se pudo cargar la red de apoyo de esta persona.",
+      detail,
     );
   }
   return new PersonSupportError("desconocido", "No se pudo cargar la red de apoyo de esta persona.");

@@ -19,21 +19,31 @@ export interface ValidatableImportFile {
   size: number;
 }
 
+/**
+ * Motivo por el que el fichero no es válido — este módulo es una función
+ * pura, sin acceso a `useTranslations` (tarea 3 de i18n), así que ya no
+ * devuelve el texto en español a mostrar: `components/people/
+ * ImportPeopleDialog.tsx` traduce el `kind` con
+ * `people.importDialog.errors.<kind>` (`fileTooLarge` interpola
+ * `IMPORT_MAX_MB` como parámetro ICU `{max}`).
+ */
+export type ImportFileErrorKind = "tipo_no_permitido" | "demasiado_grande";
+
 export function extensionOf(filename: string): string {
   const dot = filename.lastIndexOf(".");
   if (dot === -1 || dot === filename.length - 1) return "";
   return filename.slice(dot + 1).toLowerCase();
 }
 
-/** `null` si el fichero es válido; si no, el mensaje que mostrar en el formulario. */
-export function validateImportFile(file: ValidatableImportFile): string | null {
+/** `null` si el fichero es válido; si no, el motivo por el que no lo es. */
+export function validateImportFile(file: ValidatableImportFile): ImportFileErrorKind | null {
   const extension = extensionOf(file.name);
   if (!IMPORT_ALLOWED_EXTENSIONS.includes(extension as ImportAllowedExtension)) {
-    return "Tipo de fichero no permitido. Usa un .csv o un .xlsx.";
+    return "tipo_no_permitido";
   }
   const maxBytes = IMPORT_MAX_MB * 1024 * 1024;
   if (file.size > maxBytes) {
-    return `El fichero supera el límite de ${IMPORT_MAX_MB} MB.`;
+    return "demasiado_grande";
   }
   return null;
 }

@@ -22,22 +22,33 @@ import type { Reference } from "@/lib/api/types";
 
 export type AssignReferentErrorKind = "invalido" | "sin_permiso" | "desconocido";
 
+/**
+ * `kind` (+ `detail`, el texto verbatim del backend cuando lo hay) es lo
+ * que traduce `components/entidad/PersonSheet.tsx` (tarea 3 de i18n,
+ * `lib/i18n/errorKindText.ts`) — este hook, plano `.ts`, no puede llamar
+ * a `t()`, así que `message` sigue en español tal cual (compatibilidad de
+ * los tests que ya lo comprueban).
+ */
 export class AssignReferentError extends Error {
   readonly kind: AssignReferentErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: AssignReferentErrorKind, message: string) {
+  constructor(kind: AssignReferentErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "AssignReferentError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
 function toAssignReferentError(error: unknown): AssignReferentError {
   if (error instanceof ApiError) {
     if (error.status === 400) {
+      const detail = detailOf(error);
       return new AssignReferentError(
         "invalido",
-        detailOf(error) ?? "No se pudo asignar el referente: revisa los datos.",
+        detail ?? "No se pudo asignar el referente: revisa los datos.",
+        detail,
       );
     }
     if (error.status === 403) {

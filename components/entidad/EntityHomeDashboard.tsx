@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
@@ -8,6 +9,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { StatCard } from "@/components/metrics/StatCard";
 import { useEntityHome } from "@/hooks/useEntityHome";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 import { formatCount, formatPct } from "@/lib/metrics/format";
 
 export interface EntityHomeDashboardProps {
@@ -19,6 +21,12 @@ function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
 }
 
+const ENTITY_EVENTS_ERROR_KEYS = {
+  periodo_invalido: "errors.entityEvents.periodoInvalido",
+  sin_acceso: "errors.entityEvents.sinAcceso",
+  desconocido: "errors.entityEvents.desconocido",
+} as const;
+
 /**
  * Inicio de la entidad (tarea W3): actividades de hoy con
  * inscritos/plazas/responsable, avisos de ayuda y reportes pendientes
@@ -28,19 +36,29 @@ function formatTime(iso: string): string {
  */
 export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
   const { today, pendingReports, pendingHelpRequests, metrics, activePrograms } = useEntityHome(orgId);
+  const t = useTranslations("entidad.inicio");
+  const tErrors = useTranslations();
 
   return (
     <div className="flex flex-col gap-6">
       <section aria-labelledby="actividades-hoy-heading">
         <h2 id="actividades-hoy-heading" className="mb-2 text-lg font-semibold text-text-base">
-          Actividades de hoy
+          {t("todayHeading")}
         </h2>
         {today.isError ? (
-          <ErrorState title="No se pudieron cargar las actividades de hoy" description={today.error.message} />
+          <ErrorState
+            title={t("todayErrorTitle")}
+            description={errorKindText(
+              today.error,
+              ENTITY_EVENTS_ERROR_KEYS,
+              tErrors,
+              "errors.entityEvents.desconocido",
+            )}
+          />
         ) : !today.data ? (
-          <p className="text-sm text-text-secondary">Cargando actividades…</p>
+          <p className="text-sm text-text-secondary">{t("loadingToday")}</p>
         ) : today.data.length === 0 ? (
-          <EmptyState title="Sin actividades hoy" />
+          <EmptyState title={t("noEventsToday")} />
         ) : (
           <ul className="flex flex-col gap-2">
             {today.data.map((event) => (
@@ -55,8 +73,8 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
                       </p>
                     </div>
                     <Badge tone="info">
-                      {event.registered} inscritos
-                      {event.capacity !== null ? ` / ${event.capacity} plazas` : ""}
+                      {t("eventRegistered", { count: event.registered })}
+                      {event.capacity !== null ? ` / ${t("eventCapacity", { count: event.capacity })}` : ""}
                     </Badge>
                   </div>
                 </Card>
@@ -68,37 +86,37 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
 
       <section aria-labelledby="avisos-heading" className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <h2 id="avisos-heading" className="sr-only">
-          Avisos pendientes
+          {t("pendingAlertsHeading")}
         </h2>
         {pendingHelpRequests.data !== null && pendingHelpRequests.data !== undefined ? (
-          <Card title="Solicitudes de ayuda pendientes">
+          <Card title={t("pendingHelpRequests")}>
             <p className="text-2xl font-semibold text-text-base">{pendingHelpRequests.data}</p>
             <Link href={`/entidad/${slug}/guardia`} className="text-sm font-medium text-primary-700 underline">
-              Ir a Guardia
+              {t("goToGuardia")}
             </Link>
           </Card>
         ) : pendingHelpRequests.isError ? (
-          <p className="text-sm text-error">No se pudieron cargar las solicitudes de ayuda.</p>
+          <p className="text-sm text-error">{t("helpRequestsError")}</p>
         ) : null}
 
         {pendingReports.data !== null && pendingReports.data !== undefined ? (
-          <Card title="Reportes pendientes">
+          <Card title={t("pendingReports")}>
             <p className="text-2xl font-semibold text-text-base">{pendingReports.data}</p>
             <Link href={`/entidad/${slug}/reportes`} className="text-sm font-medium text-primary-700 underline">
-              Ir a Reportes
+              {t("goToReportes")}
             </Link>
           </Card>
         ) : pendingReports.isError ? (
-          <p className="text-sm text-error">No se pudieron cargar los reportes.</p>
+          <p className="text-sm text-error">{t("reportsError")}</p>
         ) : null}
       </section>
 
       <section aria-labelledby="programas-heading">
         <h2 id="programas-heading" className="sr-only">
-          Programas
+          {t("programsHeading")}
         </h2>
         {activePrograms.data ? (
-          <Card title="Programas en curso">
+          <Card title={t("activePrograms")}>
             <p className="text-2xl font-semibold text-text-base">
               {activePrograms.data.filter((program) => program.status === "active").length}
             </p>
@@ -106,54 +124,54 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
               href={`/entidad/${slug}/programas`}
               className="text-sm font-medium text-primary-700 underline"
             >
-              Ir a Programas
+              {t("goToProgramas")}
             </Link>
           </Card>
         ) : activePrograms.isError ? (
-          <p className="text-sm text-error">No se pudieron cargar los programas.</p>
+          <p className="text-sm text-error">{t("programsError")}</p>
         ) : null}
       </section>
 
       <section aria-labelledby="metricas-mes-heading">
         <h2 id="metricas-mes-heading" className="mb-2 text-lg font-semibold text-text-base">
-          Este mes
+          {t("monthHeading")}
         </h2>
         {metrics.isError ? (
-          <ErrorState title="No se pudieron cargar las métricas" description={metrics.error.message} />
+          <ErrorState title={t("metricsErrorTitle")} description={metrics.error.message} />
         ) : !metrics.data ? (
-          <p className="text-sm text-text-secondary">Cargando métricas…</p>
+          <p className="text-sm text-text-secondary">{t("loadingMetrics")}</p>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <StatCard
-              label="Personas activas"
+              label={t("statActivePeople")}
               value={formatCount(metrics.data.people.active, metrics.data.people.suppressed)}
             />
             <StatCard
-              label="Altas"
+              label={t("statNew")}
               value={formatCount(metrics.data.people.new, metrics.data.people.suppressed)}
             />
             <StatCard
-              label="Actividades celebradas"
+              label={t("statEventsHeld")}
               value={formatCount(metrics.data.events.held, false)}
             />
             <StatCard
-              label="Actividades canceladas"
+              label={t("statEventsCancelled")}
               value={formatCount(metrics.data.events.cancelled, false)}
             />
             <StatCard
-              label="Asistencia"
+              label={t("statAttendance")}
               value={formatPct(metrics.data.attendance.rate, metrics.data.attendance.suppressed)}
             />
             <StatCard
-              label="No-shows"
+              label={t("statNoShows")}
               value={formatCount(metrics.data.attendance.no_show, metrics.data.attendance.suppressed)}
             />
             <StatCard
-              label="Comunidades activas"
+              label={t("statActiveCommunities")}
               value={formatCount(metrics.data.communities.active, false)}
             />
             <StatCard
-              label="Personas en comunidades"
+              label={t("statCommunityMembers")}
               value={formatCount(metrics.data.communities.members, metrics.data.communities.suppressed)}
             />
           </div>

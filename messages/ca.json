@@ -9,7 +9,8 @@
     "noAccess": "Sense accés",
     "backHome": "Torna a l'inici",
     "items": "{count, plural, one {# element} other {# elements}}",
-    "confirm": "Confirma"
+    "confirm": "Confirma",
+    "noPhoneNotice": "Popyplan no guarda telèfons: contacta amb la persona pel xat de l'app o a través del seu referent."
   },
   "language": {
     "title": "Idioma",
@@ -40,7 +41,8 @@
       "errors": {
         "invalidCredentials": "Usuari o contrasenya incorrectes.",
         "tooManyAttempts": "Massa intents; espera un minut.",
-        "generic": "No s'ha pogut iniciar sessió. Torna-ho a provar."
+        "generic": "No s'ha pogut iniciar sessió. Torna-ho a provar.",
+        "sessionExpired": "La teva sessió ha caducat."
       }
     }
   },
@@ -255,6 +257,329 @@
     "procedure": {
       "heading": "Procediment d'aplicació",
       "body": "Si després d'adreçar-te al correu de contacte no obtens resposta o no hi estàs conforme, pots presentar una queixa o una reclamació per disconformitat d'acord amb l'article 13 del <rd>Reial decret 1112/2018</rd>."
+    }
+  },
+  "entidad": {
+    "inicio": {
+      "heading": "Inici",
+      "panelSubtitle": "Tauler de {orgName}.",
+      "todayHeading": "Activitats d'avui",
+      "loadingToday": "Carregant activitats…",
+      "noEventsToday": "Sense activitats avui",
+      "todayErrorTitle": "No s'han pogut carregar les activitats d'avui",
+      "eventRegistered": "{count, plural, one {# inscrit} other {# inscrits}}",
+      "eventCapacity": "{count, plural, one {# plaça} other {# places}}",
+      "pendingAlertsHeading": "Avisos pendents",
+      "pendingHelpRequests": "Sol·licituds d'ajuda pendents",
+      "goToGuardia": "Vés a Guàrdia",
+      "helpRequestsError": "No s'han pogut carregar les sol·licituds d'ajuda.",
+      "pendingReports": "Informes pendents",
+      "goToReportes": "Vés a Informes",
+      "reportsError": "No s'han pogut carregar els informes.",
+      "programsHeading": "Programes",
+      "activePrograms": "Programes en curs",
+      "goToProgramas": "Vés a Programes",
+      "programsError": "No s'han pogut carregar els programes.",
+      "monthHeading": "Aquest mes",
+      "loadingMetrics": "Carregant mètriques…",
+      "metricsErrorTitle": "No s'han pogut carregar les mètriques",
+      "statActivePeople": "Persones actives",
+      "statNew": "Altes",
+      "statEventsHeld": "Activitats celebrades",
+      "statEventsCancelled": "Activitats cancel·lades",
+      "statAttendance": "Assistència",
+      "statNoShows": "Absències",
+      "statActiveCommunities": "Comunitats actives",
+      "statCommunityMembers": "Persones en comunitats"
+    },
+    "personas": {
+      "heading": "Persones",
+      "noAccessDescription": "El teu rol no té accés a Persones.",
+      "addPerson": "Afegir persona",
+      "importExcelCsv": "Importar Excel/CSV",
+      "filtersLabel": "Filtres de persones",
+      "searchLabel": "Cerca",
+      "communityLabel": "Comunitat",
+      "communityAll": "Totes",
+      "communitiesError": "No s'han pogut carregar les comunitats.",
+      "referentLabel": "Referent",
+      "activeSinceLabel": "Participació des de",
+      "joinedSinceLabel": "D'alta des de",
+      "includeInvited": "Incloure convidades",
+      "invitationsCountError": "No s'ha pogut carregar el recompte d'invitacions.",
+      "pendingInvitations": "{count, plural, one {# invitació pendent} other {# invitacions pendents}}",
+      "resentTo": "Invitació reenviada a {email}.",
+      "loadError": "No s'han pogut carregar les persones",
+      "loadingPeople": "Carregant persones…",
+      "emptyFiltered": "Sense persones amb aquests filtres",
+      "tableCaption": "Persones de l'entitat",
+      "colName": "Nom",
+      "colCommunities": "Comunitats",
+      "colEventsPeriod": "Activitats (període)",
+      "colAttendedPeriod": "Ha assistit (període)",
+      "colJoined": "D'alta",
+      "colReferent": "Referent",
+      "colActions": "Accions",
+      "invitedBadge": "Convidada (pendent)",
+      "resend": "Reenviar",
+      "revoke": "Revocar",
+      "noReferent": "Sense referent",
+      "previous": "Anterior",
+      "next": "Següent",
+      "countLabel": "{count, plural, one {# persona} other {# persones}}",
+      "revokeTitle": "Revocar invitació",
+      "revokeConfirm": "Vols revocar la invitació a «{name}»? Aquesta acció no es pot desfer."
+    },
+    "personaFicha": {
+      "heading": "Fitxa de la persona",
+      "sinAccesoDescription": "No tens accés a la fitxa d'aquesta persona.",
+      "loadErrorTitle": "No s'ha pogut carregar la fitxa d'aquesta persona",
+      "loading": "Carregant fitxa…",
+      "headerInfo": "D'alta des de {date} · Nivell de verificació: {level}",
+      "referentLine": "Referent: {name}",
+      "verificationLevel": {
+        "unverified": "Sense verificar",
+        "phoneVerified": "Telèfon verificat",
+        "adult": "Majoria d'edat",
+        "fullIdentity": "Identitat completa"
+      },
+      "assignReferentTitle": "Assignar referent",
+      "referentSelectLabel": "Persona referent",
+      "selectAPerson": "Selecciona una persona",
+      "assigning": "Assignant…",
+      "assigned": "Referent assignat.",
+      "communitiesHeading": "Comunitats",
+      "noCommunities": "Sense comunitats en aquesta entitat",
+      "eventsHeading": "Activitats del període",
+      "noEvents": "Sense activitats en aquest període",
+      "nextEventHeading": "Pròxima activitat",
+      "noNextEvent": "Sense pròxima activitat",
+      "supportHeading": "Xarxa de suport",
+      "supportLoadErrorTitle": "No s'ha pogut carregar la xarxa de suport",
+      "noSupportNetwork": "Aquesta persona no té cap xarxa de suport activa.",
+      "notifyYes": "Rep avisos",
+      "notifyNo": "Sense avisos",
+      "supportFooter": "Només tu, com a referent, veus aquesta xarxa. Popyplan no guarda telèfons: contacta amb la persona pel xat de l'app."
+    },
+    "comunidades": {
+      "heading": "Comunitats",
+      "noAccessDescription": "El teu rol no té accés a Comunitats.",
+      "visibilityOpen": "Oberta",
+      "visibilityOnRequest": "Amb sol·licitud",
+      "visibilityPrivate": "Privada",
+      "membersBadge": "{count, plural, one {# membre} other {# membres}}",
+      "activeMembersBadge": "{count, plural, one {# actiu} other {# actius}}",
+      "upcomingEventsBadge": "{count, plural, one {# activitat propera} other {# activitats properes}}",
+      "makeModerator": "Fer moderador",
+      "removeModeration": "Treure moderació",
+      "kick": "Expulsar",
+      "owner": "Propietari",
+      "kickTitle": "Expulsar de la comunitat",
+      "kickConfirm": "Vols expulsar «{name}» d'aquesta comunitat? Deixarà de veure les seves activitats i haurà de tornar a sol·licitar l'entrada.",
+      "approve": "Aprovar",
+      "reject": "Rebutjar",
+      "pendingHeading": "Sol·licituds pendents",
+      "pendingError": "No s'han pogut carregar les sol·licituds",
+      "loading": "Carregant…",
+      "noPending": "Sense sol·licituds pendents",
+      "pendingTableCaption": "Sol·licituds pendents de la comunitat",
+      "colPerson": "Persona",
+      "colActions": "Accions",
+      "membersHeading": "Membres",
+      "membersError": "No s'han pogut carregar els membres",
+      "noMembers": "Sense membres",
+      "membersTableCaption": "Membres de la comunitat",
+      "colRole": "Rol",
+      "loadError": "No s'han pogut carregar les comunitats",
+      "loadingCommunities": "Carregant comunitats…",
+      "empty": "Sense comunitats",
+      "emptyDescription": "Aquesta entitat encara no té cap comunitat amb el seu segell.",
+      "choose": "Tria una comunitat",
+      "chooseDescription": "Selecciona una comunitat de la llista per veure'n els membres i les sol·licituds."
+    },
+    "actividades": {
+      "heading": "Activitats",
+      "noAccessDescription": "El teu rol no té accés a Activitats.",
+      "statusLabel": "Estat",
+      "statusAll": "Totes",
+      "statusScheduled": "Programada",
+      "statusCancelled": "Cancel·lada",
+      "statusCompleted": "Celebrada",
+      "loadError": "No s'han pogut carregar les activitats",
+      "loading": "Carregant activitats…",
+      "empty": "Sense activitats en aquest període",
+      "tableCaption": "Activitats de l'entitat",
+      "colActivity": "Activitat",
+      "colStatus": "Estat",
+      "colResponsible": "Responsable",
+      "colRegistered": "Inscrits",
+      "colAttended": "Ha assistit",
+      "colNoShow": "No ha assistit"
+    },
+    "asistencia": {
+      "heading": "Assistència",
+      "noAccessDescription": "El teu rol no té accés a Assistència.",
+      "chooseActivity": "Tria una activitat per gestionar-ne l'assistència.",
+      "checkinTitle": "Check-in per QR",
+      "tokenLabel": "Token",
+      "giveEntry": "Donar entrada",
+      "stopScanning": "Deixar d'escanejar",
+      "startScanning": "Escanejar amb la càmera",
+      "cameraViewLabel": "Vista de la càmera per escanejar el QR",
+      "cameraDenied": "No s'ha pogut accedir a la càmera per escanejar.",
+      "alreadyUsed": "Aquest token ja s'havia utilitzat (check-in ja fet).",
+      "checkinOk": "Check-in correcte.",
+      "attendeesHeading": "Assistents",
+      "attendeesLoadErrorTitle": "No s'ha pogut carregar la llista d'assistents",
+      "loadingAttendees": "Carregant assistents…",
+      "noAttendees": "Sense inscrits en aquesta activitat",
+      "attendeesTableCaption": "Assistents de l'activitat",
+      "colPerson": "Persona",
+      "colStatus": "Estat",
+      "colGuests": "Acompanyants",
+      "colMark": "Marcar",
+      "markAttended": "Marcar assistència",
+      "markNotAttended": "Marcar no-assistència"
+    },
+    "attendanceStatus": {
+      "registered": "Inscrit",
+      "waitlisted": "Llista d'espera",
+      "cancelled": "Cancel·lada",
+      "attended": "Ha assistit",
+      "noShow": "No ha assistit"
+    }
+  },
+  "people": {
+    "addDialog": {
+      "title": "Afegir persona",
+      "nameLabel": "Nom",
+      "emailLabel": "Correu",
+      "emailInvalid": "Introdueix un correu vàlid.",
+      "phoneLabel": "Telèfon",
+      "communityLabel": "Comunitat",
+      "communityNone": "Sense comunitat (alta a «General»)",
+      "communitiesError": "No s'han pogut carregar les comunitats.",
+      "referentLabel": "Referent",
+      "referentNone": "Sense referent",
+      "submit": "Enviar invitació",
+      "sentTo": "Invitació enviada a {email}."
+    },
+    "referentsLoadError": "No s'han pogut carregar els referents.",
+    "importDialog": {
+      "title": "Importar persones",
+      "downloadTemplate": "Descarregar plantilla",
+      "fileLabel": "Fitxer (.xlsx o .csv)",
+      "preview": "Vista prèvia",
+      "confirm": "Confirmar importació",
+      "chooseAnotherFile": "Triar un altre fitxer",
+      "confirmed": "Importació confirmada.",
+      "errorsNotBlocking": "Les files amb error no s'importaran; la resta de files vàlides es poden confirmar igualment.",
+      "summaryCreated": "Creades:",
+      "summaryResent": "Reenviades:",
+      "summaryAlreadyMembers": "Ja eren membres:",
+      "summaryErrors": "Errors:",
+      "errorsTableCaption": "Errors per fila",
+      "colRow": "Fila",
+      "colEmail": "Correu",
+      "colReason": "Motiu",
+      "errors": {
+        "tipoNoPermitido": "Tipus de fitxer no permès. Fes servir un .csv o un .xlsx.",
+        "demasiadoGrande": "El fitxer supera el límit de {max} MB."
+      }
+    }
+  },
+  "support": {
+    "relationship": {
+      "parent": "Mare o pare",
+      "partner": "Parella",
+      "sibling": "Germà o germana",
+      "relative": "Un altre familiar",
+      "friend": "Amistat",
+      "legalGuardian": "Tutor o tutora legal",
+      "trustedOther": "Una altra persona de confiança",
+      "unspecified": "Sense especificar"
+    }
+  },
+  "errors": {
+    "entityEvents": {
+      "periodoInvalido": "El període o el filtre triat no és vàlid.",
+      "sinAcceso": "No tens accés a les activitats d'aquesta entitat.",
+      "desconocido": "No s'han pogut carregar les activitats."
+    },
+    "people": {
+      "periodoInvalido": "Els filtres triats no són vàlids.",
+      "sinAcceso": "No tens accés a la llista de persones.",
+      "paginaInexistente": "Aquesta pàgina de la llista ja no existeix.",
+      "desconocido": "No s'ha pogut carregar la llista de persones."
+    },
+    "person": {
+      "periodoInvalido": "El període triat no és vàlid.",
+      "sinAcceso": "Sense accés a aquesta fitxa.",
+      "desconocido": "No s'ha pogut carregar la fitxa d'aquesta persona."
+    },
+    "personSupport": {
+      "sinAcceso": "Sense accés a la xarxa de suport d'aquesta persona.",
+      "desconocido": "No s'ha pogut carregar la xarxa de suport d'aquesta persona."
+    },
+    "attendees": {
+      "sinPermiso": "No organitzes aquesta activitat.",
+      "desconocido": "No s'ha pogut carregar la llista d'assistents."
+    },
+    "markAttendance": {
+      "invalido": "No s'ha pogut marcar l'assistència.",
+      "noInscrita": "Aquesta persona no està inscrita.",
+      "sinPermiso": "No organitzes aquesta activitat.",
+      "desconocido": "No s'ha pogut marcar l'assistència."
+    },
+    "checkin": {
+      "tokenDesconocido": "Token de check-in desconegut per a aquesta activitat.",
+      "fueraDeVentana": "Fora de la finestra de check-in d'aquesta activitat.",
+      "sinPermiso": "No organitzes aquesta activitat.",
+      "desconocido": "No s'ha pogut fer el check-in."
+    },
+    "invite": {
+      "invalido": "Revisa les dades: alguna no és vàlida.",
+      "sinPermiso": "Només el titular o el moderador poden convidar persones.",
+      "yaEsMiembro": "Aquesta persona ja és membre de l'entitat.",
+      "desconocido": "No s'ha pogut enviar la invitació."
+    },
+    "importPeople": {
+      "invalido": "Revisa el fitxer: alguna fila no és vàlida.",
+      "sinPermiso": "Només el titular o el moderador poden importar persones.",
+      "desconocido": "No s'ha pogut importar el fitxer."
+    },
+    "resendInvitation": {
+      "invalido": "Aquesta invitació ja no està pendent.",
+      "sinPermiso": "Només el titular o el moderador poden reenviar invitacions.",
+      "noEncontrada": "Aquesta invitació no existeix.",
+      "desconocido": "No s'ha pogut reenviar la invitació."
+    },
+    "revokeInvitation": {
+      "invalido": "Aquesta invitació ja no està pendent.",
+      "sinPermiso": "Només el titular o el moderador poden revocar invitacions.",
+      "noEncontrada": "Aquesta invitació no existeix.",
+      "desconocido": "No s'ha pogut revocar la invitació."
+    },
+    "assignReferent": {
+      "invalido": "No s'ha pogut assignar el referent: revisa les dades.",
+      "sinPermiso": "No tens permís per assignar referents.",
+      "desconocido": "No s'ha pogut assignar el referent."
+    },
+    "entityCommunities": {
+      "demasiadasPaginas": "Hi ha massa comunitats per carregar-les totes; contacta amb Popyplan.",
+      "desconocido": "No s'han pogut carregar les comunitats de l'entitat."
+    },
+    "communityMembers": {
+      "desconocido": "No s'han pogut carregar els membres de la comunitat."
+    },
+    "communityPendingRequests": {
+      "desconocido": "No s'han pogut carregar les sol·licituds pendents."
+    },
+    "communityMemberAction": {
+      "approve": "No s'ha pogut aprovar la sol·licitud.",
+      "reject": "No s'ha pogut rebutjar la sol·licitud.",
+      "kick": "No s'ha pogut expulsar la persona.",
+      "changeRole": "No s'ha pogut canviar el rol."
     }
   }
 }

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -13,8 +14,9 @@ import { useOrgMembers } from "@/hooks/useOrgMembers";
 import { usePerson } from "@/hooks/usePerson";
 import { usePersonSupport } from "@/hooks/usePersonSupport";
 import { isAllowedImageSrc } from "@/lib/config/imagePatterns";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 import { presetPeriod } from "@/lib/metrics/period";
-import { relationshipLabel } from "@/lib/support/relationshipLabel";
+import { relationshipLabelKey } from "@/lib/support/relationshipLabel";
 
 export interface PersonSheetProps {
   orgId: number | string;
@@ -32,6 +34,23 @@ export interface PersonSheetProps {
   isReferent: boolean;
 }
 
+const PERSON_SUPPORT_ERROR_KEYS = {
+  sin_acceso: "errors.personSupport.sinAcceso",
+  desconocido: "errors.personSupport.desconocido",
+} as const;
+
+const ASSIGN_REFERENT_ERROR_KEYS = {
+  invalido: "errors.assignReferent.invalido",
+  sin_permiso: "errors.assignReferent.sinPermiso",
+  desconocido: "errors.assignReferent.desconocido",
+} as const;
+
+const PERSON_ERROR_KEYS = {
+  periodo_invalido: "errors.person.periodoInvalido",
+  sin_acceso: "errors.person.sinAcceso",
+  desconocido: "errors.person.desconocido",
+} as const;
+
 /**
  * Sección «Red de apoyo» (`docs/PANEL.md` §14.5), visible solo para el
  * referente asignado. Invariante 9: solo `public_name`, `relationship` y
@@ -47,6 +66,8 @@ function SupportNetworkSection({
   isReferent: boolean;
 }) {
   const support = usePersonSupport(Number(orgId), String(userId), isReferent);
+  const t = useTranslations("entidad.personaFicha");
+  const tAll = useTranslations();
 
   if (!isReferent) return null;
 
@@ -66,29 +87,35 @@ function SupportNetworkSection({
   return (
     <section aria-labelledby="red-apoyo-heading">
       <h2 id="red-apoyo-heading" className="mb-2 text-lg font-semibold text-text-base">
-        Red de apoyo
+        {t("supportHeading")}
       </h2>
       {support.isError ? (
         <ErrorState
-          title="No se pudo cargar la red de apoyo"
-          description={support.error.message}
+          title={t("supportLoadErrorTitle")}
+          description={errorKindText(
+            support.error,
+            PERSON_SUPPORT_ERROR_KEYS,
+            tAll,
+            "errors.personSupport.desconocido",
+          )}
         />
       ) : support.data.length === 0 ? (
-        <EmptyState title="Esta persona no tiene red de apoyo activa." />
+        <EmptyState title={t("noSupportNetwork")} />
       ) : (
         <>
           <ul className="flex flex-col gap-1">
-            {support.data.map((row) => (
-              <li key={row.supporter.id} className="text-sm text-text-base">
-                {row.supporter.public_name} · {relationshipLabel(row.relationship)} ·{" "}
-                {row.notify_on_help ? "Recibe avisos" : "Sin avisos"}
-              </li>
-            ))}
+            {support.data.map((row) => {
+              const key = relationshipLabelKey(row.relationship);
+              const relationship = key ? tAll(key) : row.relationship;
+              return (
+                <li key={row.supporter.id} className="text-sm text-text-base">
+                  {row.supporter.public_name} · {relationship} ·{" "}
+                  {row.notify_on_help ? t("notifyYes") : t("notifyNo")}
+                </li>
+              );
+            })}
           </ul>
-          <p className="mt-2 text-sm text-text-secondary">
-            Solo tú, como referente, ves esta red. Popyplan no guarda teléfonos: contacta con la
-            persona por el chat de la app.
-          </p>
+          <p className="mt-2 text-sm text-text-secondary">{t("supportFooter")}</p>
         </>
       )}
     </section>
@@ -112,19 +139,19 @@ function formatDate(iso: string | null): string {
  * `VerificationReference`). Un nivel que el panel no conozca se pinta
  * como número en vez de quedarse en blanco.
  */
-const VERIFICATION_LEVEL_LABELS: Record<number, string> = {
-  0: "Sin verificar",
-  1: "Teléfono verificado",
-  2: "Mayoría de edad",
-  3: "Identidad completa",
+const VERIFICATION_LEVEL_KEYS: Record<number, string> = {
+  0: "entidad.personaFicha.verificationLevel.unverified",
+  1: "entidad.personaFicha.verificationLevel.phoneVerified",
+  2: "entidad.personaFicha.verificationLevel.adult",
+  3: "entidad.personaFicha.verificationLevel.fullIdentity",
 };
 
-const ATTENDANCE_LABELS: Record<string, string> = {
-  registered: "Inscrito",
-  waitlisted: "Lista de espera",
-  cancelled: "Cancelada",
-  attended: "Asistió",
-  no_show: "No asistió",
+const ATTENDANCE_STATUS_KEYS: Record<string, string> = {
+  registered: "entidad.attendanceStatus.registered",
+  waitlisted: "entidad.attendanceStatus.waitlisted",
+  cancelled: "entidad.attendanceStatus.cancelled",
+  attended: "entidad.attendanceStatus.attended",
+  no_show: "entidad.attendanceStatus.noShow",
 };
 
 /**
@@ -146,6 +173,9 @@ function AssignReferentForm({
   const [referentUserId, setReferentUserId] = useState("");
   const members = useOrgMembers(orgId);
   const assignReferent = useAssignReferent(orgId);
+  const t = useTranslations("entidad.personaFicha");
+  const tPeople = useTranslations("people");
+  const tAll = useTranslations();
 
   const referentes = (members.data ?? []).filter((member) => member.role === "referente");
 
@@ -157,11 +187,11 @@ function AssignReferentForm({
   }
 
   return (
-    <Card title="Asignar referente">
+    <Card title={t("assignReferentTitle")}>
       <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
         <div>
           <label htmlFor="referent-user-id" className="mb-1 block text-sm font-medium text-text-form">
-            Persona referente
+            {t("referentSelectLabel")}
           </label>
           <select
             id="referent-user-id"
@@ -170,7 +200,7 @@ function AssignReferentForm({
             aria-describedby={members.isError ? "referent-user-id-error" : undefined}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
-            <option value="">Selecciona una persona</option>
+            <option value="">{t("selectAPerson")}</option>
             {referentes.map((member) => (
               <option key={member.user} value={member.user}>
                 {member.public_name}
@@ -179,20 +209,23 @@ function AssignReferentForm({
           </select>
           {members.isError ? (
             <p id="referent-user-id-error" role="alert" className="mt-1 text-xs text-error">
-              No se pudieron cargar los referentes.
+              {tPeople("referentsLoadError")}
             </p>
           ) : null}
         </div>
         <Button type="submit" disabled={assignReferent.isPending}>
-          {assignReferent.isPending ? "Asignando…" : "Asignar referente"}
+          {assignReferent.isPending ? t("assigning") : t("assignReferentTitle")}
         </Button>
       </form>
-      {assignReferent.isSuccess ? (
-        <p className="mt-2 text-sm text-success">Referente asignado.</p>
-      ) : null}
+      {assignReferent.isSuccess ? <p className="mt-2 text-sm text-success">{t("assigned")}</p> : null}
       {assignReferent.isError ? (
         <p role="alert" className="mt-2 text-sm text-error">
-          {assignReferent.error.message}
+          {errorKindText(
+            assignReferent.error,
+            ASSIGN_REFERENT_ERROR_KEYS,
+            tAll,
+            "errors.assignReferent.desconocido",
+          )}
         </p>
       ) : null}
     </Card>
@@ -208,22 +241,31 @@ function AssignReferentForm({
 export function PersonSheet({ orgId, userId, canAssignReferent, isReferent }: PersonSheetProps) {
   const period = presetPeriod("mes");
   const person = usePerson(orgId, userId, period);
+  const t = useTranslations("entidad.personaFicha");
+  const tCommon = useTranslations("common");
+  const tPersonas = useTranslations("entidad.personas");
+  const tAll = useTranslations();
 
   if (person.isError && person.error.kind === "sin_acceso") {
-    return <EmptyState title="Sin acceso" description="No tienes acceso a la ficha de esta persona." />;
+    return <EmptyState title={tCommon("noAccess")} description={t("sinAccesoDescription")} />;
   }
 
   if (person.isError) {
     return (
-      <ErrorState title="No se pudo cargar la ficha de esta persona" description={person.error.message} />
+      <ErrorState
+        title={t("loadErrorTitle")}
+        description={errorKindText(person.error, PERSON_ERROR_KEYS, tAll, "errors.person.desconocido")}
+      />
     );
   }
 
   if (!person.data) {
-    return <p className="text-sm text-text-secondary">Cargando ficha…</p>;
+    return <p className="text-sm text-text-secondary">{t("loading")}</p>;
   }
 
   const data = person.data;
+  const verificationLevelKey = VERIFICATION_LEVEL_KEYS[data.verification_level];
+  const verificationLevelText = verificationLevelKey ? tAll(verificationLevelKey) : data.verification_level;
 
   return (
     <div className="flex flex-col gap-4">
@@ -245,11 +287,10 @@ export function PersonSheet({ orgId, userId, canAssignReferent, isReferent }: Pe
           <div>
             <p className="text-lg font-semibold text-text-base">{data.public_name}</p>
             <p className="text-sm text-text-secondary">
-              De alta desde {formatDate(data.joined_at)} · Nivel de verificación:{" "}
-              {VERIFICATION_LEVEL_LABELS[data.verification_level] ?? data.verification_level}
+              {t("headerInfo", { date: formatDate(data.joined_at), level: verificationLevelText })}
             </p>
             <p className="text-sm text-text-secondary">
-              Referente: {data.referent ? data.referent.public_name : "Sin referente"}
+              {t("referentLine", { name: data.referent ? data.referent.public_name : tPersonas("noReferent") })}
             </p>
           </div>
         </div>
@@ -259,10 +300,10 @@ export function PersonSheet({ orgId, userId, canAssignReferent, isReferent }: Pe
 
       <section aria-labelledby="comunidades-persona-heading">
         <h2 id="comunidades-persona-heading" className="mb-2 text-lg font-semibold text-text-base">
-          Comunidades
+          {t("communitiesHeading")}
         </h2>
         {data.communities.length === 0 ? (
-          <EmptyState title="Sin comunidades en esta entidad" />
+          <EmptyState title={t("noCommunities")} />
         ) : (
           <ul className="flex flex-col gap-1">
             {data.communities.map((community) => (
@@ -276,10 +317,10 @@ export function PersonSheet({ orgId, userId, canAssignReferent, isReferent }: Pe
 
       <section aria-labelledby="actividades-persona-heading">
         <h2 id="actividades-persona-heading" className="mb-2 text-lg font-semibold text-text-base">
-          Actividades del periodo
+          {t("eventsHeading")}
         </h2>
         {data.events.length === 0 ? (
-          <EmptyState title="Sin actividades en este periodo" />
+          <EmptyState title={t("noEvents")} />
         ) : (
           <ul className="flex flex-col gap-1">
             {data.events.map((event) => (
@@ -287,7 +328,11 @@ export function PersonSheet({ orgId, userId, canAssignReferent, isReferent }: Pe
                 <span>
                   {event.title} · {formatDateTime(event.starts_at)}
                 </span>
-                <Badge>{ATTENDANCE_LABELS[event.attendance_status] ?? event.attendance_status}</Badge>
+                <Badge>
+                  {ATTENDANCE_STATUS_KEYS[event.attendance_status]
+                    ? tAll(ATTENDANCE_STATUS_KEYS[event.attendance_status])
+                    : event.attendance_status}
+                </Badge>
               </li>
             ))}
           </ul>
@@ -296,14 +341,14 @@ export function PersonSheet({ orgId, userId, canAssignReferent, isReferent }: Pe
 
       <section aria-labelledby="proxima-actividad-heading">
         <h2 id="proxima-actividad-heading" className="mb-2 text-lg font-semibold text-text-base">
-          Próxima actividad
+          {t("nextEventHeading")}
         </h2>
         {data.next_event ? (
           <p className="text-sm text-text-base">
             {data.next_event.title} · {formatDateTime(data.next_event.starts_at)}
           </p>
         ) : (
-          <EmptyState title="Sin próxima actividad" />
+          <EmptyState title={t("noNextEvent")} />
         )}
       </section>
 

@@ -9,7 +9,8 @@
     "noAccess": "Sin acceso",
     "backHome": "Volver al inicio",
     "items": "{count, plural, one {# elemento} other {# elementos}}",
-    "confirm": "Confirmar"
+    "confirm": "Confirmar",
+    "noPhoneNotice": "Popyplan no guarda teléfonos: contacta con la persona por el chat de la app o a través de su referente."
   },
   "language": {
     "title": "Idioma",
@@ -40,7 +41,8 @@
       "errors": {
         "invalidCredentials": "Usuario o contraseña incorrectos.",
         "tooManyAttempts": "Demasiados intentos; espera un minuto.",
-        "generic": "No se pudo iniciar sesión. Inténtalo de nuevo."
+        "generic": "No se pudo iniciar sesión. Inténtalo de nuevo.",
+        "sessionExpired": "Tu sesión ha caducado."
       }
     }
   },
@@ -255,6 +257,329 @@
     "procedure": {
       "heading": "Procedimiento de aplicación",
       "body": "Si tras dirigirte al correo de contacto no obtienes respuesta o no estás conforme con ella, puedes presentar una queja o una reclamación por disconformidad conforme al artículo 13 del <rd>Real Decreto 1112/2018</rd>."
+    }
+  },
+  "entidad": {
+    "inicio": {
+      "heading": "Inicio",
+      "panelSubtitle": "Panel de {orgName}.",
+      "todayHeading": "Actividades de hoy",
+      "loadingToday": "Cargando actividades…",
+      "noEventsToday": "Sin actividades hoy",
+      "todayErrorTitle": "No se pudieron cargar las actividades de hoy",
+      "eventRegistered": "{count, plural, one {# inscrito} other {# inscritos}}",
+      "eventCapacity": "{count, plural, one {# plaza} other {# plazas}}",
+      "pendingAlertsHeading": "Avisos pendientes",
+      "pendingHelpRequests": "Solicitudes de ayuda pendientes",
+      "goToGuardia": "Ir a Guardia",
+      "helpRequestsError": "No se pudieron cargar las solicitudes de ayuda.",
+      "pendingReports": "Reportes pendientes",
+      "goToReportes": "Ir a Reportes",
+      "reportsError": "No se pudieron cargar los reportes.",
+      "programsHeading": "Programas",
+      "activePrograms": "Programas en curso",
+      "goToProgramas": "Ir a Programas",
+      "programsError": "No se pudieron cargar los programas.",
+      "monthHeading": "Este mes",
+      "loadingMetrics": "Cargando métricas…",
+      "metricsErrorTitle": "No se pudieron cargar las métricas",
+      "statActivePeople": "Personas activas",
+      "statNew": "Altas",
+      "statEventsHeld": "Actividades celebradas",
+      "statEventsCancelled": "Actividades canceladas",
+      "statAttendance": "Asistencia",
+      "statNoShows": "No-shows",
+      "statActiveCommunities": "Comunidades activas",
+      "statCommunityMembers": "Personas en comunidades"
+    },
+    "personas": {
+      "heading": "Personas",
+      "noAccessDescription": "Tu rol no tiene acceso a Personas.",
+      "addPerson": "Añadir persona",
+      "importExcelCsv": "Importar Excel/CSV",
+      "filtersLabel": "Filtros de personas",
+      "searchLabel": "Buscar",
+      "communityLabel": "Comunidad",
+      "communityAll": "Todas",
+      "communitiesError": "No se pudieron cargar las comunidades.",
+      "referentLabel": "Referente",
+      "activeSinceLabel": "Participación desde",
+      "joinedSinceLabel": "De alta desde",
+      "includeInvited": "Incluir invitadas",
+      "invitationsCountError": "No se pudo cargar el recuento de invitaciones.",
+      "pendingInvitations": "{count, plural, one {# invitación pendiente} other {# invitaciones pendientes}}",
+      "resentTo": "Invitación reenviada a {email}.",
+      "loadError": "No se pudieron cargar las personas",
+      "loadingPeople": "Cargando personas…",
+      "emptyFiltered": "Sin personas con estos filtros",
+      "tableCaption": "Personas de la entidad",
+      "colName": "Nombre",
+      "colCommunities": "Comunidades",
+      "colEventsPeriod": "Actividades (periodo)",
+      "colAttendedPeriod": "Asistió (periodo)",
+      "colJoined": "De alta",
+      "colReferent": "Referente",
+      "colActions": "Acciones",
+      "invitedBadge": "Invitada (pendiente)",
+      "resend": "Reenviar",
+      "revoke": "Revocar",
+      "noReferent": "Sin referente",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "countLabel": "{count, plural, one {# persona} other {# personas}}",
+      "revokeTitle": "Revocar invitación",
+      "revokeConfirm": "¿Revocar la invitación a «{name}»? Esta acción no se puede deshacer."
+    },
+    "personaFicha": {
+      "heading": "Ficha de la persona",
+      "sinAccesoDescription": "No tienes acceso a la ficha de esta persona.",
+      "loadErrorTitle": "No se pudo cargar la ficha de esta persona",
+      "loading": "Cargando ficha…",
+      "headerInfo": "De alta desde {date} · Nivel de verificación: {level}",
+      "referentLine": "Referente: {name}",
+      "verificationLevel": {
+        "unverified": "Sin verificar",
+        "phoneVerified": "Teléfono verificado",
+        "adult": "Mayoría de edad",
+        "fullIdentity": "Identidad completa"
+      },
+      "assignReferentTitle": "Asignar referente",
+      "referentSelectLabel": "Persona referente",
+      "selectAPerson": "Selecciona una persona",
+      "assigning": "Asignando…",
+      "assigned": "Referente asignado.",
+      "communitiesHeading": "Comunidades",
+      "noCommunities": "Sin comunidades en esta entidad",
+      "eventsHeading": "Actividades del periodo",
+      "noEvents": "Sin actividades en este periodo",
+      "nextEventHeading": "Próxima actividad",
+      "noNextEvent": "Sin próxima actividad",
+      "supportHeading": "Red de apoyo",
+      "supportLoadErrorTitle": "No se pudo cargar la red de apoyo",
+      "noSupportNetwork": "Esta persona no tiene red de apoyo activa.",
+      "notifyYes": "Recibe avisos",
+      "notifyNo": "Sin avisos",
+      "supportFooter": "Solo tú, como referente, ves esta red. Popyplan no guarda teléfonos: contacta con la persona por el chat de la app."
+    },
+    "comunidades": {
+      "heading": "Comunidades",
+      "noAccessDescription": "Tu rol no tiene acceso a Comunidades.",
+      "visibilityOpen": "Abierta",
+      "visibilityOnRequest": "Con solicitud",
+      "visibilityPrivate": "Privada",
+      "membersBadge": "{count, plural, one {# miembro} other {# miembros}}",
+      "activeMembersBadge": "{count, plural, one {# activo} other {# activos}}",
+      "upcomingEventsBadge": "{count, plural, one {# actividad próxima} other {# actividades próximas}}",
+      "makeModerator": "Hacer moderador",
+      "removeModeration": "Quitar moderación",
+      "kick": "Expulsar",
+      "owner": "Propietario",
+      "kickTitle": "Expulsar de la comunidad",
+      "kickConfirm": "¿Expulsar a «{name}» de esta comunidad? Dejará de ver sus actividades y tendrá que volver a solicitar la entrada.",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "pendingHeading": "Solicitudes pendientes",
+      "pendingError": "No se pudieron cargar las solicitudes",
+      "loading": "Cargando…",
+      "noPending": "Sin solicitudes pendientes",
+      "pendingTableCaption": "Solicitudes pendientes de la comunidad",
+      "colPerson": "Persona",
+      "colActions": "Acciones",
+      "membersHeading": "Miembros",
+      "membersError": "No se pudieron cargar los miembros",
+      "noMembers": "Sin miembros",
+      "membersTableCaption": "Miembros de la comunidad",
+      "colRole": "Rol",
+      "loadError": "No se pudieron cargar las comunidades",
+      "loadingCommunities": "Cargando comunidades…",
+      "empty": "Sin comunidades",
+      "emptyDescription": "Esta entidad todavía no tiene comunidades con su sello.",
+      "choose": "Elige una comunidad",
+      "chooseDescription": "Selecciona una comunidad de la lista para ver sus miembros y solicitudes."
+    },
+    "actividades": {
+      "heading": "Actividades",
+      "noAccessDescription": "Tu rol no tiene acceso a Actividades.",
+      "statusLabel": "Estado",
+      "statusAll": "Todas",
+      "statusScheduled": "Programada",
+      "statusCancelled": "Cancelada",
+      "statusCompleted": "Celebrada",
+      "loadError": "No se pudieron cargar las actividades",
+      "loading": "Cargando actividades…",
+      "empty": "Sin actividades en este periodo",
+      "tableCaption": "Actividades de la entidad",
+      "colActivity": "Actividad",
+      "colStatus": "Estado",
+      "colResponsible": "Responsable",
+      "colRegistered": "Inscritos",
+      "colAttended": "Asistió",
+      "colNoShow": "No asistió"
+    },
+    "asistencia": {
+      "heading": "Asistencia",
+      "noAccessDescription": "Tu rol no tiene acceso a Asistencia.",
+      "chooseActivity": "Elige una actividad para gestionar su asistencia.",
+      "checkinTitle": "Check-in por QR",
+      "tokenLabel": "Token",
+      "giveEntry": "Dar entrada",
+      "stopScanning": "Dejar de escanear",
+      "startScanning": "Escanear con la cámara",
+      "cameraViewLabel": "Vista de la cámara para escanear el QR",
+      "cameraDenied": "No se pudo acceder a la cámara para escanear.",
+      "alreadyUsed": "Este token ya se había usado (check-in ya dado).",
+      "checkinOk": "Check-in correcto.",
+      "attendeesHeading": "Asistentes",
+      "attendeesLoadErrorTitle": "No se pudo cargar la lista de asistentes",
+      "loadingAttendees": "Cargando asistentes…",
+      "noAttendees": "Sin inscritos en esta actividad",
+      "attendeesTableCaption": "Asistentes de la actividad",
+      "colPerson": "Persona",
+      "colStatus": "Estado",
+      "colGuests": "Acompañantes",
+      "colMark": "Marcar",
+      "markAttended": "Marcar asistió",
+      "markNotAttended": "Marcar no asistió"
+    },
+    "attendanceStatus": {
+      "registered": "Inscrito",
+      "waitlisted": "Lista de espera",
+      "cancelled": "Cancelada",
+      "attended": "Asistió",
+      "noShow": "No asistió"
+    }
+  },
+  "people": {
+    "addDialog": {
+      "title": "Añadir persona",
+      "nameLabel": "Nombre",
+      "emailLabel": "Email",
+      "emailInvalid": "Introduce un correo válido.",
+      "phoneLabel": "Teléfono",
+      "communityLabel": "Comunidad",
+      "communityNone": "Sin comunidad (alta en «General»)",
+      "communitiesError": "No se pudieron cargar las comunidades.",
+      "referentLabel": "Referente",
+      "referentNone": "Sin referente",
+      "submit": "Enviar invitación",
+      "sentTo": "Invitación enviada a {email}."
+    },
+    "referentsLoadError": "No se pudieron cargar los referentes.",
+    "importDialog": {
+      "title": "Importar personas",
+      "downloadTemplate": "Descargar plantilla",
+      "fileLabel": "Fichero (.xlsx o .csv)",
+      "preview": "Vista previa",
+      "confirm": "Confirmar importación",
+      "chooseAnotherFile": "Elegir otro fichero",
+      "confirmed": "Importación confirmada.",
+      "errorsNotBlocking": "Las filas con error no se importarán; el resto de filas válidas se puede confirmar igual.",
+      "summaryCreated": "Creadas:",
+      "summaryResent": "Reenviadas:",
+      "summaryAlreadyMembers": "Ya eran miembros:",
+      "summaryErrors": "Errores:",
+      "errorsTableCaption": "Errores por fila",
+      "colRow": "Fila",
+      "colEmail": "Email",
+      "colReason": "Motivo",
+      "errors": {
+        "tipoNoPermitido": "Tipo de fichero no permitido. Usa un .csv o un .xlsx.",
+        "demasiadoGrande": "El fichero supera el límite de {max} MB."
+      }
+    }
+  },
+  "support": {
+    "relationship": {
+      "parent": "Madre o padre",
+      "partner": "Pareja",
+      "sibling": "Hermano o hermana",
+      "relative": "Otro familiar",
+      "friend": "Amistad",
+      "legalGuardian": "Tutor o tutora legal",
+      "trustedOther": "Otra persona de confianza",
+      "unspecified": "Sin indicar"
+    }
+  },
+  "errors": {
+    "entityEvents": {
+      "periodoInvalido": "El periodo o el filtro elegido no es válido.",
+      "sinAcceso": "No tienes acceso a las actividades de esta entidad.",
+      "desconocido": "No se pudieron cargar las actividades."
+    },
+    "people": {
+      "periodoInvalido": "Los filtros elegidos no son válidos.",
+      "sinAcceso": "No tienes acceso al listado de personas.",
+      "paginaInexistente": "Esa página del listado ya no existe.",
+      "desconocido": "No se pudo cargar el listado de personas."
+    },
+    "person": {
+      "periodoInvalido": "El periodo elegido no es válido.",
+      "sinAcceso": "Sin acceso a esta ficha.",
+      "desconocido": "No se pudo cargar la ficha de esta persona."
+    },
+    "personSupport": {
+      "sinAcceso": "Sin acceso a la red de apoyo de esta persona.",
+      "desconocido": "No se pudo cargar la red de apoyo de esta persona."
+    },
+    "attendees": {
+      "sinPermiso": "No organizas esta actividad.",
+      "desconocido": "No se pudo cargar la lista de asistentes."
+    },
+    "markAttendance": {
+      "invalido": "No se pudo marcar la asistencia.",
+      "noInscrita": "Esa persona no está apuntada.",
+      "sinPermiso": "No organizas esta actividad.",
+      "desconocido": "No se pudo marcar la asistencia."
+    },
+    "checkin": {
+      "tokenDesconocido": "Token de check-in desconocido para esta actividad.",
+      "fueraDeVentana": "Fuera de la ventana de check-in de esta actividad.",
+      "sinPermiso": "No organizas esta actividad.",
+      "desconocido": "No se pudo dar el check-in."
+    },
+    "invite": {
+      "invalido": "Revisa los datos: alguno no es válido.",
+      "sinPermiso": "Solo titular o moderador pueden invitar personas.",
+      "yaEsMiembro": "Esta persona ya es miembro de la entidad.",
+      "desconocido": "No se pudo enviar la invitación."
+    },
+    "importPeople": {
+      "invalido": "Revisa el fichero: alguna fila no es válida.",
+      "sinPermiso": "Solo titular o moderador pueden importar personas.",
+      "desconocido": "No se pudo importar el fichero."
+    },
+    "resendInvitation": {
+      "invalido": "Esta invitación ya no está pendiente.",
+      "sinPermiso": "Solo titular o moderador pueden reenviar invitaciones.",
+      "noEncontrada": "Esta invitación no existe.",
+      "desconocido": "No se pudo reenviar la invitación."
+    },
+    "revokeInvitation": {
+      "invalido": "Esta invitación ya no está pendiente.",
+      "sinPermiso": "Solo titular o moderador pueden revocar invitaciones.",
+      "noEncontrada": "Esta invitación no existe.",
+      "desconocido": "No se pudo revocar la invitación."
+    },
+    "assignReferent": {
+      "invalido": "No se pudo asignar el referente: revisa los datos.",
+      "sinPermiso": "No tienes permiso para asignar referentes.",
+      "desconocido": "No se pudo asignar el referente."
+    },
+    "entityCommunities": {
+      "demasiadasPaginas": "Hay demasiadas comunidades para cargarlas todas; contacta con Popyplan.",
+      "desconocido": "No se pudieron cargar las comunidades de la entidad."
+    },
+    "communityMembers": {
+      "desconocido": "No se pudieron cargar los miembros de la comunidad."
+    },
+    "communityPendingRequests": {
+      "desconocido": "No se pudieron cargar las solicitudes pendientes."
+    },
+    "communityMemberAction": {
+      "approve": "No se pudo aprobar la solicitud.",
+      "reject": "No se pudo rechazar la solicitud.",
+      "kick": "No se pudo expulsar a la persona.",
+      "changeRole": "No se pudo cambiar el rol."
     }
   }
 }

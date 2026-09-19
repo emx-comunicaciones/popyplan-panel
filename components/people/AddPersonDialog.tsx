@@ -14,12 +14,14 @@
  * de `user`), igual que `components/entidad/PersonSheet.tsx::AssignReferentForm`.
  */
 import { useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { useEntityCommunities } from "@/hooks/useEntityCommunities";
 import { useInvite } from "@/hooks/useInvite";
 import { useOrgMembers } from "@/hooks/useOrgMembers";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 
 export interface AddPersonDialogProps {
   orgId: number | string;
@@ -28,10 +30,20 @@ export interface AddPersonDialogProps {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const INVITE_ERROR_KEYS = {
+  invalido: "errors.invite.invalido",
+  sin_permiso: "errors.invite.sinPermiso",
+  ya_es_miembro: "errors.invite.yaEsMiembro",
+  desconocido: "errors.invite.desconocido",
+} as const;
+
 export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
   const communities = useEntityCommunities(orgId);
   const members = useOrgMembers(orgId);
   const invite = useInvite(orgId);
+  const t = useTranslations("people.addDialog");
+  const tPeople = useTranslations("people");
+  const tAll = useTranslations();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -92,14 +104,14 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
     <Dialog
       open
       titleId="add-person-title"
-      title="Añadir persona"
+      title={t("title")}
       pending={invite.isPending}
       onClose={handleClose}
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div>
           <label htmlFor="add-person-name" className="mb-1 block text-sm font-medium text-text-form">
-            Nombre
+            {t("nameLabel")}
           </label>
           <input
             id="add-person-name"
@@ -111,7 +123,7 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
         </div>
         <div>
           <label htmlFor="add-person-email" className="mb-1 block text-sm font-medium text-text-form">
-            Email
+            {t("emailLabel")}
           </label>
           <input
             id="add-person-email"
@@ -123,13 +135,13 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
           />
           {emailTouched && !emailValid ? (
             <p role="alert" className="mt-1 text-xs text-error">
-              Introduce un correo válido.
+              {t("emailInvalid")}
             </p>
           ) : null}
         </div>
         <div>
           <label htmlFor="add-person-phone" className="mb-1 block text-sm font-medium text-text-form">
-            Teléfono
+            {t("phoneLabel")}
           </label>
           <input
             id="add-person-phone"
@@ -141,7 +153,7 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
         </div>
         <div>
           <label htmlFor="add-person-community" className="mb-1 block text-sm font-medium text-text-form">
-            Comunidad
+            {t("communityLabel")}
           </label>
           <select
             id="add-person-community"
@@ -150,7 +162,7 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
             aria-describedby={communities.isError ? "add-person-community-error" : undefined}
             className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
-            <option value="">Sin comunidad (alta en «General»)</option>
+            <option value="">{t("communityNone")}</option>
             {(communities.data ?? []).map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -159,13 +171,13 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
           </select>
           {communities.isError ? (
             <p id="add-person-community-error" role="alert" className="mt-1 text-xs text-error">
-              No se pudieron cargar las comunidades.
+              {t("communitiesError")}
             </p>
           ) : null}
         </div>
         <div>
           <label htmlFor="add-person-referent" className="mb-1 block text-sm font-medium text-text-form">
-            Referente
+            {t("referentLabel")}
           </label>
           <select
             id="add-person-referent"
@@ -174,7 +186,7 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
             aria-describedby={members.isError ? "add-person-referent-error" : undefined}
             className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
-            <option value="">Sin referente</option>
+            <option value="">{t("referentNone")}</option>
             {referentes.map((member) => (
               <option key={member.user} value={member.user}>
                 {member.public_name}
@@ -183,14 +195,14 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
           </select>
           {members.isError ? (
             <p id="add-person-referent-error" role="alert" className="mt-1 text-xs text-error">
-              No se pudieron cargar los referentes.
+              {tPeople("referentsLoadError")}
             </p>
           ) : null}
         </div>
 
         <div className="flex gap-2">
           <Button type="submit" disabled={!canSubmit || invite.isPending}>
-            Enviar invitación
+            {t("submit")}
           </Button>
           <Button
             type="button"
@@ -198,16 +210,16 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
             onClick={handleClose}
             disabled={invite.isPending}
           >
-            Cancelar
+            {tAll("common.cancel")}
           </Button>
         </div>
 
         {invite.isError ? (
           <p role="alert" className="text-sm text-error">
-            {invite.error.message}
+            {errorKindText(invite.error, INVITE_ERROR_KEYS, tAll, "errors.invite.desconocido")}
           </p>
         ) : null}
-        {sentTo ? <p className="text-sm text-success">Invitación enviada a {sentTo}.</p> : null}
+        {sentTo ? <p className="text-sm text-success">{t("sentTo", { email: sentTo })}</p> : null}
       </form>
     </Dialog>
   );

@@ -17,13 +17,22 @@ import type { EntityInvitation } from "@/lib/api/types";
 
 export type InviteErrorKind = "invalido" | "sin_permiso" | "ya_es_miembro" | "desconocido";
 
+/**
+ * `kind` (+ `detail`, el texto verbatim del backend cuando lo hay) es lo
+ * que traduce `components/people/AddPersonDialog.tsx` (tarea 3 de i18n,
+ * `lib/i18n/errorKindText.ts`) — este hook, plano `.ts`, no puede llamar
+ * a `t()`, así que `message` sigue en español tal cual (compatibilidad de
+ * los tests que ya lo comprueban).
+ */
 export class InviteError extends Error {
   readonly kind: InviteErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: InviteErrorKind, message: string) {
+  constructor(kind: InviteErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "InviteError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -55,7 +64,8 @@ export function useInvite(
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
-          throw new InviteError("invalido", detailOf(error) ?? "Revisa los datos: alguno no es válido.");
+          const detail = detailOf(error);
+          throw new InviteError("invalido", detail ?? "Revisa los datos: alguno no es válido.", detail);
         }
         if (error instanceof ApiError && error.status === 403) {
           throw new InviteError("sin_permiso", "Solo titular o moderador pueden invitar personas.");

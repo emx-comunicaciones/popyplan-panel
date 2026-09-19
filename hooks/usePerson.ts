@@ -17,6 +17,12 @@ import type { Period } from "@/lib/metrics/period";
 
 export type PersonErrorKind = "periodo_invalido" | "sin_acceso" | "desconocido";
 
+/**
+ * `kind` es lo único que necesita `components/entidad/PersonSheet.tsx`
+ * para traducir (tarea 3 de i18n, `CLAUDE.md`) — este hook, plano `.ts`,
+ * no puede llamar a `t()`, así que `message` sigue en español tal cual
+ * (compatibilidad de los tests que ya lo comprueban).
+ */
 export class PersonError extends Error {
   readonly kind: PersonErrorKind;
 

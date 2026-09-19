@@ -32,13 +32,16 @@ export default async function EntidadActividadesPage({
   }
 
   const menu = entidadMenuFor(membership.role);
+  const t = await getTranslations();
   if (!menu.includes("actividades")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Actividades." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("entidad.actividades.noAccessDescription")} />
+    );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">Actividades</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.actividades.heading")}</h1>
       <ActividadesTable
         orgId={membership.organization_id}
         slug={slug}

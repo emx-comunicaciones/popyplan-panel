@@ -46,6 +46,12 @@ export type PeopleErrorKind =
   | "pagina_inexistente"
   | "desconocido";
 
+/**
+ * `kind` es lo único que necesita `components/entidad/PersonasTable.tsx`
+ * para traducir (tarea 3 de i18n, `CLAUDE.md`) — este hook, plano `.ts`,
+ * no puede llamar a `t()`, así que `message` sigue en español tal cual
+ * (compatibilidad de los tests que ya lo comprueban).
+ */
 export class PeopleError extends Error {
   readonly kind: PeopleErrorKind;
 

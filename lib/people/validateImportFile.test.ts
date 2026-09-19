@@ -26,13 +26,11 @@ describe("validateImportFile", () => {
   });
 
   it("una extensión no permitida da error", () => {
-    expect(validateImportFile({ name: "personas.pdf", size: 1024 })).toMatch(/Tipo de fichero no permitido/);
+    expect(validateImportFile({ name: "personas.pdf", size: 1024 })).toBe("tipo_no_permitido");
   });
 
   it("un fichero que supera el límite da error", () => {
     const oversized = IMPORT_MAX_MB * 1024 * 1024 + 1;
-    expect(validateImportFile({ name: "personas.csv", size: oversized })).toBe(
-      `El fichero supera el límite de ${IMPORT_MAX_MB} MB.`,
-    );
+    expect(validateImportFile({ name: "personas.csv", size: oversized })).toBe("demasiado_grande");
   });
 });
