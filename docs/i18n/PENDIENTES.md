@@ -44,10 +44,31 @@ La Tarea 4 anota dos puntos, ninguno de redacción en español:
   es lo que se ve siempre. El campo queda por si el contrato cambiara
   algún día a mandar un cuerpo en el 401 — no es una redacción pendiente,
   solo un caso sin ejercitar hoy.
-- **`lib/reports/labels.ts` con cuatro funciones a la vez**
-  (`reasonLabel`/`statusLabel` de texto, `reasonLabelKey`/`statusLabelKey`
-  de clave): no es una redacción pendiente, es una convivencia temporal
-  — `components/plataforma/ReportesQueuePlataforma.tsx` (tarea 5) sigue
-  llamando a las de texto; cuando esa tarea traduzca esa pantalla debe
-  cambiar a las de clave y las dos funciones de texto quedan sin
-  consumidor (borrarlas entonces, no antes).
+- **`lib/reports/labels.ts` con cuatro funciones a la vez** — **cerrado
+  en la Tarea 5**: `ReportesQueuePlataforma.tsx` ya usa
+  `reasonLabelKey`/`statusLabelKey`; `reasonLabel`/`statusLabel`
+  (`REASON_LABELS`/`STATUS_LABELS`) se borraron con sus tests al
+  quedarse sin consumidor.
+
+La Tarea 5 anota dos puntos, ninguno de redacción en español:
+
+- **Cabeceras del CSV de Auditoría** (`plataforma.auditoria.csv{Id,Actor,
+  Action,TargetType,TargetId,Metadata,CreatedAt}`, `AuditoriaPanel::downloadCsv`):
+  se mantienen **iguales en los cuatro idiomas a propósito** — son
+  identificadores técnicos del contrato (`id`, `actor`, `action`,
+  `target_type`, `target_id`, `metadata`, `created_at`), no prosa de
+  interfaz, y alguien podría reimportar ese CSV en una hoja de cálculo o
+  un script esperando esos nombres de columna. Pasan por el catálogo (y
+  por `t()` en el momento de la llamada, como pide el brief) para que la
+  cabecera siga siendo una única fuente junto al resto de textos de la
+  pantalla, pero su valor no cambia entre `en`/`es`/`eu`/`ca`.
+- **`CONTRACT_STATUS_LABEL_KEYS`/`INVOICE_STATUS_LABEL_KEYS` en
+  `EntidadDetail.tsx`** siguen tipados como `Record<string, string>`
+  (no `Record<ContractStatus, string>`/`Record<InvoiceStatus, string>`),
+  igual que las constantes de texto que sustituyen: es defensa contra un
+  valor que el backend añadiera y el panel no conociera todavía (antes
+  se pintaba el valor crudo sin traducir; ahora cae a la clave de
+  «Borrador», que es una aproximación, no una traducción de ese valor
+  nuevo). No es una redacción pendiente — es el mismo comportamiento
+  defensivo que ya tenía el código en español, documentado aquí porque
+  el `??` ya no cae a un valor crudo sino a una clave fija.

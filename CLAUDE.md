@@ -1951,12 +1951,18 @@ vuelve al botón) con el resumen de para qué sirve la pantalla actual,
 qué se puede hacer en ella y quién la ve.
 
 - **Registro**: `lib/help/pageHelp.ts::PAGE_HELP`, una entrada
-  (`PageHelpEntry {route, title, summary, actions, audience}`) por cada
-  `page.tsx` real de `app/entidad/[slug]/**`, `app/paraguas/[slug]/**`
-  y `app/plataforma/**` — 32 pantallas (19 entidad, 2 paraguas, 11
-  plataforma), textos en español, literales (nunca construidos por
-  concatenación: la internacionalización, cuando llegue, los extraerá
-  igual que el resto de la UI).
+  (`PageHelpEntry {route, key}`) por cada `page.tsx` real de
+  `app/entidad/[slug]/**`, `app/paraguas/[slug]/**` y
+  `app/plataforma/**` — 32 pantallas (19 entidad, 2 paraguas, 11
+  plataforma). **Actualizado en la tarea 5 de i18n**: `title`/`summary`/
+  `actions`/`audience` ya no viven en el registro como texto en español
+  — `key` (p. ej. `"entidad.personas"`, mismos segmentos que
+  `pages.<area>.<slug>` de la tarea 2) apunta a
+  `messages/{en,es,eu,ca}.json::help.<key>.*`; `components/help/
+  PageHelp.tsx` resuelve con `useTranslations("help")` (`t.raw` para el
+  array `actions`, que no lleva interpolación). `lib/help/pageHelp.test.ts`
+  comprueba, contra los cuatro catálogos reales, que cada `key` existe
+  con `title`/`summary`/`audience` no vacíos y entre 1 y 4 `actions`.
 - **Resolución de ruta**: `routeToRegExp(route)` convierte una plantilla
   con segmentos dinámicos (`/entidad/[slug]/personas/[userId]`) en una
   expresión regular anclada de principio a fin, con barra final
@@ -2270,9 +2276,14 @@ en CI lo gate el job `e2e`).
   el fix round 1 de esa tarea (`detail` conservado en
   `useReportActions`/`useCreateFamiliesCommunity`/`useProgramReport`,
   `GuardiaPanel::GuardiaSettings` traducido con `errorKindText`):
-  **99,87 %** (2423/2426 líneas, 1597 tests, 174 ficheros). El umbral
-  fijado sigue en 99,7 porque real menos 0,3 (99,57) queda por debajo,
-  así que el ratchet no sube.
+  **99,87 %** (2423/2426 líneas, 1597 tests, 174 ficheros). Tras la
+  Tarea 5 de i18n (plataforma, métricas y ayuda por pantalla desde
+  catálogos — cierra los puentes de `noPhoneNotice`/`reports/labels`
+  que dejó la Tarea 4): **99,87 %** (2470/2473 líneas, 1693 tests, 174
+  ficheros — mismo número de ficheros: ningún fichero nuevo, solo
+  hooks/componentes/tests ya existentes tocados). El umbral fijado
+  sigue en 99,7 porque real menos 0,3 (99,57) queda por debajo, así que
+  el ratchet no sube.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la
