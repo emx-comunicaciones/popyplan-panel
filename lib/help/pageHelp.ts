@@ -254,7 +254,8 @@ export const PAGE_HELP: readonly PageHelpEntry[] = [
       "Cambiar el periodo",
       "Comparar comarcas, entidades o municipios con el periodo anterior",
     ],
-    audience: "Titular, moderador y analista de la entidad paraguas.",
+    audience:
+      "Todos los roles de la entidad paraguas; las exportaciones, solo titular, moderador y analista.",
   },
   {
     route: "/paraguas/[slug]/informes",
@@ -390,32 +391,19 @@ export function routeToRegExp(route: string): RegExp {
 
 /**
  * Devuelve la entrada cuya plantilla casa con el pathname real, o
- * `null`. Cuando varias plantillas casarían, gana la más específica: la
- * de más segmentos (dos plantillas solo pueden casar con el mismo
- * pathname si tienen el mismo número de segmentos —el ancla `^…$` de
- * `routeToRegExp` lo impone—, así que en la práctica esta regla desempata
- * entre plantillas de igual longitud, quedándose con la primera si hay
- * empate real). Con las 32 rutas reales de `PAGE_HELP` nunca hay dos
- * plantillas que casen con el mismo pathname a la vez; `entries` es
- * sustituible en test para poder ejercitar esa rama sin inventar rutas
- * falsas en el registro real.
+ * `null`. Cada plantilla de `PAGE_HELP` está anclada de principio a fin
+ * (`routeToRegExp`), así que dos plantillas solo podrían casar a la vez
+ * con el mismo pathname si tuvieran el mismo número de segmentos y los
+ * mismos segmentos literales — el test de completitud de
+ * `pageHelp.test.ts` garantiza que `PAGE_HELP` no tiene rutas
+ * duplicadas, y las 32 rutas reales son literalmente distintas entre sí
+ * en algún segmento, así que como mucho una entrada casa con un
+ * pathname dado. No hace falta desempatar por especificidad: basta con
+ * la primera que case.
  */
-export function matchPageHelp(
-  pathname: string,
-  entries: readonly PageHelpEntry[] = PAGE_HELP,
-): PageHelpEntry | null {
-  const matches = entries.filter((entry) =>
-    routeToRegExp(entry.route).test(pathname),
+export function matchPageHelp(pathname: string): PageHelpEntry | null {
+  return (
+    PAGE_HELP.find((entry) => routeToRegExp(entry.route).test(pathname)) ??
+    null
   );
-  if (matches.length === 0) return null;
-
-  return matches.reduce((mostSpecific, candidate) =>
-    segmentCount(candidate.route) > segmentCount(mostSpecific.route)
-      ? candidate
-      : mostSpecific,
-  );
-}
-
-function segmentCount(route: string): number {
-  return route.split("/").filter((segment) => segment.length > 0).length;
 }

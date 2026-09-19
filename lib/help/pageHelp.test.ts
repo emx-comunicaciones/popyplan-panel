@@ -93,7 +93,7 @@ describe("routeToRegExp", () => {
     expect(regExp.test("/entidad/x/personas/42/algo")).toBe(false);
   });
 
-  it("no casa un segmento dinámico vacío", () => {
+  it("no casa con una barra doble al final (segundo segmento dinámico vacío)", () => {
     const regExp = routeToRegExp("/entidad/[slug]/personas/[userId]");
     expect(regExp.test("/entidad/x/personas//")).toBe(false);
   });
@@ -132,23 +132,5 @@ describe("matchPageHelp", () => {
   it("devuelve la entrada exacta para una ruta raíz de área", () => {
     expect(matchPageHelp("/plataforma")?.route).toBe("/plataforma");
     expect(matchPageHelp("/paraguas/x")?.route).toBe("/paraguas/[slug]");
-  });
-
-  // Con las 32 rutas reales nunca hay dos plantillas que casen con el
-  // mismo pathname a la vez: el patrón ancla el número de segmentos
-  // exacto, así que dos plantillas que casen con el mismo pathname
-  // tienen siempre el mismo número de segmentos entre sí. Este caso usa
-  // un registro de prueba propio (parámetro `entries`, sustituible solo
-  // en test) para ejercitar de verdad el `reduce` interno con más de un
-  // candidato — aquí con el mismo número de segmentos en las dos
-  // plantillas, así que gana la primera que casa (empate, sin ganador
-  // más específico que la otra) en vez de romper o devolver `undefined`.
-  it("con varias plantillas que casan a la vez, la función no rompe y devuelve una de ellas", () => {
-    const entries = [
-      { ...PAGE_HELP[0], route: "/entidad/[slug]/asistencia" },
-      { ...PAGE_HELP[0], route: "/entidad/[slug]/[tab]" },
-    ];
-    const match = matchPageHelp("/entidad/x/asistencia", entries);
-    expect(match?.route).toBe("/entidad/[slug]/asistencia");
   });
 });
