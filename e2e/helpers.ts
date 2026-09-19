@@ -25,6 +25,10 @@ export const DEMO_PASSWORD = "panel-pass-1234";
 
 export const BIDASOA_SLUG = "asociacion-bidasoa";
 export const TITULAR_BIDASOA_EMAIL = `panel-titular-${BIDASOA_SLUG}@test.com`;
+/** Referente de Bidasoa (`docs/PANEL.md` §14.6): tiene `Reference` hacia
+ *  `DEMO_PERSON_EMAIL`/`DEMO_PERSON_2_EMAIL`, así que ve «Red de apoyo»
+ *  en sus fichas (§14.5). */
+export const REFERENTE_BIDASOA_EMAIL = `panel-referente-${BIDASOA_SLUG}@test.com`;
 export const ANALISTA_GFA_EMAIL = "panel-analista-gfa@test.com";
 export const PLATAFORMA_SUPERADMIN_EMAIL = "plataforma@test.com";
 /** Una de las 20 personas «de calle» sembradas para Bidasoa (`p01`-`p20`). */
@@ -33,6 +37,18 @@ export const DEMO_PERSON_EMAIL = `panel-demo-${BIDASOA_SLUG}-p01@test.com`;
  *  para marcarla asistida a mano desde la UI (distinta de la que hace
  *  check-in por QR, para no mezclar las dos acciones sobre la misma fila). */
 export const DEMO_PERSON_2_EMAIL = `panel-demo-${BIDASOA_SLUG}-p02@test.com`;
+/** Primer apoyo de la red de `DEMO_PERSON_EMAIL` (`docs/PANEL.md` §14.6):
+ *  relación `parent`, recibe avisos. Su `public_name` real se lee por
+ *  API (`GET /api/users/users/me/`), nunca a mano — «Miren» en el
+ *  ejemplo de PANEL.md §14.5 es solo ilustrativo, la demo real siembra
+ *  «Apoyo 01». */
+export const SUPPORTER_1_EMAIL = "panel-demo-apoyo-01@test.com";
+/** Elkartea Txikia (`docs/PANEL.md` §14.6): entidad sembrada a propósito
+ *  sin comunidad de familias, con un apoyo (`panel-demo-apoyo-04`) a la
+ *  espera de que se cree — único caso real de
+ *  `missing_families_space_supporters > 0` en la demo. */
+export const ELKARTEA_TXIKIA_SLUG = "elkartea-txikia";
+export const TITULAR_TXIKIA_EMAIL = `panel-titular-${ELKARTEA_TXIKIA_SLUG}@test.com`;
 
 export async function newApiContext(): Promise<APIRequestContext> {
   return playwrightRequest.newContext({ baseURL: BACKEND_URL });
@@ -60,6 +76,22 @@ export async function resolveOrgId(
     throw new Error(`la cuenta no tiene membresía en la entidad «${slug}»`);
   }
   return membership.organization_id;
+}
+
+/**
+ * `GET /api/users/users/me/` → `profile.public_name` de la cuenta del
+ * token dado. Usado para leer el nombre público real de una cuenta de
+ * demo en vez de darlo por sabido a mano (p. ej. el apoyo de la red,
+ * `e2e/red-de-apoyo.spec.ts`) — mismo patrón que ya usaba
+ * `createCheckinFixture` para `secondPersonName`.
+ */
+export async function resolvePublicName(api: APIRequestContext, token: string): Promise<string> {
+  const response = await api.get("/api/users/users/me/", { headers: authHeader(token) });
+  if (!response.ok()) {
+    throw new Error(`no se pudo leer el nombre público: ${response.status()}`);
+  }
+  const me = (await response.json()) as { profile: { public_name: string } };
+  return me.profile.public_name;
 }
 
 /** `POST /api/auth/login/` → access token (`key`). Lanza si falla. */
