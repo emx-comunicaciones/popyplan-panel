@@ -15,7 +15,7 @@ import {
 } from "@/hooks/useAcknowledgeHelpRequest";
 import { usePendingHelpRequests } from "@/hooks/usePendingHelpRequests";
 import { useOrganization } from "@/hooks/useOrganization";
-import { useUpdateOrganization } from "@/hooks/useUpdateOrganization";
+import { useUpdateOrganization, type UpdateOrganizationErrorKind } from "@/hooks/useUpdateOrganization";
 import type { HelpRequestRow } from "@/lib/api/types";
 import { NO_PHONE_NOTICE_KEY } from "@/lib/help/noPhoneNotice";
 import { errorKindText } from "@/lib/i18n/errorKindText";
@@ -30,6 +30,15 @@ export interface GuardiaPanelProps {
 const ACKNOWLEDGE_ERROR_KEYS: Record<AcknowledgeHelpRequestErrorKind, string> = {
   sin_permiso: "errors.acknowledgeHelpRequest.sinPermiso",
   desconocido: "errors.acknowledgeHelpRequest.desconocido",
+};
+
+// Mismas claves que `ConfiguracionPanel.tsx::DatosEntidad` (comparten el
+// hook `useUpdateOrganization`, así que el 403/400/genérico dicen lo
+// mismo en las dos pantallas).
+const UPDATE_ORGANIZATION_ERROR_KEYS: Record<UpdateOrganizationErrorKind, string> = {
+  invalido: "errors.updateOrganization.invalido",
+  sin_permiso: "errors.updateOrganization.sinPermiso",
+  desconocido: "errors.updateOrganization.desconocido",
 };
 
 function formatDateTime(iso: string): string {
@@ -179,7 +188,12 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
       </p>
       {updateOrganization.isError ? (
         <p role="alert" className="mt-2 text-sm text-error">
-          {updateOrganization.error.detail ?? updateOrganization.error.message}
+          {errorKindText(
+            updateOrganization.error,
+            UPDATE_ORGANIZATION_ERROR_KEYS,
+            t,
+            "errors.updateOrganization.desconocido",
+          )}
         </p>
       ) : null}
       {updateOrganization.isSuccess ? (

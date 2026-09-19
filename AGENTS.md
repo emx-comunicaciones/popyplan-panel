@@ -1925,11 +1925,6 @@ Menores:
 - **«Rechazar» una solicitud pendiente de comunidad** (`ComunidadesPanel
   ::PendingRow`) sigue sin confirmación. Es reversible (la persona puede
   volver a solicitar), pero rompe la coherencia de M12.
-- **`hooks/useOrgMembers.ts` no tipa su 403.** Distingue el caso solo en
-  el *mensaje* («Solo el titular puede ver el equipo de la entidad.»),
-  así que ningún componente puede reaccionar a él sin comparar cadenas.
-  Añadirle `kind: "sin_acceso" | "desconocido"` (como `PersonError`)
-  dejaría salir solos los textos específicos de los selects de referente.
 - **Filtro `owner_org` en `GET /api/communities/`, del repo backend.**
   Sin él, `hooks/useEntityCommunities.ts` recorre el listado global
   página a página (hasta 250 peticiones en serie) y filtra en el cliente;
@@ -2271,9 +2266,13 @@ en CI lo gate el job `e2e`).
   encuestas, recursos, familias, programas, reportes, guardia y
   configuración desde catálogos): **99,87 %** (2416/2419 líneas, 1590
   tests, 174 ficheros — mismo número de ficheros que la Tarea 3: ningún
-  fichero nuevo, solo hooks/componentes/tests ya existentes tocados). El
-  umbral fijado sigue en 99,7 porque real menos 0,3 (99,57) queda por
-  debajo, así que el ratchet no sube.
+  fichero nuevo, solo hooks/componentes/tests ya existentes tocados). Tras
+  el fix round 1 de esa tarea (`detail` conservado en
+  `useReportActions`/`useCreateFamiliesCommunity`/`useProgramReport`,
+  `GuardiaPanel::GuardiaSettings` traducido con `errorKindText`):
+  **99,87 %** (2423/2426 líneas, 1597 tests, 174 ficheros). El umbral
+  fijado sigue en 99,7 porque real menos 0,3 (99,57) queda por debajo,
+  así que el ratchet no sube.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la

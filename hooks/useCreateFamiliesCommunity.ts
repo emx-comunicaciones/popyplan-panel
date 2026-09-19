@@ -23,11 +23,13 @@ export type CreateFamiliesCommunityErrorKind = "invalido" | "sin_permiso" | "des
 
 export class CreateFamiliesCommunityError extends Error {
   readonly kind: CreateFamiliesCommunityErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: CreateFamiliesCommunityErrorKind, message: string) {
+  constructor(kind: CreateFamiliesCommunityErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "CreateFamiliesCommunityError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -63,9 +65,11 @@ export function useCreateFamiliesCommunity(): UseMutationResult<
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
+          const detail = detailOf(error);
           throw new CreateFamiliesCommunityError(
             "invalido",
-            detailOf(error) ?? "Revisa los datos: alguno no es válido.",
+            detail ?? "Revisa los datos: alguno no es válido.",
+            detail,
           );
         }
         if (error instanceof ApiError && error.status === 403) {

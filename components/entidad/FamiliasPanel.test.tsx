@@ -295,6 +295,36 @@ describe("FamiliasPanel", () => {
     );
   });
 
+  it("«Nueva comunidad de familias» con detalle del backend (400) muestra ese texto tal cual", async () => {
+    const { CreateFamiliesCommunityError } = await import("@/hooks/useCreateFamiliesCommunity");
+    useToggleCrossSpaceMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      isError: false,
+      error: null,
+    });
+    useCreateFamiliesCommunityMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      isError: true,
+      error: new CreateFamiliesCommunityError(
+        "invalido",
+        "Ya existe una comunidad de familias en esta entidad.",
+        "Ya existe una comunidad de familias en esta entidad.",
+      ),
+    });
+    useFamiliesSummaryMock.mockReturnValue({ data: buildFamiliesSummary(), isError: false, error: null });
+
+    const user = userEvent.setup();
+    render(<FamiliasPanel orgId={7} slug="alfaville" canManage />);
+
+    await user.click(screen.getByRole("button", { name: "Nueva comunidad de familias" }));
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Ya existe una comunidad de familias en esta entidad.",
+    );
+  });
+
   it("tarjetas de la red de apoyo: pintan value/suppressed con formatCount", () => {
     mockMutationDefaults();
     useFamiliesSummaryMock.mockReturnValue({

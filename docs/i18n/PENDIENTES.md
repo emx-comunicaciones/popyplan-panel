@@ -27,19 +27,23 @@ nueva de esta tarea):
 
 La Tarea 4 anota dos puntos, ninguno de redacción en español:
 
-- **`errors.programReport.sesionCaducada`** (`hooks/useProgramReport.ts`):
-  el hook real construye ese mensaje como
+- **`errors.programReport.sesionCaducada`** (`hooks/useProgramReport.ts`,
+  ampliada tras la revisión de fix round 1 de la Tarea 4): el hook
+  real sigue construyendo `.message` como
   `error.message || SESSION_EXPIRED_MESSAGE` (texto potencialmente
-  dinámico de la propia `ApiError`, no siempre la constante fija) —
-  `ProgramaDetalle.tsx` lo traduce igual que el resto de `kind` de ese
-  hook (texto fijo por clave), así que en el caso poco frecuente de que
-  `error.message` traiga algo distinto de
-  `SESSION_EXPIRED_MESSAGE` (`"Tu sesión ha caducado."`), la traducción
-  mostraría la cadena fija del catálogo en vez de ese texto puntual. No
-  se ha añadido un campo `detail` al hook para esta única rama (el resto
-  de `ProgramReportError` no lo necesita) porque el caso real casi
-  siempre coincide con la constante; anotado por si alguien lo revisa al
-  tocar sesión/expiración.
+  dinámico de la propia `ApiError`), pero ahora **sí** lleva un campo
+  `detail`, poblado con `detailOf(error)` igual que el resto de ramas de
+  `ProgramReportError` — `ProgramaDetalle.tsx` (vía `errorKindText`)
+  prioriza ese `detail` sobre la traducción fija por `kind`, como en
+  cualquier otro hook del panel. La comprobación (`hooks/
+  useProgramReport.test.tsx`) confirma que en la práctica `detail` queda
+  siempre `undefined` para esta rama: el cuerpo de un 401 de
+  `requestWithAuth` (`lib/api/client.ts`) es siempre `null`, así que
+  `detailOf` nunca encuentra nada real ahí y la traducción fija por
+  `kind` (`"Tu sesión ha caducado."`, idéntica a `SESSION_EXPIRED_MESSAGE`)
+  es lo que se ve siempre. El campo queda por si el contrato cambiara
+  algún día a mandar un cuerpo en el 401 — no es una redacción pendiente,
+  solo un caso sin ejercitar hoy.
 - **`lib/reports/labels.ts` con cuatro funciones a la vez**
   (`reasonLabel`/`statusLabel` de texto, `reasonLabelKey`/`statusLabelKey`
   de clave): no es una redacción pendiente, es una convivencia temporal

@@ -33,11 +33,13 @@ export type ProgramReportErrorKind =
 
 export class ProgramReportError extends Error {
   readonly kind: ProgramReportErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: ProgramReportErrorKind, message: string) {
+  constructor(kind: ProgramReportErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "ProgramReportError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -50,16 +52,23 @@ export interface ProgramReportParams {
 function toProgramReportError(error: unknown): ProgramReportError {
   if (error instanceof ApiError) {
     if (error.status === 503) {
+      const detail = detailOf(error);
       return new ProgramReportError(
         "pdf_unavailable",
-        detailOf(error) ?? "El informe en PDF no está disponible ahora mismo.",
+        detail ?? "El informe en PDF no está disponible ahora mismo.",
+        detail,
       );
     }
     if (error.status === 403) {
       return new ProgramReportError("forbidden", "No tienes permiso para exportar informes.");
     }
     if (error.status === 401) {
-      return new ProgramReportError("sesion_caducada", error.message || SESSION_EXPIRED_MESSAGE);
+      // El cuerpo de este 401 es siempre `null` (`requestWithAuth`,
+      // `lib/api/client.ts`): `detailOf` nunca encuentra nada aquí en la
+      // práctica, pero se llama igual por si el contrato cambiara algún
+      // día a mandar un cuerpo — mismo criterio que el resto de ramas.
+      const detail = detailOf(error);
+      return new ProgramReportError("sesion_caducada", error.message || SESSION_EXPIRED_MESSAGE, detail);
     }
     return new ProgramReportError("desconocido", "No se pudo generar el informe.");
   }

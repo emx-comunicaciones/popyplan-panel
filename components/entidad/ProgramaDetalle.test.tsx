@@ -313,6 +313,28 @@ describe("ProgramaDetalle", () => {
     expect(mutate).toHaveBeenCalledWith({ orgId: 7, programId: 9, format: "pdf" });
   });
 
+  it("informe PDF no disponible (503) con detalle del backend muestra ese texto tal cual", async () => {
+    const { ProgramReportError } = await import("@/hooks/useProgramReport");
+    mockDefaults();
+    useProgramReportMock.mockReturnValue(
+      mutationDefaults({
+        isError: true,
+        error: new ProgramReportError(
+          "pdf_unavailable",
+          "Exportación PDF no disponible en este entorno.",
+          "Exportación PDF no disponible en este entorno.",
+        ),
+      }),
+    );
+    useProgramMock.mockReturnValue({ data: buildProgram({ id: 9 }), isError: false, error: null });
+
+    render(<ProgramaDetalle orgId={7} programId={9} canManage canExport />);
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Exportación PDF no disponible en este entorno.",
+    );
+  });
+
   it("«Editar» abre el diálogo con el formulario precargado", async () => {
     mockDefaults();
     useProgramMock.mockReturnValue({

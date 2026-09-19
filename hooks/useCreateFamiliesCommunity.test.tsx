@@ -74,6 +74,10 @@ describe("useCreateFamiliesCommunity", () => {
     expect(result.current.error).toBeInstanceOf(CreateFamiliesCommunityError);
     expect(result.current.error?.kind).toBe("invalido");
     expect(result.current.error?.message).toBe("El nombre es obligatorio.");
+    // `detail` es lo que `errorKindText` (`lib/i18n/errorKindText.ts`)
+    // prioriza sobre la traducción por `kind` — sin él, `FamiliasPanel`
+    // mostraría el genérico de la clave en cualquier idioma.
+    expect(result.current.error?.detail).toBe("El nombre es obligatorio.");
   });
 
   it("400 con {error} en vez de {detail} también extrae el mensaje", async () => {

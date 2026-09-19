@@ -40,6 +40,10 @@ export const STATUS_LABELS: Record<string, string> = {
   resolved: "Resuelto",
 };
 
+// TODO(tarea 5 de i18n): cuando `components/plataforma/
+// ReportesQueuePlataforma.tsx` traduzca su pantalla, cambia a
+// `reasonLabelKey`/`statusLabelKey` y borra `reasonLabel`/`statusLabel`
+// (con `REASON_LABELS`/`STATUS_LABELS`) — es su único consumidor restante.
 export function reasonLabel(reason: string): string {
   return REASON_LABELS[reason] ?? reason;
 }

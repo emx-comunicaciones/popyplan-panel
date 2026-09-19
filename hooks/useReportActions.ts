@@ -17,18 +17,21 @@ export type ReportActionErrorKind = "invalido" | "sin_permiso" | "desconocido";
 
 export class ReportActionError extends Error {
   readonly kind: ReportActionErrorKind;
+  readonly detail?: string;
 
-  constructor(kind: ReportActionErrorKind, message: string) {
+  constructor(kind: ReportActionErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "ReportActionError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
 function toReportActionError(error: unknown, fallback: string): ReportActionError {
   if (error instanceof ApiError) {
     if (error.status === 400) {
-      return new ReportActionError("invalido", detailOf(error) ?? fallback);
+      const detail = detailOf(error);
+      return new ReportActionError("invalido", detail ?? fallback, detail);
     }
     if (error.status === 403) {
       return new ReportActionError("sin_permiso", "No tienes permiso para actuar sobre este reporte.");

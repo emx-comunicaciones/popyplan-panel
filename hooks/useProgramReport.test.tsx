@@ -146,6 +146,10 @@ describe("downloadProgramReport", () => {
     expect(error).toBeInstanceOf(ProgramReportError);
     expect((error as ProgramReportError).kind).toBe("sesion_caducada");
     expect((error as ProgramReportError).message).toBe("Tu sesión ha caducado.");
+    // El cuerpo de este 401 es siempre `null` (`requestWithAuth`), así que
+    // `detailOf` nunca encuentra nada aquí en la práctica — `errorKindText`
+    // cae entonces a la traducción fija por `kind`, que dice lo mismo.
+    expect((error as ProgramReportError).detail).toBeUndefined();
   });
 
   it("un fallo de red (no ApiError) sube tal cual, sin envolver en ProgramReportError", async () => {
@@ -172,6 +176,22 @@ describe("downloadProgramReport", () => {
     expect(error).toBeInstanceOf(ProgramReportError);
     expect((error as ProgramReportError).kind).toBe("pdf_unavailable");
     expect((error as ProgramReportError).message).toBe("Exportación PDF no disponible en este entorno.");
+    // `detail` es lo que `errorKindText` (`lib/i18n/errorKindText.ts`)
+    // prioriza sobre la traducción por `kind` en `ProgramaDetalle.tsx` —
+    // sin él, el aviso mostraría el genérico de la clave en cualquier
+    // idioma en vez del motivo real que dio el backend.
+    expect((error as ProgramReportError).detail).toBe("Exportación PDF no disponible en este entorno.");
+  });
+
+  it("503 sin detalle en el cuerpo cae al mensaje genérico, sin `detail`", async () => {
+    fetchMock.mockResolvedValueOnce(fakeResponse({ ok: false, status: 503 }));
+
+    const error = await downloadProgramReport({ orgId: 7, programId: 3, format: "pdf" }).catch(
+      (caught) => caught,
+    );
+
+    expect((error as ProgramReportError).message).toBe("El informe en PDF no está disponible ahora mismo.");
+    expect((error as ProgramReportError).detail).toBeUndefined();
   });
 
   it("403 lanza ProgramReportError con kind 'forbidden'", async () => {

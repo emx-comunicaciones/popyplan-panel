@@ -153,6 +153,66 @@ describe("EntidadReporteDetailPage", () => {
     expect(escalateMutate).toHaveBeenCalledWith({ reportId: "r1", note: "Necesita plataforma" });
   });
 
+  it("asignarme con detalle del backend (400) muestra ese texto tal cual", async () => {
+    useReportMock.mockReturnValue({ data: buildReportDetail({ assigned_to: null }), isError: false, error: null });
+    useAssignReportMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      isError: true,
+      error: {
+        message: "Ese reporte ya está asignado a otra persona.",
+        kind: "invalido",
+        detail: "Ese reporte ya está asignado a otra persona.",
+      },
+    });
+    useResolveReportMock.mockReturnValue(idleMutation());
+    useEscalateReportMock.mockReturnValue(idleMutation());
+
+    await renderPage();
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Ese reporte ya está asignado a otra persona.");
+  });
+
+  it("resolver con detalle del backend (400) muestra ese texto tal cual", async () => {
+    useReportMock.mockReturnValue({ data: buildReportDetail({ assigned_to: 9 }), isError: false, error: null });
+    useAssignReportMock.mockReturnValue(idleMutation());
+    useResolveReportMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      isError: true,
+      error: {
+        message: "Esa resolución no es válida.",
+        kind: "invalido",
+        detail: "Esa resolución no es válida.",
+      },
+    });
+    useEscalateReportMock.mockReturnValue(idleMutation());
+
+    await renderPage();
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Esa resolución no es válida.");
+  });
+
+  it("escalar con detalle del backend (400) muestra ese texto tal cual", async () => {
+    useReportMock.mockReturnValue({ data: buildReportDetail({ assigned_to: 9 }), isError: false, error: null });
+    useAssignReportMock.mockReturnValue(idleMutation());
+    useResolveReportMock.mockReturnValue(idleMutation());
+    useEscalateReportMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      isError: true,
+      error: {
+        message: "Este reporte ya está escalado.",
+        kind: "invalido",
+        detail: "Este reporte ya está escalado.",
+      },
+    });
+
+    await renderPage();
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Este reporte ya está escalado.");
+  });
+
   it("un reporte ya resuelto no muestra los formularios de acción", async () => {
     useReportMock.mockReturnValue({
       data: buildReportDetail({ status: "resolved", assigned_to: 9 }),

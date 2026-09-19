@@ -217,6 +217,32 @@ describe("GuardiaPanel", () => {
     expect(mutate).toHaveBeenCalledWith({ help_phone: "" });
   });
 
+  it("guardar con un 403 (dinamizador sin permiso) muestra el texto traducido de ese kind", async () => {
+    const { UpdateOrganizationError } = await import("@/hooks/useUpdateOrganization");
+    mockOrganizationHooks();
+    useUpdateOrganizationMock.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      isError: true,
+      error: new UpdateOrganizationError(
+        "sin_permiso",
+        "Solo el titular puede editar la ficha de la entidad.",
+      ),
+      isSuccess: false,
+    });
+    usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
+
+    render(<GuardiaPanel orgId={7} slug={SLUG} />);
+
+    // En `es` el texto traducido coincide, letra por letra, con el que
+    // manda el hook — la prueba real de que pasa por `errorKindText` (no
+    // por casualidad) es que el `kind` decide, no `.message`.
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Solo el titular puede editar la ficha de la entidad.",
+    );
+  });
+
   it("acuse de recibo: mantiene el botón «He contactado» y pinta el error si falla", () => {
     mockOrganizationHooks();
     usePendingHelpRequestsMock.mockReturnValue({

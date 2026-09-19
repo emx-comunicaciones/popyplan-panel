@@ -89,6 +89,11 @@ describe("useResolveReport", () => {
     const error = result.current.error as ReportActionError;
     expect(error.kind).toBe("invalido");
     expect(error.message).toBe("Resolución no válida");
+    // El texto del backend queda también en `detail`, la prioridad que lee
+    // `errorKindText` (`lib/i18n/errorKindText.ts`) antes que traducir por
+    // `kind` — sin este campo, el aviso mostraría el genérico de la clave
+    // en vez del motivo real que dio el backend.
+    expect(error.detail).toBe("Resolución no válida");
   });
 
   it("400 sin detalle ni error en el cuerpo cae al mensaje por defecto", async () => {
