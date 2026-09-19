@@ -732,6 +732,10 @@
       "acknowledged": "Atendido",
       "acknowledgeAction": "He contactado"
     },
+    "informes": {
+      "noAccessDescription": "Tu rol no tiene acceso a Informes.",
+      "heading": "Informes"
+    },
     "configuracion": {
       "heading": "Configuración",
       "noAccessDescription": "Tu rol no tiene acceso a Configuración.",

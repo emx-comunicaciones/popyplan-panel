@@ -6,8 +6,40 @@
  */
 import type { components } from "./types.generated";
 
-/** `GET /api/users/users/me/`. */
-export type Me = components["schemas"]["Me"];
+/**
+ * `GET /api/users/users/me/`. Ensancha el esquema generado con
+ * `preferred_language` (spec de diseño `2026-09-19-i18n-es-eu-ca`,
+ * decisión 2): el backend ya lo devuelve
+ * (`users/models.py::User.preferred_language`, `blank=True,
+ * default=''`, `''` cuando la cuenta no ha elegido idioma —
+ * `users/profile_serializers.py::MeSerializer`), pero
+ * `docs/schema.yaml` todavía no se ha regenerado para esta tarea (es
+ * trabajo de la tarea 6 del propio backend, verificado leyendo
+ * `users/profile_serializers.py`/`users/tests/test_profile_api.py`, no
+ * solo el esquema) — `Me` del esquema generado no lo lleva. Mismo
+ * patrón de ensanche manual que `FamiliesSummary`/`PeopleMetrics` en
+ * otras rondas de este fichero; se puede quitar en cuanto
+ * `npm run gen:types` lo traiga solo.
+ */
+export type Me = components["schemas"]["Me"] & {
+  preferred_language: string;
+};
+
+/**
+ * `PATCH /api/users/users/update_profile/`
+ * (`users/unified_viewset.py::UsersViewSet.update_profile`). Mismatch
+ * de contrato: el `@extend_schema` de la vista declara
+ * `responses={200: MeSerializer}`, pero el código devuelve
+ * `Response(serializer.data)` de `MeUpdateSerializer` (el serializer de
+ * **escritura** — sin `id`/`org_memberships`/etc., solo los campos que
+ * `MeUpdateSerializer` declara). El panel solo necesita confirmar que
+ * `preferred_language` se guardó (`hooks/useUpdatePreferredLanguage.ts`),
+ * así que el tipo manual se limita a ese campo en vez de fingir un
+ * `Me` completo que la respuesta real no trae.
+ */
+export interface UpdatePreferredLanguageResponse {
+  preferred_language: string;
+}
 
 /** Una entidad dentro de `Me.org_memberships`. */
 export type OrgMembershipRef = components["schemas"]["OrgMembershipRef"];

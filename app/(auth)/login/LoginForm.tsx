@@ -5,12 +5,13 @@ import { useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import { Footer } from "@/components/layout/Footer";
 import { ApiError } from "@/lib/api/client";
 import { resolveArea } from "@/lib/auth/area";
 import { consumeSessionExpiredMessage, SESSION_EXPIRED_MESSAGE } from "@/lib/auth/sessionEvents";
 import { safeReturnTo } from "@/lib/auth/returnTo";
-import { login } from "@/hooks/useAuth";
+import { applyAccountLanguage, login } from "@/hooks/useAuth";
 
 function areaPath(area: ReturnType<typeof resolveArea>): string {
   if (area === "plataforma") return "/plataforma";
@@ -85,6 +86,16 @@ export function LoginForm() {
     setSubmitting(true);
     try {
       const session = await login(usernameOrEmail, password);
+      // Idioma de la cuenta (spec de diseño `2026-09-19-i18n-es-eu-ca`,
+      // decisión 2): si difiere del idioma con el que se ha visto este
+      // formulario, `router.refresh()` antes de navegar para que el
+      // destino ya se pinte en el idioma correcto — sin esto, la cookie
+      // quedaría fijada pero la navegación reutilizaría el árbol de
+      // Server Components (incluida la raíz, que fija `<html lang>`) ya
+      // cacheado del idioma anterior.
+      if (await applyAccountLanguage(session.user)) {
+        router.refresh();
+      }
       const area = resolveArea(session.user, session.platformRole);
       router.replace(safeReturnTo(searchParams.get("returnTo")) ?? areaPath(area));
     } catch (caught) {
@@ -97,6 +108,9 @@ export function LoginForm() {
     <div className="flex min-h-screen flex-col bg-border-light">
       <main className="flex flex-1 items-center justify-center p-4">
         <div className="w-full max-w-sm rounded-lg border border-border bg-white p-6 shadow-sm">
+          <div className="mb-4 flex justify-end">
+            <LanguageSwitcher />
+          </div>
           <h1 className="mb-1 text-xl font-semibold text-text-base">{t("brand")}</h1>
           <p className="mb-6 text-sm text-text-secondary">{t("subtitle")}</p>
           <form onSubmit={handleSubmit} noValidate>

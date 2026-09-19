@@ -34,6 +34,7 @@ export function buildMe(overrides: Partial<MeForArea> = {}): MeForArea {
     verification_level: "1",
     verification_pending_review: "false",
     created_at: "2026-01-10T09:00:00Z",
+    preferred_language: "",
     profile: {
       display_name: "Ana",
       public_name: "Ana G.",

@@ -40,6 +40,18 @@ export const USERS = {
    * mano.
    */
   SEARCH: () => "/api/users/users/",
+  /**
+   * `PATCH /api/users/users/update_profile/ {preferred_language}`
+   * (`users/unified_viewset.py::UsersViewSet.update_profile`,
+   * `MeUpdateSerializer`, spec de diseño `2026-09-19-i18n-es-eu-ca`,
+   * decisión 2). Lo usa `hooks/useUpdatePreferredLanguage.ts` para
+   * guardar el idioma elegido en la cuenta cuando hay sesión — el
+   * selector de idioma (`components/layout/LanguageSwitcher.tsx`)
+   * tolera un fallo aquí (400 si el campo aún no está desplegado, 401
+   * sin sesión real): la cookie `pp_lang` ya decide el idioma de la
+   * interfaz sin depender de esta llamada.
+   */
+  UPDATE_PROFILE: "/api/users/users/update_profile/",
 } as const;
 
 export const SAFETY = {

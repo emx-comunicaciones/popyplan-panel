@@ -34,14 +34,31 @@ test("la declaración de accesibilidad es pública, sin sesión", async ({ page 
   await expect(page.getByRole("heading", { name: "Situación de cumplimiento" })).toBeVisible();
 });
 
-test("en /login, Tab recorre email → contraseña → botón, siempre con el foco visible", async ({
+test("en /login, Tab recorre idioma → email → contraseña → botón, siempre con el foco visible", async ({
   page,
 }) => {
   await page.goto("/login");
 
   // Sin `SkipLink` en esta página (solo la llevan los tres layouts de
-  // área): el primer Tab desde la carga de la página cae directo en el
-  // primer campo del formulario.
+  // área): el primer Tab desde la carga de la página cae en el primer
+  // elemento interactivo del propio formulario de login. Desde la tarea
+  // 6 de i18n eso ya no es el campo de usuario, sino los tres botones
+  // del selector de idioma (`components/layout/LanguageSwitcher.tsx`),
+  // colocado antes del formulario a propósito: alguien que solo use el
+  // teclado también tiene que poder cambiar de idioma antes de rellenar
+  // sus credenciales, no solo quien usa el ratón.
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Español" })).toBeFocused();
+  await expectVisibleFocusRing(page);
+
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Euskara" })).toBeFocused();
+  await expectVisibleFocusRing(page);
+
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Català" })).toBeFocused();
+  await expectVisibleFocusRing(page);
+
   await page.keyboard.press("Tab");
   await expect(page.getByLabel("Usuario o email")).toBeFocused();
   await expectVisibleFocusRing(page);

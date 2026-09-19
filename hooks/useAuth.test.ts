@@ -7,6 +7,7 @@ import { ApiError } from "@/lib/api/client";
 import { getAccessToken, resetAccessTokenForTests, setAccessToken } from "@/lib/auth/tokenStore";
 
 import {
+  applyAccountLanguage,
   bootRestoreSession,
   login,
   logout,
@@ -175,5 +176,62 @@ describe("useAccessToken", () => {
     setAccessToken("token-reactivo");
 
     await waitFor(() => expect(result.current).toBe("token-reactivo"));
+  });
+});
+
+/**
+ * `applyAccountLanguage` (spec de diseño `2026-09-19-i18n-es-eu-ca`,
+ * decisión 2): `document.cookie` es real en jsdom, así que cada test
+ * limpia `pp_lang` explícitamente en vez de confiar en el `afterEach`
+ * global (que resetea mocks, no el DOM).
+ */
+describe("applyAccountLanguage", () => {
+  afterEach(() => {
+    document.cookie = "pp_lang=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+  });
+
+  it("con preferred_language vacío, no llama a /api/lang y devuelve false", async () => {
+    const changed = await applyAccountLanguage(buildMe({ preferred_language: "" }));
+
+    expect(changed).toBe(false);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("con un idioma no soportado, no llama a /api/lang y devuelve false", async () => {
+    const changed = await applyAccountLanguage(buildMe({ preferred_language: "de" as never }));
+
+    expect(changed).toBe(false);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("con un idioma soportado distinto de la cookie actual, fija la cookie y devuelve true", async () => {
+    document.cookie = "pp_lang=es; path=/";
+    fetchMock.mockResolvedValueOnce(response(null, 204));
+
+    const changed = await applyAccountLanguage(buildMe({ preferred_language: "eu" }));
+
+    expect(fetchMock).toHaveBeenCalledWith("/api/lang", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lang: "eu" }),
+    });
+    expect(changed).toBe(true);
+  });
+
+  it("si la cookie ya tiene ese idioma, no llama a /api/lang y devuelve false", async () => {
+    document.cookie = "pp_lang=eu; path=/";
+
+    const changed = await applyAccountLanguage(buildMe({ preferred_language: "eu" }));
+
+    expect(changed).toBe(false);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("un fallo de red al fijar la cookie no lanza: devuelve false", async () => {
+    fetchMock.mockRejectedValueOnce(new Error("red caída"));
+
+    const changed = await applyAccountLanguage(buildMe({ preferred_language: "ca" }));
+
+    expect(changed).toBe(false);
   });
 });

@@ -732,6 +732,10 @@
       "acknowledged": "Attended to",
       "acknowledgeAction": "I've contacted them"
     },
+    "informes": {
+      "noAccessDescription": "Your role doesn't have access to Reports.",
+      "heading": "Reports"
+    },
     "configuracion": {
       "heading": "Settings",
       "noAccessDescription": "Your role doesn't have access to Settings.",

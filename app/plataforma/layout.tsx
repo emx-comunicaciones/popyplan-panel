@@ -6,6 +6,7 @@ import { LogoutButton } from "@/components/LogoutButton";
 import { PageHelp } from "@/components/help/PageHelp";
 import { SkipLink } from "@/components/ui/SkipLink";
 import { Footer } from "@/components/layout/Footer";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import {
   PLATAFORMA_MENU_LABELS,
   isPlatformRole,
@@ -34,6 +35,7 @@ export default async function PlataformaLayout({ children }: { children: React.R
       <header className="flex items-center justify-between gap-4 bg-secondary-900 px-6 py-4 text-text-inverse">
         <span className="text-lg font-semibold">{t("layout.plataforma.brand")}</span>
         <div className="flex items-center gap-3">
+          <LanguageSwitcher />
           <PageHelp />
           <LogoutButton />
         </div>

@@ -732,6 +732,10 @@
       "acknowledged": "Atès",
       "acknowledgeAction": "He contactat"
     },
+    "informes": {
+      "noAccessDescription": "El teu rol no té accés a Informes.",
+      "heading": "Informes"
+    },
     "configuracion": {
       "heading": "Configuració",
       "noAccessDescription": "El teu rol no té accés a Configuració.",

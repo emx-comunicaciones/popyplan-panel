@@ -12,6 +12,8 @@ import { useSyncExternalStore } from "react";
 
 import { ApiError } from "@/lib/api/client";
 import { setAccessToken, subscribeAccessToken, getAccessToken } from "@/lib/auth/tokenStore";
+import { LANG_COOKIE_NAME } from "@/lib/i18n/cookie";
+import { isSupportedLanguage } from "@/lib/i18n/languages";
 import type { MeForArea, PlatformRoleMe } from "@/lib/api/types";
 
 export interface SessionData {
@@ -82,6 +84,45 @@ export async function restoreSession(): Promise<SessionData | null> {
   const session = (await parseJson(response)) as SessionData;
   setAccessToken(session.accessToken);
   return session;
+}
+
+/** `pp_lang` actual, leída directamente de `document.cookie` (sin `document` — SSR de un Client Component — no hay nada que leer). */
+function currentLangCookie(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.split("; ").find((row) => row.startsWith(`${LANG_COOKIE_NAME}=`));
+  if (!match) return null;
+  return decodeURIComponent(match.slice(LANG_COOKIE_NAME.length + 1));
+}
+
+/**
+ * Idioma de la cuenta al entrar (spec de diseño `2026-09-19-i18n-es-eu-ca`,
+ * decisión 2, último párrafo): si `preferred_language` viene no vacío y
+ * distinto de la cookie `pp_lang` actual, fija la cookie con el mismo
+ * route handler que usa el selector de idioma
+ * (`components/layout/LanguageSwitcher.tsx`, `app/api/lang/route.ts`) y
+ * devuelve `true` — quien llama (`LoginForm.tsx` tras `login()`,
+ * `app/providers.tsx` tras `bootRestoreSession()`, los dos únicos sitios
+ * con `useRouter()` a mano) decide entonces si hace falta
+ * `router.refresh()` para que `app/layout.tsx` recoja el idioma nuevo de
+ * `getLocale()`. Nunca lanza: un fallo aquí (red caída) no debe romper
+ * el login ni el arranque de la app, la interfaz sigue en el idioma que
+ * ya tenía.
+ */
+export async function applyAccountLanguage(user: MeForArea): Promise<boolean> {
+  const preferred = user.preferred_language;
+  if (!isSupportedLanguage(preferred) || currentLangCookie() === preferred) {
+    return false;
+  }
+  try {
+    await fetch("/api/lang", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lang: preferred }),
+    });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**

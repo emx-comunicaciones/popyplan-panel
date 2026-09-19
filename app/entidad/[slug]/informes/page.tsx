@@ -40,13 +40,17 @@ export default async function EntidadInformesPage({
     redirect("/");
   }
 
+  const t = await getTranslations();
+
   if (!entidadMenuFor(membership.role).includes("informes")) {
-    return <EmptyState title="Sin acceso" description="Tu rol no tiene acceso a Informes." />;
+    return (
+      <EmptyState title={t("common.noAccess")} description={t("entidad.informes.noAccessDescription")} />
+    );
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-text-base">Informes</h1>
+      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.informes.heading")}</h1>
       <ExportPanel scope="entidad" orgId={membership.organization_id} />
     </div>
   );

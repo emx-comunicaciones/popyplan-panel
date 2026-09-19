@@ -10,12 +10,24 @@ import { ApiError } from "@/lib/api/client";
 import { notifySessionExpired, resetSessionEventsForTests } from "@/lib/auth/sessionEvents";
 
 const loginMock = vi.hoisted(() => vi.fn());
-vi.mock("@/hooks/useAuth", () => ({ login: loginMock }));
+// `applyAccountLanguage` (tarea 6 de i18n): por defecto resuelve `false`
+// (sin idioma de cuenta que sincronizar), como el `buildMe()` por
+// defecto trae `preferred_language: ""` — así el grueso de estos tests
+// no tiene que preocuparse por ella; el test dedicado más abajo la
+// hace resolver `true` para comprobar el `router.refresh()` de
+// `LoginForm.tsx`.
+const applyAccountLanguageMock = vi.hoisted(() => vi.fn().mockResolvedValue(false));
+vi.mock("@/hooks/useAuth", () => ({
+  login: loginMock,
+  applyAccountLanguage: applyAccountLanguageMock,
+}));
 
 import LoginPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   loginMock.mockReset();
+  applyAccountLanguageMock.mockReset();
+  applyAccountLanguageMock.mockResolvedValue(false);
   resetSessionEventsForTests();
 });
 
@@ -45,6 +57,30 @@ describe("LoginPage", () => {
     await user.click(screen.getByRole("button", { name: "Entrar" }));
 
     expect(loginMock).toHaveBeenCalledWith("titular@alfaville.test", "correcta-1234");
+    expect(applyAccountLanguageMock).toHaveBeenCalledWith(expect.objectContaining({ id: 42 }));
+    expect(routerMock.refresh).not.toHaveBeenCalled();
+    expect(routerMock.replace).toHaveBeenCalledWith("/entidad/alfaville");
+  });
+
+  it("si el idioma de la cuenta difiere del actual, refresca antes de navegar", async () => {
+    const user = userEvent.setup();
+    applyAccountLanguageMock.mockResolvedValueOnce(true);
+    loginMock.mockResolvedValue({
+      accessToken: "token-1",
+      user: buildMe({
+        preferred_language: "eu",
+        org_memberships: [buildOrgMembership({ role: "titular", organization_slug: "alfaville" })],
+      }),
+      platformRole: buildPlatformRole(null),
+    });
+
+    render(<LoginPage />);
+
+    await user.type(screen.getByLabelText("Usuario o email"), "titular@alfaville.test");
+    await user.type(screen.getByLabelText("Contraseña"), "correcta-1234");
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(routerMock.refresh).toHaveBeenCalled();
     expect(routerMock.replace).toHaveBeenCalledWith("/entidad/alfaville");
   });
 

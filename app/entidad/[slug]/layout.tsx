@@ -8,6 +8,7 @@ import { PageHelp } from "@/components/help/PageHelp";
 import { SkipLink } from "@/components/ui/SkipLink";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Footer } from "@/components/layout/Footer";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import { contrastRatio, readableOn } from "@/lib/a11y/contrast";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { ENTIDAD_MENU_LABELS, entidadMenuFor } from "@/lib/auth/entidadMenu";
@@ -105,6 +106,7 @@ export default async function EntidadLayout({
           <span className="text-lg font-semibold">{org?.name ?? membership.organization_name}</span>
         </div>
         <div className="flex items-center gap-3">
+          <LanguageSwitcher />
           <PageHelp />
           <LogoutButton />
         </div>

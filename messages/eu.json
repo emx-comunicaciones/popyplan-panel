@@ -732,6 +732,10 @@
       "acknowledged": "Artatuta",
       "acknowledgeAction": "Harremanetan jarri naiz"
     },
+    "informes": {
+      "noAccessDescription": "Zure rolak ez du sarbiderik Txostenetan.",
+      "heading": "Txostenak"
+    },
     "configuracion": {
       "heading": "Konfigurazioa",
       "noAccessDescription": "Zure rolak ez du sarbiderik Konfigurazioan.",
