@@ -1978,9 +1978,11 @@ en CI lo gate el job `e2e`).
   esta métrica). Tras la auditoría de bugs de 2026-09: **99,84 %**. Tras
   la segunda ronda (2026-09-18, `middleware.ts` incluido): **99,86 %**
   (2206/2209 líneas). Tras la revisión final de la rama (F1-F5 y
-  menores): **99,86 %** (2205/2208 líneas, 1375 tests). El umbral fijado
-  sigue en 99,7 porque real menos 0,3 (99,56) queda por debajo, así que
-  el ratchet no sube.
+  menores): **99,86 %** (2205/2208 líneas, 1375 tests). Tras la Fase 7
+  (red de apoyo, revisión final incluida): **99,86 %** (2225/2228
+  líneas, 1418 tests, 162 ficheros). El umbral fijado sigue en 99,7
+  porque real menos 0,3 (99,56) queda por debajo, así que el ratchet no
+  sube.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la
