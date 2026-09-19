@@ -71,6 +71,16 @@ export type OrgMembershipRef = components["schemas"]["OrgMembershipRef"];
  */
 export type OrgMembershipForArea = OrgMembershipRef & {
   org_type?: components["schemas"]["OrgTypeEnum"];
+  /**
+   * `users/profile_serializers.py::OrgMembershipRefSerializer`, spec
+   * §3.5: el backend deriva este booleano de `org_type` para que el
+   * panel deje de comparar cadenas. Opcional porque un backend anterior
+   * al despliegue no lo trae — `lib/auth/area.ts::isParaguas` lo usa
+   * cuando está y cae al respaldo por `organization_type` cuando no
+   * (spec §7). Tipo manual hasta `npm run gen:types`.
+   */
+  is_administration?: boolean;
+  admin_level?: AdminLevel;
 };
 
 export type MeForArea = Omit<Me, "org_memberships"> & {
@@ -80,8 +90,47 @@ export type MeForArea = Omit<Me, "org_memberships"> & {
 /** `GET /api/safety/platform-roles/me/`. */
 export type PlatformRoleMe = components["schemas"]["PlatformRoleMe"];
 
-/** `GET`/`PATCH /api/organizations/{id}/`. */
-export type Organization = components["schemas"]["Organization"];
+/**
+ * Nivel administrativo de una organización de tipo `administracion`
+ * (spec de diseño `2026-09-19-territorio-administraciones-design.md`
+ * §2.1). Cadena vacía en todo lo que no es una administración: el
+ * backend lo declara `CharField(choices, blank=True)`, no nullable.
+ *
+ * **Tipo manual, provisional**: se retira en cuanto la rama de backend
+ * `feature/territorio-*` esté fusionada y se regenere el esquema con
+ * `npm run gen:types` (spec §7, «regenerar tipos desde
+ * docs/schema.yaml»). Mismo patrón que `Me.preferred_language` más
+ * arriba en este fichero.
+ */
+export type AdminLevel = "ayuntamiento" | "mancomunidad" | "diputacion" | "gobierno" | "";
+
+/**
+ * Forma del territorio declarado (spec §2.1): un atajo (`ccaa`,
+ * `provincia`, `comarca`) o una lista literal de municipios
+ * (`municipios`); cadena vacía si la administración no tiene territorio.
+ * `territory_code` guarda el código del atajo o, con `municipios`, los
+ * códigos INE separados por comas. Tipo manual, misma nota que
+ * `AdminLevel`.
+ */
+export type TerritoryKind = "ccaa" | "provincia" | "comarca" | "municipios" | "";
+
+/**
+ * `GET`/`PATCH /api/organizations/{id}/`, ensanchado con los cuatro
+ * campos de territorio de la spec §2.1 más el recuento derivado
+ * `territory_places_count` (solo lectura: cuántos municipios tiene hoy
+ * el `OrgScope` expandido). Todos opcionales porque un backend anterior
+ * al despliegue de este bloque no los trae (spec §7) — el panel trata su
+ * ausencia igual que `place: null` (ver `EntidadDetail`/`SedeSelector`).
+ * Tipo manual, misma nota que `AdminLevel`.
+ */
+export type Organization = components["schemas"]["Organization"] & {
+  /** Código INE de la sede (`Place.ine_code`), `null` si no la tiene. */
+  place?: string | null;
+  admin_level?: AdminLevel;
+  territory_kind?: TerritoryKind;
+  territory_code?: string;
+  readonly territory_places_count?: number;
+};
 
 export type OrgMembershipRole = components["schemas"]["OrgMembershipRoleEnum"];
 
@@ -763,3 +812,79 @@ export type BillingSummary = components["schemas"]["BillingSummary"];
 export type PersonSupportRow = components["schemas"]["ReferentNetworkRow"];
 /** `relationship` de un vínculo de la red de apoyo (`docs/PANEL.md` §14.2). */
 export type SupportRelationship = components["schemas"]["RelationshipEnum"];
+
+/**
+ * `POST /api/organizations/` con la sede obligatoria (spec §4.3, «Alta
+ * de entidad: sede obligatoria»): el serializer de alta exige `place`
+ * (código INE). Tipo manual hasta `npm run gen:types`.
+ */
+export type OrganizationCreateInput = OrganizationCreateRequest & {
+  place: string;
+};
+
+/**
+ * Fila de `GET /api/places/?ine_code=a,b&search=&ccaa_code=&prov_code=
+ * &comarca_code=&page=` (spec §3.3, ampliada con los tres filtros de
+ * código por decisión del coordinador del bloque): listado de municipios
+ * de solo lectura, autenticado y paginado (solo `is_active`), sin ningún
+ * dato personal. Los tres filtros de código son de coincidencia exacta y
+ * combinables entre sí y con `search`/`ine_code`; el `count` de
+ * `PaginatedPlaceList` es el total que casa con el filtro, no el tamaño
+ * de la página. Tipo manual hasta `npm run gen:types`.
+ *
+ * `latitude`/`longitude` se declaran `number | null` siguiendo el
+ * ejemplo de la spec §3.2. Quien las consuma las pasa igualmente por
+ * `lib/metrics/mapScale.ts::toFiniteNumber`, porque un `DecimalField` de
+ * DRF puede llegar serializado como cadena según la configuración del
+ * backend y una coordenada no numérica no puede pintar una burbuja.
+ */
+export interface PlaceRow {
+  ine_code: string;
+  name: string;
+  name_local: string;
+  comarca_code: string;
+  comarca_name_es: string;
+  comarca_name_eu: string;
+  prov_code: string;
+  prov_name: string;
+  ccaa_code: string;
+  ccaa_name: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+/** Envoltorio DRF estándar de `GET /api/places/`. */
+export interface PaginatedPlaceList {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: PlaceRow[];
+}
+
+/** El municipio dentro de la ficha de `GET …/territorio/{org}/places/{ine}/`. */
+export interface PlaceSheetPlace {
+  ine_code: string;
+  name: string;
+  name_local: string;
+  comarca_name_es: string;
+  prov_name: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+/**
+ * `GET /api/panel/territorio/{org_id}/places/{ine_code}/?since&until`
+ * (spec §3.2): ficha agregada de un municipio del territorio.
+ * `organizations_based_here` es un **recuento** de organizaciones con
+ * sede ahí, nunca sus nombres (invariante 1). `people`/`attendance`
+ * respetan el umbral `PANEL_MIN_GROUP_SIZE` igual que el resto del
+ * panel. Tipo manual hasta `npm run gen:types`.
+ */
+export interface PlaceSheet {
+  place: PlaceSheetPlace;
+  events: { held: number; upcoming: number };
+  people: { value: number | null; suppressed: boolean };
+  attendance: { rate: number | null; suppressed: boolean };
+  communities: { count: number };
+  organizations_based_here: number;
+}

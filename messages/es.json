@@ -66,8 +66,10 @@
       "configuracion": "Configuración"
     },
     "paraguas": {
-      "navLabel": "Secciones de la entidad paraguas",
+      "navLabel": "Secciones del área de administración",
       "inicio": "Inicio",
+      "territorio": "Territorio",
+      "redFinanciada": "Red financiada",
       "informes": "Informes"
     },
     "plataforma": {

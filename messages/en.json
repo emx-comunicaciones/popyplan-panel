@@ -66,8 +66,10 @@
       "configuracion": "Settings"
     },
     "paraguas": {
-      "navLabel": "Umbrella entity sections",
+      "navLabel": "Administration area sections",
       "inicio": "Home",
+      "territorio": "Territory",
+      "redFinanciada": "Funded network",
       "informes": "Reports (export)"
     },
     "plataforma": {

@@ -66,8 +66,10 @@
       "configuracion": "Configuració"
     },
     "paraguas": {
-      "navLabel": "Seccions de l'entitat paraigua",
+      "navLabel": "Seccions de l'àrea d'administració",
       "inicio": "Inici",
+      "territorio": "Territori",
+      "redFinanciada": "Xarxa finançada",
       "informes": "Informes"
     },
     "plataforma": {

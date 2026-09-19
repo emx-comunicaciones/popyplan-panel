@@ -231,6 +231,30 @@ describe("ParaguasLayout", () => {
     expect(container.querySelector("img")).not.toBeNull();
   });
 
+  it("el menú de la administración lleva las cuatro secciones para la analista", async () => {
+    setPathname("/paraguas/diputacion-demo");
+    getServerSessionMock.mockResolvedValue(session("analista"));
+    serverFetchMock.mockResolvedValue({ ok: true, status: 200, data: buildOrganization() });
+
+    const element = await ParaguasLayout({
+      children: <p>contenido</p>,
+      params: Promise.resolve({ slug: "diputacion-demo" }),
+    });
+    render(element);
+
+    const nav = screen.getByRole("navigation", { name: "Secciones del área de administración" });
+    expect(nav.textContent).toContain("Territorio");
+    expect(nav.textContent).toContain("Red financiada");
+    expect(screen.getByRole("link", { name: "Territorio" })).toHaveAttribute(
+      "href",
+      "/paraguas/diputacion-demo/territorio",
+    );
+    expect(screen.getByRole("link", { name: "Red financiada" })).toHaveAttribute(
+      "href",
+      "/paraguas/diputacion-demo/red-financiada",
+    );
+  });
+
   it("con un logo en un host NO permitido no pinta imagen y el layout sigue en pie", async () => {
     vi.stubEnv("NEXT_PUBLIC_API_URL", "https://api.test");
     getServerSessionMock.mockResolvedValue(session("titular"));

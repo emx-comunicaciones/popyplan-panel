@@ -17,6 +17,11 @@ export function buildOrganization(overrides: Partial<Organization> = {}): Organi
     primary_color: "#1FB3AE",
     secondary_color: "#72C9EE",
     on_call_user: null,
+    place: "20069",
+    admin_level: "",
+    territory_kind: "",
+    territory_code: "",
+    territory_places_count: 0,
     ...overrides,
   };
 }

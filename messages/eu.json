@@ -66,8 +66,10 @@
       "configuracion": "Konfigurazioa"
     },
     "paraguas": {
-      "navLabel": "Erakunde aterkiaren atalak",
+      "navLabel": "Administrazio-arloaren atalak",
       "inicio": "Hasiera",
+      "territorio": "Lurraldea",
+      "redFinanciada": "Finantzatutako sarea",
       "informes": "Txostenak"
     },
     "plataforma": {

@@ -1,17 +1,18 @@
 /**
- * Menú lateral del panel de paraguas (tarea W2): «Inicio» (métricas
- * agregadas) e «Informes» (exportación CSV/PDF).
+ * Menú lateral del panel de paraguas.
  *
- * Visibilidad por rol (corrección de auditoría, hallazgo M2): «Informes»
- * exporta con `PuedeEnEntidad('exportar_informes')` (`docs/PANEL.md`
- * §2.1), permiso que solo tienen `titular`, `moderador` y `analista` —
- * mismo criterio que `lib/auth/entidadMenu.ts`, donde Informes está
- * fuera del menú de `dinamizador` y `referente`. «Inicio» solo pide
- * `ver_panel`, así que la ven los cinco roles de panel.
+ * Bloque 1 de territorio (spec §4.1): el área de paraguas pasa a ser el
+ * **área de administración** y su menú de 2 a 4 secciones — Inicio,
+ * Territorio (observatorio del territorio declarado), Red financiada
+ * (el dashboard de paraguas de siempre, sobre el árbol `parent`) e
+ * Informes. La ruta no cambia (`/paraguas/[slug]`), para no romper
+ * marcadores ni los e2e existentes. Las tres primeras solo piden
+ * `ver_panel`, así que las ven los cinco roles; Informes sigue acotada a
+ * `exportar_informes` (`titular`/`moderador`/`analista`).
  */
 import { isEntidadPanelRole, type EntidadPanelRole } from "./area";
 
-export const PARAGUAS_MENU_ITEMS = ["inicio", "informes"] as const;
+export const PARAGUAS_MENU_ITEMS = ["inicio", "territorio", "red-financiada", "informes"] as const;
 
 export type ParaguasMenuItem = (typeof PARAGUAS_MENU_ITEMS)[number];
 
@@ -24,6 +25,8 @@ export type ParaguasMenuItem = (typeof PARAGUAS_MENU_ITEMS)[number];
  */
 export const PARAGUAS_MENU_LABELS: Record<ParaguasMenuItem, string> = {
   inicio: "menu.paraguas.inicio",
+  territorio: "menu.paraguas.territorio",
+  "red-financiada": "menu.paraguas.redFinanciada",
   informes: "menu.paraguas.informes",
 };
 

@@ -4,12 +4,12 @@
  * panel», plan de Fase 5). Sin rol de plataforma, se mira
  * `me.org_memberships`.
  *
- * Regla de paraguas (W1): `OrgMembershipRef`, tal y como lo sirve hoy
- * `users/profile_serializers.py::OrgMembershipRefSerializer`, expone
- * `organization_type` (`source='organization.org_type'`, ronda de cierre
- * de Fase 5) — `isParaguas` lo mira (y también el `org_type` heredado
- * por compatibilidad), así que una membresía con
- * `organization_type === 'administracion'` resuelve a paraguas.
+ * Regla de paraguas (bloque 1 de territorio, spec de diseño
+ * `2026-09-19-territorio-administraciones-design.md` §3.5): el backend
+ * deriva `is_administration` de `org_type` para que el panel deje de
+ * comparar cadenas — `isParaguas` lo mira primero y solo cae al respaldo
+ * histórico por `organization_type`/`org_type` (W1) cuando el campo
+ * nuevo no viene (backend anterior al despliegue de este bloque).
  */
 import type { MeForArea, OrgMembershipForArea, PlatformRoleMe } from "@/lib/api/types";
 import { isPlatformRole } from "@/lib/auth/plataformaMenu";
@@ -50,7 +50,22 @@ function hasPanelRole(membership: OrgMembershipForArea): boolean {
   return isEntidadPanelRole(membership.role);
 }
 
+/**
+ * Una membresía es de administración (área `/paraguas/[slug]`) cuando el
+ * backend lo dice con `is_administration` (spec de diseño
+ * `2026-09-19-territorio-administraciones-design.md` §3.5: el campo se
+ * deriva de `org_type` para que el panel deje de comparar cadenas).
+ *
+ * El campo **manda cuando está**, también con valor `false`: un backend
+ * que ya lo sirve es la autoridad, y un `organization_type` heredado no
+ * puede contradecirlo. Solo si el campo **no viene** (backend anterior al
+ * despliegue de este bloque, spec §7) se cae al respaldo histórico por
+ * `organization_type`/`org_type`, que es lo que hacía W1.
+ */
 function isParaguas(membership: OrgMembershipForArea): boolean {
+  if (typeof membership.is_administration === "boolean") {
+    return membership.is_administration;
+  }
   return membership.organization_type === "administracion" || membership.org_type === "administracion";
 }
 

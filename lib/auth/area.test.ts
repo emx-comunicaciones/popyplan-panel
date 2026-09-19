@@ -149,4 +149,57 @@ describe("resolveArea", () => {
 
     expect(resolveArea(me, { role: "rol-que-el-backend-inventa" })).toBe("sin-acceso");
   });
+
+  it("con `is_administration: true` resuelve paraguas aunque no venga organization_type", () => {
+    const me = buildMe({
+      org_memberships: [
+        buildOrgMembership({
+          role: "analista",
+          organization_slug: "gipuzkoako-foru-aldundia",
+          organization_type: "",
+          is_administration: true,
+        }),
+      ],
+    });
+
+    expect(resolveArea(me, buildPlatformRole(null))).toEqual({
+      kind: "paraguas",
+      slug: "gipuzkoako-foru-aldundia",
+    });
+  });
+
+  it("`is_administration: false` manda sobre un organization_type heredado", () => {
+    const me = buildMe({
+      org_memberships: [
+        buildOrgMembership({
+          role: "titular",
+          organization_slug: "asociacion-bidasoa",
+          organization_type: "administracion",
+          is_administration: false,
+        }),
+      ],
+    });
+
+    expect(resolveArea(me, buildPlatformRole(null))).toEqual({
+      kind: "entidad",
+      slug: "asociacion-bidasoa",
+    });
+  });
+
+  it("sin `is_administration` (backend anterior al despliegue) sigue el respaldo por organization_type", () => {
+    const me = buildMe({
+      org_memberships: [
+        buildOrgMembership({
+          role: "analista",
+          organization_slug: "gipuzkoako-foru-aldundia",
+          organization_type: "administracion",
+        }),
+      ],
+    });
+
+    expect(resolveArea(me, buildPlatformRole(null))).toEqual({
+      kind: "paraguas",
+      slug: "gipuzkoako-foru-aldundia",
+    });
+  });
 });
