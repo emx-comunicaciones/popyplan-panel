@@ -202,6 +202,9 @@
       },
       "informes": {
         "title": "Umbrella entity reports (export)"
+      },
+      "redFinanciada": {
+        "title": "Funded network"
       }
     },
     "plataforma": {
@@ -1367,10 +1370,10 @@
     "paraguas": {
       "inicio": {
         "title": "Umbrella home",
-        "summary": "Aggregated metrics for every entity in your territory: people, activities and attendance by municipality, by entity and by month, plus the comparison with the previous period. You never see people: any group of fewer than five shows as “<5”.",
+        "summary": "A single glance at the administration: the state of your declared territory and of the entities you fund, each with a link to its own section.",
         "actions": [
-          "Change the period",
-          "Compare districts, entities or municipalities against the previous period"
+          "Open the territory observatory",
+          "Open the funded network"
         ],
         "audience": "All roles of the umbrella entity."
       },
@@ -1386,12 +1389,22 @@
       },
       "informes": {
         "title": "Umbrella reports & exports",
-        "summary": "Aggregated export for the territory as CSV or PDF.",
+        "summary": "Aggregated export of the territory or the funded network as CSV or PDF.",
         "actions": [
+          "Choose the scope (territory or funded network)",
           "Choose the period and breakdown",
           "Download the report"
         ],
         "audience": "Owner, moderator and analyst."
+      },
+      "redFinanciada": {
+        "title": "Funded network",
+        "summary": "Aggregated metrics for the entities that hang off this administration: people, activities and attendance by municipality, by entity and by month, plus the comparison with the previous period. It follows the parent/children tree, not the territory.",
+        "actions": [
+          "Change the period",
+          "Compare districts, entities or municipalities against the previous period"
+        ],
+        "audience": "All roles of the administration."
       }
     },
     "plataforma": {
@@ -1563,7 +1576,12 @@
       "groupByYear": "By year (multi-year record)",
       "csv": "Export CSV",
       "pdf": "Export PDF",
-      "exporting": "Exporting…"
+      "exporting": "Exporting…",
+      "scopeLabel": "Report scope",
+      "scopeEntidad": "Entity",
+      "scopeRedFinanciada": "Funded network",
+      "scopePlataforma": "Platform",
+      "scopeTerritorio": "Territory"
     },
     "comparativa": {
       "notAvailable": "Not available due to the aggregation threshold",
@@ -1902,7 +1920,12 @@
   },
   "paraguas": {
     "inicio": {
-      "heading": "Home"
+      "heading": "Home",
+      "territoryHeading": "Your territory",
+      "territoryLink": "View the territory",
+      "networkHeading": "Funded network",
+      "networkLink": "View the funded network",
+      "fundedEntities": "Funded entities"
     },
     "territorio": {
       "heading": "Territory",
@@ -1917,6 +1940,10 @@
     "informes": {
       "noAccessDescription": "Your role doesn't have access to Reports.",
       "heading": "Reports"
+    },
+    "redFinanciada": {
+      "heading": "Funded network",
+      "noAccessDescription": "Your role doesn't have access to the Funded network."
     }
   }
 }

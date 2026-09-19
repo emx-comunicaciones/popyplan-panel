@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
-import { ParaguasMetricsDashboard } from "@/components/metrics/ParaguasMetricsDashboard";
+import { ParaguasHomeDashboard } from "@/components/metrics/ParaguasHomeDashboard";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { getServerOrganization } from "@/lib/auth/organization";
 import { getServerSession } from "@/lib/auth/session";
@@ -38,7 +38,7 @@ export default async function ParaguasInicioPage({
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold text-text-base">{t("paraguas.inicio.heading")}</h1>
-      <ParaguasMetricsDashboard orgId={membership.organization_id} orgName={orgName} />
+      <ParaguasHomeDashboard orgId={membership.organization_id} slug={slug} orgName={orgName} />
     </div>
   );
 }

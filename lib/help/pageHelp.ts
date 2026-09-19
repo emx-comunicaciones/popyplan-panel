@@ -57,6 +57,7 @@ export const PAGE_HELP: readonly PageHelpEntry[] = [
   // Paraguas (`/paraguas/[slug]/…`)
   { route: "/paraguas/[slug]", key: "paraguas.inicio" },
   { route: "/paraguas/[slug]/territorio", key: "paraguas.territorio" },
+  { route: "/paraguas/[slug]/red-financiada", key: "paraguas.redFinanciada" },
   { route: "/paraguas/[slug]/informes", key: "paraguas.informes" },
 
   // Plataforma (`/plataforma/…`)

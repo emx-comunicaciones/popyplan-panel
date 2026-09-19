@@ -23,7 +23,23 @@ interface ExportPanelOwnProps {
    * a la vez (`docs/PANEL.md` §11.4).
    */
   groupBy?: MetricsGroupBy;
+  /**
+   * Ámbitos entre los que puede elegir quien exporta. Con dos o más, el
+   * panel pinta un `<select>` «Ámbito del informe» y la descarga usa el
+   * elegido; con uno (o sin la prop) se comporta como siempre y usa
+   * `scope`. Lo usa Informes del área de administración (spec §4.1):
+   * la misma pantalla exporta el territorio o la red financiada, que son
+   * dos rutas distintas del backend con el mismo formato de salida.
+   */
+  scopeChoices?: readonly MetricsScope[];
 }
+
+const SCOPE_LABEL_KEYS: Record<MetricsScope, string> = {
+  entidad: "scopeEntidad",
+  paraguas: "scopeRedFinanciada",
+  plataforma: "scopePlataforma",
+  territorio: "scopeTerritorio",
+};
 
 /**
  * Periodo controlado por el dashboard que envuelve este panel: con él, el
@@ -69,6 +85,7 @@ export function ExportPanel({
   scope,
   orgId,
   groupBy,
+  scopeChoices,
   period,
   preset,
   onPeriodChange,
@@ -77,7 +94,12 @@ export function ExportPanel({
   const [ownPreset, setOwnPreset] = useState<PeriodPreset>("mes");
   const [ownPeriod, setOwnPeriod] = useState<Period>(() => presetPeriod("mes"));
   const [exportGroupBy, setExportGroupBy] = useState<ExportGroupByChoice>("habitual");
+  const [chosenScope, setChosenScope] = useState<MetricsScope>(scope);
   const selectId = useId();
+  const scopeSelectId = useId();
+
+  const showScopeSelect = (scopeChoices?.length ?? 0) > 1;
+  const effectiveScope = showScopeSelect ? chosenScope : scope;
 
   const controlled = period !== undefined;
   const effectivePeriod = period ?? ownPeriod;
@@ -99,6 +121,25 @@ export function ExportPanel({
     <Card title={t("title")}>
       <p className="mb-4 text-sm text-text-secondary">{t("noNamesNotice")}</p>
       <PeriodSelector value={effectivePeriod} preset={effectivePreset} onChange={handlePeriodChange} />
+      {showScopeSelect ? (
+        <div className="mt-4">
+          <label htmlFor={scopeSelectId} className="mb-1 block text-sm font-medium text-text-form">
+            {t("scopeLabel")}
+          </label>
+          <select
+            id={scopeSelectId}
+            value={chosenScope}
+            onChange={(event) => setChosenScope(event.target.value as MetricsScope)}
+            className="rounded-md border border-border px-2 py-1 text-sm text-text-base focus-visible:outline-primary-700"
+          >
+            {(scopeChoices ?? []).map((choice) => (
+              <option key={choice} value={choice}>
+                {t(SCOPE_LABEL_KEYS[choice])}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
       <div className="mt-4">
         <label htmlFor={selectId} className="mb-1 block text-sm font-medium text-text-form">
           {t("groupByLabel")}
@@ -114,7 +155,9 @@ export function ExportPanel({
         </select>
       </div>
       <div className="mt-4">
-        <ExportButtons params={{ scope, orgId, period: effectivePeriod, groupBy: effectiveGroupBy }} />
+        <ExportButtons
+          params={{ scope: effectiveScope, orgId, period: effectivePeriod, groupBy: effectiveGroupBy }}
+        />
       </div>
     </Card>
   );

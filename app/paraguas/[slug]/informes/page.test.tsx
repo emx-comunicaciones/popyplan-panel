@@ -58,7 +58,7 @@ describe("ParaguasInformesPage", () => {
     await user.click(screen.getByRole("button", { name: "Exportar CSV" }));
 
     expect(mutate).toHaveBeenCalledWith(
-      expect.objectContaining({ scope: "paraguas", orgId: 5, format: "csv" }),
+      expect.objectContaining({ scope: "territorio", orgId: 5, format: "csv" }),
     );
   });
 
@@ -71,8 +71,17 @@ describe("ParaguasInformesPage", () => {
     await user.click(screen.getByRole("button", { name: "Exportar PDF" }));
 
     expect(mutate).toHaveBeenCalledWith(
-      expect.objectContaining({ scope: "paraguas", orgId: 5, format: "pdf" }),
+      expect.objectContaining({ scope: "territorio", orgId: 5, format: "pdf" }),
     );
+  });
+
+  it("permite exportar el territorio o la red financiada", async () => {
+    useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
+
+    await renderPage("diputacion-demo", "analista");
+
+    expect(screen.getByLabelText("Ámbito del informe")).toHaveValue("territorio");
+    expect(screen.getByRole("option", { name: "Red financiada" })).toBeInTheDocument();
   });
 
   it("503 (PDF no disponible) muestra el mensaje de informe no disponible", async () => {

@@ -202,6 +202,9 @@
       },
       "informes": {
         "title": "Informes del paraguas"
+      },
+      "redFinanciada": {
+        "title": "Red financiada"
       }
     },
     "plataforma": {
@@ -1367,10 +1370,10 @@
     "paraguas": {
       "inicio": {
         "title": "Inicio del paraguas",
-        "summary": "Métricas agregadas de todas las entidades de tu territorio: personas, actividades y asistencia por municipio, por entidad y por mes, y la comparativa con el periodo anterior. Nunca ves personas: cualquier grupo con menos de cinco se muestra como «<5».",
+        "summary": "Un vistazo a la administración: cómo está tu territorio declarado y cómo está la red de entidades que financias, cada bloque con enlace a su sección.",
         "actions": [
-          "Cambiar el periodo",
-          "Comparar comarcas, entidades o municipios con el periodo anterior"
+          "Abrir el observatorio del territorio",
+          "Abrir la red financiada"
         ],
         "audience": "Todos los roles de la entidad paraguas."
       },
@@ -1386,12 +1389,22 @@
       },
       "informes": {
         "title": "Informes del paraguas",
-        "summary": "Exportación agregada del territorio en CSV o PDF.",
+        "summary": "Exportación agregada del territorio o de la red financiada en CSV o PDF.",
         "actions": [
+          "Elegir el ámbito (territorio o red financiada)",
           "Elegir periodo y desglose",
           "Descargar el informe"
         ],
         "audience": "Titular, moderador y analista."
+      },
+      "redFinanciada": {
+        "title": "Red financiada",
+        "summary": "Métricas agregadas de las entidades que cuelgan de esta administración: personas, actividades y asistencia por municipio, por entidad y por mes, y la comparativa con el periodo anterior. Sigue el árbol de entidades, no el territorio.",
+        "actions": [
+          "Cambiar el periodo",
+          "Comparar comarcas, entidades o municipios con el periodo anterior"
+        ],
+        "audience": "Todos los roles de la administración."
       }
     },
     "plataforma": {
@@ -1563,7 +1576,12 @@
       "groupByYear": "Por año (memoria plurianual)",
       "csv": "Exportar CSV",
       "pdf": "Exportar PDF",
-      "exporting": "Exportando…"
+      "exporting": "Exportando…",
+      "scopeLabel": "Ámbito del informe",
+      "scopeEntidad": "Entidad",
+      "scopeRedFinanciada": "Red financiada",
+      "scopePlataforma": "Plataforma",
+      "scopeTerritorio": "Territorio"
     },
     "comparativa": {
       "notAvailable": "No disponible por umbral de agregación",
@@ -1902,7 +1920,12 @@
   },
   "paraguas": {
     "inicio": {
-      "heading": "Inicio"
+      "heading": "Inicio",
+      "territoryHeading": "Tu territorio",
+      "territoryLink": "Ver el territorio",
+      "networkHeading": "Red financiada",
+      "networkLink": "Ver la red financiada",
+      "fundedEntities": "Entidades financiadas"
     },
     "territorio": {
       "heading": "Territorio",
@@ -1917,6 +1940,10 @@
     "informes": {
       "noAccessDescription": "Tu rol no tiene acceso a Informes.",
       "heading": "Informes"
+    },
+    "redFinanciada": {
+      "heading": "Red financiada",
+      "noAccessDescription": "Tu rol no tiene acceso a la Red financiada."
     }
   }
 }

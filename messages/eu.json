@@ -202,6 +202,9 @@
       },
       "informes": {
         "title": "Erakunde aterkiaren txostenak"
+      },
+      "redFinanciada": {
+        "title": "Finantzatutako sarea"
       }
     },
     "plataforma": {
@@ -1367,10 +1370,10 @@
     "paraguas": {
       "inicio": {
         "title": "Aterkiaren hasiera",
-        "summary": "Zure lurraldeko erakunde guztien metrika agregatuak: pertsonak, jarduerak eta bertaratzea udalerriz, erakundez eta hilabetez, eta aurreko aldiarekiko konparaketa. Inoiz ez dituzu pertsonak ikusten: bost baino gutxiagoko talde oro «<5» gisa erakusten da.",
+        "summary": "Administrazioaren begiratu bat: nola dagoen adierazitako zure lurraldea eta nola dagoen finantzatzen duzun erakunde-sarea, bloke bakoitza bere atalerako estekarekin.",
         "actions": [
-          "Aldia aldatu",
-          "Eskualdeak, erakundeak edo udalerriak aurreko aldiarekin konparatu"
+          "Lurraldearen behatokia ireki",
+          "Finantzatutako sarea ireki"
         ],
         "audience": "Erakunde aterkiko rol guztiak."
       },
@@ -1386,12 +1389,22 @@
       },
       "informes": {
         "title": "Aterkiaren txostenak",
-        "summary": "Lurraldearen esportazio agregatua CSV edo PDF gisa.",
+        "summary": "Lurraldearen edo finantzatutako sarearen esportazio agregatua CSV edo PDF gisa.",
         "actions": [
+          "Esparrua aukeratu (lurraldea edo finantzatutako sarea)",
           "Aldia eta banaketa aukeratu",
           "Txostena deskargatu"
         ],
         "audience": "Titularra, moderatzailea eta analista."
+      },
+      "redFinanciada": {
+        "title": "Finantzatutako sarea",
+        "summary": "Administrazio honen menpe dauden erakundeen metrika agregatuak: pertsonak, jarduerak eta bertaratzea udalerriz, erakundez eta hilabetez, eta aurreko aldiarekiko konparaketa. Erakundeen zuhaitzari jarraitzen dio, ez lurraldeari.",
+        "actions": [
+          "Aldia aldatu",
+          "Eskualdeak, erakundeak edo udalerriak aurreko aldiarekin konparatu"
+        ],
+        "audience": "Administrazioko rol guztiak."
       }
     },
     "plataforma": {
@@ -1563,7 +1576,12 @@
       "groupByYear": "Urteka (urte anitzeko memoria)",
       "csv": "CSV esportatu",
       "pdf": "PDF esportatu",
-      "exporting": "Esportatzen…"
+      "exporting": "Esportatzen…",
+      "scopeLabel": "Txostenaren esparrua",
+      "scopeEntidad": "Erakundea",
+      "scopeRedFinanciada": "Finantzatutako sarea",
+      "scopePlataforma": "Plataforma",
+      "scopeTerritorio": "Lurraldea"
     },
     "comparativa": {
       "notAvailable": "Ez dago erabilgarri agregazio-atalasea dela eta",
@@ -1902,7 +1920,12 @@
   },
   "paraguas": {
     "inicio": {
-      "heading": "Hasiera"
+      "heading": "Hasiera",
+      "territoryHeading": "Zure lurraldea",
+      "territoryLink": "Lurraldea ikusi",
+      "networkHeading": "Finantzatutako sarea",
+      "networkLink": "Finantzatutako sarea ikusi",
+      "fundedEntities": "Finantzatutako erakundeak"
     },
     "territorio": {
       "heading": "Lurraldea",
@@ -1917,6 +1940,10 @@
     "informes": {
       "noAccessDescription": "Zure rolak ez du sarbiderik Txostenetan.",
       "heading": "Txostenak"
+    },
+    "redFinanciada": {
+      "heading": "Finantzatutako sarea",
+      "noAccessDescription": "Zure rolak ez du sarbiderik Finantzatutako sarean."
     }
   }
 }

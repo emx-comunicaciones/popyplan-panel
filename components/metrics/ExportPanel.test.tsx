@@ -105,6 +105,33 @@ describe("ExportPanel", () => {
     expect(mutate).toHaveBeenCalledWith(expect.objectContaining({ groupBy: undefined }));
   });
 
+  it("con varios ámbitos ofrece elegir entre territorio y red financiada", async () => {
+    const mutate = vi.fn();
+    useExportMock.mockReturnValue({ mutate, isPending: false, error: null });
+    const user = userEvent.setup();
+
+    render(<ExportPanel scope="territorio" orgId={3} scopeChoices={["territorio", "paraguas"]} />);
+
+    const select = screen.getByLabelText("Ámbito del informe");
+    expect(select).toHaveValue("territorio");
+    expect(screen.getByRole("option", { name: "Territorio" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Red financiada" })).toBeInTheDocument();
+
+    await user.selectOptions(select, "paraguas");
+    expect(select).toHaveValue("paraguas");
+
+    await user.click(screen.getByRole("button", { name: "Exportar CSV" }));
+    expect(mutate).toHaveBeenCalledWith(expect.objectContaining({ scope: "paraguas" }));
+  });
+
+  it("con un solo ámbito no pinta el selector (las dos páginas de Informes de entidad)", () => {
+    useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
+
+    render(<ExportPanel scope="entidad" orgId={7} />);
+
+    expect(screen.queryByLabelText("Ámbito del informe")).not.toBeInTheDocument();
+  });
+
   it("el tipo de props impide un `period` sin `onPeriodChange`", () => {
     // Comprobación de tipos, no de comportamiento: `ExportPanelProps` es una
     // unión discriminada, así que un periodo controlado sin la función para

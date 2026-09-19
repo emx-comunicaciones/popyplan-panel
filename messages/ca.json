@@ -202,6 +202,9 @@
       },
       "informes": {
         "title": "Informes de l'entitat paraigua"
+      },
+      "redFinanciada": {
+        "title": "Xarxa finançada"
       }
     },
     "plataforma": {
@@ -1367,10 +1370,10 @@
     "paraguas": {
       "inicio": {
         "title": "Inici del paraigua",
-        "summary": "Mètriques agregades de totes les entitats del teu territori: persones, activitats i assistència per municipi, per entitat i per mes, i la comparativa amb el període anterior. Mai veus persones: qualsevol grup amb menys de cinc es mostra com a «<5».",
+        "summary": "Una ullada a l'administració: com està el teu territori declarat i com està la xarxa d'entitats que finances, cada bloc amb enllaç a la seva secció.",
         "actions": [
-          "Canviar el període",
-          "Comparar comarques, entitats o municipis amb el període anterior"
+          "Obrir l'observatori del territori",
+          "Obrir la xarxa finançada"
         ],
         "audience": "Tots els rols de l'entitat paraigua."
       },
@@ -1386,12 +1389,22 @@
       },
       "informes": {
         "title": "Informes del paraigua",
-        "summary": "Exportació agregada del territori en CSV o PDF.",
+        "summary": "Exportació agregada del territori o de la xarxa finançada en CSV o PDF.",
         "actions": [
+          "Triar l'àmbit (territori o xarxa finançada)",
           "Triar període i desglossament",
           "Descarregar l'informe"
         ],
         "audience": "Titular, moderador i analista."
+      },
+      "redFinanciada": {
+        "title": "Xarxa finançada",
+        "summary": "Mètriques agregades de les entitats que pengen d'aquesta administració: persones, activitats i assistència per municipi, per entitat i per mes, i la comparativa amb el període anterior. Segueix l'arbre d'entitats, no el territori.",
+        "actions": [
+          "Canviar el període",
+          "Comparar comarques, entitats o municipis amb el període anterior"
+        ],
+        "audience": "Tots els rols de l'administració."
       }
     },
     "plataforma": {
@@ -1563,7 +1576,12 @@
       "groupByYear": "Per any (memòria plurianual)",
       "csv": "Exportar CSV",
       "pdf": "Exportar PDF",
-      "exporting": "Exportant…"
+      "exporting": "Exportant…",
+      "scopeLabel": "Àmbit de l'informe",
+      "scopeEntidad": "Entitat",
+      "scopeRedFinanciada": "Xarxa finançada",
+      "scopePlataforma": "Plataforma",
+      "scopeTerritorio": "Territori"
     },
     "comparativa": {
       "notAvailable": "No disponible pel llindar d'agregació",
@@ -1902,7 +1920,12 @@
   },
   "paraguas": {
     "inicio": {
-      "heading": "Inici"
+      "heading": "Inici",
+      "territoryHeading": "El teu territori",
+      "territoryLink": "Veure el territori",
+      "networkHeading": "Xarxa finançada",
+      "networkLink": "Veure la xarxa finançada",
+      "fundedEntities": "Entitats finançades"
     },
     "territorio": {
       "heading": "Territori",
@@ -1917,6 +1940,10 @@
     "informes": {
       "noAccessDescription": "El teu rol no té accés a Informes.",
       "heading": "Informes"
+    },
+    "redFinanciada": {
+      "heading": "Xarxa finançada",
+      "noAccessDescription": "El teu rol no té accés a la Xarxa finançada."
     }
   }
 }
