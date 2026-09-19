@@ -12,6 +12,14 @@
  * (`{count, plural, one {…} other {…}}`), `extractIcuArgs` solo recoge
  * los parámetros de nivel superior (el nombre justo después de cada `{`
  * que abre), nunca el texto literal de las ramas internas del plural.
+ *
+ * **Arrays (tarea 5, `help.*`):** un array de strings (las `actions` de
+ * cada entrada de ayuda por pantalla) se aplana como si cada posición
+ * fuera una clave más (`help.entidad.inicio.actions.0`,
+ * `.actions.1`…) — así una traducción con menos o más acciones que las
+ * otras tres rompe la comprobación de «mismas claves hoja» sin lógica
+ * nueva, y cada acción individual entra en la comprobación de «ningún
+ * valor vacío» igual que cualquier otra cadena.
  */
 import { describe, expect, it } from "vitest";
 
@@ -20,7 +28,7 @@ import en from "../../messages/en.json";
 import es from "../../messages/es.json";
 import eu from "../../messages/eu.json";
 
-type MessageTree = { [key: string]: string | MessageTree };
+type MessageTree = { [key: string]: string | readonly string[] | MessageTree };
 
 function flatten(tree: MessageTree, prefix = ""): Record<string, string> {
   const out: Record<string, string> = {};
@@ -28,8 +36,12 @@ function flatten(tree: MessageTree, prefix = ""): Record<string, string> {
     const path = prefix ? `${prefix}.${key}` : key;
     if (typeof value === "string") {
       out[path] = value;
+    } else if (Array.isArray(value)) {
+      value.forEach((item, index) => {
+        out[`${path}.${index}`] = item;
+      });
     } else {
-      Object.assign(out, flatten(value, path));
+      Object.assign(out, flatten(value as MessageTree, path));
     }
   }
   return out;

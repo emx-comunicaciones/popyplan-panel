@@ -1070,5 +1070,311 @@
     "errors": {
       "endsOnBeforeStartsOn": "The end date can't be earlier than the start date."
     }
+  },
+  "help": {
+    "entidad": {
+      "inicio": {
+        "title": "Home",
+        "summary": "Overview of your entity for today: today's activities, pending alerts and this month's metrics.",
+        "actions": [
+          "See today's activities",
+          "See how many help alerts and reports are pending (only whoever moderates or is on call)",
+          "Check people, activities and attendance for the month"
+        ],
+        "audience": "All entity roles."
+      },
+      "personas": {
+        "title": "People",
+        "summary": "The people who take part in your entity, with their communities, recent activity and referent. Never shows contact details: Popyplan works with aliases.",
+        "actions": [
+          "Search and filter by community, referent or join date",
+          "Invite a person or import an Excel/CSV (owner and moderator)",
+          "Open each person's profile",
+          "Include pending invitations and resend or revoke them"
+        ],
+        "audience": "Owner, moderator, facilitator and referent."
+      },
+      "personaFicha": {
+        "title": "Person profile",
+        "summary": "Summary of a person's participation in your entity: communities, activities for the period and next activity. No email, phone or notes: the relationship always goes through the app.",
+        "actions": [
+          "Assign or change their referent (owner and moderator)",
+          "See their support network (only their referent)",
+          "Review which activities they signed up for and whether they attended"
+        ],
+        "audience": "Owner, moderator, facilitator and that person's referent."
+      },
+      "comunidades": {
+        "title": "Communities",
+        "summary": "Your entity's communities and their members: who belongs, who moderates and pending join requests.",
+        "actions": [
+          "See each community, its visibility and its members",
+          "Accept or reject join requests",
+          "Appoint moderators or remove someone (owner and moderator)"
+        ],
+        "audience": "Owner, moderator and facilitator."
+      },
+      "actividades": {
+        "title": "Activities",
+        "summary": "The period's activities with their sign-ups, attendees and organiser.",
+        "actions": [
+          "Filter by status",
+          "Open each activity's attendance list",
+          "See who is responsible for each one"
+        ],
+        "audience": "Owner, moderator, facilitator and referent."
+      },
+      "asistencia": {
+        "title": "Attendance",
+        "summary": "Choose an activity to take attendance or do the QR check-in.",
+        "actions": [
+          "Open an activity's attendance list",
+          "Mark attendance by hand or scan the app's QR code"
+        ],
+        "audience": "Owner, moderator and facilitator."
+      },
+      "asistenciaEvento": {
+        "title": "Attendance list",
+        "summary": "Who signed up for this activity and who has shown up. QR check-in only works from two hours before to twelve hours after the start.",
+        "actions": [
+          "Mark each person as “attended” or “did not attend”",
+          "Scan the QR code shown in the person's app or paste their code"
+        ],
+        "audience": "Owner, moderator and facilitator."
+      },
+      "comunicaciones": {
+        "title": "Announcements",
+        "summary": "Official announcements from the entity to all members, to a community or to the families space, with their history and number of recipients.",
+        "actions": [
+          "Draft and send an announcement (owner and moderator)",
+          "Use the welcome-to-the-support-network template once the families space exists",
+          "Check the history"
+        ],
+        "audience": "Owner and moderator."
+      },
+      "encuestas": {
+        "title": "Surveys",
+        "summary": "Anonymous, aggregated surveys: the periodic ones you create and the ones the app sends on its own after each activity.",
+        "actions": [
+          "Create a periodic survey with its questions (owner and moderator)",
+          "See whether it's open or closed and open its results"
+        ],
+        "audience": "Owner, moderator and facilitator."
+      },
+      "encuestaResultados": {
+        "title": "Survey results",
+        "summary": "Aggregated results per question. With fewer than five responses the detail isn't shown, so no one can be identified.",
+        "actions": [
+          "See each question's average and distribution",
+          "Read text answers with no order or author"
+        ],
+        "audience": "Owner, moderator and facilitator."
+      },
+      "recursos": {
+        "title": "Resources",
+        "summary": "The entity's content library: text, PDFs, videos, audio and links, organised by category and aimed at members, families or anyone.",
+        "actions": [
+          "Create, edit or delete resources (owner and moderator)",
+          "Choose category and audience; “How to support” is the category for the support network"
+        ],
+        "audience": "Owner, moderator and facilitator."
+      },
+      "familias": {
+        "title": "Families",
+        "summary": "The entity's families space, separate from the members' space: its communities, upcoming activities, announcements and resources, and the aggregated support-network counters. Nobody declares being family to anyone.",
+        "actions": [
+          "Create the families community (owner and moderator)",
+          "Turn each community's cross-space viewing on or off",
+          "See how many people have a support network and how many supporters are waiting for the community to exist"
+        ],
+        "audience": "Owner, moderator and facilitator."
+      },
+      "programas": {
+        "title": "Programs",
+        "summary": "Campaigns with fixed dates and a declared budget, with their aggregated final report. A program never lists people.",
+        "actions": [
+          "Create, activate and close programs (owner and moderator)",
+          "Download the CSV or PDF report (owner, moderator and analyst)"
+        ],
+        "audience": "All entity roles."
+      },
+      "programaFicha": {
+        "title": "Program profile",
+        "summary": "The program's status, dates, budget and metrics for its period.",
+        "actions": [
+          "Edit, activate or close the program with closing notes (owner and moderator)",
+          "Download its report"
+        ],
+        "audience": "All entity roles; only the owner and moderator can manage it."
+      },
+      "reportes": {
+        "title": "Reports",
+        "summary": "Your entity's moderation report queue: what was reported, why and its current status.",
+        "actions": [
+          "Open each report",
+          "Assign it, resolve it or escalate it to the platform"
+        ],
+        "audience": "Owner and moderator."
+      },
+      "reporteDetalle": {
+        "title": "Report detail",
+        "summary": "Everything needed to decide on a report: reason, reported content, history and who's handling it.",
+        "actions": [
+          "Assign it to a team member",
+          "Resolve it with a decision",
+          "Escalate it to Popyplan if it's beyond the entity"
+        ],
+        "audience": "Owner and moderator."
+      },
+      "guardia": {
+        "title": "On call",
+        "summary": "Your entity's “I'm having a bad day” alerts and the settings for who's on call. Popyplan does not store phone numbers: contact happens through the app chat or through the referent.",
+        "actions": [
+          "Handle an alert",
+          "Set the help phone number and see who's on call",
+          "See whether someone from the person's support network has already stepped in"
+        ],
+        "audience": "Owner, moderator, facilitator and whoever is on call."
+      },
+      "informes": {
+        "title": "Reports & exports",
+        "summary": "Export the entity's metrics as CSV or PDF, by period and breakdown, with the same aggregation rule as the rest of the panel.",
+        "actions": [
+          "Choose the period and breakdown (regular or by year)",
+          "Download the report"
+        ],
+        "audience": "Owner, moderator and analyst."
+      },
+      "configuracion": {
+        "title": "Settings",
+        "summary": "The entity's details, team with their roles, and references between referents and people.",
+        "actions": [
+          "Add or remove someone from the team (owner only)",
+          "Assign references",
+          "Adjust the entity's details and colours"
+        ],
+        "audience": "Owner and moderator; only the owner sees the team."
+      }
+    },
+    "paraguas": {
+      "inicio": {
+        "title": "Umbrella home",
+        "summary": "Aggregated metrics for every entity in your territory: people, activities and attendance by municipality, by entity and by month, plus the comparison with the previous period. You never see people: any group of fewer than five shows as “<5”.",
+        "actions": [
+          "Change the period",
+          "Compare districts, entities or municipalities against the previous period"
+        ],
+        "audience": "All roles of the umbrella entity."
+      },
+      "informes": {
+        "title": "Umbrella reports & exports",
+        "summary": "Aggregated export for the territory as CSV or PDF.",
+        "actions": [
+          "Choose the period and breakdown",
+          "Download the report"
+        ],
+        "audience": "Owner, moderator and analyst."
+      }
+    },
+    "plataforma": {
+      "inicio": {
+        "title": "Platform home",
+        "summary": "Popyplan's overall status: verified and pending entities, escalated reports, unattended help alerts, contracts and invoices.",
+        "actions": [
+          "Open each queue from its card"
+        ],
+        "audience": "Popyplan's team, according to their role."
+      },
+      "entidades": {
+        "title": "Entities",
+        "summary": "Every entity that has signed up, verified or not.",
+        "actions": [
+          "Search and filter by verification",
+          "Sign up a new entity (verifier and superadmin)",
+          "Open its profile"
+        ],
+        "audience": "Superadmin and verifier."
+      },
+      "entidadFicha": {
+        "title": "Entity profile",
+        "summary": "An entity's details, umbrella, territorial scope, team, metrics, communities and contract.",
+        "actions": [
+          "Verify it",
+          "Assign it an umbrella or extend its scope (superadmin)",
+          "Manage its team"
+        ],
+        "audience": "Superadmin and verifier; some tabs are superadmin only."
+      },
+      "reportes": {
+        "title": "Escalated reports",
+        "summary": "Global queue of reports that entities have escalated to Popyplan.",
+        "actions": [
+          "Open each report",
+          "Assign or resolve it (moderator and superadmin); support can only view"
+        ],
+        "audience": "Superadmin, moderator and support."
+      },
+      "reporteDetalle": {
+        "title": "Report detail",
+        "summary": "Reason, content, originating entity and history of an escalated report.",
+        "actions": [
+          "Assign or resolve it (moderator and superadmin)"
+        ],
+        "audience": "Superadmin, moderator and support."
+      },
+      "ayuda": {
+        "title": "Help alerts",
+        "summary": "“I'm having a bad day” alerts pending across the whole platform, to spot entities with no one on call to respond.",
+        "actions": [
+          "See the alert, its entity and its referent",
+          "Handle it if needed"
+        ],
+        "audience": "Superadmin, moderator and support."
+      },
+      "verificaciones": {
+        "title": "Verifications",
+        "summary": "Pending identity reviews: the person's document and the provider's reason.",
+        "actions": [
+          "Approve or reject with a note"
+        ],
+        "audience": "Superadmin and verifier."
+      },
+      "roles": {
+        "title": "Roles",
+        "summary": "Who makes up Popyplan's team and with which platform role.",
+        "actions": [
+          "Grant a role by searching for the account",
+          "Revoke it"
+        ],
+        "audience": "Superadmin only."
+      },
+      "auditoria": {
+        "title": "Audit log",
+        "summary": "Log of sensitive actions across the whole system, with filters by actor, action, target and dates.",
+        "actions": [
+          "Filter and review the log",
+          "Export the current page to CSV"
+        ],
+        "audience": "Superadmin only."
+      },
+      "metricas": {
+        "title": "Metrics",
+        "summary": "Aggregated metrics for the whole platform, by territory or by entity, with a comparison between periods.",
+        "actions": [
+          "Change the period and breakdown",
+          "Export"
+        ],
+        "audience": "Superadmin, moderator and support."
+      },
+      "contratos": {
+        "title": "Contracts",
+        "summary": "Popyplan's contracts with each entity, pricing tiers and invoices.",
+        "actions": [
+          "Create and activate contracts, tiers and invoices (superadmin)",
+          "Mark invoices as paid"
+        ],
+        "audience": "Superadmin and support; support can only view."
+      }
+    }
   }
 }

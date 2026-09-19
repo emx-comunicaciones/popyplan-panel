@@ -22,10 +22,12 @@ import { matchPageHelp } from "@/lib/help/pageHelp";
 
 export function PageHelp() {
   const pathname = usePathname();
-  // Solo los textos de UI de este componente (tarea i18n 2): el registro
-  // de `lib/help/pageHelp.ts` (título/resumen/acciones/audiencia de cada
-  // pantalla) sigue en español a mano hasta la tarea 5 del plan de i18n.
+  // Textos de UI fijos del propio componente (tarea i18n 2, sin cambios).
   const t = useTranslations("ui.pageHelp");
+  // Contenido de cada pantalla (tarea i18n 5, decisión 6 del plan): las
+  // 203 cadenas del registro viven ahora en `messages/*.json::help`,
+  // indexadas por `entry.key` (`lib/help/pageHelp.ts`).
+  const tHelp = useTranslations("help");
   const [open, setOpen] = useState(false);
   const titleId = useId();
   const entry = matchPageHelp(pathname);
@@ -40,6 +42,15 @@ export function PageHelp() {
 
   if (!entry) return null;
 
+  const title = tHelp(`${entry.key}.title`);
+  const summary = tHelp(`${entry.key}.summary`);
+  const audience = tHelp(`${entry.key}.audience`);
+  // `t.raw` devuelve el array de `messages/*.json` tal cual (sin pasar
+  // por el formateo ICU de `t()`, que solo entiende strings) — cada
+  // elemento es ya una traducción completa, no hace falta interpolar
+  // nada más.
+  const actions = tHelp.raw(`${entry.key}.actions`) as string[];
+
   return (
     <>
       <button
@@ -47,7 +58,7 @@ export function PageHelp() {
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label={t("ariaLabel", { title: entry.title })}
+        aria-label={t("ariaLabel", { title })}
         className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-primary-700 font-semibold hover:bg-primary-100 focus-visible:outline-primary-700"
       >
         <span aria-hidden="true">?</span>
@@ -55,19 +66,19 @@ export function PageHelp() {
       <Dialog
         open={open}
         titleId={titleId}
-        title={entry.title}
+        title={title}
         onClose={() => setOpen(false)}
         widthClassName="max-w-xl"
       >
-        <p>{entry.summary}</p>
+        <p>{summary}</p>
         <h3 className="mt-4 text-sm font-semibold text-text-base">{t("whatYouCanDo")}</h3>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-base">
-          {entry.actions.map((action) => (
-            <li key={action}>{action}</li>
+          {actions.map((action, index) => (
+            <li key={index}>{action}</li>
           ))}
         </ul>
         <p className="mt-4 text-sm text-text-secondary">
-          <strong>{t("audienceLabel")}</strong> {entry.audience}
+          <strong>{t("audienceLabel")}</strong> {audience}
         </p>
       </Dialog>
     </>

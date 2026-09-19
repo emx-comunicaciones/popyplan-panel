@@ -1070,5 +1070,311 @@
     "errors": {
       "endsOnBeforeStartsOn": "La data de fi no pot ser anterior a la d'inici."
     }
+  },
+  "help": {
+    "entidad": {
+      "inicio": {
+        "title": "Inici",
+        "summary": "Vista general de la teva entitat per avui: activitats del dia, avisos pendents i les mètriques del mes en curs.",
+        "actions": [
+          "Veure les activitats d'avui",
+          "Veure quants avisos d'ajuda i informes hi ha pendents (només qui modera o està de guàrdia)",
+          "Consultar persones, activitats i assistència del mes"
+        ],
+        "audience": "Tots els rols de l'entitat."
+      },
+      "personas": {
+        "title": "Persones",
+        "summary": "Les persones que participen a la teva entitat, amb les seves comunitats, la seva activitat recent i el seu referent. Mai mostra dades de contacte: Popyplan treballa amb àlies.",
+        "actions": [
+          "Cercar i filtrar per comunitat, referent o data d'alta",
+          "Convidar una persona o importar un Excel/CSV (titular i moderador)",
+          "Obrir la fitxa de cada persona",
+          "Incloure les invitacions pendents i reenviar-les o revocar-les"
+        ],
+        "audience": "Titular, moderador, dinamitzador i referent."
+      },
+      "personaFicha": {
+        "title": "Fitxa de la persona",
+        "summary": "Resum de la participació d'una persona a la teva entitat: comunitats, activitats del període i propera activitat. Sense email, telèfon ni notes: la relació és sempre a través de l'app.",
+        "actions": [
+          "Assignar o canviar el seu referent (titular i moderador)",
+          "Veure la seva xarxa de suport (només el seu referent)",
+          "Revisar a quines activitats es va apuntar i si hi va assistir"
+        ],
+        "audience": "Titular, moderador, dinamitzador i el referent d'aquesta persona."
+      },
+      "comunidades": {
+        "title": "Comunitats",
+        "summary": "Les comunitats de la teva entitat i els seus membres: qui en forma part, qui modera i les sol·licituds d'entrada pendents.",
+        "actions": [
+          "Veure cada comunitat, la seva visibilitat i els seus membres",
+          "Acceptar o rebutjar sol·licituds d'entrada",
+          "Nomenar moderadors o expulsar algú (titular i moderador)"
+        ],
+        "audience": "Titular, moderador i dinamitzador."
+      },
+      "actividades": {
+        "title": "Activitats",
+        "summary": "Les activitats del període amb els seus inscrits, assistents i responsable.",
+        "actions": [
+          "Filtrar per estat",
+          "Entrar a la llista d'assistència de cada activitat",
+          "Veure qui n'és el responsable"
+        ],
+        "audience": "Titular, moderador, dinamitzador i referent."
+      },
+      "asistencia": {
+        "title": "Assistència",
+        "summary": "Tria una activitat per passar llista o fer el check-in per QR.",
+        "actions": [
+          "Obrir la llista nominal d'una activitat",
+          "Marcar l'assistència a mà o escanejar el QR de l'app"
+        ],
+        "audience": "Titular, moderador i dinamitzador."
+      },
+      "asistenciaEvento": {
+        "title": "Llista d'assistència",
+        "summary": "Qui es va apuntar a aquesta activitat i qui hi ha vingut. El check-in per QR només funciona des de dues hores abans fins a dotze després de l'inici.",
+        "actions": [
+          "Marcar «ha assistit» o «no ha assistit» a cada persona",
+          "Escanejar el QR que la persona mostra a la seva app o enganxar el seu codi"
+        ],
+        "audience": "Titular, moderador i dinamitzador."
+      },
+      "comunicaciones": {
+        "title": "Comunicacions",
+        "summary": "Comunicacions oficials de l'entitat a tots els membres, a una comunitat o a l'espai de famílies, amb el seu historial i el nombre de destinataris.",
+        "actions": [
+          "Redactar i enviar una comunicació (titular i moderador)",
+          "Fer servir la plantilla de benvinguda a la xarxa de suport quan existeixi l'espai de famílies",
+          "Consultar l'historial"
+        ],
+        "audience": "Titular i moderador."
+      },
+      "encuestas": {
+        "title": "Enquestes",
+        "summary": "Enquestes anònimes i agregades: les periòdiques que crees tu i les que l'app envia sola després de cada activitat.",
+        "actions": [
+          "Crear una enquesta periòdica amb les seves preguntes (titular i moderador)",
+          "Veure si està oberta o tancada i entrar-hi als resultats"
+        ],
+        "audience": "Titular, moderador i dinamitzador."
+      },
+      "encuestaResultados": {
+        "title": "Resultats de l'enquesta",
+        "summary": "Resultats agregats per pregunta. Amb menys de cinc respostes no es mostra el detall, perquè ningú sigui identificable.",
+        "actions": [
+          "Veure la mitjana i la distribució de cada pregunta",
+          "Llegir les respostes de text sense ordre ni autor"
+        ],
+        "audience": "Titular, moderador i dinamitzador."
+      },
+      "recursos": {
+        "title": "Recursos",
+        "summary": "La biblioteca de continguts de l'entitat: textos, PDF, vídeos, àudios i enllaços, organitzats per categoria i adreçats a membres, famílies o a qualsevol.",
+        "actions": [
+          "Crear, editar o esborrar recursos (titular i moderador)",
+          "Triar categoria i audiència; «Com acompanyar» és la categoria per a la xarxa de suport"
+        ],
+        "audience": "Titular, moderador i dinamitzador."
+      },
+      "familias": {
+        "title": "Famílies",
+        "summary": "L'espai de famílies de l'entitat, separat del de membres: les seves comunitats, properes activitats, comunicacions i recursos, i els comptadors agregats de la xarxa de suport. Ningú declara ser familiar de ningú.",
+        "actions": [
+          "Crear la comunitat de famílies (titular i moderador)",
+          "Activar o desactivar l'encreuament d'espais de cada comunitat",
+          "Veure quantes persones tenen xarxa de suport i quants suports esperen que existeixi la comunitat"
+        ],
+        "audience": "Titular, moderador i dinamitzador."
+      },
+      "programas": {
+        "title": "Programes",
+        "summary": "Campanyes amb dates tancades i pressupost declarat, amb el seu informe final agregat. Un programa mai llista persones.",
+        "actions": [
+          "Crear, activar i tancar programes (titular i moderador)",
+          "Descarregar l'informe CSV o PDF (titular, moderador i analista)"
+        ],
+        "audience": "Tots els rols de l'entitat."
+      },
+      "programaFicha": {
+        "title": "Fitxa del programa",
+        "summary": "Estat, dates, pressupost i mètriques del programa en el seu període.",
+        "actions": [
+          "Editar, activar o tancar el programa amb notes de tancament (titular i moderador)",
+          "Descarregar el seu informe"
+        ],
+        "audience": "Tots els rols de l'entitat; gestionar-lo només titular i moderador."
+      },
+      "reportes": {
+        "title": "Informes de moderació",
+        "summary": "Cua d'informes de moderació de la teva entitat: què s'ha informat, per què i en quin estat es troba.",
+        "actions": [
+          "Obrir cada informe",
+          "Assignar-lo, resoldre'l o escalar-lo a la plataforma"
+        ],
+        "audience": "Titular i moderador."
+      },
+      "reporteDetalle": {
+        "title": "Detall de l'informe",
+        "summary": "Tot el que cal saber d'un informe per decidir: motiu, contingut informat, historial i qui el porta.",
+        "actions": [
+          "Assignar-lo a una persona de l'equip",
+          "Resoldre'l amb una decisió",
+          "Escalar-lo a Popyplan si excedeix l'entitat"
+        ],
+        "audience": "Titular i moderador."
+      },
+      "guardia": {
+        "title": "Guàrdia",
+        "summary": "Els avisos «avui ho porto malament» de les persones de la teva entitat i la configuració de qui està de guàrdia. Popyplan no guarda telèfons: el contacte és pel xat de l'app o a través del referent.",
+        "actions": [
+          "Atendre un avís",
+          "Fixar el telèfon d'ajuda i veure qui està de guàrdia",
+          "Veure si algú de la xarxa de suport de la persona ja se n'ha fet càrrec"
+        ],
+        "audience": "Titular, moderador, dinamitzador i la persona de guàrdia."
+      },
+      "informes": {
+        "title": "Informes",
+        "summary": "Exportació de les mètriques de l'entitat en CSV o PDF, per període i desglossament, amb la mateixa regla d'agregació que la resta del panell.",
+        "actions": [
+          "Triar període i desglossament (habitual o per any)",
+          "Descarregar l'informe"
+        ],
+        "audience": "Titular, moderador i analista."
+      },
+      "configuracion": {
+        "title": "Configuració",
+        "summary": "Dades de l'entitat, equip amb els seus rols i referències entre referents i persones.",
+        "actions": [
+          "Donar d'alta o baixa algú de l'equip (només titular)",
+          "Assignar referències",
+          "Ajustar les dades i els colors de l'entitat"
+        ],
+        "audience": "Titular i moderador; l'equip només el veu el titular."
+      }
+    },
+    "paraguas": {
+      "inicio": {
+        "title": "Inici del paraigua",
+        "summary": "Mètriques agregades de totes les entitats del teu territori: persones, activitats i assistència per municipi, per entitat i per mes, i la comparativa amb el període anterior. Mai veus persones: qualsevol grup amb menys de cinc es mostra com a «<5».",
+        "actions": [
+          "Canviar el període",
+          "Comparar comarques, entitats o municipis amb el període anterior"
+        ],
+        "audience": "Tots els rols de l'entitat paraigua."
+      },
+      "informes": {
+        "title": "Informes del paraigua",
+        "summary": "Exportació agregada del territori en CSV o PDF.",
+        "actions": [
+          "Triar període i desglossament",
+          "Descarregar l'informe"
+        ],
+        "audience": "Titular, moderador i analista."
+      }
+    },
+    "plataforma": {
+      "inicio": {
+        "title": "Inici de plataforma",
+        "summary": "Estat general de Popyplan: entitats verificades i pendents, informes escalats, avisos d'ajuda sense atendre, contractes i factures.",
+        "actions": [
+          "Entrar a cada cua des de la seva targeta"
+        ],
+        "audience": "Equip de Popyplan segons el seu rol."
+      },
+      "entidades": {
+        "title": "Entitats",
+        "summary": "Totes les entitats donades d'alta, verificades o no.",
+        "actions": [
+          "Cercar i filtrar per verificació",
+          "Donar d'alta una entitat nova (verificador i superadmin)",
+          "Obrir la seva fitxa"
+        ],
+        "audience": "Superadmin i verificador."
+      },
+      "entidadFicha": {
+        "title": "Fitxa de l'entitat",
+        "summary": "Dades, paraigua, àmbit territorial, equip, mètriques, comunitats i contracte d'una entitat.",
+        "actions": [
+          "Verificar-la",
+          "Assignar-li un paraigua o ampliar el seu àmbit (superadmin)",
+          "Gestionar el seu equip"
+        ],
+        "audience": "Superadmin i verificador; algunes pestanyes només superadmin."
+      },
+      "reportes": {
+        "title": "Informes escalats",
+        "summary": "Cua global d'informes que les entitats han escalat a Popyplan.",
+        "actions": [
+          "Obrir cada informe",
+          "Assignar-lo o resoldre'l (moderador i superadmin); suport només consulta"
+        ],
+        "audience": "Superadmin, moderador i suport."
+      },
+      "reporteDetalle": {
+        "title": "Detall de l'informe",
+        "summary": "Motiu, contingut, entitat d'origen i historial d'un informe escalat.",
+        "actions": [
+          "Assignar o resoldre (moderador i superadmin)"
+        ],
+        "audience": "Superadmin, moderador i suport."
+      },
+      "ayuda": {
+        "title": "Avisos d'ajuda",
+        "summary": "Avisos «avui ho porto malament» pendents a tota la plataforma, per detectar entitats sense guàrdia que respongui.",
+        "actions": [
+          "Veure l'avís, la seva entitat i el seu referent",
+          "Atendre'l si escau"
+        ],
+        "audience": "Superadmin, moderador i suport."
+      },
+      "verificaciones": {
+        "title": "Verificacions",
+        "summary": "Revisions d'identitat pendents: el document de la persona i el motiu del proveïdor.",
+        "actions": [
+          "Aprovar o rebutjar amb una nota"
+        ],
+        "audience": "Superadmin i verificador."
+      },
+      "roles": {
+        "title": "Rols",
+        "summary": "Qui forma l'equip de Popyplan i amb quin rol de plataforma.",
+        "actions": [
+          "Concedir un rol cercant el compte",
+          "Revocar-lo"
+        ],
+        "audience": "Només superadmin."
+      },
+      "auditoria": {
+        "title": "Auditoria",
+        "summary": "Registre d'accions sensibles de tot el sistema, amb filtres per actor, acció, objecte i dates.",
+        "actions": [
+          "Filtrar i revisar el registre",
+          "Exportar la pàgina actual a CSV"
+        ],
+        "audience": "Només superadmin."
+      },
+      "metricas": {
+        "title": "Mètriques",
+        "summary": "Mètriques agregades de tota la plataforma, per territori o per entitat, amb comparativa entre períodes.",
+        "actions": [
+          "Canviar període i desglossament",
+          "Exportar"
+        ],
+        "audience": "Superadmin, moderador i suport."
+      },
+      "contratos": {
+        "title": "Contractes",
+        "summary": "Contractes de Popyplan amb cada entitat, trams de preu i factures.",
+        "actions": [
+          "Crear i activar contractes, trams i factures (superadmin)",
+          "Marcar factures com a pagades"
+        ],
+        "audience": "Superadmin i suport; suport només consulta."
+      }
+    }
   }
 }

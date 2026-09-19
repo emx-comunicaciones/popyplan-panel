@@ -3,7 +3,29 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import ca from "@/messages/ca.json";
+import en from "@/messages/en.json";
+import es from "@/messages/es.json";
+import eu from "@/messages/eu.json";
+
 import { matchPageHelp, PAGE_HELP, routeToRegExp } from "./pageHelp";
+
+type HelpCatalog = {
+  help?: Record<string, unknown>;
+};
+
+const CATALOGS: Record<string, HelpCatalog> = { en, es, eu, ca };
+
+/** Navega `help.<key>` (p. ej. `"entidad.inicio"`) dentro de un catálogo. */
+function resolveHelpEntry(catalog: HelpCatalog, key: string): unknown {
+  const segments = key.split(".");
+  let node: unknown = catalog.help;
+  for (const segment of segments) {
+    if (typeof node !== "object" || node === null) return undefined;
+    node = (node as Record<string, unknown>)[segment];
+  }
+  return node;
+}
 
 /**
  * Recorre `app/entidad`, `app/paraguas` y `app/plataforma` buscando cada
@@ -57,16 +79,37 @@ describe("PAGE_HELP", () => {
     expect(new Set(routes).size).toBe(routes.length);
   });
 
-  it.each(PAGE_HELP.map((entry) => [entry.route, entry] as const))(
-    "%s tiene title, summary, audience no vacíos y entre 1 y 4 actions",
-    (_route, entry) => {
-      expect(entry.title.length).toBeGreaterThan(0);
-      expect(entry.summary.length).toBeGreaterThan(0);
-      expect(entry.audience.length).toBeGreaterThan(0);
-      expect(entry.actions.length).toBeGreaterThanOrEqual(1);
-      expect(entry.actions.length).toBeLessThanOrEqual(4);
-      for (const action of entry.actions) {
-        expect(action.length).toBeGreaterThan(0);
+  it("no tiene dos entradas con la misma key", () => {
+    const keys = PAGE_HELP.map((entry) => entry.key);
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  it.each(
+    PAGE_HELP.flatMap((entry) =>
+      (["en", "es", "eu", "ca"] as const).map((lang) => [entry.route, entry.key, lang] as const),
+    ),
+  )(
+    "%s (help.%s, %s) tiene title, summary, audience no vacíos y entre 1 y 4 actions",
+    (_route, key, lang) => {
+      const entry = resolveHelpEntry(CATALOGS[lang], key) as
+        | { title?: unknown; summary?: unknown; audience?: unknown; actions?: unknown }
+        | undefined;
+
+      expect(entry, `help.${key} falta en ${lang}.json`).toBeDefined();
+      expect(typeof entry?.title).toBe("string");
+      expect((entry?.title as string).length).toBeGreaterThan(0);
+      expect(typeof entry?.summary).toBe("string");
+      expect((entry?.summary as string).length).toBeGreaterThan(0);
+      expect(typeof entry?.audience).toBe("string");
+      expect((entry?.audience as string).length).toBeGreaterThan(0);
+
+      expect(Array.isArray(entry?.actions)).toBe(true);
+      const actions = entry?.actions as unknown[];
+      expect(actions.length).toBeGreaterThanOrEqual(1);
+      expect(actions.length).toBeLessThanOrEqual(4);
+      for (const action of actions) {
+        expect(typeof action).toBe("string");
+        expect((action as string).length).toBeGreaterThan(0);
       }
     },
   );

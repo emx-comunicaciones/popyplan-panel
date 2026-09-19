@@ -1070,5 +1070,311 @@
     "errors": {
       "endsOnBeforeStartsOn": "Amaiera data ezin da hasiera data baino lehenagokoa izan."
     }
+  },
+  "help": {
+    "entidad": {
+      "inicio": {
+        "title": "Hasiera",
+        "summary": "Zure erakundearen ikuspegi orokorra gaurko egunerako: eguneko jarduerak, zain dauden abisuak eta uneko hilabeteko metrikak.",
+        "actions": [
+          "Gaurko jarduerak ikusi",
+          "Zenbat laguntza-abisu eta salaketa dauden zain ikusi (moderatzen duenak edo txandan dagoenak bakarrik)",
+          "Hilabeteko pertsonak, jarduerak eta bertaratzea kontsultatu"
+        ],
+        "audience": "Erakundeko rol guztiak."
+      },
+      "personas": {
+        "title": "Pertsonak",
+        "summary": "Zure erakundean parte hartzen duten pertsonak, beren komunitateekin, azken jarduerarekin eta erreferentearekin. Inoiz ez ditu kontaktu-datuak erakusten: Popyplanek ezizenekin egiten du lan.",
+        "actions": [
+          "Komunitatearen, erreferentearen edo alta-dataren arabera bilatu eta iragazi",
+          "Pertsona bat gonbidatu edo Excel/CSV bat inportatu (titularra eta moderatzailea)",
+          "Pertsona bakoitzaren fitxa ireki",
+          "Zain dauden gonbidapenak sartu eta berbidali edo baliogabetu"
+        ],
+        "audience": "Titularra, moderatzailea, dinamizatzailea eta erreferentea."
+      },
+      "personaFicha": {
+        "title": "Pertsonaren fitxa",
+        "summary": "Pertsona baten zure erakundean izandako parte-hartzearen laburpena: komunitateak, aldiko jarduerak eta hurrengo jarduera. Ez du emailik, telefonorik ez oharrik: harremana beti aplikazioaren bidez da.",
+        "actions": [
+          "Bere erreferentea esleitu edo aldatu (titularra eta moderatzailea)",
+          "Bere laguntza-sarea ikusi (bere erreferenteak bakarrik)",
+          "Zein jardueratan izena eman zuen eta joan zen ala ez berrikusi"
+        ],
+        "audience": "Titularra, moderatzailea, dinamizatzailea eta pertsona horren erreferentea."
+      },
+      "comunidades": {
+        "title": "Komunitateak",
+        "summary": "Zure erakundearen komunitateak eta beren kideak: nor dagoen barruan, nork moderatzen duen eta zain dauden sarrera-eskaerak.",
+        "actions": [
+          "Komunitate bakoitza, bere ikusgaitasuna eta kideak ikusi",
+          "Sarrera-eskaerak onartu edo ezetsi",
+          "Moderatzaileak izendatu edo norbait bota (titularra eta moderatzailea)"
+        ],
+        "audience": "Titularra, moderatzailea eta dinamizatzailea."
+      },
+      "actividades": {
+        "title": "Jarduerak",
+        "summary": "Aldiko jarduerak, izena emandakoekin, bertaratutakoekin eta arduradunarekin.",
+        "actions": [
+          "Egoeraren arabera iragazi",
+          "Jarduera bakoitzaren bertaratze-zerrendan sartu",
+          "Bakoitzaren arduraduna nor den ikusi"
+        ],
+        "audience": "Titularra, moderatzailea, dinamizatzailea eta erreferentea."
+      },
+      "asistencia": {
+        "title": "Bertaratzea",
+        "summary": "Aukeratu jarduera bat zerrenda pasatzeko edo QR bidezko check-ina egiteko.",
+        "actions": [
+          "Jarduera baten bertaratze-zerrenda ireki",
+          "Bertaratzea eskuz markatu edo aplikazioaren QR kodea eskaneatu"
+        ],
+        "audience": "Titularra, moderatzailea eta dinamizatzailea."
+      },
+      "asistenciaEvento": {
+        "title": "Bertaratze-zerrenda",
+        "summary": "Nork eman zuen izena jarduera honetan eta nor etorri den. QR bidezko check-inak bi ordu lehenagotik hasi eta hasieratik hamabi ordura arte bakarrik funtzionatzen du.",
+        "actions": [
+          "Pertsona bakoitza «joan da» edo «ez da joan» gisa markatu",
+          "Pertsonak bere aplikazioan erakusten duen QR kodea eskaneatu edo kodea itsatsi"
+        ],
+        "audience": "Titularra, moderatzailea eta dinamizatzailea."
+      },
+      "comunicaciones": {
+        "title": "Jakinarazpenak",
+        "summary": "Erakundearen jakinarazpen ofizialak kide guztiei, komunitate bati edo familien espazioari, historiarekin eta hartzaile-kopuruarekin.",
+        "actions": [
+          "Jakinarazpen bat idatzi eta bidali (titularra eta moderatzailea)",
+          "Laguntza-sarerako ongietorri txantiloia erabili familien espazioa dagoenean",
+          "Historia kontsultatu"
+        ],
+        "audience": "Titularra eta moderatzailea."
+      },
+      "encuestas": {
+        "title": "Inkestak",
+        "summary": "Inkesta anonimo eta agregatuak: zuk sortzen dituzun aldizkakoak eta aplikazioak jarduera bakoitzaren ondoren bakarrik bidaltzen dituenak.",
+        "actions": [
+          "Inkesta aldizkako bat sortu galderekin (titularra eta moderatzailea)",
+          "Irekita edo itxita dagoen ikusi eta emaitzetan sartu"
+        ],
+        "audience": "Titularra, moderatzailea eta dinamizatzailea."
+      },
+      "encuestaResultados": {
+        "title": "Inkestaren emaitzak",
+        "summary": "Galdera bakoitzeko emaitza agregatuak. Bost erantzun baino gutxiagorekin xehetasuna ez da erakusten, inor identifikagarria ez izateko.",
+        "actions": [
+          "Galdera bakoitzaren batez bestekoa eta banaketa ikusi",
+          "Testu-erantzunak ordenarik eta egilerik gabe irakurri"
+        ],
+        "audience": "Titularra, moderatzailea eta dinamizatzailea."
+      },
+      "recursos": {
+        "title": "Baliabideak",
+        "summary": "Erakundearen edukien liburutegia: testuak, PDFak, bideoak, audioak eta estekak, kategoriaka antolatuta eta kideei, familiei edo edonori zuzenduta.",
+        "actions": [
+          "Baliabideak sortu, editatu edo ezabatu (titularra eta moderatzailea)",
+          "Kategoria eta hartzaileak aukeratu; «Nola lagundu» da laguntza-sarearen kategoria"
+        ],
+        "audience": "Titularra, moderatzailea eta dinamizatzailea."
+      },
+      "familias": {
+        "title": "Familiak",
+        "summary": "Erakundearen familien espazioa, kideenatik bereizita: bere komunitateak, datozen jarduerak, jakinarazpenak eta baliabideak, eta laguntza-sarearen kontagailu agregatuak. Inork ez du bere burua inoren familiartzat aitortzen.",
+        "actions": [
+          "Familien komunitatea sortu (titularra eta moderatzailea)",
+          "Komunitate bakoitzaren espazioen arteko gurutzaketa piztu edo itzali",
+          "Zenbat pertsonak duten laguntza-sarea eta zenbat laguntzailek zain dauden komunitatea sortzeko"
+        ],
+        "audience": "Titularra, moderatzailea eta dinamizatzailea."
+      },
+      "programas": {
+        "title": "Programak",
+        "summary": "Data itxiak eta adierazitako aurrekontua dituzten kanpainak, bere azken txosten agregatuarekin. Programa batek inoiz ez ditu pertsonak zerrendatzen.",
+        "actions": [
+          "Programak sortu, aktibatu eta itxi (titularra eta moderatzailea)",
+          "CSV edo PDF txostena deskargatu (titularra, moderatzailea eta analista)"
+        ],
+        "audience": "Erakundeko rol guztiak."
+      },
+      "programaFicha": {
+        "title": "Programaren fitxa",
+        "summary": "Programaren egoera, datak, aurrekontua eta metrikak bere aldian.",
+        "actions": [
+          "Programa editatu, aktibatu edo itxi ixte-oharrekin (titularra eta moderatzailea)",
+          "Bere txostena deskargatu"
+        ],
+        "audience": "Erakundeko rol guztiak; kudeatzea titularrak eta moderatzaileak bakarrik."
+      },
+      "reportes": {
+        "title": "Salaketak",
+        "summary": "Zure erakundearen moderazio-salaketen ilara: zer salatu den, zergatik eta zein egoeratan dagoen.",
+        "actions": [
+          "Salaketa bakoitza ireki",
+          "Esleitu, ebatzi edo plataformara igo"
+        ],
+        "audience": "Titularra eta moderatzailea."
+      },
+      "reporteDetalle": {
+        "title": "Salaketaren xehetasuna",
+        "summary": "Salaketa bati buruz erabakitzeko jakin behar den guztia: arrazoia, salatutako edukia, historia eta nork daraman.",
+        "actions": [
+          "Taldeko pertsona bati esleitu",
+          "Erabaki batekin ebatzi",
+          "Popyplanera igo erakundea gainditzen badu"
+        ],
+        "audience": "Titularra eta moderatzailea."
+      },
+      "guardia": {
+        "title": "Txanda",
+        "summary": "Zure erakundeko pertsonen «gaur txarto nago» abisuak eta txandan nor dagoen konfiguratzeko atala. Popyplanek ez ditu telefonoak gordetzen: kontaktua aplikazioaren txataren bidez edo erreferentearen bidez da.",
+        "actions": [
+          "Abisu bati erantzun",
+          "Laguntza-telefonoa ezarri eta nor dagoen txandan ikusi",
+          "Pertsonaren laguntza-sareko norbait dagoeneko arduratu den ikusi"
+        ],
+        "audience": "Titularra, moderatzailea, dinamizatzailea eta txandako pertsona."
+      },
+      "informes": {
+        "title": "Txostenak",
+        "summary": "Erakundearen metrikak CSV edo PDF gisa esportatzea, aldiaren eta banaketaren arabera, panelaren gainerakoak duen agregazio-arau berarekin.",
+        "actions": [
+          "Aldia eta banaketa aukeratu (ohikoa edo urteka)",
+          "Txostena deskargatu"
+        ],
+        "audience": "Titularra, moderatzailea eta analista."
+      },
+      "configuracion": {
+        "title": "Konfigurazioa",
+        "summary": "Erakundearen datuak, taldea bere roleekin eta erreferenteen eta pertsonen arteko erreferentziak.",
+        "actions": [
+          "Taldean norbait alta edo baja eman (titularrak bakarrik)",
+          "Erreferentziak esleitu",
+          "Erakundearen datuak eta koloreak doitu"
+        ],
+        "audience": "Titularra eta moderatzailea; taldea titularrak bakarrik ikusten du."
+      }
+    },
+    "paraguas": {
+      "inicio": {
+        "title": "Aterkiaren hasiera",
+        "summary": "Zure lurraldeko erakunde guztien metrika agregatuak: pertsonak, jarduerak eta bertaratzea udalerriz, erakundez eta hilabetez, eta aurreko aldiarekiko konparaketa. Inoiz ez dituzu pertsonak ikusten: bost baino gutxiagoko talde oro «<5» gisa erakusten da.",
+        "actions": [
+          "Aldia aldatu",
+          "Eskualdeak, erakundeak edo udalerriak aurreko aldiarekin konparatu"
+        ],
+        "audience": "Erakunde aterkiko rol guztiak."
+      },
+      "informes": {
+        "title": "Aterkiaren txostenak",
+        "summary": "Lurraldearen esportazio agregatua CSV edo PDF gisa.",
+        "actions": [
+          "Aldia eta banaketa aukeratu",
+          "Txostena deskargatu"
+        ],
+        "audience": "Titularra, moderatzailea eta analista."
+      }
+    },
+    "plataforma": {
+      "inicio": {
+        "title": "Plataformaren hasiera",
+        "summary": "Popyplanen egoera orokorra: egiaztatutako eta zain dauden erakundeak, plataformara igotako salaketak, erantzun gabeko laguntza-abisuak, kontratuak eta fakturak.",
+        "actions": [
+          "Ilara bakoitzean sartu bere txartelatik"
+        ],
+        "audience": "Popyplan taldea, bere rolaren arabera."
+      },
+      "entidades": {
+        "title": "Erakundeak",
+        "summary": "Alta emandako erakunde guztiak, egiaztatuta egon zein ez.",
+        "actions": [
+          "Egiaztapenaren arabera bilatu eta iragazi",
+          "Erakunde berri bat alta eman (egiaztatzailea eta superadmin)",
+          "Bere fitxa ireki"
+        ],
+        "audience": "Superadmin eta egiaztatzailea."
+      },
+      "entidadFicha": {
+        "title": "Erakundearen fitxa",
+        "summary": "Erakunde baten datuak, aterkia, lurralde-eremua, taldea, metrikak, komunitateak eta kontratua.",
+        "actions": [
+          "Egiaztatu",
+          "Aterki bat esleitu edo bere eremua zabaldu (superadmin)",
+          "Bere taldea kudeatu"
+        ],
+        "audience": "Superadmin eta egiaztatzailea; fitxa batzuk superadminek bakarrik."
+      },
+      "reportes": {
+        "title": "Plataformara igotako salaketak",
+        "summary": "Erakundeek Popyplanera igotako salaketen ilara orokorra.",
+        "actions": [
+          "Salaketa bakoitza ireki",
+          "Esleitu edo ebatzi (moderatzailea eta superadmin); laguntzak kontsulta bakarrik egin dezake"
+        ],
+        "audience": "Superadmin, moderatzailea eta laguntza."
+      },
+      "reporteDetalle": {
+        "title": "Salaketaren xehetasuna",
+        "summary": "Plataformara igotako salaketa baten arrazoia, edukia, jatorrizko erakundea eta historia.",
+        "actions": [
+          "Esleitu edo ebatzi (moderatzailea eta superadmin)"
+        ],
+        "audience": "Superadmin, moderatzailea eta laguntza."
+      },
+      "ayuda": {
+        "title": "Laguntza-abisuak",
+        "summary": "Plataforma osoan zain dauden «gaur txarto nago» abisuak, erantzuteko txandarik ez duten erakundeak antzemateko.",
+        "actions": [
+          "Abisua, bere erakundea eta erreferentea ikusi",
+          "Behar bada erantzun"
+        ],
+        "audience": "Superadmin, moderatzailea eta laguntza."
+      },
+      "verificaciones": {
+        "title": "Egiaztapenak",
+        "summary": "Zain dauden identitate-berrikuspenak: pertsonaren dokumentua eta hornitzailearen arrazoia.",
+        "actions": [
+          "Onartu edo ezetsi ohar batekin"
+        ],
+        "audience": "Superadmin eta egiaztatzailea."
+      },
+      "roles": {
+        "title": "Rolak",
+        "summary": "Nortzuk osatzen duten Popyplan taldea eta zein plataforma-rolekin.",
+        "actions": [
+          "Kontua bilatuz rol bat eman",
+          "Baliogabetu"
+        ],
+        "audience": "Superadmin bakarrik."
+      },
+      "auditoria": {
+        "title": "Auditoria",
+        "summary": "Sistema osoko ekintza sentikorren erregistroa, egilearen, ekintzaren, objektuaren eta dataren araberako iragazkiekin.",
+        "actions": [
+          "Erregistroa iragazi eta berrikusi",
+          "Uneko orrialdea CSV gisa esportatu"
+        ],
+        "audience": "Superadmin bakarrik."
+      },
+      "metricas": {
+        "title": "Metrikak",
+        "summary": "Plataforma osoaren metrika agregatuak, lurraldeka edo erakundeka, aldien arteko konparaketarekin.",
+        "actions": [
+          "Aldia eta banaketa aldatu",
+          "Esportatu"
+        ],
+        "audience": "Superadmin, moderatzailea eta laguntza."
+      },
+      "contratos": {
+        "title": "Kontratuak",
+        "summary": "Popyplanek erakunde bakoitzarekin dituen kontratuak, prezio-tarteak eta fakturak.",
+        "actions": [
+          "Kontratuak, tarteak eta fakturak sortu eta aktibatu (superadmin)",
+          "Fakturak ordainduta gisa markatu"
+        ],
+        "audience": "Superadmin eta laguntza; laguntzak kontsulta bakarrik egin dezake."
+      }
+    }
   }
 }
