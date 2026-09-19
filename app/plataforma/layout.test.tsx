@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
-import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
+import { NextRedirectSignal, setPathname } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 
@@ -15,6 +15,20 @@ afterEach(() => {
 });
 
 describe("PlataformaLayout", () => {
+  it("la cabecera lleva el botón de ayuda de la pantalla actual", async () => {
+    setPathname("/plataforma");
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const element = await PlataformaLayout({ children: <p>contenido</p> });
+    render(element);
+
+    expect(screen.getByRole("button", { name: /^Ayuda:/ })).toBeInTheDocument();
+  });
+
   it("pinta las 9 secciones del menú de plataforma", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",

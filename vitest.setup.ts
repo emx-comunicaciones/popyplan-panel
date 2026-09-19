@@ -5,6 +5,7 @@ import React from "react";
 import { afterEach, vi } from "vitest";
 
 import {
+  getPathnameMock,
   getSearchParamsMock,
   notFoundMock,
   redirectMock,
@@ -14,7 +15,7 @@ import {
 
 vi.mock("next/navigation", () => ({
   useRouter: () => routerMock,
-  usePathname: () => "/",
+  usePathname: () => getPathnameMock(),
   useSearchParams: () => getSearchParamsMock(),
   redirect: redirectMock,
   notFound: notFoundMock,

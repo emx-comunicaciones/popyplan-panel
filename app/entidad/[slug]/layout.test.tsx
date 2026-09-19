@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
-import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
+import { NextRedirectSignal, setPathname } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildOrganization } from "@/test-utils/fixtures/organization";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
@@ -46,6 +46,20 @@ describe("EntidadLayout", () => {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
     expect(screen.getByText("Asociación Vecinal Alfaville")).toBeInTheDocument();
+  });
+
+  it("la cabecera lleva el botón de ayuda de la pantalla actual", async () => {
+    setPathname("/entidad/alfaville");
+    getServerSessionMock.mockResolvedValue(session("titular"));
+    serverFetchMock.mockResolvedValue({ ok: true, status: 200, data: buildOrganization() });
+
+    const element = await EntidadLayout({
+      children: <p>contenido</p>,
+      params: Promise.resolve({ slug: "alfaville" }),
+    });
+    render(element);
+
+    expect(screen.getByRole("button", { name: /^Ayuda:/ })).toBeInTheDocument();
   });
 
   it("analista no ve Personas ni Configuración: solo Inicio e Informes", async () => {

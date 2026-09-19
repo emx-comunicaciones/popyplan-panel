@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { LogoutButton } from "@/components/LogoutButton";
+import { PageHelp } from "@/components/help/PageHelp";
 import { SkipLink } from "@/components/ui/SkipLink";
 import { Footer } from "@/components/layout/Footer";
 import {
@@ -30,7 +31,10 @@ export default async function PlataformaLayout({ children }: { children: React.R
       <SkipLink />
       <header className="flex items-center justify-between gap-4 bg-secondary-900 px-6 py-4 text-text-inverse">
         <span className="text-lg font-semibold">Popyplan · Plataforma</span>
-        <LogoutButton />
+        <div className="flex items-center gap-3">
+          <PageHelp />
+          <LogoutButton />
+        </div>
       </header>
       <div className="flex flex-1">
         <nav aria-label="Secciones de plataforma" className="w-56 shrink-0 border-r border-border bg-white p-4">

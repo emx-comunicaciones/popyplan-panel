@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
-import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
+import { NextRedirectSignal, setPathname } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildOrganization } from "@/test-utils/fixtures/organization";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
@@ -36,6 +36,20 @@ function session(role: string) {
 }
 
 describe("ParaguasLayout", () => {
+  it("la cabecera lleva el botón de ayuda de la pantalla actual", async () => {
+    setPathname("/paraguas/diputacion-demo");
+    getServerSessionMock.mockResolvedValue(session("analista"));
+    serverFetchMock.mockResolvedValue({ ok: true, status: 200, data: buildOrganization() });
+
+    const element = await ParaguasLayout({
+      children: <p>contenido</p>,
+      params: Promise.resolve({ slug: "diputacion-demo" }),
+    });
+    render(element);
+
+    expect(screen.getByRole("button", { name: /^Ayuda:/ })).toBeInTheDocument();
+  });
+
   it("pinta la cabecera con el nombre de la entidad paraguas", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",

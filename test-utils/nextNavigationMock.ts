@@ -54,6 +54,22 @@ export function setSearchParams(init: string | Record<string, string>): void {
   searchParams = new URLSearchParams(init);
 }
 
+/**
+ * Pathname que devuelve `usePathname()`. Por defecto `"/"` (ninguna
+ * pantalla de las tres áreas), como antes de que `PageHelp` (tarea 2 de
+ * «ayuda por pantalla») necesitara distinguir una ruta real. Un test lo
+ * fija con `setPathname`; el `afterEach` global lo repone a `"/"`.
+ */
+let pathname = "/";
+
+export function getPathnameMock(): string {
+  return pathname;
+}
+
+export function setPathname(value: string): void {
+  pathname = value;
+}
+
 export function resetNextNavigationMocks(): void {
   routerMock.push.mockClear();
   routerMock.replace.mockClear();
@@ -63,4 +79,5 @@ export function resetNextNavigationMocks(): void {
   redirectMock.mockClear();
   notFoundMock.mockClear();
   searchParams = new URLSearchParams();
+  pathname = "/";
 }

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { LogoutButton } from "@/components/LogoutButton";
+import { PageHelp } from "@/components/help/PageHelp";
 import { SkipLink } from "@/components/ui/SkipLink";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Footer } from "@/components/layout/Footer";
@@ -91,7 +92,10 @@ export default async function ParaguasLayout({
           ) : null}
           <span className="text-lg font-semibold">{org?.name ?? membership.organization_name}</span>
         </div>
-        <LogoutButton />
+        <div className="flex items-center gap-3">
+          <PageHelp />
+          <LogoutButton />
+        </div>
       </header>
       {!orgResult.ok ? (
         <div className="p-4">
