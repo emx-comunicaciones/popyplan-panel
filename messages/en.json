@@ -1081,6 +1081,35 @@
     },
     "auditLog": {
       "desconocido": "Couldn't load the audit log."
+    },
+    "contractMutation": {
+      "sinAcceso": "This action is only for platform superadmin.",
+      "invalido": "Check the details: something isn't valid.",
+      "noEncontrado": "This resource doesn't exist.",
+      "desconocidoCrear": "Couldn't create the contract.",
+      "desconocidoGuardar": "Couldn't save the contract.",
+      "conflicto": "This action isn't valid in the current state.",
+      "desconocidoActivar": "Couldn't activate the contract.",
+      "desconocidoFinalizar": "Couldn't end the contract."
+    },
+    "createInvoice": {
+      "desconocido": "Couldn't create the invoice."
+    },
+    "tierMutation": {
+      "desconocidoCrear": "Couldn't create the tier.",
+      "desconocidoGuardar": "Couldn't save the tier."
+    },
+    "payInvoice": {
+      "desconocido": "Couldn't mark the invoice as paid."
+    },
+    "contractsQuery": {
+      "desconocido": "Couldn't load the contracts."
+    },
+    "tiersQuery": {
+      "desconocido": "Couldn't load the tiers."
+    },
+    "invoicesQuery": {
+      "desconocido": "Couldn't load the invoices."
     }
   },
   "reports": {
@@ -1526,7 +1555,75 @@
         "maxBelowMin": "The maximum population can't be lower than the minimum."
       },
       "heading": "Contracts",
-      "noAccessDescription": "Only superadmin and support see platform contracts and billing."
+      "noAccessDescription": "Only superadmin and support see platform contracts and billing.",
+      "chooseOrganization": "Choose an entity…",
+      "tierLabel": "Tier",
+      "chooseTier": "Choose a tier…",
+      "startsOnLabel": "Start",
+      "endsOnLabel": "End",
+      "notesLabel": "Notes",
+      "endsBeforeStartsError": "The end date can't be before the start date.",
+      "invoiceNumberLabel": "Number",
+      "amountLabel": "Amount (€)",
+      "issuedOnLabel": "Issued on",
+      "dueOnLabel": "Due on",
+      "dueBeforeIssuedError": "The due date can't be before the issue date.",
+      "orgFilterLabel": "Entity",
+      "statusDraft": "Draft",
+      "statusActive": "Active",
+      "statusEnded": "Ended",
+      "newContract": "New contract",
+      "editContract": "Edit contract",
+      "loadError": "Couldn't load the contracts",
+      "loading": "Loading contracts…",
+      "emptyTitle": "No contracts with these filters",
+      "tableCaption": "Platform contracts",
+      "validityHeader": "Validity",
+      "pendingAmountHeader": "Pending collection",
+      "pendingAmountValue": "{amountText} ({count, plural, one {# invoice} other {# invoices}})",
+      "viewInvoices": "View invoices",
+      "endContractAction": "End",
+      "endContractConfirmTitle": "End contract",
+      "endContractDescription": "The entity stops being billed for this contract. It doesn't affect how it works in the panel: it keeps operating the same.",
+      "sectionsLegend": "Billing sections",
+      "tabContratos": "Contracts",
+      "tabTramos": "Tiers",
+      "tabFacturas": "Invoices",
+      "tierNameLabel": "Name",
+      "minPopulationLabel": "Minimum population",
+      "maxPopulationLabel": "Maximum population (empty = no cap)",
+      "annualPriceLabel": "Annual price (€)",
+      "tierActiveLabel": "Active tier (available for new contracts)",
+      "newTier": "New tier",
+      "editTier": "Edit tier",
+      "tiersLoadError": "Couldn't load the tiers",
+      "tiersLoading": "Loading tiers…",
+      "tiersEmptyTitle": "No tiers yet",
+      "populationRangeCapped": "{min} – {max} inhabitants",
+      "populationRangeUncapped": "{min}+ inhabitants",
+      "perYear": "/year",
+      "tierActive": "Active",
+      "tierInactive": "Inactive",
+      "contractLabel": "Contract",
+      "chooseContract": "Choose a contract…",
+      "chooseContractEmpty": "Choose a contract to see its invoices",
+      "newInvoice": "New invoice",
+      "invoicesLoadError": "Couldn't load the invoices",
+      "invoicesLoading": "Loading invoices…",
+      "invoicesEmptyTitle": "No invoices yet",
+      "invoicesTableCaption": "Contract invoices",
+      "colAmount": "Amount",
+      "colIssued": "Issued",
+      "colDue": "Due",
+      "colPaid": "Paid",
+      "invoiceStatusPaid": "Paid",
+      "invoiceStatusPending": "Pending",
+      "invoiceStatusOverdue": "Overdue",
+      "markPaid": "Mark paid",
+      "markPaidConfirmTitle": "Mark invoice as paid",
+      "markPaidDescription": "Invoice {number}, {amount}.",
+      "paidOnLabel": "Payment date",
+      "paidOnRequiredError": "Enter the payment date."
     },
     "ayuda": {
       "noOrganization": "No entity",

@@ -40,11 +40,20 @@ export type BillingErrorKind = "sin_acceso" | "invalido" | "conflicto" | "no_enc
 
 export class BillingError extends Error {
   readonly kind: BillingErrorKind;
+  /**
+   * Texto verbatim del backend, solo cuando `detailOf` encuentra algo
+   * (tarea 5 de i18n, mismo patrón que el resto de errores tipados del
+   * panel): `ContratosPanel.tsx`/`ContratoForm.tsx`/`FacturaForm.tsx`
+   * traducen con `errorKindText`, que le da prioridad sobre la
+   * traducción fija por `kind`.
+   */
+  readonly detail?: string;
 
-  constructor(kind: BillingErrorKind, message: string) {
+  constructor(kind: BillingErrorKind, message: string, detail?: string) {
     super(message);
     this.name = "BillingError";
     this.kind = kind;
+    this.detail = detail;
   }
 }
 
@@ -59,19 +68,27 @@ export class BillingError extends Error {
 function toBillingError(error: unknown, fallback: string): BillingError {
   if (error instanceof ApiError) {
     if (error.status === 403) {
+      const detail = detailOf(error);
       return new BillingError(
         "sin_acceso",
-        detailOf(error) ?? "Esta acción es solo para superadmin de plataforma.",
+        detail ?? "Esta acción es solo para superadmin de plataforma.",
+        detail,
       );
     }
     if (error.status === 400) {
-      return new BillingError("invalido", detailOf(error) ?? "Revisa los datos: alguno no es válido.");
+      const detail = detailOf(error);
+      return new BillingError("invalido", detail ?? "Revisa los datos: alguno no es válido.", detail);
     }
     if (error.status === 404) {
       return new BillingError("no_encontrado", "Este recurso no existe.");
     }
     if (error.status === 409) {
-      return new BillingError("conflicto", detailOf(error) ?? "Esta acción no es válida en el estado actual.");
+      const detail = detailOf(error);
+      return new BillingError(
+        "conflicto",
+        detail ?? "Esta acción no es válida en el estado actual.",
+        detail,
+      );
     }
   }
   return new BillingError("desconocido", fallback);

@@ -14,11 +14,13 @@
  * amplíe esta pantalla si hiciera falta.
  */
 import { useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
-import { useCreateContract, useTiers, useUpdateContract } from "@/hooks/useBilling";
+import { useCreateContract, useTiers, useUpdateContract, type BillingErrorKind } from "@/hooks/useBilling";
 import { useOrganizations } from "@/hooks/useOrganizations";
 import type { Contract } from "@/lib/api/types";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 
 export interface ContratoFormProps {
   editing: Contract | "new";
@@ -26,12 +28,30 @@ export interface ContratoFormProps {
 }
 
 /** Mismo criterio de validación de fechas que `lib/programs/validation.ts`: solo `fin >= inicio`. */
-function validateContractDates(startsOn: string, endsOn: string): string | null {
-  if (!startsOn || !endsOn) return null;
-  return endsOn < startsOn ? "La fecha de fin no puede ser anterior a la de inicio." : null;
+function hasInvalidContractDates(startsOn: string, endsOn: string): boolean {
+  if (!startsOn || !endsOn) return false;
+  return endsOn < startsOn;
 }
 
+// `createContract`/`updateContract` comparten `BillingError`, pero su
+// fallback «desconocido» difiere en el texto real del hook («crear» vs.
+// «guardar») — dos mapas casi idénticos, mismo patrón que
+// `ProgramMutationError` en `ProgramaForm.tsx`.
+const CREATE_CONTRACT_ERROR_KEYS: Record<BillingErrorKind, string> = {
+  sin_acceso: "errors.contractMutation.sinAcceso",
+  invalido: "errors.contractMutation.invalido",
+  conflicto: "errors.contractMutation.conflicto",
+  no_encontrado: "errors.contractMutation.noEncontrado",
+  desconocido: "errors.contractMutation.desconocidoCrear",
+};
+
+const UPDATE_CONTRACT_ERROR_KEYS: Record<BillingErrorKind, string> = {
+  ...CREATE_CONTRACT_ERROR_KEYS,
+  desconocido: "errors.contractMutation.desconocidoGuardar",
+};
+
 export function ContratoForm({ editing, onDone }: ContratoFormProps) {
+  const t = useTranslations();
   const organizations = useOrganizations();
   const tiers = useTiers();
   const createContract = useCreateContract();
@@ -46,7 +66,10 @@ export function ContratoForm({ editing, onDone }: ContratoFormProps) {
   const [notes, setNotes] = useState(editing === "new" ? "" : editing.notes);
 
   const mutation = editing === "new" ? createContract : updateContract;
-  const dateError = validateContractDates(startsOn, endsOn);
+  const mutationErrorKeys = editing === "new" ? CREATE_CONTRACT_ERROR_KEYS : UPDATE_CONTRACT_ERROR_KEYS;
+  const mutationFallbackKey =
+    editing === "new" ? "errors.contractMutation.desconocidoCrear" : "errors.contractMutation.desconocidoGuardar";
+  const dateError = hasInvalidContractDates(startsOn, endsOn);
   const canSubmit =
     (editing !== "new" || (organization.length > 0 && tier.length > 0)) &&
     startsOn.length > 0 &&
@@ -80,7 +103,7 @@ export function ContratoForm({ editing, onDone }: ContratoFormProps) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <div>
         <label htmlFor="contrato-organization" className="mb-1 block text-sm font-medium text-text-form">
-          Entidad
+          {t("metrics.groupBy.organization")}
         </label>
         {editing === "new" ? (
           <select
@@ -89,7 +112,7 @@ export function ContratoForm({ editing, onDone }: ContratoFormProps) {
             onChange={(event) => setOrganization(event.target.value)}
             className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
-            <option value="">Elige una entidad…</option>
+            <option value="">{t("plataforma.contratos.chooseOrganization")}</option>
             {organizations.data?.results.map((org) => (
               <option key={org.id} value={org.id}>
                 {org.name}
@@ -105,7 +128,7 @@ export function ContratoForm({ editing, onDone }: ContratoFormProps) {
 
       <div>
         <label htmlFor="contrato-tier" className="mb-1 block text-sm font-medium text-text-form">
-          Tramo
+          {t("plataforma.contratos.tierLabel")}
         </label>
         {editing === "new" ? (
           <select
@@ -114,10 +137,10 @@ export function ContratoForm({ editing, onDone }: ContratoFormProps) {
             onChange={(event) => setTier(event.target.value)}
             className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
-            <option value="">Elige un tramo…</option>
-            {tiers.data?.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
+            <option value="">{t("plataforma.contratos.chooseTier")}</option>
+            {tiers.data?.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.name}
               </option>
             ))}
           </select>
@@ -131,7 +154,7 @@ export function ContratoForm({ editing, onDone }: ContratoFormProps) {
       <div className="flex flex-wrap gap-3">
         <div>
           <label htmlFor="contrato-starts-on" className="mb-1 block text-sm font-medium text-text-form">
-            Inicio
+            {t("plataforma.contratos.startsOnLabel")}
           </label>
           <input
             id="contrato-starts-on"
@@ -143,7 +166,7 @@ export function ContratoForm({ editing, onDone }: ContratoFormProps) {
         </div>
         <div>
           <label htmlFor="contrato-ends-on" className="mb-1 block text-sm font-medium text-text-form">
-            Fin
+            {t("plataforma.contratos.endsOnLabel")}
           </label>
           <input
             id="contrato-ends-on"
@@ -157,7 +180,7 @@ export function ContratoForm({ editing, onDone }: ContratoFormProps) {
 
       <div>
         <label htmlFor="contrato-notes" className="mb-1 block text-sm font-medium text-text-form">
-          Notas
+          {t("plataforma.contratos.notesLabel")}
         </label>
         <textarea
           id="contrato-notes"
@@ -170,21 +193,21 @@ export function ContratoForm({ editing, onDone }: ContratoFormProps) {
 
       {dateError ? (
         <p role="alert" className="text-sm text-error">
-          {dateError}
+          {t("plataforma.contratos.endsBeforeStartsError")}
         </p>
       ) : null}
 
       <div className="flex gap-2">
         <Button type="submit" disabled={!canSubmit || mutation.isPending}>
-          Guardar
+          {t("common.save")}
         </Button>
         <Button type="button" variant="secondary" onClick={onDone}>
-          Cancelar
+          {t("common.cancel")}
         </Button>
       </div>
       {mutation.isError ? (
         <p role="alert" className="text-sm text-error">
-          {mutation.error.message}
+          {errorKindText(mutation.error, mutationErrorKeys, t, mutationFallbackKey)}
         </p>
       ) : null}
     </form>

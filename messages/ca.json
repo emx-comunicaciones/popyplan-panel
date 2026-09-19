@@ -1081,6 +1081,35 @@
     },
     "auditLog": {
       "desconocido": "No s'ha pogut carregar l'auditoria."
+    },
+    "contractMutation": {
+      "sinAcceso": "Aquesta acció és només per a superadmin de plataforma.",
+      "invalido": "Revisa les dades: alguna no és vàlida.",
+      "noEncontrado": "Aquest recurs no existeix.",
+      "desconocidoCrear": "No s'ha pogut crear el contracte.",
+      "desconocidoGuardar": "No s'ha pogut desar el contracte.",
+      "conflicto": "Aquesta acció no és vàlida en l'estat actual.",
+      "desconocidoActivar": "No s'ha pogut activar el contracte.",
+      "desconocidoFinalizar": "No s'ha pogut finalitzar el contracte."
+    },
+    "createInvoice": {
+      "desconocido": "No s'ha pogut crear la factura."
+    },
+    "tierMutation": {
+      "desconocidoCrear": "No s'ha pogut crear el tram.",
+      "desconocidoGuardar": "No s'ha pogut desar el tram."
+    },
+    "payInvoice": {
+      "desconocido": "No s'ha pogut marcar la factura com a pagada."
+    },
+    "contractsQuery": {
+      "desconocido": "No s'han pogut carregar els contractes."
+    },
+    "tiersQuery": {
+      "desconocido": "No s'han pogut carregar els trams."
+    },
+    "invoicesQuery": {
+      "desconocido": "No s'han pogut carregar les factures."
     }
   },
   "reports": {
@@ -1526,7 +1555,75 @@
         "maxBelowMin": "La població màxima no pot ser inferior a la mínima."
       },
       "heading": "Contractes",
-      "noAccessDescription": "Només superadmin i suport veuen la contractació i facturació de plataforma."
+      "noAccessDescription": "Només superadmin i suport veuen la contractació i facturació de plataforma.",
+      "chooseOrganization": "Tria una entitat…",
+      "tierLabel": "Tram",
+      "chooseTier": "Tria un tram…",
+      "startsOnLabel": "Inici",
+      "endsOnLabel": "Fi",
+      "notesLabel": "Notes",
+      "endsBeforeStartsError": "La data de fi no pot ser anterior a la d'inici.",
+      "invoiceNumberLabel": "Número",
+      "amountLabel": "Import (€)",
+      "issuedOnLabel": "Emesa el",
+      "dueOnLabel": "Venç el",
+      "dueBeforeIssuedError": "La data de venciment no pot ser anterior a la d'emissió.",
+      "orgFilterLabel": "Entitat",
+      "statusDraft": "Esborrany",
+      "statusActive": "Vigent",
+      "statusEnded": "Finalitzat",
+      "newContract": "Nou contracte",
+      "editContract": "Editar contracte",
+      "loadError": "No s'han pogut carregar els contractes",
+      "loading": "Carregant contractes…",
+      "emptyTitle": "Sense contractes amb aquests filtres",
+      "tableCaption": "Contractes de plataforma",
+      "validityHeader": "Vigència",
+      "pendingAmountHeader": "Pendent de cobrament",
+      "pendingAmountValue": "{amountText} ({count, plural, one {# factura} other {# factures}})",
+      "viewInvoices": "Veure factures",
+      "endContractAction": "Finalitzar",
+      "endContractConfirmTitle": "Finalitzar contracte",
+      "endContractDescription": "L'entitat deixa de facturar-se per aquest contracte. No afecta el seu funcionament al panell: continua operant igual.",
+      "sectionsLegend": "Seccions de contractació",
+      "tabContratos": "Contractes",
+      "tabTramos": "Trams",
+      "tabFacturas": "Factures",
+      "tierNameLabel": "Nom",
+      "minPopulationLabel": "Població mínima",
+      "maxPopulationLabel": "Població màxima (buit = sense límit)",
+      "annualPriceLabel": "Preu anual (€)",
+      "tierActiveLabel": "Tram actiu (disponible per a nous contractes)",
+      "newTier": "Nou tram",
+      "editTier": "Editar tram",
+      "tiersLoadError": "No s'han pogut carregar els trams",
+      "tiersLoading": "Carregant trams…",
+      "tiersEmptyTitle": "Encara no hi ha trams",
+      "populationRangeCapped": "{min} – {max} habitants",
+      "populationRangeUncapped": "{min}+ habitants",
+      "perYear": "/any",
+      "tierActive": "Actiu",
+      "tierInactive": "Inactiu",
+      "contractLabel": "Contracte",
+      "chooseContract": "Tria un contracte…",
+      "chooseContractEmpty": "Tria un contracte per veure les seves factures",
+      "newInvoice": "Nova factura",
+      "invoicesLoadError": "No s'han pogut carregar les factures",
+      "invoicesLoading": "Carregant factures…",
+      "invoicesEmptyTitle": "Encara no hi ha factures",
+      "invoicesTableCaption": "Factures del contracte",
+      "colAmount": "Import",
+      "colIssued": "Emesa",
+      "colDue": "Venciment",
+      "colPaid": "Pagada",
+      "invoiceStatusPaid": "Pagada",
+      "invoiceStatusPending": "Pendent",
+      "invoiceStatusOverdue": "Vençuda",
+      "markPaid": "Marcar pagada",
+      "markPaidConfirmTitle": "Marcar factura com a pagada",
+      "markPaidDescription": "Factura {number}, {amount}.",
+      "paidOnLabel": "Data de pagament",
+      "paidOnRequiredError": "Indica la data de pagament."
     },
     "ayuda": {
       "noOrganization": "Sense entitat",

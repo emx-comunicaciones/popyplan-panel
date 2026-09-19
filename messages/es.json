@@ -1081,6 +1081,35 @@
     },
     "auditLog": {
       "desconocido": "No se pudo cargar la auditoría."
+    },
+    "contractMutation": {
+      "sinAcceso": "Esta acción es solo para superadmin de plataforma.",
+      "invalido": "Revisa los datos: alguno no es válido.",
+      "noEncontrado": "Este recurso no existe.",
+      "desconocidoCrear": "No se pudo crear el contrato.",
+      "desconocidoGuardar": "No se pudo guardar el contrato.",
+      "conflicto": "Esta acción no es válida en el estado actual.",
+      "desconocidoActivar": "No se pudo activar el contrato.",
+      "desconocidoFinalizar": "No se pudo finalizar el contrato."
+    },
+    "createInvoice": {
+      "desconocido": "No se pudo crear la factura."
+    },
+    "tierMutation": {
+      "desconocidoCrear": "No se pudo crear el tramo.",
+      "desconocidoGuardar": "No se pudo guardar el tramo."
+    },
+    "payInvoice": {
+      "desconocido": "No se pudo marcar la factura como pagada."
+    },
+    "contractsQuery": {
+      "desconocido": "No se pudieron cargar los contratos."
+    },
+    "tiersQuery": {
+      "desconocido": "No se pudieron cargar los tramos."
+    },
+    "invoicesQuery": {
+      "desconocido": "No se pudieron cargar las facturas."
     }
   },
   "reports": {
@@ -1526,7 +1555,75 @@
         "maxBelowMin": "La población máxima no puede ser menor que la mínima."
       },
       "heading": "Contratos",
-      "noAccessDescription": "Solo superadmin y support ven la contratación y facturación de plataforma."
+      "noAccessDescription": "Solo superadmin y support ven la contratación y facturación de plataforma.",
+      "chooseOrganization": "Elige una entidad…",
+      "tierLabel": "Tramo",
+      "chooseTier": "Elige un tramo…",
+      "startsOnLabel": "Inicio",
+      "endsOnLabel": "Fin",
+      "notesLabel": "Notas",
+      "endsBeforeStartsError": "La fecha de fin no puede ser anterior a la de inicio.",
+      "invoiceNumberLabel": "Número",
+      "amountLabel": "Importe (€)",
+      "issuedOnLabel": "Emitida el",
+      "dueOnLabel": "Vence el",
+      "dueBeforeIssuedError": "La fecha de vencimiento no puede ser anterior a la de emisión.",
+      "orgFilterLabel": "Entidad",
+      "statusDraft": "Borrador",
+      "statusActive": "Vigente",
+      "statusEnded": "Finalizado",
+      "newContract": "Nuevo contrato",
+      "editContract": "Editar contrato",
+      "loadError": "No se pudieron cargar los contratos",
+      "loading": "Cargando contratos…",
+      "emptyTitle": "Sin contratos con esos filtros",
+      "tableCaption": "Contratos de plataforma",
+      "validityHeader": "Vigencia",
+      "pendingAmountHeader": "Pendiente de cobro",
+      "pendingAmountValue": "{amountText} ({count, plural, one {# factura} other {# facturas}})",
+      "viewInvoices": "Ver facturas",
+      "endContractAction": "Finalizar",
+      "endContractConfirmTitle": "Finalizar contrato",
+      "endContractDescription": "La entidad deja de facturarse por este contrato. No afecta a su funcionamiento en el panel: sigue operando igual.",
+      "sectionsLegend": "Secciones de contratación",
+      "tabContratos": "Contratos",
+      "tabTramos": "Tramos",
+      "tabFacturas": "Facturas",
+      "tierNameLabel": "Nombre",
+      "minPopulationLabel": "Población mínima",
+      "maxPopulationLabel": "Población máxima (vacío = sin tope)",
+      "annualPriceLabel": "Precio anual (€)",
+      "tierActiveLabel": "Tramo activo (disponible para nuevos contratos)",
+      "newTier": "Nuevo tramo",
+      "editTier": "Editar tramo",
+      "tiersLoadError": "No se pudieron cargar los tramos",
+      "tiersLoading": "Cargando tramos…",
+      "tiersEmptyTitle": "Sin tramos todavía",
+      "populationRangeCapped": "{min} – {max} habitantes",
+      "populationRangeUncapped": "{min}+ habitantes",
+      "perYear": "/año",
+      "tierActive": "Activo",
+      "tierInactive": "Inactivo",
+      "contractLabel": "Contrato",
+      "chooseContract": "Elige un contrato…",
+      "chooseContractEmpty": "Elige un contrato para ver sus facturas",
+      "newInvoice": "Nueva factura",
+      "invoicesLoadError": "No se pudieron cargar las facturas",
+      "invoicesLoading": "Cargando facturas…",
+      "invoicesEmptyTitle": "Sin facturas todavía",
+      "invoicesTableCaption": "Facturas del contrato",
+      "colAmount": "Importe",
+      "colIssued": "Emitida",
+      "colDue": "Vence",
+      "colPaid": "Pagada",
+      "invoiceStatusPaid": "Pagada",
+      "invoiceStatusPending": "Pendiente",
+      "invoiceStatusOverdue": "Vencida",
+      "markPaid": "Marcar pagada",
+      "markPaidConfirmTitle": "Marcar factura como pagada",
+      "markPaidDescription": "Factura {number}, {amount}.",
+      "paidOnLabel": "Fecha de pago",
+      "paidOnRequiredError": "Indica la fecha de pago."
     },
     "ayuda": {
       "noOrganization": "Sin entidad",

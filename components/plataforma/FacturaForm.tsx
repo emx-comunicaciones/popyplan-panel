@@ -10,9 +10,11 @@
  * marca pagada (`ContratosPanel.tsx`, acción aparte).
  */
 import { useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
-import { useCreateInvoice } from "@/hooks/useBilling";
+import { useCreateInvoice, type BillingErrorKind } from "@/hooks/useBilling";
+import { errorKindText } from "@/lib/i18n/errorKindText";
 import { eurosToCents } from "@/lib/programs/money";
 
 export interface FacturaFormProps {
@@ -20,14 +22,23 @@ export interface FacturaFormProps {
   onDone: () => void;
 }
 
+const CREATE_INVOICE_ERROR_KEYS: Record<BillingErrorKind, string> = {
+  sin_acceso: "errors.contractMutation.sinAcceso",
+  invalido: "errors.contractMutation.invalido",
+  conflicto: "errors.contractMutation.conflicto",
+  no_encontrado: "errors.contractMutation.noEncontrado",
+  desconocido: "errors.createInvoice.desconocido",
+};
+
 export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
+  const t = useTranslations();
   const createInvoice = useCreateInvoice();
   const [number, setNumber] = useState("");
   const [amountEuros, setAmountEuros] = useState("");
   const [issuedOn, setIssuedOn] = useState("");
   const [dueOn, setDueOn] = useState("");
   const [notes, setNotes] = useState("");
-  const [dateError, setDateError] = useState<string | null>(null);
+  const [dateError, setDateError] = useState(false);
 
   const canSubmit =
     number.trim().length > 0 &&
@@ -43,10 +54,10 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
     // Las dos fechas llegan como `YYYY-MM-DD`, así que la comparación de
     // cadenas ya ordena bien. El backend lo valida otra vez.
     if (dueOn < issuedOn) {
-      setDateError("La fecha de vencimiento no puede ser anterior a la de emisión.");
+      setDateError(true);
       return;
     }
-    setDateError(null);
+    setDateError(false);
 
     createInvoice.mutate(
       {
@@ -65,7 +76,7 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <div>
         <label htmlFor="factura-number" className="mb-1 block text-sm font-medium text-text-form">
-          Número
+          {t("plataforma.contratos.invoiceNumberLabel")}
         </label>
         <input
           id="factura-number"
@@ -78,7 +89,7 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
 
       <div>
         <label htmlFor="factura-amount" className="mb-1 block text-sm font-medium text-text-form">
-          Importe (€)
+          {t("plataforma.contratos.amountLabel")}
         </label>
         <input
           id="factura-amount"
@@ -94,7 +105,7 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
       <div className="flex flex-wrap gap-3">
         <div>
           <label htmlFor="factura-issued-on" className="mb-1 block text-sm font-medium text-text-form">
-            Emitida el
+            {t("plataforma.contratos.issuedOnLabel")}
           </label>
           <input
             id="factura-issued-on"
@@ -102,7 +113,7 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
             value={issuedOn}
             aria-describedby={dateError ? "factura-fechas-error" : undefined}
             onChange={(event) => {
-              setDateError(null);
+              setDateError(false);
               setIssuedOn(event.target.value);
             }}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
@@ -110,7 +121,7 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
         </div>
         <div>
           <label htmlFor="factura-due-on" className="mb-1 block text-sm font-medium text-text-form">
-            Vence el
+            {t("plataforma.contratos.dueOnLabel")}
           </label>
           <input
             id="factura-due-on"
@@ -118,7 +129,7 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
             value={dueOn}
             aria-describedby={dateError ? "factura-fechas-error" : undefined}
             onChange={(event) => {
-              setDateError(null);
+              setDateError(false);
               setDueOn(event.target.value);
             }}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
@@ -128,7 +139,7 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
 
       <div>
         <label htmlFor="factura-notes" className="mb-1 block text-sm font-medium text-text-form">
-          Notas
+          {t("plataforma.contratos.notesLabel")}
         </label>
         <textarea
           id="factura-notes"
@@ -141,21 +152,21 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
 
       {dateError ? (
         <p id="factura-fechas-error" role="alert" className="text-sm text-error">
-          {dateError}
+          {t("plataforma.contratos.dueBeforeIssuedError")}
         </p>
       ) : null}
 
       <div className="flex gap-2">
         <Button type="submit" disabled={!canSubmit || createInvoice.isPending}>
-          Guardar
+          {t("common.save")}
         </Button>
         <Button type="button" variant="secondary" onClick={onDone}>
-          Cancelar
+          {t("common.cancel")}
         </Button>
       </div>
       {createInvoice.isError ? (
         <p role="alert" className="text-sm text-error">
-          {createInvoice.error.message}
+          {errorKindText(createInvoice.error, CREATE_INVOICE_ERROR_KEYS, t, "errors.createInvoice.desconocido")}
         </p>
       ) : null}
     </form>

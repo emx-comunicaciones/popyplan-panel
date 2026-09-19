@@ -1081,6 +1081,35 @@
     },
     "auditLog": {
       "desconocido": "Ezin izan da auditoria kargatu."
+    },
+    "contractMutation": {
+      "sinAcceso": "Ekintza hau plataformaren superadminentzat bakarrik da.",
+      "invalido": "Berrikusi datuak: bat ez da baliozkoa.",
+      "noEncontrado": "Baliabide hau ez da existitzen.",
+      "desconocidoCrear": "Ezin izan da kontratua sortu.",
+      "desconocidoGuardar": "Ezin izan da kontratua gorde.",
+      "conflicto": "Ekintza hau ez da baliozkoa uneko egoeran.",
+      "desconocidoActivar": "Ezin izan da kontratua aktibatu.",
+      "desconocidoFinalizar": "Ezin izan da kontratua amaitu."
+    },
+    "createInvoice": {
+      "desconocido": "Ezin izan da faktura sortu."
+    },
+    "tierMutation": {
+      "desconocidoCrear": "Ezin izan da tartea sortu.",
+      "desconocidoGuardar": "Ezin izan da tartea gorde."
+    },
+    "payInvoice": {
+      "desconocido": "Ezin izan da faktura ordainduta gisa markatu."
+    },
+    "contractsQuery": {
+      "desconocido": "Ezin izan dira kontratuak kargatu."
+    },
+    "tiersQuery": {
+      "desconocido": "Ezin izan dira tarteak kargatu."
+    },
+    "invoicesQuery": {
+      "desconocido": "Ezin izan dira fakturak kargatu."
     }
   },
   "reports": {
@@ -1526,7 +1555,75 @@
         "maxBelowMin": "Gehieneko biztanleria ezin da gutxienekoa baino txikiagoa izan."
       },
       "heading": "Kontratuak",
-      "noAccessDescription": "Superadminek eta laguntzak bakarrik ikusten dute plataformaren kontratazioa eta fakturazioa."
+      "noAccessDescription": "Superadminek eta laguntzak bakarrik ikusten dute plataformaren kontratazioa eta fakturazioa.",
+      "chooseOrganization": "Aukeratu erakunde bat…",
+      "tierLabel": "Tartea",
+      "chooseTier": "Aukeratu tarte bat…",
+      "startsOnLabel": "Hasiera",
+      "endsOnLabel": "Amaiera",
+      "notesLabel": "Oharrak",
+      "endsBeforeStartsError": "Amaiera-data ezin da hasiera-data baino lehenagokoa izan.",
+      "invoiceNumberLabel": "Zenbakia",
+      "amountLabel": "Zenbatekoa (€)",
+      "issuedOnLabel": "Igorpen-data",
+      "dueOnLabel": "Mugaeguna",
+      "dueBeforeIssuedError": "Mugaeguna ezin da igorpen-data baino lehenagokoa izan.",
+      "orgFilterLabel": "Erakundea",
+      "statusDraft": "Zirriborroa",
+      "statusActive": "Indarrean",
+      "statusEnded": "Amaituta",
+      "newContract": "Kontratu berria",
+      "editContract": "Kontratua editatu",
+      "loadError": "Ezin izan dira kontratuak kargatu",
+      "loading": "Kontratuak kargatzen…",
+      "emptyTitle": "Ez dago iragazki horiekin kontraturik",
+      "tableCaption": "Plataformaren kontratuak",
+      "validityHeader": "Indarraldia",
+      "pendingAmountHeader": "Kobratzeke",
+      "pendingAmountValue": "{amountText} ({count, plural, one {faktura #} other {# faktura}})",
+      "viewInvoices": "Fakturak ikusi",
+      "endContractAction": "Amaitu",
+      "endContractConfirmTitle": "Kontratua amaitu",
+      "endContractDescription": "Erakundeak kontratu honengatik fakturatzeari utziko dio. Ez dio eragiten panelean duen funtzionamenduari: modu berean jarraituko du.",
+      "sectionsLegend": "Kontrataziorako atalak",
+      "tabContratos": "Kontratuak",
+      "tabTramos": "Tarteak",
+      "tabFacturas": "Fakturak",
+      "tierNameLabel": "Izena",
+      "minPopulationLabel": "Gutxieneko biztanleria",
+      "maxPopulationLabel": "Gehieneko biztanleria (hutsik = mugarik gabe)",
+      "annualPriceLabel": "Urteko prezioa (€)",
+      "tierActiveLabel": "Tarte aktiboa (kontratu berrietarako erabilgarri)",
+      "newTier": "Tarte berria",
+      "editTier": "Tartea editatu",
+      "tiersLoadError": "Ezin izan dira tarteak kargatu",
+      "tiersLoading": "Tarteak kargatzen…",
+      "tiersEmptyTitle": "Oraindik ez dago tarterik",
+      "populationRangeCapped": "{min} – {max} biztanle",
+      "populationRangeUncapped": "{min}+ biztanle",
+      "perYear": "/urte",
+      "tierActive": "Aktiboa",
+      "tierInactive": "Inaktiboa",
+      "contractLabel": "Kontratua",
+      "chooseContract": "Aukeratu kontratu bat…",
+      "chooseContractEmpty": "Aukeratu kontratu bat bere fakturak ikusteko",
+      "newInvoice": "Faktura berria",
+      "invoicesLoadError": "Ezin izan dira fakturak kargatu",
+      "invoicesLoading": "Fakturak kargatzen…",
+      "invoicesEmptyTitle": "Oraindik ez dago fakturarik",
+      "invoicesTableCaption": "Kontratuaren fakturak",
+      "colAmount": "Zenbatekoa",
+      "colIssued": "Igorria",
+      "colDue": "Mugaeguna",
+      "colPaid": "Ordainduta",
+      "invoiceStatusPaid": "Ordainduta",
+      "invoiceStatusPending": "Zain",
+      "invoiceStatusOverdue": "Mugaeguna igarota",
+      "markPaid": "Ordainduta gisa markatu",
+      "markPaidConfirmTitle": "Faktura ordainduta gisa markatu",
+      "markPaidDescription": "{number} faktura, {amount}.",
+      "paidOnLabel": "Ordainketa-data",
+      "paidOnRequiredError": "Adierazi ordainketa-data."
     },
     "ayuda": {
       "noOrganization": "Erakunderik gabe",
