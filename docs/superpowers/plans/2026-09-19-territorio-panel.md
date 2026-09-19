@@ -103,9 +103,15 @@ verificados leyendo el árbol real:
     events:{held,upcoming}, people:{value,suppressed},
     attendance:{rate,suppressed}, communities:{count},
     organizations_based_here}`; **404** fuera del territorio.
-  - `GET /api/places/?ine_code=a,b&search=&page=` → listado paginado DRF de
+  - `GET /api/places/?ine_code=a,b&search=&ccaa_code=&prov_code=&comarca_code=&page=`
+    → listado paginado DRF de
     `{ine_code,name,name_local,comarca_code,comarca_name_es,comarca_name_eu,
     prov_code,prov_name,ccaa_code,ccaa_name,latitude,longitude}`.
+    `ccaa_code`/`prov_code`/`comarca_code` son filtros de **coincidencia
+    exacta**, combinables entre sí y con `search`/`ine_code`; `count` de
+    la respuesta paginada es el total que casa con el filtro, no el
+    tamaño de la página — es lo que hace posible la vista previa «N
+    municipios» de la Tarea 7 sin traerse las filas.
   - `GET /api/users/users/me/` → cada `org_memberships[]` gana
     `is_administration: boolean` y
     `admin_level: "ayuntamiento"|"mancomunidad"|"diputacion"|"gobierno"|""`.
@@ -148,14 +154,20 @@ Se documentan aquí, no dentro de una tarea, porque afectan a varias:
    (`/api/panel/entidad/{id}/resources/`) no cambian». Dentro de
    Suscripciones, la pestaña «Contratos» **sigue** llamándose así: lo que
    se renombra es la sección, no el objeto de dominio `Contract`.
-3. **Vista previa «N municipios».** No hay ninguna ruta que cuente
-   municipios de un `ccaa_code`/`prov_code`/`comarca_code` antes de
-   guardar (`GET /api/places/` solo filtra por `ine_code` y `search`,
-   spec §3.3). Resolución: con `territory_kind === "municipios"` la vista
-   previa se calcula en el cliente contando los códigos escritos; con los
-   tres atajos, la vista previa es el `territory_places_count` **ya
-   guardado** que devuelve `Organization` tras el `PATCH`. Anotado como
-   pendiente de backend.
+3. **Vista previa «N municipios».** El backend **sí** expondrá filtros
+   `ccaa_code`/`prov_code`/`comarca_code` en `GET /api/places/`
+   (coincidencia exacta, combinables con `search`/`ine_code`, respuesta
+   paginada cuyo `count` es el total del filtro) — decidido por el
+   coordinador del bloque al revisar este plan, así que la spec §3.3 se
+   lee ampliada con esos tres parámetros. Resolución: con
+   `territory_kind === "municipios"` la vista previa cuenta los códigos
+   escritos en el cliente (exacto y sin red); con uno de los tres atajos,
+   pide `count` al backend con el filtro correspondiente y el código
+   escrito, **con retardo** (`useDebouncedValue`, igual que el resto de
+   buscadores del panel). `territory_places_count` sigue siendo el valor
+   **guardado**, el que se muestra cuando todavía no se ha escrito ningún
+   código o tras guardar. No queda nada pendiente de backend por este
+   punto.
 4. **Quién edita sede desde plataforma.** La spec §4.3 dice «sede … para
    toda organización» sin acotar rol, pero §2.3 dice «Solo la plataforma
    (`superadmin`) … `place` sí lo puede editar el `titular` de la entidad
@@ -195,7 +207,7 @@ Se documentan aquí, no dentro de una tarea, porque afectan a varias:
 | `lib/config/redirects.ts` (+ `.test.ts`) | Las dos redirecciones permanentes de los renombres, en `lib/` para poder probarlas (mismo patrón que `imagePatterns.ts`/`securityHeaders.ts`). |
 | `lib/metrics/mapScale.ts` (+ `.test.ts`) | Funciones puras: radio y color de burbuja, unión de `by_place` con coordenadas. Sin JSX, sin React. |
 | `hooks/usePlaceSheet.ts` (+ `.test.tsx`) | `GET …/territorio/{org}/places/{ine}/`, errores tipados. |
-| `hooks/usePlaces.ts` (+ `.test.tsx`) | `usePlacesByIne` (coordenadas del mapa, sigue páginas) y `useSearchPlaces` (buscador de sede, una página). |
+| `hooks/usePlaces.ts` (+ `.test.tsx`) | `usePlacesByIne` (coordenadas del mapa, sigue páginas), `useSearchPlaces` (buscador de sede, una página) y `usePlacesCount` (vista previa «N municipios» de un atajo de territorio, solo el `count`). |
 | `hooks/useSetOrganizationTerritory.ts` (+ `.test.tsx`) | `PATCH /api/organizations/{id}/` con `admin_level`/`territory_kind`/`territory_code`, solo esos campos. |
 | `components/metrics/TerritoryMapCanvas.tsx` | La parte `react-leaflet` pura (se importa solo desde el `dynamic`). |
 | `components/metrics/TerritoryMap.tsx` (+ `.test.tsx`) | Envoltorio `"use client"` con `next/dynamic({ssr:false})`, `role="img"` y `aria-label`. |
@@ -823,10 +835,14 @@ export type OrganizationCreateInput = OrganizationCreateRequest & {
 };
 
 /**
- * Fila de `GET /api/places/?ine_code=a,b&search=&page=` (spec §3.3):
- * listado de municipios de solo lectura, autenticado y paginado (solo
- * `is_active`), sin ningún dato personal. Tipo manual hasta
- * `npm run gen:types`.
+ * Fila de `GET /api/places/?ine_code=a,b&search=&ccaa_code=&prov_code=
+ * &comarca_code=&page=` (spec §3.3, ampliada con los tres filtros de
+ * código por decisión del coordinador del bloque): listado de municipios
+ * de solo lectura, autenticado y paginado (solo `is_active`), sin ningún
+ * dato personal. Los tres filtros de código son de coincidencia exacta y
+ * combinables entre sí y con `search`/`ine_code`; el `count` de
+ * `PaginatedPlaceList` es el total que casa con el filtro, no el tamaño
+ * de la página. Tipo manual hasta `npm run gen:types`.
  *
  * `latitude`/`longitude` se declaran `number | null` siguiendo el
  * ejemplo de la spec §3.2. Quien las consuma las pasa igualmente por
@@ -1109,9 +1125,11 @@ lo use todavía.
     Period): UseQueryResult<PlaceSheet, PlaceSheetError>` con
     `PlaceSheetErrorKind = "fuera_de_territorio" | "sin_acceso" |
     "sin_territorio" | "desconocido"`.
-  - `usePlacesByIne(ineCodes: string[]): UseQueryResult<PlaceRow[], PlacesError>`
-    y `useSearchPlaces(search: string): UseQueryResult<PlaceRow[], PlacesError>`,
-    con `PlacesErrorKind = "demasiadas_paginas" | "desconocido"`.
+  - `usePlacesByIne(ineCodes: string[]): UseQueryResult<PlaceRow[], PlacesError>`,
+    `useSearchPlaces(search: string): UseQueryResult<PlaceRow[], PlacesError>`
+    y `usePlacesCount(kind: TerritoryKind, code: string):
+    UseQueryResult<number, PlacesError>`, con
+    `PlacesErrorKind = "demasiadas_paginas" | "desconocido"`.
 
 - [ ] **Step 1: Añadir las rutas a `lib/api/endpoints.ts`**
 
@@ -1174,7 +1192,15 @@ export const TERRITORIO = {
  * Configuración (`?search=`).
  */
 export const PLACES = {
-  /** `GET /api/places/?ine_code=&search=&page=`. */
+  /**
+   * `GET /api/places/?ine_code=&search=&ccaa_code=&prov_code=
+   * &comarca_code=&page=`. Los tres filtros de código son de
+   * coincidencia exacta y combinables con `search`/`ine_code`; el
+   * `count` de la respuesta paginada es el total del filtro, que es lo
+   * que usa la vista previa «N municipios» del formulario de territorio
+   * (`components/plataforma/TerritorioForm.tsx`) para no traerse las
+   * filas.
+   */
   LIST: () => "/api/places/",
 } as const;
 ```
@@ -1541,7 +1567,7 @@ Expected: PASS (5 tests).
 Crea `hooks/usePlaces.test.tsx` con el mismo andamiaje del fichero
 anterior (mock de `@/lib/api/client`, `wrapper` local con su
 `QueryClient` y `apiFetchMock.mockReset()` en el `afterEach`), los
-imports `import { usePlacesByIne, useSearchPlaces } from "./usePlaces";`
+imports `import { usePlacesByIne, usePlacesCount, useSearchPlaces } from "./usePlaces";`
 y `import { buildPlaceRow } from "@/test-utils/fixtures/places";`, y
 estos casos:
 
@@ -1619,6 +1645,45 @@ estos casos:
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error?.kind).toBe("desconocido");
   });
+
+  it("usePlacesCount traduce cada atajo a su filtro y devuelve solo el total", async () => {
+    apiFetchMock.mockResolvedValue({ count: 88, next: null, previous: null, results: [] });
+
+    const { result } = renderHook(() => usePlacesCount("provincia", "20"), { wrapper });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(apiFetchMock).toHaveBeenCalledExactlyOnceWith("/api/places/?prov_code=20");
+    expect(result.current.data).toBe(88);
+  });
+
+  it("usePlacesCount usa ccaa_code y comarca_code para los otros dos atajos", async () => {
+    apiFetchMock.mockResolvedValue({ count: 3, next: null, previous: null, results: [] });
+
+    const ccaa = renderHook(() => usePlacesCount("ccaa", "16"), { wrapper });
+    await waitFor(() => expect(ccaa.result.current.isSuccess).toBe(true));
+    expect(apiFetchMock).toHaveBeenCalledWith("/api/places/?ccaa_code=16");
+
+    const comarca = renderHook(() => usePlacesCount("comarca", "C1"), { wrapper });
+    await waitFor(() => expect(comarca.result.current.isSuccess).toBe(true));
+    expect(apiFetchMock).toHaveBeenCalledWith("/api/places/?comarca_code=C1");
+  });
+
+  it("usePlacesCount no pide nada sin atajo, con «municipios» o sin código", () => {
+    renderHook(() => usePlacesCount("", "20"), { wrapper });
+    renderHook(() => usePlacesCount("municipios", "20069,20045"), { wrapper });
+    renderHook(() => usePlacesCount("provincia", "   "), { wrapper });
+
+    expect(apiFetchMock).not.toHaveBeenCalled();
+  });
+
+  it("un fallo de la vista previa es kind 'desconocido'", async () => {
+    apiFetchMock.mockRejectedValue(new ApiError(500, {}));
+
+    const { result } = renderHook(() => usePlacesCount("provincia", "20"), { wrapper });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.kind).toBe("desconocido");
+  });
 ```
 
 - [ ] **Step 12: Ejecutar y comprobar que falla**
@@ -1653,6 +1718,14 @@ Expected: FAIL — `Failed to resolve import "./usePlaces"`.
  *   Configuración): solo la primera página, que es lo que se pinta en un
  *   desplegable de resultados, y solo a partir de dos caracteres (mismo
  *   umbral que `hooks/useUserSearch.ts`).
+ * - **`usePlacesCount`** (vista previa «N municipios» del formulario de
+ *   territorio): no necesita ninguna fila, solo el `count` de la
+ *   respuesta paginada con el filtro de código correspondiente al atajo
+ *   elegido — por eso pide una sola página y se queda con el total. Los
+ *   tres filtros (`ccaa_code`/`prov_code`/`comarca_code`) los expone el
+ *   backend de este bloque; `municipios` no pasa por aquí, porque su
+ *   recuento es la lista que se está escribiendo y se cuenta en el
+ *   cliente.
  *
  * `staleTime` de 5 minutos en los dos: la geografía no cambia durante
  * una sesión y montar otra vez un selector de municipio no debería
@@ -1663,7 +1736,7 @@ import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
 import { apiFetch } from "@/lib/api/client";
 import { PLACES } from "@/lib/api/endpoints";
-import type { PaginatedPlaceList, PlaceRow } from "@/lib/api/types";
+import type { PaginatedPlaceList, PlaceRow, TerritoryKind } from "@/lib/api/types";
 
 export type PlacesErrorKind = "demasiadas_paginas" | "desconocido";
 
@@ -1738,12 +1811,62 @@ export function useSearchPlaces(search: string): UseQueryResult<PlaceRow[], Plac
     },
   });
 }
+
+/**
+ * Nombre del parámetro de `GET /api/places/` que filtra cada atajo de
+ * territorio (spec §2.2/§3.3). `""` y `municipios` no tienen filtro de
+ * código: el primero no declara territorio y el segundo es una lista
+ * literal que se cuenta en el cliente.
+ */
+const COUNT_FILTER_PARAM: Record<TerritoryKind, string | null> = {
+  "": null,
+  municipios: null,
+  ccaa: "ccaa_code",
+  provincia: "prov_code",
+  comarca: "comarca_code",
+};
+
+/**
+ * Total de municipios activos que casan con el código de un atajo, para
+ * la vista previa «N municipios» de
+ * `components/plataforma/TerritorioForm.tsx`. Se queda con el `count` de
+ * la respuesta paginada y **descarta las filas**: no hay que pintar
+ * ninguna, y una CCAA son cientos de municipios que no interesa traer.
+ */
+export function usePlacesCount(
+  kind: TerritoryKind,
+  code: string,
+): UseQueryResult<number, PlacesError> {
+  const param = COUNT_FILTER_PARAM[kind];
+  const trimmed = code.trim();
+
+  return useQuery<number, PlacesError>({
+    queryKey: ["panel-places-count", kind, trimmed],
+    enabled: param !== null && trimmed.length > 0,
+    staleTime: STALE_TIME_MS,
+    queryFn: async () => {
+      // `enabled` ya lo garantiza; se comprueba en vez de forzar con `!`
+      // para no dejar una rama sin cubrir (mismo criterio que
+      // `usePlaceSheet`).
+      if (param === null) {
+        throw new PlacesError("desconocido", "No se pudo contar los municipios del territorio.");
+      }
+      const params = new URLSearchParams({ [param]: trimmed });
+      try {
+        const data = await apiFetch<PaginatedPlaceList>(`${PLACES.LIST()}?${params.toString()}`);
+        return data.count ?? 0;
+      } catch {
+        throw new PlacesError("desconocido", "No se pudo contar los municipios del territorio.");
+      }
+    },
+  });
+}
 ```
 
 - [ ] **Step 14: Ejecutar y comprobar que pasa**
 
 Run: `npx vitest run hooks/usePlaces.test.tsx`
-Expected: PASS (5 tests).
+Expected: PASS (9 tests).
 
 - [ ] **Step 15: Añadir las claves de error a los cuatro catálogos**
 
@@ -4000,7 +4123,8 @@ entidades sin sede, y dejar que el `titular` edite su propia sede.
 - Modify: `messages/{en,es,eu,ca}.json`
 
 **Interfaces:**
-- Consumes: `useSearchPlaces` (Tarea 3), `Organization` con `place`/
+- Consumes: `useSearchPlaces` y `usePlacesCount` (Tarea 3),
+  `useDebouncedValue` (ya existía), `Organization` con `place`/
   `admin_level`/`territory_kind`/`territory_code`/`territory_places_count`,
   `AdminLevel`, `TerritoryKind`, `OrganizationCreateInput` (Tarea 2).
 - Produces:
@@ -4329,21 +4453,26 @@ y en `hooks/useUpdateOrganization.test.tsx`:
  * administración: §2.3 dice que una administración no se autoasigna
  * territorio, y §2.1 que `admin_level` va en blanco en todo lo demás.
  *
- * **Vista previa «N municipios»** (§4.3): el backend no tiene ninguna
- * ruta que cuente los municipios de un `ccaa_code`/`prov_code`/
- * `comarca_code` **antes** de guardar (`GET /api/places/` solo filtra
- * por `ine_code` y `search`, §3.3), así que la vista previa tiene dos
- * caras: con `municipios` se cuentan los códigos escritos, que es
- * exacto y local; con un atajo se muestra el
- * `territory_places_count` ya guardado, que el backend recalcula al
- * expandir el `OrgScope`. Anotado como pendiente de backend en el plan.
+ * **Vista previa «N municipios»** (§4.3): con `municipios` se cuentan
+ * los códigos escritos, que es exacto y no toca la red; con uno de los
+ * tres atajos se pide el total al backend
+ * (`hooks/usePlaces.ts::usePlacesCount`, que filtra `GET /api/places/`
+ * por `ccaa_code`/`prov_code`/`comarca_code` y se queda con el `count`
+ * de la respuesta paginada), **con retardo** — el código se teclea
+ * carácter a carácter y sin `useDebouncedValue` cada tecla sería una
+ * petición, igual que en `EntidadesTable`/`SedeSelector`. Mientras no
+ * haya código escrito, o justo después de guardar, se muestra el
+ * `territory_places_count` **guardado**, que el backend recalcula al
+ * expandir el `OrgScope` (§2.2).
  */
 import { useId, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import type { OrganizationsErrorKind } from "@/hooks/useOrganizations";
+import { usePlacesCount } from "@/hooks/usePlaces";
 import {
   useSetOrganizationTerritory,
   type SetOrganizationTerritoryInput,
@@ -4403,12 +4532,28 @@ export function TerritorioForm({ organization }: TerritorioFormProps) {
     save.mutate(form);
   }
 
-  const preview =
-    form.territory_kind === "municipios"
-      ? t("plataforma.territorio.previewTyped", { count: countMunicipios(form.territory_code) })
-      : t("plataforma.territorio.previewSaved", {
-          count: organization.territory_places_count ?? 0,
-        });
+  // El código se teclea, así que la cuenta va con retardo; `usePlacesCount`
+  // además se deshabilita sola con «municipios», sin atajo o sin código.
+  const debouncedCode = useDebouncedValue(form.territory_code);
+  const placesCount = usePlacesCount(form.territory_kind, debouncedCode);
+
+  const preview = previewText();
+
+  function previewText(): string {
+    if (form.territory_kind === "municipios") {
+      return t("plataforma.territorio.previewTyped", {
+        count: countMunicipios(form.territory_code),
+      });
+    }
+    if (form.territory_kind === "" || debouncedCode.trim().length === 0) {
+      return t("plataforma.territorio.previewSaved", {
+        count: organization.territory_places_count ?? 0,
+      });
+    }
+    if (placesCount.isError) return t("plataforma.territorio.previewError");
+    if (placesCount.data === undefined) return t("plataforma.territorio.previewLoading");
+    return t("plataforma.territorio.previewFilter", { count: placesCount.data });
+  }
 
   return (
     <Card title={t("plataforma.territorio.cardTitle")}>
@@ -4485,26 +4630,78 @@ export function TerritorioForm({ organization }: TerritorioFormProps) {
 }
 ```
 
-Crea `components/plataforma/TerritorioForm.test.tsx` con, al menos:
+Crea `components/plataforma/TerritorioForm.test.tsx`. Mockea
+`usePlacesCount` (la vista previa de los atajos es lo único que toca la
+red en este formulario) y recuerda la convención de los campos con
+retardo: `fireEvent.change` + `act(() => vi.advanceTimersByTime(300))`,
+nunca `userEvent` con temporizadores falsos, y `vi.useRealTimers()` al
+principio del `afterEach`.
 
 ```tsx
-  it("la vista previa cuenta los códigos escritos con «municipios»", async () => {
-    render(<TerritorioForm organization={buildOrganization({ territory_kind: "municipios" })} />);
+const usePlacesCountMock = vi.hoisted(() => vi.fn());
+vi.mock("@/hooks/usePlaces", async () => {
+  const actual = await vi.importActual<typeof import("@/hooks/usePlaces")>("@/hooks/usePlaces");
+  return { ...actual, usePlacesCount: usePlacesCountMock };
+});
 
+afterEach(() => {
+  vi.useRealTimers();
+  usePlacesCountMock.mockReset();
+});
+
+describe("TerritorioForm", () => {
+  it("la vista previa cuenta los códigos escritos con «municipios», sin pedir nada", async () => {
+    usePlacesCountMock.mockReturnValue({ data: undefined, isError: false, error: null });
+
+    render(<TerritorioForm organization={buildOrganization({ territory_kind: "municipios" })} />);
     await userEvent.type(screen.getByLabelText("Códigos INE separados por comas"), "20069, 20045");
 
     expect(screen.getByText("2 municipios en la lista escrita")).toBeInTheDocument();
   });
 
-  it("con un atajo enseña el recuento ya guardado", () => {
+  it("con un atajo y un código escrito enseña el total que devuelve el backend", () => {
+    vi.useFakeTimers();
+    usePlacesCountMock.mockReturnValue({ data: 88, isError: false, error: null });
+
     render(
       <TerritorioForm
-        organization={buildOrganization({ territory_kind: "provincia", territory_code: "20", territory_places_count: 88 })}
+        organization={buildOrganization({ territory_kind: "provincia", territory_places_count: 0 })}
+      />,
+    );
+    fireEvent.change(screen.getByLabelText("Código del territorio"), { target: { value: "20" } });
+    act(() => vi.advanceTimersByTime(300));
+
+    expect(usePlacesCountMock).toHaveBeenLastCalledWith("provincia", "20");
+    expect(screen.getByText("88 municipios en el código escrito")).toBeInTheDocument();
+  });
+
+  it("sin código escrito todavía, enseña el recuento ya guardado", () => {
+    usePlacesCountMock.mockReturnValue({ data: undefined, isError: false, error: null });
+
+    render(
+      <TerritorioForm
+        organization={buildOrganization({
+          territory_kind: "provincia",
+          territory_code: "",
+          territory_places_count: 88,
+        })}
       />,
     );
 
     expect(screen.getByText("88 municipios en el territorio guardado")).toBeInTheDocument();
   });
+
+  it("si la cuenta falla lo dice, en vez de enseñar un cero que se leería como «ese código no tiene municipios»", () => {
+    vi.useFakeTimers();
+    usePlacesCountMock.mockReturnValue({ data: undefined, isError: true, error: { kind: "desconocido" } });
+
+    render(<TerritorioForm organization={buildOrganization({ territory_kind: "provincia" })} />);
+    fireEvent.change(screen.getByLabelText("Código del territorio"), { target: { value: "20" } });
+    act(() => vi.advanceTimersByTime(300));
+
+    expect(screen.getByText("No se pudo contar los municipios de ese código.")).toBeInTheDocument();
+  });
+});
 ```
 
 y un test unitario de `countMunicipios` (cadena vacía → 0, comas de más
@@ -4701,7 +4898,10 @@ Test en `app/entidad/[slug]/configuracion/page.test.tsx`:
       "codeLabelShortcut": "Territory code",
       "codeLabelMunicipios": "INE codes separated by commas",
       "previewTyped": "{count, plural, one {# municipality in the typed list} other {# municipalities in the typed list}}",
-      "previewSaved": "{count, plural, one {# municipality in the saved territory} other {# municipalities in the saved territory}}"
+      "previewFilter": "{count, plural, one {# municipality for the typed code} other {# municipalities for the typed code}}",
+      "previewSaved": "{count, plural, one {# municipality in the saved territory} other {# municipalities in the saved territory}}",
+      "previewLoading": "Counting municipalities…",
+      "previewError": "The municipalities for that code could not be counted."
     }
   },
   "errors": { "setOrganizationTerritory": {
@@ -4744,7 +4944,10 @@ Test en `app/entidad/[slug]/configuracion/page.test.tsx`:
       "codeLabelShortcut": "Código del territorio",
       "codeLabelMunicipios": "Códigos INE separados por comas",
       "previewTyped": "{count, plural, one {# municipio en la lista escrita} other {# municipios en la lista escrita}}",
-      "previewSaved": "{count, plural, one {# municipio en el territorio guardado} other {# municipios en el territorio guardado}}"
+      "previewFilter": "{count, plural, one {# municipio en el código escrito} other {# municipios en el código escrito}}",
+      "previewSaved": "{count, plural, one {# municipio en el territorio guardado} other {# municipios en el territorio guardado}}",
+      "previewLoading": "Contando municipios…",
+      "previewError": "No se pudo contar los municipios de ese código."
     }
   },
   "errors": { "setOrganizationTerritory": {
@@ -4787,7 +4990,10 @@ Test en `app/entidad/[slug]/configuracion/page.test.tsx`:
       "codeLabelShortcut": "Lurraldearen kodea",
       "codeLabelMunicipios": "INE kodeak komaz bereizita",
       "previewTyped": "{count, plural, one {udalerri # idatzitako zerrendan} other {# udalerri idatzitako zerrendan}}",
-      "previewSaved": "{count, plural, one {udalerri # gordetako lurraldean} other {# udalerri gordetako lurraldean}}"
+      "previewFilter": "{count, plural, one {udalerri # idatzitako kodean} other {# udalerri idatzitako kodean}}",
+      "previewSaved": "{count, plural, one {udalerri # gordetako lurraldean} other {# udalerri gordetako lurraldean}}",
+      "previewLoading": "Udalerriak zenbatzen…",
+      "previewError": "Ezin izan dira kode horretako udalerriak zenbatu."
     }
   },
   "errors": { "setOrganizationTerritory": {
@@ -4830,7 +5036,10 @@ Test en `app/entidad/[slug]/configuracion/page.test.tsx`:
       "codeLabelShortcut": "Codi del territori",
       "codeLabelMunicipios": "Codis INE separats per comes",
       "previewTyped": "{count, plural, one {# municipi a la llista escrita} other {# municipis a la llista escrita}}",
-      "previewSaved": "{count, plural, one {# municipi al territori desat} other {# municipis al territori desat}}"
+      "previewFilter": "{count, plural, one {# municipi per al codi escrit} other {# municipis per al codi escrit}}",
+      "previewSaved": "{count, plural, one {# municipi al territori desat} other {# municipis al territori desat}}",
+      "previewLoading": "Comptant municipis…",
+      "previewError": "No s'han pogut comptar els municipis d'aquest codi."
     }
   },
   "errors": { "setOrganizationTerritory": {
@@ -4841,7 +5050,8 @@ Test en `app/entidad/[slug]/configuracion/page.test.tsx`:
 }
 ```
 
-> **Ojo con el plural en euskera** (`previewTyped`/`previewSaved`): igual
+> **Ojo con el plural en euskera** (`previewTyped`/`previewFilter`/
+> `previewSaved`): igual
 > que el resto de plurales de este catálogo, la rama `one` antepone el
 > numeral (`udalerri #`), coherente con la corrección documentada en
 > `docs/i18n/ESTADO.md`; no lo reescribas como `# udalerri` sin revisar
@@ -5047,14 +5257,17 @@ Fase 6)», con estos puntos (los dos ficheros tienen que quedar
 - El 409 `sin_territorio` en `useMetrics`/`useCompare`/`useExport` y su
   tratamiento como `EmptyState`, no como error.
 - Plataforma: sede/nivel/territorio solo `superadmin` (decisión 4), la
-  vista previa limitada (decisión 3), el aviso «Sede sin municipio» y la
-  sede obligatoria en el alta; Configuración de entidad edita la sede del
-  titular.
-- Los tres **pendientes de backend** que abre este bloque, en la lista
+  vista previa «N municipios» (`usePlacesCount` sobre los filtros
+  `ccaa_code`/`prov_code`/`comarca_code` de `GET /api/places/`, con
+  retardo; `municipios` se cuenta en el cliente y
+  `territory_places_count` es el valor ya guardado — decisión 3), el
+  aviso «Sede sin municipio» y la sede obligatoria en el alta;
+  Configuración de entidad edita la sede del titular.
+- Los **dos pendientes de backend** que abre este bloque, en la lista
   «Pendientes conocidos»: agregado de «organizaciones con sede en el
-  territorio» (decisión 5), recuento de municipios de un atajo antes de
-  guardar (decisión 3), y tasa de asistencia por fila en `by_place`
-  (decisión 1).
+  territorio» (decisión 5) y tasa de asistencia por fila en `by_place`
+  (decisión 1). La vista previa de municipios **no** es uno de ellos: el
+  backend de este mismo bloque expone los tres filtros de código.
 - Actualiza los recuentos que el fichero mantiene: el menú de entidad
   sigue en 14 secciones (Recursos pasa a llamarse Biblioteca), el de
   plataforma en 9 (Contratos pasa a Suscripciones), el de paraguas pasa
