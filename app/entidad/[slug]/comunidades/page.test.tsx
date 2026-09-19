@@ -29,7 +29,7 @@ vi.mock("@/hooks/useCommunityMemberActions", () => ({
   useChangeCommunityMemberRole: useChangeCommunityMemberRoleMock,
 }));
 
-import EntidadComunidadesPage from "./page";
+import EntidadComunidadesPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   getServerSessionMock.mockReset();
@@ -60,6 +60,10 @@ async function renderPage(role = "titular", slug = "alfaville") {
 }
 
 describe("EntidadComunidadesPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Comunidades");
+  });
+
   it("no tiene violaciones de accesibilidad (axe), con una comunidad abierta", async () => {
     const user = userEvent.setup();
     useEntityCommunitiesMock.mockReturnValue({

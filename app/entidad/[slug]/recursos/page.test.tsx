@@ -44,7 +44,7 @@ vi.mock("@/hooks/useDeleteResource", async () => {
   return { ...actual, useDeleteResource: useDeleteResourceMock };
 });
 
-import EntidadRecursosPage from "./page";
+import EntidadRecursosPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   getServerSessionMock.mockReset();
@@ -82,6 +82,10 @@ async function renderPage(role = "titular", slug = "alfaville") {
 }
 
 describe("EntidadRecursosPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Recursos");
+  });
+
   it("titular ve la lista agrupada por categoría con destacados y el botón de nuevo recurso", async () => {
     mockDefaults();
     useResourcesMock.mockReturnValue({

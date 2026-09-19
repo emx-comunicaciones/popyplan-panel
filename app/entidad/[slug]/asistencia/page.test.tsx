@@ -14,7 +14,7 @@ vi.mock("@/hooks/useEntityEvents", async () => {
   return { ...actual, useEntityEvents: useEntityEventsMock };
 });
 
-import EntidadAsistenciaIndexPage from "./page";
+import EntidadAsistenciaIndexPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   getServerSessionMock.mockReset();
@@ -35,6 +35,10 @@ async function renderPage(slug = "alfaville", role = "titular") {
 }
 
 describe("EntidadAsistenciaIndexPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Asistencia");
+  });
+
   it("lista las actividades para elegir cuál gestionar, con enlace a asistencia/{id}", async () => {
     useEntityEventsMock.mockReturnValue({
       data: [

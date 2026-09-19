@@ -10,6 +10,7 @@
  * vuelve a donde estaba al cerrarse).
  */
 import { useId, useRef, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 
 import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
 
@@ -30,12 +31,19 @@ export function ConfirmDialog({
   open,
   title,
   description,
-  confirmLabel = "Confirmar",
-  cancelLabel = "Cancelar",
+  confirmLabel,
+  cancelLabel,
   pending = false,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  // Los textos por defecto de los dos botones salen del catálogo
+  // (`common.confirm`/`common.cancel`, tarea i18n 2) — no se pueden
+  // fijar como valor por defecto del parámetro porque `useTranslations`
+  // es un hook y solo puede llamarse dentro del cuerpo del componente.
+  const t = useTranslations("common");
+  const resolvedConfirmLabel = confirmLabel ?? t("confirm");
+  const resolvedCancelLabel = cancelLabel ?? t("cancel");
   const containerRef = useRef<HTMLDivElement>(null);
   // `useId()` y no un id fijo: hoy ninguna página monta dos de estos a la
   // vez (cada uno vive tras su propio estado de «confirmando»), pero nada
@@ -67,10 +75,10 @@ export function ConfirmDialog({
         {description ? <div className="mt-2 text-sm text-text-secondary">{description}</div> : null}
         <div className="mt-4 flex justify-end gap-2">
           <Button type="button" variant="secondary" onClick={onCancel} disabled={pending}>
-            {cancelLabel}
+            {resolvedCancelLabel}
           </Button>
           <Button type="button" onClick={onConfirm} disabled={pending}>
-            {confirmLabel}
+            {resolvedConfirmLabel}
           </Button>
         </div>
       </div>

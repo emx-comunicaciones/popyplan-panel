@@ -18,7 +18,7 @@ import { buildMe } from "@/test-utils/fixtures/me";
 import { buildOrganization } from "@/test-utils/fixtures/organization";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 
-import PlataformaEntidadesPage from "./page";
+import PlataformaEntidadesPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   vi.useRealTimers();
@@ -27,6 +27,10 @@ afterEach(() => {
 });
 
 describe("PlataformaEntidadesPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Entidades");
+  });
+
   it("no tiene violaciones de accesibilidad (axe), tampoco con el diálogo «Nueva entidad» abierto", async () => {
     apiFetchMock.mockResolvedValue({
       count: 1,

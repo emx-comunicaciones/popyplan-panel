@@ -15,7 +15,7 @@ import { buildHelpRequest } from "@/test-utils/fixtures/helpRequest";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 
-import PlataformaAyudaPage from "./page";
+import PlataformaAyudaPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   getServerSessionMock.mockReset();
@@ -23,6 +23,10 @@ afterEach(() => {
 });
 
 describe("PlataformaAyudaPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Ayuda");
+  });
+
   it("moderator ve los avisos agregados de todas las entidades (ruta de plataforma sin `organization`)", async () => {
     apiFetchMock.mockImplementation(async (path: string) => {
       if (path === "/api/safety/help-requests/pending/") {

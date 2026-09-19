@@ -16,7 +16,7 @@ vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock })
 vi.mock("@/lib/api/serverFetch", () => ({ serverFetch: serverFetchMock }));
 vi.mock("@/hooks/useEntityHome", () => ({ useEntityHome: useEntityHomeMock }));
 
-import EntidadInicioPage from "./page";
+import EntidadInicioPage, { generateMetadata } from "./page";
 
 const TODAY_EVENT = {
   id: "e1",
@@ -72,6 +72,10 @@ async function renderPage(slug = "alfaville", role = "titular") {
 }
 
 describe("EntidadInicioPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Inicio de la entidad");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     useEntityHomeMock.mockReturnValue(homeState());
 

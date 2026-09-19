@@ -40,7 +40,7 @@ vi.mock("@/hooks/useMetrics", async () => {
   return { ...actual, useMetrics: useMetricsMock };
 });
 
-import EntidadProgramaPage from "./page";
+import EntidadProgramaPage, { generateMetadata } from "./page";
 
 function mutationDefaults() {
   return { mutate: vi.fn(), isPending: false, isError: false, error: null };
@@ -76,6 +76,10 @@ async function renderPage(role = "titular", slug = "alfaville", programId = "5")
 }
 
 describe("EntidadProgramaPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Ficha del programa");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     mockDefaults();
     useProgramMock.mockReturnValue({ data: buildProgram(), isError: false, error: null });

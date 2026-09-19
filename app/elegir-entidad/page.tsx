@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { resolveArea } from "@/lib/auth/area";
 import { getServerSession } from "@/lib/auth/session";
 
-export const metadata: Metadata = { title: "Elige una entidad" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("pages.elegirEntidad");
+  return { title: t("title") };
+}
 
 export default async function ElegirEntidadPage() {
+  const t = await getTranslations("pages.elegirEntidad");
   const session = await getServerSession();
   if (!session) {
     redirect("/login");
@@ -22,10 +27,8 @@ export default async function ElegirEntidadPage() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-4 p-4">
-      <h1 className="text-xl font-semibold text-text-base">Elige una entidad</h1>
-      <p className="text-sm text-text-secondary">
-        Tienes rol en varias entidades. Elige con cuál quieres entrar al panel.
-      </p>
+      <h1 className="text-xl font-semibold text-text-base">{t("title")}</h1>
+      <p className="text-sm text-text-secondary">{t("description")}</p>
       <ul className="flex flex-col gap-2">
         {area.orgs.map((org) => (
           <li key={org.slug}>

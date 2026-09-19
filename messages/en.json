@@ -8,12 +8,253 @@
     "loading": "Loading…",
     "noAccess": "No access",
     "backHome": "Back to home",
-    "items": "{count, plural, one {# item} other {# items}}"
+    "items": "{count, plural, one {# item} other {# items}}",
+    "confirm": "Confirm"
   },
   "language": {
     "title": "Language",
     "es": "Spanish",
     "eu": "Basque",
     "ca": "Catalan"
+  },
+  "ui": {
+    "skipLink": "Skip to main content",
+    "pageHelp": {
+      "whatYouCanDo": "What you can do here",
+      "audienceLabel": "Who sees it:",
+      "ariaLabel": "Help: {title}"
+    }
+  },
+  "auth": {
+    "logout": {
+      "action": "Log out",
+      "pending": "Logging out…"
+    },
+    "login": {
+      "brand": "Popyplan · Panel",
+      "subtitle": "Sign in with your Popyplan account.",
+      "usernameLabel": "Username or email",
+      "passwordLabel": "Password",
+      "submit": "Log in",
+      "submitting": "Logging in…",
+      "errors": {
+        "invalidCredentials": "Incorrect username or password.",
+        "tooManyAttempts": "Too many attempts; wait a minute.",
+        "generic": "Could not log in. Please try again."
+      }
+    }
+  },
+  "menu": {
+    "entidad": {
+      "navLabel": "Entity sections",
+      "inicio": "Home",
+      "personas": "People",
+      "comunidades": "Communities",
+      "actividades": "Activities",
+      "asistencia": "Attendance",
+      "comunicaciones": "Announcements",
+      "encuestas": "Surveys",
+      "recursos": "Resources",
+      "familias": "Families",
+      "programas": "Programs",
+      "reportes": "Reports",
+      "guardia": "On-call",
+      "informes": "Reports (export)",
+      "configuracion": "Settings"
+    },
+    "paraguas": {
+      "navLabel": "Umbrella entity sections",
+      "inicio": "Home",
+      "informes": "Reports (export)"
+    },
+    "plataforma": {
+      "navLabel": "Platform sections",
+      "inicio": "Home",
+      "entidades": "Entities",
+      "reportes": "Reports",
+      "ayuda": "Help",
+      "verificaciones": "Verifications",
+      "roles": "Roles",
+      "auditoria": "Audit log",
+      "metricas": "Metrics",
+      "contratos": "Contracts"
+    }
+  },
+  "layout": {
+    "plataforma": {
+      "brand": "Popyplan · Platform"
+    },
+    "entidad": {
+      "loadErrorTitle": "Could not load the entity's record",
+      "loadErrorDescription": "Contact details and colors are not available right now."
+    },
+    "paraguas": {
+      "loadErrorTitle": "Could not load the umbrella entity's record"
+    },
+    "footer": {
+      "accessibility": "Accessibility"
+    }
+  },
+  "pages": {
+    "home": {
+      "noAccessTitle": "You don't have access to any panel area",
+      "noAccessDescription": "Your account has no platform role or entity role with panel access assigned. Contact whoever manages your entity or Popyplan."
+    },
+    "error": {
+      "title": "Something went wrong",
+      "description": "We couldn't load this page. You can retry or sign in again.",
+      "retry": "Retry",
+      "loginLink": "Go to sign in"
+    },
+    "globalError": {
+      "title": "Something went wrong",
+      "description": "We couldn't load the panel. You can retry.",
+      "retry": "Retry"
+    },
+    "notFound": {
+      "title": "Page not found",
+      "description": "The address you opened doesn't exist or is no longer available.",
+      "backLink": "Back to home"
+    },
+    "login": {
+      "title": "Log in"
+    },
+    "elegirEntidad": {
+      "title": "Choose an entity",
+      "description": "You have a role in several entities. Choose which one you want to enter the panel with."
+    },
+    "accessibility": {
+      "title": "Accessibility statement"
+    },
+    "entidad": {
+      "inicio": {
+        "title": "Entity home"
+      },
+      "personas": {
+        "title": "People"
+      },
+      "personaFicha": {
+        "title": "Person record"
+      },
+      "comunidades": {
+        "title": "Communities"
+      },
+      "actividades": {
+        "title": "Entity activities"
+      },
+      "asistencia": {
+        "title": "Attendance"
+      },
+      "asistenciaEvento": {
+        "title": "Activity attendance"
+      },
+      "comunicaciones": {
+        "title": "Announcements"
+      },
+      "encuestas": {
+        "title": "Surveys"
+      },
+      "encuestaResultados": {
+        "title": "Survey results"
+      },
+      "recursos": {
+        "title": "Resources"
+      },
+      "familias": {
+        "title": "Families"
+      },
+      "programas": {
+        "title": "Programs"
+      },
+      "programaFicha": {
+        "title": "Program record"
+      },
+      "reportes": {
+        "title": "Entity reports"
+      },
+      "reporteDetalle": {
+        "title": "Report detail (entity)"
+      },
+      "guardia": {
+        "title": "On-call"
+      },
+      "informes": {
+        "title": "Entity reports (export)"
+      },
+      "configuracion": {
+        "title": "Entity settings"
+      }
+    },
+    "paraguas": {
+      "inicio": {
+        "title": "Umbrella entity home"
+      },
+      "informes": {
+        "title": "Umbrella entity reports (export)"
+      }
+    },
+    "plataforma": {
+      "inicio": {
+        "title": "Platform home"
+      },
+      "entidades": {
+        "title": "Entities"
+      },
+      "entidadFicha": {
+        "title": "Entity record (platform)"
+      },
+      "reportes": {
+        "title": "Platform reports"
+      },
+      "reporteDetalle": {
+        "title": "Report detail (platform)"
+      },
+      "ayuda": {
+        "title": "Help"
+      },
+      "verificaciones": {
+        "title": "Verifications"
+      },
+      "roles": {
+        "title": "Platform roles"
+      },
+      "auditoria": {
+        "title": "Audit log"
+      },
+      "metricas": {
+        "title": "Platform metrics"
+      },
+      "contratos": {
+        "title": "Contracts"
+      }
+    }
+  },
+  "accessibility": {
+    "heading": "Popyplan accessibility statement",
+    "scope": {
+      "heading": "Scope",
+      "body": "This statement covers the <strong>popyplan-panel</strong> web panel (this site, served under this same domain) and the <strong>Popyplan</strong> mobile app (iOS and Android). It does not cover embedded third-party content (for example, images or documents uploaded by an entity) or sites linked outside these two products."
+    },
+    "status": {
+      "heading": "Compliance status",
+      "body": "This site is <strong>partially compliant</strong> with level AA of the UNE-EN 301549:2022 Standard (WCAG 2.1), due to the exceptions described in «Non-accessible content». It will become «fully compliant» once the automatic audit (axe) and manual keyboard tests cover every page without documented exceptions (Phase 6, task W5 of this panel)."
+    },
+    "nonAccessible": {
+      "heading": "Non-accessible content",
+      "intro": "As of this statement, the following panel pages don't yet have a dedicated automatic accessibility test (axe) — the coverage chosen so far is representative of the three areas and the shared patterns (tables, dialogs with focus trapping, charts, forms), but not exhaustive:",
+      "list": "Communities, Activities, Reports, On-call, Settings, Announcements, Surveys and Resources of the entity panel; Reports of the umbrella entity panel; and Audit log, Help, Verifications, Roles, Reports, Metrics and entity record of the platform panel. Extending this coverage is mechanical work, documented in <code>CLAUDE.md</code> («Accessibility»)."
+    },
+    "preparation": {
+      "heading": "Preparation of this statement",
+      "body": "This statement was prepared on September 5, 2026. It was reviewed through automatic evaluation (<code>axe-core</code> on the pages with a dedicated test, see «Non-accessible content») and manual keyboard and screen reader review of the main flows across the panel's three areas."
+    },
+    "contact": {
+      "heading": "Feedback and contact details",
+      "body": "You can report any accessibility problem, or request information in an accessible format, by writing to <email>{contactEmail}</email>."
+    },
+    "procedure": {
+      "heading": "Enforcement procedure",
+      "body": "If after contacting us you don't get a response or aren't satisfied with it, you can file a complaint under article 13 of <rd>Royal Decree 1112/2018</rd>."
+    }
   }
 }

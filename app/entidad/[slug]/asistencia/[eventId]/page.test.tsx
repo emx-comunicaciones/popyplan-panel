@@ -15,7 +15,7 @@ vi.mock("@/hooks/useAttendees", () => ({ useAttendees: useAttendeesMock }));
 vi.mock("@/hooks/useMarkAttendance", () => ({ useMarkAttendance: useMarkAttendanceMock }));
 vi.mock("@/hooks/useCheckin", () => ({ useCheckin: useCheckinMock }));
 
-import EntidadAsistenciaPage from "./page";
+import EntidadAsistenciaPage, { generateMetadata } from "./page";
 
 const ATTENDEE = {
   user: { id: 42, username: "ana", public_name: "Ana", photo: null, verification_level: 1 },
@@ -49,6 +49,10 @@ async function renderPage(slug = "alfaville", eventId = "event-uuid-1", role = "
 }
 
 describe("EntidadAsistenciaPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Asistencia de la actividad");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     useAttendeesMock.mockReturnValue({ data: [ATTENDEE], isError: false, error: null });
     useMarkAttendanceMock.mockReturnValue({ mutate: vi.fn(), isPending: false, variables: undefined });

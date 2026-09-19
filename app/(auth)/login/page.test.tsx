@@ -12,7 +12,7 @@ import { notifySessionExpired, resetSessionEventsForTests } from "@/lib/auth/ses
 const loginMock = vi.hoisted(() => vi.fn());
 vi.mock("@/hooks/useAuth", () => ({ login: loginMock }));
 
-import LoginPage from "./page";
+import LoginPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   loginMock.mockReset();
@@ -20,6 +20,10 @@ afterEach(() => {
 });
 
 describe("LoginPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Iniciar sesión");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     const { container } = render(<LoginPage />);
 

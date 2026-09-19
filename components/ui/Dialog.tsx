@@ -18,6 +18,7 @@
  * aquí ni en `ConfirmDialog`, así que no hace falta guardarlo.
  */
 import { useRef, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 
 import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
 
@@ -41,6 +42,7 @@ export function Dialog({
   widthClassName = "max-w-lg",
   pending = false,
 }: DialogProps) {
+  const t = useTranslations("common");
   const containerRef = useRef<HTMLDivElement>(null);
   useFocusTrap(containerRef, open, () => {
     if (!pending) onClose();
@@ -69,7 +71,7 @@ export function Dialog({
               if (!pending) onClose();
             }}
             disabled={pending}
-            aria-label="Cerrar"
+            aria-label={t("close")}
             className="text-lg leading-none text-text-secondary hover:text-text-base focus-visible:outline-primary-700"
           >
             ×

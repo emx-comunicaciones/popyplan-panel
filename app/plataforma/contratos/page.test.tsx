@@ -19,7 +19,7 @@ import { buildOrganization } from "@/test-utils/fixtures/organization";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import { buildContract, buildInvoice, buildPricingTier } from "@/test-utils/fixtures/billing";
 
-import PlataformaContratosPage from "./page";
+import PlataformaContratosPage, { generateMetadata } from "./page";
 
 const CONTRACT = buildContract({
   id: 3,
@@ -59,6 +59,10 @@ async function renderPage(role: string | null = "superadmin") {
 }
 
 describe("PlataformaContratosPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Contratos");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     mockApiFetch();
     const { container } = await renderPage("superadmin");

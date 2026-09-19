@@ -14,7 +14,7 @@ import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 
-import PlataformaRolesPage from "./page";
+import PlataformaRolesPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   vi.useRealTimers();
@@ -23,6 +23,10 @@ afterEach(() => {
 });
 
 describe("PlataformaRolesPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Roles de plataforma");
+  });
+
   it("superadmin ve los roles vigentes", async () => {
     apiFetchMock.mockResolvedValueOnce([
       { user: 1, username: "ana", role: "moderator", granted_by: 2, created_at: "2026-09-01T00:00:00Z" },

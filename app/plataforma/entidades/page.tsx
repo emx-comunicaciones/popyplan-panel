@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { EntidadesTable } from "@/components/plataforma/EntidadesTable";
@@ -6,7 +7,10 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { isPlatformRole, plataformaMenuFor } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
-export const metadata: Metadata = { title: "Entidades" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("pages.plataforma.entidades");
+  return { title: t("title") };
+}
 
 export default async function PlataformaEntidadesPage() {
   const session = await getServerSession();

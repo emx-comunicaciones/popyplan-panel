@@ -22,7 +22,7 @@ vi.mock("@/hooks/useCreateSurvey", async () => {
   return { ...actual, useCreateSurvey: useCreateSurveyMock };
 });
 
-import EntidadEncuestasPage from "./page";
+import EntidadEncuestasPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   getServerSessionMock.mockReset();
@@ -44,6 +44,10 @@ async function renderPage(role = "titular", slug = "alfaville") {
 }
 
 describe("EntidadEncuestasPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Encuestas");
+  });
+
   it("titular ve el formulario de creación y la lista con enlace a resultados", async () => {
     useSurveysMock.mockReturnValue({ data: [buildSurvey()], isError: false, error: null });
     useCreateSurveyMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false, error: null });

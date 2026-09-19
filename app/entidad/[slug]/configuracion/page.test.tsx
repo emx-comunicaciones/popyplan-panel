@@ -35,7 +35,7 @@ vi.mock("@/hooks/useOrgReferences", () => ({
 }));
 vi.mock("@/hooks/useOrgScope", () => ({ useOrgScope: useOrgScopeMock }));
 
-import EntidadConfiguracionPage from "./page";
+import EntidadConfiguracionPage, { generateMetadata } from "./page";
 
 const REFERENCE = {
   id: 1,
@@ -97,6 +97,10 @@ async function renderPage(role = "titular", slug = "alfaville") {
 }
 
 describe("EntidadConfiguracionPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Configuración de la entidad");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     setDefaultMocks();
     useOrgMembersMock.mockReturnValue({

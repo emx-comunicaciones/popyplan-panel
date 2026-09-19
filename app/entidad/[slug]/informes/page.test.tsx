@@ -14,7 +14,7 @@ vi.mock("@/hooks/useExport", async () => {
   return { ...actual, useExport: useExportMock };
 });
 
-import EntidadInformesPage from "./page";
+import EntidadInformesPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   getServerSessionMock.mockReset();
@@ -35,6 +35,10 @@ async function renderPage(role = "titular", slug = "alfaville") {
 }
 
 describe("EntidadInformesPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Informes de la entidad");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     const mutate = vi.fn();
     useExportMock.mockReturnValue({ mutate, isPending: false, error: null });

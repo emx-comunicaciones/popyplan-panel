@@ -15,9 +15,16 @@ export const PARAGUAS_MENU_ITEMS = ["inicio", "informes"] as const;
 
 export type ParaguasMenuItem = (typeof PARAGUAS_MENU_ITEMS)[number];
 
+/**
+ * Claves de traducción de cada sección (tarea i18n 2), no el texto en
+ * español: `app/paraguas/[slug]/layout.tsx` (Server Component) resuelve
+ * `t(PARAGUAS_MENU_LABELS[item])` con `getTranslations()`. Mismo patrón
+ * que `lib/auth/entidadMenu.ts::ENTIDAD_MENU_LABELS` — las claves reales
+ * viven en `messages/*.json::menu.paraguas.*`.
+ */
 export const PARAGUAS_MENU_LABELS: Record<ParaguasMenuItem, string> = {
-  inicio: "Inicio",
-  informes: "Informes",
+  inicio: "menu.paraguas.inicio",
+  informes: "menu.paraguas.informes",
 };
 
 /** Roles con `exportar_informes` (`docs/PANEL.md` §2.1). */

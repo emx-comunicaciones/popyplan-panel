@@ -8,12 +8,253 @@
     "loading": "Kargatzen…",
     "noAccess": "Sarbiderik ez",
     "backHome": "Itzuli hasierara",
-    "items": "{count, plural, one {# elementu} other {# elementu}}"
+    "items": "{count, plural, one {# elementu} other {# elementu}}",
+    "confirm": "Berretsi"
   },
   "language": {
     "title": "Hizkuntza",
     "es": "Gaztelania",
     "eu": "Euskara",
     "ca": "Katalana"
+  },
+  "ui": {
+    "skipLink": "Saltatu edukira",
+    "pageHelp": {
+      "whatYouCanDo": "Zer egin dezakezu hemen",
+      "audienceLabel": "Nork ikusten duen:",
+      "ariaLabel": "Laguntza: {title}"
+    }
+  },
+  "auth": {
+    "logout": {
+      "action": "Saioa itxi",
+      "pending": "Saioa isten…"
+    },
+    "login": {
+      "brand": "Popyplan · Panela",
+      "subtitle": "Hasi saioa zure Popyplan kontuarekin.",
+      "usernameLabel": "Erabiltzailea edo emaila",
+      "passwordLabel": "Pasahitza",
+      "submit": "Sartu",
+      "submitting": "Sartzen…",
+      "errors": {
+        "invalidCredentials": "Erabiltzailea edo pasahitza ez dira zuzenak.",
+        "tooManyAttempts": "Saiakera gehiegi; itxaron minutu bat.",
+        "generic": "Ezin izan da saioa hasi. Saiatu berriro."
+      }
+    }
+  },
+  "menu": {
+    "entidad": {
+      "navLabel": "Erakundearen atalak",
+      "inicio": "Hasiera",
+      "personas": "Pertsonak",
+      "comunidades": "Komunitateak",
+      "actividades": "Jarduerak",
+      "asistencia": "Bertaratzea",
+      "comunicaciones": "Jakinarazpenak",
+      "encuestas": "Inkestak",
+      "recursos": "Baliabideak",
+      "familias": "Familiak",
+      "programas": "Programak",
+      "reportes": "Salaketak",
+      "guardia": "Txanda",
+      "informes": "Txostenak",
+      "configuracion": "Konfigurazioa"
+    },
+    "paraguas": {
+      "navLabel": "Erakunde aterkiaren atalak",
+      "inicio": "Hasiera",
+      "informes": "Txostenak"
+    },
+    "plataforma": {
+      "navLabel": "Plataformaren atalak",
+      "inicio": "Hasiera",
+      "entidades": "Erakundeak",
+      "reportes": "Salaketak",
+      "ayuda": "Laguntza",
+      "verificaciones": "Egiaztapenak",
+      "roles": "Rolak",
+      "auditoria": "Auditoria",
+      "metricas": "Metrikak",
+      "contratos": "Kontratuak"
+    }
+  },
+  "layout": {
+    "plataforma": {
+      "brand": "Popyplan · Plataforma"
+    },
+    "entidad": {
+      "loadErrorTitle": "Ezin izan da erakundearen fitxa kargatu",
+      "loadErrorDescription": "Kontaktu-datuak eta koloreak ez daude eskuragarri une honetan."
+    },
+    "paraguas": {
+      "loadErrorTitle": "Ezin izan da erakunde aterkiaren fitxa kargatu"
+    },
+    "footer": {
+      "accessibility": "Irisgarritasuna"
+    }
+  },
+  "pages": {
+    "home": {
+      "noAccessTitle": "Ez duzu panelaren atal batera ere sarbiderik",
+      "noAccessDescription": "Zure kontuak ez du plataformako rolik ez eta panela duen erakunde-rolik ere esleituta. Jarri harremanetan zure erakundea kudeatzen duenarekin edo Popyplanekin."
+    },
+    "error": {
+      "title": "Zerbait hutsegin du",
+      "description": "Ezin izan dugu orri hau kargatu. Berriro saiatu edo saioa berriro has dezakezu.",
+      "retry": "Saiatu berriro",
+      "loginLink": "Joan saioa hasteko orrira"
+    },
+    "globalError": {
+      "title": "Zerbait hutsegin du",
+      "description": "Ezin izan dugu panela kargatu. Berriro saia zaitezke.",
+      "retry": "Saiatu berriro"
+    },
+    "notFound": {
+      "title": "Orria ez da aurkitu",
+      "description": "Ireki duzun helbidea ez da existitzen edo jada ez dago eskuragarri.",
+      "backLink": "Itzuli hasierara"
+    },
+    "login": {
+      "title": "Hasi saioa"
+    },
+    "elegirEntidad": {
+      "title": "Aukeratu erakunde bat",
+      "description": "Hainbat erakundetan duzu rola. Aukeratu zeinekin sartu nahi duzun panelera."
+    },
+    "accessibility": {
+      "title": "Irisgarritasun adierazpena"
+    },
+    "entidad": {
+      "inicio": {
+        "title": "Erakundearen hasiera"
+      },
+      "personas": {
+        "title": "Pertsonak"
+      },
+      "personaFicha": {
+        "title": "Pertsonaren fitxa"
+      },
+      "comunidades": {
+        "title": "Komunitateak"
+      },
+      "actividades": {
+        "title": "Erakundearen jarduerak"
+      },
+      "asistencia": {
+        "title": "Bertaratzea"
+      },
+      "asistenciaEvento": {
+        "title": "Jardueraren bertaratzea"
+      },
+      "comunicaciones": {
+        "title": "Jakinarazpenak"
+      },
+      "encuestas": {
+        "title": "Inkestak"
+      },
+      "encuestaResultados": {
+        "title": "Inkestaren emaitzak"
+      },
+      "recursos": {
+        "title": "Baliabideak"
+      },
+      "familias": {
+        "title": "Familiak"
+      },
+      "programas": {
+        "title": "Programak"
+      },
+      "programaFicha": {
+        "title": "Programaren fitxa"
+      },
+      "reportes": {
+        "title": "Erakundearen salaketak"
+      },
+      "reporteDetalle": {
+        "title": "Salaketaren xehetasuna (erakundea)"
+      },
+      "guardia": {
+        "title": "Txanda"
+      },
+      "informes": {
+        "title": "Erakundearen txostenak"
+      },
+      "configuracion": {
+        "title": "Erakundearen konfigurazioa"
+      }
+    },
+    "paraguas": {
+      "inicio": {
+        "title": "Erakunde aterkiaren hasiera"
+      },
+      "informes": {
+        "title": "Erakunde aterkiaren txostenak"
+      }
+    },
+    "plataforma": {
+      "inicio": {
+        "title": "Plataformaren hasiera"
+      },
+      "entidades": {
+        "title": "Erakundeak"
+      },
+      "entidadFicha": {
+        "title": "Erakundearen fitxa (plataforma)"
+      },
+      "reportes": {
+        "title": "Plataformaren salaketak"
+      },
+      "reporteDetalle": {
+        "title": "Salaketaren xehetasuna (plataforma)"
+      },
+      "ayuda": {
+        "title": "Laguntza"
+      },
+      "verificaciones": {
+        "title": "Egiaztapenak"
+      },
+      "roles": {
+        "title": "Plataformako rolak"
+      },
+      "auditoria": {
+        "title": "Auditoria"
+      },
+      "metricas": {
+        "title": "Plataformaren metrikak"
+      },
+      "contratos": {
+        "title": "Kontratuak"
+      }
+    }
+  },
+  "accessibility": {
+    "heading": "Popyplan-en irisgarritasun adierazpena",
+    "scope": {
+      "heading": "Norainokoa",
+      "body": "Adierazpen honek <strong>popyplan-panel</strong> web panela (gune hau bera, domeinu berean zerbitzatua) eta <strong>Popyplan</strong> mugikorreko aplikazioa (iOS eta Android) hartzen ditu. Ez ditu hartzen txertatutako hirugarrenen edukiak (adibidez, erakunde batek igotako irudi edo dokumentuak) ez eta bi produktu hauetatik kanpo estekatutako guneak."
+    },
+    "status": {
+      "heading": "Betetze-egoera",
+      "body": "Gune hau <strong>partzialki bateragarria</strong> da UNE-EN 301549:2022 Arauaren (WCAG 2.1) AA mailarekin, «Eduki ez-irisgarria» atalean azaltzen diren salbuespenengatik. «Erabat bateragarri» izango da azterketa automatikoak (axe) eta teklatu bidezko proba eskuzkoek orri guztiak salbuespenik gabe hartzen dituztenean (6. Fasea, panel honen W5 zeregina)."
+    },
+    "nonAccessible": {
+      "heading": "Eduki ez-irisgarria",
+      "intro": "Adierazpen hau egiteko datan, panelaren ondorengo orriek ez dute oraindik irisgarritasunerako proba automatiko berezirik (axe) — orain arte aukeratutako estaldura hiru arloen eta ohiko ereduen (taulak, foku-atxikitzea duten elkarrizketa-koadroak, grafikoak, formularioak) adierazgarria da, ez ordea osoa:",
+      "list": "Erakundearen panelaren Komunitateak, Jarduerak, Salaketak, Txanda, Konfigurazioa, Jakinarazpenak, Inkestak eta Baliabideak; erakunde aterkiaren panelaren Txostenak; eta plataformaren panelaren Auditoria, Laguntza, Egiaztapenak, Rolak, Salaketak, Metrikak eta erakundearen fitxa. Estaldura hori zabaltzea lan mekanikoa da, <code>CLAUDE.md</code>-n dokumentatua («Irisgarritasuna»)."
+    },
+    "preparation": {
+      "heading": "Adierazpenaren prestaketa",
+      "body": "Adierazpen hau 2026ko irailaren 5ean prestatu zen. Ebaluazio automatikoaren bidez berrikusi zen (<code>axe-core</code>, proba berezia duten orrietan, ikus «Eduki ez-irisgarria») eta teklatu eta pantaila-irakurgailu bidezko berrikuspen eskuzkoaren bidez, panelaren hiru arloetako fluxu nagusietan."
+    },
+    "contact": {
+      "heading": "Oharrak eta kontaktu-datuak",
+      "body": "Irisgarritasun-arazo bat jakinarazi dezakezu, edo informazioa formatu irisgarrian eska dezakezu, <email>{contactEmail}</email> helbidera idatzita."
+    },
+    "procedure": {
+      "heading": "Aplikazio-prozedura",
+      "body": "Kontaktu-helbidera idatzi ondoren erantzunik jasotzen ez baduzu edo jasotakoarekin ados ez bazaude, desadostasun-kexa edo -erreklamazio bat aurkez dezakezu, <rd>1112/2018 Errege Dekretuaren</rd> 13. artikuluaren arabera."
+    }
   }
 }

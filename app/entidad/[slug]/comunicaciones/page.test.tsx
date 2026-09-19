@@ -31,7 +31,7 @@ vi.mock("@/hooks/useEntityCommunities", async () => {
   return { ...actual, useEntityCommunities: useEntityCommunitiesMock };
 });
 
-import EntidadComunicacionesPage from "./page";
+import EntidadComunicacionesPage, { generateMetadata } from "./page";
 
 const community = {
   id: "c-1",
@@ -64,6 +64,10 @@ async function renderPage(role = "titular", slug = "alfaville") {
 }
 
 describe("EntidadComunicacionesPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Comunicaciones");
+  });
+
   it("titular ve el formulario de redacción y el historial", async () => {
     useAnnouncementsMock.mockReturnValue({ data: [buildAnnouncement()], isError: false, error: null });
     useEntityCommunitiesMock.mockReturnValue({ data: [community], isError: false, error: null });

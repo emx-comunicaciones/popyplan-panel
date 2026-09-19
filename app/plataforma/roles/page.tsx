@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { RolesPanel } from "@/components/plataforma/RolesPanel";
@@ -6,7 +7,10 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { isPlatformRole, plataformaMenuFor } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
-export const metadata: Metadata = { title: "Roles de plataforma" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("pages.plataforma.roles");
+  return { title: t("title") };
+}
 
 export default async function PlataformaRolesPage() {
   const session = await getServerSession();

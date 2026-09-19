@@ -17,7 +17,7 @@ import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import { buildBillingSummary } from "@/test-utils/fixtures/billing";
 
-import PlataformaInicioPage from "./page";
+import PlataformaInicioPage, { generateMetadata } from "./page";
 
 const ORGS_PAGE = (count: number) => ({
   count,
@@ -64,6 +64,10 @@ afterEach(() => {
 });
 
 describe("PlataformaInicioPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Inicio de plataforma");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     mockApiFetch();
     getServerSessionMock.mockResolvedValue({

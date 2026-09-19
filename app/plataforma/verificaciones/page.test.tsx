@@ -16,7 +16,7 @@ import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 
-import PlataformaVerificacionesPage from "./page";
+import PlataformaVerificacionesPage, { generateMetadata } from "./page";
 
 const REVIEW = {
   id: "r1",
@@ -40,6 +40,10 @@ afterEach(() => {
 });
 
 describe("PlataformaVerificacionesPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Verificaciones");
+  });
+
   it("verifier ve la cola con el recurso y puede aprobar/rechazar", async () => {
     apiFetchMock.mockResolvedValueOnce({ count: 1, next: null, previous: null, results: [REVIEW] });
     getServerSessionMock.mockResolvedValue({

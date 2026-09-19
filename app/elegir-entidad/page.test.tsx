@@ -8,13 +8,17 @@ import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
-import ElegirEntidadPage from "./page";
+import ElegirEntidadPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   getServerSessionMock.mockReset();
 });
 
 describe("ElegirEntidadPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Elige una entidad");
+  });
+
   it("lista las entidades disponibles con enlace a cada panel", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",

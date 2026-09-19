@@ -36,7 +36,7 @@ vi.mock("@/hooks/useCompare", async () => {
   return { ...actual, useCompare: useCompareMock };
 });
 
-import PlataformaMetricasPage from "./page";
+import PlataformaMetricasPage, { generateMetadata } from "./page";
 
 function mockMetricsByGroup(
   handlers: Partial<Record<"base" | MetricsGroupBy, ReturnType<typeof buildMetricsResponse>>>,
@@ -72,6 +72,10 @@ afterEach(() => {
 });
 
 describe("PlataformaMetricasPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Métricas de plataforma");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
     mockMetricsByGroup({

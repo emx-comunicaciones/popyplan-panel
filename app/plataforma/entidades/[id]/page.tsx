@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 
 import { EntidadDetail } from "@/components/plataforma/EntidadDetail";
@@ -6,7 +7,10 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { isPlatformRole, plataformaMenuFor } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
-export const metadata: Metadata = { title: "Ficha de la entidad (plataforma)" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("pages.plataforma.entidadFicha");
+  return { title: t("title") };
+}
 
 /**
  * `Organization.id` es un entero en el backend (`/api/organizations/{id}/`):

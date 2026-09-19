@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { ProgramaDetalle } from "@/components/entidad/ProgramaDetalle";
@@ -7,7 +8,10 @@ import { isEntidadPanelRole } from "@/lib/auth/area";
 import { entidadMenuFor } from "@/lib/auth/entidadMenu";
 import { getServerSession } from "@/lib/auth/session";
 
-export const metadata: Metadata = { title: "Ficha del programa" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("pages.entidad.programaFicha");
+  return { title: t("title") };
+}
 
 /**
  * Ficha de un programa (`docs/PANEL.md` §12): activar/cerrar/editar solo

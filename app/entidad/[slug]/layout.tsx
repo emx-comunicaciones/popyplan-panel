@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { LogoutButton } from "@/components/LogoutButton";
 import { PageHelp } from "@/components/help/PageHelp";
@@ -23,6 +24,7 @@ export default async function EntidadLayout({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const t = await getTranslations();
   const session = await getServerSession();
   if (!session) {
     redirect("/login");
@@ -110,13 +112,13 @@ export default async function EntidadLayout({
       {!orgResult.ok ? (
         <div className="p-4">
           <ErrorState
-            title="No se pudo cargar la ficha de la entidad"
-            description="Los datos de contacto y colores no están disponibles ahora mismo."
+            title={t("layout.entidad.loadErrorTitle")}
+            description={t("layout.entidad.loadErrorDescription")}
           />
         </div>
       ) : null}
       <div className="flex flex-1">
-        <nav aria-label="Secciones de la entidad" className="w-56 shrink-0 border-r border-border bg-white p-4">
+        <nav aria-label={t("menu.entidad.navLabel")} className="w-56 shrink-0 border-r border-border bg-white p-4">
           <ul className="flex flex-col gap-1">
             {menu.map((item) => (
               <li key={item}>
@@ -124,7 +126,7 @@ export default async function EntidadLayout({
                   href={item === "inicio" ? `/entidad/${slug}` : `/entidad/${slug}/${item}`}
                   className="block rounded-md px-3 py-2 text-sm font-medium text-text-form hover:bg-border-light"
                 >
-                  {ENTIDAD_MENU_LABELS[item]}
+                  {t(ENTIDAD_MENU_LABELS[item])}
                 </Link>
               </li>
             ))}

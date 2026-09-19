@@ -26,7 +26,7 @@ vi.mock("@/hooks/useAcknowledgeHelpRequest", () => ({
 vi.mock("@/hooks/useOrganization", () => ({ useOrganization: useOrganizationMock }));
 vi.mock("@/hooks/useUpdateOrganization", () => ({ useUpdateOrganization: useUpdateOrganizationMock }));
 
-import EntidadGuardiaPage from "./page";
+import EntidadGuardiaPage, { generateMetadata } from "./page";
 
 function idleMutation() {
   return { mutate: vi.fn(), isPending: false, isError: false, isSuccess: false };
@@ -54,6 +54,10 @@ async function renderPage(role = "titular", slug = "alfaville") {
 }
 
 describe("EntidadGuardiaPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Guardia");
+  });
+
   it("lista los avisos pendientes y «He contactado» llama a la mutación", async () => {
     const request = buildHelpRequest({ id: "hr-1", acknowledged_at: null });
     usePendingHelpRequestsMock.mockReturnValue({ data: [request], isError: false, error: null });

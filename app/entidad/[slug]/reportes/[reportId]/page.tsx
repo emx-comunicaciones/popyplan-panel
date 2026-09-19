@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { ReporteDetail } from "@/components/entidad/ReporteDetail";
@@ -7,7 +8,10 @@ import { isEntidadPanelRole } from "@/lib/auth/area";
 import { entidadMenuFor } from "@/lib/auth/entidadMenu";
 import { getServerSession } from "@/lib/auth/session";
 
-export const metadata: Metadata = { title: "Detalle de reporte (entidad)" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("pages.entidad.reporteDetalle");
+  return { title: t("title") };
+}
 
 export default async function EntidadReporteDetailPage({
   params,

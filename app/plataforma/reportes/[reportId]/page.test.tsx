@@ -16,7 +16,7 @@ import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import { buildReportDetail } from "@/test-utils/fixtures/report";
 
-import PlataformaReporteDetailPage from "./page";
+import PlataformaReporteDetailPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   getServerSessionMock.mockReset();
@@ -24,6 +24,10 @@ afterEach(() => {
 });
 
 describe("PlataformaReporteDetailPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Detalle de reporte (plataforma)");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     apiFetchMock.mockResolvedValueOnce(buildReportDetail());
     getServerSessionMock.mockResolvedValue({

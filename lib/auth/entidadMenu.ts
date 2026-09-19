@@ -74,21 +74,29 @@ export const ENTIDAD_MENU_ITEMS = [
 
 export type EntidadMenuItem = (typeof ENTIDAD_MENU_ITEMS)[number];
 
+/**
+ * Claves de traducción de cada sección (tarea i18n 2), no el texto en
+ * español: `app/entidad/[slug]/layout.tsx` (Server Component) resuelve
+ * `t(ENTIDAD_MENU_LABELS[item])` con `getTranslations()`. Es el mapa
+ * explícito que permite la regla «sin claves dinámicas construidas
+ * salvo un `Record` con todas las variantes» — las claves reales viven
+ * en `messages/*.json::menu.entidad.*`.
+ */
 export const ENTIDAD_MENU_LABELS: Record<EntidadMenuItem, string> = {
-  inicio: "Inicio",
-  personas: "Personas",
-  comunidades: "Comunidades",
-  actividades: "Actividades",
-  asistencia: "Asistencia",
-  comunicaciones: "Comunicaciones",
-  encuestas: "Encuestas",
-  recursos: "Recursos",
-  familias: "Familias",
-  programas: "Programas",
-  reportes: "Reportes",
-  guardia: "Guardia",
-  informes: "Informes",
-  configuracion: "Configuración",
+  inicio: "menu.entidad.inicio",
+  personas: "menu.entidad.personas",
+  comunidades: "menu.entidad.comunidades",
+  actividades: "menu.entidad.actividades",
+  asistencia: "menu.entidad.asistencia",
+  comunicaciones: "menu.entidad.comunicaciones",
+  encuestas: "menu.entidad.encuestas",
+  recursos: "menu.entidad.recursos",
+  familias: "menu.entidad.familias",
+  programas: "menu.entidad.programas",
+  reportes: "menu.entidad.reportes",
+  guardia: "menu.entidad.guardia",
+  informes: "menu.entidad.informes",
+  configuracion: "menu.entidad.configuracion",
 };
 
 /**

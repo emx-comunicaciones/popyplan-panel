@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { PlataformaHomeDashboard } from "@/components/plataforma/PlataformaHomeDashboard";
 import { isPlatformRole } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
-export const metadata: Metadata = { title: "Inicio de plataforma" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("pages.plataforma.inicio");
+  return { title: t("title") };
+}
 
 export default async function PlataformaInicioPage() {
   const session = await getServerSession();

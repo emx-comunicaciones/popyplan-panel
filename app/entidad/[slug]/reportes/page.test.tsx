@@ -17,7 +17,7 @@ vi.mock("@/hooks/useReportsQueue", async () => {
   return { ...actual, useReportsQueue: useReportsQueueMock };
 });
 
-import EntidadReportesPage from "./page";
+import EntidadReportesPage, { generateMetadata } from "./page";
 
 // Array plano de verdad (no `{count, ...}`, docs/SEGURIDAD_Y_MODERACION.md §4).
 function pageData() {
@@ -43,6 +43,10 @@ async function renderPage(role = "titular", slug = "alfaville") {
 }
 
 describe("EntidadReportesPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Reportes de la entidad");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     useReportsQueueMock.mockReturnValue({ data: pageData(), isError: false, error: null });
 

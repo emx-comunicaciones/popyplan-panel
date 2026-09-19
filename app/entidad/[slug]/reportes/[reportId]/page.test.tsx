@@ -23,7 +23,7 @@ vi.mock("@/hooks/useReportActions", () => ({
   useEscalateReport: useEscalateReportMock,
 }));
 
-import EntidadReporteDetailPage from "./page";
+import EntidadReporteDetailPage, { generateMetadata } from "./page";
 
 function idleMutation() {
   return { mutate: vi.fn(), isPending: false, isError: false };
@@ -51,6 +51,10 @@ async function renderPage(role = "titular", slug = "alfaville", reportId = "r1")
 }
 
 describe("EntidadReporteDetailPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Detalle de reporte (entidad)");
+  });
+
   it("muestra los datos del reporte y el botón Asignarme cuando no hay asignado", async () => {
     useReportMock.mockReturnValue({ data: buildReportDetail({ assigned_to: null }), isError: false, error: null });
     useAssignReportMock.mockReturnValue(idleMutation());

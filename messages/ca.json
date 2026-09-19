@@ -8,12 +8,253 @@
     "loading": "Carregant…",
     "noAccess": "Sense accés",
     "backHome": "Torna a l'inici",
-    "items": "{count, plural, one {# element} other {# elements}}"
+    "items": "{count, plural, one {# element} other {# elements}}",
+    "confirm": "Confirma"
   },
   "language": {
     "title": "Idioma",
     "es": "Castellà",
     "eu": "Basc",
     "ca": "Català"
+  },
+  "ui": {
+    "skipLink": "Vés al contingut principal",
+    "pageHelp": {
+      "whatYouCanDo": "Què pots fer aquí",
+      "audienceLabel": "Qui la veu:",
+      "ariaLabel": "Ajuda: {title}"
+    }
+  },
+  "auth": {
+    "logout": {
+      "action": "Tanca la sessió",
+      "pending": "Tancant la sessió…"
+    },
+    "login": {
+      "brand": "Popyplan · Tauler",
+      "subtitle": "Inicia sessió amb el teu compte de Popyplan.",
+      "usernameLabel": "Usuari o correu",
+      "passwordLabel": "Contrasenya",
+      "submit": "Entra",
+      "submitting": "Entrant…",
+      "errors": {
+        "invalidCredentials": "Usuari o contrasenya incorrectes.",
+        "tooManyAttempts": "Massa intents; espera un minut.",
+        "generic": "No s'ha pogut iniciar sessió. Torna-ho a provar."
+      }
+    }
+  },
+  "menu": {
+    "entidad": {
+      "navLabel": "Seccions de l'entitat",
+      "inicio": "Inici",
+      "personas": "Persones",
+      "comunidades": "Comunitats",
+      "actividades": "Activitats",
+      "asistencia": "Assistència",
+      "comunicaciones": "Comunicacions",
+      "encuestas": "Enquestes",
+      "recursos": "Recursos",
+      "familias": "Famílies",
+      "programas": "Programes",
+      "reportes": "Informes (moderació)",
+      "guardia": "Guàrdia",
+      "informes": "Informes",
+      "configuracion": "Configuració"
+    },
+    "paraguas": {
+      "navLabel": "Seccions de l'entitat paraigua",
+      "inicio": "Inici",
+      "informes": "Informes"
+    },
+    "plataforma": {
+      "navLabel": "Seccions de la plataforma",
+      "inicio": "Inici",
+      "entidades": "Entitats",
+      "reportes": "Informes (moderació)",
+      "ayuda": "Ajuda",
+      "verificaciones": "Verificacions",
+      "roles": "Rols",
+      "auditoria": "Auditoria",
+      "metricas": "Mètriques",
+      "contratos": "Contractes"
+    }
+  },
+  "layout": {
+    "plataforma": {
+      "brand": "Popyplan · Plataforma"
+    },
+    "entidad": {
+      "loadErrorTitle": "No s'ha pogut carregar la fitxa de l'entitat",
+      "loadErrorDescription": "Les dades de contacte i els colors no estan disponibles ara mateix."
+    },
+    "paraguas": {
+      "loadErrorTitle": "No s'ha pogut carregar la fitxa de l'entitat paraigua"
+    },
+    "footer": {
+      "accessibility": "Accessibilitat"
+    }
+  },
+  "pages": {
+    "home": {
+      "noAccessTitle": "No tens accés a cap àrea del tauler",
+      "noAccessDescription": "El teu compte no té cap rol de plataforma ni d'entitat amb tauler assignat. Contacta amb qui gestiona la teva entitat o amb Popyplan."
+    },
+    "error": {
+      "title": "Alguna cosa ha fallat",
+      "description": "No hem pogut carregar aquesta pàgina. Pots tornar-ho a provar o tornar a iniciar sessió.",
+      "retry": "Torna-ho a provar",
+      "loginLink": "Vés a l'inici de sessió"
+    },
+    "globalError": {
+      "title": "Alguna cosa ha fallat",
+      "description": "No hem pogut carregar el tauler. Pots tornar-ho a provar.",
+      "retry": "Torna-ho a provar"
+    },
+    "notFound": {
+      "title": "Pàgina no trobada",
+      "description": "L'adreça que has obert no existeix o ja no està disponible.",
+      "backLink": "Torna a l'inici"
+    },
+    "login": {
+      "title": "Inicia sessió"
+    },
+    "elegirEntidad": {
+      "title": "Tria una entitat",
+      "description": "Tens rol en diverses entitats. Tria amb quina vols entrar al tauler."
+    },
+    "accessibility": {
+      "title": "Declaració d'accessibilitat"
+    },
+    "entidad": {
+      "inicio": {
+        "title": "Inici de l'entitat"
+      },
+      "personas": {
+        "title": "Persones"
+      },
+      "personaFicha": {
+        "title": "Fitxa de la persona"
+      },
+      "comunidades": {
+        "title": "Comunitats"
+      },
+      "actividades": {
+        "title": "Activitats de l'entitat"
+      },
+      "asistencia": {
+        "title": "Assistència"
+      },
+      "asistenciaEvento": {
+        "title": "Assistència de l'activitat"
+      },
+      "comunicaciones": {
+        "title": "Comunicacions"
+      },
+      "encuestas": {
+        "title": "Enquestes"
+      },
+      "encuestaResultados": {
+        "title": "Resultats de l'enquesta"
+      },
+      "recursos": {
+        "title": "Recursos"
+      },
+      "familias": {
+        "title": "Famílies"
+      },
+      "programas": {
+        "title": "Programes"
+      },
+      "programaFicha": {
+        "title": "Fitxa del programa"
+      },
+      "reportes": {
+        "title": "Informes de l'entitat"
+      },
+      "reporteDetalle": {
+        "title": "Detall de l'informe (entitat)"
+      },
+      "guardia": {
+        "title": "Guàrdia"
+      },
+      "informes": {
+        "title": "Informes de l'entitat"
+      },
+      "configuracion": {
+        "title": "Configuració de l'entitat"
+      }
+    },
+    "paraguas": {
+      "inicio": {
+        "title": "Inici de l'entitat paraigua"
+      },
+      "informes": {
+        "title": "Informes de l'entitat paraigua"
+      }
+    },
+    "plataforma": {
+      "inicio": {
+        "title": "Inici de la plataforma"
+      },
+      "entidades": {
+        "title": "Entitats"
+      },
+      "entidadFicha": {
+        "title": "Fitxa de l'entitat (plataforma)"
+      },
+      "reportes": {
+        "title": "Informes de la plataforma"
+      },
+      "reporteDetalle": {
+        "title": "Detall de l'informe (plataforma)"
+      },
+      "ayuda": {
+        "title": "Ajuda"
+      },
+      "verificaciones": {
+        "title": "Verificacions"
+      },
+      "roles": {
+        "title": "Rols de la plataforma"
+      },
+      "auditoria": {
+        "title": "Auditoria"
+      },
+      "metricas": {
+        "title": "Mètriques de la plataforma"
+      },
+      "contratos": {
+        "title": "Contractes"
+      }
+    }
+  },
+  "accessibility": {
+    "heading": "Declaració d'accessibilitat de Popyplan",
+    "scope": {
+      "heading": "Abast",
+      "body": "Aquesta declaració cobreix el tauler web <strong>popyplan-panel</strong> (aquest lloc, servit sota aquest mateix domini) i l'aplicació mòbil <strong>Popyplan</strong> (iOS i Android). No cobreix contingut de tercers incrustat (per exemple, imatges o documents pujats per una entitat) ni llocs enllaçats fora d'aquests dos productes."
+    },
+    "status": {
+      "heading": "Situació de compliment",
+      "body": "Aquest lloc és <strong>parcialment conforme</strong> amb el nivell AA de la Norma UNE-EN 301549:2022 (WCAG 2.1), per les excepcions descrites a «Contingut no accessible». Passarà a «totalment conforme» quan l'auditoria automàtica (axe) i les proves manuals de teclat cobreixin totes les pàgines sense excepcions documentades (Fase 6, tasca W5 d'aquest tauler)."
+    },
+    "nonAccessible": {
+      "heading": "Contingut no accessible",
+      "intro": "A data d'aquesta declaració, les pàgines següents del tauler encara no tenen una prova automàtica d'accessibilitat (axe) dedicada — la cobertura triada fins ara és representativa de les tres àrees i dels patrons compartits (taules, diàlegs amb focus atrapat, gràfics, formularis), però no exhaustiva:",
+      "list": "Comunitats, Activitats, Informes, Guàrdia, Configuració, Comunicacions, Enquestes i Recursos del tauler d'entitat; Informes del tauler d'entitat paraigua; i Auditoria, Ajuda, Verificacions, Rols, Informes, Mètriques i fitxa d'entitat del tauler de plataforma. Ampliar aquesta cobertura és feina mecànica, documentada a <code>CLAUDE.md</code> («Accessibilitat»)."
+    },
+    "preparation": {
+      "heading": "Preparació de la declaració",
+      "body": "Aquesta declaració es va preparar el 5 de setembre de 2026. Es va revisar mitjançant avaluació automàtica (<code>axe-core</code> sobre les pàgines amb prova dedicada, vegeu «Contingut no accessible») i revisió manual de teclat i lector de pantalla sobre els fluxos principals de les tres àrees del tauler."
+    },
+    "contact": {
+      "heading": "Observacions i dades de contacte",
+      "body": "Pots comunicar qualsevol problema d'accessibilitat, o demanar informació en un format accessible, escrivint a <email>{contactEmail}</email>."
+    },
+    "procedure": {
+      "heading": "Procediment d'aplicació",
+      "body": "Si després d'adreçar-te al correu de contacte no obtens resposta o no hi estàs conforme, pots presentar una queixa o una reclamació per disconformitat d'acord amb l'article 13 del <rd>Reial decret 1112/2018</rd>."
+    }
   }
 }

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { LogoutButton } from "@/components/LogoutButton";
 import { PageHelp } from "@/components/help/PageHelp";
@@ -23,6 +24,7 @@ export default async function ParaguasLayout({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const t = await getTranslations();
   const session = await getServerSession();
   if (!session) {
     redirect("/login");
@@ -99,11 +101,11 @@ export default async function ParaguasLayout({
       </header>
       {!orgResult.ok ? (
         <div className="p-4">
-          <ErrorState title="No se pudo cargar la ficha de la entidad paraguas" />
+          <ErrorState title={t("layout.paraguas.loadErrorTitle")} />
         </div>
       ) : null}
       <div className="flex flex-1">
-        <nav aria-label="Secciones de la entidad paraguas" className="w-56 shrink-0 border-r border-border bg-white p-4">
+        <nav aria-label={t("menu.paraguas.navLabel")} className="w-56 shrink-0 border-r border-border bg-white p-4">
           <ul className="flex flex-col gap-1">
             {menu.map((item) => (
               <li key={item}>
@@ -111,7 +113,7 @@ export default async function ParaguasLayout({
                   href={item === "inicio" ? `/paraguas/${slug}` : `/paraguas/${slug}/${item}`}
                   className="block rounded-md px-3 py-2 text-sm font-medium text-text-form hover:bg-border-light"
                 >
-                  {PARAGUAS_MENU_LABELS[item]}
+                  {t(PARAGUAS_MENU_LABELS[item])}
                 </Link>
               </li>
             ))}

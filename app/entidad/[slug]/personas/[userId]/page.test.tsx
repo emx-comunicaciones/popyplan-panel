@@ -20,7 +20,7 @@ vi.mock("@/hooks/usePersonSupport", () => ({ usePersonSupport: usePersonSupportM
 
 import { buildOrgMembershipFull } from "@/test-utils/fixtures/orgMembershipFull";
 
-import EntidadPersonaPage from "./page";
+import EntidadPersonaPage, { generateMetadata } from "./page";
 
 const PERSON_DETAIL = {
   user_id: 42,
@@ -69,6 +69,10 @@ async function renderPage(role = "titular", slug = "alfaville", userId = "42") {
 }
 
 describe("EntidadPersonaPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Ficha de la persona");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
     useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });

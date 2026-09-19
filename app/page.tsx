@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { LogoutButton } from "@/components/LogoutButton";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -17,6 +18,7 @@ import { getServerSession } from "@/lib/auth/session";
  * el estado «sin acceso» de abajo era inalcanzable).
  */
 export default async function Home() {
+  const t = await getTranslations("pages.home");
   const session = await getServerSession();
   if (!session) {
     redirect("/login");
@@ -36,8 +38,8 @@ export default async function Home() {
   return (
     <main className="flex min-h-screen items-center justify-center p-4">
       <ErrorState
-        title="No tienes acceso a ningún área del panel"
-        description="Tu cuenta no tiene ningún rol de plataforma ni de entidad con panel asignado. Contacta con quien gestiona tu entidad o con Popyplan."
+        title={t("noAccessTitle")}
+        description={t("noAccessDescription")}
         action={<LogoutButton />}
       />
     </main>

@@ -1,10 +1,12 @@
 import userEvent from "@testing-library/user-event";
 import { render as rtlRenderUnwrapped } from "@testing-library/react";
+import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, it } from "vitest";
 
 import { axe } from "@/test-utils/axe";
 import { fireEvent, render, screen } from "@/test-utils/render";
 import { setPathname } from "@/test-utils/nextNavigationMock";
+import es from "@/messages/es.json";
 
 import { PageHelp } from "./PageHelp";
 
@@ -70,13 +72,21 @@ describe("PageHelp", () => {
     // envolver de Testing Library para que `rerender` actualice el
     // mismo árbol de verdad, sin remontar.
     setPathname("/entidad/alfaville/personas");
-    const { rerender } = rtlRenderUnwrapped(<PageHelp />);
+    const { rerender } = rtlRenderUnwrapped(
+      <NextIntlClientProvider locale="es" messages={es}>
+        <PageHelp />
+      </NextIntlClientProvider>,
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "Ayuda: Personas" }));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
 
     setPathname("/entidad/alfaville/actividades");
-    rerender(<PageHelp />);
+    rerender(
+      <NextIntlClientProvider locale="es" messages={es}>
+        <PageHelp />
+      </NextIntlClientProvider>,
+    );
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });

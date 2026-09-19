@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { ExportPanel } from "@/components/metrics/ExportPanel";
@@ -7,7 +8,10 @@ import { isEntidadPanelRole } from "@/lib/auth/area";
 import { paraguasMenuFor } from "@/lib/auth/paraguasMenu";
 import { getServerSession } from "@/lib/auth/session";
 
-export const metadata: Metadata = { title: "Informes del paraguas" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("pages.paraguas.informes");
+  return { title: t("title") };
+}
 
 export default async function ParaguasInformesPage({
   params,

@@ -15,7 +15,7 @@ vi.mock("@/hooks/useEntityEvents", async () => {
   return { ...actual, useEntityEvents: useEntityEventsMock };
 });
 
-import EntidadActividadesPage from "./page";
+import EntidadActividadesPage, { generateMetadata } from "./page";
 
 const EVENT_ROW = {
   id: "e3",
@@ -50,6 +50,10 @@ async function renderPage(slug = "alfaville", role = "titular") {
 }
 
 describe("EntidadActividadesPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Actividades de la entidad");
+  });
+
   it("muestra la actividad con estado/responsable/inscritos/asistió/no asistió y enlaza a asistencia", async () => {
     useEntityEventsMock.mockReturnValue({ data: [EVENT_ROW], isError: false, error: null });
 

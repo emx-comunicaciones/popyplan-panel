@@ -29,7 +29,7 @@ vi.mock("@/hooks/useOrgMembers", () => ({ useOrgMembers: useOrgMembersMock }));
 vi.mock("@/hooks/useInvite", () => ({ useInvite: useInviteMock }));
 vi.mock("@/hooks/useImportPeople", () => ({ useImportPeople: useImportPeopleMock }));
 
-import EntidadPersonasPage from "./page";
+import EntidadPersonasPage, { generateMetadata } from "./page";
 
 const PERSON_ROW = {
   user_id: 42,
@@ -101,6 +101,10 @@ async function renderPage(role = "titular", slug = "alfaville") {
 }
 
 describe("EntidadPersonasPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Personas");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     mockDefaults();
     usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });

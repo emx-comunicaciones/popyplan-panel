@@ -48,16 +48,23 @@ export const PLATAFORMA_MENU_ITEMS = [
 
 export type PlataformaMenuItem = (typeof PLATAFORMA_MENU_ITEMS)[number];
 
+/**
+ * Claves de traducción de cada sección (tarea i18n 2), no el texto en
+ * español: `app/plataforma/layout.tsx` (Server Component) resuelve
+ * `t(PLATAFORMA_MENU_LABELS[item])` con `getTranslations()`. Mismo
+ * patrón que `lib/auth/entidadMenu.ts::ENTIDAD_MENU_LABELS` — las
+ * claves reales viven en `messages/*.json::menu.plataforma.*`.
+ */
 export const PLATAFORMA_MENU_LABELS: Record<PlataformaMenuItem, string> = {
-  inicio: "Inicio",
-  entidades: "Entidades",
-  reportes: "Reportes",
-  ayuda: "Ayuda",
-  verificaciones: "Verificaciones",
-  roles: "Roles",
-  auditoria: "Auditoría",
-  metricas: "Métricas",
-  contratos: "Contratos",
+  inicio: "menu.plataforma.inicio",
+  entidades: "menu.plataforma.entidades",
+  reportes: "menu.plataforma.reportes",
+  ayuda: "menu.plataforma.ayuda",
+  verificaciones: "menu.plataforma.verificaciones",
+  roles: "menu.plataforma.roles",
+  auditoria: "menu.plataforma.auditoria",
+  metricas: "menu.plataforma.metricas",
+  contratos: "menu.plataforma.contratos",
 };
 
 /**

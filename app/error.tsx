@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -21,21 +22,23 @@ export default function ErrorBoundary({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations("pages.error");
+
   return (
     <main className="flex min-h-screen items-center justify-center p-4">
       <ErrorState
-        title="Algo ha fallado"
-        description="No hemos podido cargar esta página. Puedes reintentarlo o volver a iniciar sesión."
+        title={t("title")}
+        description={t("description")}
         action={
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Button type="button" onClick={() => reset()}>
-              Reintentar
+              {t("retry")}
             </Button>
             <Link
               href="/login"
               className="text-sm font-medium text-primary-700 underline"
             >
-              Ir al inicio de sesión
+              {t("loginLink")}
             </Link>
           </div>
         }

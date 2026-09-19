@@ -15,12 +15,17 @@
  */
 import { useEffect, useId, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 import { Dialog } from "@/components/ui/Dialog";
 import { matchPageHelp } from "@/lib/help/pageHelp";
 
 export function PageHelp() {
   const pathname = usePathname();
+  // Solo los textos de UI de este componente (tarea i18n 2): el registro
+  // de `lib/help/pageHelp.ts` (título/resumen/acciones/audiencia de cada
+  // pantalla) sigue en español a mano hasta la tarea 5 del plan de i18n.
+  const t = useTranslations("ui.pageHelp");
   const [open, setOpen] = useState(false);
   const titleId = useId();
   const entry = matchPageHelp(pathname);
@@ -42,7 +47,7 @@ export function PageHelp() {
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label={`Ayuda: ${entry.title}`}
+        aria-label={t("ariaLabel", { title: entry.title })}
         className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-primary-700 font-semibold hover:bg-primary-100 focus-visible:outline-primary-700"
       >
         <span aria-hidden="true">?</span>
@@ -55,14 +60,14 @@ export function PageHelp() {
         widthClassName="max-w-xl"
       >
         <p>{entry.summary}</p>
-        <h3 className="mt-4 text-sm font-semibold text-text-base">Qué puedes hacer aquí</h3>
+        <h3 className="mt-4 text-sm font-semibold text-text-base">{t("whatYouCanDo")}</h3>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-base">
           {entry.actions.map((action) => (
             <li key={action}>{action}</li>
           ))}
         </ul>
         <p className="mt-4 text-sm text-text-secondary">
-          <strong>Quién la ve:</strong> {entry.audience}
+          <strong>{t("audienceLabel")}</strong> {entry.audience}
         </p>
       </Dialog>
     </>

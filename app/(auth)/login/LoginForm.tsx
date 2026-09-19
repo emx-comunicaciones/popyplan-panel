@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
 import { Footer } from "@/components/layout/Footer";
@@ -19,17 +20,26 @@ function areaPath(area: ReturnType<typeof resolveArea>): string {
   return "/elegir-entidad";
 }
 
-function errorMessage(error: unknown): string {
+/**
+ * Traduce el error del intento de login (tarea i18n 2). `t` se recibe
+ * como parámetro porque esta función vive fuera del componente (no
+ * puede llamar a `useTranslations`, un hook) — mismo patrón que
+ * cualquier otra función pura de este panel que necesite traducir.
+ */
+function errorMessage(
+  error: unknown,
+  t: (key: "invalidCredentials" | "tooManyAttempts" | "generic") => string,
+): string {
   if (error instanceof ApiError) {
     if (error.status === 400 || error.status === 401) {
-      return "Usuario o contraseña incorrectos.";
+      return t("invalidCredentials");
     }
     if (error.status === 429) {
-      return "Demasiados intentos; espera un minuto.";
+      return t("tooManyAttempts");
     }
-    return "No se pudo iniciar sesión. Inténtalo de nuevo.";
+    return t("generic");
   }
-  return "No se pudo iniciar sesión. Inténtalo de nuevo.";
+  return t("generic");
 }
 
 /**
@@ -41,6 +51,8 @@ function errorMessage(error: unknown): string {
  */
 export function LoginForm() {
   const router = useRouter();
+  const t = useTranslations("auth.login");
+  const tErrors = useTranslations("auth.login.errors");
   // Destino guardado por `middleware.ts` cuando la sesión no llegó a la
   // ruta pedida (enlace profundo con `SameSite=Strict`, refresh caducado).
   // `safeReturnTo` lo descarta si no es una ruta interna del panel: sin
@@ -63,7 +75,7 @@ export function LoginForm() {
       const area = resolveArea(session.user, session.platformRole);
       router.replace(safeReturnTo(searchParams.get("returnTo")) ?? areaPath(area));
     } catch (caught) {
-      setError(errorMessage(caught));
+      setError(errorMessage(caught, tErrors));
       setSubmitting(false);
     }
   }
@@ -72,14 +84,12 @@ export function LoginForm() {
     <div className="flex min-h-screen flex-col bg-border-light">
       <main className="flex flex-1 items-center justify-center p-4">
         <div className="w-full max-w-sm rounded-lg border border-border bg-white p-6 shadow-sm">
-          <h1 className="mb-1 text-xl font-semibold text-text-base">Popyplan · Panel</h1>
-          <p className="mb-6 text-sm text-text-secondary">
-            Inicia sesión con tu cuenta de Popyplan.
-          </p>
+          <h1 className="mb-1 text-xl font-semibold text-text-base">{t("brand")}</h1>
+          <p className="mb-6 text-sm text-text-secondary">{t("subtitle")}</p>
           <form onSubmit={handleSubmit} noValidate>
             <div className="mb-4">
               <label htmlFor="username_or_email" className="mb-1 block text-sm font-medium text-text-form">
-                Usuario o email
+                {t("usernameLabel")}
               </label>
               <input
                 id="username_or_email"
@@ -94,7 +104,7 @@ export function LoginForm() {
             </div>
             <div className="mb-4">
               <label htmlFor="password" className="mb-1 block text-sm font-medium text-text-form">
-                Contraseña
+                {t("passwordLabel")}
               </label>
               <input
                 id="password"
@@ -113,7 +123,7 @@ export function LoginForm() {
               </p>
             ) : null}
             <Button type="submit" disabled={submitting} className="w-full">
-              {submitting ? "Entrando…" : "Entrar"}
+              {submitting ? t("submitting") : t("submit")}
             </Button>
           </form>
         </div>

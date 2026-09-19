@@ -24,7 +24,7 @@ vi.mock("@/hooks/useProgramMutations", async () => {
   return { ...actual, useCreateProgram: useCreateProgramMock, useUpdateProgram: useUpdateProgramMock };
 });
 
-import EntidadProgramasPage from "./page";
+import EntidadProgramasPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   getServerSessionMock.mockReset();
@@ -52,6 +52,10 @@ async function renderPage(role = "titular", slug = "alfaville") {
 }
 
 describe("EntidadProgramasPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Programas");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     mockDefaults();
     useProgramsMock.mockReturnValue({

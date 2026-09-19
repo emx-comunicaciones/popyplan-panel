@@ -17,7 +17,7 @@ vi.mock("@/hooks/useSurveyResults", async () => {
   return { ...actual, useSurveyResults: useSurveyResultsMock };
 });
 
-import EntidadSurveyResultsPage from "./page";
+import EntidadSurveyResultsPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   getServerSessionMock.mockReset();
@@ -38,6 +38,10 @@ async function renderPage(role = "titular", slug = "alfaville", surveyId = "3") 
 }
 
 describe("EntidadSurveyResultsPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Resultados de la encuesta");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     useSurveyResultsMock.mockReturnValue({ data: buildSurveyResults(), isError: false, error: null });
 

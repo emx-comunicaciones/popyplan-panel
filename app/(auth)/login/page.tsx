@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 import { LoginForm } from "./LoginForm";
 
-export const metadata: Metadata = { title: "Iniciar sesión" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("pages.login");
+  return { title: t("title") };
+}
 
 /**
  * Render dinámico: `LoginForm` lee `?returnTo=` con `useSearchParams()`

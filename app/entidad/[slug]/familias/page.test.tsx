@@ -31,7 +31,7 @@ vi.mock("@/hooks/useCreateFamiliesCommunity", async () => {
   return { ...actual, useCreateFamiliesCommunity: useCreateFamiliesCommunityMock };
 });
 
-import EntidadFamiliasPage from "./page";
+import EntidadFamiliasPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   getServerSessionMock.mockReset();
@@ -69,6 +69,10 @@ async function renderPage(role = "titular", slug = "alfaville") {
 }
 
 describe("EntidadFamiliasPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Familias");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     mockMutationDefaults();
     useFamiliesSummaryMock.mockReturnValue({

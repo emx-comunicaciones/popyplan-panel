@@ -8,12 +8,253 @@
     "loading": "Cargando…",
     "noAccess": "Sin acceso",
     "backHome": "Volver al inicio",
-    "items": "{count, plural, one {# elemento} other {# elementos}}"
+    "items": "{count, plural, one {# elemento} other {# elementos}}",
+    "confirm": "Confirmar"
   },
   "language": {
     "title": "Idioma",
     "es": "Español",
     "eu": "Euskara",
     "ca": "Català"
+  },
+  "ui": {
+    "skipLink": "Saltar al contenido principal",
+    "pageHelp": {
+      "whatYouCanDo": "Qué puedes hacer aquí",
+      "audienceLabel": "Quién la ve:",
+      "ariaLabel": "Ayuda: {title}"
+    }
+  },
+  "auth": {
+    "logout": {
+      "action": "Cerrar sesión",
+      "pending": "Cerrando sesión…"
+    },
+    "login": {
+      "brand": "Popyplan · Panel",
+      "subtitle": "Inicia sesión con tu cuenta de Popyplan.",
+      "usernameLabel": "Usuario o email",
+      "passwordLabel": "Contraseña",
+      "submit": "Entrar",
+      "submitting": "Entrando…",
+      "errors": {
+        "invalidCredentials": "Usuario o contraseña incorrectos.",
+        "tooManyAttempts": "Demasiados intentos; espera un minuto.",
+        "generic": "No se pudo iniciar sesión. Inténtalo de nuevo."
+      }
+    }
+  },
+  "menu": {
+    "entidad": {
+      "navLabel": "Secciones de la entidad",
+      "inicio": "Inicio",
+      "personas": "Personas",
+      "comunidades": "Comunidades",
+      "actividades": "Actividades",
+      "asistencia": "Asistencia",
+      "comunicaciones": "Comunicaciones",
+      "encuestas": "Encuestas",
+      "recursos": "Recursos",
+      "familias": "Familias",
+      "programas": "Programas",
+      "reportes": "Reportes",
+      "guardia": "Guardia",
+      "informes": "Informes",
+      "configuracion": "Configuración"
+    },
+    "paraguas": {
+      "navLabel": "Secciones de la entidad paraguas",
+      "inicio": "Inicio",
+      "informes": "Informes"
+    },
+    "plataforma": {
+      "navLabel": "Secciones de plataforma",
+      "inicio": "Inicio",
+      "entidades": "Entidades",
+      "reportes": "Reportes",
+      "ayuda": "Ayuda",
+      "verificaciones": "Verificaciones",
+      "roles": "Roles",
+      "auditoria": "Auditoría",
+      "metricas": "Métricas",
+      "contratos": "Contratos"
+    }
+  },
+  "layout": {
+    "plataforma": {
+      "brand": "Popyplan · Plataforma"
+    },
+    "entidad": {
+      "loadErrorTitle": "No se pudo cargar la ficha de la entidad",
+      "loadErrorDescription": "Los datos de contacto y colores no están disponibles ahora mismo."
+    },
+    "paraguas": {
+      "loadErrorTitle": "No se pudo cargar la ficha de la entidad paraguas"
+    },
+    "footer": {
+      "accessibility": "Accesibilidad"
+    }
+  },
+  "pages": {
+    "home": {
+      "noAccessTitle": "No tienes acceso a ningún área del panel",
+      "noAccessDescription": "Tu cuenta no tiene ningún rol de plataforma ni de entidad con panel asignado. Contacta con quien gestiona tu entidad o con Popyplan."
+    },
+    "error": {
+      "title": "Algo ha fallado",
+      "description": "No hemos podido cargar esta página. Puedes reintentarlo o volver a iniciar sesión.",
+      "retry": "Reintentar",
+      "loginLink": "Ir al inicio de sesión"
+    },
+    "globalError": {
+      "title": "Algo ha fallado",
+      "description": "No hemos podido cargar el panel. Puedes reintentarlo.",
+      "retry": "Reintentar"
+    },
+    "notFound": {
+      "title": "Página no encontrada",
+      "description": "La dirección que has abierto no existe o ya no está disponible.",
+      "backLink": "Volver al inicio"
+    },
+    "login": {
+      "title": "Iniciar sesión"
+    },
+    "elegirEntidad": {
+      "title": "Elige una entidad",
+      "description": "Tienes rol en varias entidades. Elige con cuál quieres entrar al panel."
+    },
+    "accessibility": {
+      "title": "Declaración de accesibilidad"
+    },
+    "entidad": {
+      "inicio": {
+        "title": "Inicio de la entidad"
+      },
+      "personas": {
+        "title": "Personas"
+      },
+      "personaFicha": {
+        "title": "Ficha de la persona"
+      },
+      "comunidades": {
+        "title": "Comunidades"
+      },
+      "actividades": {
+        "title": "Actividades de la entidad"
+      },
+      "asistencia": {
+        "title": "Asistencia"
+      },
+      "asistenciaEvento": {
+        "title": "Asistencia de la actividad"
+      },
+      "comunicaciones": {
+        "title": "Comunicaciones"
+      },
+      "encuestas": {
+        "title": "Encuestas"
+      },
+      "encuestaResultados": {
+        "title": "Resultados de la encuesta"
+      },
+      "recursos": {
+        "title": "Recursos"
+      },
+      "familias": {
+        "title": "Familias"
+      },
+      "programas": {
+        "title": "Programas"
+      },
+      "programaFicha": {
+        "title": "Ficha del programa"
+      },
+      "reportes": {
+        "title": "Reportes de la entidad"
+      },
+      "reporteDetalle": {
+        "title": "Detalle de reporte (entidad)"
+      },
+      "guardia": {
+        "title": "Guardia"
+      },
+      "informes": {
+        "title": "Informes de la entidad"
+      },
+      "configuracion": {
+        "title": "Configuración de la entidad"
+      }
+    },
+    "paraguas": {
+      "inicio": {
+        "title": "Inicio del paraguas"
+      },
+      "informes": {
+        "title": "Informes del paraguas"
+      }
+    },
+    "plataforma": {
+      "inicio": {
+        "title": "Inicio de plataforma"
+      },
+      "entidades": {
+        "title": "Entidades"
+      },
+      "entidadFicha": {
+        "title": "Ficha de la entidad (plataforma)"
+      },
+      "reportes": {
+        "title": "Reportes de plataforma"
+      },
+      "reporteDetalle": {
+        "title": "Detalle de reporte (plataforma)"
+      },
+      "ayuda": {
+        "title": "Ayuda"
+      },
+      "verificaciones": {
+        "title": "Verificaciones"
+      },
+      "roles": {
+        "title": "Roles de plataforma"
+      },
+      "auditoria": {
+        "title": "Auditoría"
+      },
+      "metricas": {
+        "title": "Métricas de plataforma"
+      },
+      "contratos": {
+        "title": "Contratos"
+      }
+    }
+  },
+  "accessibility": {
+    "heading": "Declaración de accesibilidad de Popyplan",
+    "scope": {
+      "heading": "Alcance",
+      "body": "Esta declaración cubre el panel web <strong>popyplan-panel</strong> (este sitio, servido bajo este mismo dominio) y la aplicación móvil <strong>Popyplan</strong> (iOS y Android). No cubre contenido de terceros incrustado (por ejemplo, imágenes o documentos subidos por una entidad) ni sitios enlazados fuera de estos dos productos."
+    },
+    "status": {
+      "heading": "Situación de cumplimiento",
+      "body": "Este sitio es <strong>parcialmente conforme</strong> con el nivel AA de la Norma UNE-EN 301549:2022 (WCAG 2.1), por las excepciones descritas en «Contenido no accesible». Pasará a «plenamente conforme» cuando la auditoría automática (axe) y las pruebas manuales de teclado cubran todas las páginas sin excepciones documentadas (Fase 6, tarea W5 de este panel)."
+    },
+    "nonAccessible": {
+      "heading": "Contenido no accesible",
+      "intro": "A fecha de esta declaración, las siguientes páginas del panel todavía no tienen un test automático de accesibilidad (axe) dedicado — la cobertura elegida hasta ahora es representativa de las tres áreas y de los patrones compartidos (tablas, diálogos con foco atrapado, gráficos, formularios), pero no exhaustiva:",
+      "list": "Comunidades, Actividades, Reportes, Guardia, Configuración, Comunicaciones, Encuestas y Recursos del panel de entidad; Informes del panel de paraguas; y Auditoría, Ayuda, Verificaciones, Roles, Reportes, Métricas y ficha de entidad del panel de plataforma. Ampliar esta cobertura es trabajo mecánico, documentado en <code>CLAUDE.md</code> («Accesibilidad»)."
+    },
+    "preparation": {
+      "heading": "Preparación de la declaración",
+      "body": "Esta declaración se preparó el 5 de septiembre de 2026. Se revisó mediante evaluación automática (<code>axe-core</code> sobre las páginas con test dedicado, ver «Contenido no accesible») y revisión manual de teclado y lector de pantalla sobre los flujos principales de las tres áreas del panel."
+    },
+    "contact": {
+      "heading": "Observaciones y datos de contacto",
+      "body": "Puedes comunicar cualquier problema de accesibilidad, o pedir información en un formato accesible, escribiendo a <email>{contactEmail}</email>."
+    },
+    "procedure": {
+      "heading": "Procedimiento de aplicación",
+      "body": "Si tras dirigirte al correo de contacto no obtienes respuesta o no estás conforme con ella, puedes presentar una queja o una reclamación por disconformidad conforme al artículo 13 del <rd>Real Decreto 1112/2018</rd>."
+    }
   }
 }

@@ -18,7 +18,7 @@ import { buildOrganization } from "@/test-utils/fixtures/organization";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import { buildContract, buildInvoice } from "@/test-utils/fixtures/billing";
 
-import PlataformaEntidadDetailPage from "./page";
+import PlataformaEntidadDetailPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   getServerSessionMock.mockReset();
@@ -26,6 +26,10 @@ afterEach(() => {
 });
 
 describe("PlataformaEntidadDetailPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Ficha de la entidad (plataforma)");
+  });
+
   it("pinta la ficha con las secciones y permite verificar", async () => {
     apiFetchMock.mockImplementation(async (path: string) => {
       if (path === "/api/organizations/9/") {

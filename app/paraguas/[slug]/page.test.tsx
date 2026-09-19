@@ -31,7 +31,7 @@ vi.mock("@/hooks/useCompare", async () => {
   return { ...actual, useCompare: useCompareMock };
 });
 
-import ParaguasInicioPage from "./page";
+import ParaguasInicioPage, { generateMetadata } from "./page";
 
 function mockMetricsByGroup(
   handlers: Partial<Record<"base" | MetricsGroupBy, ReturnType<typeof buildMetricsResponse>>>,
@@ -74,6 +74,10 @@ async function renderPage(slug = "diputacion-demo") {
 }
 
 describe("ParaguasInicioPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Inicio del paraguas");
+  });
+
   it("no tiene violaciones de accesibilidad (axe)", async () => {
     mockMetricsByGroup({
       base: buildMetricsResponse(),

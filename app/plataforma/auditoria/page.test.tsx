@@ -19,7 +19,7 @@ import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 
-import PlataformaAuditoriaPage from "./page";
+import PlataformaAuditoriaPage, { generateMetadata } from "./page";
 
 const ENTRY = {
   id: "a1",
@@ -39,6 +39,10 @@ afterEach(() => {
 });
 
 describe("PlataformaAuditoriaPage", () => {
+  it("expone el título de la página vía generateMetadata", async () => {
+    expect((await generateMetadata()).title).toBe("Auditoría");
+  });
+
   it("superadmin ve la auditoría con metadata legible", async () => {
     apiFetchMock.mockResolvedValueOnce({ count: 1, next: null, previous: null, results: [ENTRY] });
     getServerSessionMock.mockResolvedValue({
