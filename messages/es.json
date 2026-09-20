@@ -13,6 +13,10 @@
     "noPhoneNotice": "Popyplan no guarda teléfonos: contacta con la persona por el chat de la app o a través de su referente.",
     "actions": "Acciones"
   },
+  "account": {
+    "title": "Cuenta",
+    "open": "Cuenta de {email}"
+  },
   "language": {
     "title": "Idioma",
     "es": "Español",

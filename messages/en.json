@@ -13,6 +13,10 @@
     "noPhoneNotice": "Popyplan does not store phone numbers: contact the person through the app chat or through their referent.",
     "actions": "Actions"
   },
+  "account": {
+    "title": "Account",
+    "open": "Account for {email}"
+  },
   "language": {
     "title": "Language",
     "es": "Spanish",

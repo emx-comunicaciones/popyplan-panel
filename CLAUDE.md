@@ -2657,6 +2657,27 @@ tabulación** (antes tres): `e2e/accesibilidad.spec.ts` lo refleja, y
 etiqueta, que **está traducida** («Idioma» en español, «Hizkuntza» en
 euskera) mientras el `value` sigue siendo el código ISO.
 
+## Menú de cuenta en la cabecera (2026-09-20)
+
+Encargo del propietario: «pon estos botones bajo un icono de login típico,
+que se vea el idioma, cerrar sesión y el correo electrónico».
+`components/layout/UserMenu.tsx` (`"use client"`) sustituye en las tres
+cabeceras de área al trío `LanguageSwitcher` + `LogoutButton` sueltos: un
+botón redondo de 32 px con icono de persona (`aria-label` «Cuenta de
+`<email>`», `aria-haspopup="true"`, `aria-expanded`, `aria-controls`)
+abre un panel anclado a la derecha (`role="group"` con nombre «Cuenta»,
+no un `role="menu"` ARIA: dentro hay un `<select>` y un botón, no
+`menuitem`s) con el nombre de la cuenta (`lib/auth/displayName.ts`,
+`first_name` + `last_name`, o solo el email si no hay), el email, el
+selector de idioma con su etiqueta visible (`LanguageSwitcher
+labelVisible`) y «Cerrar sesión» (`LogoutButton className="w-full"`).
+Al abrir, el foco pasa al selector; `Escape` cierra y devuelve el foco al
+botón; un clic fuera y un cambio de `pathname` cierran. El botón «?» de
+`PageHelp` se queda fuera, a su izquierda: es ayuda de la pantalla, no de
+la cuenta. En `/login` el selector sigue suelto (no hay cuenta). Los tres
+`layout.test.tsx` comprueban el botón de cuenta; `e2e/idioma.spec.ts`
+abre el menú antes de cambiar de idioma dentro del área.
+
 ## Comandos
 
 - `npm run dev` / `npm run build` / `npm run start`

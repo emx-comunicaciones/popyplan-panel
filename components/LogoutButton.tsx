@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { logout } from "@/hooks/useAuth";
 
-export function LogoutButton() {
+export function LogoutButton({ className }: { className?: string } = {}) {
   const router = useRouter();
   const t = useTranslations("auth.logout");
   const [pending, setPending] = useState(false);
@@ -19,7 +19,12 @@ export function LogoutButton() {
   }
 
   return (
-    <Button variant="secondary" onClick={handleClick} disabled={pending}>
+    <Button
+      variant="secondary"
+      onClick={handleClick}
+      disabled={pending}
+      className={className}
+    >
       {pending ? t("pending") : t("action")}
     </Button>
   );

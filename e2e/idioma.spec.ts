@@ -1,6 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-import { apiLogin, DEMO_PASSWORD, newApiContext, TITULAR_BIDASOA_EMAIL } from "./helpers";
+import {
+  apiLogin,
+  DEMO_PASSWORD,
+  newApiContext,
+  TITULAR_BIDASOA_EMAIL,
+} from "./helpers";
 
 /**
  * Selector de idioma (spec de diseño `2026-09-19-i18n-es-eu-ca`, tarea 6
@@ -72,6 +77,12 @@ test("cambiar a euskera en el login, entrar y ver el panel en euskera, y volver 
   // elegir «Euskara» en `/login`.
   await expect(page.getByRole("heading", { name: "Hasiera" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Pertsonak" })).toBeVisible();
+  // Dentro del área, el selector de idioma y «Cerrar sesión» viven en el
+  // menú de cuenta (`components/layout/UserMenu.tsx`), cuyo botón lleva
+  // el email en su nombre accesible («<email> kontua» en euskera).
+  await page
+    .getByRole("button", { name: `${TITULAR_BIDASOA_EMAIL} kontua` })
+    .click();
   await expect(page.getByRole("button", { name: "Saioa itxi" })).toBeVisible();
 
   await page.getByLabel("Hizkuntza").selectOption("es");
@@ -79,5 +90,14 @@ test("cambiar a euskera en el login, entrar y ver el panel en euskera, y volver 
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
   await expect(page.getByRole("heading", { name: "Inicio" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Personas" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Cerrar sesión" })).toBeVisible();
+  // `router.refresh()` no desmonta el menú, pero por si acaso se reabre
+  // cuando haga falta antes de comprobar el texto de «Cerrar sesión».
+  const account = page.getByRole("button", {
+    name: `Cuenta de ${TITULAR_BIDASOA_EMAIL}`,
+  });
+  if ((await account.getAttribute("aria-expanded")) !== "true")
+    await account.click();
+  await expect(
+    page.getByRole("button", { name: "Cerrar sesión" }),
+  ).toBeVisible();
 });

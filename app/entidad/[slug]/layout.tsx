@@ -2,12 +2,12 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
-import { LogoutButton } from "@/components/LogoutButton";
 import { PageHelp } from "@/components/help/PageHelp";
 import { SkipLink } from "@/components/ui/SkipLink";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Footer } from "@/components/layout/Footer";
-import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { UserMenu } from "@/components/layout/UserMenu";
+import { displayName } from "@/lib/auth/displayName";
 import { SideNav } from "@/components/layout/SideNav";
 import { contrastRatio, readableOn } from "@/lib/a11y/contrast";
 import { isEntidadPanelRole } from "@/lib/auth/area";
@@ -46,7 +46,10 @@ export default async function EntidadLayout({
     redirect("/");
   }
 
-  const orgResult = await getServerOrganization(membership.organization_id, session.token);
+  const orgResult = await getServerOrganization(
+    membership.organization_id,
+    session.token,
+  );
 
   const menu = entidadMenuFor(membership.role);
   const org = orgResult.ok ? orgResult.data : null;
@@ -66,16 +69,22 @@ export default async function EntidadLayout({
   // medias): «no calculable» cae al mismo tinte que un par ilegible.
   const headerContrast =
     primaryColor && headerText ? contrastRatio(headerText, primaryColor) : null;
-  const headerIsLegible = !primaryColor || (headerContrast !== null && headerContrast >= 3);
-  const headerBackground = headerIsLegible ? primaryColor || "var(--color-primary-700)" : "var(--color-primary-100)";
-  const headerForeground = headerIsLegible && headerText ? headerText : "var(--color-text-base)";
+  const headerIsLegible =
+    !primaryColor || (headerContrast !== null && headerContrast >= 3);
+  const headerBackground = headerIsLegible
+    ? primaryColor || "var(--color-primary-700)"
+    : "var(--color-primary-100)";
+  const headerForeground =
+    headerIsLegible && headerText ? headerText : "var(--color-text-base)";
   // La franja solo tiene sentido con un color que el navegador vaya a
   // pintar: si `primary_color` no es un hex calculable, una declaración
   // inválida dejaría la cabecera sin borde inferior de todos modos, así
   // que se usa el tinte decorativo de la marca.
   const headerAccent = headerIsLegible
     ? undefined
-    : (primaryColor && headerText ? primaryColor : "var(--color-primary)");
+    : primaryColor && headerText
+      ? primaryColor
+      : "var(--color-primary)";
 
   return (
     <div className="flex min-h-screen flex-col bg-border-light">
@@ -103,12 +112,13 @@ export default async function EntidadLayout({
               className="rounded-full bg-white object-contain"
             />
           ) : null}
-          <span className="text-base font-semibold">{org?.name ?? membership.organization_name}</span>
+          <span className="text-base font-semibold">
+            {org?.name ?? membership.organization_name}
+          </span>
         </div>
         <div className="flex items-center gap-2">
-          <LanguageSwitcher />
           <PageHelp />
-          <LogoutButton />
+          <UserMenu email={session.me.email} name={displayName(session.me)} />
         </div>
       </header>
       {!orgResult.ok ? (
@@ -123,11 +133,18 @@ export default async function EntidadLayout({
         <SideNav
           ariaLabel={t("menu.entidad.navLabel")}
           items={menu.map((item) => ({
-            href: item === "inicio" ? `/entidad/${slug}` : `/entidad/${slug}/${item}`,
+            href:
+              item === "inicio"
+                ? `/entidad/${slug}`
+                : `/entidad/${slug}/${item}`,
             label: t(ENTIDAD_MENU_LABELS[item]),
           }))}
         />
-        <main id="main-content" tabIndex={-1} className="flex-1 p-4 focus:outline-none">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex-1 p-4 focus:outline-none"
+        >
           {children}
         </main>
       </div>

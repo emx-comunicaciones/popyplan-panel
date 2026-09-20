@@ -1,14 +1,19 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
-import { NextRedirectSignal, setPathname } from "@/test-utils/nextNavigationMock";
+import {
+  NextRedirectSignal,
+  setPathname,
+} from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildOrganization } from "@/test-utils/fixtures/organization";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 const serverFetchMock = vi.hoisted(() => vi.fn());
-vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
+vi.mock("@/lib/auth/session", () => ({
+  getServerSession: getServerSessionMock,
+}));
 vi.mock("@/lib/api/serverFetch", () => ({ serverFetch: serverFetchMock }));
 
 import ParaguasLayout from "./layout";
@@ -39,7 +44,11 @@ describe("ParaguasLayout", () => {
   it("la cabecera lleva el botón de ayuda de la pantalla actual", async () => {
     setPathname("/paraguas/diputacion-demo");
     getServerSessionMock.mockResolvedValue(session("analista"));
-    serverFetchMock.mockResolvedValue({ ok: true, status: 200, data: buildOrganization() });
+    serverFetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: buildOrganization(),
+    });
 
     const element = await ParaguasLayout({
       children: <p>contenido</p>,
@@ -51,7 +60,11 @@ describe("ParaguasLayout", () => {
     // Selector de idioma: un `<select>` con etiqueta solo para lectores
     // de pantalla desde la pasada de densidad (2026-09-20), no tres
     // botones.
-    expect(screen.getByLabelText("Idioma").tagName).toBe("SELECT");
+    // Idioma y «Cerrar sesión» viven dentro del menú de cuenta, cuyo
+    // botón lleva el email de la sesión en su nombre accesible.
+    expect(
+      screen.getByRole("button", { name: /^Cuenta de .+@.+/ }),
+    ).toHaveAttribute("aria-expanded", "false");
   });
 
   it("pinta la cabecera con el nombre de la entidad paraguas", async () => {
@@ -71,7 +84,10 @@ describe("ParaguasLayout", () => {
     serverFetchMock.mockResolvedValue({
       ok: true,
       status: 200,
-      data: buildOrganization({ name: "Diputación Demo", org_type: "administracion" }),
+      data: buildOrganization({
+        name: "Diputación Demo",
+        org_type: "administracion",
+      }),
     });
 
     const element = await ParaguasLayout({
@@ -116,7 +132,9 @@ describe("ParaguasLayout", () => {
       params: Promise.resolve({ slug: "diputacion-demo" }),
     });
     const { container, unmount } = render(corto);
-    expect(container.querySelector("header")?.style.backgroundColor).toBe("rgb(0, 170, 68)");
+    expect(container.querySelector("header")?.style.backgroundColor).toBe(
+      "rgb(0, 170, 68)",
+    );
     unmount();
 
     serverFetchMock.mockResolvedValue({
@@ -139,8 +157,15 @@ describe("ParaguasLayout", () => {
     getServerSessionMock.mockResolvedValue(null);
 
     await expect(
-      ParaguasLayout({ children: <p />, params: Promise.resolve({ slug: "diputacion-demo" }) }),
-    ).rejects.toEqual(expect.objectContaining({ url: "/login" } satisfies Partial<NextRedirectSignal>));
+      ParaguasLayout({
+        children: <p />,
+        params: Promise.resolve({ slug: "diputacion-demo" }),
+      }),
+    ).rejects.toEqual(
+      expect.objectContaining({
+        url: "/login",
+      } satisfies Partial<NextRedirectSignal>),
+    );
   });
 
   it("con rol de plataforma redirige a /plataforma", async () => {
@@ -151,22 +176,41 @@ describe("ParaguasLayout", () => {
     });
 
     await expect(
-      ParaguasLayout({ children: <p />, params: Promise.resolve({ slug: "diputacion-demo" }) }),
-    ).rejects.toEqual(expect.objectContaining({ url: "/plataforma" } satisfies Partial<NextRedirectSignal>));
+      ParaguasLayout({
+        children: <p />,
+        params: Promise.resolve({ slug: "diputacion-demo" }),
+      }),
+    ).rejects.toEqual(
+      expect.objectContaining({
+        url: "/plataforma",
+      } satisfies Partial<NextRedirectSignal>),
+    );
   });
 
   it("sin membresía en esa entidad paraguas redirige a /", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",
       me: buildMe({
-        org_memberships: [buildOrgMembership({ role: "analista", organization_slug: "diputacion-demo" })],
+        org_memberships: [
+          buildOrgMembership({
+            role: "analista",
+            organization_slug: "diputacion-demo",
+          }),
+        ],
       }),
       platformRole: buildPlatformRole(null),
     });
 
     await expect(
-      ParaguasLayout({ children: <p />, params: Promise.resolve({ slug: "otra-diputacion" }) }),
-    ).rejects.toEqual(expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>));
+      ParaguasLayout({
+        children: <p />,
+        params: Promise.resolve({ slug: "otra-diputacion" }),
+      }),
+    ).rejects.toEqual(
+      expect.objectContaining({
+        url: "/",
+      } satisfies Partial<NextRedirectSignal>),
+    );
   });
 
   it("referente no ve «Informes» en el menú (no exporta informes)", async () => {
@@ -174,12 +218,19 @@ describe("ParaguasLayout", () => {
       token: "t",
       me: buildMe({
         org_memberships: [
-          buildOrgMembership({ role: "referente", organization_slug: "diputacion-demo" }),
+          buildOrgMembership({
+            role: "referente",
+            organization_slug: "diputacion-demo",
+          }),
         ],
       }),
       platformRole: buildPlatformRole(null),
     });
-    serverFetchMock.mockResolvedValue({ ok: true, status: 200, data: buildOrganization() });
+    serverFetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: buildOrganization(),
+    });
 
     const element = await ParaguasLayout({
       children: <p>contenido</p>,
@@ -188,7 +239,9 @@ describe("ParaguasLayout", () => {
     render(element);
 
     expect(screen.getByRole("link", { name: "Inicio" })).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Informes" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Informes" }),
+    ).not.toBeInTheDocument();
   });
 
   it("con un rol de plataforma desconocido NO va a /plataforma: pinta el panel del paraguas", async () => {
@@ -205,7 +258,11 @@ describe("ParaguasLayout", () => {
       }),
       platformRole: { role: "rol-que-el-backend-inventa" },
     });
-    serverFetchMock.mockResolvedValue({ ok: true, status: 200, data: buildOrganization() });
+    serverFetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: buildOrganization(),
+    });
 
     const element = await ParaguasLayout({
       children: <p>contenido</p>,
@@ -238,7 +295,11 @@ describe("ParaguasLayout", () => {
   it("el menú de la administración lleva las cuatro secciones para la analista", async () => {
     setPathname("/paraguas/diputacion-demo");
     getServerSessionMock.mockResolvedValue(session("analista"));
-    serverFetchMock.mockResolvedValue({ ok: true, status: 200, data: buildOrganization() });
+    serverFetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: buildOrganization(),
+    });
 
     const element = await ParaguasLayout({
       children: <p>contenido</p>,
@@ -246,17 +307,18 @@ describe("ParaguasLayout", () => {
     });
     render(element);
 
-    const nav = screen.getByRole("navigation", { name: "Secciones del área de administración" });
+    const nav = screen.getByRole("navigation", {
+      name: "Secciones del área de administración",
+    });
     expect(nav.textContent).toContain("Territorio");
     expect(nav.textContent).toContain("Red financiada");
     expect(screen.getByRole("link", { name: "Territorio" })).toHaveAttribute(
       "href",
       "/paraguas/diputacion-demo/territorio",
     );
-    expect(screen.getByRole("link", { name: "Red financiada" })).toHaveAttribute(
-      "href",
-      "/paraguas/diputacion-demo/red-financiada",
-    );
+    expect(
+      screen.getByRole("link", { name: "Red financiada" }),
+    ).toHaveAttribute("href", "/paraguas/diputacion-demo/red-financiada");
   });
 
   it("con un logo en un host NO permitido no pinta imagen y el layout sigue en pie", async () => {

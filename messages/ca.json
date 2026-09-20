@@ -13,6 +13,10 @@
     "noPhoneNotice": "Popyplan no guarda telèfons: contacta amb la persona pel xat de l'app o a través del seu referent.",
     "actions": "Accions"
   },
+  "account": {
+    "title": "Compte",
+    "open": "Compte de {email}"
+  },
   "language": {
     "title": "Idioma",
     "es": "Castellà",

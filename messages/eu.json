@@ -13,6 +13,10 @@
     "noPhoneNotice": "Popyplanek ez du telefonorik gordetzen: jarri harremanetan pertsonarekin appeko txatetik edo bere erreferentearen bidez.",
     "actions": "Ekintzak"
   },
+  "account": {
+    "title": "Kontua",
+    "open": "{email} kontua"
+  },
   "language": {
     "title": "Hizkuntza",
     "es": "Gaztelania",

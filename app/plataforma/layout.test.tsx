@@ -1,12 +1,17 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
-import { NextRedirectSignal, setPathname } from "@/test-utils/nextNavigationMock";
+import {
+  NextRedirectSignal,
+  setPathname,
+} from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 
 const getServerSessionMock = vi.hoisted(() => vi.fn());
-vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
+vi.mock("@/lib/auth/session", () => ({
+  getServerSession: getServerSessionMock,
+}));
 
 import PlataformaLayout from "./layout";
 
@@ -30,7 +35,11 @@ describe("PlataformaLayout", () => {
     // Selector de idioma: un `<select>` con etiqueta solo para lectores
     // de pantalla desde la pasada de densidad (2026-09-20), no tres
     // botones.
-    expect(screen.getByLabelText("Idioma").tagName).toBe("SELECT");
+    // Idioma y «Cerrar sesión» viven dentro del menú de cuenta, cuyo
+    // botón lleva el email de la sesión en su nombre accesible.
+    expect(
+      screen.getByRole("button", { name: /^Cuenta de .+@.+/ }),
+    ).toHaveAttribute("aria-expanded", "false");
   });
 
   it("pinta las 9 secciones del menú de plataforma", async () => {
@@ -71,8 +80,16 @@ describe("PlataformaLayout", () => {
     for (const label of ["Inicio", "Reportes", "Ayuda", "Métricas"]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
-    for (const label of ["Entidades", "Verificaciones", "Roles", "Auditoría", "Suscripciones"]) {
-      expect(screen.queryByRole("link", { name: label })).not.toBeInTheDocument();
+    for (const label of [
+      "Entidades",
+      "Verificaciones",
+      "Roles",
+      "Auditoría",
+      "Suscripciones",
+    ]) {
+      expect(
+        screen.queryByRole("link", { name: label }),
+      ).not.toBeInTheDocument();
     }
   });
 
@@ -86,11 +103,19 @@ describe("PlataformaLayout", () => {
     const element = await PlataformaLayout({ children: <p>contenido</p> });
     render(element);
 
-    for (const label of ["Inicio", "Reportes", "Ayuda", "Métricas", "Suscripciones"]) {
+    for (const label of [
+      "Inicio",
+      "Reportes",
+      "Ayuda",
+      "Métricas",
+      "Suscripciones",
+    ]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
     for (const label of ["Entidades", "Verificaciones", "Roles", "Auditoría"]) {
-      expect(screen.queryByRole("link", { name: label })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("link", { name: label }),
+      ).not.toBeInTheDocument();
     }
   });
 
@@ -107,14 +132,18 @@ describe("PlataformaLayout", () => {
     for (const label of ["Inicio", "Entidades", "Verificaciones"]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
-    expect(screen.queryByRole("link", { name: "Métricas" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Métricas" }),
+    ).not.toBeInTheDocument();
   });
 
   it("sin sesión redirige a /login", async () => {
     getServerSessionMock.mockResolvedValue(null);
 
     await expect(PlataformaLayout({ children: <p /> })).rejects.toEqual(
-      expect.objectContaining({ url: "/login" } satisfies Partial<NextRedirectSignal>),
+      expect.objectContaining({
+        url: "/login",
+      } satisfies Partial<NextRedirectSignal>),
     );
   });
 
@@ -126,7 +155,9 @@ describe("PlataformaLayout", () => {
     });
 
     await expect(PlataformaLayout({ children: <p /> })).rejects.toEqual(
-      expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>),
+      expect.objectContaining({
+        url: "/",
+      } satisfies Partial<NextRedirectSignal>),
     );
   });
 
@@ -138,7 +169,9 @@ describe("PlataformaLayout", () => {
     });
 
     await expect(PlataformaLayout({ children: <p /> })).rejects.toEqual(
-      expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>),
+      expect.objectContaining({
+        url: "/",
+      } satisfies Partial<NextRedirectSignal>),
     );
   });
 });

@@ -49,7 +49,18 @@ import { getAccessToken } from "@/lib/auth/tokenStore";
 import { SUPPORTED_LANGUAGES, type Language } from "@/lib/i18n/languages";
 import { useUpdatePreferredLanguage } from "@/hooks/useUpdatePreferredLanguage";
 
-export function LanguageSwitcher() {
+export interface LanguageSwitcherProps {
+  /**
+   * Etiqueta «Idioma» visible (dentro del menú de cuenta,
+   * `components/layout/UserMenu.tsx`) o solo para lectores de pantalla
+   * (cabecera de `/login`, donde el control va suelto y compacto).
+   */
+  labelVisible?: boolean;
+}
+
+export function LanguageSwitcher({
+  labelVisible = false,
+}: LanguageSwitcherProps = {}) {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("language");
@@ -93,8 +104,13 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="flex items-center">
-      <label htmlFor={selectId} className="sr-only">
+    <div className={labelVisible ? "flex flex-col gap-1" : "flex items-center"}>
+      <label
+        htmlFor={selectId}
+        className={
+          labelVisible ? "text-xs font-medium text-text-form" : "sr-only"
+        }
+      >
         {t("title")}
       </label>
       <select
@@ -102,7 +118,7 @@ export function LanguageSwitcher() {
         value={selected ?? locale}
         disabled={pending}
         onChange={(event) => handleChange(event.target.value as Language)}
-        className="h-8 rounded-md border border-border bg-white px-2 text-sm font-medium text-text-form focus-visible:outline-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className={`h-8 rounded-md border border-border bg-white px-2 text-sm font-medium text-text-form focus-visible:outline-primary-700 disabled:cursor-not-allowed disabled:opacity-50 ${labelVisible ? "w-full" : ""}`}
       >
         {SUPPORTED_LANGUAGES.map((lang) => (
           <option key={lang} value={lang}>

@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
-import { LogoutButton } from "@/components/LogoutButton";
 import { PageHelp } from "@/components/help/PageHelp";
 import { SkipLink } from "@/components/ui/SkipLink";
 import { Footer } from "@/components/layout/Footer";
-import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { UserMenu } from "@/components/layout/UserMenu";
+import { displayName } from "@/lib/auth/displayName";
 import { SideNav } from "@/components/layout/SideNav";
 import {
   PLATAFORMA_MENU_LABELS,
@@ -14,7 +14,11 @@ import {
 } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
-export default async function PlataformaLayout({ children }: { children: React.ReactNode }) {
+export default async function PlataformaLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const t = await getTranslations();
   const session = await getServerSession();
   if (!session) {
@@ -33,11 +37,12 @@ export default async function PlataformaLayout({ children }: { children: React.R
     <div className="flex min-h-screen flex-col bg-border-light">
       <SkipLink />
       <header className="flex items-center justify-between gap-3 bg-secondary-900 px-4 py-2 text-text-inverse">
-        <span className="text-base font-semibold">{t("layout.plataforma.brand")}</span>
+        <span className="text-base font-semibold">
+          {t("layout.plataforma.brand")}
+        </span>
         <div className="flex items-center gap-2">
-          <LanguageSwitcher />
           <PageHelp />
-          <LogoutButton />
+          <UserMenu email={session.me.email} name={displayName(session.me)} />
         </div>
       </header>
       <div className="flex flex-1">
@@ -48,7 +53,11 @@ export default async function PlataformaLayout({ children }: { children: React.R
             label: t(PLATAFORMA_MENU_LABELS[item]),
           }))}
         />
-        <main id="main-content" tabIndex={-1} className="flex-1 p-4 focus:outline-none">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex-1 p-4 focus:outline-none"
+        >
           {children}
         </main>
       </div>
