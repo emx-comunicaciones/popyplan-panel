@@ -497,7 +497,13 @@
       "editSave": "Save changes",
       "editLoading": "Loading the community record…",
       "editLoadError": "Couldn't load the community record",
-      "editLoadErrorDescription": "Try again later."
+      "editLoadErrorDescription": "Try again later.",
+      "inviteCodeTitle": "Invitation code",
+      "inviteCodeHint": "This community is private: it can only be joined with this code. Share it only with whoever you want inside.",
+      "inviteCodeLoading": "Loading the invitation code…",
+      "inviteCodeCopy": "Copy code",
+      "inviteCodeCopied": "Code copied.",
+      "inviteCodeCopyError": "Couldn't copy it. Select the code and copy it by hand."
     },
     "actividades": {
       "heading": "Activities",
@@ -1255,6 +1261,11 @@
       "invalido": "Check the details: something isn't valid.",
       "sinPermiso": "Only the owner or moderator can edit a community.",
       "desconocido": "Couldn't save the changes to the community."
+    },
+    "communityInviteCode": {
+      "sinPermiso": "You don't have permission to see the invitation code.",
+      "noPrivada": "Only private communities have an invitation code.",
+      "desconocido": "Couldn't load the invitation code."
     }
   },
   "reports": {

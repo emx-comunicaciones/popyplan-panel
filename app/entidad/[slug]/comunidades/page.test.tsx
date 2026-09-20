@@ -18,6 +18,7 @@ const useChangeCommunityMemberRoleMock = vi.hoisted(() => vi.fn());
 const useCreateCommunityMock = vi.hoisted(() => vi.fn());
 const useCommunityMock = vi.hoisted(() => vi.fn());
 const useUpdateCommunityMock = vi.hoisted(() => vi.fn());
+const useCommunityInviteCodeMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("@/hooks/useEntityCommunities", () => ({ useEntityCommunities: useEntityCommunitiesMock }));
@@ -42,6 +43,12 @@ vi.mock("@/hooks/useCreateCommunity", async () => {
 // `editingCommunity`), así que la mayoría de tests de este fichero no
 // necesita mockearlos — solo los que abren ese diálogo.
 vi.mock("@/hooks/useCommunity", () => ({ useCommunity: useCommunityMock }));
+vi.mock("@/hooks/useCommunityInviteCode", async () => {
+  const actual = await vi.importActual<typeof import("@/hooks/useCommunityInviteCode")>(
+    "@/hooks/useCommunityInviteCode",
+  );
+  return { ...actual, useCommunityInviteCode: useCommunityInviteCodeMock };
+});
 vi.mock("@/hooks/useUpdateCommunity", async () => {
   const actual = await vi.importActual<typeof import("@/hooks/useUpdateCommunity")>(
     "@/hooks/useUpdateCommunity",
@@ -63,6 +70,7 @@ afterEach(() => {
   useCreateCommunityMock.mockReset();
   useCommunityMock.mockReset();
   useUpdateCommunityMock.mockReset();
+  useCommunityInviteCodeMock.mockReset();
 });
 
 function idleMutation() {
@@ -362,6 +370,75 @@ describe("EntidadComunidadesPage", () => {
     await user.click(screen.getByRole("button", { name: /Paseos al atardecer/ }));
 
     expect(screen.getByRole("button", { name: "Editar" })).toBeInTheDocument();
+  });
+
+  it("una comunidad privada enseña su código de invitación a quien la gestiona (B-I8)", async () => {
+    // Sin esto, una comunidad `private` creada desde el panel era un
+    // callejón sin salida: nadie podía entrar.
+    const user = userEvent.setup();
+    mockCreateCommunityDefault();
+    useCommunityInviteCodeMock.mockReturnValue({ data: "9f2c-1111", isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c1", name: "Grupo reservado", visibility: "private" })],
+      isError: false,
+      error: null,
+    });
+    useCommunityMembersMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useCommunityPendingRequestsMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useApproveCommunityMemberMock.mockReturnValue(idleMutation());
+    useRejectCommunityMemberMock.mockReturnValue(idleMutation());
+    useKickCommunityMemberMock.mockReturnValue(idleMutation());
+    useChangeCommunityMemberRoleMock.mockReturnValue(idleMutation());
+
+    await renderPage("titular");
+    await user.click(screen.getByRole("button", { name: /Grupo reservado/ }));
+
+    expect(screen.getByText("Código de invitación")).toBeInTheDocument();
+    expect(screen.getByText("9f2c-1111")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Copiar código" })).toBeInTheDocument();
+  });
+
+  it("una comunidad abierta no enseña código de invitación (el backend daría 400)", async () => {
+    const user = userEvent.setup();
+    mockCreateCommunityDefault();
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c1", name: "Paseos al atardecer", visibility: "open" })],
+      isError: false,
+      error: null,
+    });
+    useCommunityMembersMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useCommunityPendingRequestsMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useApproveCommunityMemberMock.mockReturnValue(idleMutation());
+    useRejectCommunityMemberMock.mockReturnValue(idleMutation());
+    useKickCommunityMemberMock.mockReturnValue(idleMutation());
+    useChangeCommunityMemberRoleMock.mockReturnValue(idleMutation());
+
+    await renderPage("titular");
+    await user.click(screen.getByRole("button", { name: /Paseos al atardecer/ }));
+
+    expect(screen.queryByText("Código de invitación")).not.toBeInTheDocument();
+    expect(useCommunityInviteCodeMock).not.toHaveBeenCalled();
+  });
+
+  it("dinamizador no ve el código de invitación de una privada (el backend daría 403)", async () => {
+    const user = userEvent.setup();
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c1", name: "Grupo reservado", visibility: "private" })],
+      isError: false,
+      error: null,
+    });
+    useCommunityMembersMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useCommunityPendingRequestsMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useApproveCommunityMemberMock.mockReturnValue(idleMutation());
+    useRejectCommunityMemberMock.mockReturnValue(idleMutation());
+    useKickCommunityMemberMock.mockReturnValue(idleMutation());
+    useChangeCommunityMemberRoleMock.mockReturnValue(idleMutation());
+
+    await renderPage("dinamizador");
+    await user.click(screen.getByRole("button", { name: /Grupo reservado/ }));
+
+    expect(screen.queryByText("Código de invitación")).not.toBeInTheDocument();
+    expect(useCommunityInviteCodeMock).not.toHaveBeenCalled();
   });
 
   it("dinamizador no ve el botón «Editar» junto a la comunidad seleccionada", async () => {

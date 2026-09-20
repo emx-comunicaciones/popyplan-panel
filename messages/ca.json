@@ -497,7 +497,13 @@
       "editSave": "Desa els canvis",
       "editLoading": "Carregant la fitxa de la comunitat…",
       "editLoadError": "No s'ha pogut carregar la fitxa de la comunitat",
-      "editLoadErrorDescription": "Torna-ho a provar més tard."
+      "editLoadErrorDescription": "Torna-ho a provar més tard.",
+      "inviteCodeTitle": "Codi d'invitació",
+      "inviteCodeHint": "Aquesta comunitat és privada: només s'hi entra amb aquest codi. Comparteix-lo només amb qui vulguis a dins.",
+      "inviteCodeLoading": "Carregant el codi d'invitació…",
+      "inviteCodeCopy": "Copiar el codi",
+      "inviteCodeCopied": "Codi copiat.",
+      "inviteCodeCopyError": "No s'ha pogut copiar. Selecciona el codi i copia'l a mà."
     },
     "actividades": {
       "heading": "Activitats",
@@ -1255,6 +1261,11 @@
       "invalido": "Revisa les dades: alguna no és vàlida.",
       "sinPermiso": "Només el titular o el moderador poden editar una comunitat.",
       "desconocido": "No s'han pogut desar els canvis a la comunitat."
+    },
+    "communityInviteCode": {
+      "sinPermiso": "No tens permís per veure el codi d'invitació.",
+      "noPrivada": "Només les comunitats privades tenen codi d'invitació.",
+      "desconocido": "No s'ha pogut carregar el codi d'invitació."
     }
   },
   "reports": {

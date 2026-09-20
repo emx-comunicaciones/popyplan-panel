@@ -497,7 +497,13 @@
       "editSave": "Gorde aldaketak",
       "editLoading": "Komunitatearen fitxa kargatzen…",
       "editLoadError": "Ezin izan da komunitatearen fitxa kargatu",
-      "editLoadErrorDescription": "Saiatu berriro geroago."
+      "editLoadErrorDescription": "Saiatu berriro geroago.",
+      "inviteCodeTitle": "Gonbidapen-kodea",
+      "inviteCodeHint": "Komunitate hau pribatua da: kode honekin bakarrik sar daiteke. Partekatu barruan nahi duzunarekin bakarrik.",
+      "inviteCodeLoading": "Gonbidapen-kodea kargatzen…",
+      "inviteCodeCopy": "Kopiatu kodea",
+      "inviteCodeCopied": "Kodea kopiatu da.",
+      "inviteCodeCopyError": "Ezin izan da kopiatu. Hautatu kodea eta kopiatu eskuz."
     },
     "actividades": {
       "heading": "Jarduerak",
@@ -1255,6 +1261,11 @@
       "invalido": "Berrikusi datuak: badago baliozkoa ez den bat.",
       "sinPermiso": "Titularrak edo moderatzaileak bakarrik editatu dezakete komunitate bat.",
       "desconocido": "Ezin izan dira komunitatearen aldaketak gorde."
+    },
+    "communityInviteCode": {
+      "sinPermiso": "Ez duzu baimenik gonbidapen-kodea ikusteko.",
+      "noPrivada": "Komunitate pribatuek bakarrik dute gonbidapen-koderik.",
+      "desconocido": "Ezin izan da gonbidapen-kodea kargatu."
     }
   },
   "reports": {

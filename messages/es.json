@@ -497,7 +497,13 @@
       "editSave": "Guardar cambios",
       "editLoading": "Cargando la ficha de la comunidad…",
       "editLoadError": "No se pudo cargar la ficha de la comunidad",
-      "editLoadErrorDescription": "Vuelve a intentarlo más tarde."
+      "editLoadErrorDescription": "Vuelve a intentarlo más tarde.",
+      "inviteCodeTitle": "Código de invitación",
+      "inviteCodeHint": "Esta comunidad es privada: solo se entra con este código. Compártelo únicamente con quien quieras dentro.",
+      "inviteCodeLoading": "Cargando el código de invitación…",
+      "inviteCodeCopy": "Copiar código",
+      "inviteCodeCopied": "Código copiado.",
+      "inviteCodeCopyError": "No se pudo copiar. Selecciona el código y cópialo a mano."
     },
     "actividades": {
       "heading": "Actividades",
@@ -1255,6 +1261,11 @@
       "invalido": "Revisa los datos: alguno no es válido.",
       "sinPermiso": "Solo titular o moderador pueden editar una comunidad.",
       "desconocido": "No se pudieron guardar los cambios en la comunidad."
+    },
+    "communityInviteCode": {
+      "sinPermiso": "No tienes permiso para ver el código de invitación.",
+      "noPrivada": "Solo las comunidades privadas tienen código de invitación.",
+      "desconocido": "No se pudo cargar el código de invitación."
     }
   },
   "reports": {

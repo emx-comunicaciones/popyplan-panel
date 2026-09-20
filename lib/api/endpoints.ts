@@ -216,6 +216,15 @@ export const COMMUNITIES = {
    * `owner_org`) reutiliza `LIST` de arriba, mismo path.
    */
   DETAIL: (id: string) => `/api/communities/${id}/`,
+  /**
+   * `GET /api/communities/{id}/invite-code/` → `{invite_code}`. Solo
+   * para quien gestiona la comunidad (para una comunidad con
+   * `owner_org`, el titular/moderador de esa entidad) y solo si la
+   * visibilidad es `private`: 403 y 400 respectivamente, los dos con
+   * `{"error": …}` en vez de `{"detail": …}`
+   * (`hooks/useCommunityInviteCode.ts`).
+   */
+  INVITE_CODE: (id: string) => `/api/communities/${id}/invite-code/`,
 } as const;
 
 /**

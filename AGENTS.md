@@ -3132,6 +3132,25 @@ de la app viven en sus propios repos.
   de 1461 días. `asistencia/page.tsx` lo hereda sin tocar nada, porque
   monta la misma tabla.
 
+- **Código de invitación de una comunidad privada (B-I8)**
+  (`hooks/useCommunityInviteCode.ts` nuevo, `COMMUNITIES.INVITE_CODE`,
+  `ComunidadesPanel.tsx::InviteCode`): el panel ofrecía crear comunidades
+  `private` (`NuevaComunidadDialog`) pero no enseñaba el código en
+  ninguna parte, así que una privada creada desde el panel era un
+  callejón sin salida — nadie podía entrar en ella. Con la comunidad
+  seleccionada, `visibility === 'private'` y `canManage`, se pinta el
+  código de `GET /api/communities/{id}/invite-code/`
+  (`communities/unified_viewset.py::invite_code`, «Solo para gestores y
+  solo en comunidades `private`») con un botón «Copiar código»
+  (`navigator.clipboard`, con aviso si el navegador lo niega — el código
+  queda visible y seleccionable igual). Las otras dos visibilidades ni
+  montan el hook: el backend respondería 400. El endpoint contesta
+  `{"error": …}` en vez de `{"detail": …}` en sus dos rechazos, que
+  `lib/api/drfError.ts::detailOf` ya lee. **Fuera de alcance**: «Eliminar
+  comunidad» (`DELETE /api/communities/{id}/`), que el mismo hallazgo
+  pedía — es una acción destructiva con su propio diálogo y no estaba en
+  el plan de arreglos de esta rama.
+
 ## Comandos
 
 - `npm run dev` / `npm run build` / `npm run start`
