@@ -92,6 +92,40 @@ describe("EntidadActividadesPage", () => {
     expect(useEntityEventsMock).toHaveBeenLastCalledWith(7, expect.anything(), "cancelled");
   });
 
+  it("arranca en el mes en curso y el selector de periodo llega a lo que viene (C-I8)", async () => {
+    // Sin selector, el periodo estaba clavado del día 1 a hoy: las
+    // actividades futuras no aparecían nunca y ningún mes anterior se
+    // podía consultar.
+    useEntityEventsMock.mockReturnValue({ data: [EVENT_ROW], isError: false, error: null });
+    const user = userEvent.setup();
+
+    await renderPage();
+
+    const today = new Date();
+    const firstOfMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-01`;
+    expect(useEntityEventsMock).toHaveBeenLastCalledWith(
+      7,
+      expect.objectContaining({ since: firstOfMonth }),
+      undefined,
+    );
+
+    // Un `until` futuro es válido (ni el cliente ni `_periodo` del
+    // backend ponen tope por arriba): así se ven las actividades que
+    // vienen.
+    await user.clear(screen.getByLabelText("Desde"));
+    await user.type(screen.getByLabelText("Desde"), "2026-09-01");
+    await user.clear(screen.getByLabelText("Hasta"));
+    await user.type(screen.getByLabelText("Hasta"), "2027-06-30");
+    useEntityEventsMock.mockClear();
+    await user.click(screen.getByRole("button", { name: "Personalizado" }));
+
+    expect(useEntityEventsMock).toHaveBeenLastCalledWith(
+      7,
+      { since: "2026-09-01", until: "2027-06-30" },
+      undefined,
+    );
+  });
+
   it("sin actividades muestra el estado vacío", async () => {
     useEntityEventsMock.mockReturnValue({ data: [], isError: false, error: null });
 

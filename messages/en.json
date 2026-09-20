@@ -1337,6 +1337,7 @@
         "title": "Activities",
         "summary": "The period's activities with their sign-ups, attendees and organiser.",
         "actions": [
+          "Change the period (includes upcoming activities)",
           "Filter by status",
           "Open each activity's attendance list",
           "See who is responsible for each one"

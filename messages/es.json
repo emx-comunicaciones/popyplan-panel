@@ -1337,6 +1337,7 @@
         "title": "Actividades",
         "summary": "Las actividades del periodo con sus inscritos, asistentes y responsable.",
         "actions": [
+          "Cambiar el periodo (incluye las actividades que vienen)",
           "Filtrar por estado",
           "Entrar en la lista de asistencia de cada actividad",
           "Ver quién es responsable de cada una"

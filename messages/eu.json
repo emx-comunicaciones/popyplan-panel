@@ -1337,6 +1337,7 @@
         "title": "Jarduerak",
         "summary": "Aldiko jarduerak, izena emandakoekin, bertaratutakoekin eta arduradunarekin.",
         "actions": [
+          "Aldatu aldia (datozen jarduerak barne)",
           "Egoeraren arabera iragazi",
           "Jarduera bakoitzaren bertaratze-zerrendan sartu",
           "Bakoitzaren arduraduna nor den ikusi"

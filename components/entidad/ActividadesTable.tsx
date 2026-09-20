@@ -4,12 +4,13 @@ import Link from "next/link";
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 
+import { PeriodSelector } from "@/components/metrics/PeriodSelector";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useEntityEvents, type EntityEventStatus } from "@/hooks/useEntityEvents";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 import { localeForUseLocale } from "@/lib/i18n/locale";
-import { presetPeriod } from "@/lib/metrics/period";
+import { presetPeriod, type Period, type PeriodPreset } from "@/lib/metrics/period";
 
 export interface ActividadesTableProps {
   orgId: number | string;
@@ -47,10 +48,28 @@ function formatDateTime(iso: string, locale: string): string {
  * con inscritos/asistencia/ausencias y el responsable cuando quien mira
  * tiene lista nominal. Cada fila enlaza a `asistencia/{eventId}` cuando
  * el rol de quien mira tiene esa sección (`canOpenAttendance`).
+ *
+ * **Hallazgo C-I8 de la auditoría de integración (2026-09-21)**: el
+ * periodo estaba clavado a `presetPeriod("mes")` (del día 1 del mes en
+ * curso **hasta hoy**) y no había selector, así que las actividades
+ * **futuras** no aparecían nunca, ningún mes anterior se podía
+ * consultar, y el día 1 de cada mes la sección estaba casi vacía — y con
+ * ella la de Asistencia, que reutiliza esta tabla como selector de
+ * actividad, de modo que el check-in solo era alcanzable para
+ * actividades de este mes ya empezadas. Ahora monta el mismo
+ * `components/metrics/PeriodSelector.tsx` que los dashboards de
+ * métricas: arranca en «Este mes» y el rango personalizado admite un
+ * `until` **futuro** (ni `customPeriod` ni `panel/viewsets.py::_periodo`
+ * ponen tope por arriba, solo la diferencia de 1461 días), que es cómo
+ * se llega a lo que viene.
  */
 export function ActividadesTable({ orgId, slug, canOpenAttendance }: ActividadesTableProps) {
   const [status, setStatus] = useState<EntityEventStatus | "">("");
-  const period = presetPeriod("mes");
+  const [preset, setPreset] = useState<PeriodPreset>("mes");
+  // El periodo inicial se calcula una vez (no en cada render): `useQuery`
+  // lo lleva en su clave de caché y un objeto nuevo por render la
+  // invalidaría sin motivo.
+  const [period, setPeriod] = useState<Period>(() => presetPeriod("mes"));
   const t = useTranslations("entidad.actividades");
   const tAll = useTranslations();
   const locale = useLocale();
@@ -59,6 +78,14 @@ export function ActividadesTable({ orgId, slug, canOpenAttendance }: Actividades
 
   return (
     <div className="flex flex-col gap-4">
+      <PeriodSelector
+        value={period}
+        preset={preset}
+        onChange={(nextPeriod, nextPreset) => {
+          setPeriod(nextPeriod);
+          setPreset(nextPreset);
+        }}
+      />
       <div>
         <label htmlFor="actividades-status" className="mb-1 block text-sm font-medium text-text-form">
           {t("statusLabel")}

@@ -1337,6 +1337,7 @@
         "title": "Activitats",
         "summary": "Les activitats del període amb els seus inscrits, assistents i responsable.",
         "actions": [
+          "Canviar el període (inclou les activitats que vénen)",
           "Filtrar per estat",
           "Entrar a la llista d'assistència de cada activitat",
           "Veure qui n'és el responsable"

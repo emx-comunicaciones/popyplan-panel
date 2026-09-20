@@ -3117,6 +3117,21 @@ de la app viven en sus propios repos.
   compartido con la cola de plataforma, como ya pasaba con
   `notMember`/`referent`).
 
+- **Actividades con selector de periodo (C-I8)**
+  (`components/entidad/ActividadesTable.tsx`): el periodo estaba clavado
+  a `presetPeriod("mes")` —del día 1 del mes en curso **hasta hoy**— y no
+  había selector, así que las actividades **futuras** no aparecían nunca,
+  ningún mes anterior se podía consultar y el día 1 de cada mes la
+  sección estaba casi vacía. Arrastraba a Asistencia, que reutiliza esta
+  tabla como selector de actividad: el check-in solo era alcanzable para
+  actividades de este mes ya empezadas. Ahora monta el mismo
+  `components/metrics/PeriodSelector.tsx` que los dashboards de métricas
+  (arranca en «Este mes»); a lo que viene se llega con el rango
+  personalizado, cuyo `until` puede ser futuro — ni `customPeriod` ni
+  `panel/viewsets.py::_periodo` ponen tope por arriba, solo la diferencia
+  de 1461 días. `asistencia/page.tsx` lo hereda sin tocar nada, porque
+  monta la misma tabla.
+
 ## Comandos
 
 - `npm run dev` / `npm run build` / `npm run start`
