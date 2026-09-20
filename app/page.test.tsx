@@ -103,13 +103,13 @@ describe("Home (app/page.tsx)", () => {
     // accesible — `getAllByRole` en vez de `getByRole`, comprobando que
     // los dos llevan la URL correcta.
     const appStoreLinks = screen.getAllByRole("link", { name: "Descargar en el App Store" });
-    expect(appStoreLinks.length).toBeGreaterThanOrEqual(1);
+    expect(appStoreLinks).toHaveLength(2);
     for (const link of appStoreLinks) {
       expect(link).toHaveAttribute("href", "https://apps.apple.com/app/popyplan/id1");
     }
 
     const playStoreLinks = screen.getAllByRole("link", { name: "Descargar en Google Play" });
-    expect(playStoreLinks.length).toBeGreaterThanOrEqual(1);
+    expect(playStoreLinks).toHaveLength(2);
     for (const link of playStoreLinks) {
       expect(link).toHaveAttribute(
         "href",
