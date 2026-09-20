@@ -1520,8 +1520,12 @@ el access token a la petición como cabecera interna
 (`ACCESS_TOKEN_HEADER = 'x-pp-access-token'`, nunca llega al navegador)
 que `getServerSession` lee con `headers()` de `next/headers`. Sin
 cookie, o si el backend rechaza el refresh, una navegación de documento
-va a `/login?returnTo=<destino>` (y un prefetch/RSC pasa sin cabecera,
-con lo que `getServerSession` devuelve `null` y el layout redirige);
+va a `/login?returnTo=<destino>` — **salvo en `/`, que desde la landing
+es la web pública y pasa sin cabecera de sesión en vez de ir al login**
+(ver «Landing pública y login único» más abajo); toda otra ruta del
+`matcher` sigue yendo al login. Un prefetch/RSC pasa sin cabecera en
+cualquier ruta, con lo que `getServerSession` devuelve `null` y el
+layout redirige;
 **el middleware no borra nunca la cookie**, eso lo hace el route handler
 de refresco o el logout (F3, ver «Hardening de sesión» más abajo).
 
@@ -1639,8 +1643,9 @@ sección: **1375 tests**, líneas **99,86 %**.
   la mitigación es que **solo el route handler borra la cookie**, porque
   es el único que consulta la caché de replay antes de dar el refresh por
   caducado (más el logout, que la borra a propósito). El middleware, ante
-  un 401, se limita a mandar al login con el destino guardado: la cookie
-  de más que se queda en el navegador no da bucle —`/login` está fuera
+  un 401, se limita a mandar al login con el destino guardado (**en `/`,
+  a dejar pasar sin sesión**: es la landing pública): la cookie de más
+  que se queda en el navegador no da bucle —`/login` está fuera
   del `matcher`— y la restauración de arranque de `app/providers.tsx`
   llama a ese route handler, que la borra con su 401 si de verdad estaba
   caducada, o **revive la sesión** si lo que había era la carrera.
@@ -2717,7 +2722,16 @@ es la única condición nueva; `redirectToLogin` pierde su excepción
 profesionales), `HowItWorks`, `Privacy`, `Contact` y el `Footer` común.
 `StoreLinks` pinta los botones de tienda y devuelve `null` —etiqueta
 incluida— si no hay ninguna URL configurada. `AppAccountScreen` reutiliza
-`StoreLinks` y `LogoutButton`.
+`StoreLinks` y `LogoutButton`, con una cabecera propia (marca +
+`LanguageSwitcher`, la de `LandingHeader` sin «Entrar»): era la única
+pantalla del producto sin selector de idioma, y justo la que ve quien
+quizá entró por error.
+**El pie no lleva enlace de contacto, a propósito** (la spec §4, bloque 7,
+lo pedía): `components/layout/Footer.tsx` se reutiliza tal cual, solo con
+el enlace de accesibilidad. La sección «Habla con nosotros» está
+literalmente encima del pie, así que añadir una prop a un componente
+compartido por los tres layouts de área para repetir ese enlace dos
+centímetros más abajo no compensaba.
 **Ninguno puede ser `async`**: Testing Library renderiza el árbol que
 devuelve `app/page.tsx` con `react-dom/client`, que no resuelve promesas de
 componente — por eso traducen con `useTranslations` (soportado en RSC) y no
@@ -2760,14 +2774,24 @@ prohíbe `/entidad`, `/paraguas`, `/plataforma`, `/elegir-entidad`,
 `/login` y `/api`; `app/sitemap.ts` lista las dos rutas públicas (sin
 `lastModified`: no hay fecha real que dar). `app/page.tsx::generateMetadata`
 usa `title.absolute` —el layout raíz aplica la plantilla `"%s · Popyplan"`
-y el título ya lleva la marca— más `openGraph` (`images: ["/og.png"]`,
-`url: siteUrl()`, `locale` en forma `es_ES` derivada de
-`lib/i18n/locale.ts`) y `twitter.card = "summary_large_image"`.
-`public/og.png` (1200×630) es hoy **un liso del color de marca**
-(`#0e7c78`): ninguna dependencia instalada rasteriza texto y no se añadió
-una solo para esto; se generó con un script de un solo uso (no commiteado)
-que escribe el PNG con `node:zlib`, y se sustituye cuando haya material
-gráfico de marca.
+y el título ya lleva la marca— más `openGraph` (`url: siteUrl()`, `locale`
+en forma `es_ES` derivada de `lib/i18n/locale.ts`) y
+`twitter.card = "summary_large_image"`; **ningún `images` a mano**, porque
+la imagen la genera una ruta y Next la inyecta sola en los dos sitios.
+**`app/opengraph-image.tsx`** (1200×630, fondo `--color-primary-700`
+`#0e7c78`, la marca y la frase de portada en blanco) la rasteriza con
+`ImageResponse` de `next/og`, que **viene con Next 15** (Satori + resvg,
+sin tocar el `package.json`). La primera versión de la rama era un
+`public/og.png` liso, con un motivo documentado que resultó ser falso
+(«ninguna dependencia instalada rasteriza texto»); ese PNG ya no existe.
+Los textos salen del **catálogo español** (`import es from
+"@/messages/es.json"`), no de `getTranslations`: un fichero de imagen de
+metadatos no tiene contexto de petición con el que resolver el idioma de
+quien comparte, y `alt` es además una constante de módulo — el español es
+el idioma por defecto del producto, que es el criterio correcto para una
+imagen fija. El `#0e7c78` va como literal hexadecimal y no `var(--…)` por
+el mismo motivo que `lib/metrics/mapScale.ts`: Satori solo entiende
+estilos en línea, no hay hoja de estilos que resolver.
 
 **Pruebas**: `app/page.test.tsx` cubre los cinco redirects, la landing
 (`h1`, las cuatro tarjetas, «Entrar» → `/login`, `mailto:` con el correo
@@ -2782,6 +2806,28 @@ cubren los tres módulos que sí cuentan para el umbral de cobertura.
 sesión, `panel-demo-asociacion-bidasoa-p01@test.com` (sin rol de panel) en
 «Tu cuenta es de la app», y el titular de Bidasoa que visita `/` con sesión
 y aterriza en su entidad.
+
+**Pendientes conocidos** (revisión final de la rama, no bloquean):
+
+- **Contraste del `hover` de las llamadas principales** (M8):
+  `components/landing/linkStyles.ts::PRIMARY_LINK_CLASS` usa
+  `hover:bg-secondary-600`, y `text-inverse` sobre `secondary-600` da
+  ≈2,9:1 — por debajo del 3:1 de AA para texto de UI. **No se toca aquí**
+  porque es la convención heredada de `components/ui/Button.tsx`, que la
+  aplica en todo el panel: arreglarlo solo en la landing la haría
+  divergir. El cambio correcto (`hover:bg-secondary-900`, 14,46:1, par ya
+  auditado en `lib/a11y/tokens.test.ts`, o un `primary-900` nuevo) es una
+  pasada sobre `Button.tsx`, en su propio ticket.
+- **Sin `alternates.canonical` ni `Vary: Accept-Language`** (M11): la
+  landing sirve tres idiomas desde una sola URL según `pp_lang` /
+  `Accept-Language`, y no declara ninguna de las dos cosas. Hoy no es un
+  bug —la ruta es dinámica y Next la sirve sin caché compartida— pero en
+  cuanto se ponga un CDN delante podría servir la versión en euskera a un
+  visitante castellanohablante. No se añade `alternates` porque **no hay
+  enrutado de idioma** (decisión 7 de i18n: ni segmento `[locale]` ni URL
+  por idioma), así que no hay ninguna URL alternativa que declarar; quien
+  monte el CDN tiene que añadir `Vary: Accept-Language` para `/` en
+  `lib/config/securityHeaders.ts`.
 
 **Fuera de alcance** (fases siguientes ya acordadas, spec §9): páginas por
 público (`/asociaciones`, …); formulario de contacto guardado en plataforma
@@ -2866,12 +2912,15 @@ en CI lo gate el job `e2e`).
   cerrada, no solo el `npx vitest run --coverage` en verde). El umbral
   fijado sigue en 99,7 porque real menos 0,3 (99,58) queda por debajo,
   así que el ratchet no sube.
-  Tras la landing pública y el login único (2026-09-20, Tareas 1-6):
-  **99,81 %** (2724/2729 líneas, 1946 tests, 195 ficheros — tres ficheros
-  nuevos que sí cuentan para la medición, `lib/config/site.ts`,
-  `app/robots.ts` y `app/sitemap.ts`, los tres con test propio; los
-  componentes de `components/landing/` son `.tsx` y, como el resto del
-  panel, se prueban por comportamiento). El umbral sigue en 99,7.
+  Tras la landing pública y el login único (2026-09-20, Tareas 1-6, ronda
+  final de correcciones I1-I3/M1-M13 incluida): **99,81 %** (2743/2748
+  líneas, 1958 tests, 195 ficheros — tres ficheros nuevos que sí cuentan
+  para la medición, `lib/config/site.ts`, `app/robots.ts` y
+  `app/sitemap.ts`, los tres con test propio y `site.ts` al 100 %; los
+  componentes de `components/landing/` y `app/opengraph-image.tsx` son
+  `.tsx` y, como el resto del panel, se prueban por comportamiento — el
+  de la imagen de compartir, además, se verificó contra el servidor
+  real). El umbral sigue en 99,7.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la
