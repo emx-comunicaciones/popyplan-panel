@@ -273,94 +273,84 @@
   },
   "landing": {
     "meta": {
-      "title": "Popyplan — planak, komunitateak eta jarduerak",
-      "description": "Popyplan planen, komunitateen eta jardueren aplikazioa da, elkarte, administrazio publiko eta profesionalentzako panel batekin."
+      "title": "Popyplan · Plan osasuntsuak, jende aktiboa",
+      "description": "Kirola, natura eta konpainia ona. Alkoholik eta drogarik gabeko planak eta komunitateak, zure ondoan."
     },
     "header": {
       "brand": "Popyplan",
+      "logoAlt": "Popyplan",
+      "navLabel": "Nagusia",
+      "home": "Hasiera",
+      "features": "Funtzionalitateak",
+      "downloadNav": "Deskarga",
+      "download": "Deskargatu aplikazioa",
       "login": "Sartu"
     },
     "hero": {
-      "title": "Planak, komunitateak eta jarduerak, ondo eta lagunduta bizitzeko",
-      "subtitle": "Popyplanek leku bakarrean biltzen du beste pertsonekin egiten duzuna: jarduera irekiak, arau propioak dituzten komunitateak eta antolatzen dituenarentzako panel bat.",
-      "ctaPanel": "Panelera sartu"
+      "title": "Plan osasuntsuak, jende aktiboa.",
+      "subtitle": "Kirola, natura eta konpainia ona. Alkoholik eta drogarik gabe.",
+      "mockupAlt": "Popyplan aplikazioa kirol komunitate bat erakusten"
     },
     "stores": {
-      "appStore": "Deskargatu App Storen",
-      "playStore": "Eskuratu Google Playn"
+      "label": "Deskargatu aplikazioa",
+      "appStoreLabel": "Deskargatu App Storen",
+      "appStorePrefix": "Deskargatu hemen",
+      "appStoreName": "App Store",
+      "playStoreLabel": "Eskuratu Google Playn",
+      "playStorePrefix": "Eskuratu hemen",
+      "playStoreName": "Google Play"
     },
-    "audiences": {
-      "title": "Norentzat da",
-      "people": {
-        "title": "Pertsonak",
-        "benefits": [
-          "Zure inguruko jarduerak eta planak, aplikaziotik izena emanda.",
-          "Arau propioak dituzten komunitateak: irekiak, eskaeraz edo pribatuak.",
-          "Zure laguntza-sarea, nahi baduzu: zuk erabakitzen duzu nork osatzen duen."
-        ],
-        "cta": "Deskargatu mugikorrean"
-      },
-      "associations": {
-        "title": "Elkarteak eta GKEak",
-        "benefits": [
-          "Pertsonak, jarduerak eta bertaratzea, QR bidezko check-inarekin.",
-          "Komunikazioak, baliabide-liburutegia eta inkesta anonimoak.",
-          "Aurrekontu adierazia eta amaierako txostena dituzten programak."
-        ],
-        "cta": "Idatzi iezaguzu elkarte batentzat"
-      },
-      "administrations": {
-        "title": "Administrazio publikoak",
-        "benefits": [
-          "Zure lurraldearen behatokia, oraindik jarduerarik ez dagoen tokietan ere.",
-          "Finantzatutako sarea: laguntzen dituzun erakundeek zer egiten duten.",
-          "Aldien arteko konparaketak eta txostenak CSV eta PDF formatuan."
-        ],
-        "cta": "Idatzi iezaguzu administrazio batentzat"
-      },
-      "professionals": {
-        "title": "Profesionalak",
-        "benefits": [
-          "Komunitate pribatuak zurekin lan egiten duten pertsonentzat.",
-          "Zure material propioak liburutegian, hartzailearen arabera.",
-          "Inoiz ez datu klinikorik: Popyplan ez da historia klinikoa."
-        ],
-        "cta": "Idatzi iezaguzu erabilera profesionalerako"
-      }
+    "modes": {
+      "label": "Zer ikusi nahi duzu",
+      "plans": "Planak",
+      "communities": "Komunitateak",
+      "plansText": "Ibilbideak, entrenamenduak eta aire zabaleko hitzorduak, zure ondoan.",
+      "communitiesText": "Kirolaren eta zaletasunaren araberako taldeak, arau propioekin.",
+      "heading": "Bere gorputza eta bere jendea zaintzen dituenarentzat diseinatua.",
+      "mockupAlt": "Popyplan aplikazioaren hiru pantaila"
     },
-    "how": {
-      "title": "Nola funtzionatzen duen",
-      "steps": [
-        "Erakundeak pertsonak gonbidatzen ditu bere gunera; inork ez du inoren konturik sortzen.",
-        "Jarduera bakoitza argitaratzen da, bete egiten da eta zerrenda aplikazioko QR kodearekin pasatzen da.",
-        "Panelak gertatutakoa laburbiltzen du, modu agregatuan eta txosten baterako prest."
-      ]
+    "features": {
+      "title": "Funtzionalitateak",
+      "communitiesTitle": "Kirolaren eta zaletasunaren araberako komunitateak",
+      "communitiesBody": "Sortu edo elkartu running, txirrindularitza, mendi edo yoga taldeetara, zuk nahi duzun bera nahi duen jendearekin.",
+      "plansTitle": "Planak zure ondoan",
+      "plansBody": "Ibilbideak, entrenamenduak eta aire zabaleko hitzorduak. Eman izena eta pasa zerrenda aplikazioko QR kodearekin.",
+      "shareTitle": "Partekatu zure lorpenak",
+      "shareBody": "Kontatu nola joan zaizun zure komunitatera irekitako harietan."
     },
-    "privacy": {
-      "title": "Pribatutasuna diseinutik",
-      "items": [
-        "Panelak ez du parte-hartzaileen telefonorik ez helbide elektronikorik erakusten.",
-        "Popyplanek ez du datu klinikorik ez diagnostikorik gordetzen.",
-        "Inkestak anonimoak dira eta beti modu agregatuan ikusten dira.",
-        "Ez da bostetik beherako pertsona-zenbaketarik erakusten.",
-        "Inork ez du inoren senide denik adierazten: guneak bereizita daude.",
-        "Dena gaztelaniaz, euskaraz eta katalanez."
-      ]
+    "values": {
+      "title": "Zerk bereizten gaituen",
+      "cleanTitle": "% 100 alkoholik eta drogarik gabe",
+      "cleanBody": "Popyplaneko plan eta komunitate guztiak alkoholik, kerik eta substantziarik gabekoak dira. Hona ondo egotera etortzen da.",
+      "realTitle": "Jende erreala, plan errealak",
+      "realBody": "Benetako hitzorduak, QR bidezko bertaratzearekin: mamu-profilik ez.",
+      "privacyTitle": "Zure pribatutasuna, lehenengo",
+      "privacyBody": "Popyplanek ez dio inori zure telefonoa erakusten, ezta osasun-daturik gordetzen ere. Zuk erabakitzen duzu zer partekatzen duzun."
     },
-    "contact": {
-      "title": "Hitz egin gurekin",
-      "body": "Esan iezaguzu zure erakundeak zer egiten duen eta panela erakutsiko dizugu.",
-      "cta": "Idatzi iezaguzu",
-      "subject": {
-        "associations": "Popyplan elkarte batentzat",
-        "administrations": "Popyplan administrazio publiko batentzat",
-        "professionals": "Popyplan profesionalentzat",
-        "other": "Popyplani buruzko galdera"
-      }
+    "download": {
+      "title": "Deskargatu doan eta hasi mugitzen zure jendearekin.",
+      "phoneAlt": "Popyplan aplikazioa mugikor batean"
+    },
+    "footer": {
+      "logoAlt": "Popyplan",
+      "navLabel": "Oineko estekak",
+      "product": "Produktua",
+      "downloads": "Deskargak",
+      "ios": "iOS",
+      "android": "Android",
+      "qrAlt": "Popyplan deskargatzeko QR kodea",
+      "qrText": "Eskaneatu QR kodea aplikazioa deskargatzeko",
+      "copyright": "© {year} Popyplan. Eskubide guztiak erreserbatuta.",
+      "support": "Laguntza",
+      "privacy": "Pribatutasuna",
+      "terms": "Baldintzak",
+      "deleteAccount": "Ezabatu kontua",
+      "accessibility": "Irisgarritasuna",
+      "panel": "Panelerako sarbidea"
     },
     "appAccount": {
       "title": "Zure kontua Popyplan aplikaziokoa da",
-      "description": "Panel hau elkarte, administrazio eta profesionalentzat da. Zure gunea aplikazioan dago: han dituzu zure jarduerak, zure komunitateak eta zure abisuak.",
+      "description": "Zure lekua aplikazioan dago: han dituzu zure planak, zure komunitateak eta zure jendea. Deskargatu eta sartu kontu berarekin.",
       "storesLabel": "Deskargatu aplikazioa",
       "openApp": "Ireki aplikazioa"
     }

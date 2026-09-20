@@ -11,6 +11,13 @@ vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock })
 
 import Home, { generateMetadata } from "./page";
 
+/** Fichas reales, el valor por defecto de `lib/config/site.ts::storeLinks()`. */
+const DEFAULT_APP_STORE = "https://apps.apple.com/us/app/polypop/id6755899118";
+const DEFAULT_PLAY_STORE = "https://play.google.com/store/apps/details?id=com.tikneo.popmobile";
+
+const APP_STORE_NAME = "Descargar en el App Store";
+const PLAY_STORE_NAME = "Descargar en Google Play";
+
 afterEach(() => {
   getServerSessionMock.mockReset();
   vi.unstubAllEnvs();
@@ -35,25 +42,85 @@ describe("Home (app/page.tsx)", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("sin sesión pinta la landing con su portada y las cuatro tarjetas de público", async () => {
+  it("sin sesión pinta la portada con el titular del rediseño", async () => {
+    getServerSessionMock.mockResolvedValue(null);
+
+    render(await Home());
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Planes sanos, gente activa." }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Deporte, naturaleza y buena compañía. Sin alcohol ni drogas."),
+    ).toBeInTheDocument();
+  });
+
+  it("el conmutador ofrece Planes y Comunidades, con Planes activo de entrada", async () => {
+    getServerSessionMock.mockResolvedValue(null);
+
+    render(await Home());
+
+    expect(screen.getByRole("button", { name: "Planes" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getByRole("button", { name: "Comunidades" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+    expect(
+      screen.getByRole("heading", {
+        level: 2,
+        name: "Diseñado para quien cuida su cuerpo y a su gente.",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("pinta las tres funcionalidades bajo su encabezado", async () => {
+    getServerSessionMock.mockResolvedValue(null);
+
+    render(await Home());
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Funcionalidades" }),
+    ).toBeInTheDocument();
+    for (const name of [
+      "Comunidades por deporte y afición",
+      "Planes cerca de ti",
+      "Comparte tus logros",
+    ]) {
+      expect(screen.getByRole("heading", { level: 3, name })).toBeInTheDocument();
+    }
+  });
+
+  it("pinta los tres valores, con el compromiso de planes sin alcohol ni drogas", async () => {
+    getServerSessionMock.mockResolvedValue(null);
+
+    render(await Home());
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Lo que nos diferencia" }),
+    ).toBeInTheDocument();
+    for (const name of [
+      "100 % libre de alcohol y drogas",
+      "Gente real, planes reales",
+      "Tu privacidad, primero",
+    ]) {
+      expect(screen.getByRole("heading", { level: 3, name })).toBeInTheDocument();
+    }
+  });
+
+  it("el banner de descarga cierra la página con su llamada", async () => {
     getServerSessionMock.mockResolvedValue(null);
 
     render(await Home());
 
     expect(
       screen.getByRole("heading", {
-        level: 1,
-        name: "Planes, comunidades y actividades para vivir bien acompañado",
+        level: 2,
+        name: "Descárgala gratis y empieza a moverte con tu gente.",
       }),
     ).toBeInTheDocument();
-    for (const name of [
-      "Personas",
-      "Asociaciones y ONG",
-      "Administraciones públicas",
-      "Profesionales",
-    ]) {
-      expect(screen.getByRole("heading", { level: 3, name })).toBeInTheDocument();
-    }
   });
 
   it("sin sesión ofrece entrar al panel desde la cabecera", async () => {
@@ -64,58 +131,130 @@ describe("Home (app/page.tsx)", () => {
     expect(screen.getByRole("link", { name: "Entrar" })).toHaveAttribute("href", "/login");
   });
 
-  it("la llamada de contacto es un mailto al correo por defecto, con su asunto", async () => {
+  it("la cabecera enlaza las tres secciones de la página", async () => {
     getServerSessionMock.mockResolvedValue(null);
-    vi.stubEnv("NEXT_PUBLIC_CONTACT_EMAIL", undefined);
 
     render(await Home());
 
-    expect(screen.getByRole("link", { name: "Escríbenos" })).toHaveAttribute(
+    const nav = screen.getByRole("navigation", { name: "Principal" });
+    expect(nav).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Inicio" })[0]).toHaveAttribute("href", "#inicio");
+    expect(screen.getAllByRole("link", { name: "Funcionalidades" })[0]).toHaveAttribute(
       "href",
-      "mailto:hola@popyplan.com?subject=Consulta%20sobre%20Popyplan",
+      "#funcionalidades",
     );
-    expect(screen.getByRole("link", { name: "Escríbenos para una asociación" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Descarga la app" })).toHaveAttribute(
       "href",
-      "mailto:hola@popyplan.com?subject=Popyplan%20para%20una%20asociaci%C3%B3n",
+      "#descarga",
     );
   });
 
-  it("sin tiendas configuradas la landing no pinta botones de tienda", async () => {
+  it("sin variables de tienda enlaza las fichas reales, no oculta los botones", async () => {
+    // Cambio del rediseño: la descarga es la llamada principal de la
+    // web, así que no puede depender de dos variables de entorno.
     getServerSessionMock.mockResolvedValue(null);
     vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", undefined);
     vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", undefined);
 
     render(await Home());
 
-    expect(screen.queryByRole("link", { name: "Descargar en el App Store" })).toBeNull();
-    expect(screen.queryByRole("link", { name: "Descargar en Google Play" })).toBeNull();
+    // `<StoreLinks />` se monta dos veces (la portada y el banner de
+    // descarga), así que hay dos enlaces con el mismo nombre accesible.
+    const appStoreLinks = screen.getAllByRole("link", { name: APP_STORE_NAME });
+    expect(appStoreLinks).toHaveLength(2);
+    for (const link of appStoreLinks) {
+      expect(link).toHaveAttribute("href", DEFAULT_APP_STORE);
+      expect(link).toHaveAttribute("rel", "noopener noreferrer");
+      expect(link).toHaveAttribute("target", "_blank");
+    }
+
+    const playStoreLinks = screen.getAllByRole("link", { name: PLAY_STORE_NAME });
+    expect(playStoreLinks).toHaveLength(2);
+    for (const link of playStoreLinks) {
+      expect(link).toHaveAttribute("href", DEFAULT_PLAY_STORE);
+    }
   });
 
-  it("sin sesión, con tiendas configuradas, la portada enseña los botones de App Store y Google Play", async () => {
+  it("con las variables declaradas manda su valor", async () => {
     getServerSessionMock.mockResolvedValue(null);
     vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", "https://apps.apple.com/app/popyplan/id1");
-    vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", "https://play.google.com/store/apps/details?id=com.popyplan");
+    vi.stubEnv(
+      "NEXT_PUBLIC_PLAY_STORE_URL",
+      "https://play.google.com/store/apps/details?id=com.popyplan",
+    );
 
     render(await Home());
 
-    // `<StoreLinks />` se monta dos veces en la landing (el hero y la
-    // tarjeta de «Personas»), así que hay dos enlaces con el mismo nombre
-    // accesible — `getAllByRole` en vez de `getByRole`, comprobando que
-    // los dos llevan la URL correcta.
-    const appStoreLinks = screen.getAllByRole("link", { name: "Descargar en el App Store" });
-    expect(appStoreLinks).toHaveLength(2);
-    for (const link of appStoreLinks) {
+    for (const link of screen.getAllByRole("link", { name: APP_STORE_NAME })) {
       expect(link).toHaveAttribute("href", "https://apps.apple.com/app/popyplan/id1");
     }
-
-    const playStoreLinks = screen.getAllByRole("link", { name: "Descargar en Google Play" });
-    expect(playStoreLinks).toHaveLength(2);
-    for (const link of playStoreLinks) {
+    for (const link of screen.getAllByRole("link", { name: PLAY_STORE_NAME })) {
       expect(link).toHaveAttribute(
         "href",
         "https://play.google.com/store/apps/details?id=com.popyplan",
       );
     }
+  });
+
+  it("con una variable de tienda inservible no pinta esa insignia", async () => {
+    getServerSessionMock.mockResolvedValue(null);
+    vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", "javascript:alert(1)");
+    vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", "no soy una url");
+
+    render(await Home());
+
+    expect(screen.queryByRole("link", { name: APP_STORE_NAME })).toBeNull();
+    expect(screen.queryByRole("link", { name: PLAY_STORE_NAME })).toBeNull();
+  });
+
+  it("el pie lleva el QR, los cuatro enlaces legales, accesibilidad y el acceso al panel", async () => {
+    getServerSessionMock.mockResolvedValue(null);
+
+    render(await Home());
+
+    expect(
+      screen.getByRole("img", { name: "Código QR para descargar Popyplan" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Escanea el código QR para descargar la aplicación"),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Soporte" })).toHaveAttribute(
+      "href",
+      "https://popyplan.com/support",
+    );
+    expect(screen.getByRole("link", { name: "Privacidad" })).toHaveAttribute(
+      "href",
+      "https://popyplan.com/privacy",
+    );
+    expect(screen.getByRole("link", { name: "Términos" })).toHaveAttribute(
+      "href",
+      "https://popyplan.com/terms",
+    );
+    expect(screen.getByRole("link", { name: "Eliminar cuenta" })).toHaveAttribute(
+      "href",
+      "https://popyplan.com/delete-account",
+    );
+    expect(screen.getByRole("link", { name: "Accesibilidad" })).toHaveAttribute(
+      "href",
+      "/accesibilidad",
+    );
+    expect(screen.getByRole("link", { name: "Acceso al panel" })).toHaveAttribute(
+      "href",
+      "/login",
+    );
+  });
+
+  it("el aviso de derechos lleva el año en curso sin separador de millares", async () => {
+    // `{year}` se pasa como cadena a propósito: un número lo formatearía
+    // `Intl` en es-ES como «2.026».
+    getServerSessionMock.mockResolvedValue(null);
+    const year = new Date().getFullYear();
+
+    render(await Home());
+
+    expect(
+      screen.getByText(`© ${year} Popyplan. Todos los derechos reservados.`),
+    ).toBeInTheDocument();
   });
 
   it("generateMetadata describe la landing con su Open Graph", async () => {
@@ -124,13 +263,13 @@ describe("Home (app/page.tsx)", () => {
     const metadata = await generateMetadata();
 
     expect(metadata.title).toEqual({
-      absolute: "Popyplan — planes, comunidades y actividades",
+      absolute: "Popyplan · Planes sanos, gente activa",
     });
     expect(metadata.description).toBe(
-      "Popyplan es la app de planes, comunidades y actividades, con un panel para asociaciones, administraciones públicas y profesionales.",
+      "Deporte, naturaleza y buena compañía. Planes y comunidades sin alcohol ni drogas, cerca de ti.",
     );
     expect(metadata.openGraph).toMatchObject({
-      title: "Popyplan — planes, comunidades y actividades",
+      title: "Popyplan · Planes sanos, gente activa",
       url: "https://popyplan.com",
       siteName: "Popyplan",
       locale: "es_ES",
@@ -227,8 +366,6 @@ describe("Home (app/page.tsx)", () => {
 
   it("sin ningún acceso no tiene violaciones de accesibilidad (axe)", async () => {
     getServerSessionMock.mockResolvedValue(sessionWithoutAccess());
-    vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", "https://apps.apple.com/app/popyplan/id1");
-    vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", "https://play.google.com/store/apps/details?id=com.popyplan");
 
     const { container } = render(await Home());
 
@@ -242,6 +379,11 @@ describe("Home (app/page.tsx)", () => {
 
     expect(
       screen.getByRole("heading", { level: 1, name: "Tu cuenta es de la app Popyplan" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Tu sitio está en la app: ahí tienes tus planes, tus comunidades y tu gente. Descárgala y entra con esta misma cuenta.",
+      ),
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Abrir la app" })).toHaveAttribute(
       "href",
@@ -260,32 +402,35 @@ describe("Home (app/page.tsx)", () => {
     expect(screen.getByLabelText("Idioma")).toBeInTheDocument();
   });
 
-  it("sin tiendas configuradas no pinta ningún botón de tienda", async () => {
+  it("sin ningún acceso ofrece descargar la app con las fichas por defecto", async () => {
     getServerSessionMock.mockResolvedValue(sessionWithoutAccess());
     vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", undefined);
     vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", undefined);
 
     render(await Home());
 
-    expect(screen.queryByRole("link", { name: "Descargar en el App Store" })).toBeNull();
-    expect(screen.queryByRole("link", { name: "Descargar en Google Play" })).toBeNull();
+    expect(screen.getByRole("link", { name: APP_STORE_NAME })).toHaveAttribute(
+      "href",
+      DEFAULT_APP_STORE,
+    );
+    expect(screen.getByRole("link", { name: PLAY_STORE_NAME })).toHaveAttribute(
+      "href",
+      DEFAULT_PLAY_STORE,
+    );
   });
 
-  it("con las tiendas configuradas pinta los dos botones con su URL", async () => {
+  it("sin ninguna ficha válida no pinta ningún botón de tienda", async () => {
     getServerSessionMock.mockResolvedValue(sessionWithoutAccess());
-    vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", "https://apps.apple.com/app/popyplan/id1");
-    vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", "https://play.google.com/store/apps/details?id=com.popyplan");
+    vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", "no soy una url");
+    vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", "no soy una url");
 
     render(await Home());
 
-    expect(screen.getByRole("link", { name: "Descargar en el App Store" })).toHaveAttribute(
-      "href",
-      "https://apps.apple.com/app/popyplan/id1",
-    );
-    expect(screen.getByRole("link", { name: "Descargar en Google Play" })).toHaveAttribute(
-      "href",
-      "https://play.google.com/store/apps/details?id=com.popyplan",
-    );
+    expect(screen.queryByRole("link", { name: APP_STORE_NAME })).toBeNull();
+    expect(screen.queryByRole("link", { name: PLAY_STORE_NAME })).toBeNull();
+    // La etiqueta tampoco se pinta: un rótulo suelto sin botones debajo
+    // se lee como algo que falta.
+    expect(screen.queryByText("Descarga la app")).toBeNull();
   });
 
   it("con un rol de plataforma desconocido redirige a su entidad, no a /plataforma", async () => {

@@ -273,94 +273,84 @@
   },
   "landing": {
     "meta": {
-      "title": "Popyplan — planes, comunidades y actividades",
-      "description": "Popyplan es la app de planes, comunidades y actividades, con un panel para asociaciones, administraciones públicas y profesionales."
+      "title": "Popyplan · Planes sanos, gente activa",
+      "description": "Deporte, naturaleza y buena compañía. Planes y comunidades sin alcohol ni drogas, cerca de ti."
     },
     "header": {
       "brand": "Popyplan",
+      "logoAlt": "Popyplan",
+      "navLabel": "Principal",
+      "home": "Inicio",
+      "features": "Funcionalidades",
+      "downloadNav": "Descarga",
+      "download": "Descarga la app",
       "login": "Entrar"
     },
     "hero": {
-      "title": "Planes, comunidades y actividades para vivir bien acompañado",
-      "subtitle": "Popyplan reúne en un mismo sitio lo que haces con otras personas: actividades abiertas, comunidades con sus normas y un panel para quien las organiza.",
-      "ctaPanel": "Entrar al panel"
+      "title": "Planes sanos, gente activa.",
+      "subtitle": "Deporte, naturaleza y buena compañía. Sin alcohol ni drogas.",
+      "mockupAlt": "La app de Popyplan mostrando una comunidad de deporte"
     },
     "stores": {
-      "appStore": "Descargar en el App Store",
-      "playStore": "Descargar en Google Play"
+      "label": "Descarga la app",
+      "appStoreLabel": "Descargar en el App Store",
+      "appStorePrefix": "Descárgalo en",
+      "appStoreName": "App Store",
+      "playStoreLabel": "Descargar en Google Play",
+      "playStorePrefix": "Obtenlo en",
+      "playStoreName": "Google Play"
     },
-    "audiences": {
-      "title": "Para quién es",
-      "people": {
-        "title": "Personas",
-        "benefits": [
-          "Actividades y planes cerca de ti, con inscripción desde la app.",
-          "Comunidades con sus normas: abiertas, con solicitud o privadas.",
-          "Tu red de apoyo, si quieres tenerla: tú decides quién la forma."
-        ],
-        "cta": "Descárgala en tu móvil"
-      },
-      "associations": {
-        "title": "Asociaciones y ONG",
-        "benefits": [
-          "Personas, actividades y asistencia con check-in por QR.",
-          "Comunicaciones, biblioteca de recursos y encuestas anónimas.",
-          "Programas con presupuesto declarado e informe final."
-        ],
-        "cta": "Escríbenos para una asociación"
-      },
-      "administrations": {
-        "title": "Administraciones públicas",
-        "benefits": [
-          "Observatorio de tu territorio, también donde todavía no hay actividad.",
-          "Red financiada: qué hacen las entidades a las que apoyas.",
-          "Comparativas entre periodos e informes en CSV y PDF."
-        ],
-        "cta": "Escríbenos para una administración"
-      },
-      "professionals": {
-        "title": "Profesionales",
-        "benefits": [
-          "Comunidades privadas para las personas con las que trabajas.",
-          "Tus propios materiales en la biblioteca, por audiencia.",
-          "Nunca datos clínicos: Popyplan no es una historia clínica."
-        ],
-        "cta": "Escríbenos para un uso profesional"
-      }
+    "modes": {
+      "label": "Qué quieres ver",
+      "plans": "Planes",
+      "communities": "Comunidades",
+      "plansText": "Rutas, entrenos y quedadas al aire libre, cerca de ti.",
+      "communitiesText": "Grupos por deporte y afición, con sus propias normas.",
+      "heading": "Diseñado para quien cuida su cuerpo y a su gente.",
+      "mockupAlt": "Tres pantallas de la app de Popyplan"
     },
-    "how": {
-      "title": "Cómo funciona",
-      "steps": [
-        "La entidad invita a las personas a su espacio; nadie crea la cuenta de nadie.",
-        "Cada actividad se publica, se llena y se pasa lista con el QR de la app.",
-        "El panel resume lo que ha pasado, en agregado y listo para un informe."
-      ]
+    "features": {
+      "title": "Funcionalidades",
+      "communitiesTitle": "Comunidades por deporte y afición",
+      "communitiesBody": "Crea o únete a grupos de running, ciclismo, montaña, yoga… con gente que va a lo mismo que tú.",
+      "plansTitle": "Planes cerca de ti",
+      "plansBody": "Rutas, entrenos y quedadas al aire libre. Apúntate y pasa lista con el QR de la app.",
+      "shareTitle": "Comparte tus logros",
+      "shareBody": "Cuenta cómo te ha ido en hilos abiertos a tu comunidad."
     },
-    "privacy": {
-      "title": "Privacidad por diseño",
-      "items": [
-        "El panel no muestra teléfonos ni correos de las personas participantes.",
-        "Popyplan no guarda datos clínicos ni diagnósticos.",
-        "Las encuestas son anónimas y solo se ven agregadas.",
-        "Ningún recuento de personas se muestra por debajo de cinco.",
-        "Nadie declara ser familiar de nadie: los espacios están separados.",
-        "Todo en español, euskera y catalán."
-      ]
+    "values": {
+      "title": "Lo que nos diferencia",
+      "cleanTitle": "100 % libre de alcohol y drogas",
+      "cleanBody": "Todos los planes y comunidades de Popyplan son sin alcohol, sin humo y sin sustancias. Aquí se viene a estar bien.",
+      "realTitle": "Gente real, planes reales",
+      "realBody": "Quedadas de verdad, con asistencia por QR: nada de perfiles fantasma.",
+      "privacyTitle": "Tu privacidad, primero",
+      "privacyBody": "Popyplan no muestra tu teléfono a nadie ni guarda datos de salud. Tú decides qué compartes."
     },
-    "contact": {
-      "title": "Habla con nosotros",
-      "body": "Cuéntanos qué hace tu entidad y te enseñamos el panel.",
-      "cta": "Escríbenos",
-      "subject": {
-        "associations": "Popyplan para una asociación",
-        "administrations": "Popyplan para una administración pública",
-        "professionals": "Popyplan para profesionales",
-        "other": "Consulta sobre Popyplan"
-      }
+    "download": {
+      "title": "Descárgala gratis y empieza a moverte con tu gente.",
+      "phoneAlt": "La app de Popyplan en un móvil"
+    },
+    "footer": {
+      "logoAlt": "Popyplan",
+      "navLabel": "Enlaces del pie",
+      "product": "Producto",
+      "downloads": "Descargas",
+      "ios": "iOS",
+      "android": "Android",
+      "qrAlt": "Código QR para descargar Popyplan",
+      "qrText": "Escanea el código QR para descargar la aplicación",
+      "copyright": "© {year} Popyplan. Todos los derechos reservados.",
+      "support": "Soporte",
+      "privacy": "Privacidad",
+      "terms": "Términos",
+      "deleteAccount": "Eliminar cuenta",
+      "accessibility": "Accesibilidad",
+      "panel": "Acceso al panel"
     },
     "appAccount": {
       "title": "Tu cuenta es de la app Popyplan",
-      "description": "Este panel es para asociaciones, administraciones y profesionales. Tu espacio está en la app: ahí tienes tus actividades, tus comunidades y tus avisos.",
+      "description": "Tu sitio está en la app: ahí tienes tus planes, tus comunidades y tu gente. Descárgala y entra con esta misma cuenta.",
       "storesLabel": "Descarga la app",
       "openApp": "Abrir la app"
     }
