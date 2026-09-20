@@ -38,6 +38,22 @@ describe("useUpdateOrganization", () => {
     });
   });
 
+  it("con un logo manda multipart: FormData con el fichero y el resto de campos como cadenas", async () => {
+    apiFetchMock.mockResolvedValueOnce(buildOrganization());
+    const logo = new File(["png"], "logo.png", { type: "image/png" });
+
+    const { result } = renderHook(() => useUpdateOrganization(7), { wrapper });
+    result.current.mutate({ description: "Nueva", primary_color: "#000000", logo });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    const [, init] = apiFetchMock.mock.calls[0] as [string, { method: string; body: FormData }];
+    expect(init.method).toBe("PATCH");
+    expect(init.body).toBeInstanceOf(FormData);
+    expect(init.body.get("logo")).toBe(logo);
+    expect(init.body.get("description")).toBe("Nueva");
+    expect(init.body.get("primary_color")).toBe("#000000");
+  });
+
   it("400 surge como invalido con el detalle", async () => {
     apiFetchMock.mockRejectedValueOnce(new ApiError(400, { detail: "on_call_user sin rol en la entidad" }));
 

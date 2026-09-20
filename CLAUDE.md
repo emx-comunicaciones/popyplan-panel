@@ -350,6 +350,21 @@ el `boundary` multipart que pone el navegador), se le añadió detección de
 `FormData` en `rawRequest` — cambio mínimo y compatible con todo lo que
 ya lo usaba (`lib/api/client.test.ts` tiene el caso nuevo).
 
+**Logo de la entidad (2026-09-20)**: el mismo camino sirve para
+`Organization.logo` (`ImageField`, en la lista blanca del `PATCH` del
+titular desde antes de P6, pero el panel solo lo mostraba). Configuración
+(`ConfiguracionPanel.tsx::DatosEntidad`) tiene ahora un `<input
+type="file">` «Logo»: `lib/organizations/validateLogo.ts` valida en el
+cliente (`png`/`jpg`/`jpeg`/`webp`, 2 MB — límite del panel, el backend
+no impone tamaño; un SVG se rechaza porque Pillow no lo abre) y
+`hooks/useUpdateOrganization.ts::buildOrganizationPayload` manda un
+`FormData` con el resto de campos como cadenas solo cuando hay fichero;
+sin él, el JSON de siempre. El logo se guarda con el botón «Guardar» del
+formulario, no al elegirlo; la URL que devuelve el backend cae en
+`MEDIA_URL` del mismo host de la API, así que `isAllowedImageSrc` la
+admite en las cabeceras. Verificado contra el backend real con un PNG
+generado (`PATCH` multipart → 200 con `logo` en `/media/entities/logos/`).
+
 **Menú de `dinamizador` (decisión de esta tarea, pregunta 19 del informe
 de W4a)**: `lib/auth/entidadMenu.ts::PENDING_SECTIONS` pasa de
 `[comunicaciones, encuestas, recursos, familias]` a solo `[familias]` —

@@ -150,7 +150,47 @@ describe("EntidadConfiguracionPage", () => {
 
     expect(updateMutate).toHaveBeenCalledWith(
       expect.objectContaining({ description: "Nueva descripción" }),
+      expect.anything(),
     );
+  });
+
+  it("elegir un logo válido lo manda junto al resto de la ficha al guardar", async () => {
+    setDefaultMocks();
+    const updateMutate = vi.fn();
+    useUpdateOrganizationMock.mockReturnValue({ ...idleMutation(), mutate: updateMutate });
+    const user = userEvent.setup();
+
+    await renderPage();
+
+    const logo = new File(["png"], "logo.png", { type: "image/png" });
+    await user.upload(screen.getByLabelText("Logo"), logo);
+    expect(screen.getByText("Fichero elegido: logo.png")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(updateMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ logo, primary_color: expect.any(String) }),
+      expect.anything(),
+    );
+  });
+
+  it("un logo en un formato no admitido se rechaza en el cliente y no se manda", async () => {
+    setDefaultMocks();
+    const updateMutate = vi.fn();
+    useUpdateOrganizationMock.mockReturnValue({ ...idleMutation(), mutate: updateMutate });
+    // `applyAccept: false`: el `accept` del control filtra en el navegador,
+    // pero la validación del cliente tiene que aguantar igual un fichero
+    // que llegue por otro camino (arrastrar, un navegador sin filtro).
+    const user = userEvent.setup({ applyAccept: false });
+
+    await renderPage();
+
+    const svg = new File(["<svg/>"], "logo.svg", { type: "image/svg+xml" });
+    await user.upload(screen.getByLabelText("Logo"), svg);
+    expect(screen.getByRole("alert")).toHaveTextContent("Formato no admitido");
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(updateMutate).toHaveBeenCalledTimes(1);
+    expect(updateMutate.mock.calls[0][0]).not.toHaveProperty("logo");
   });
 
   it("el titular puede cambiar la sede de su entidad", async () => {
@@ -208,7 +248,7 @@ describe("EntidadConfiguracionPage", () => {
     await renderPage("titular");
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 
-    expect(updateMutate).toHaveBeenCalledWith(expect.objectContaining({ place: "20069" }));
+    expect(updateMutate).toHaveBeenCalledWith(expect.objectContaining({ place: "20069" }), expect.anything());
   });
 
   it("añadir miembro al equipo llama a la mutación con user y role", async () => {

@@ -6,10 +6,12 @@
  * (`description, contact_email, contact_phone, help_phone, website,
  * primary_color, secondary_color, on_call_user`) — `parent` queda fuera
  * (solo `superadmin`, y nunca junto al resto en la misma petición).
- * `logo` también está en la lista blanca pero el contrato real espera
- * `multipart/form-data` (fichero), no una URL de texto: esta mutación
- * solo cubre los campos de texto/color/guardia; ver «Desviaciones» del
- * informe de esta tarea sobre el logo.
+ * `logo` también está en la lista blanca y el contrato real espera
+ * `multipart/form-data` (un fichero, no una URL de texto): con `logo`
+ * en la entrada, `buildOrganizationPayload` construye un `FormData` con
+ * el resto de campos como cadenas (mismo patrón que
+ * `lib/resources/resourceFormData.ts`, y `apiFetch` ya manda un
+ * `FormData` tal cual); sin `logo`, JSON normal, como siempre.
  *
  * La usan tanto Configuración (datos, colores) como Guardia (`on_call_user`,
  * `help_phone`).
@@ -52,6 +54,28 @@ export interface UpdateOrganizationInput {
    * `hooks/useSetOrganizationTerritory.ts`.
    */
   place?: string | null;
+  /**
+   * Logo nuevo (`Organization.logo`, `ImageField`). Solo se manda cuando
+   * la persona ha elegido un fichero; validado antes con
+   * `lib/organizations/validateLogo.ts`. Fuerza el cuerpo `multipart`.
+   */
+  logo?: File;
+}
+
+/**
+ * Cuerpo real de la petición: `FormData` si hay logo (cada campo como
+ * cadena; `null` viaja como cadena vacía, que DRF interpreta como
+ * «vaciar» en un campo `allow_blank`), o el objeto JSON tal cual.
+ */
+export function buildOrganizationPayload(input: UpdateOrganizationInput): FormData | UpdateOrganizationInput {
+  if (!input.logo) return input;
+  const formData = new FormData();
+  for (const [field, value] of Object.entries(input)) {
+    if (field === "logo" || value === undefined) continue;
+    formData.append(field, value === null ? "" : String(value));
+  }
+  formData.append("logo", input.logo);
+  return formData;
 }
 
 export function useUpdateOrganization(
@@ -64,7 +88,7 @@ export function useUpdateOrganization(
       try {
         return await apiFetch<Organization>(ORGANIZATIONS.DETAIL(orgId), {
           method: "PATCH",
-          body: input,
+          body: buildOrganizationPayload(input),
         });
       } catch (error) {
         if (error instanceof ApiError && error.status === 400) {

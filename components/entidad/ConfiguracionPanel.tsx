@@ -25,6 +25,12 @@ import { useOrgScope, type OrgScopeErrorKind } from "@/hooks/useOrgScope";
 import { useUpdateOrganization } from "@/hooks/useUpdateOrganization";
 import type { OrgMembershipFull, OrgMembershipRole, Reference } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import {
+  LOGO_ALLOWED_EXTENSIONS,
+  LOGO_MAX_MB,
+  validateLogoFile,
+  type LogoFileErrorKind,
+} from "@/lib/organizations/validateLogo";
 
 import { SedeSelector } from "@/components/plataforma/SedeSelector";
 
@@ -86,11 +92,25 @@ const ROLE_OPTIONS: OrgMembershipRole[] = [
   "voluntario",
 ];
 
+const LOGO_ERROR_KEYS: Record<LogoFileErrorKind, string> = {
+  tipo_no_permitido: "entidad.configuracion.logoBadType",
+  demasiado_grande: "entidad.configuracion.logoTooLarge",
+};
+
 function DatosEntidad({ orgId }: { orgId: number | string }) {
   const t = useTranslations();
   const organization = useOrganization(orgId);
   const updateOrganization = useUpdateOrganization(orgId);
   const sedeHintId = useId();
+  const logoHintId = useId();
+  // El logo va aparte del resto del formulario: es un `File`, no una
+  // cadena, y solo se manda cuando la persona ha elegido uno (con él, la
+  // petición pasa a `multipart`). `logoInputKey` remonta el `<input
+  // type="file">` tras guardar, porque su valor no se puede fijar desde
+  // React.
+  const [logo, setLogo] = useState<File | null>(null);
+  const [logoError, setLogoError] = useState<LogoFileErrorKind | null>(null);
+  const [logoInputKey, setLogoInputKey] = useState(0);
   const [form, setForm] = useState<{
     description: string;
     contact_email: string;
@@ -123,9 +143,21 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
     place: organization.data.place ?? null,
   };
 
+  function handleLogoChange(fileList: FileList | null) {
+    const file = fileList?.[0] ?? null;
+    const error = file ? validateLogoFile(file) : null;
+    setLogoError(error);
+    setLogo(error ? null : file);
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    updateOrganization.mutate(data);
+    updateOrganization.mutate(logo ? { ...data, logo } : data, {
+      onSuccess: () => {
+        setLogo(null);
+        setLogoInputKey((key) => key + 1);
+      },
+    });
   }
 
   return (
@@ -221,15 +253,49 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
             />
           </div>
         </div>
-        {organization.data.logo ? (
-          // eslint-disable-next-line @next/next/no-img-element -- logo remoto de origen variable, ver Image en el layout
-          <img
-            src={organization.data.logo}
-            alt={t("entidad.configuracion.logoAlt")}
-            className="h-16 w-16 rounded-full object-contain"
-          />
-        ) : null}
-        <p className="text-xs text-text-secondary">{t("entidad.configuracion.logoUploadHint")}</p>
+        <div>
+          <label htmlFor="config-logo" className="mb-1 block text-sm font-medium text-text-form">
+            {t("entidad.configuracion.logoLabel")}
+          </label>
+          <div className="flex items-center gap-3">
+            {organization.data.logo ? (
+              // eslint-disable-next-line @next/next/no-img-element -- logo remoto de origen variable, ver Image en el layout
+              <img
+                src={organization.data.logo}
+                alt={t("entidad.configuracion.logoAlt")}
+                className="h-16 w-16 rounded-full border border-border object-contain"
+              />
+            ) : null}
+            <input
+              key={logoInputKey}
+              id="config-logo"
+              type="file"
+              accept={LOGO_ALLOWED_EXTENSIONS.map((extension) => `.${extension}`).join(",")}
+              onChange={(event) => handleLogoChange(event.target.files)}
+              aria-describedby={logoHintId}
+              className="block text-sm"
+            />
+          </div>
+          <p id={logoHintId} className="mt-1 text-xs text-text-secondary">
+            {t("entidad.configuracion.logoHint", {
+              extensions: LOGO_ALLOWED_EXTENSIONS.join(", "),
+              max: LOGO_MAX_MB,
+            })}
+          </p>
+          {logo ? (
+            <p className="mt-1 text-xs text-text-secondary">
+              {t("entidad.configuracion.logoSelected", { name: logo.name })}
+            </p>
+          ) : null}
+          {logoError ? (
+            <p role="alert" className="mt-1 text-xs text-error">
+              {t(LOGO_ERROR_KEYS[logoError], {
+                extensions: LOGO_ALLOWED_EXTENSIONS.join(", "),
+                max: LOGO_MAX_MB,
+              })}
+            </p>
+          ) : null}
+        </div>
         <div>
           <Button type="submit" disabled={updateOrganization.isPending || data.place === null}>
             {t("common.save")}
