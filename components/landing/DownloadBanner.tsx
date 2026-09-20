@@ -21,9 +21,17 @@ import { StoreLinks } from "./StoreLinks";
  * claro con texto oscuro, porque su texto es pequeño y no podría ir en
  * blanco sobre el degradado.
  *
- * Los dos móviles son decorativos por debajo de `lg` (no se pintan) y
- * arriba llevan uno el `alt` traducido y otro `alt=""`: describir dos
- * veces la misma pantalla de la app sería ruido.
+ * **Los dos móviles son pantallas de comunidades**, no de
+ * emparejamiento (encargo del propietario, «no hay match en esta
+ * versión»): `banner-phone-match.png` («¡Es un match!») y
+ * `banner-phone-profile.png` (una ficha con botones de me gusta / no me
+ * gusta y «busco conexiones auténticas») enseñaban una función que este
+ * producto no tiene, así que los dos ficheros se borraron del repo para
+ * que no puedan volver por descuido. En su lugar van los mockups de
+ * comunidad que ya usa el conmutador, al mismo tamaño.
+ *
+ * Solo se pintan desde `lg`; arriba lleva uno el `alt` traducido y otro
+ * `alt=""`: describir dos veces la misma pantalla de la app sería ruido.
  */
 export function DownloadBanner() {
   const t = useTranslations("landing.download");
@@ -66,18 +74,18 @@ export function DownloadBanner() {
             </div>
             <div className="relative hidden h-[300px] lg:block">
               <Image
-                src="/landing/banner-phone-profile.png"
+                src="/landing/circle-mockup-left.png"
                 alt=""
-                width={372}
-                height={660}
-                className="absolute bottom-[-32px] right-[150px] z-0 w-[260px] drop-shadow-xl"
+                width={880}
+                height={1561}
+                className="absolute bottom-[-24px] right-[150px] z-0 w-[190px] drop-shadow-xl"
               />
               <Image
-                src="/landing/banner-phone-match.png"
+                src="/landing/circle-mockup-right.png"
                 alt={t("phoneAlt")}
-                width={372}
-                height={660}
-                className="absolute -top-28 right-0 z-10 w-[300px] drop-shadow-2xl"
+                width={880}
+                height={1561}
+                className="absolute -top-16 right-0 z-10 w-[220px] drop-shadow-2xl"
               />
             </div>
           </div>

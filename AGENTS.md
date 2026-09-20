@@ -2750,7 +2750,10 @@ en orden:
    `aria-pressed` (no ARIA tabs: no hay paneles que mostrar y ocultar),
    que cambian una frase en una región `aria-live="polite"` siempre
    montada; debajo, los tres mockups y el `h2` fijo «Diseñado para quien
-   cuida su cuerpo y a su gente.».
+   cuida su cuerpo y a su gente.». La pastilla inactiva **se subraya** al
+   pasar el ratón, no cambia de color: `text-primary-700` sobre el
+   `primary-100` del contenedor da 4,31:1, así que el `hover` empeoraba un
+   texto que en reposo está en 16,93:1.
 4. **`Features`** (`id="funcionalidades"`) — tres columnas con icono
    redondo turquesa: comunidades por deporte, planes cerca de ti (con QR)
    y compartir logros.
@@ -2758,14 +2761,25 @@ en orden:
    «Gente real, planes reales» y «Tu privacidad, primero». Ninguna promesa
    que el producto no cumpla ya (invariante 9, asistencia por QR).
 6. **`DownloadBanner`** (`id="descarga"`) — degradado turquesa con textura
-   y dos móviles que sobresalen de la tarjeta, `StoreLinks` en variante
-   `onDark`.
-7. **`LandingFooter`** — logo blanco, columnas «Producto» y «Descargas»,
-   tarjeta blanca con el QR, y la línea inferior con el aviso de derechos,
+   y dos móviles que sobresalen de la tarjeta (mockups de **comunidad**:
+   los dos móviles de la web de referencia, `banner-phone-match.png` y
+   `banner-phone-profile.png`, enseñaban emparejamiento —«¡Es un match!»,
+   una ficha con me gusta / no me gusta— y **se borraron del repo**, por
+   encargo del propietario: «no hay match en esta versión»), `StoreLinks`
+   en variante `onDark`.
+7. **`LandingFooter`** — logo blanco, columnas «Producto» y «Descargas»
+   (sus títulos son `h2`, no `<p>` en negrita: dan navegación por
+   encabezados y no rompen el orden), tarjeta **blanca entera** con el QR
+   y texto oscuro, y la línea inferior con el aviso de derechos,
    los cuatro enlaces legales (`legalLinks()`), «Accesibilidad»
    (`/accesibilidad`, que es donde el RD 1112/2018 exige poder
    encontrarla) y «Acceso al panel». **`components/layout/Footer.tsx` no
    se usa en la landing**: este pie ya lleva ese enlace.
+
+`AppAccountScreen` lleva también `<SkipLink />` + `<main id="main-content"
+tabIndex={-1}>`, igual que `Landing` y que los tres layouts de área: son
+pocos controles, pero el patrón de salto al contenido es el mismo en todo
+el producto.
 
 **Lo que se retiró y por qué**: `Audiences` (cuatro tarjetas por público),
 `HowItWorks`, `Privacy`, `Contact` y `components/landing/mailto.ts` — el
@@ -2800,9 +2814,24 @@ por la regla de este fichero («`primary` solo para superficies decorativas
 sin texto»):
 
 - El **pie** va en `--color-primary-700` (5,03:1 con blanco) y no en el
-  turquesa de marca (2,59:1), y **sin blancos translúcidos**
-  (`text-white/70` sobre ese fondo baja a ≈3,3:1): todo el texto del pie es
-  blanco pleno y los enlaces se subrayan al pasar por encima.
+  turquesa de marca (2,59:1), y **sin blancos translúcidos, ni de texto ni
+  de fondo**: `text-white/70` sobre ese fondo baja a ≈3,3:1, y un
+  `bg-white/10` compuesto encima (el tinte que tenía la tarjeta del QR)
+  dejaba su texto blanco en 4,20:1 — por eso esa tarjeta es **blanca
+  entera con texto `text-base`** (19,8:1). Todo el texto del pie es blanco
+  pleno y los enlaces se subrayan al pasar por encima.
+- **El anillo de foco se invierte sobre fondo de marca**: el
+  `:focus-visible` global de `app/globals.css` es `--color-primary-700`,
+  que sobre el pie (del mismo color) da **1,00:1** — ningún indicador al
+  tabular. Los once enlaces del pie y la insignia de tienda del banner
+  fuerzan `focus-visible:outline-text-inverse` (blanco: 5,03:1 sobre el
+  pie, 3,90:1 sobre el extremo claro del degradado del banner), y los dos
+  pares están en `lib/a11y/tokens.test.ts`. El botón negro de la cabecera
+  **conserva el anillo global** (3,93:1 sobre el propio botón y 5,03:1
+  sobre el blanco de la cabecera, donde lo dibuja el `outline-offset`).
+  Es la misma regresión que este fichero ya documenta para el botón «?»
+  de `PageHelp`: la regla de contraste del repo está tabulada contra
+  blanco y se invierte sobre una superficie de marca.
 - El **banner de descarga** usa el degradado `--color-primary-600`
   (`#12908b`, token nuevo, 3,90:1) → `--color-primary-700`, con la textura
   al 10 % en `mix-blend-screen` (en el peor caso deja el extremo claro en
@@ -2822,14 +2851,20 @@ y `onDark` (banner). El **nombre accesible lo fija un `aria-label`**
 (`landing.stores.appStoreLabel`), no la suma de las dos líneas: son dos
 nodos de texto pegados y cada navegador decide por su cuenta si mete un
 espacio al calcular el nombre (jsdom no, Chrome sí) — con el `aria-label`
-el nombre es idéntico en el navegador, en Vitest y en Playwright.
+el nombre es idéntico en el navegador, en Vitest y en Playwright. **Su
+valor es exactamente el texto visible concatenado** («Descárgalo en App
+Store», «Obtenlo en Google Play», y su equivalente en los otros tres
+idiomas), nunca una redacción propia: WCAG 2.5.3 «Label in Name» (nivel A)
+exige que lo visible esté contenido en el nombre accesible, o quien usa
+control por voz dice lo que lee y el comando no encuentra el enlace.
 `target="_blank"` + `rel="noopener noreferrer"` (dominios externos).
 
 **Imágenes**: todas con `next/image` y `width`/`height` explícitos; los SVG
 llevan además `unoptimized`, porque el optimizador de Next rechaza los SVG
 salvo con `dangerouslyAllowSVG`, que no se activa por un icono. Rutas
-relativas de `public/landing/` (25 ficheros), siempre permitidas por
-`isAllowedImageSrc`.
+relativas de `public/landing/` (**23** ficheros: los dos móviles de
+emparejamiento del banner se borraron, ver el bloque 6), siempre
+permitidas por `isAllowedImageSrc`.
 
 **Contenido y textos**: namespace `landing.*` en los cuatro catálogos
 (`meta`, `header`, `hero`, `stores`, `modes`, `features`, `values`,
@@ -2916,11 +2951,14 @@ aterriza en su entidad.
   por idioma), así que no hay ninguna URL alternativa que declarar; quien
   monte el CDN tiene que añadir `Vary: Accept-Language` para `/` en
   `lib/config/securityHeaders.ts`.
-- **Los mockups de la app son los de la web de referencia** (gastronomía,
-  perfiles), no capturas de planes deportivos: el brief los daba como
-  recursos a reutilizar y no hay material gráfico propio de la app en modo
-  «deporte» todavía. Sustituirlos es trabajo de diseño, no de código: basta
-  con reemplazar los PNG de `public/landing/` manteniendo el nombre.
+- **Los mockups de la app son los de la web de referencia** (una
+  comunidad de gastronomía), no capturas de planes deportivos: el brief los
+  daba como recursos a reutilizar y no hay material gráfico propio de la
+  app en modo «deporte» todavía. Los dos que enseñaban emparejamiento ya
+  **no están** (el propietario confirmó que esa función no existe en esta
+  versión); los que quedan son de comunidad, que sí es una función real.
+  Sustituirlos es trabajo de diseño, no de código: basta con reemplazar los
+  PNG de `public/landing/` manteniendo el nombre.
 - **El pie ya no usa `components/layout/Footer.tsx`**, así que un cambio en
   el pie del panel (p. ej. un enlace legal nuevo) hay que replicarlo a mano
   en `LandingFooter`. Unificarlos exigiría una prop de variante en un
@@ -3023,11 +3061,15 @@ en CI lo gate el job `e2e`).
   `.tsx` y, como el resto del panel, se prueban por comportamiento — el
   de la imagen de compartir, además, se verificó contra el servidor
   real). El umbral sigue en 99,7.
-  Tras el rediseño «planes sanos, gente activa» (2026-09-20): **99,81 %**
-  (2747/2752 líneas, 1977 tests, 196 ficheros — un fichero de test nuevo,
-  `components/landing/ModeToggle.test.tsx`; `lib/config/site.ts` sigue al
-  100 % de líneas, ramas y funciones con `legalLinks()` y las fichas de
-  tienda por defecto dentro). El umbral sigue en 99,7.
+  Tras el rediseño «planes sanos, gente activa» (2026-09-20) y su ronda de
+  correcciones (I1-I3 y M1-M4 de la revisión de rama, más la retirada de
+  los mockups de emparejamiento): **99,81 %** (2747/2752 líneas, **1980**
+  tests, 196 ficheros — un fichero de test nuevo,
+  `components/landing/ModeToggle.test.tsx`, y tres pares de contraste más
+  en `lib/a11y/tokens.test.ts` para los anillos de foco sobre fondo de
+  marca; `lib/config/site.ts` sigue al 100 % de líneas, ramas y funciones
+  con `legalLinks()` y las fichas de tienda por defecto dentro). El umbral
+  sigue en 99,7.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la
