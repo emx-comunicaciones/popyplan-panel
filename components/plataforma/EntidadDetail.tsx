@@ -15,7 +15,7 @@
  * abajo, por tanto, solo deberían verse hoy con `verifier` o con una
  * membresía real insuficiente — no es ya el caso general.
  */
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
@@ -44,6 +44,8 @@ import {
   type OrganizationsErrorKind,
 } from "@/hooks/useOrganizations";
 import { useOrgScope, type OrgScopeErrorKind } from "@/hooks/useOrgScope";
+import { usePlacesByIne } from "@/hooks/usePlaces";
+import { placeLabelState } from "@/lib/places/placeLabel";
 import { useEntityCommunities, type EntityCommunitiesErrorKind } from "@/hooks/useEntityCommunities";
 import { useEntityEvents, type EntityEventsErrorKind } from "@/hooks/useEntityEvents";
 import { useContracts, useInvoices, type BillingErrorKind } from "@/hooks/useBilling";
@@ -223,6 +225,7 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
   const organization = useOrganization(orgId);
   const verify = useVerifyOrganization();
   const updateSede = useUpdateOrganization(orgId);
+  const sedeHintId = useId();
   const canVerify = role === "verifier" || role === "superadmin";
   const canManageTerritory = role === "superadmin";
   // `undefined` es «todavía no se ha tocado el selector» (usa `org.place`
@@ -232,6 +235,11 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
   // limpiar la sede: `sedeValue` volvía a caer al valor guardado en
   // cuanto `sede === null`, indistinguible de «no se ha tocado nada».
   const [sede, setSede] = useState<string | null | undefined>(undefined);
+  // I1 de la revisión final de rama: la `<dd>` de solo lectura pintaba
+  // el código INE crudo — se resuelve igual que en `EntidadesTable`.
+  // Llamado siempre, antes de cualquier `return` condicional: los hooks
+  // de React no pueden ser condicionales dentro de un mismo componente.
+  const sedePlace = usePlacesByIne(organization.data?.place ? [organization.data.place] : []);
 
   if (organization.isError) {
     return (
@@ -248,6 +256,7 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
   const org = organization.data;
   const isAdministration = org.org_type === "administracion";
   const sedeValue = sede === undefined ? (org.place ?? null) : sede;
+  const sedeLabel = placeLabelState(org.place, sedePlace);
 
   return (
     <div className="flex flex-col gap-4">
@@ -270,7 +279,15 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
           <dt className="text-text-secondary">{t("plataforma.entidadFicha.contactLabel")}</dt>
           <dd className="text-text-base">{org.contact_email || "—"}</dd>
           <dt className="text-text-secondary">{t("plataforma.sede.header")}</dt>
-          <dd className="text-text-base">{org.place || t("plataforma.sede.missing")}</dd>
+          <dd className="text-text-base">
+            {sedeLabel.kind === "empty"
+              ? t("plataforma.sede.missing")
+              : sedeLabel.kind === "loading"
+                ? "…"
+                : sedeLabel.kind === "resolved"
+                  ? t("plataforma.sede.resolved", { name: sedeLabel.name, province: sedeLabel.province })
+                  : org.place}
+          </dd>
           {/* Solo lectura para quien no gestiona el territorio: la
               editable (`TerritorioForm`) ya la pinta más abajo, así que
               duplicarla aquí para `superadmin` sería redundante. */}
@@ -305,11 +322,24 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
 
       {canManageTerritory ? (
         <Card title={t("plataforma.sede.header")}>
-          <SedeSelector id="entidad-sede" value={sedeValue} onChange={setSede} />
+          <SedeSelector
+            id="entidad-sede"
+            value={sedeValue}
+            onChange={setSede}
+            hintId={sedeValue === null ? sedeHintId : undefined}
+          />
+          {/* I5 de la revisión final de rama: la sede es obligatoria
+              también en edición (spec §2.1) — sin ella, «Guardar» queda
+              deshabilitado con el motivo explicado junto al selector. */}
+          {sedeValue === null ? (
+            <p id={sedeHintId} className="mt-1 text-xs text-text-secondary">
+              {t("plataforma.sede.requiredHintEdit")}
+            </p>
+          ) : null}
           <div className="mt-3">
             <Button
               type="button"
-              disabled={updateSede.isPending}
+              disabled={updateSede.isPending || sedeValue === null}
               onClick={() => updateSede.mutate({ place: sedeValue })}
             >
               {t("common.save")}

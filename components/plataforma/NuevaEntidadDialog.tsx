@@ -7,7 +7,7 @@
  * (`is_verified=false`): verificar es un paso aparte, desde la ficha de
  * la entidad.
  */
-import { useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
@@ -37,6 +37,7 @@ const CREATE_ORGANIZATION_ERROR_KEYS: Record<OrganizationsErrorKind, string> = {
 export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
   const t = useTranslations();
   const create = useCreateOrganization();
+  const sedeHintId = useId();
 
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -135,8 +136,15 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
           </select>
         </div>
         <div>
-          <SedeSelector id="nueva-entidad-sede" value={place} onChange={setPlace} />
-          <p className="mt-1 text-xs text-text-secondary">{t("plataforma.sede.requiredHint")}</p>
+          <SedeSelector
+            id="nueva-entidad-sede"
+            value={place}
+            onChange={setPlace}
+            hintId={sedeHintId}
+          />
+          <p id={sedeHintId} className="mt-1 text-xs text-text-secondary">
+            {t("plataforma.sede.requiredHint")}
+          </p>
         </div>
         <div>
           <label htmlFor="nueva-entidad-cif" className="mb-1 block text-sm font-medium text-text-form">

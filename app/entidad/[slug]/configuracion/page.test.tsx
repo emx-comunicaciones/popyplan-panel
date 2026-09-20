@@ -167,6 +167,28 @@ describe("EntidadConfiguracionPage", () => {
     expect(screen.getByLabelText("Municipio de la sede")).toHaveValue("20069");
   });
 
+  /**
+   * I5 de la revisión final de rama: la sede es obligatoria también en
+   * edición (spec §2.1) — una entidad antigua sin sede no puede guardar
+   * el resto de sus datos hasta elegir un municipio, con el motivo
+   * explicado junto al selector.
+   */
+  it("sin sede, «Guardar» queda deshabilitado con el motivo explicado (I5)", async () => {
+    setDefaultMocks();
+    useOrganizationMock.mockReturnValue({
+      data: buildOrganization({ place: null }),
+      isError: false,
+      error: null,
+    });
+
+    await renderPage("titular");
+
+    expect(screen.getByRole("button", { name: "Guardar" })).toBeDisabled();
+    expect(
+      screen.getByText("La sede es obligatoria: elige un municipio para poder guardar."),
+    ).toBeInTheDocument();
+  });
+
   it("guardar la sede manda `place` junto al resto de la lista blanca", async () => {
     setDefaultMocks();
     useOrganizationMock.mockReturnValue({

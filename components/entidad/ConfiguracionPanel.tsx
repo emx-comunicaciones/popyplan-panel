@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
@@ -90,6 +90,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
   const t = useTranslations();
   const organization = useOrganization(orgId);
   const updateOrganization = useUpdateOrganization(orgId);
+  const sedeHintId = useId();
   const [form, setForm] = useState<{
     description: string;
     contact_email: string;
@@ -184,7 +185,16 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
           id="config-sede"
           value={data.place}
           onChange={(place) => setForm({ ...data, place })}
+          hintId={data.place === null ? sedeHintId : undefined}
         />
+        {/* I5 de la revisión final de rama: la sede es obligatoria
+            también en edición (spec §2.1) — sin ella, «Guardar» queda
+            deshabilitado con el motivo explicado junto al selector. */}
+        {data.place === null ? (
+          <p id={sedeHintId} className="text-xs text-text-secondary">
+            {t("plataforma.sede.requiredHintEdit")}
+          </p>
+        ) : null}
         <div className="flex flex-wrap gap-3">
           <div>
             <label htmlFor="config-primary-color" className="mb-1 block text-sm font-medium text-text-form">
@@ -221,7 +231,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
         ) : null}
         <p className="text-xs text-text-secondary">{t("entidad.configuracion.logoUploadHint")}</p>
         <div>
-          <Button type="submit" disabled={updateOrganization.isPending}>
+          <Button type="submit" disabled={updateOrganization.isPending || data.place === null}>
             {t("common.save")}
           </Button>
         </div>

@@ -18,7 +18,9 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { Table } from "@/components/ui/Table";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useOrganizations } from "@/hooks/useOrganizations";
+import { usePlacesByIne } from "@/hooks/usePlaces";
 import type { Organization } from "@/lib/api/types";
+import { placeLabelState } from "@/lib/places/placeLabel";
 
 import { NuevaEntidadDialog } from "./NuevaEntidadDialog";
 
@@ -55,6 +57,20 @@ export function EntidadesTable({ canCreate }: EntidadesTableProps) {
   useEffect(() => {
     setPage(1);
   }, [debouncedSearch]);
+
+  // I1 de la revisión final de rama: una sola petición por página con
+  // los códigos INE distintos de las filas cargadas, no una por fila —
+  // `placeLabelState` decide, por fila, si ya se resolvió, sigue
+  // cargando o hay que caer al código crudo (fallo o municipio no
+  // encontrado).
+  const placeCodes = Array.from(
+    new Set(
+      (organizations.data?.results ?? [])
+        .map((org) => org.place)
+        .filter((place): place is string => Boolean(place)),
+    ),
+  );
+  const places = usePlacesByIne(placeCodes);
 
   return (
     <div className="flex flex-col gap-4">
@@ -127,8 +143,17 @@ export function EntidadesTable({ canCreate }: EntidadesTableProps) {
               {
                 key: "place",
                 header: t("plataforma.sede.header"),
-                render: (org) =>
-                  org.place ? org.place : <Badge tone="neutral">{t("plataforma.sede.missing")}</Badge>,
+                render: (org) => {
+                  const state = placeLabelState(org.place, places);
+                  if (state.kind === "empty") {
+                    return <Badge tone="neutral">{t("plataforma.sede.missing")}</Badge>;
+                  }
+                  if (state.kind === "loading") return "…";
+                  if (state.kind === "resolved") {
+                    return t("plataforma.sede.resolved", { name: state.name, province: state.province });
+                  }
+                  return org.place;
+                },
               },
               {
                 key: "verified",

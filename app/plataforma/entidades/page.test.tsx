@@ -177,6 +177,40 @@ describe("PlataformaEntidadesPage", () => {
   });
 
   /**
+   * I1 de la revisión final de rama: la columna «Sede» pintaba el
+   * código INE crudo («20069»), nunca el nombre del municipio — regla
+   * B20 («nada de valores crudos del contrato»). Se resuelve con una
+   * sola petición por página (`usePlacesByIne`, no una por fila).
+   */
+  it("resuelve el código INE de la sede a nombre + provincia (I1)", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path.startsWith("/api/places/")) {
+        return { count: 1, next: null, previous: null, results: [buildPlaceRow()] };
+      }
+      return {
+        count: 1,
+        next: null,
+        previous: null,
+        results: [buildOrganization({ id: 9, name: "Ayuntamiento de Irun", place: "20069" })],
+      };
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const element = await PlataformaEntidadesPage();
+    render(element);
+
+    await waitFor(() => expect(screen.getByText("Irun (Gipuzkoa)")).toBeInTheDocument());
+    expect(screen.queryByText("20069")).not.toBeInTheDocument();
+    expect(
+      apiFetchMock.mock.calls.filter(([path]) => String(path).startsWith("/api/places/")),
+    ).toHaveLength(1);
+  });
+
+  /**
    * El buscador va con retardo (`hooks/useDebouncedValue.ts`): estos dos
    * tests usan `fireEvent.change` (una tecla por llamada) y no
    * `userEvent`, que se queda colgado con `vi.useFakeTimers()` (el

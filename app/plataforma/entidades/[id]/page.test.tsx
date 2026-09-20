@@ -12,9 +12,11 @@ vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock })
 
 import { ApiError } from "@/lib/api/client";
 import { render, screen, waitFor, within } from "@/test-utils/render";
+import { axe } from "@/test-utils/axe";
 import { NextNotFoundSignal, NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildOrganization } from "@/test-utils/fixtures/organization";
+import { buildPlaceRow } from "@/test-utils/fixtures/places";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import { buildContract, buildInvoice } from "@/test-utils/fixtures/billing";
 
@@ -28,6 +30,43 @@ afterEach(() => {
 describe("PlataformaEntidadDetailPage", () => {
   it("expone el título de la página vía generateMetadata", async () => {
     expect((await generateMetadata()).title).toBe("Ficha de la entidad (plataforma)");
+  });
+
+  /**
+   * I2 de la revisión final de rama: la spec §5 pedía `axe` para «la
+   * ficha de entidad con territorio» y esta página se quedó fuera —
+   * justo la que estrena `SedeSelector` y `TerritorioForm`, dos
+   * formularios nuevos completos. Con `superadmin` y `org_type:
+   * "administracion"` los dos se montan (pestaña «Datos», la que abre
+   * por defecto).
+   */
+  it("no tiene violaciones de accesibilidad (axe), con el formulario de territorio montado como superadmin", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") {
+        return buildOrganization({
+          id: 9,
+          name: "Diputación Demo",
+          org_type: "administracion",
+          place: "20069",
+          admin_level: "diputacion",
+        });
+      }
+      if (path.startsWith("/api/places/")) {
+        return { count: 1, next: null, previous: null, results: [buildPlaceRow()] };
+      }
+      return { count: 0, next: null, previous: null, results: [] };
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const element = await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) });
+    const { container } = render(element);
+
+    await waitFor(() => expect(screen.getByLabelText("Municipio de la sede")).toBeInTheDocument());
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("pinta la ficha con las secciones y permite verificar", async () => {
@@ -266,6 +305,35 @@ describe("PlataformaEntidadDetailPage", () => {
     expect(screen.getByLabelText("Tipo de territorio")).toBeInTheDocument();
   });
 
+  /**
+   * I1 de la revisión final de rama: la `<dd>` de «Sede» de la pestaña
+   * Datos pintaba el código INE crudo. Se resuelve con
+   * `usePlacesByIne`, igual que en `EntidadesTable`.
+   */
+  it("resuelve la sede de solo lectura a nombre + provincia (I1)", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") {
+        return buildOrganization({ id: 9, place: "20069" });
+      }
+      if (path.startsWith("/api/places/")) {
+        return { count: 1, next: null, previous: null, results: [buildPlaceRow()] };
+      }
+      return { count: 0, next: null, previous: null, results: [] };
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const element = await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) });
+    render(element);
+
+    const datosCard = (await screen.findByText("Datos de la entidad")).closest("div") as HTMLElement;
+    await waitFor(() => expect(within(datosCard).getByText("Irun (Gipuzkoa)")).toBeInTheDocument());
+    expect(within(datosCard).queryByText("20069")).not.toBeInTheDocument();
+  });
+
   it("verifier ve la sede y el territorio en solo lectura, ningún control editable", async () => {
     apiFetchMock.mockImplementation(async (path: string) => {
       if (path === "/api/organizations/9/") {
@@ -377,12 +445,14 @@ describe("PlataformaEntidadDetailPage", () => {
   });
 
   /**
-   * Fix round 1, hallazgo C2: `sede` usaba `null` tanto para «todavía no
-   * se ha tocado el selector» como para el valor que emite `SedeSelector`
-   * al elegir «Sin municipio», así que limpiar la sede y guardar
-   * reenviaba `org.place` en vez de `null`.
+   * I5 de la revisión final de rama (regla nueva, sustituye el test de
+   * C2 de la tarea 7: la sede es obligatoria en alta **y en edición**,
+   * spec §2.1 — el backend rechaza `place: null`, así que `SedeSelector`
+   * ya no ofrece «Sin municipio» y esto ya no se puede provocar desde la
+   * UI). Editar la sede a un municipio nuevo manda su código INE, nunca
+   * `null`.
    */
-  it("elegir «Sin municipio» y guardar manda `place: null`, no el valor guardado (fix round 1)", async () => {
+  it("editar la sede a un municipio nuevo manda su código INE (I5, sustituye a C2)", async () => {
     let currentOrg = buildOrganization({ id: 9, place: "20045" });
     const patchBodies: unknown[] = [];
     apiFetchMock.mockImplementation(
@@ -394,6 +464,9 @@ describe("PlataformaEntidadDetailPage", () => {
         }
         if (path === "/api/organizations/9/") {
           return currentOrg;
+        }
+        if (path.startsWith("/api/places/")) {
+          return { count: 1, next: null, previous: null, results: [buildPlaceRow()] };
         }
         return { count: 0, next: null, previous: null, results: [] };
       },
@@ -408,13 +481,47 @@ describe("PlataformaEntidadDetailPage", () => {
     const element = await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) });
     render(element);
 
-    await waitFor(() => expect(screen.getByText("20045")).toBeInTheDocument());
-    await user.selectOptions(screen.getByLabelText("Municipio de la sede"), "Sin municipio");
+    await waitFor(() => expect(screen.getByLabelText("Municipio de la sede")).toBeInTheDocument());
+    await user.type(screen.getByLabelText("Buscar un municipio"), "irun");
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Irun (Gipuzkoa) · 20069" })).toBeInTheDocument(),
+    );
+    await user.selectOptions(screen.getByLabelText("Municipio de la sede"), "20069");
 
     const sedeCard = screen.getByRole("heading", { name: "Sede" }).closest("div") as HTMLElement;
     await user.click(within(sedeCard).getByRole("button", { name: "Guardar" }));
 
-    await waitFor(() => expect(patchBodies).toContainEqual({ place: null }));
+    await waitFor(() => expect(patchBodies).toContainEqual({ place: "20069" }));
+  });
+
+  /**
+   * I5 de la revisión final de rama: una organización antigua sin sede
+   * (`place: null`) no puede guardar sin elegir antes un municipio — el
+   * botón queda deshabilitado y el motivo se explica junto al selector,
+   * en vez de que la persona no entienda por qué «Guardar» no responde.
+   */
+  it("sin sede, «Guardar» queda deshabilitado con el motivo explicado (I5)", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") {
+        return buildOrganization({ id: 9, place: null });
+      }
+      return { count: 0, next: null, previous: null, results: [] };
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const element = await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) });
+    render(element);
+
+    await waitFor(() => expect(screen.getByLabelText("Municipio de la sede")).toBeInTheDocument());
+    const sedeCard = screen.getByRole("heading", { name: "Sede" }).closest("div") as HTMLElement;
+    expect(within(sedeCard).getByRole("button", { name: "Guardar" })).toBeDisabled();
+    expect(
+      within(sedeCard).getByText("La sede es obligatoria: elige un municipio para poder guardar."),
+    ).toBeInTheDocument();
   });
 
   it("moderator ve «Sin acceso»", async () => {
