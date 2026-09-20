@@ -73,10 +73,46 @@ describe("middleware", () => {
     );
   });
 
-  it("sin cookie en la raíz, redirige al login sin returnTo", async () => {
-    const res = await middleware(requestWithCookie(undefined, undefined, "http://panel.test/"));
+  it("sin cookie en la raíz deja pasar sin sesión: la landing es pública", async () => {
+    const res = await middleware(
+      requestWithCookie(
+        undefined,
+        { [ACCESS_TOKEN_HEADER]: "access-falsificado" },
+        "http://panel.test/",
+      ),
+    );
 
-    expect(res.headers.get("location")).toBe("http://panel.test/login");
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(res.status).toBe(200);
+    expect(res.headers.get("location")).toBeNull();
+    // La cabecera interna se borra igual que en cualquier otro camino sin
+    // sesión (hallazgo B2): un visitante anónimo no puede forjarla.
+    expect(forwardedHeaderNames(res)).not.toHaveLength(0);
+    expect(forwardedHeaderNames(res)).not.toContain(ACCESS_TOKEN_HEADER);
+    expect(res.headers.get(`x-middleware-request-${ACCESS_TOKEN_HEADER}`)).toBeNull();
+  });
+
+  it("con el refresh rechazado en la raíz tampoco redirige al login", async () => {
+    fetchMock.mockResolvedValueOnce(response({ detail: "token_not_valid" }, 401));
+
+    const res = await middleware(
+      requestWithCookie("refresh-caducado", { "sec-fetch-dest": "document" }, "http://panel.test/"),
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("location")).toBeNull();
+    expect(res.cookies.get(SESSION_COOKIE_NAME)).toBeUndefined();
+  });
+
+  it("con refresh válido la raíz sigue recibiendo el access (reparto de área)", async () => {
+    fetchMock.mockResolvedValueOnce(
+      response({ access: "access-nuevo", refresh: "refresh-nuevo" }, 200),
+    );
+
+    const res = await middleware(requestWithCookie("refresh-viejo", undefined, "http://panel.test/"));
+
+    expect(res.headers.get(`x-middleware-request-${ACCESS_TOKEN_HEADER}`)).toBe("access-nuevo");
+    expect(res.cookies.get(SESSION_COOKIE_NAME)?.value).toBe("refresh-nuevo");
   });
 
   it("el returnTo conserva la cadena de consulta del destino", async () => {

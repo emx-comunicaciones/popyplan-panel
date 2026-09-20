@@ -18,7 +18,10 @@
  *    `SameSite=Strict` un enlace profundo llegado de fuera no manda la
  *    cookie, y antes se perdía el destino); un prefetch/RSC sin cookie
  *    sigue pasando tal cual, y el layout que llame a `getServerSession()`
- *    redirigirá como siempre.
+ *    redirigirá como siempre. **La raíz es la excepción** (spec de diseño
+ *    `2026-09-20-landing-login-unico-design.md` §3.2): `/` es la landing
+ *    pública, así que sin cookie pasa sin sesión —también en una
+ *    navegación de documento— y `app/page.tsx` la pinta.
  * 2. Llama a `POST /api/auth/token/refresh/` con **single-flight**
  *    (`lib/auth/singleFlight.ts`, indexado por el valor del refresh):
  *    varias peticiones concurrentes con la misma cookie (RSC, prefetch,
@@ -48,6 +51,8 @@
  *    middleware no vuelve a correr allí, y la restauración de arranque de
  *    `app/providers.tsx` llama a ese route handler, que la borra con su
  *    401 si de verdad estaba caducada.
+ *    En `/` no se redirige nunca: un refresh rechazado deja ver la
+ *    landing pública, no el login (spec §3.2).
  * 4. Si el backend no responde (error de red), o responde 200 con algo
  *    que no son los dos tokens del contrato
  *    (`lib/auth/tokenRefresh.ts::parseRefreshedTokens`, hallazgo B3),
@@ -135,8 +140,14 @@ function passThroughWithoutAccess(request: NextRequest): NextResponse {
 }
 
 /**
- * Redirección al login guardando el destino (`returnTo`). La raíz no lo
- * necesita: `app/page.tsx` ya decide el área a la que llevar tras entrar.
+ * Redirección al login guardando el destino (`returnTo`).
+ *
+ * Ya no hay excepción para la raíz: desde la landing pública (spec de
+ * diseño `2026-09-20-landing-login-unico-design.md` §3.2), `/` **nunca**
+ * llega hasta aquí — sin cookie, o con el refresh rechazado, se deja
+ * pasar sin sesión (`passThroughWithoutAccess`) y `app/page.tsx` pinta la
+ * landing. Toda ruta que sí llega a esta función es una ruta protegida
+ * del panel, así que siempre hay un destino que guardar.
  */
 function redirectToLogin(request: NextRequest): NextResponse {
   const target = `${request.nextUrl.pathname}${request.nextUrl.search}`;
@@ -145,17 +156,28 @@ function redirectToLogin(request: NextRequest): NextResponse {
   const loginUrl = request.nextUrl.clone();
   loginUrl.pathname = "/login";
   loginUrl.search = "";
-  if (request.nextUrl.pathname !== "/") {
-    loginUrl.searchParams.set("returnTo", target);
-  }
+  loginUrl.searchParams.set("returnTo", target);
   return NextResponse.redirect(loginUrl);
+}
+
+/**
+ * `/` es pública desde la landing (spec §3.1/§3.2). Sigue en el `matcher`
+ * porque **con** cookie hay que refrescar la sesión para que
+ * `app/page.tsx` sepa a qué área mandar (hallazgo A2), pero sin cookie —o
+ * con el refresh rechazado— la petición pasa sin sesión en vez de ir al
+ * login: quien todavía no tiene cuenta tiene que poder leer la web.
+ */
+function isPublicRoot(request: NextRequest): boolean {
+  return request.nextUrl.pathname === "/";
 }
 
 export async function middleware(request: NextRequest) {
   const refresh = request.cookies.get(SESSION_COOKIE_NAME)?.value;
 
   if (!refresh) {
-    if (!isDocumentNavigation(request)) return passThroughWithoutAccess(request);
+    if (isPublicRoot(request) || !isDocumentNavigation(request)) {
+      return passThroughWithoutAccess(request);
+    }
     return redirectToLogin(request);
   }
 
@@ -178,14 +200,16 @@ export async function middleware(request: NextRequest) {
       // se entiende. Mismo trato que si no respondiera.
       return new NextResponse(null, { status: 503 });
     }
-    if (!isDocumentNavigation(request)) {
+    if (isPublicRoot(request) || !isDocumentNavigation(request)) {
       // Prefetch/RSC: la petición pasa sin sesión y el layout que llame a
       // `getServerSession()` redirigirá; la navegación de documento
-      // siguiente repetirá este refresco.
+      // siguiente repetirá este refresco. La raíz pasa siempre: es la
+      // landing pública (spec §3.2).
       return passThroughWithoutAccess(request);
     }
-    // Navegación de documento: al login con el destino, pero **sin**
-    // borrar la cookie (hallazgo F3, ver el docstring del módulo).
+    // Navegación de documento a una ruta protegida: al login con el
+    // destino, pero **sin** borrar la cookie (hallazgo F3, ver el
+    // docstring del módulo).
     return redirectToLogin(request);
   }
 
@@ -203,6 +227,8 @@ export const config = {
     // el área con `getServerSession()`, que solo lee la cabecera interna
     // que pone este middleware — fuera del matcher, cualquier
     // `redirect("/")` de un layout acababa en el login con la sesión viva.
+    // Desde la landing (spec §3.2) sigue aquí por el mismo motivo, pero
+    // sin cookie **no** redirige: pasa sin sesión y se pinta la landing.
     "/",
     "/entidad/:path*",
     "/paraguas/:path*",
