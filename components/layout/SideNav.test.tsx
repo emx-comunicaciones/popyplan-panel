@@ -53,6 +53,17 @@ describe("SideNav", () => {
     expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
   });
 
+  it("una sección hermana con el mismo prefijo literal no se marca (frontera de segmento)", () => {
+    // «/personas-extra» empieza por «/personas» como texto, pero no es una
+    // subruta suya: la coincidencia es por segmento, no por prefijo de cadena.
+    const items = [...ITEMS, { href: "/entidad/bidasoa/personas-extra", label: "Personas extra" }];
+    setPathname("/entidad/bidasoa/personas-extra/7");
+    render(<SideNav ariaLabel="Menú de la entidad" items={items} />);
+
+    expect(screen.getByRole("link", { name: "Personas extra" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Personas" })).not.toHaveAttribute("aria-current");
+  });
+
   it("una ruta fuera del menú no marca ninguna sección", () => {
     setPathname("/otra-cosa");
     render(<SideNav ariaLabel="Menú de la entidad" items={ITEMS} />);
