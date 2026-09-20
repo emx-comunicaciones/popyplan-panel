@@ -69,18 +69,32 @@ export type OrgMembershipRef = components["schemas"]["OrgMembershipRef"];
  * resuelve igual. Si algún día se retiran esos fixtures, se puede borrar
  * el campo y la rama de `isParaguas` a la vez.
  */
-export type OrgMembershipForArea = OrgMembershipRef & {
+/**
+ * El esquema regenerado (bloque 1 de territorio) ya trae
+ * `OrgMembershipRef.is_administration: boolean` y `admin_level: string`
+ * como campos **obligatorios** (spec §3.5, el backend siempre los deriva
+ * de `org_type`; `admin_level` sale como `string` genérico, no como el
+ * enum, porque `users/profile_serializers.py::OrgMembershipRefSerializer
+ * .admin_level` es un `CharField` de solo lectura sin `choices`
+ * declaradas ahí — sigue siendo uno de los valores de `AdminLevel` en
+ * runtime).
+ *
+ * **`is_administration` se re-ensancha aquí a opcional, a propósito**: no
+ * es un desajuste de contrato, es el respaldo que el propio
+ * `lib/auth/area.ts::isParaguas` documenta y comprueba en tiempo de
+ * ejecución (`typeof membership.is_administration === "boolean"`, si no
+ * cae a `organization_type`/`org_type`) para un backend desplegado
+ * *antes* de este bloque, que nunca mandó el campo — exactamente el caso
+ * que fijan `lib/auth/area.test.ts` («sin `is_administration`… sigue el
+ * respaldo») y varios fixtures de `test-utils/`. Declararlo obligatorio
+ * porque el esquema ya lo obliga habría hecho mentir al tipo justo en el
+ * escenario que existe para cubrir. `org_type?` es el otro respaldo, ya
+ * documentado en su día para la tarea W1: el nombre que esa nota daba
+ * por bueno y que el backend nunca ha usado.
+ */
+export type OrgMembershipForArea = Omit<OrgMembershipRef, "is_administration"> & {
   org_type?: components["schemas"]["OrgTypeEnum"];
-  /**
-   * `users/profile_serializers.py::OrgMembershipRefSerializer`, spec
-   * §3.5: el backend deriva este booleano de `org_type` para que el
-   * panel deje de comparar cadenas. Opcional porque un backend anterior
-   * al despliegue no lo trae — `lib/auth/area.ts::isParaguas` lo usa
-   * cuando está y cae al respaldo por `organization_type` cuando no
-   * (spec §7). Tipo manual hasta `npm run gen:types`.
-   */
   is_administration?: boolean;
-  admin_level?: AdminLevel;
 };
 
 export type MeForArea = Omit<Me, "org_memberships"> & {
@@ -96,40 +110,61 @@ export type PlatformRoleMe = components["schemas"]["PlatformRoleMe"];
  * §2.1). Cadena vacía en todo lo que no es una administración: el
  * backend lo declara `CharField(choices, blank=True)`, no nullable.
  *
- * **Tipo manual, provisional**: se retira en cuanto la rama de backend
- * `feature/territorio-*` esté fusionada y se regenere el esquema con
- * `npm run gen:types` (spec §7, «regenerar tipos desde
- * docs/schema.yaml»). Mismo patrón que `Me.preferred_language` más
- * arriba en este fichero.
+ * Alias directo del esquema regenerado: `Organization.admin_level` sale
+ * como `AdminLevelEnum | BlankEnum` (`BlankEnum` es `""`), exactamente
+ * esta unión — drf-spectacular sí detecta el `blank=True` aquí (a
+ * diferencia de `TerritoryKind`, ver más abajo) porque el campo del
+ * modelo declara `choices` con blank explícito, mientras que
+ * `territory_kind` es de solo lectura y su blank lo decide un servicio
+ * aparte, no el propio `CharField`.
  */
-export type AdminLevel = "ayuntamiento" | "mancomunidad" | "diputacion" | "gobierno" | "";
+export type AdminLevel = components["schemas"]["AdminLevelEnum"] | components["schemas"]["BlankEnum"];
 
 /**
  * Forma del territorio declarado (spec §2.1): un atajo (`ccaa`,
  * `provincia`, `comarca`) o una lista literal de municipios
  * (`municipios`); cadena vacía si la administración no tiene territorio.
  * `territory_code` guarda el código del atajo o, con `municipios`, los
- * códigos INE separados por comas. Tipo manual, misma nota que
- * `AdminLevel`.
+ * códigos INE separados por comas.
+ *
+ * **Tipo manual pese al esquema regenerado**: `Organization.territory_kind`
+ * genera solo `TerritoryKindEnum` (los cuatro atajos, sin `""`), pero en
+ * runtime el campo **sí** llega vacío para cualquier organización sin
+ * territorio — confirmado leyendo el backend, no solo el esquema:
+ * `entities/models.py::Organization.territory_kind` es
+ * `CharField(choices=…, blank=True, default='')` y
+ * `entities/services/territory.py::set_territory` escribe
+ * `territory_kind = ''` explícitamente para «sin territorio». El motivo
+ * de la discrepancia: es un campo de **solo lectura** en el serializer
+ * (`entities/serializers.py::OrganizationSerializer.read_only_fields`),
+ * y drf-spectacular no añade la variante en blanco a un `read_only`
+ * derivado de un `CharField` con `choices` del mismo modo que lo hace
+ * para uno editable como `admin_level` — mismo tipo de quirk que
+ * `ProgramWriteFields`/`PricingTierUpdateRequest` documentan en este
+ * fichero, aplicado a lectura en vez de a escritura.
  */
-export type TerritoryKind = "ccaa" | "provincia" | "comarca" | "municipios" | "";
+export type TerritoryKind = components["schemas"]["TerritoryKindEnum"] | "";
 
 /**
- * `GET`/`PATCH /api/organizations/{id}/`, ensanchado con los cuatro
- * campos de territorio de la spec §2.1 más el recuento derivado
- * `territory_places_count` (solo lectura: cuántos municipios tiene hoy
- * el `OrgScope` expandido). Todos opcionales porque un backend anterior
- * al despliegue de este bloque no los trae (spec §7) — el panel trata su
- * ausencia igual que `place: null` (ver `EntidadDetail`/`SedeSelector`).
- * Tipo manual, misma nota que `AdminLevel`.
+ * `GET`/`PATCH /api/organizations/{id}/`. El esquema regenerado ya trae
+ * los cuatro campos de territorio de la spec §2.1 más
+ * `territory_places_count` (solo lectura), así que este tipo solo
+ * ensancha dos:
+ *
+ * - `place`: el generado lo marca `string` (sin `null`), pero el modelo
+ *   admite `place=NULL` para entidades sembradas antes de este bloque
+ *   (`entities/serializers.py`: «el modelo admite place=NULL, entidades
+ *   legado sin tocar»; `extra_kwargs = {'place': {'allow_null': False}}`
+ *   solo bloquea **escribir** `null`, no impide que un `GET` lo
+ *   devuelva). `EntidadDetail`/`SedeSelector` ya tratan su ausencia como
+ *   «Sin municipio».
+ * - `territory_kind`: se sustituye por el alias de arriba (`TerritoryKind`,
+ *   con `""`), por el motivo que documenta su propio docstring.
  */
-export type Organization = components["schemas"]["Organization"] & {
+export type Organization = Omit<components["schemas"]["Organization"], "place" | "territory_kind"> & {
   /** Código INE de la sede (`Place.ine_code`), `null` si no la tiene. */
   place?: string | null;
-  admin_level?: AdminLevel;
-  territory_kind?: TerritoryKind;
-  territory_code?: string;
-  readonly territory_places_count?: number;
+  territory_kind: TerritoryKind;
 };
 
 export type OrgMembershipRole = components["schemas"]["OrgMembershipRoleEnum"];
@@ -815,12 +850,11 @@ export type SupportRelationship = components["schemas"]["RelationshipEnum"];
 
 /**
  * `POST /api/organizations/` con la sede obligatoria (spec §4.3, «Alta
- * de entidad: sede obligatoria»): el serializer de alta exige `place`
- * (código INE). Tipo manual hasta `npm run gen:types`.
+ * de entidad: sede obligatoria»). Alias directo: el esquema regenerado
+ * ya marca `OrganizationCreateRequest.place` como obligatorio (sin `?`),
+ * así que no hace falta ensancharlo a mano.
  */
-export type OrganizationCreateInput = OrganizationCreateRequest & {
-  place: string;
-};
+export type OrganizationCreateInput = OrganizationCreateRequest;
 
 /**
  * Fila de `GET /api/places/?ine_code=a,b&search=&ccaa_code=&prov_code=
@@ -830,13 +864,23 @@ export type OrganizationCreateInput = OrganizationCreateRequest & {
  * dato personal. Los tres filtros de código son de coincidencia exacta y
  * combinables entre sí y con `search`/`ine_code`; el `count` de
  * `PaginatedPlaceList` es el total que casa con el filtro, no el tamaño
- * de la página. Tipo manual hasta `npm run gen:types`.
+ * de la página.
  *
- * `latitude`/`longitude` se declaran `number | null` siguiendo el
- * ejemplo de la spec §3.2. Quien las consuma las pasa igualmente por
- * `lib/metrics/mapScale.ts::toFiniteNumber`, porque un `DecimalField` de
- * DRF puede llegar serializado como cadena según la configuración del
- * backend y una coordenada no numérica no puede pintar una burbuja.
+ * El esquema regenerado ya trae `components["schemas"]["Place"]` con
+ * exactamente estos once campos, así que casi todo podría ser un alias
+ * directo — **salvo `latitude`/`longitude`**, que el generado tipa como
+ * `number` a secas. Confirmado contra el backend (`places/models.py`,
+ * sin `null=True`; `places/serializers.py::PlaceSerializer` las expone
+ * con `FloatField(read_only=True)` a propósito para no heredar el
+ * `DecimalField`-como-cadena de DRF): en este backend nunca llegan
+ * `null`. El tipo se queda `number | null` de todos modos, a propósito
+ * más defensivo que el contrato — `lib/metrics/mapScale.ts::toFiniteNumber`
+ * ya sabe descartar en silencio un municipio sin coordenada válida (fila
+ * de la tabla intacta, sin burbuja en el mapa), y
+ * `lib/metrics/mapScale.test.ts` fija ese camino con `latitude: null`;
+ * quitar el `| null` rompería esa cobertura sin ganar nada, porque
+ * `toFiniteNumber` acepta `unknown` y compila igual con cualquiera de
+ * los dos tipos.
  */
 export interface PlaceRow {
   ine_code: string;
@@ -853,7 +897,15 @@ export interface PlaceRow {
   longitude: number | null;
 }
 
-/** Envoltorio DRF estándar de `GET /api/places/`. */
+/**
+ * Envoltorio DRF estándar de `GET /api/places/`. Tipo manual pese al
+ * esquema regenerado: `components["schemas"]["PaginatedPlaceList"]`
+ * marca `count`/`next`/`previous`/`results` como opcionales — el mismo
+ * quirk genérico de drf-spectacular con los envoltorios paginados que ya
+ * fuerza a mantener `PaginatedPersonRowList`/`PaginatedAuditLogList` a
+ * mano en este fichero — mientras que `PageNumberPagination` de DRF los
+ * manda siempre los cuatro.
+ */
 export interface PaginatedPlaceList {
   count: number;
   next: string | null;
@@ -861,7 +913,28 @@ export interface PaginatedPlaceList {
   results: PlaceRow[];
 }
 
-/** El municipio dentro de la ficha de `GET …/territorio/{org}/places/{ine}/`. */
+/**
+ * El municipio dentro de la ficha de `GET …/territorio/{org}/places/{ine}/`.
+ *
+ * **Tipo manual, y no por descuido**: el esquema regenerado declara
+ * `PlaceSheet.place` como `components["schemas"]["PlaceRef"]`
+ * (`ine_code`/`name`/`prov_name`, tres campos), pero es un falso amigo —
+ * verificado leyendo el backend, no solo `docs/schema.yaml`.
+ * `panel/serializers.py::PlaceRefSerializer` (el que de verdad instancia
+ * `panel-territorio-place`, con los ocho campos de aquí abajo) tiene el
+ * **mismo nombre de clase** que `users/profile_serializers.py
+ * ::PlaceRefSerializer` (el recortado, que usan `events`/`communities`
+ * para pintar la sede de una persona); drf-spectacular deduplica
+ * componentes por nombre de clase y se quedó con uno solo —el
+ * recortado— para las dos rutas. Es un bug de nombres del backend, no
+ * del panel: en runtime la vista sigue devolviendo la instancia correcta
+ * de `panel.serializers.PlaceRefSerializer`, con los ocho campos
+ * (confirmado en `panel/serializers.py:131-141` y en
+ * `panel/tests/test_place_sheet.py`), así que el tipo manual sigue
+ * siendo la forma real de la respuesta — solo `docs/schema.yaml` la
+ * documenta mal. Reportado para que el backend renombre una de las dos
+ * clases (ver «Pendientes conocidos» de la sección de territorio).
+ */
 export interface PlaceSheetPlace {
   ine_code: string;
   name: string;

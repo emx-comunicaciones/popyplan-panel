@@ -3139,9 +3139,13 @@ export interface paths {
         get: operations["organizations_retrieve"];
         /**
          * @description Solo el titular (permiso `equipo`) edita la lista blanca de
-         *     `OrganizationSerializer`; `parent` es aparte, solo `superadmin`
-         *     (evita que un titular reasigne su propia entidad paraguas).
-         *     Esta ficha solo se edita a trozos: PUT se trata como PATCH.
+         *     `OrganizationSerializer`; `parent`/`admin_level` son aparte, solo
+         *     `superadmin` (evita que un titular reasigne su propia entidad
+         *     paraguas o se autoasigne un nivel de administración); y
+         *     `territory_kind`/`territory_code` van por su propio camino, solo
+         *     `superadmin`, escrito con `set_territory` (el serializer los
+         *     declara de solo lectura). Esta ficha solo se edita a trozos: PUT se
+         *     trata como PATCH.
          */
         put: operations["organizations_update"];
         post?: never;
@@ -3219,7 +3223,18 @@ export interface paths {
         put?: never;
         /**
          * @description `{"places": [ine...]} | {"province": "20"} | {"comarca": "..."}`
-         *     — titular (permiso `equipo`) o plataforma (`superadmin`).
+         *     — **ámbito de actuación** de la entidad: dónde trabaja. Titular
+         *     (permiso `equipo`) o plataforma (`superadmin`), como siempre, y
+         *     **aditivo**: cada llamada suma municipios, nunca quita.
+         *
+         *     Una **administración** no declara su ámbito por aquí: para ella
+         *     `OrgScope` es el territorio, con semántica de reemplazo, y lo fija
+         *     la plataforma con `territory_kind`/`territory_code` en el `PATCH` de
+         *     la ficha (`docs/PANEL.md` §15.1). Por eso aquí recibe 403.
+         *
+         *     La escritura pasa por `entities.services.territory::set_territory`
+         *     (único escritor de `OrgScope`): la vista calcula la unión de lo que
+         *     ya había con lo que se pide y se la pasa como lista de municipios.
          */
         post: operations["organizations_scope_create"];
         delete?: never;
@@ -3606,6 +3621,9 @@ export interface paths {
          *     entidad o municipio. `group_by` es obligatorio (400 sin él). Nunca
          *     nominal (agrega personas de entidades distintas). Audita siempre
          *     `panel.compare_viewed`.
+         *
+         *     Solo administraciones (`org_type == 'administracion'`, spec §2.4): otra
+         *     entidad recibe 403.
          */
         get: operations["panel_paraguas_compare_retrieve"];
         put?: never;
@@ -3630,6 +3648,9 @@ export interface paths {
          *     con la marca de la propia paraguas en el PDF. Nunca nominal (agrega
          *     personas de entidades distintas). Solo quien tiene `exportar_informes`
          *     en la propia entidad paraguas.
+         *
+         *     Solo administraciones (`org_type == 'administracion'`, spec §2.4): otra
+         *     entidad recibe 403.
          */
         get: operations["panel_paraguas_export_retrieve"];
         put?: never;
@@ -3650,6 +3671,9 @@ export interface paths {
         /**
          * @description `GET /api/panel/paraguas/{org_id}/metrics/`. Agrega la entidad y
          *     todas sus hijas recursivas; nunca nominal.
+         *
+         *     Solo administraciones (`org_type == 'administracion'`, spec §2.4): otra
+         *     entidad recibe 403.
          */
         get: operations["panel_paraguas_metrics_retrieve"];
         put?: never;
@@ -3716,6 +3740,99 @@ export interface paths {
          *     restricción por entidad ni territorio; nunca nominal.
          */
         get: operations["panel_plataforma_metrics_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/territorio/{org_id}/compare/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/territorio/{org_id}/compare/?since&until&group_by=
+         *     place|comarca|province`. `group_by` obligatorio (400 sin él), igual que
+         *     en paraguas y plataforma. Audita `panel.compare_viewed`.
+         */
+        get: operations["panel_territorio_compare_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/territorio/{org_id}/export/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/territorio/{org_id}/export/?format=csv|pdf&since&until&group_by`.
+         *
+         *     Informe del territorio con la marca de la propia administración en el
+         *     PDF. Exige `exportar_informes` (titular, moderador, analista) además de
+         *     ser administración. Nunca nominal.
+         */
+        get: operations["panel_territorio_export_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/territorio/{org_id}/metrics/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/territorio/{org_id}/metrics/?since&until&group_by`.
+         *
+         *     Solo administraciones (`org_type == 'administracion'`, spec §2.4).
+         *     Nunca nominal: agrega personas de entidades distintas, muchas de ellas
+         *     ajenas a la administración. Audita `panel.metrics_viewed`.
+         */
+        get: operations["panel_territorio_metrics_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/territorio/{org_id}/places/{ine_code}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/territorio/{org_id}/places/{ine_code}/?since&until`.
+         *
+         *     Ficha de un municipio del territorio: cifras agregadas del periodo y un
+         *     recuento de organizaciones con sede allí — nunca sus nombres, nunca una
+         *     persona. 409 si la administración no tiene territorio declarado
+         *     (comprobado ANTES que el 404: sin territorio no hay territorio del que
+         *     este municipio pueda estar "fuera"); 404 si el municipio no pertenece
+         *     al territorio.
+         */
+        get: operations["panel_territorio_places_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4166,6 +4283,40 @@ export interface paths {
          * @description Verifica el OTP de 6 dígitos. En producción lo comprueba contra Twilio Verify API; en desarrollo usa el código guardado localmente. Si el código es correcto marca el teléfono como verificado.
          */
         post: operations["phone_verification_code_verify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/places/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/places/` y `GET /api/places/{ine_code}/`. */
+        get: operations["places_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/places/{ine_code}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/places/` y `GET /api/places/{ine_code}/`. */
+        get: operations["places_retrieve"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -6108,6 +6259,14 @@ export interface components {
             code?: string;
         };
         /**
+         * @description * `ayuntamiento` - Ayuntamiento
+         *     * `mancomunidad` - Mancomunidad
+         *     * `diputacion` - Diputación
+         *     * `gobierno` - Gobierno autonómico
+         * @enum {string}
+         */
+        AdminLevelEnum: "ayuntamiento" | "mancomunidad" | "diputacion" | "gobierno";
+        /**
          * @description Serializer para que un admin envíe una notificación dirigida:
          *     a todos los usuarios (target='all') o a uno concreto (target='user').
          */
@@ -6244,6 +6403,8 @@ export interface components {
             overdue_invoices: number;
             pending_amount_cents: number;
         };
+        /** @enum {unknown} */
+        BlankEnum: "";
         /** @description Un bloqueo mío. El preventivo no dice de qué teléfono es. */
         Block: {
             /** Format: uuid */
@@ -7829,6 +7990,14 @@ export interface components {
             readonly two_fa_enabled: boolean;
             push_notifications?: boolean;
             email_notifications?: boolean;
+            /**
+             * @description Idioma elegido por la persona en su perfil. Vacío si no ha elegido todavía.
+             *
+             *     * `es` - Español
+             *     * `eu` - Euskara
+             *     * `ca` - Català
+             */
+            preferred_language?: components["schemas"]["PreferredLanguageEnum"] | components["schemas"]["BlankEnum"];
             readonly verification_level: string;
             readonly verification_pending_review: string;
             /** Format: date-time */
@@ -7847,6 +8016,14 @@ export interface components {
             birth_date?: string | null;
             push_notifications?: boolean;
             email_notifications?: boolean;
+            /**
+             * @description Idioma elegido por la persona en su perfil. Vacío si no ha elegido todavía.
+             *
+             *     * `es` - Español
+             *     * `eu` - Euskara
+             *     * `ca` - Català
+             */
+            preferred_language?: components["schemas"]["PreferredLanguageEnum"] | components["schemas"]["BlankEnum"];
         };
         /**
          * @description Escritura de la cuenta propia. Los campos de citas que lleguen se
@@ -7860,6 +8037,7 @@ export interface components {
             phone?: string | null;
             push_notifications?: boolean;
             email_notifications?: boolean;
+            preferred_language?: components["schemas"]["PreferredLanguageEnum"] | components["schemas"]["BlankEnum"];
             profile?: components["schemas"]["ProfileUpdateRequest"];
         };
         /** @description Serializer para mensajes */
@@ -7986,14 +8164,25 @@ export interface components {
             /** Format: date-time */
             read_at?: string | null;
         };
-        /** @description Serializer para plantillas de notificaciones */
+        /**
+         * @description Serializer para plantillas de notificaciones.
+         *
+         *     Los cuatro campos `*_template` guardan un `msgid` en **inglés**, no el
+         *     texto final: se traducen al idioma de quien recibe la notificación al
+         *     aplicar la plantilla (i18n backend, tarea 4; ver el docstring de
+         *     `notifications.models.NotificationTemplate`).
+         */
         NotificationTemplate: {
             readonly id: number;
             name: string;
             notification_type: components["schemas"]["NotificationTypeEnum"];
+            /** @description Guarda un `msgid` en inglés, no el texto final: se traduce al idioma de quien recibe la notificación al aplicar la plantilla (ver el docstring de este modelo). Un `msgid` que falte en locale/*\/LC_MESSAGES/django.po se muestra tal cual, en un solo idioma. */
             title_template: string;
+            /** @description Guarda un `msgid` en inglés, no el texto final: se traduce al idioma de quien recibe la notificación al aplicar la plantilla (ver el docstring de este modelo). Un `msgid` que falte en locale/*\/LC_MESSAGES/django.po se muestra tal cual, en un solo idioma. */
             message_template: string;
+            /** @description Guarda un `msgid` en inglés, no el texto final: se traduce al idioma de quien recibe la notificación al aplicar la plantilla (ver el docstring de este modelo). Un `msgid` que falte en locale/*\/LC_MESSAGES/django.po se muestra tal cual, en un solo idioma. */
             email_subject_template?: string;
+            /** @description Guarda un `msgid` en inglés, no el texto final: se traduce al idioma de quien recibe la notificación al aplicar la plantilla (ver el docstring de este modelo). Un `msgid` que falte en locale/*\/LC_MESSAGES/django.po se muestra tal cual, en un solo idioma. */
             email_body_template?: string;
             is_active?: boolean;
             priority?: components["schemas"]["PriorityEnum"];
@@ -8002,13 +8191,24 @@ export interface components {
             /** Format: date-time */
             readonly updated_at: string;
         };
-        /** @description Serializer para plantillas de notificaciones */
+        /**
+         * @description Serializer para plantillas de notificaciones.
+         *
+         *     Los cuatro campos `*_template` guardan un `msgid` en **inglés**, no el
+         *     texto final: se traducen al idioma de quien recibe la notificación al
+         *     aplicar la plantilla (i18n backend, tarea 4; ver el docstring de
+         *     `notifications.models.NotificationTemplate`).
+         */
         NotificationTemplateRequest: {
             name: string;
             notification_type: components["schemas"]["NotificationTypeEnum"];
+            /** @description Guarda un `msgid` en inglés, no el texto final: se traduce al idioma de quien recibe la notificación al aplicar la plantilla (ver el docstring de este modelo). Un `msgid` que falte en locale/*\/LC_MESSAGES/django.po se muestra tal cual, en un solo idioma. */
             title_template: string;
+            /** @description Guarda un `msgid` en inglés, no el texto final: se traduce al idioma de quien recibe la notificación al aplicar la plantilla (ver el docstring de este modelo). Un `msgid` que falte en locale/*\/LC_MESSAGES/django.po se muestra tal cual, en un solo idioma. */
             message_template: string;
+            /** @description Guarda un `msgid` en inglés, no el texto final: se traduce al idioma de quien recibe la notificación al aplicar la plantilla (ver el docstring de este modelo). Un `msgid` que falte en locale/*\/LC_MESSAGES/django.po se muestra tal cual, en un solo idioma. */
             email_subject_template?: string;
+            /** @description Guarda un `msgid` en inglés, no el texto final: se traduce al idioma de quien recibe la notificación al aplicar la plantilla (ver el docstring de este modelo). Un `msgid` que falte en locale/*\/LC_MESSAGES/django.po se muestra tal cual, en un solo idioma. */
             email_body_template?: string;
             is_active?: boolean;
             priority?: components["schemas"]["PriorityEnum"];
@@ -8079,6 +8279,10 @@ export interface components {
          *     necesita distinguir una entidad paraguas de una entidad "hoja" para
          *     pintar el árbol/navegación sin una petición aparte por cada una.
          *     `parent_id` es `null` si la entidad no tiene paraguas.
+         *
+         *     `is_administration`/`admin_level` (bloque 1 del panel institucional,
+         *     spec §3.5): el panel decide con ellos si esta membresía abre el área de
+         *     administración, en vez de comparar `organization_type` a mano.
          */
         OrgMembershipRef: {
             readonly organization_id: number;
@@ -8087,6 +8291,8 @@ export interface components {
             readonly organization_type: string;
             readonly parent_id: number | null;
             readonly is_verified: boolean;
+            readonly is_administration: boolean;
+            readonly admin_level: string;
             readonly logo: string | null;
             readonly role: string;
         };
@@ -8123,7 +8329,20 @@ export interface components {
          * @enum {string}
          */
         OrgTypeEnum: "asociacion" | "ong" | "administracion";
-        /** @description `GET`/`PATCH /api/organizations/{id}/`. */
+        /**
+         * @description `GET`/`PATCH /api/organizations/{id}/`.
+         *
+         *     `place` (sede) lo edita el titular como cualquier otro campo de la lista
+         *     blanca; `admin_level` es cosa de la plataforma
+         *     (`entities.viewsets.OrganizationViewSet.update`, no este serializer, es
+         *     quien lo comprueba — bloque 1 del panel institucional, tarea 2).
+         *     `territory_kind`/`territory_code` son de solo lectura **aquí** porque su
+         *     único escritor es `entities.services.territory.set_territory`: el
+         *     `PATCH` los acepta en el cuerpo, pero la vista los desvía a ese servicio
+         *     antes de llegar a este serializer. `territory_places_count` (Fix
+         *     round 1) es de solo lectura, número de filas de `OrgScope` de la
+         *     entidad — el panel lo consume tal cual.
+         */
         Organization: {
             readonly id: number;
             /** Nombre */
@@ -8167,12 +8386,33 @@ export interface components {
             on_call_user?: number | null;
             /** Encuesta post-actividad activa */
             post_event_survey_enabled?: boolean;
+            /**
+             * Nivel de administración
+             * @description Solo para administraciones públicas. No concede ningún permiso.
+             *
+             *     * `ayuntamiento` - Ayuntamiento
+             *     * `mancomunidad` - Mancomunidad
+             *     * `diputacion` - Diputación
+             *     * `gobierno` - Gobierno autonómico
+             */
+            admin_level?: components["schemas"]["AdminLevelEnum"] | components["schemas"]["BlankEnum"];
+            /** Municipio de la sede */
+            place?: string;
+            /** Tipo de territorio */
+            readonly territory_kind: components["schemas"]["TerritoryKindEnum"];
+            /**
+             * Código de territorio
+             * @description Código del atajo (comunidad autónoma, provincia o comarca) o códigos INE separados por comas.
+             */
+            readonly territory_code: string;
+            readonly territory_places_count: number;
         };
         /**
          * @description `POST /api/organizations/` — alta de entidad (verificador/superadmin).
          *
          *     `is_verified` nace en `False`: la verificación es un paso aparte
-         *     (`organization-verify`).
+         *     (`organization-verify`). `place` (sede) es obligatorio desde la tarea 2
+         *     del plan de territorio (spec §2.1): toda entidad nace con un municipio.
          */
         OrganizationCreateRequest: {
             /** Nombre */
@@ -8188,13 +8428,38 @@ export interface components {
             parent?: number | null;
             /** Descripción */
             description?: string;
+            /**
+             * Nivel de administración
+             * @description Solo para administraciones públicas. No concede ningún permiso.
+             *
+             *     * `ayuntamiento` - Ayuntamiento
+             *     * `mancomunidad` - Mancomunidad
+             *     * `diputacion` - Diputación
+             *     * `gobierno` - Gobierno autonómico
+             */
+            admin_level?: components["schemas"]["AdminLevelEnum"] | components["schemas"]["BlankEnum"];
+            /** Municipio de la sede */
+            place: string;
         };
         /** @description La entidad oculta, con lo justo para pintar la lista. */
         OrganizationRef: {
             id: number;
             name: string;
         };
-        /** @description `GET`/`PATCH /api/organizations/{id}/`. */
+        /**
+         * @description `GET`/`PATCH /api/organizations/{id}/`.
+         *
+         *     `place` (sede) lo edita el titular como cualquier otro campo de la lista
+         *     blanca; `admin_level` es cosa de la plataforma
+         *     (`entities.viewsets.OrganizationViewSet.update`, no este serializer, es
+         *     quien lo comprueba — bloque 1 del panel institucional, tarea 2).
+         *     `territory_kind`/`territory_code` son de solo lectura **aquí** porque su
+         *     único escritor es `entities.services.territory.set_territory`: el
+         *     `PATCH` los acepta en el cuerpo, pero la vista los desvía a ese servicio
+         *     antes de llegar a este serializer. `territory_places_count` (Fix
+         *     round 1) es de solo lectura, número de filas de `OrgScope` de la
+         *     entidad — el panel lo consume tal cual.
+         */
         OrganizationRequest: {
             /**
              * Entidad paraguas
@@ -8230,6 +8495,18 @@ export interface components {
             on_call_user?: number | null;
             /** Encuesta post-actividad activa */
             post_event_survey_enabled?: boolean;
+            /**
+             * Nivel de administración
+             * @description Solo para administraciones públicas. No concede ningún permiso.
+             *
+             *     * `ayuntamiento` - Ayuntamiento
+             *     * `mancomunidad` - Mancomunidad
+             *     * `diputacion` - Diputación
+             *     * `gobierno` - Gobierno autonómico
+             */
+            admin_level?: components["schemas"]["AdminLevelEnum"] | components["schemas"]["BlankEnum"];
+            /** Municipio de la sede */
+            place?: string;
         };
         PaginatedAuditLogList: {
             /** @example 123 */
@@ -8455,6 +8732,21 @@ export interface components {
              */
             previous?: string | null;
             results?: components["schemas"]["Organization"][];
+        };
+        PaginatedPlaceList: {
+            /** @example 123 */
+            count?: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results?: components["schemas"]["Place"][];
         };
         PaginatedPlanCategoryList: {
             /** @example 123 */
@@ -8751,6 +9043,14 @@ export interface components {
             birth_date?: string | null;
             push_notifications?: boolean;
             email_notifications?: boolean;
+            /**
+             * @description Idioma elegido por la persona en su perfil. Vacío si no ha elegido todavía.
+             *
+             *     * `es` - Español
+             *     * `eu` - Euskara
+             *     * `ca` - Català
+             */
+            preferred_language?: components["schemas"]["PreferredLanguageEnum"] | components["schemas"]["BlankEnum"];
         };
         /**
          * @description Escritura de la cuenta propia. Los campos de citas que lleguen se
@@ -8764,6 +9064,7 @@ export interface components {
             phone?: string | null;
             push_notifications?: boolean;
             email_notifications?: boolean;
+            preferred_language?: components["schemas"]["PreferredLanguageEnum"] | components["schemas"]["BlankEnum"];
             profile?: components["schemas"]["ProfileUpdateRequest"];
         };
         /** @description Serializer para notificaciones */
@@ -8777,18 +9078,42 @@ export interface components {
             /** Format: date-time */
             read_at?: string | null;
         };
-        /** @description Serializer para plantillas de notificaciones */
+        /**
+         * @description Serializer para plantillas de notificaciones.
+         *
+         *     Los cuatro campos `*_template` guardan un `msgid` en **inglés**, no el
+         *     texto final: se traducen al idioma de quien recibe la notificación al
+         *     aplicar la plantilla (i18n backend, tarea 4; ver el docstring de
+         *     `notifications.models.NotificationTemplate`).
+         */
         PatchedNotificationTemplateRequest: {
             name?: string;
             notification_type?: components["schemas"]["NotificationTypeEnum"];
+            /** @description Guarda un `msgid` en inglés, no el texto final: se traduce al idioma de quien recibe la notificación al aplicar la plantilla (ver el docstring de este modelo). Un `msgid` que falte en locale/*\/LC_MESSAGES/django.po se muestra tal cual, en un solo idioma. */
             title_template?: string;
+            /** @description Guarda un `msgid` en inglés, no el texto final: se traduce al idioma de quien recibe la notificación al aplicar la plantilla (ver el docstring de este modelo). Un `msgid` que falte en locale/*\/LC_MESSAGES/django.po se muestra tal cual, en un solo idioma. */
             message_template?: string;
+            /** @description Guarda un `msgid` en inglés, no el texto final: se traduce al idioma de quien recibe la notificación al aplicar la plantilla (ver el docstring de este modelo). Un `msgid` que falte en locale/*\/LC_MESSAGES/django.po se muestra tal cual, en un solo idioma. */
             email_subject_template?: string;
+            /** @description Guarda un `msgid` en inglés, no el texto final: se traduce al idioma de quien recibe la notificación al aplicar la plantilla (ver el docstring de este modelo). Un `msgid` que falte en locale/*\/LC_MESSAGES/django.po se muestra tal cual, en un solo idioma. */
             email_body_template?: string;
             is_active?: boolean;
             priority?: components["schemas"]["PriorityEnum"];
         };
-        /** @description `GET`/`PATCH /api/organizations/{id}/`. */
+        /**
+         * @description `GET`/`PATCH /api/organizations/{id}/`.
+         *
+         *     `place` (sede) lo edita el titular como cualquier otro campo de la lista
+         *     blanca; `admin_level` es cosa de la plataforma
+         *     (`entities.viewsets.OrganizationViewSet.update`, no este serializer, es
+         *     quien lo comprueba — bloque 1 del panel institucional, tarea 2).
+         *     `territory_kind`/`territory_code` son de solo lectura **aquí** porque su
+         *     único escritor es `entities.services.territory.set_territory`: el
+         *     `PATCH` los acepta en el cuerpo, pero la vista los desvía a ese servicio
+         *     antes de llegar a este serializer. `territory_places_count` (Fix
+         *     round 1) es de solo lectura, número de filas de `OrgScope` de la
+         *     entidad — el panel lo consume tal cual.
+         */
         PatchedOrganizationRequest: {
             /**
              * Entidad paraguas
@@ -8824,6 +9149,18 @@ export interface components {
             on_call_user?: number | null;
             /** Encuesta post-actividad activa */
             post_event_survey_enabled?: boolean;
+            /**
+             * Nivel de administración
+             * @description Solo para administraciones públicas. No concede ningún permiso.
+             *
+             *     * `ayuntamiento` - Ayuntamiento
+             *     * `mancomunidad` - Mancomunidad
+             *     * `diputacion` - Diputación
+             *     * `gobierno` - Gobierno autonómico
+             */
+            admin_level?: components["schemas"]["AdminLevelEnum"] | components["schemas"]["BlankEnum"];
+            /** Municipio de la sede */
+            place?: string;
         };
         /**
          * @description Categoría de actividad, con sus subcategorías activas anidadas.
@@ -9071,6 +9408,32 @@ export interface components {
              */
             phone: string;
         };
+        Place: {
+            /** Código INE */
+            readonly ine_code: string;
+            /** Nombre */
+            readonly name: string;
+            /** Nombre local */
+            readonly name_local: string;
+            /** Código de provincia */
+            readonly prov_code: string;
+            /** Provincia */
+            readonly prov_name: string;
+            /** Código de CCAA */
+            readonly ccaa_code: string;
+            /** Comunidad autónoma */
+            readonly ccaa_name: string;
+            /** Código de comarca */
+            readonly comarca_code: string;
+            /** Comarca (es) */
+            readonly comarca_name_es: string;
+            /** Comarca (eu) */
+            readonly comarca_name_eu: string;
+            /** Format: double */
+            readonly latitude: number;
+            /** Format: double */
+            readonly longitude: number;
+        };
         /** @description Municipio recortado: lo justo para pintarlo en la app. */
         PlaceRef: {
             /** Código INE */
@@ -9088,6 +9451,31 @@ export interface components {
             name: string;
             /** Provincia */
             prov_name: string;
+        };
+        /** @description Esquema fijo de `panel-territorio-place` (spec §3.2). */
+        PlaceSheet: {
+            place: components["schemas"]["PlaceRef"];
+            events: components["schemas"]["PlaceSheetEvents"];
+            people: components["schemas"]["PlaceSheetPeople"];
+            attendance: components["schemas"]["PlaceSheetAttendance"];
+            communities: components["schemas"]["PlaceSheetCommunities"];
+            organizations_based_here: number;
+        };
+        PlaceSheetAttendance: {
+            /** Format: double */
+            rate: number | null;
+            suppressed: boolean;
+        };
+        PlaceSheetCommunities: {
+            count: number;
+        };
+        PlaceSheetEvents: {
+            held: number;
+            upcoming: number;
+        };
+        PlaceSheetPeople: {
+            value: number | null;
+            suppressed: boolean;
         };
         /**
          * @description Categoría de actividad, con sus subcategorías activas anidadas.
@@ -9176,6 +9564,13 @@ export interface components {
         PlatformRoleMe: {
             role: string | null;
         };
+        /**
+         * @description * `es` - Español
+         *     * `eu` - Euskara
+         *     * `ca` - Català
+         * @enum {string}
+         */
+        PreferredLanguageEnum: "es" | "eu" | "ca";
         PricingTier: {
             readonly id: number;
             /** Nombre */
@@ -10042,6 +10437,14 @@ export interface components {
             results: components["schemas"]["Team"][];
             count: number;
         };
+        /**
+         * @description * `ccaa` - Comunidad autónoma
+         *     * `provincia` - Provincia
+         *     * `comarca` - Comarca
+         *     * `municipios` - Lista de municipios
+         * @enum {string}
+         */
+        TerritoryKindEnum: "ccaa" | "provincia" | "comarca" | "municipios";
         TokenRefresh: {
             readonly access: string;
             refresh: string;
@@ -18654,6 +19057,216 @@ export interface operations {
             };
         };
     };
+    panel_territorio_compare_retrieve: {
+        parameters: {
+            query: {
+                /** @description Desglose obligatorio de la comparativa. */
+                group_by: string;
+                /** @description Fecha ISO de inicio del periodo actual. */
+                since?: string;
+                /** @description Fecha ISO de fin del periodo actual. */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompareResponse"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_territorio_export_retrieve: {
+        parameters: {
+            query?: {
+                /** @description csv (por defecto) | pdf */
+                format?: string;
+                /** @description place (por defecto) | comarca | province | year */
+                group_by?: string;
+                /** @description Fecha ISO de inicio (por defecto, hace 30 días). */
+                since?: string;
+                /** @description Fecha ISO de fin (por defecto, hoy). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_territorio_metrics_retrieve: {
+        parameters: {
+            query?: {
+                /** @description place | comarca | province | month | year */
+                group_by?: string;
+                /** @description Fecha ISO de inicio (por defecto, hace 30 días). */
+                since?: string;
+                /** @description Fecha ISO de fin (por defecto, hoy). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MetricsResponse"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_territorio_places_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Fecha ISO de inicio (por defecto, hace 30 días). */
+                since?: string;
+                /** @description Fecha ISO de fin (por defecto, hoy). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                ine_code: string;
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaceSheet"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     payments_status_retrieve: {
         parameters: {
             query?: never;
@@ -19310,6 +19923,71 @@ export interface operations {
                         /** @example Authentication credentials were not provided. */
                         detail?: string;
                     };
+                };
+            };
+        };
+    };
+    places_list: {
+        parameters: {
+            query?: {
+                /** @description Código de comunidad autónoma (dos dígitos). Con `count` da la vista previa «N municipios» del atajo `ccaa`. */
+                ccaa_code?: string;
+                /** @description Código de comarca. Vista previa del atajo `comarca`. */
+                comarca_code?: string;
+                /** @description Uno o varios códigos INE separados por comas. */
+                ine_code?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Código de provincia (dos dígitos). Vista previa del atajo `provincia`. */
+                prov_code?: string;
+                /** @description Búsqueda por nombre oficial o local. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedPlaceList"];
+                };
+            };
+        };
+    };
+    places_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Código de comunidad autónoma (dos dígitos). Con `count` da la vista previa «N municipios» del atajo `ccaa`. */
+                ccaa_code?: string;
+                /** @description Código de comarca. Vista previa del atajo `comarca`. */
+                comarca_code?: string;
+                /** @description Uno o varios códigos INE separados por comas. */
+                ine_code?: string;
+                /** @description Código de provincia (dos dígitos). Vista previa del atajo `provincia`. */
+                prov_code?: string;
+                /** @description Búsqueda por nombre oficial o local. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique value identifying this municipio. */
+                ine_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Place"];
                 };
             };
         };

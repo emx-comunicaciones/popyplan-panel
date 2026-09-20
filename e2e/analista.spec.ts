@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { ANALISTA_GFA_EMAIL, DEMO_PASSWORD } from "./helpers";
+import { ANALISTA_GFA_EMAIL, DEMO_PASSWORD, GFA_SLUG } from "./helpers";
 
 /**
  * Analista de la diputación (Gipuzkoako Foru Aldundia, entidad paraguas
@@ -29,8 +29,8 @@ test("analista GFA: métricas del paraguas y exportar PDF", async ({ page }) => 
 
   // Aterriza en /paraguas/gipuzkoako-foru-aldundia (ver docstring); la
   // navegación explícita deja el test independiente de esa resolución.
-  await expect(page).toHaveURL(/\/(entidad|paraguas)\/gipuzkoako-foru-aldundia/);
-  await page.goto("/paraguas/gipuzkoako-foru-aldundia");
+  await expect(page).toHaveURL(new RegExp(`/(entidad|paraguas)/${GFA_SLUG}`));
+  await page.goto(`/paraguas/${GFA_SLUG}`);
 
   await expect(page.getByRole("heading", { name: "Inicio" })).toBeVisible();
   // Tarjetas de métricas agregadas (docs/PANEL.md §1.4): al menos

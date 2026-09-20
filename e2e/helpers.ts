@@ -29,6 +29,10 @@ export const TITULAR_BIDASOA_EMAIL = `panel-titular-${BIDASOA_SLUG}@test.com`;
  *  `DEMO_PERSON_EMAIL`/`DEMO_PERSON_2_EMAIL`, así que ve «Red de apoyo»
  *  en sus fichas (§14.5). */
 export const REFERENTE_BIDASOA_EMAIL = `panel-referente-${BIDASOA_SLUG}@test.com`;
+/** Diputación Foral de Gipuzkoa de la demo (`docs/PANEL.md` §14.6 y
+ *  §15.9): la administración con territorio declarado (provincia 20,
+ *  88 municipios) de la spec del bloque 1 de territorio §6. */
+export const GFA_SLUG = "gipuzkoako-foru-aldundia";
 export const ANALISTA_GFA_EMAIL = "panel-analista-gfa@test.com";
 export const PLATAFORMA_SUPERADMIN_EMAIL = "plataforma@test.com";
 /** Una de las 20 personas «de calle» sembradas para Bidasoa (`p01`-`p20`). */

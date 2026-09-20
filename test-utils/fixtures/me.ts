@@ -10,6 +10,7 @@ export function buildOrgMembership(
     organization_type: "ong",
     parent_id: null,
     is_verified: true,
+    admin_level: "",
     logo: null,
     role: "titular",
     ...overrides,
