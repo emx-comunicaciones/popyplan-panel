@@ -39,14 +39,24 @@ export function DownloadBanner() {
         className="pointer-events-none absolute -right-10 bottom-0 hidden h-[420px] w-[460px] rotate-[86deg] select-none opacity-70 lg:block"
       />
       <div className="relative mx-auto max-w-[1344px]">
-        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-primary-600 to-primary-700 px-6 py-12 sm:px-10 lg:px-16 lg:py-14">
-          <Image
-            src="/landing/banner-texture.png"
-            alt=""
-            width={1100}
-            height={616}
-            className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-10 mix-blend-screen"
-          />
+        <div className="relative rounded-[32px] px-6 py-12 sm:px-10 lg:px-16 lg:py-14">
+          {/*
+            El fondo (degradado + textura) va en su propia capa con
+            `overflow-hidden`, y no en la tarjeta: así la textura queda
+            recortada por las esquinas redondeadas mientras los dos
+            móviles siguen pudiendo sobresalir por arriba, como en la web
+            de referencia.
+          */}
+          <div className="absolute inset-0 overflow-hidden rounded-[32px]">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary-600 to-primary-700" />
+            <Image
+              src="/landing/banner-texture.png"
+              alt=""
+              width={1100}
+              height={616}
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-10 mix-blend-screen"
+            />
+          </div>
           <div className="relative grid items-center gap-10 lg:grid-cols-2">
             <div className="flex flex-col gap-8">
               <h2 className="max-w-[520px] font-display text-[30px] font-bold leading-tight text-text-inverse sm:text-[36px]">

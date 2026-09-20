@@ -9,8 +9,10 @@ import {
 
 /**
  * Landing pública y login único (spec de diseño
- * `2026-09-20-landing-login-unico-design.md` §7), contra el backend real
- * sembrado con `seed_panel_demo`.
+ * `2026-09-20-landing-login-unico-design.md` §7), con el rediseño
+ * «planes sanos, gente activa» (2026-09-20, brief en
+ * `.superpowers/sdd/2026-09-20-landing-deportiva/`), contra el backend
+ * real sembrado con `seed_panel_demo`.
  *
  * Dos logins de UI en todo el fichero (límite de 5/60 s por IP en local,
  * `users/rate_limiting.py`; `pop.settings_e2e` lo desactiva en CI) y
@@ -23,10 +25,10 @@ import {
  * `resolveArea` la resuelve a `sin-acceso` — es justo la cuenta que tiene
  * que ver «Tu cuenta es de la app».
  *
- * `exact: true` en el enlace «Entrar» de la landing: el `name` de
- * `getByRole` de Playwright empareja por subcadena por defecto, y la
- * portada tiene además «Entrar al panel» — sin `exact` serían dos
- * coincidencias y el modo estricto lo rechazaría.
+ * `exact: true` en el enlace «Entrar»: el `name` de `getByRole` de
+ * Playwright empareja por subcadena por defecto, y el pie tiene además
+ * «Acceso al panel» (otro nombre, pero el criterio se mantiene) — con
+ * `exact` la cabecera es la única coincidencia posible.
  */
 test("sin sesión, la raíz muestra la landing y «Entrar» lleva al login", async ({
   page,
@@ -34,19 +36,43 @@ test("sin sesión, la raíz muestra la landing y «Entrar» lleva al login", asy
   await page.goto("/");
 
   await expect(
-    page.getByRole("heading", {
-      level: 1,
-      name: "Planes, comunidades y actividades para vivir bien acompañado",
-    }),
+    page.getByRole("heading", { level: 1, name: "Planes sanos, gente activa." }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { level: 3, name: "Asociaciones y ONG" }),
+    page.getByRole("heading", { level: 2, name: "Funcionalidades" }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "100 % libre de alcohol y drogas" }),
+  ).toBeVisible();
+
+  // Las insignias de tienda salen sin declarar ninguna variable de
+  // entorno: `storeLinks()` cae a las fichas reales publicadas.
+  await expect(
+    page.getByRole("link", { name: "Descargar en el App Store" }).first(),
+  ).toHaveAttribute("href", /apps\.apple\.com/);
 
   await page.getByRole("link", { name: "Entrar", exact: true }).click();
 
   await expect(page).toHaveURL(/\/login/);
   await expect(page.getByRole("button", { name: "Entrar" })).toBeVisible();
+});
+
+test("el conmutador de la portada cambia la frase sin recargar", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(
+    page.getByText("Rutas, entrenos y quedadas al aire libre, cerca de ti."),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Comunidades" }).click();
+
+  await expect(
+    page.getByText("Grupos por deporte y afición, con sus propias normas."),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Comunidades" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
 });
 
 test("una cuenta sin rol de panel ve «Tu cuenta es de la app»", async ({
