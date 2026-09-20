@@ -15,6 +15,15 @@
  * y unas tarjetas de compartir apuntando a `localhost` — tirar la página
  * pública entera por eso sería peor que el problema que resuelve.
  *
+ * Lo que sí hace, desde la revisión final de la rama (hallazgos I1/I2):
+ * **validar** el valor y **avisar en voz alta una sola vez** cuando falta
+ * o no sirve, en vez de devolverlo tal cual. `app/page.tsx` construye un
+ * `new URL(siteUrl())` para `metadataBase`, y ese constructor **lanza**
+ * con cualquier cosa que no sea una URL absoluta (`popyplan.com`,
+ * `https://`): como `/` es dinámica, el fallo no lo vería `next build`,
+ * lo verían en producción todos los visitantes anónimos y todos los
+ * rastreadores, con un 500 en la única página pública del producto.
+ *
  * **`NEXT_PUBLIC_*` se incrusta en el bundle al construir**: quien
  * despliegue tiene que declarar estas cuatro variables en el entorno de
  * `next build`, no solo en el de ejecución (`.env.example` lo dice al
@@ -23,20 +32,83 @@
 const DEFAULT_SITE_URL = "http://localhost:3100";
 const DEFAULT_CONTACT_EMAIL = "hola@popyplan.com";
 
-/** URL absoluta del sitio público, **sin** barra final. */
-export function siteUrl(): string {
-  const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+/**
+ * Comprobación mínima de un correo: algo, una arroba, algo con punto.
+ * No pretende validar el RFC 5322 (imposible con una expresión regular
+ * razonable) — solo descartar un valor que **no** puede funcionar en un
+ * `mailto:`, como una frase con espacios o una cadena sin arroba.
+ */
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
+/**
+ * Un solo aviso por proceso (I2): estas funciones se llaman en cada
+ * petición de `/` (ruta dinámica), así que sin esta bandera un
+ * despliegue mal configurado escribiría una línea de log por visita.
+ */
+let alreadyWarned = false;
 
-  return DEFAULT_SITE_URL;
+/**
+ * Solo en producción: en desarrollo y en los tests el valor por defecto
+ * (`localhost:3100`) es justo el correcto, y avisar sería ruido en cada
+ * arranque.
+ */
+function warnInProduction(message: string): void {
+  if (process.env.NODE_ENV !== "production" || alreadyWarned) return;
+  alreadyWarned = true;
+  console.warn(message);
 }
 
-/** Destino del `mailto:` de la landing (spec §2, decisión 5). */
+/** La URL parseada, o `null` si no es una URL absoluta de `protocols`. */
+function parseUrl(value: string, protocols: readonly string[]): URL | null {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return null;
+  }
+  return protocols.includes(url.protocol) ? url : null;
+}
+
+/**
+ * URL absoluta del sitio público, **sin** barra final. **Nunca lanza y
+ * nunca devuelve algo que `new URL()` no acepte** (I1): quien la llama
+ * puede construir un `metadataBase` con el resultado sin envolverlo en
+ * un `try`.
+ */
+export function siteUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/+$/, "");
+
+  if (!configured) {
+    warnInProduction(
+      `NEXT_PUBLIC_SITE_URL no está declarada: el sitemap y las tarjetas de compartir apuntarán a ${DEFAULT_SITE_URL}. Decláralo en el entorno de "next build".`,
+    );
+    return DEFAULT_SITE_URL;
+  }
+
+  if (!parseUrl(configured, ["http:", "https:"])) {
+    warnInProduction(
+      `NEXT_PUBLIC_SITE_URL no es una URL absoluta http(s) ("${configured}"): se usa ${DEFAULT_SITE_URL}.`,
+    );
+    return DEFAULT_SITE_URL;
+  }
+
+  return configured;
+}
+
+/**
+ * Destino del `mailto:` de la landing (spec §2, decisión 5). Un valor que
+ * no parezca un correo se descarta (M9): acabaría en un `href` que
+ * ningún cliente de correo puede abrir, y un valor con espacios o con
+ * `&cc=` sería además una vía de inyectar cabeceras de correo.
+ */
 export function contactEmail(): string {
-  return process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || DEFAULT_CONTACT_EMAIL;
+  const configured = process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim();
+
+  if (configured && EMAIL_PATTERN.test(configured)) {
+    return configured;
+  }
+
+  return DEFAULT_CONTACT_EMAIL;
 }
 
 export interface StoreUrls {
@@ -45,14 +117,23 @@ export interface StoreUrls {
 }
 
 /**
- * Fichas de la app en las tiendas. Una variable ausente o vacía devuelve
- * `null` y su botón **no se pinta** (`components/landing/StoreLinks.tsx`):
- * enlazar a una ficha que todavía no existe es peor que no ofrecer el
- * botón.
+ * Fichas de la app en las tiendas. Una variable ausente, vacía o que no
+ * sea una URL **`https:`** devuelve `null` y su botón **no se pinta**
+ * (`components/landing/StoreLinks.tsx`): enlazar a una ficha que todavía
+ * no existe es peor que no ofrecer el botón, y estos dos valores acaban
+ * directamente en un `href` — el precedente del repo para eso es
+ * `lib/config/imagePatterns.ts::isAllowedImageSrc`.
  */
 export function storeLinks(): StoreUrls {
   return {
-    appStore: process.env.NEXT_PUBLIC_APP_STORE_URL?.trim() || null,
-    playStore: process.env.NEXT_PUBLIC_PLAY_STORE_URL?.trim() || null,
+    appStore: httpsUrlOrNull(process.env.NEXT_PUBLIC_APP_STORE_URL),
+    playStore: httpsUrlOrNull(process.env.NEXT_PUBLIC_PLAY_STORE_URL),
   };
+}
+
+function httpsUrlOrNull(value: string | undefined): string | null {
+  const trimmed = value?.trim();
+  if (!trimmed) return null;
+
+  return parseUrl(trimmed, ["https:"]) ? trimmed : null;
 }

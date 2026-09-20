@@ -147,6 +147,18 @@ describe("Home (app/page.tsx)", () => {
     expect(metadata.metadataBase?.href).toBe("https://popyplan.com/");
   });
 
+  it("con un NEXT_PUBLIC_SITE_URL mal escrito no lanza: cae al valor por defecto", async () => {
+    // `new URL("popyplan.com")` lanza, y `generateMetadata` corre en cada
+    // petición de `/` (ruta dinámica): sin la validación de `siteUrl()`
+    // esto era un 500 para todo visitante anónimo (hallazgo I1).
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "popyplan.com");
+
+    const metadata = await generateMetadata();
+
+    expect(metadata.metadataBase?.href).toBe("http://localhost:3100/");
+    expect(metadata.openGraph).toMatchObject({ url: "http://localhost:3100" });
+  });
+
   it("con rol de plataforma redirige a /plataforma", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",
