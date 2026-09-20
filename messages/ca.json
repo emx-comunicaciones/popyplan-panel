@@ -286,8 +286,8 @@
       "ctaPanel": "Entra al tauler"
     },
     "stores": {
-      "appStore": "Descarrega'l a l'App Store",
-      "playStore": "Aconsegueix-lo a Google Play"
+      "appStore": "Descarrega-la a l'App Store",
+      "playStore": "Aconsegueix-la a Google Play"
     },
     "audiences": {
       "title": "Per a qui és",
@@ -313,7 +313,7 @@
         "title": "Administracions públiques",
         "benefits": [
           "Observatori del teu territori, també on encara no hi ha activitat.",
-          "Xarxa finançada: què fan les entitats que finances.",
+          "Xarxa finançada: què fan les entitats a les quals dones suport.",
           "Comparatives entre períodes i informes en CSV i PDF."
         ],
         "cta": "Escriu-nos per a una administració"

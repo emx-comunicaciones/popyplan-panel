@@ -49,8 +49,12 @@ export function Audiences() {
                 {t(`${audience}.title`)}
               </h3>
               <ul className="mb-3 flex list-disc flex-col gap-1 pl-4 text-sm text-text-secondary">
-                {benefits.map((benefit) => (
-                  <li key={benefit}>{benefit}</li>
+                {benefits.map((benefit, index) => (
+                  // La clave es el índice a propósito: la lista es
+                  // estática y nunca se reordena, y dos beneficios que
+                  // empiecen igual en `eu`/`ca` darían claves repetidas
+                  // si se usara el texto traducido.
+                  <li key={index}>{benefit}</li>
                 ))}
               </ul>
               {audience === "people" ? (

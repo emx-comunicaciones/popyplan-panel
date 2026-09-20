@@ -12,8 +12,11 @@ export function HowItWorks() {
           {t("title")}
         </h2>
         <ol className="flex list-decimal flex-col gap-2 pl-4 text-sm text-text-secondary">
-          {steps.map((step) => (
-            <li key={step}>{step}</li>
+          {steps.map((step, index) => (
+            // Índice y no el texto traducido: lista estática que nunca
+            // se reordena, y dos pasos idénticos en cualquiera de los
+            // cuatro catálogos darían una clave repetida.
+            <li key={index}>{step}</li>
           ))}
         </ol>
       </div>

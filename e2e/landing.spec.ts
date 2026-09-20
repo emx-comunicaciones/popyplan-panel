@@ -40,14 +40,17 @@ test("sin sesión, la raíz muestra la landing y «Entrar» lleva al login", asy
   await expect(page.getByRole("button", { name: "Entrar" })).toBeVisible();
 });
 
-test("una cuenta sin rol de panel ve «Tu cuenta es de la app»", async ({ page }) => {
+test("una cuenta sin rol de panel ve «Tu cuenta es de la app»", async ({ page, baseURL }) => {
   await page.goto("/login");
 
   await page.getByLabel("Usuario o email").fill(DEMO_PERSON_EMAIL);
   await page.getByLabel("Contraseña").fill(DEMO_PASSWORD);
   await page.getByRole("button", { name: "Entrar" }).click();
 
-  await expect(page).toHaveURL(/\/$/);
+  // La raíz exacta, no «cualquier URL acabada en barra» (M13): un
+  // `/elegir-entidad/` inesperado casaba con `/\/$/` y el test seguía
+  // verde hasta la aserción siguiente.
+  await expect(page).toHaveURL(new RegExp(`^${baseURL}/?$`));
   await expect(
     page.getByRole("heading", { level: 1, name: "Tu cuenta es de la app Popyplan" }),
   ).toBeVisible();

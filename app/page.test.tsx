@@ -250,6 +250,16 @@ describe("Home (app/page.tsx)", () => {
     expect(screen.getByRole("button", { name: "Cerrar sesión" })).toBeInTheDocument();
   });
 
+  it("sin ningún acceso ofrece cambiar de idioma desde su cabecera", async () => {
+    // Era la única pantalla del producto sin selector de idioma (M10), y
+    // justo la que ve quien quizá no lee el idioma que le ha tocado.
+    getServerSessionMock.mockResolvedValue(sessionWithoutAccess());
+
+    render(await Home());
+
+    expect(screen.getByLabelText("Idioma")).toBeInTheDocument();
+  });
+
   it("sin tiendas configuradas no pinta ningún botón de tienda", async () => {
     getServerSessionMock.mockResolvedValue(sessionWithoutAccess());
     vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", undefined);

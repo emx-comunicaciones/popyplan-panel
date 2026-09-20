@@ -323,7 +323,7 @@
         "benefits": [
           "Komunitate pribatuak zurekin lan egiten duten pertsonentzat.",
           "Zure material propioak liburutegian, hartzailearen arabera.",
-          "Inoiz ez datu klinikorik: Popyplan ez da historia kliniko bat."
+          "Inoiz ez datu klinikorik: Popyplan ez da historia klinikoa."
         ],
         "cta": "Idatzi iezaguzu erabilera profesionalerako"
       }
@@ -331,7 +331,7 @@
     "how": {
       "title": "Nola funtzionatzen duen",
       "steps": [
-        "Erakundeak pertsonak gonbidatzen ditu bere gunera; inork ez du besteren konturik sortzen.",
+        "Erakundeak pertsonak gonbidatzen ditu bere gunera; inork ez du inoren konturik sortzen.",
         "Jarduera bakoitza argitaratzen da, bete egiten da eta zerrenda aplikazioko QR kodearekin pasatzen da.",
         "Panelak gertatutakoa laburbiltzen du, modu agregatuan eta txosten baterako prest."
       ]
@@ -343,7 +343,7 @@
         "Popyplanek ez du datu klinikorik ez diagnostikorik gordetzen.",
         "Inkestak anonimoak dira eta beti modu agregatuan ikusten dira.",
         "Ez da bostetik beherako pertsona-zenbaketarik erakusten.",
-        "Inork ez du besteren senide denik adierazten: guneak bereizita daude.",
+        "Inork ez du inoren senide denik adierazten: guneak bereizita daude.",
         "Dena gaztelaniaz, euskaraz eta katalanez."
       ]
     },

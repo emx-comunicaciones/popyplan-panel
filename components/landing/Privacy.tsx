@@ -16,8 +16,10 @@ export function Privacy() {
         {t("title")}
       </h2>
       <ul className="flex list-disc flex-col gap-1 pl-4 text-sm text-text-secondary">
-        {items.map((item) => (
-          <li key={item}>{item}</li>
+        {items.map((item, index) => (
+          // Índice y no el texto traducido, mismo motivo que en
+          // `Audiences`/`HowItWorks`: la lista es estática.
+          <li key={index}>{item}</li>
         ))}
       </ul>
     </section>
