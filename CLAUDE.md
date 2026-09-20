@@ -2678,6 +2678,117 @@ la cuenta. En `/login` el selector sigue suelto (no hay cuenta). Los tres
 `layout.test.tsx` comprueban el botón de cuenta; `e2e/idioma.spec.ts`
 abre el menú antes de cambiar de idioma dentro del área.
 
+## Landing pública y login único (2026-09-20)
+
+Spec de diseño: `docs/superpowers/specs/2026-09-20-landing-login-unico-design.md`
+(encargo del propietario 2026-09-18: «una web de presentación… y que todo
+el software tenga un mismo login»). Plan de 6 tareas:
+`docs/superpowers/plans/2026-09-20-landing-login-unico.md`.
+
+**`/` deja de redirigir al login.** `app/page.tsx` sigue siendo el
+repartidor de áreas, pero con dos ramas de render más:
+
+- **Sin sesión** → `<Landing />` (`components/landing/Landing.tsx`), la web
+  pública. Enfoque 1 de la spec: se descartó mover el resolutor a `/entrar`
+  porque obligaba a tocar los cinco `redirect("/")` del panel y el
+  `returnTo` del login por una ventaja marginal.
+- **Con sesión** → `resolveArea` como siempre (`/plataforma`,
+  `/entidad/{slug}`, `/paraguas/{slug}`, `/elegir-entidad`).
+- **Con sesión y `sin-acceso`** → `<AppAccountScreen />` («Tu cuenta es de
+  la app Popyplan», spec §5), que sustituye al `ErrorState` «No tienes
+  acceso a ningún área del panel». Las claves `pages.home.noAccess*` salen
+  de los cuatro catálogos al quedarse sin consumidor.
+
+**`middleware.ts`: la raíz sigue en el `matcher` pero ya no manda al
+login.** Con cookie se refresca la sesión igual que siempre (hallazgo A2:
+`getServerSession` solo lee la cabecera interna que pone el middleware, así
+que sin esto el reparto por área no funciona); **sin** cookie o con el
+refresh rechazado, `/` pasa por `passThroughWithoutAccess` en vez de
+`redirectToLogin` — incluso en una navegación de documento. `isPublicRoot`
+es la única condición nueva; `redirectToLogin` pierde su excepción
+`pathname !== "/"` (la raíz ya nunca llega ahí) y guarda siempre el
+`returnTo`. Ninguna otra ruta del `matcher` cambia.
+
+**Componentes** (`components/landing/`, todos Server Components
+**síncronos** que traducen con `useTranslations` de next-intl):
+`Landing` compone `LandingHeader` (marca, `LanguageSwitcher` y «Entrar»),
+`Hero` (portada, `<h1>`, fondo decorativo `primary-100`), `Audiences`
+(cuatro tarjetas: personas, asociaciones, administraciones,
+profesionales), `HowItWorks`, `Privacy`, `Contact` y el `Footer` común.
+`StoreLinks` pinta los botones de tienda y devuelve `null` —etiqueta
+incluida— si no hay ninguna URL configurada. `AppAccountScreen` reutiliza
+`StoreLinks` y `LogoutButton`.
+**Ninguno puede ser `async`**: Testing Library renderiza el árbol que
+devuelve `app/page.tsx` con `react-dom/client`, que no resuelve promesas de
+componente — por eso traducen con `useTranslations` (soportado en RSC) y no
+con `getTranslations`, que solo usan `app/page.tsx` y su `generateMetadata`.
+
+**Contenido y textos**: namespace `landing.*` en los cuatro catálogos
+(`meta`, `header`, `hero`, `stores`, `audiences`, `how`, `privacy`,
+`contact`, `appAccount`), con los arrays (`benefits`, `steps`, `items`)
+leídos con `t.raw(...) as string[]`, mismo patrón que
+`components/help/PageHelp.tsx`. Vocabulario neutro (la app es para gente
+sana; la intervención es una capa opcional) y ninguna cifra ni cliente
+inventados: los beneficios describen lo que el panel ya hace. El bloque de
+privacidad enumera invariantes reales (sin teléfonos en el panel, sin datos
+clínicos, encuestas anónimas y agregadas, umbral de 5, nadie declara ser
+familiar de nadie, tres idiomas). Sin botón «?» de ayuda: está fuera de las
+tres áreas (decisión 3 de «ayuda por pantalla»), y `lib/help/pageHelp.ts`
+no lleva entrada de la raíz.
+
+**Contacto**: `mailto:` (decisión 5 de la spec; el formulario guardado en
+plataforma es de la fase de alta desde la web). `components/landing/
+mailto.ts::mailtoHref` codifica el asunto con `encodeURIComponent` — es
+texto traducido, con espacios y tildes. Cada tarjeta de público tiene su
+asunto (`landing.contact.subject.*`) y el bloque «Habla con nosotros» usa
+el genérico.
+
+**Configuración** (`lib/config/site.ts`, mismo patrón de lectura que
+`lib/api/baseUrl.ts`: `process.env` dentro de la función, nunca a nivel de
+módulo): `siteUrl()` (`NEXT_PUBLIC_SITE_URL`, sin barra final, por defecto
+`http://localhost:3100`), `contactEmail()` (`NEXT_PUBLIC_CONTACT_EMAIL`,
+por defecto `hola@popyplan.com`) y `storeLinks()`
+(`NEXT_PUBLIC_APP_STORE_URL`/`NEXT_PUBLIC_PLAY_STORE_URL`, vacías → `null`
+→ botón no pintado). **A diferencia de `apiBaseUrl()`, no lanza en
+producción**: sin `NEXT_PUBLIC_SITE_URL` la landing se pinta igual y lo
+único que sale mal es el sitemap y las tarjetas de compartir. Las cuatro
+son `NEXT_PUBLIC_*`, así que se incrustan **en el build**, no en runtime
+(`.env.example` lo dice al lado de cada una).
+
+**SEO** (spec §6): `app/robots.ts` permite `/` y `/accesibilidad` y
+prohíbe `/entidad`, `/paraguas`, `/plataforma`, `/elegir-entidad`,
+`/login` y `/api`; `app/sitemap.ts` lista las dos rutas públicas (sin
+`lastModified`: no hay fecha real que dar). `app/page.tsx::generateMetadata`
+usa `title.absolute` —el layout raíz aplica la plantilla `"%s · Popyplan"`
+y el título ya lleva la marca— más `openGraph` (`images: ["/og.png"]`,
+`url: siteUrl()`, `locale` en forma `es_ES` derivada de
+`lib/i18n/locale.ts`) y `twitter.card = "summary_large_image"`.
+`public/og.png` (1200×630) es hoy **un liso del color de marca**
+(`#0e7c78`): ninguna dependencia instalada rasteriza texto y no se añadió
+una solo para esto; se generó con un script de un solo uso (no commiteado)
+que escribe el PNG con `node:zlib`, y se sustituye cuando haya material
+gráfico de marca.
+
+**Pruebas**: `app/page.test.tsx` cubre los cinco redirects, la landing
+(`h1`, las cuatro tarjetas, «Entrar» → `/login`, `mailto:` con el correo
+por defecto, tiendas ocultas sin variables), la pantalla de cuenta de app y
+`generateMetadata`, más `axe` en los dos estados de render — la raíz entra
+así en la lista de páginas con test de accesibilidad.
+`middleware.test.ts` fija la raíz pública (sin cookie y con el refresh
+rechazado pasa; con refresh válido sigue reenviando el access).
+`lib/config/site.test.ts`, `app/robots.test.ts` y `app/sitemap.test.ts`
+cubren los tres módulos que sí cuentan para el umbral de cobertura.
+`e2e/landing.spec.ts` (dos logins de UI, ninguno de API): la landing sin
+sesión, `panel-demo-asociacion-bidasoa-p01@test.com` (sin rol de panel) en
+«Tu cuenta es de la app», y el titular de Bidasoa que visita `/` con sesión
+y aterriza en su entidad.
+
+**Fuera de alcance** (fases siguientes ya acordadas, spec §9): páginas por
+público (`/asociaciones`, …); formulario de contacto guardado en plataforma
+(«Solicitudes»); alta de entidades desde la web; versión web de la app para
+usuarios finales; material gráfico de marca. Sin cambios en el backend ni en
+el móvil.
+
 ## Comandos
 
 - `npm run dev` / `npm run build` / `npm run start`
@@ -2755,6 +2866,12 @@ en CI lo gate el job `e2e`).
   cerrada, no solo el `npx vitest run --coverage` en verde). El umbral
   fijado sigue en 99,7 porque real menos 0,3 (99,58) queda por debajo,
   así que el ratchet no sube.
+  Tras la landing pública y el login único (2026-09-20, Tareas 1-6):
+  **99,81 %** (2724/2729 líneas, 1946 tests, 195 ficheros — tres ficheros
+  nuevos que sí cuentan para la medición, `lib/config/site.ts`,
+  `app/robots.ts` y `app/sitemap.ts`, los tres con test propio; los
+  componentes de `components/landing/` son `.tsx` y, como el resto del
+  panel, se prueban por comportamiento). El umbral sigue en 99,7.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la
