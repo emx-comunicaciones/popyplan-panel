@@ -757,7 +757,8 @@ Ayuda/Métricas (`safety/services/reports.py::queue` y
   `OrgMembership.public_name`. **La tabla de Referencias no**: `Reference`
   trae el `public_name` de la persona referenciada, pero del referente
   solo `referent: number`, así que `ConfiguracionPanel::ReferentName`
-  resuelve el nombre contra `useOrgMembers` y distingue tres estados
+  resuelve el nombre contra `useOrgMembers` (por el id de **membresía**,
+  ver A-I4 en «Auditoría de integración» abajo) y distingue tres estados
   («Referente…» mientras carga, «Referente no disponible» con la consulta
   en error, «Referente sin nombre» si el equipo está cargado y esa cuenta
   no está). Y solo lo intenta con rol `titular`: el `GET` de equipo es
@@ -3064,6 +3065,20 @@ de la app viven en sus propios repos.
   devuelve a la raíz. Actualizadas las tres audiencias de
   `messages/*.json::help.entidad.{personas,personaFicha,guardia}`, que
   nombraban al dinamizador.
+
+- **`ReferentName` comparaba ids de dos secuencias distintas (A-I4)**
+  (`components/entidad/ConfiguracionPanel.tsx`): `Reference.referent` es
+  el id de la **`OrgMembership`** (`entities/models.py`:
+  `ForeignKey(OrgMembership)`; `docs/schema.yaml::Reference.referent` lo
+  confirma), y la tabla de Referencias lo buscaba en
+  `OrgMembership.user`. En la entidad de demo eso es `referent: 190`
+  contra `{id: 190, user: 11}`: la columna decía siempre «Referente sin
+  nombre». Y podía decir algo peor — el nombre **de otra persona**—
+  cuando el id de membresía de una coincidía con el id de cuenta de otra
+  (dos secuencias de enteros del mismo rango; las membresías de todas las
+  entidades comparten la suya). Ahora compara `m.id ===
+  referentMembershipId` (la prop se llama así para que no vuelva a
+  confundirse), con un test de la colisión.
 
 ## Comandos
 

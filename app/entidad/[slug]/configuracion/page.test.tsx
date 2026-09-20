@@ -436,7 +436,9 @@ describe("EntidadConfiguracionPage", () => {
     } as Reference;
     useOrgReferencesMock.mockReturnValue({ data: [reference], isError: false, error: null });
     useOrgMembersMock.mockReturnValue({
-      data: [buildOrgMembershipFull({ user: 9, role: "referente", public_name: "Ana" })],
+      // `Reference.referent` es el id de la MEMBRESÍA (`id: 9`), no el de
+      // la cuenta (`user: 11`): A-I4.
+      data: [buildOrgMembershipFull({ id: 9, user: 11, role: "referente", public_name: "Ana" })],
       isError: false,
       error: null,
     });
@@ -457,6 +459,30 @@ describe("EntidadConfiguracionPage", () => {
     await user.click(within(dialog).getByRole("button", { name: "Quitar" }));
 
     expect(removeMutate).toHaveBeenCalledWith(42, expect.anything());
+  });
+
+  it("resuelve el referente por el id de su MEMBRESÍA, no por el de su cuenta (A-I4)", async () => {
+    // Caso de colisión real: la membresía 9 (cuenta 11, «Ana») es la
+    // referente de la referencia; la membresía 3 es de la cuenta 9
+    // («Carlos»). Comparando contra `OrgMembership.user` —lo que hacía
+    // el panel— salía «Carlos», el nombre de otra persona.
+    setDefaultMocks();
+    useOrgReferencesMock.mockReturnValue({ data: [REFERENCE], isError: false, error: null });
+    useOrgMembersMock.mockReturnValue({
+      data: [
+        buildOrgMembershipFull({ id: 3, user: 9, role: "moderador", public_name: "Carlos" }),
+        buildOrgMembershipFull({ id: 9, user: 11, role: "referente", public_name: "Ana" }),
+      ],
+      isError: false,
+      error: null,
+    });
+
+    await renderPage();
+
+    expect(screen.getByText("Bea — Referente: Ana")).toBeInTheDocument();
+    // «Carlos» sí aparece en la tabla de Equipo de la misma pestaña; lo
+    // que no puede es figurar como referente de Bea.
+    expect(screen.queryByText("Bea — Referente: Carlos")).not.toBeInTheDocument();
   });
 
   it("mientras carga el equipo, el nombre del referente no se da por perdido", async () => {

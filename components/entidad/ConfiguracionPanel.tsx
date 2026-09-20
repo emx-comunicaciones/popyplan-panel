@@ -474,13 +474,25 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
  * equipo es solo-titular (`entities/permissions.py`) y un `moderador`
  * solo se ganaría un 403 por referencia. Sin nombre se dice «sin
  * nombre», nunca el id (el panel no pinta ids de cuenta, invariante 1/9).
+ *
+ * **Hallazgo A-I4 de la auditoría de integración (2026-09-21)**:
+ * `Reference.referent` es el id de la **`OrgMembership`**, no el de la
+ * cuenta (`entities/models.py`: `ForeignKey(OrgMembership)`, y
+ * `docs/schema.yaml::Reference.referent` lo declara de solo lectura con
+ * el mismo sentido). Esto comparaba contra `OrgMembership.user`, así
+ * que la columna decía siempre «Referente sin nombre» (en la entidad de
+ * demo, `referent: 190` frente a `{id: 190, user: 11}`) y —peor— podía
+ * enseñar el nombre **de otra persona** cuando el id de membresía de una
+ * coincidía con el id de cuenta de otra: las dos secuencias son enteros
+ * del mismo rango y las membresías de todas las entidades comparten
+ * secuencia.
  */
 function ReferentName({
   orgId,
-  referentUserId,
+  referentMembershipId,
 }: {
   orgId: number | string;
-  referentUserId: number;
+  referentMembershipId: number;
 }) {
   const t = useTranslations();
   const members = useOrgMembers(orgId);
@@ -491,7 +503,7 @@ function ReferentName({
   // cargada.
   if (members.isError) return <>{t("entidad.configuracion.referentUnavailable")}</>;
   if (!members.data) return <>{t("entidad.configuracion.referentLoading")}</>;
-  const member = members.data.find((m) => m.user === referentUserId);
+  const member = members.data.find((m) => m.id === referentMembershipId);
   return (
     <>
       {member
@@ -578,7 +590,7 @@ function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam
               <span>
                 {reference.public_name} —{" "}
                 {canSeeTeam ? (
-                  <ReferentName orgId={orgId} referentUserId={reference.referent} />
+                  <ReferentName orgId={orgId} referentMembershipId={reference.referent} />
                 ) : (
                   t("entidad.configuracion.referentNoName")
                 )}
