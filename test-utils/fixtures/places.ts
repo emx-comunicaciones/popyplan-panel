@@ -27,6 +27,7 @@ export function buildPlaceSheet(overrides: Partial<PlaceSheet> = {}): PlaceSheet
       name: "Irun",
       name_local: "Irun",
       comarca_name_es: "Bidasoa",
+      comarca_name_eu: "Bidasoa",
       prov_name: "Gipuzkoa",
       latitude: 43.34,
       longitude: -1.79,

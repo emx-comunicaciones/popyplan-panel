@@ -1440,12 +1440,12 @@ coordinador del bloque: `ccaa_code`/`prov_code`/`comarca_code`, además de
   (sigue nullable a mano: el generado lo marca `string` a secas, pero el
   modelo admite `place=NULL` para una entidad legado, y `allow_null:
   False` del serializer solo bloquea **escribir** `null`, no que un `GET`
-  lo devuelva); y `PlaceSheetPlace` (el esquema documenta mal
-  `PlaceSheet.place` — apunta al `PlaceRef` recortado de
-  `users/profile_serializers.py` por una colisión de nombre de clase con
-  el `PlaceRefSerializer` real de `panel/serializers.py`, que es el que
-  de verdad instancia la vista; confirmado leyendo el backend y con
-  `e2e/territorio.spec.ts` contra el servidor real). `PlaceRow`/
+  lo devuelva). `PlaceSheetPlace` **dejó de ser manual** en el cierre del
+  bloque: el esquema documentaba mal `PlaceSheet.place` (apuntaba al
+  `PlaceRef` recortado de `users/profile_serializers.py` por una colisión
+  de nombre de clase con el serializador real de `panel/serializers.py`),
+  el backend renombró el suyo a `PlaceSheetPlaceSerializer` y el tipo es
+  ya un alias de `components["schemas"]["PlaceSheetPlace"]`. `PlaceRow`/
   `PaginatedPlaceList` se quedan manuales por los mismos quirks ya
   documentados para otros listados paginados de este fichero
   (envoltorio con todos los campos opcionales) y por una nulabilidad de

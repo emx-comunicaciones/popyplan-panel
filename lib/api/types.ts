@@ -867,7 +867,7 @@ export type OrganizationCreateInput = OrganizationCreateRequest;
  * de la página.
  *
  * El esquema regenerado ya trae `components["schemas"]["Place"]` con
- * exactamente estos once campos, así que casi todo podría ser un alias
+ * exactamente estos doce campos, así que casi todo podría ser un alias
  * directo — **salvo `latitude`/`longitude`**, que el generado tipa como
  * `number` a secas. Confirmado contra el backend (`places/models.py`,
  * sin `null=True`; `places/serializers.py::PlaceSerializer` las expone
@@ -916,37 +916,14 @@ export interface PaginatedPlaceList {
 /**
  * El municipio dentro de la ficha de `GET …/territorio/{org}/places/{ine}/`.
  *
- * **Tipo manual, y no por descuido**: el esquema regenerado declara
- * `PlaceSheet.place` como `components["schemas"]["PlaceRef"]`
- * (`ine_code`/`name`/`prov_name`, tres campos), pero es un falso amigo —
- * verificado leyendo el backend, no solo `docs/schema.yaml`.
- * `panel/serializers.py::PlaceRefSerializer` (el que de verdad instancia
- * `panel-territorio-place`, con los ocho campos de aquí abajo) tiene el
- * **mismo nombre de clase** que `users/profile_serializers.py
- * ::PlaceRefSerializer` (el recortado, que usan `events`/`communities`
- * para pintar la sede de una persona); drf-spectacular deduplica
- * componentes por nombre de clase y se quedó con uno solo —el
- * recortado— para las dos rutas. Es un bug de nombres del backend, no
- * del panel: en runtime la vista sigue devolviendo la instancia correcta
- * de `panel.serializers.PlaceRefSerializer`, con los ocho campos
- * (confirmado en `panel/serializers.py:131-141` y en
- * `panel/tests/test_place_sheet.py`), así que el tipo manual sigue
- * siendo la forma real de la respuesta — solo `docs/schema.yaml` la
- * documenta mal. Reportado para que el backend renombre una de las dos
- * clases (ver «Pendientes conocidos» de la sección de territorio).
+ * Alias del esquema generado desde que el backend renombró
+ * `panel.serializers.PlaceRefSerializer` a `PlaceSheetPlaceSerializer`
+ * (colisionaba con `users.profile_serializers.PlaceRefSerializer` y
+ * drf-spectacular fusionaba los dos en un `PlaceRef` de tres campos):
+ * `PlaceSheetPlace` trae ya los ocho campos reales, `comarca_name_eu`
+ * incluido (vacío fuera de Euskadi) y coordenadas siempre numéricas.
  */
-export interface PlaceSheetPlace {
-  ine_code: string;
-  name: string;
-  name_local: string;
-  comarca_name_es: string;
-  /** Nombre en euskera de la comarca (X6 de la revisión final): opcional
-   *  mientras el backend no lo sirva; vacío fuera de Euskadi. */
-  comarca_name_eu?: string;
-  prov_name: string;
-  latitude: number | null;
-  longitude: number | null;
-}
+export type PlaceSheetPlace = components["schemas"]["PlaceSheetPlace"];
 
 /**
  * `GET /api/panel/territorio/{org_id}/places/{ine_code}/?since&until`

@@ -3233,8 +3233,16 @@ export interface paths {
          *     la ficha (`docs/PANEL.md` §15.1). Por eso aquí recibe 403.
          *
          *     La escritura pasa por `entities.services.territory::set_territory`
-         *     (único escritor de `OrgScope`): la vista calcula la unión de lo que
-         *     ya había con lo que se pide y se la pasa como lista de municipios.
+         *     (único escritor de `OrgScope`) con `stamp=False`: la vista calcula
+         *     la unión de lo que ya había con lo que se pide y se la pasa como
+         *     lista de municipios, pero **nunca** estampa `territory_kind`/
+         *     `territory_code` (revisión final de la rama, hallazgo I1) — esos
+         *     dos campos son solo del territorio de una administración
+         *     (`backfill_for`, el `PATCH` de la ficha y `docs/PANEL.md` §15.1
+         *     coinciden en eso; una asociación con `territory_kind='municipios'`
+         *     tras un `POST /scope/` sería un estado que ni un `superadmin`
+         *     podría deshacer, porque el `PATCH` ya rechaza tocar el territorio
+         *     fuera de una administración).
          */
         post: operations["organizations_scope_create"];
         delete?: never;
@@ -9454,7 +9462,7 @@ export interface components {
         };
         /** @description Esquema fijo de `panel-territorio-place` (spec §3.2). */
         PlaceSheet: {
-            place: components["schemas"]["PlaceRef"];
+            place: components["schemas"]["PlaceSheetPlace"];
             events: components["schemas"]["PlaceSheetEvents"];
             people: components["schemas"]["PlaceSheetPeople"];
             attendance: components["schemas"]["PlaceSheetAttendance"];
@@ -9476,6 +9484,22 @@ export interface components {
         PlaceSheetPeople: {
             value: number | null;
             suppressed: boolean;
+        };
+        /**
+         * @description Municipio de la ficha de territorio: identificación y centroide, sin
+         *     ningún dato personal.
+         */
+        PlaceSheetPlace: {
+            ine_code: string;
+            name: string;
+            name_local: string;
+            comarca_name_es: string;
+            comarca_name_eu: string;
+            prov_name: string;
+            /** Format: double */
+            latitude: number;
+            /** Format: double */
+            longitude: number;
         };
         /**
          * @description Categoría de actividad, con sus subcategorías activas anidadas.
