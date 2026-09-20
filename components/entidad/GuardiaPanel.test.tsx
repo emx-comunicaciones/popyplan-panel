@@ -4,12 +4,14 @@ import { describe, expect, it, vi, afterEach } from "vitest";
 import { axe } from "@/test-utils/axe";
 import { buildHelpRequest, buildHelpRequestUserDisplay } from "@/test-utils/fixtures/helpRequest";
 import { buildOrganization } from "@/test-utils/fixtures/organization";
+import { buildOrgMembershipFull } from "@/test-utils/fixtures/orgMembershipFull";
 import { render, screen } from "@/test-utils/render";
 
 const usePendingHelpRequestsMock = vi.hoisted(() => vi.fn());
 const useAcknowledgeHelpRequestMock = vi.hoisted(() => vi.fn());
 const useOrganizationMock = vi.hoisted(() => vi.fn());
 const useUpdateOrganizationMock = vi.hoisted(() => vi.fn());
+const useOrgMembersMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/hooks/usePendingHelpRequests", async () => {
   const actual = await vi.importActual<typeof import("@/hooks/usePendingHelpRequests")>(
@@ -36,6 +38,11 @@ vi.mock("@/hooks/useUpdateOrganization", async () => {
   return { ...actual, useUpdateOrganization: useUpdateOrganizationMock };
 });
 
+vi.mock("@/hooks/useOrgMembers", async () => {
+  const actual = await vi.importActual<typeof import("@/hooks/useOrgMembers")>("@/hooks/useOrgMembers");
+  return { ...actual, useOrgMembers: useOrgMembersMock };
+});
+
 import { GuardiaPanel } from "./GuardiaPanel";
 
 const SLUG = "asociacion-alfaville";
@@ -45,10 +52,16 @@ afterEach(() => {
   useAcknowledgeHelpRequestMock.mockReset();
   useOrganizationMock.mockReset();
   useUpdateOrganizationMock.mockReset();
+  useOrgMembersMock.mockReset();
 });
 
 function mockOrganizationHooks() {
   useOrganizationMock.mockReturnValue({ data: buildOrganization({ id: 7 }) });
+  useOrgMembersMock.mockReturnValue({
+    data: [buildOrgMembershipFull({ id: 1, user: 42, role: "titular", public_name: "Ana" })],
+    isError: false,
+    error: null,
+  });
   useUpdateOrganizationMock.mockReturnValue({
     mutate: vi.fn(),
     isPending: false,
@@ -74,6 +87,7 @@ describe("GuardiaPanel", () => {
   });
 
   it("si la ficha de la entidad falla, los ajustes de guardia lo dicen", () => {
+    useOrgMembersMock.mockReturnValue({ data: [], isError: false, error: null });
     useOrganizationMock.mockReturnValue({
       data: undefined,
       isError: true,
@@ -214,7 +228,7 @@ describe("GuardiaPanel", () => {
     await user.clear(screen.getByLabelText("Teléfono de ayuda"));
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 
-    expect(mutate).toHaveBeenCalledWith({ help_phone: "" });
+    expect(mutate).toHaveBeenCalledWith({ help_phone: "", on_call_user: null });
   });
 
   it("guardar con un 403 (dinamizador sin permiso) muestra el texto traducido de ese kind", async () => {

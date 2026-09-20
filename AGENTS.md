@@ -3080,6 +3080,24 @@ de la app viven en sus propios repos.
   referentMembershipId` (la prop se llama así para que no vuelva a
   confundirse), con un test de la colisión.
 
+- **La entidad ya puede nombrar a su persona de guardia (D-I8)**
+  (`components/entidad/GuardiaPanel.tsx::GuardiaSettings`):
+  `on_call_user` era escribible por API pero ninguna pantalla lo fijaba,
+  y la pista imprimía el **id de cuenta** en crudo («Persona de guardia
+  actual: 8»), contra la regla de no pintar ids de cuenta. Ahora es un
+  `<select>` de `useOrgMembers` con `public_name` (mismo patrón que el
+  select de referente de `AddPersonDialog`), y se guarda junto al
+  teléfono en el **mismo** `PATCH` — los dos campos van por la misma
+  lista blanca solo-titular (`entities/viewsets.py::update` exige
+  `equipo`), así que separarlos en dos peticiones no tenía sentido.
+  Vaciarla manda `on_call_user: null` (`null=True`/`SET_NULL`), no cadena
+  vacía como el teléfono. El `GET .../members/` es también solo-titular,
+  así que con `moderador` el 403 **no** rompe la pantalla: no se pinta el
+  selector, se dice «Solo el titular puede ver y cambiar la persona de
+  guardia.» y el teléfono se sigue pudiendo intentar guardar. Claves
+  nuevas `entidad.guardia.{onCallLabel,onCallLoading,onCallOnlyTitular}`
+  en los cuatro catálogos; `onCallHint` desaparece.
+
 ## Comandos
 
 - `npm run dev` / `npm run build` / `npm run start`

@@ -1,11 +1,12 @@
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildHelpRequest } from "@/test-utils/fixtures/helpRequest";
 import { buildOrganization } from "@/test-utils/fixtures/organization";
+import { buildOrgMembershipFull } from "@/test-utils/fixtures/orgMembershipFull";
 
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 const usePendingHelpRequestsMock = vi.hoisted(() => vi.fn());
@@ -16,6 +17,7 @@ const useUpdateOrganizationMock = vi.hoisted(() => vi.fn());
 // mira es la persona de guardia (D-I8, `lib/auth/organization.ts
 // ::isOnCallUser`): sin guardia nombrada, el menú manda.
 const serverFetchMock = vi.hoisted(() => vi.fn());
+const useOrgMembersMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("@/lib/api/serverFetch", () => ({ serverFetch: serverFetchMock }));
@@ -30,6 +32,10 @@ vi.mock("@/hooks/useAcknowledgeHelpRequest", () => ({
 }));
 vi.mock("@/hooks/useOrganization", () => ({ useOrganization: useOrganizationMock }));
 vi.mock("@/hooks/useUpdateOrganization", () => ({ useUpdateOrganization: useUpdateOrganizationMock }));
+vi.mock("@/hooks/useOrgMembers", async () => {
+  const actual = await vi.importActual<typeof import("@/hooks/useOrgMembers")>("@/hooks/useOrgMembers");
+  return { ...actual, useOrgMembers: useOrgMembersMock };
+});
 
 import EntidadGuardiaPage, { generateMetadata } from "./page";
 
@@ -44,6 +50,14 @@ afterEach(() => {
   useOrganizationMock.mockReset();
   useUpdateOrganizationMock.mockReset();
   serverFetchMock.mockReset();
+  useOrgMembersMock.mockReset();
+});
+
+// El selector de persona de guardia sale del equipo de la entidad
+// (solo-titular): por defecto, un equipo vacío; cada test que se ocupe de
+// él lo sobrescribe.
+beforeEach(() => {
+  useOrgMembersMock.mockReturnValue({ data: [], isError: false, error: null });
 });
 
 async function renderPage(role = "titular", slug = "alfaville", onCallUser: number | null = null) {
@@ -126,7 +140,110 @@ describe("EntidadGuardiaPage", () => {
     await user.type(input, "+34611111111");
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 
-    expect(updateMutate).toHaveBeenCalledWith({ help_phone: "+34611111111" });
+    // Los dos campos de la lista blanca solo-titular viajan en el mismo
+    // `PATCH` (D-I8): sin guardia elegida, `on_call_user` es `null`
+    // (el campo es `null=True`/`SET_NULL`, no `blank`).
+    expect(updateMutate).toHaveBeenCalledWith({ help_phone: "+34611111111", on_call_user: null });
+  });
+
+  it("la persona de guardia se elige por nombre, nunca por id (D-I8)", async () => {
+    usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
+    useOrganizationMock.mockReturnValue({
+      data: buildOrganization({ help_phone: "+34600000009", on_call_user: 11 }),
+      isError: false,
+      error: null,
+    });
+    useOrgMembersMock.mockReturnValue({
+      data: [
+        buildOrgMembershipFull({ id: 1, user: 11, role: "titular", public_name: "Ana" }),
+        buildOrgMembershipFull({ id: 2, user: 12, role: "referente", public_name: "Bea" }),
+      ],
+      isError: false,
+      error: null,
+    });
+    const updateMutate = vi.fn();
+    useUpdateOrganizationMock.mockReturnValue({
+      mutate: updateMutate,
+      isPending: false,
+      isError: false,
+      isSuccess: false,
+    });
+    const user = userEvent.setup();
+
+    await renderPage();
+
+    const select = screen.getByLabelText("Persona de guardia");
+    // La guardia actual se lee por su nombre, no como «Persona de
+    // guardia actual: 11».
+    expect(select).toHaveValue("11");
+    expect(screen.queryByText(/: 11/)).not.toBeInTheDocument();
+
+    await user.selectOptions(select, "12");
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(updateMutate).toHaveBeenCalledWith({
+      help_phone: "+34600000009",
+      on_call_user: 12,
+    });
+  });
+
+  it("«Sin asignar» vacía la guardia con null, no con cadena vacía", async () => {
+    usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
+    useOrganizationMock.mockReturnValue({
+      data: buildOrganization({ help_phone: "", on_call_user: 11 }),
+      isError: false,
+      error: null,
+    });
+    useOrgMembersMock.mockReturnValue({
+      data: [buildOrgMembershipFull({ id: 1, user: 11, public_name: "Ana" })],
+      isError: false,
+      error: null,
+    });
+    const updateMutate = vi.fn();
+    useUpdateOrganizationMock.mockReturnValue({
+      mutate: updateMutate,
+      isPending: false,
+      isError: false,
+      isSuccess: false,
+    });
+    const user = userEvent.setup();
+
+    await renderPage();
+
+    await user.selectOptions(screen.getByLabelText("Persona de guardia"), "");
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(updateMutate).toHaveBeenCalledWith({ help_phone: "", on_call_user: null });
+  });
+
+  it("el 403 solo-titular del equipo no rompe la pantalla: dice quién puede cambiarla", async () => {
+    const { OrgMembersError } = await import("@/hooks/useOrgMembers");
+    usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
+    useOrganizationMock.mockReturnValue({
+      data: buildOrganization({ on_call_user: 11 }),
+      isError: false,
+      error: null,
+    });
+    useOrgMembersMock.mockReturnValue({
+      data: undefined,
+      isError: true,
+      error: new OrgMembersError("sin_acceso", "Solo el titular puede ver el equipo de la entidad."),
+    });
+    useUpdateOrganizationMock.mockReturnValue(idleMutation());
+
+    await renderPage("moderador");
+
+    expect(screen.queryByLabelText("Persona de guardia")).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Solo el titular puede ver y cambiar la persona de guardia."),
+    ).toBeInTheDocument();
+    // El id de cuenta de la guardia no se pinta nunca.
+    expect(screen.queryByText(/11/)).not.toBeInTheDocument();
+    // El teléfono de ayuda se sigue pudiendo guardar.
+    expect(screen.getByLabelText("Teléfono de ayuda")).toBeInTheDocument();
   });
 
   it("sin avisos muestra el estado vacío", async () => {

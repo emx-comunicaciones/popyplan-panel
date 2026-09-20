@@ -15,6 +15,7 @@ import {
 } from "@/hooks/useAcknowledgeHelpRequest";
 import { usePendingHelpRequests } from "@/hooks/usePendingHelpRequests";
 import { useOrganization } from "@/hooks/useOrganization";
+import { useOrgMembers, type OrgMembersErrorKind } from "@/hooks/useOrgMembers";
 import { useUpdateOrganization, type UpdateOrganizationErrorKind } from "@/hooks/useUpdateOrganization";
 import type { HelpRequestRow } from "@/lib/api/types";
 import { NO_PHONE_NOTICE_KEY } from "@/lib/help/noPhoneNotice";
@@ -39,6 +40,20 @@ const UPDATE_ORGANIZATION_ERROR_KEYS: Record<UpdateOrganizationErrorKind, string
   invalido: "errors.updateOrganization.invalido",
   sin_permiso: "errors.updateOrganization.sinPermiso",
   desconocido: "errors.updateOrganization.desconocido",
+};
+
+// El equipo (`GET /api/organizations/{id}/members/`) es solo-titular
+// (`entities/permissions.py`, `'equipo': {'titular'}`), igual que el
+// `PATCH` que fija la guardia: un `moderador` recibe 403 en las dos
+// cosas. El 403 no se pinta como error de página — se dice quién puede
+// hacerlo, igual que `ConfiguracionPanel` con la pestaña Equipo.
+const ORG_MEMBERS_ERROR_KEYS: Record<OrgMembersErrorKind, string> = {
+  // `invalido` solo lo producen el alta y la baja de equipo, nunca la
+  // lectura que usa esta pantalla: cae al genérico a propósito, sin
+  // inventar una clave de catálogo sin uso real.
+  invalido: "errors.orgMembers.desconocido",
+  sin_acceso: "entidad.guardia.onCallOnlyTitular",
+  desconocido: "errors.orgMembers.desconocido",
 };
 
 function formatDateTime(iso: string): string {
@@ -130,11 +145,27 @@ function HelpRequestCard({
   );
 }
 
+/**
+ * Ajustes de guardia: teléfono de ayuda y **persona de guardia**
+ * (`on_call_user`).
+ *
+ * **Hallazgo D-I8 de la auditoría de integración (2026-09-21)**: el
+ * campo era escribible desde la API pero ninguna pantalla lo fijaba, y
+ * la pista de aquí abajo imprimía el **id de cuenta** en crudo
+ * («Persona de guardia actual: 8»), contra la regla del panel de no
+ * pintar ids de cuenta. Ahora es un `<select>` de `useOrgMembers` con
+ * `public_name`, mismo patrón que el select de referente de
+ * `components/people/AddPersonDialog.tsx`, y se guarda junto al teléfono
+ * en el mismo `PATCH` (los dos campos van por la misma lista blanca
+ * solo-titular, así que no tiene sentido separarlos en dos peticiones).
+ */
 function GuardiaSettings({ orgId }: { orgId: number | string }) {
   const t = useTranslations();
   const organization = useOrganization(orgId);
+  const members = useOrgMembers(orgId);
   const updateOrganization = useUpdateOrganization(orgId);
   const [helpPhone, setHelpPhone] = useState<string | null>(null);
+  const [onCall, setOnCall] = useState<string | null>(null);
 
   // Un fallo de la ficha dejaba la sección entera en blanco, sin decir
   // nada: quien entra no sabe si la entidad no tiene teléfono de guardia
@@ -152,14 +183,24 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
   if (!organization.data) return null;
 
   const currentHelpPhone = helpPhone ?? organization.data.help_phone ?? "";
+  // `on_call_user` es el id de **cuenta** (`entities/models.py`:
+  // `ForeignKey(AUTH_USER_MODEL)`, validado contra las membresías de la
+  // entidad), así que el `value` de cada opción es `membership.user`.
+  const currentOnCall =
+    onCall ?? (organization.data.on_call_user != null ? String(organization.data.on_call_user) : "");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    // Cadena vacía (no `null`) es el valor que limpia el campo: el modelo
-    // real es `CharField(blank=True, default='')` (`entities/models.py`,
-    // migración 0003) y `docs/schema.yaml` lo tipa `type: string`, sin
-    // nullable — DRF rechaza `null` con 400. Verificado contra el backend.
-    updateOrganization.mutate({ help_phone: currentHelpPhone });
+    // Cadena vacía (no `null`) es el valor que limpia el teléfono: el
+    // modelo real es `CharField(blank=True, default='')`
+    // (`entities/models.py`, migración 0003) y `docs/schema.yaml` lo tipa
+    // `type: string`, sin nullable — DRF rechaza `null` con 400.
+    // Verificado contra el backend. `on_call_user` sí es nullable
+    // (`null=True`, `SET_NULL`): vaciarlo es `null`, no cadena vacía.
+    updateOrganization.mutate({
+      help_phone: currentHelpPhone,
+      on_call_user: currentOnCall ? Number(currentOnCall) : null,
+    });
   }
 
   return (
@@ -177,15 +218,41 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
             className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
+        {members.data ? (
+          <div>
+            <label htmlFor="guardia-on-call" className="mb-1 block text-sm font-medium text-text-form">
+              {t("entidad.guardia.onCallLabel")}
+            </label>
+            <select
+              id="guardia-on-call"
+              value={currentOnCall}
+              onChange={(event) => setOnCall(event.target.value)}
+              className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
+            >
+              <option value="">{t("entidad.guardia.onCallUnassigned")}</option>
+              {members.data.map((member) => (
+                <option key={member.id} value={member.user}>
+                  {member.public_name}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
         <Button type="submit" disabled={updateOrganization.isPending}>
           {t("common.save")}
         </Button>
       </form>
-      <p className="mt-2 text-xs text-text-secondary">
-        {t("entidad.guardia.onCallHint", {
-          onCall: organization.data.on_call_user ?? t("entidad.guardia.onCallUnassigned"),
-        })}
-      </p>
+      {/* Sin el equipo cargado no se puede ofrecer el selector ni
+          resolver el nombre de quien está de guardia — y el id crudo no
+          se pinta nunca (invariante 1/9). Se dice qué pasa, que es lo que
+          hace el resto del panel con una consulta auxiliar caída (B15). */}
+      {members.isError ? (
+        <p role="alert" className="mt-2 text-sm text-text-secondary">
+          {errorKindText(members.error, ORG_MEMBERS_ERROR_KEYS, t, "errors.orgMembers.desconocido")}
+        </p>
+      ) : !members.data ? (
+        <p className="mt-2 text-sm text-text-secondary">{t("entidad.guardia.onCallLoading")}</p>
+      ) : null}
       {updateOrganization.isError ? (
         <p role="alert" className="mt-2 text-sm text-error">
           {errorKindText(
@@ -206,12 +273,11 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
 /**
  * Guardia de la entidad (tarea W4a, `docs/SEGURIDAD_Y_MODERACION.md` §5):
  * avisos de «hoy lo llevo mal» pendientes, con «He contactado»
- * (`acknowledge`), y el teléfono de ayuda de la entidad
- * (`PATCH .../organizations/{id}/ {help_phone}`). Fijar `on_call_user`
- * (persona de guardia) exige un id de usuario que hoy no hay forma de
- * buscar desde el panel (`GET /api/users/users/` es solo para
- * `IsAdminUser`) — ver «Desviaciones» del informe. Cada aviso enlaza a la
- * ficha de la persona (`/entidad/{slug}/personas/{userId}`) solo si
+ * (`acknowledge`), y los ajustes de la entidad: teléfono de ayuda y
+ * persona de guardia (`PATCH .../organizations/{id}/ {help_phone,
+ * on_call_user}`, los dos de la misma lista blanca solo-titular). Cada
+ * aviso enlaza a la ficha de la persona
+ * (`/entidad/{slug}/personas/{userId}`) solo si
  * `user_display.is_member`; si no, un badge «No pertenece a la entidad»
  * (ver `HelpRequestCard`).
  */
