@@ -831,6 +831,8 @@
       "notMember": "Not a member of the entity",
       "joinedWithoutMembership": "Joined the activity without being a member.",
       "referent": "Referent: {name}",
+      "supportResponse": "{name}, from their support network, is taking care of it · {when}",
+      "supportResponsesEmpty": "Nobody from their support network is taking care of it yet.",
       "noCommunity": "No community",
       "acknowledged": "Attended to",
       "acknowledgeAction": "I've contacted them"

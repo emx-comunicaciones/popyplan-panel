@@ -831,6 +831,8 @@
       "notMember": "No pertany a l'entitat",
       "joinedWithoutMembership": "Es va apuntar a l'activitat sense ser membre.",
       "referent": "Referent: {name}",
+      "supportResponse": "{name}, de la seva xarxa de suport, se n'està encarregant · {when}",
+      "supportResponsesEmpty": "Ningú de la seva xarxa de suport se n'ha encarregat encara.",
       "noCommunity": "Sense comunitat",
       "acknowledged": "Atès",
       "acknowledgeAction": "He contactat"

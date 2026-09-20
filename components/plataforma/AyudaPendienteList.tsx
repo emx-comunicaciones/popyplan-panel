@@ -10,6 +10,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { SupportResponses } from "@/components/help/SupportResponses";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import {
@@ -76,6 +77,9 @@ function HelpRequestCard({ request }: { request: HelpRequestRow }) {
               {request.community_display ? ` · ${request.community_display.name}` : ""}
             </p>
             <p className="text-xs text-text-secondary">{formatDateTime(request.created_at, locale)}</p>
+            {/* Mismo D-I4 que en la guardia de la entidad: la cola global
+                tampoco enseñaba que la red ya se estaba encargando. */}
+            <SupportResponses responses={request.support_responses} />
           </div>
           {request.acknowledged_at ? (
             <Badge tone="success">{t("entidad.guardia.acknowledged")}</Badge>

@@ -188,6 +188,48 @@ describe("GuardiaPanel", () => {
     expect(screen.getByText("Se apuntó a la actividad sin ser miembro.")).toBeInTheDocument();
   });
 
+  it("pinta quién de la red de apoyo ya se está encargando (D-I4)", () => {
+    mockOrganizationHooks();
+    usePendingHelpRequestsMock.mockReturnValue({
+      data: [
+        buildHelpRequest({
+          support_responses: [
+            {
+              supporter: { id: 185, public_name: "Laia" },
+              responded_at: "2026-09-19T20:56:17Z",
+            },
+          ],
+        }),
+      ],
+      isError: false,
+      error: null,
+    });
+    useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
+
+    render(<GuardiaPanel orgId={7} slug={SLUG} />);
+
+    expect(screen.getByText(/Laia, de su red de apoyo, se está encargando/)).toBeInTheDocument();
+    expect(
+      screen.queryByText("Nadie de su red de apoyo se ha encargado todavía."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("sin nadie de la red encargándose, lo dice en vez de dejar el hueco vacío", () => {
+    mockOrganizationHooks();
+    usePendingHelpRequestsMock.mockReturnValue({
+      data: [buildHelpRequest({ support_responses: [] })],
+      isError: false,
+      error: null,
+    });
+    useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
+
+    render(<GuardiaPanel orgId={7} slug={SLUG} />);
+
+    expect(
+      screen.getByText("Nadie de su red de apoyo se ha encargado todavía."),
+    ).toBeInTheDocument();
+  });
+
   it("muestra siempre la línea de ayuda sobre cómo contactar", () => {
     mockOrganizationHooks();
     usePendingHelpRequestsMock.mockReturnValue({

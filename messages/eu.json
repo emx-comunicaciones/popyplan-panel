@@ -831,6 +831,8 @@
       "notMember": "Ez da erakundeko kidea",
       "joinedWithoutMembership": "Jarduerara izena eman du kide izan gabe.",
       "referent": "Erreferentea: {name}",
+      "supportResponse": "{name}, bere laguntza-saretik, arduratzen ari da · {when}",
+      "supportResponsesEmpty": "Bere laguntza-saretik oraindik inor ez da arduratu.",
       "noCommunity": "Komunitaterik ez",
       "acknowledged": "Artatuta",
       "acknowledgeAction": "Harremanetan jarri naiz"

@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { SupportResponses } from "@/components/help/SupportResponses";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import {
@@ -117,6 +118,9 @@ function HelpRequestCard({
               {request.event_display ? ` · ${request.event_display.title}` : ""}
             </p>
             <p className="text-xs text-text-secondary">{formatDateTime(request.created_at)}</p>
+            {/* D-I4: quién de su red ya dijo «me encargo». Sin esto, la
+                guardia llama sin saber que alguien está ya con ella. */}
+            <SupportResponses responses={request.support_responses} />
           </div>
           {request.acknowledged_at ? (
             <Badge tone="success">{t("entidad.guardia.acknowledged")}</Badge>

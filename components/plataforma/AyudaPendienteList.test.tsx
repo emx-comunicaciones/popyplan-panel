@@ -210,6 +210,25 @@ describe("AyudaPendienteList", () => {
     expect(screen.queryByText(expectedEs)).not.toBeInTheDocument();
   });
 
+  it("pinta quién de la red de apoyo ya se está encargando (D-I4)", () => {
+    usePlatformPendingHelpRequestsMock.mockReturnValue({
+      data: [
+        buildHelpRequest({
+          support_responses: [
+            { supporter: { id: 185, public_name: "Laia" }, responded_at: "2026-09-19T20:56:17Z" },
+          ],
+        }),
+      ],
+      isError: false,
+      error: null,
+    });
+    useAcknowledgeHelpRequestGlobalMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
+
+    render(<AyudaPendienteList />);
+
+    expect(screen.getByText(/Laia, de su red de apoyo, se está encargando/)).toBeInTheDocument();
+  });
+
   it("acuse de recibo fallido: el mensaje de error se pinta con role=alert", () => {
     usePlatformPendingHelpRequestsMock.mockReturnValue({
       data: [buildHelpRequest()],

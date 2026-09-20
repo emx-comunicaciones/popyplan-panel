@@ -831,6 +831,8 @@
       "notMember": "No pertenece a la entidad",
       "joinedWithoutMembership": "Se apuntó a la actividad sin ser miembro.",
       "referent": "Referente: {name}",
+      "supportResponse": "{name}, de su red de apoyo, se está encargando · {when}",
+      "supportResponsesEmpty": "Nadie de su red de apoyo se ha encargado todavía.",
       "noCommunity": "Sin comunidad",
       "acknowledged": "Atendido",
       "acknowledgeAction": "He contactado"

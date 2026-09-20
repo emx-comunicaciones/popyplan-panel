@@ -3098,6 +3098,25 @@ de la app viven en sus propios repos.
   nuevas `entidad.guardia.{onCallLabel,onCallLoading,onCallOnlyTitular}`
   en los cuatro catálogos; `onCallHint` desaparece.
 
+- **«Me encargo» de la red de apoyo, visible en la guardia (D-I4)**
+  (`components/help/SupportResponses.tsx`, nuevo, compartido por
+  `GuardiaPanel.tsx` y `components/plataforma/AyudaPendienteList.tsx`):
+  `HelpRequest.support_responses` (`docs/PANEL.md` §14.4) lo sirve el
+  backend desde la Fase 7 y `lib/api/types.ts::SupportResponse` ya lo
+  tipaba, pero ninguna de las dos colas del panel lo pintaba (la app
+  móvil sí) — la guardia llamaba a una persona sin saber que alguien de
+  su red llevaba veinte minutos con ella. Cada respuesta se pinta como
+  «`<public_name>`, de su red de apoyo, se está encargando ·
+  `<fecha y hora>`»; con el array vacío se dice explícitamente que nadie
+  se ha encargado todavía (un hueco en blanco se lee como «no hay red»,
+  que es otro dato). **Nunca** contacto, y tampoco la relación
+  (`parent`/`friend`/…): esa vive en `PersonSupportRow.relationship`, que
+  solo ve el referente en la ficha de la persona — el serializer de este
+  aviso no la manda. Claves nuevas
+  `entidad.guardia.{supportResponse,supportResponsesEmpty}` (namespace
+  compartido con la cola de plataforma, como ya pasaba con
+  `notMember`/`referent`).
+
 ## Comandos
 
 - `npm run dev` / `npm run build` / `npm run start`
