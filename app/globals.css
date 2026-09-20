@@ -19,6 +19,17 @@
    * ver `lib/a11y/contrast.ts::readableOn`).
    */
   --color-primary-700: #0e7c78;
+  /*
+   * Turquesa intermedio (rediseño de la landing, 2026-09-20): el extremo
+   * claro del degradado del banner de descarga y del pie de la web
+   * pública. Existe porque el tono de marca (`--color-primary`, 2,59:1
+   * con blanco) no llega ni al 3:1 de texto grande, y la referencia pide
+   * blanco grande sobre turquesa: `#12908b` da 3,90:1 con blanco, así
+   * que el degradado entero (de este tono a `--color-primary-700`, 5,03:1)
+   * es legible. Solo fondos con texto blanco grande encima; para texto
+   * pequeño, `--color-primary-700`.
+   */
+  --color-primary-600: #12908b;
   --color-primary-100: #d7f3f1;
   --color-secondary: #72c9ee;
   --color-secondary-900: #1a2c33;
@@ -48,6 +59,7 @@
 @theme inline {
   --color-primary: var(--color-primary);
   --color-primary-700: var(--color-primary-700);
+  --color-primary-600: var(--color-primary-600);
   --color-primary-100: var(--color-primary-100);
   --color-secondary: var(--color-secondary);
   --color-secondary-900: var(--color-secondary-900);
@@ -74,6 +86,17 @@
   --color-message-bubble: var(--color-message-bubble);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /*
+   * Tipografías de la web pública (`components/landing/fonts.ts`), no
+   * del panel: las dos variables solo existen dentro del subárbol que
+   * aplica `LANDING_FONT_CLASS` (la landing y `AppAccountScreen`).
+   * Están en `@theme inline` justamente por eso — así `font-display` y
+   * `font-body` resuelven la variable **en el sitio de uso** y no
+   * congelan un valor global, que es lo que las mantiene acotadas a esas
+   * dos pantallas.
+   */
+  --font-display: var(--font-plus-jakarta-sans);
+  --font-body: var(--font-dm-sans);
 }
 
 /*

@@ -75,6 +75,17 @@ describe("contraste de los tokens de color (app/globals.css)", () => {
       4.5,
     ],
     ["text-base / primary-100 (tinte claro de cabecera)", "color-text-base", "color-primary-100", 4.5],
+    // Banner de descarga de la web pública: texto blanco **grande**
+    // (≥ 24 px, umbral AA de 3:1) sobre el extremo claro del degradado
+    // turquesa. El extremo oscuro es `primary-700`, ya auditado arriba a
+    // 4,5:1, así que con estos dos el degradado entero es legible.
+    [
+      "text-inverse / primary-600 (banner de descarga, texto grande)",
+      "color-text-inverse",
+      "color-primary-600",
+      3,
+    ],
+    ["text-base / primary (tarjetas decorativas sobre el tono de marca)", "color-text-base", "color-primary", 4.5],
   ];
 
   it.each(pairs)("%s ≥ %s:1", (_label, fg, bg, threshold) => {

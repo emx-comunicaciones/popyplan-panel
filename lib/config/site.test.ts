@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { contactEmail, siteUrl, storeLinks } from "./site";
+import { contactEmail, legalLinks, siteUrl, storeLinks } from "./site";
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -156,6 +156,10 @@ describe("contactEmail", () => {
 });
 
 describe("storeLinks", () => {
+  const DEFAULT_APP_STORE = "https://apps.apple.com/us/app/polypop/id6755899118";
+  const DEFAULT_PLAY_STORE =
+    "https://play.google.com/store/apps/details?id=com.tikneo.popmobile";
+
   it("devuelve las dos fichas configuradas", () => {
     vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", "https://apps.apple.com/app/popyplan/id1");
     vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", "https://play.google.com/store/apps/details?id=com.popyplan");
@@ -166,11 +170,27 @@ describe("storeLinks", () => {
     });
   });
 
-  it("una tienda ausente o vacía es null (su botón no se pinta)", () => {
+  it("sin variables devuelve las fichas reales publicadas", () => {
+    // Cambio del rediseño de la landing: antes esto daba `null` y la web
+    // se quedaba sin botones de descarga, que es justo su llamada
+    // principal. Las fichas ya existen, así que son el valor por defecto.
+    vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", undefined);
+    vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", undefined);
+
+    expect(storeLinks()).toEqual({
+      appStore: DEFAULT_APP_STORE,
+      playStore: DEFAULT_PLAY_STORE,
+    });
+  });
+
+  it("una variable vacía se comporta como si no estuviera declarada", () => {
     vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", "   ");
     vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", undefined);
 
-    expect(storeLinks()).toEqual({ appStore: null, playStore: null });
+    expect(storeLinks()).toEqual({
+      appStore: DEFAULT_APP_STORE,
+      playStore: DEFAULT_PLAY_STORE,
+    });
   });
 
   it("recorta los espacios alrededor de cada URL", () => {
@@ -181,6 +201,9 @@ describe("storeLinks", () => {
   });
 
   it("una URL que no es https es null (acaba directamente en un href)", () => {
+    // Un valor declarado pero inservible **no** cae al valor por
+    // defecto: quien lo declaró quería otra cosa, y enlazar a la ficha
+    // real taparía el error de configuración.
     vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", "http://apps.apple.com/app/popyplan/id1");
     vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", "javascript:alert(1)");
 
@@ -192,5 +215,29 @@ describe("storeLinks", () => {
     vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", "no soy una url");
 
     expect(storeLinks()).toEqual({ appStore: null, playStore: null });
+  });
+});
+
+describe("legalLinks", () => {
+  it("devuelve las cuatro URL absolutas de la web pública", () => {
+    expect(legalLinks()).toEqual({
+      support: "https://popyplan.com/support",
+      privacy: "https://popyplan.com/privacy",
+      terms: "https://popyplan.com/terms",
+      deleteAccount: "https://popyplan.com/delete-account",
+    });
+  });
+
+  it("no depende de ninguna variable de entorno", () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://otro-dominio.example");
+
+    expect(legalLinks().privacy).toBe("https://popyplan.com/privacy");
+  });
+
+  it("devuelve una copia, así nadie puede mutar la constante compartida", () => {
+    const first = legalLinks();
+    first.support = "https://cambiado.example";
+
+    expect(legalLinks().support).toBe("https://popyplan.com/support");
   });
 });

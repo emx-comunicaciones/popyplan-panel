@@ -33,6 +33,35 @@ const DEFAULT_SITE_URL = "http://localhost:3100";
 const DEFAULT_CONTACT_EMAIL = "hola@popyplan.com";
 
 /**
+ * Fichas **reales** de la app, publicadas (rediseño de la landing,
+ * 2026-09-20): son el valor por defecto de `storeLinks()`, no un
+ * marcador de posición. Hasta ahora las dos variables vacías dejaban la
+ * landing sin ningún botón de descarga, que era lo correcto mientras la
+ * app no estaba en las tiendas; ya lo está, y el botón de descarga es la
+ * llamada principal de la web, así que no puede depender de que alguien
+ * se acuerde de declarar dos variables en el entorno de `next build`.
+ * Las variables siguen mandando cuando traen una URL `https:` válida.
+ */
+const DEFAULT_APP_STORE_URL = "https://apps.apple.com/us/app/polypop/id6755899118";
+const DEFAULT_PLAY_STORE_URL =
+  "https://play.google.com/store/apps/details?id=com.tikneo.popmobile";
+
+/**
+ * Páginas legales y de soporte de la web pública (`popyplan.com`), que
+ * **no** sirve este panel: son rutas de la web de marketing, enlazadas
+ * desde el pie de la landing. Constantes a propósito, sin variable de
+ * entorno — son URLs fijas del dominio del producto, no configuración de
+ * despliegue: una variable mal puesta las dejaría apuntando a ninguna
+ * parte justo en los enlaces que la ley exige poder encontrar.
+ */
+const LEGAL_LINKS = {
+  support: "https://popyplan.com/support",
+  privacy: "https://popyplan.com/privacy",
+  terms: "https://popyplan.com/terms",
+  deleteAccount: "https://popyplan.com/delete-account",
+} as const;
+
+/**
  * Comprobación mínima de un correo: algo, una arroba, algo con punto.
  * No pretende validar el RFC 5322 (imposible con una expresión regular
  * razonable) — solo descartar un valor que **no** puede funcionar en un
@@ -96,7 +125,16 @@ export function siteUrl(): string {
 }
 
 /**
- * Destino del `mailto:` de la landing (spec §2, decisión 5). Un valor que
+ * Destino de contacto por correo. **Sin consumidor en la interfaz desde
+ * el rediseño de la landing (2026-09-20)**: la web nueva no tiene bloque
+ * «Habla con nosotros» ni tarjetas por público con `mailto:` — el pie
+ * enlaza a la página de soporte de `popyplan.com` (`legalLinks()`). Se
+ * conserva porque `NEXT_PUBLIC_CONTACT_EMAIL` es una variable ya
+ * documentada en `.env.example` y el formulario de contacto guardado en
+ * plataforma sigue planificado (spec §9); su validación y sus tests no
+ * cuestan nada y evitan tener que reescribirla al retomarlo.
+ *
+ * Un valor que
  * no parezca un correo se descarta (M9): acabaría en un `href` que
  * ningún cliente de correo puede abrir, y un valor con espacios o con
  * `&cc=` sería además una vía de inyectar cabeceras de correo.
@@ -117,23 +155,44 @@ export interface StoreUrls {
 }
 
 /**
- * Fichas de la app en las tiendas. Una variable ausente, vacía o que no
- * sea una URL **`https:`** devuelve `null` y su botón **no se pinta**
- * (`components/landing/StoreLinks.tsx`): enlazar a una ficha que todavía
- * no existe es peor que no ofrecer el botón, y estos dos valores acaban
- * directamente en un `href` — el precedente del repo para eso es
- * `lib/config/imagePatterns.ts::isAllowedImageSrc`.
+ * Fichas de la app en las tiendas. Sin variable (o con una vacía) se
+ * devuelven las **fichas reales** publicadas (`DEFAULT_APP_STORE_URL` /
+ * `DEFAULT_PLAY_STORE_URL`): el caso normal de un despliegue es no tener
+ * que declarar nada. Una variable con un valor que **no** sea una URL
+ * `https:` sigue devolviendo `null` y su botón **no se pinta**
+ * (`components/landing/StoreLinks.tsx`): estos dos valores acaban
+ * directamente en un `href`, y el precedente del repo para eso es
+ * `lib/config/imagePatterns.ts::isAllowedImageSrc` — un valor mal
+ * configurado no puede convertirse en un enlace a cualquier sitio.
  */
 export function storeLinks(): StoreUrls {
   return {
-    appStore: httpsUrlOrNull(process.env.NEXT_PUBLIC_APP_STORE_URL),
-    playStore: httpsUrlOrNull(process.env.NEXT_PUBLIC_PLAY_STORE_URL),
+    appStore: httpsUrlOr(process.env.NEXT_PUBLIC_APP_STORE_URL, DEFAULT_APP_STORE_URL),
+    playStore: httpsUrlOr(process.env.NEXT_PUBLIC_PLAY_STORE_URL, DEFAULT_PLAY_STORE_URL),
   };
 }
 
-function httpsUrlOrNull(value: string | undefined): string | null {
+function httpsUrlOr(value: string | undefined, fallback: string): string | null {
   const trimmed = value?.trim();
-  if (!trimmed) return null;
+  if (!trimmed) return fallback;
 
   return parseUrl(trimmed, ["https:"]) ? trimmed : null;
+}
+
+export interface LegalUrls {
+  support: string;
+  privacy: string;
+  terms: string;
+  deleteAccount: string;
+}
+
+/**
+ * Enlaces legales del pie de la web pública (soporte, privacidad,
+ * términos y eliminación de cuenta). Función, y no la constante suelta,
+ * por coherencia con el resto del módulo: quien la llama no tiene que
+ * saber si detrás hay una variable de entorno o un literal, y añadir una
+ * mañana no cambia ningún sitio de llamada.
+ */
+export function legalLinks(): LegalUrls {
+  return { ...LEGAL_LINKS };
 }

@@ -1,0 +1,6 @@
+<svg preserveAspectRatio="xMidYMid meet" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 25.6 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon">
+<path d="M0 3.2C0 1.43269 1.43269 0 3.2 0H14.4C16.1673 0 17.6 1.43269 17.6 3.2V9.6C17.6 11.3673 16.1673 12.8 14.4 12.8H11.2L6.4 17.6V12.8H3.2C1.43269 12.8 0 11.3673 0 9.6V3.2Z" fill="white"/>
+<path d="M20.8 6.4V12C20.8 14.2091 19.0091 16 16.8 16H12.5255L9.69876 18.8267C10.1465 19.065 10.6575 19.2 11.2 19.2H14.4L19.2 24V19.2H22.4C24.1673 19.2 25.6 17.7673 25.6 16V9.6C25.6 7.83269 24.1673 6.4 22.4 6.4H20.8Z" fill="var(--fill-0, white)"/>
+</g>
+</svg>

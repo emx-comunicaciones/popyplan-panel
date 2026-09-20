@@ -15,6 +15,28 @@ import {
   routerMock,
 } from "./test-utils/nextNavigationMock";
 
+/**
+ * `next/font/google` no tiene implementación fuera del build de Next: el
+ * compilador (plugin SWC) sustituye cada llamada por el objeto ya
+ * generado, así que bajo Vitest el módulo no sirve de nada. El mock
+ * devuelve la forma mínima que consumen los dos sitios que declaran
+ * fuentes — `app/layout.tsx` (Geist, el panel) y
+ * `components/landing/fonts.ts` (Plus Jakarta Sans + DM Sans, solo la
+ * web pública) — para que un test que renderice cualquiera de los dos
+ * árboles no tenga que mockearlo por su cuenta. `app/layout.test.tsx`
+ * mantiene además su propio `vi.mock` del módulo (más específico, tiene
+ * precedencia en ese fichero).
+ */
+vi.mock("next/font/google", () => {
+  const font = (variable: string) => () => ({ variable, className: variable });
+  return {
+    Geist: font("--font-geist-sans"),
+    Geist_Mono: font("--font-geist-mono"),
+    Plus_Jakarta_Sans: font("--font-plus-jakarta-sans"),
+    DM_Sans: font("--font-dm-sans"),
+  };
+});
+
 vi.mock("next/navigation", () => ({
   useRouter: () => routerMock,
   usePathname: () => getPathnameMock(),
