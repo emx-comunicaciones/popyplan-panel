@@ -1,6 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-import { BIDASOA_SLUG, DEMO_PASSWORD, DEMO_PERSON_EMAIL, TITULAR_BIDASOA_EMAIL } from "./helpers";
+import {
+  BIDASOA_SLUG,
+  DEMO_PASSWORD,
+  DEMO_PERSON_EMAIL,
+  TITULAR_BIDASOA_EMAIL,
+} from "./helpers";
 
 /**
  * Landing pública y login único (spec de diseño
@@ -23,7 +28,9 @@ import { BIDASOA_SLUG, DEMO_PASSWORD, DEMO_PERSON_EMAIL, TITULAR_BIDASOA_EMAIL }
  * portada tiene además «Entrar al panel» — sin `exact` serían dos
  * coincidencias y el modo estricto lo rechazaría.
  */
-test("sin sesión, la raíz muestra la landing y «Entrar» lleva al login", async ({ page }) => {
+test("sin sesión, la raíz muestra la landing y «Entrar» lleva al login", async ({
+  page,
+}) => {
   await page.goto("/");
 
   await expect(
@@ -32,7 +39,9 @@ test("sin sesión, la raíz muestra la landing y «Entrar» lleva al login", asy
       name: "Planes, comunidades y actividades para vivir bien acompañado",
     }),
   ).toBeVisible();
-  await expect(page.getByRole("heading", { level: 3, name: "Asociaciones y ONG" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "Asociaciones y ONG" }),
+  ).toBeVisible();
 
   await page.getByRole("link", { name: "Entrar", exact: true }).click();
 
@@ -40,7 +49,10 @@ test("sin sesión, la raíz muestra la landing y «Entrar» lleva al login", asy
   await expect(page.getByRole("button", { name: "Entrar" })).toBeVisible();
 });
 
-test("una cuenta sin rol de panel ve «Tu cuenta es de la app»", async ({ page, baseURL }) => {
+test("una cuenta sin rol de panel ve «Tu cuenta es de la app»", async ({
+  page,
+  baseURL,
+}) => {
   await page.goto("/login");
 
   await page.getByLabel("Usuario o email").fill(DEMO_PERSON_EMAIL);
@@ -50,14 +62,25 @@ test("una cuenta sin rol de panel ve «Tu cuenta es de la app»", async ({ page,
   // La raíz exacta, no «cualquier URL acabada en barra» (M13): un
   // `/elegir-entidad/` inesperado casaba con `/\/$/` y el test seguía
   // verde hasta la aserción siguiente.
-  await expect(page).toHaveURL(new RegExp(`^${baseURL}/?$`));
+  // Raíz exacta del sitio: se compara el `pathname` en vez de interpolar
+  // `baseURL` en una expresión regular (sus puntos casarían con cualquier
+  // carácter).
+  await expect.poll(() => new URL(page.url()).pathname).toBe("/");
+  expect(page.url().startsWith(baseURL ?? "")).toBe(true);
   await expect(
-    page.getByRole("heading", { level: 1, name: "Tu cuenta es de la app Popyplan" }),
+    page.getByRole("heading", {
+      level: 1,
+      name: "Tu cuenta es de la app Popyplan",
+    }),
   ).toBeVisible();
-  await expect(page.getByRole("button", { name: "Cerrar sesión" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Cerrar sesión" }),
+  ).toBeVisible();
 });
 
-test("con sesión de titular, visitar la raíz aterriza en su entidad", async ({ page }) => {
+test("con sesión de titular, visitar la raíz aterriza en su entidad", async ({
+  page,
+}) => {
   await page.goto("/login");
 
   await page.getByLabel("Usuario o email").fill(TITULAR_BIDASOA_EMAIL);
