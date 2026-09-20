@@ -142,7 +142,7 @@ describe("ParaguasTerritorioPage", () => {
 
     // También con el panel lateral abierto (`Dialog placement="side"`).
     usePlaceSheetMock.mockReturnValue({ data: buildPlaceSheet(), isError: false, error: null });
-    await userEvent.click(screen.getAllByRole("button", { name: "Ver ficha" })[0]);
+    await userEvent.click(screen.getByRole("button", { name: "Ver ficha de Alfaville" }));
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -176,12 +176,26 @@ describe("ParaguasTerritorioPage", () => {
     );
   });
 
+  /**
+   * M1 de la revisión final de rama: los botones «Ver ficha» de la
+   * columna de acciones se anunciaban todos igual, sin el municipio —
+   * para quien navega por lista de botones (lector de pantalla) eran N
+   * controles indistinguibles.
+   */
+  it("cada botón «Ver ficha» lleva el municipio en su nombre accesible (M1)", async () => {
+    mockHappyPath();
+    await renderPage();
+
+    expect(screen.getByRole("button", { name: "Ver ficha de Alfaville" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Ver ficha de Betaville" })).toBeInTheDocument();
+  });
+
   it("«Ver ficha» abre el panel lateral con la ficha de ese municipio", async () => {
     mockHappyPath();
     usePlaceSheetMock.mockReturnValue({ data: buildPlaceSheet(), isError: false, error: null });
     await renderPage();
 
-    await userEvent.click(screen.getAllByRole("button", { name: "Ver ficha" })[0]);
+    await userEvent.click(screen.getByRole("button", { name: "Ver ficha de Alfaville" }));
 
     const dialog = screen.getByRole("dialog");
     expect(within(dialog).getByRole("heading", { name: "Irun" })).toBeInTheDocument();
@@ -227,7 +241,7 @@ describe("ParaguasTerritorioPage", () => {
     });
     await renderPage();
 
-    await userEvent.click(screen.getAllByRole("button", { name: "Ver ficha" })[0]);
+    await userEvent.click(screen.getByRole("button", { name: "Ver ficha de Alfaville" }));
 
     const dialog = screen.getByRole("dialog");
     expect(within(dialog).getByText("No se pudo cargar la ficha del municipio")).toBeInTheDocument();
@@ -289,7 +303,7 @@ describe("ParaguasTerritorioPage", () => {
     expect(screen.queryByTestId("territory-map")).not.toBeInTheDocument();
     // La tabla y su «Ver ficha» siguen siendo la vía completa al municipio.
     expect(screen.getByRole("heading", { name: "Por municipio" })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "Ver ficha" }).length).toBe(2);
+    expect(screen.getAllByRole("button", { name: /^Ver ficha de /}).length).toBe(2);
   });
 
   it("un fallo real de las coordenadas pinta el error del mapa, no el aviso de «demasiados»", async () => {

@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 
 import { render, screen } from "@/test-utils/render";
+import { axe } from "@/test-utils/axe";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import { ExportError } from "@/hooks/useExport";
@@ -31,10 +32,23 @@ async function renderPage(slug = "diputacion-demo", role = "titular") {
   });
 
   const element = await ParaguasInformesPage({ params: Promise.resolve({ slug }) });
-  render(element);
+  return render(element);
 }
 
 describe("ParaguasInformesPage", () => {
+  /**
+   * I2 de la revisión final de rama: la spec §5 pedía `axe` para las
+   * cuatro secciones del área de administración; «Informes» (la
+   * cuarta) se quedó fuera.
+   */
+  it("no tiene violaciones de accesibilidad (axe)", async () => {
+    useExportMock.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null });
+
+    const { container } = await renderPage();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("expone el título de la página vía generateMetadata", async () => {
     expect((await generateMetadata()).title).toBe("Informes del paraguas");
   });

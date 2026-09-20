@@ -147,6 +147,23 @@ describe("ParaguasInicioPage", () => {
     expect(screen.getByText("No tienes acceso a estas métricas.")).toBeInTheDocument();
   });
 
+  /**
+   * I3 de la revisión final de rama: `useOrganizations({parent: orgId})`
+   * puede fallar (403, red, 5xx) y `children.isError` no se miraba en
+   * ningún sitio — la tarjeta pintaba «—», indistinguible de «esta
+   * administración no financia ninguna entidad» (regla B15,
+   * `CLAUDE.md`).
+   */
+  it("un fallo del listado de entidades hijas dice «No disponible», nunca «—» (I3)", async () => {
+    mockMetricsByScope({ territorio: buildMetricsResponse(), paraguas: buildMetricsResponse() });
+    useOrganizationsMock.mockReturnValue({ data: undefined, isError: true, error: new Error("500") });
+
+    await renderPage();
+
+    const red = screen.getByRole("region", { name: "Red financiada" });
+    expect(within(red).getByText("No disponible")).toBeInTheDocument();
+  });
+
   it("un error de la red financiada pinta ErrorState en su propio bloque", async () => {
     useMetricsMock.mockImplementation((scope: MetricsScope) =>
       scope === "paraguas"

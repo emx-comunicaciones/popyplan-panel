@@ -123,7 +123,14 @@ export function ParaguasHomeDashboard({ orgId, slug, orgName }: ParaguasHomeDash
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             <StatCard
               label={t("paraguas.inicio.fundedEntities")}
-              value={formatCount(children.data?.count ?? null, false)}
+              // I3 de la revisión final de rama: un fallo del listado
+              // (403, red, 5xx) se leía como «—», indistinguible de «no
+              // financia ninguna entidad» (regla B15, `CLAUDE.md`).
+              value={
+                children.isError
+                  ? t("plataforma.inicio.unavailable")
+                  : formatCount(children.data?.count ?? null, false)
+              }
             />
             <StatCard
               label={t("metrics.stats.eventsHeld")}

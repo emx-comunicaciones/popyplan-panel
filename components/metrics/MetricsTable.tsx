@@ -25,6 +25,13 @@ export interface MetricsTableProps {
    */
   onSelectRow?: (key: string) => void;
   selectRowLabel?: string;
+  /**
+   * Nombre accesible por fila, con el municipio (M1 de la revisión
+   * final de rama: `aria-label="Ver ficha de Irun"` en vez de «Ver
+   * ficha» a secas en las N filas). Opcional: sin ella, el botón sigue
+   * anunciándose solo con `selectRowLabel`, como antes.
+   */
+  selectRowAriaLabel?: (row: ByPlaceRow) => string;
 }
 
 /**
@@ -41,6 +48,7 @@ export function MetricsTable({
   codeHeader,
   onSelectRow,
   selectRowLabel,
+  selectRowAriaLabel,
 }: MetricsTableProps) {
   const t = useTranslations("metrics.table");
   const tCommon = useTranslations("common");
@@ -62,6 +70,7 @@ export function MetricsTable({
               <button
                 type="button"
                 onClick={() => onSelectRow(row.key)}
+                aria-label={selectRowAriaLabel ? selectRowAriaLabel(row) : undefined}
                 className="text-primary-700 underline focus-visible:outline-primary-700"
               >
                 {selectRowLabel}

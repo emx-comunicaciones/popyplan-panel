@@ -198,6 +198,7 @@ export function TerritorioDashboard({ orgId }: TerritorioDashboardProps) {
                 codeHeader={t("metrics.groupBy.ineCode")}
                 onSelectRow={setSelectedIne}
                 selectRowLabel={t("paraguas.territorio.openSheet")}
+                selectRowAriaLabel={(row) => t("paraguas.territorio.openSheetFor", { place: row.label })}
               />
             ) : (
               <EmptyState title={t("metrics.dashboard.byMunicipioEmpty")} />
