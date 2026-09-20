@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { EditarComunidadDialog } from "@/components/entidad/EditarComunidadDialog";
 import { NuevaComunidadDialog } from "@/components/entidad/NuevaComunidadDialog";
 import {
   useApproveCommunityMember,
@@ -308,6 +309,19 @@ function CommunityDetail({ communityId }: { communityId: string }) {
  * (`onCreated`) para no obligar a buscarla en la lista recién
  * refrescada.
  *
+ * **«Editar» (encargo del propietario: «no puedo editar la comunidad que
+ * he creado»)**: mismo `canManage`, botón junto al nombre de la
+ * comunidad seleccionada que abre `EditarComunidadDialog.tsx`
+ * (`hooks/useUpdateCommunity.ts`, `PATCH /api/communities/{id}/` con
+ * `name`/`description`/`visibility`/`code_of_conduct` — `space` nunca se
+ * edita, el backend lo rechaza tras crear la comunidad). El diálogo solo
+ * se monta mientras hay una comunidad en edición (`editingCommunity`),
+ * con `key={editingCommunity.id}` para que cambiar de comunidad sin
+ * cerrar antes (imposible por el propio overlay modal, pero por si
+ * acaso) siempre remonte el formulario en vez de reutilizar estado de la
+ * anterior — mismo motivo que el bug A3 de `ResourceForm` documentado en
+ * `CLAUDE.md`.
+ *
  * **Hueco conocido** (ver informe): el listado sale de `GET
  * /api/communities/`, que no admite filtrar por entidad ni salta la
  * visibilidad de las comunidades `private` — una comunidad privada de
@@ -317,6 +331,7 @@ export function ComunidadesPanel({ orgId, canManage }: ComunidadesPanelProps) {
   const communities = useEntityCommunities(orgId);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [editingCommunity, setEditingCommunity] = useState<EntityCommunityRow | null>(null);
   const t = useTranslations("entidad.comunidades");
   const tAll = useTranslations();
 
@@ -338,6 +353,15 @@ export function ComunidadesPanel({ orgId, canManage }: ComunidadesPanelProps) {
     />
   ) : null;
 
+  const editDialog = editingCommunity ? (
+    <EditarComunidadDialog
+      key={editingCommunity.id}
+      orgId={orgId}
+      community={editingCommunity}
+      onClose={() => setEditingCommunity(null)}
+    />
+  ) : null;
+
   if (communities.isError) {
     return (
       <>
@@ -351,6 +375,7 @@ export function ComunidadesPanel({ orgId, canManage }: ComunidadesPanelProps) {
           )}
         />
         {dialog}
+        {editDialog}
       </>
     );
   }
@@ -365,9 +390,12 @@ export function ComunidadesPanel({ orgId, canManage }: ComunidadesPanelProps) {
         {newCommunityButton}
         <EmptyState title={t("empty")} description={t("emptyDescription")} />
         {dialog}
+        {editDialog}
       </div>
     );
   }
+
+  const selectedCommunity = communities.data.find((community) => community.id === selectedId) ?? null;
 
   return (
     <div className="flex flex-col gap-4">
@@ -384,9 +412,21 @@ export function ComunidadesPanel({ orgId, canManage }: ComunidadesPanelProps) {
           ))}
         </ul>
         <div className="flex-1">
-          {selectedId ? (
+          {selectedCommunity ? (
             <Card>
-              <CommunityDetail communityId={selectedId} />
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <h2 className="text-base font-semibold text-text-base">{selectedCommunity.name}</h2>
+                {canManage ? (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => setEditingCommunity(selectedCommunity)}
+                  >
+                    {t("edit")}
+                  </Button>
+                ) : null}
+              </div>
+              <CommunityDetail communityId={selectedCommunity.id} />
             </Card>
           ) : (
             <EmptyState title={t("choose")} description={t("chooseDescription")} />
@@ -394,6 +434,7 @@ export function ComunidadesPanel({ orgId, canManage }: ComunidadesPanelProps) {
         </div>
       </div>
       {dialog}
+      {editDialog}
     </div>
   );
 }

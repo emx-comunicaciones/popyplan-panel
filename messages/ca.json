@@ -491,7 +491,13 @@
       "choose": "Tria una comunitat",
       "chooseDescription": "Selecciona una comunitat de la llista per veure'n els membres i les sol·licituds.",
       "newCommunityTitle": "Nova comunitat",
-      "newCommunityHint": "La comunitat serà de l'entitat i apareixerà a l'aplicació per a les persones que la puguin veure segons la seva visibilitat."
+      "newCommunityHint": "La comunitat serà de l'entitat i apareixerà a l'aplicació per a les persones que la puguin veure segons la seva visibilitat.",
+      "edit": "Edita",
+      "editTitle": "Edita la comunitat",
+      "editSave": "Desa els canvis",
+      "editLoading": "Carregant la fitxa de la comunitat…",
+      "editLoadError": "No s'ha pogut carregar la fitxa de la comunitat",
+      "editLoadErrorDescription": "Torna-ho a provar més tard."
     },
     "actividades": {
       "heading": "Activitats",
@@ -1240,6 +1246,11 @@
       "invalido": "Revisa el territori: alguna de les dades no és vàlida.",
       "sinPermiso": "Només un superadmin declara el territori.",
       "desconocido": "No s'ha pogut desar el territori."
+    },
+    "updateCommunity": {
+      "invalido": "Revisa les dades: alguna no és vàlida.",
+      "sinPermiso": "Només el titular o el moderador poden editar una comunitat.",
+      "desconocido": "No s'han pogut desar els canvis a la comunitat."
     }
   },
   "reports": {

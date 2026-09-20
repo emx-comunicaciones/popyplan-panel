@@ -5,7 +5,7 @@ import { axe } from "@/test-utils/axe";
 import { render, screen, within } from "@/test-utils/render";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
-import { buildEntityCommunityRow, buildCommunityMember } from "@/test-utils/fixtures/community";
+import { buildEntityCommunityRow, buildCommunityMember, buildCommunityDetail } from "@/test-utils/fixtures/community";
 
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 const useEntityCommunitiesMock = vi.hoisted(() => vi.fn());
@@ -16,6 +16,8 @@ const useRejectCommunityMemberMock = vi.hoisted(() => vi.fn());
 const useKickCommunityMemberMock = vi.hoisted(() => vi.fn());
 const useChangeCommunityMemberRoleMock = vi.hoisted(() => vi.fn());
 const useCreateCommunityMock = vi.hoisted(() => vi.fn());
+const useCommunityMock = vi.hoisted(() => vi.fn());
+const useUpdateCommunityMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("@/hooks/useEntityCommunities", () => ({ useEntityCommunities: useEntityCommunitiesMock }));
@@ -35,6 +37,17 @@ vi.mock("@/hooks/useCreateCommunity", async () => {
   );
   return { ...actual, useCreateCommunity: useCreateCommunityMock };
 });
+// `useCommunity`/`useUpdateCommunity` solo se disparan cuando el diálogo
+// «Editar» está abierto (`EditarComunidadDialog` solo se monta con
+// `editingCommunity`), así que la mayoría de tests de este fichero no
+// necesita mockearlos — solo los que abren ese diálogo.
+vi.mock("@/hooks/useCommunity", () => ({ useCommunity: useCommunityMock }));
+vi.mock("@/hooks/useUpdateCommunity", async () => {
+  const actual = await vi.importActual<typeof import("@/hooks/useUpdateCommunity")>(
+    "@/hooks/useUpdateCommunity",
+  );
+  return { ...actual, useUpdateCommunity: useUpdateCommunityMock };
+});
 
 import EntidadComunidadesPage, { generateMetadata } from "./page";
 
@@ -48,6 +61,8 @@ afterEach(() => {
   useKickCommunityMemberMock.mockReset();
   useChangeCommunityMemberRoleMock.mockReset();
   useCreateCommunityMock.mockReset();
+  useCommunityMock.mockReset();
+  useUpdateCommunityMock.mockReset();
 });
 
 function idleMutation() {
@@ -326,6 +341,114 @@ describe("EntidadComunidadesPage", () => {
 
     const dialog = screen.getByRole("alertdialog", { name: "Expulsar de la comunidad" });
     expect(within(dialog).getByRole("alert")).toHaveTextContent("No se pudo expulsar a esa persona.");
+  });
+
+  it("titular ve el botón «Editar» junto a la comunidad seleccionada", async () => {
+    const user = userEvent.setup();
+    mockCreateCommunityDefault();
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c1", name: "Paseos al atardecer" })],
+      isError: false,
+      error: null,
+    });
+    useCommunityMembersMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useCommunityPendingRequestsMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useApproveCommunityMemberMock.mockReturnValue(idleMutation());
+    useRejectCommunityMemberMock.mockReturnValue(idleMutation());
+    useKickCommunityMemberMock.mockReturnValue(idleMutation());
+    useChangeCommunityMemberRoleMock.mockReturnValue(idleMutation());
+
+    await renderPage("titular");
+    await user.click(screen.getByRole("button", { name: /Paseos al atardecer/ }));
+
+    expect(screen.getByRole("button", { name: "Editar" })).toBeInTheDocument();
+  });
+
+  it("dinamizador no ve el botón «Editar» junto a la comunidad seleccionada", async () => {
+    const user = userEvent.setup();
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c1", name: "Paseos al atardecer" })],
+      isError: false,
+      error: null,
+    });
+    useCommunityMembersMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useCommunityPendingRequestsMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useApproveCommunityMemberMock.mockReturnValue(idleMutation());
+    useRejectCommunityMemberMock.mockReturnValue(idleMutation());
+    useKickCommunityMemberMock.mockReturnValue(idleMutation());
+    useChangeCommunityMemberRoleMock.mockReturnValue(idleMutation());
+
+    await renderPage("dinamizador");
+    await user.click(screen.getByRole("button", { name: /Paseos al atardecer/ }));
+
+    expect(screen.queryByRole("button", { name: "Editar" })).not.toBeInTheDocument();
+  });
+
+  it("«Editar» abre el diálogo y guardar manda el PATCH con los cambios", async () => {
+    const user = userEvent.setup();
+    mockCreateCommunityDefault();
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c1", name: "Paseos al atardecer", space: "members" })],
+      isError: false,
+      error: null,
+    });
+    useCommunityMembersMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useCommunityPendingRequestsMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useApproveCommunityMemberMock.mockReturnValue(idleMutation());
+    useRejectCommunityMemberMock.mockReturnValue(idleMutation());
+    useKickCommunityMemberMock.mockReturnValue(idleMutation());
+    useChangeCommunityMemberRoleMock.mockReturnValue(idleMutation());
+    useCommunityMock.mockReturnValue({
+      data: buildCommunityDetail({ name: "Paseos al atardecer" }),
+      isError: false,
+      error: null,
+    });
+    const updateMutate = vi.fn();
+    useUpdateCommunityMock.mockReturnValue({ ...idleMutation(), mutate: updateMutate });
+
+    await renderPage("titular");
+    await user.click(screen.getByRole("button", { name: /Paseos al atardecer/ }));
+    await user.click(screen.getByRole("button", { name: "Editar" }));
+
+    expect(screen.getByRole("heading", { name: "Editar comunidad" })).toBeInTheDocument();
+
+    await user.clear(screen.getByLabelText("Nombre"));
+    await user.type(screen.getByLabelText("Nombre"), "Paseos al amanecer");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(updateMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ orgId: 7, communityId: "c1", space: "members", name: "Paseos al amanecer" }),
+      expect.anything(),
+    );
+  });
+
+  it("no tiene violaciones de accesibilidad (axe) con el diálogo «Editar» abierto", async () => {
+    const user = userEvent.setup();
+    mockCreateCommunityDefault();
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c1", name: "Paseos al atardecer" })],
+      isError: false,
+      error: null,
+    });
+    useCommunityMembersMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useCommunityPendingRequestsMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useApproveCommunityMemberMock.mockReturnValue(idleMutation());
+    useRejectCommunityMemberMock.mockReturnValue(idleMutation());
+    useKickCommunityMemberMock.mockReturnValue(idleMutation());
+    useChangeCommunityMemberRoleMock.mockReturnValue(idleMutation());
+    useCommunityMock.mockReturnValue({
+      data: buildCommunityDetail({ name: "Paseos al atardecer" }),
+      isError: false,
+      error: null,
+    });
+    useUpdateCommunityMock.mockReturnValue(idleMutation());
+
+    const { container } = await renderPage("titular");
+    await user.click(screen.getByRole("button", { name: /Paseos al atardecer/ }));
+    await user.click(screen.getByRole("button", { name: "Editar" }));
+
+    expect(screen.getByRole("heading", { name: "Editar comunidad" })).toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("sin comunidades muestra el estado vacío con el botón «Nueva comunidad»", async () => {

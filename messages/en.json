@@ -491,7 +491,13 @@
       "choose": "Choose a community",
       "chooseDescription": "Select a community from the list to see its members and requests.",
       "newCommunityTitle": "New community",
-      "newCommunityHint": "The community will belong to the entity and will appear in the app for anyone who can see it according to its visibility."
+      "newCommunityHint": "The community will belong to the entity and will appear in the app for anyone who can see it according to its visibility.",
+      "edit": "Edit",
+      "editTitle": "Edit community",
+      "editSave": "Save changes",
+      "editLoading": "Loading the community record…",
+      "editLoadError": "Couldn't load the community record",
+      "editLoadErrorDescription": "Try again later."
     },
     "actividades": {
       "heading": "Activities",
@@ -1240,6 +1246,11 @@
       "invalido": "Check the territory: one of the values isn't valid.",
       "sinPermiso": "Only a superadmin can declare the territory.",
       "desconocido": "The territory could not be saved."
+    },
+    "updateCommunity": {
+      "invalido": "Check the details: something isn't valid.",
+      "sinPermiso": "Only the owner or moderator can edit a community.",
+      "desconocido": "Couldn't save the changes to the community."
     }
   },
   "reports": {

@@ -458,6 +458,19 @@ el brief tampoco lo pedía para esos dos).
   invalida siempre `panel-entity-communities` y, solo con `space:
   'families'`, además `panel-families-summary` — una comunidad de
   miembros no aparece en el resumen de Familias.
+- **«Editar» en Comunidades** (encargo del propietario, 2026-09-20: «no
+  puedo editar la comunidad que he creado»): mismo `canManage`, botón
+  junto al nombre de la comunidad seleccionada que abre
+  `components/entidad/EditarComunidadDialog.tsx` — `PATCH
+  /api/communities/{id}/ {name, description, visibility,
+  code_of_conduct}` (`hooks/useUpdateCommunity.ts`, mismo criterio de
+  permiso que crear). **`space` nunca se edita**: el backend lo rechaza
+  tras crear la comunidad (`validate_space`), así que el formulario no lo
+  ofrece. `EntityCommunityRow` (el listado) no trae `code_of_conduct`, así
+  que el diálogo pide primero la ficha completa (`hooks/useCommunity.ts`,
+  `GET /api/communities/{id}/`) y solo monta el formulario cuando llega
+  (loading/error dentro del propio diálogo); el «Guardar cambios» queda
+  deshabilitado hasta que algo cambie respecto a esos valores de partida.
 - **Comunicaciones y Recursos, audiencia «Familias»** (`docs/PANEL.md`
   §5.2/§7.2, ya operativa desde P6): `ComunicacionesPanel.tsx`/
   `RecursosPanel.tsx` calculan `hasFamilies` a partir de
@@ -3100,6 +3113,14 @@ en CI lo gate el job `e2e`).
   useCreateCommunity.ts` al 100 % de líneas; un fichero de test nuevo,
   `components/entidad/NuevaComunidadDialog.test.tsx`, sin contar para el
   umbral por ser `.tsx` de componente). El umbral sigue en 99,7.
+  Tras «Editar» en Comunidades (2026-09-20, `useCommunity`/
+  `useUpdateCommunity` nuevos): **99,82 %** (2776/2781 líneas, 2014
+  tests, 200 ficheros — `hooks/useCommunity.ts` y
+  `hooks/useUpdateCommunity.ts` al 100 % de líneas; tres ficheros de test
+  nuevos (`hooks/useCommunity.test.tsx`, `hooks/useUpdateCommunity.test.tsx`,
+  `components/entidad/EditarComunidadDialog.test.tsx`), el último sin
+  contar para el umbral por ser `.tsx` de componente. El umbral sigue en
+  99,7.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la

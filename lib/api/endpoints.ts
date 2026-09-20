@@ -203,10 +203,15 @@ export const COMMUNITIES = {
     `/api/communities/${id}/members/${memberId}/role/`,
   /**
    * `GET`/`PATCH /api/communities/{id}/` — ficha completa de la
-   * comunidad. El panel solo usa `PATCH` (`allow_cross_space`, POP
-   * Familias, `docs/PANEL.md` §8.1); `POST /api/communities/` (crear,
-   * `space:'families'` + `owner_org`) reutiliza `LIST` de arriba, mismo
-   * path.
+   * comunidad. `PATCH` sirve tanto el cruce de espacios
+   * (`allow_cross_space`, POP Familias, `docs/PANEL.md` §8.1) como
+   * «Editar comunidad» (`name`/`description`/`visibility`/
+   * `code_of_conduct`, `hooks/useUpdateCommunity.ts` — `space` no se
+   * manda nunca, el backend lo rechaza tras crear la comunidad). `GET`
+   * lo usa `hooks/useCommunity.ts` para traer `code_of_conduct`, el
+   * único campo que le falta al listado (`CommunityList`) para rellenar
+   * ese formulario. `POST /api/communities/` (crear, `space` +
+   * `owner_org`) reutiliza `LIST` de arriba, mismo path.
    */
   DETAIL: (id: string) => `/api/communities/${id}/`,
 } as const;

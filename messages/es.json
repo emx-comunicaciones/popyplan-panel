@@ -491,7 +491,13 @@
       "choose": "Elige una comunidad",
       "chooseDescription": "Selecciona una comunidad de la lista para ver sus miembros y solicitudes.",
       "newCommunityTitle": "Nueva comunidad",
-      "newCommunityHint": "La comunidad será de la entidad y aparecerá en la app para las personas que puedan verla según su visibilidad."
+      "newCommunityHint": "La comunidad será de la entidad y aparecerá en la app para las personas que puedan verla según su visibilidad.",
+      "edit": "Editar",
+      "editTitle": "Editar comunidad",
+      "editSave": "Guardar cambios",
+      "editLoading": "Cargando la ficha de la comunidad…",
+      "editLoadError": "No se pudo cargar la ficha de la comunidad",
+      "editLoadErrorDescription": "Vuelve a intentarlo más tarde."
     },
     "actividades": {
       "heading": "Actividades",
@@ -1240,6 +1246,11 @@
       "invalido": "Revisa el territorio: alguno de los datos no es válido.",
       "sinPermiso": "Solo superadmin declara el territorio.",
       "desconocido": "No se pudo guardar el territorio."
+    },
+    "updateCommunity": {
+      "invalido": "Revisa los datos: alguno no es válido.",
+      "sinPermiso": "Solo titular o moderador pueden editar una comunidad.",
+      "desconocido": "No se pudieron guardar los cambios en la comunidad."
     }
   },
   "reports": {

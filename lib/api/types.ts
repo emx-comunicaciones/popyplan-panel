@@ -587,6 +587,33 @@ export interface ToggleCrossSpaceRequest {
 }
 
 /**
+ * `GET /api/communities/{id}/` (`CommunitySerializer`, ficha completa):
+ * a diferencia de `EntityCommunityRow` (`CommunityList`), trae
+ * `code_of_conduct` — el único campo que le falta a la fila del listado
+ * para poder rellenar el formulario de «Editar comunidad»
+ * (`hooks/useCommunity.ts`, `components/entidad/EditarComunidadDialog.tsx`).
+ * `name`/`description`/`visibility` ya llegan en `EntityCommunityRow`, así
+ * que el diálogo de edición solo pide esta ficha para completar el
+ * código de conducta — nunca sustituye al listado como fuente del resto
+ * de campos.
+ */
+export type CommunityDetail = components["schemas"]["Community"];
+
+/**
+ * Cuerpo de `PATCH /api/communities/{id}/` para «Editar comunidad»
+ * (`hooks/useUpdateCommunity.ts`, solo titular/moderador): `space` no
+ * está aquí a propósito — el backend rechaza cambiarlo tras crear la
+ * comunidad (`validate_space`, ver `CreateCommunityRequest` arriba), así
+ * que el formulario de edición no lo ofrece.
+ */
+export interface UpdateCommunityRequest {
+  name?: string;
+  description?: string;
+  visibility?: components["schemas"]["VisibilityEnum"];
+  code_of_conduct?: string;
+}
+
+/**
  * `docs/PANEL.md` §3b («Alta de personas: invitaciones e importación»,
  * tarea W3b): `GET`/`POST /api/organizations/{org_id}/invitations/`,
  * `.../invitations/{iid}/resend/` y `.../invitations/{iid}/` (`DELETE`).
