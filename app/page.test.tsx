@@ -133,10 +133,13 @@ describe("Home (app/page.tsx)", () => {
       title: "Popyplan — planes, comunidades y actividades",
       url: "https://popyplan.com",
       siteName: "Popyplan",
-      images: ["/og.png"],
       locale: "es_ES",
     });
     expect(metadata.twitter).toMatchObject({ card: "summary_large_image" });
+    // La imagen de compartir la genera `app/opengraph-image.tsx` y la
+    // inyecta Next; declarar aquí un `images` a mano la duplicaría.
+    expect(metadata.openGraph).not.toHaveProperty("images");
+    expect(metadata.twitter).not.toHaveProperty("images");
   });
 
   it("generateMetadata fija metadataBase al host real, para que las imágenes relativas de Open Graph resuelvan", async () => {

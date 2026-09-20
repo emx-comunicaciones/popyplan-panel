@@ -29,11 +29,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const url = siteUrl();
 
   return {
-    // `metadataBase` es imprescindible para que las rutas relativas de
-    // `openGraph.images`/`twitter.images` ("/og.png") se resuelvan contra
-    // el host real: sin él, Next cae en silencio a `http://localhost:3000`
-    // en producción (aviso de build "metadataBase property in metadata
-    // export is not set").
+    // `metadataBase` es imprescindible para que la ruta relativa de la
+    // imagen que genera `app/opengraph-image.tsx` (y que Next añade sola
+    // a `openGraph`/`twitter`, por eso aquí no hay ningún `images`) se
+    // resuelva contra el host real: sin él, Next cae en silencio a
+    // `http://localhost:3000` en producción (aviso de build
+    // "metadataBase property in metadata export is not set").
+    // `siteUrl()` nunca devuelve algo que `new URL()` rechace (I1).
     metadataBase: new URL(url),
     title: { absolute: title },
     description,
@@ -42,14 +44,12 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       url,
       siteName: "Popyplan",
-      images: ["/og.png"],
       locale: localeFor(language).replace("-", "_"),
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["/og.png"],
     },
   };
 }
