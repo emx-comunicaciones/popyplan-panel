@@ -3260,6 +3260,13 @@ en CI lo gate el job `e2e`).
   `components/entidad/EditarComunidadDialog.test.tsx`), el último sin
   contar para el umbral por ser `.tsx` de componente. El umbral sigue en
   99,7.
+  Tras los siete arreglos del panel de la auditoría de integración
+  (2026-09-21, ver «Auditoría de integración» arriba): **99,82 %**
+  (2798/2803 líneas, **2041** tests, 201 ficheros — un fichero nuevo que
+  cuenta para la medición, `hooks/useCommunityInviteCode.ts`, al 100 % de
+  líneas; `components/help/SupportResponses.tsx` es `.tsx` de componente
+  y se prueba por comportamiento desde `GuardiaPanel.test.tsx` y
+  `AyudaPendienteList.test.tsx`). El umbral sigue en 99,7.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la
