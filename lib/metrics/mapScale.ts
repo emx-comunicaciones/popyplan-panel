@@ -27,7 +27,25 @@ import type { ByPlaceRow, PlaceRow } from "@/lib/api/types";
 
 export const MIN_RADIUS = 6;
 export const MAX_RADIUS = 28;
-export const SUPPRESSED_COLOR = "var(--color-text-disabled)";
+
+/**
+ * **Literales hex, nunca `var(--…)`** (hallazgo crítico C1 de la
+ * revisión final de rama). `pathOptions.color`/`fillColor` acaban en
+ * `L.Path::_updateStyle`, que Leaflet 1.9.4 escribe con
+ * `path.setAttribute('stroke', …)`/`setAttribute('fill', …)`
+ * (`node_modules/leaflet/dist/leaflet-src.js`) — un **atributo de
+ * presentación** SVG, no una declaración CSS. Ningún navegador resuelve
+ * una propiedad personalizada dentro de un atributo de presentación
+ * (solo dentro de `style="…"` o una hoja de estilos), así que
+ * `"var(--color-primary)"` ahí es un valor inválido que el navegador
+ * ignora: las burbujas se quedan con el `fill` por omisión de SVG
+ * (negro) y sin la rampa de marca ni el gris de supresión. Se copian a
+ * mano los valores actuales de `app/globals.css`;
+ * `lib/metrics/mapScale.test.ts` lee ese fichero de verdad y falla si
+ * la paleta cambia sin actualizar también estos literales (mismo patrón
+ * que `lib/a11y/tokens.test.ts`).
+ */
+export const SUPPRESSED_COLOR = "#bdbdbd"; // --color-text-disabled
 
 /**
  * Rampa de tres tonos de la marca, de menos a más personas. Tres y no
@@ -35,9 +53,9 @@ export const SUPPRESSED_COLOR = "var(--color-text-disabled)";
  * la cifra exacta.
  */
 const PEOPLE_COLORS = [
-  "var(--color-primary-100)",
-  "var(--color-primary)",
-  "var(--color-primary-700)",
+  "#d7f3f1", // --color-primary-100
+  "#1fb3ae", // --color-primary
+  "#0e7c78", // --color-primary-700
 ] as const;
 
 export interface MapBubble {

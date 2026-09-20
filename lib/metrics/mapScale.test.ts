@@ -1,3 +1,5 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { buildPlaceRow } from "@/test-utils/fixtures/places";
@@ -11,6 +13,46 @@ import {
   toBubbles,
   toFiniteNumber,
 } from "./mapScale";
+
+/**
+ * C1 de la revisión final de rama: Leaflet 1.9.4 escribe `stroke`/`fill`
+ * como **atributos de presentación** SVG
+ * (`node_modules/leaflet/dist/leaflet-src.js::path.setAttribute`), y
+ * ningún navegador resuelve `var(--…)` ahí — solo dentro de una
+ * declaración CSS. `mapScale.ts` usa ahora los valores hex literales de
+ * `app/globals.css`, con un comentario explicando por qué no puede ser
+ * un token; este test lee el fichero real (mismo patrón que
+ * `lib/a11y/tokens.test.ts`) y falla si la paleta se mueve sin que
+ * alguien actualice también el literal del mapa.
+ */
+const GLOBALS_CSS = path.resolve(__dirname, "..", "..", "app", "globals.css");
+
+function tokenValue(name: string): string {
+  const css = fs.readFileSync(GLOBALS_CSS, "utf-8");
+  const rootMatch = css.match(/:root\s*\{([^}]*)\}/);
+  if (!rootMatch) throw new Error("No se encontró un bloque :root en app/globals.css");
+  const match = rootMatch[1].match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6});`));
+  if (!match) throw new Error(`Token --${name} no encontrado en app/globals.css`);
+  return match[1];
+}
+
+describe("colores del mapa atados a app/globals.css (C1)", () => {
+  it("SUPPRESSED_COLOR coincide con --color-text-disabled", () => {
+    expect(SUPPRESSED_COLOR.toLowerCase()).toBe(tokenValue("color-text-disabled").toLowerCase());
+  });
+
+  it("la rampa de personas coincide con --color-primary-100/--color-primary/--color-primary-700", () => {
+    expect(bubbleColor(0, false, 0).toLowerCase()).toBe(tokenValue("color-primary-100").toLowerCase());
+    expect(bubbleColor(30, false, 30).toLowerCase()).toBe(tokenValue("color-primary-700").toLowerCase());
+  });
+
+  it("ningún color del mapa es un `var(--…)`: Leaflet los escribe como atributo de presentación SVG, que no resuelve custom properties", () => {
+    expect(SUPPRESSED_COLOR).not.toMatch(/^var\(/);
+    expect(bubbleColor(0, false, 0)).not.toMatch(/^var\(/);
+    expect(bubbleColor(15, false, 30)).not.toMatch(/^var\(/);
+    expect(bubbleColor(30, false, 30)).not.toMatch(/^var\(/);
+  });
+});
 
 describe("toFiniteNumber", () => {
   it("acepta números y cadenas numéricas (DRF puede serializar decimales como texto)", () => {
@@ -60,16 +102,16 @@ describe("bubbleColor", () => {
     const low = bubbleColor(1, false, 30);
     const high = bubbleColor(30, false, 30);
     expect(low).not.toBe(high);
-    expect(high).toBe("var(--color-primary-700)");
-    expect(low).toBe("var(--color-primary-100)");
+    expect(high).toBe("#0e7c78");
+    expect(low).toBe("#d7f3f1");
   });
 
   it("con personas y máximo en cero (o negativo), usa el tono más claro sin dividir por cero", () => {
     // maxPeople inválido (<=0) cae a `people` como `safeMax`; con `people`
     // también en 0 (o negativo), `safeMax <= 0` — la rama que evita el
     // `0/0` de la fórmula de proporción.
-    expect(bubbleColor(0, false, 0)).toBe("var(--color-primary-100)");
-    expect(bubbleColor(0, false, -3)).toBe("var(--color-primary-100)");
+    expect(bubbleColor(0, false, 0)).toBe("#d7f3f1");
+    expect(bubbleColor(0, false, -3)).toBe("#d7f3f1");
   });
 });
 
@@ -92,7 +134,7 @@ describe("toBubbles", () => {
         latitude: 43.34,
         longitude: -1.79,
         radius: MAX_RADIUS,
-        color: "var(--color-primary-700)",
+        color: "#0e7c78",
         events: 12,
         people: 30,
         suppressed: false,
