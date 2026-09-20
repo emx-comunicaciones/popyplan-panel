@@ -91,6 +91,33 @@ describe("Home (app/page.tsx)", () => {
     expect(screen.queryByRole("link", { name: "Descargar en Google Play" })).toBeNull();
   });
 
+  it("sin sesión, con tiendas configuradas, la portada enseña los botones de App Store y Google Play", async () => {
+    getServerSessionMock.mockResolvedValue(null);
+    vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", "https://apps.apple.com/app/popyplan/id1");
+    vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", "https://play.google.com/store/apps/details?id=com.popyplan");
+
+    render(await Home());
+
+    // `<StoreLinks />` se monta dos veces en la landing (el hero y la
+    // tarjeta de «Personas»), así que hay dos enlaces con el mismo nombre
+    // accesible — `getAllByRole` en vez de `getByRole`, comprobando que
+    // los dos llevan la URL correcta.
+    const appStoreLinks = screen.getAllByRole("link", { name: "Descargar en el App Store" });
+    expect(appStoreLinks.length).toBeGreaterThanOrEqual(1);
+    for (const link of appStoreLinks) {
+      expect(link).toHaveAttribute("href", "https://apps.apple.com/app/popyplan/id1");
+    }
+
+    const playStoreLinks = screen.getAllByRole("link", { name: "Descargar en Google Play" });
+    expect(playStoreLinks.length).toBeGreaterThanOrEqual(1);
+    for (const link of playStoreLinks) {
+      expect(link).toHaveAttribute(
+        "href",
+        "https://play.google.com/store/apps/details?id=com.popyplan",
+      );
+    }
+  });
+
   it("generateMetadata describe la landing con su Open Graph", async () => {
     vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://popyplan.com");
 
@@ -110,6 +137,14 @@ describe("Home (app/page.tsx)", () => {
       locale: "es_ES",
     });
     expect(metadata.twitter).toMatchObject({ card: "summary_large_image" });
+  });
+
+  it("generateMetadata fija metadataBase al host real, para que las imágenes relativas de Open Graph resuelvan", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://popyplan.com");
+
+    const metadata = await generateMetadata();
+
+    expect(metadata.metadataBase?.href).toBe("https://popyplan.com/");
   });
 
   it("con rol de plataforma redirige a /plataforma", async () => {

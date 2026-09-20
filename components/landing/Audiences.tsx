@@ -33,7 +33,7 @@ export function Audiences() {
 
   return (
     <section aria-labelledby="landing-audiences" className="mx-auto max-w-5xl px-4 py-12">
-      <h2 id="landing-audiences" className="mb-4 text-lg font-semibold text-text-base">
+      <h2 id="landing-audiences" className="mb-4 text-2xl font-semibold text-text-base">
         {t("title")}
       </h2>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -45,7 +45,7 @@ export function Audiences() {
 
           return (
             <article key={audience} className="rounded-lg border border-border bg-white p-3">
-              <h3 className="mb-2 text-base font-semibold text-text-base">
+              <h3 className="mb-2 text-lg font-semibold text-text-base">
                 {t(`${audience}.title`)}
               </h3>
               <ul className="mb-3 flex list-disc flex-col gap-1 pl-4 text-sm text-text-secondary">

@@ -312,7 +312,7 @@
       "administrations": {
         "title": "Administrazio publikoak",
         "benefits": [
-          "Adierazten duzun lurraldearen behatokia, oraindik jarduerarik ez dagoen tokietan ere.",
+          "Zure lurraldearen behatokia, oraindik jarduerarik ez dagoen tokietan ere.",
           "Finantzatutako sarea: laguntzen dituzun erakundeek zer egiten duten.",
           "Aldien arteko konparaketak eta txostenak CSV eta PDF formatuan."
         ],
@@ -332,7 +332,7 @@
       "title": "Nola funtzionatzen duen",
       "steps": [
         "Erakundeak pertsonak gonbidatzen ditu bere gunera; inork ez du besteren konturik sortzen.",
-        "Jarduera bakoitza argitaratu, bete eta aplikazioko QR kodearekin pasatzen da zerrenda.",
+        "Jarduera bakoitza argitaratzen da, bete egiten da eta zerrenda aplikazioko QR kodearekin pasatzen da.",
         "Panelak gertatutakoa laburbiltzen du, modu agregatuan eta txosten baterako prest."
       ]
     },
@@ -343,13 +343,13 @@
         "Popyplanek ez du datu klinikorik ez diagnostikorik gordetzen.",
         "Inkestak anonimoak dira eta beti modu agregatuan ikusten dira.",
         "Ez da bostetik beherako pertsona-zenbaketarik erakusten.",
-        "Inork ez du besteren senide dela adierazten: guneak bereizita daude.",
+        "Inork ez du besteren senide denik adierazten: guneak bereizita daude.",
         "Dena gaztelaniaz, euskaraz eta katalanez."
       ]
     },
     "contact": {
       "title": "Hitz egin gurekin",
-      "body": "Esaguzu zure erakundeak zer egiten duen eta panela erakutsiko dizugu.",
+      "body": "Esan iezaguzu zure erakundeak zer egiten duen eta panela erakutsiko dizugu.",
       "cta": "Idatzi iezaguzu",
       "subject": {
         "associations": "Popyplan elkarte batentzat",

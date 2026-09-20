@@ -12,7 +12,7 @@ export function Privacy() {
 
   return (
     <section aria-labelledby="landing-privacy" className="mx-auto max-w-5xl px-4 py-12">
-      <h2 id="landing-privacy" className="mb-4 text-lg font-semibold text-text-base">
+      <h2 id="landing-privacy" className="mb-4 text-2xl font-semibold text-text-base">
         {t("title")}
       </h2>
       <ul className="flex list-disc flex-col gap-1 pl-4 text-sm text-text-secondary">

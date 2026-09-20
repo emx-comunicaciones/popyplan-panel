@@ -312,7 +312,7 @@
       "administrations": {
         "title": "Administracions públiques",
         "benefits": [
-          "Observatori del territori que declares, també on encara no hi ha activitat.",
+          "Observatori del teu territori, també on encara no hi ha activitat.",
           "Xarxa finançada: què fan les entitats que finances.",
           "Comparatives entre períodes i informes en CSV i PDF."
         ],
@@ -344,7 +344,7 @@
         "Les enquestes són anònimes i només es veuen agregades.",
         "No es mostra cap recompte de persones per sota de cinc.",
         "Ningú declara ser familiar de ningú: els espais estan separats.",
-        "Tot en castellà, èuscar i català."
+        "Tot en castellà, basc i català."
       ]
     },
     "contact": {

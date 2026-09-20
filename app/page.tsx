@@ -29,6 +29,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const url = siteUrl();
 
   return {
+    // `metadataBase` es imprescindible para que las rutas relativas de
+    // `openGraph.images`/`twitter.images` ("/og.png") se resuelvan contra
+    // el host real: sin él, Next cae en silencio a `http://localhost:3000`
+    // en producción (aviso de build "metadataBase property in metadata
+    // export is not set").
+    metadataBase: new URL(url),
     title: { absolute: title },
     description,
     openGraph: {

@@ -8,7 +8,7 @@ export function HowItWorks() {
   return (
     <section aria-labelledby="landing-how" className="bg-white">
       <div className="mx-auto max-w-5xl px-4 py-12">
-        <h2 id="landing-how" className="mb-4 text-lg font-semibold text-text-base">
+        <h2 id="landing-how" className="mb-4 text-2xl font-semibold text-text-base">
           {t("title")}
         </h2>
         <ol className="flex list-decimal flex-col gap-2 pl-4 text-sm text-text-secondary">

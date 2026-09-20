@@ -1,4 +1,5 @@
 import { Footer } from "@/components/layout/Footer";
+import { SkipLink } from "@/components/ui/SkipLink";
 
 import { Audiences } from "./Audiences";
 import { Contact } from "./Contact";
@@ -15,12 +16,19 @@ import { Privacy } from "./Privacy";
  *
  * Orden de encabezados: `h1` (portada) → `h2` (sección) → `h3` (tarjeta
  * de público), sin saltos — `axe` lo comprueba en `app/page.test.tsx`.
+ *
+ * `<SkipLink />` + `<main id="main-content" tabIndex={-1}>`, mismo patrón
+ * que los tres layouts de área (`app/{entidad,paraguas,plataforma}/[slug]/
+ * layout.tsx`): la landing es la única pantalla pública con navegación por
+ * teclado sustancial (cabecera + cinco secciones + pie), así que también
+ * necesita un salto directo al contenido.
  */
 export function Landing() {
   return (
     <div className="flex min-h-screen flex-col bg-border-light">
+      <SkipLink />
       <LandingHeader />
-      <main className="flex-1">
+      <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
         <Hero />
         <Audiences />
         <HowItWorks />

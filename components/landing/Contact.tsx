@@ -16,7 +16,7 @@ export function Contact() {
   return (
     <section aria-labelledby="landing-contact" className="bg-white">
       <div className="mx-auto max-w-5xl px-4 py-12">
-        <h2 id="landing-contact" className="mb-2 text-lg font-semibold text-text-base">
+        <h2 id="landing-contact" className="mb-2 text-2xl font-semibold text-text-base">
           {t("title")}
         </h2>
         <p className="mb-4 max-w-2xl text-sm text-text-secondary">{t("body")}</p>
