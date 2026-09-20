@@ -140,7 +140,10 @@ export function useVerifyOrganization(): UseMutationResult<Organization, Organiz
     },
     onSuccess: (_data, orgId) => {
       invalidateOrganizations(queryClient);
-      queryClient.invalidateQueries({ queryKey: ["panel-organization", orgId] });
+      // `String(orgId)`: misma normalización que `useOrganization`, para
+      // que la invalidación encuentre la entrada cacheada sea cual sea el
+      // tipo con el que llegó `orgId` a esta mutación.
+      queryClient.invalidateQueries({ queryKey: ["panel-organization", String(orgId)] });
     },
   });
 }
@@ -188,7 +191,10 @@ export function useSetOrganizationParent(): UseMutationResult<
     },
     onSuccess: (_data, { orgId }) => {
       invalidateOrganizations(queryClient);
-      queryClient.invalidateQueries({ queryKey: ["panel-organization", orgId] });
+      // `String(orgId)`: misma normalización que `useOrganization`, para
+      // que la invalidación encuentre la entrada cacheada sea cual sea el
+      // tipo con el que llegó `orgId` a esta mutación.
+      queryClient.invalidateQueries({ queryKey: ["panel-organization", String(orgId)] });
     },
   });
 }

@@ -225,7 +225,13 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
   const updateSede = useUpdateOrganization(orgId);
   const canVerify = role === "verifier" || role === "superadmin";
   const canManageTerritory = role === "superadmin";
-  const [sede, setSede] = useState<string | null>(null);
+  // `undefined` es «todavía no se ha tocado el selector» (usa `org.place`
+  // guardado); `null` es un valor real elegido en el selector («Sin
+  // municipio»). Usar `null` para las dos cosas (fix round 1) hacía que
+  // elegir «Sin municipio» y guardar reenviara `org.place` en vez de
+  // limpiar la sede: `sedeValue` volvía a caer al valor guardado en
+  // cuanto `sede === null`, indistinguible de «no se ha tocado nada».
+  const [sede, setSede] = useState<string | null | undefined>(undefined);
 
   if (organization.isError) {
     return (
@@ -241,7 +247,7 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
 
   const org = organization.data;
   const isAdministration = org.org_type === "administracion";
-  const sedeValue = sede === null ? (org.place ?? null) : sede;
+  const sedeValue = sede === undefined ? (org.place ?? null) : sede;
 
   return (
     <div className="flex flex-col gap-4">
@@ -320,7 +326,9 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
         </Card>
       ) : null}
 
-      {canManageTerritory && isAdministration ? <TerritorioForm organization={org} /> : null}
+      {canManageTerritory && isAdministration ? (
+        <TerritorioForm organization={org} orgId={orgId} />
+      ) : null}
     </div>
   );
 }

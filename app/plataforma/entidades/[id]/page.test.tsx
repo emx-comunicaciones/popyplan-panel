@@ -320,6 +320,103 @@ describe("PlataformaEntidadDetailPage", () => {
     expect(screen.queryByLabelText("Tipo de territorio")).not.toBeInTheDocument();
   });
 
+  /**
+   * Fix round 1, hallazgo C1: `TerritorioForm` mandaba
+   * `organization.id` (number) a `useSetOrganizationTerritory`, mientras
+   * `useOrganization`/`DatosTab` cachean la ficha con el `orgId` de la
+   * ruta (string) — la invalidación tras guardar nunca encontraba la
+   * entrada, así que la ficha se quedaba obsoleta hasta recargar. Aquí
+   * `organization.id` (999) y el id de la ruta (9) difieren a propósito:
+   * si el bug reapareciera, el `PATCH` iría a `/api/organizations/999/`
+   * (sin mock, el test fallaría) o el recuento no se refrescaría solo.
+   */
+  it("guardar el territorio refresca la ficha sin recargar (fix round 1: caché string/number)", async () => {
+    let currentOrg = buildOrganization({
+      id: 999,
+      org_type: "administracion",
+      admin_level: "",
+      territory_kind: "",
+      territory_code: "",
+      territory_places_count: 0,
+    });
+    apiFetchMock.mockImplementation(async (path: string, options?: { method?: string }) => {
+      if (path === "/api/organizations/9/" && options?.method === "PATCH") {
+        currentOrg = {
+          ...currentOrg,
+          admin_level: "diputacion",
+          territory_kind: "provincia",
+          territory_code: "20",
+          territory_places_count: 88,
+        };
+        return currentOrg;
+      }
+      if (path === "/api/organizations/9/") {
+        return currentOrg;
+      }
+      throw new Error(`sin mock para ${path}`);
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+    const user = userEvent.setup();
+
+    const element = await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) });
+    render(element);
+
+    await waitFor(() => expect(screen.getByLabelText("Nivel administrativo")).toBeInTheDocument());
+    const territorioCard = screen
+      .getByRole("heading", { name: "Territorio declarado" })
+      .closest("div") as HTMLElement;
+    await user.click(within(territorioCard).getByRole("button", { name: "Guardar" }));
+
+    await waitFor(() =>
+      expect(screen.getByText("88 municipios en el territorio guardado")).toBeInTheDocument(),
+    );
+  });
+
+  /**
+   * Fix round 1, hallazgo C2: `sede` usaba `null` tanto para «todavía no
+   * se ha tocado el selector» como para el valor que emite `SedeSelector`
+   * al elegir «Sin municipio», así que limpiar la sede y guardar
+   * reenviaba `org.place` en vez de `null`.
+   */
+  it("elegir «Sin municipio» y guardar manda `place: null`, no el valor guardado (fix round 1)", async () => {
+    let currentOrg = buildOrganization({ id: 9, place: "20045" });
+    const patchBodies: unknown[] = [];
+    apiFetchMock.mockImplementation(
+      async (path: string, options?: { method?: string; body?: unknown }) => {
+        if (path === "/api/organizations/9/" && options?.method === "PATCH") {
+          patchBodies.push(options.body);
+          currentOrg = { ...currentOrg, place: (options.body as { place: string | null }).place };
+          return currentOrg;
+        }
+        if (path === "/api/organizations/9/") {
+          return currentOrg;
+        }
+        return { count: 0, next: null, previous: null, results: [] };
+      },
+    );
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+    const user = userEvent.setup();
+
+    const element = await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) });
+    render(element);
+
+    await waitFor(() => expect(screen.getByText("20045")).toBeInTheDocument());
+    await user.selectOptions(screen.getByLabelText("Municipio de la sede"), "Sin municipio");
+
+    const sedeCard = screen.getByRole("heading", { name: "Sede" }).closest("div") as HTMLElement;
+    await user.click(within(sedeCard).getByRole("button", { name: "Guardar" }));
+
+    await waitFor(() => expect(patchBodies).toContainEqual({ place: null }));
+  });
+
   it("moderator ve «Sin acceso»", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",

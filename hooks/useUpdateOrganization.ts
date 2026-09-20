@@ -85,7 +85,10 @@ export function useUpdateOrganization(
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["panel-organization", orgId] });
+      // `String(orgId)`: misma clave que construye `useOrganization`, que
+      // también normaliza — sin esto, invalidar con un `orgId` de otro
+      // tipo (number vs. string) nunca encuentra la entrada cacheada.
+      queryClient.invalidateQueries({ queryKey: ["panel-organization", String(orgId)] });
     },
   });
 }

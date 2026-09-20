@@ -64,6 +64,18 @@ const TERRITORY_ERROR_KEYS: Record<OrganizationsErrorKind, string> = {
 
 export interface TerritorioFormProps {
   organization: Organization;
+  /**
+   * Id de la organización tal cual lo recibe `EntidadDetail` (el
+   * parámetro de ruta del Server Component, casi siempre un `string`) —
+   * **nunca** `organization.id` (un `number` del cuerpo de la API).
+   * `useOrganization`/`DatosTab` cachean la ficha con este mismo valor;
+   * pasarle a `useSetOrganizationTerritory` el `id` numérico en su lugar
+   * hacía que la invalidación tras guardar nunca encontrara esa entrada
+   * de caché, y la ficha se quedaba obsoleta hasta recargar a mano (fix
+   * round 1, misma clase de bug que `useProgram`/`useAssignReferent`
+   * documentada en `CLAUDE.md`).
+   */
+  orgId: string | number;
 }
 
 /** Códigos INE no vacíos de una lista separada por comas. */
@@ -74,9 +86,9 @@ export function countMunicipios(code: string): number {
     .filter((part) => part.length > 0).length;
 }
 
-export function TerritorioForm({ organization }: TerritorioFormProps) {
+export function TerritorioForm({ organization, orgId }: TerritorioFormProps) {
   const t = useTranslations();
-  const save = useSetOrganizationTerritory(organization.id);
+  const save = useSetOrganizationTerritory(orgId);
   const levelId = useId();
   const kindId = useId();
   const codeId = useId();

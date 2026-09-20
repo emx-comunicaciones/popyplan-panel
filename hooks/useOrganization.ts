@@ -22,7 +22,15 @@ export class OrganizationError extends Error {
 
 export function useOrganization(orgId: number | string): UseQueryResult<Organization, OrganizationError> {
   return useQuery<Organization, OrganizationError>({
-    queryKey: ["panel-organization", orgId],
+    // `String(orgId)`: quien pide la ficha puede recibir el id como
+    // parámetro de ruta (string, `EntidadDetail`/`DatosTab`) o como
+    // `Organization.id` (number, cualquier mutación que invalide esta
+    // clave tras guardar). Sin normalizar, `["panel-organization", 9]` y
+    // `["panel-organization", "9"]` son dos entradas de caché distintas
+    // para TanStack Query y una invalidación nunca encuentra la otra —
+    // mismo bug de clase que `useProgram`/`useAssignReferent`
+    // (`CLAUDE.md`, «Bug real encontrado por `e2e/programas.spec.ts`»).
+    queryKey: ["panel-organization", String(orgId)],
     queryFn: async () => {
       try {
         return await apiFetch<Organization>(ORGANIZATIONS.DETAIL(orgId));

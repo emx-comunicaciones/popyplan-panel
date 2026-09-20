@@ -59,7 +59,14 @@ export function useSetOrganizationTerritory(
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["panel-organizations"] });
-      queryClient.invalidateQueries({ queryKey: ["panel-organization", orgId] });
+      // `String(orgId)`: misma clave que construye `useOrganization` — sin
+      // normalizar, invalidar con un `orgId` de otro tipo (p. ej. el
+      // number de `Organization.id` cuando `useOrganization` cachea con
+      // el string del parámetro de ruta) nunca encontraba la entrada, y
+      // la ficha se quedaba obsoleta hasta recargar la página a mano
+      // (fix round 1, misma clase de bug que `useProgram`/
+      // `useAssignReferent`).
+      queryClient.invalidateQueries({ queryKey: ["panel-organization", String(orgId)] });
     },
   });
 }

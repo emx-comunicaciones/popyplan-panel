@@ -46,7 +46,7 @@ describe("TerritorioForm", () => {
     mockSave();
     usePlacesCountMock.mockReturnValue({ data: undefined, isError: false, error: null });
 
-    render(<TerritorioForm organization={buildOrganization({ territory_kind: "municipios" })} />);
+    render(<TerritorioForm organization={buildOrganization({ territory_kind: "municipios" })} orgId="7" />);
     await userEvent.type(screen.getByLabelText("Códigos INE separados por comas"), "20069, 20045");
 
     expect(screen.getByText("2 municipios en la lista escrita")).toBeInTheDocument();
@@ -60,6 +60,7 @@ describe("TerritorioForm", () => {
     render(
       <TerritorioForm
         organization={buildOrganization({ territory_kind: "provincia", territory_places_count: 0 })}
+        orgId="7"
       />,
     );
     fireEvent.change(screen.getByLabelText("Código del territorio"), { target: { value: "20" } });
@@ -80,6 +81,7 @@ describe("TerritorioForm", () => {
           territory_code: "",
           territory_places_count: 88,
         })}
+        orgId="7"
       />,
     );
 
@@ -91,7 +93,7 @@ describe("TerritorioForm", () => {
     vi.useFakeTimers();
     usePlacesCountMock.mockReturnValue({ data: undefined, isError: true, error: { kind: "desconocido" } });
 
-    render(<TerritorioForm organization={buildOrganization({ territory_kind: "provincia" })} />);
+    render(<TerritorioForm organization={buildOrganization({ territory_kind: "provincia" })} orgId="7" />);
     fireEvent.change(screen.getByLabelText("Código del territorio"), { target: { value: "20" } });
     act(() => vi.advanceTimersByTime(300));
 
@@ -103,7 +105,7 @@ describe("TerritorioForm", () => {
     vi.useFakeTimers();
     usePlacesCountMock.mockReturnValue({ data: undefined, isError: false, error: null });
 
-    render(<TerritorioForm organization={buildOrganization({ territory_kind: "provincia" })} />);
+    render(<TerritorioForm organization={buildOrganization({ territory_kind: "provincia" })} orgId="7" />);
     fireEvent.change(screen.getByLabelText("Código del territorio"), { target: { value: "20" } });
     act(() => vi.advanceTimersByTime(300));
 
@@ -117,6 +119,7 @@ describe("TerritorioForm", () => {
     render(
       <TerritorioForm
         organization={buildOrganization({ admin_level: "diputacion", territory_kind: "provincia", territory_code: "20" })}
+        orgId="7"
       />,
     );
     await userEvent.click(screen.getByRole("button", { name: "Guardar" }));
@@ -128,6 +131,18 @@ describe("TerritorioForm", () => {
     });
   });
 
+  it("usa el `orgId` de la prop para el hook, nunca `organization.id` (fix round 1)", () => {
+    mockSave();
+    usePlacesCountMock.mockReturnValue({ data: undefined, isError: false, error: null });
+
+    // `organization.id` (number, 999) y `orgId` (el parámetro de ruta,
+    // string) difieren a propósito: si el componente volviera a leer
+    // `organization.id` esta aserción lo delataría.
+    render(<TerritorioForm organization={buildOrganization({ id: 999 })} orgId="7" />);
+
+    expect(useSetOrganizationTerritoryMock).toHaveBeenCalledWith("7");
+  });
+
   it("un error de guardado se pinta como alerta con el texto del kind", () => {
     mockSave({
       isError: true,
@@ -135,7 +150,7 @@ describe("TerritorioForm", () => {
     });
     usePlacesCountMock.mockReturnValue({ data: undefined, isError: false, error: null });
 
-    render(<TerritorioForm organization={buildOrganization()} />);
+    render(<TerritorioForm organization={buildOrganization()} orgId="7" />);
 
     expect(screen.getByRole("alert")).toHaveTextContent("Solo superadmin declara el territorio.");
   });
@@ -147,7 +162,7 @@ describe("TerritorioForm", () => {
     });
     usePlacesCountMock.mockReturnValue({ data: undefined, isError: false, error: null });
 
-    render(<TerritorioForm organization={buildOrganization()} />);
+    render(<TerritorioForm organization={buildOrganization()} orgId="7" />);
 
     expect(screen.getByRole("alert")).toHaveTextContent("Ese código no tiene municipios activos.");
   });
@@ -156,7 +171,7 @@ describe("TerritorioForm", () => {
     mockSave({ isSuccess: true });
     usePlacesCountMock.mockReturnValue({ data: undefined, isError: false, error: null });
 
-    render(<TerritorioForm organization={buildOrganization()} />);
+    render(<TerritorioForm organization={buildOrganization()} orgId="7" />);
 
     expect(screen.getByText("Guardado.")).toBeInTheDocument();
   });

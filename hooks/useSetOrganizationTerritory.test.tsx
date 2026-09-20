@@ -75,32 +75,41 @@ describe("useSetOrganizationTerritory", () => {
     expect(result.current.error?.kind).toBe("sin_permiso");
   });
 
-  it("cualquier otro fallo es kind 'desconocido' e invalida el listado y la ficha", async () => {
+  it("cualquier otro fallo es kind 'desconocido'", async () => {
     apiFetchMock.mockRejectedValue(new Error("red caída"));
 
-    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-    queryClient.setQueryData(["panel-organizations", ""], { count: 0 });
-    queryClient.setQueryData(["panel-organization", 3], buildOrganization());
-
-    const { result } = renderHook(() => useSetOrganizationTerritory(3), {
-      wrapper: ({ children }: { children: ReactNode }) => (
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-      ),
-    });
+    const { result } = renderHook(() => useSetOrganizationTerritory(3), { wrapper });
     result.current.mutate({ admin_level: "", territory_kind: "", territory_code: "" });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error?.kind).toBe("desconocido");
   });
 
-  it("un envío que sale bien invalida el listado y la ficha de la entidad", async () => {
-    const updated = buildOrganization({ admin_level: "diputacion" });
+  /**
+   * Fix round 1, hallazgo C1: la clave de invalidación se normaliza con
+   * `String(orgId)`, igual que `useOrganization`. Aquí se comprueba con
+   * el patrón del repo (`getQueryState(...).isInvalidated`, ver
+   * `useMarkAttendance`/`useCheckin` en `CLAUDE.md`) en vez de espiar
+   * `invalidateQueries` — el hook se llama con un `orgId` **number** (9)
+   * a propósito, mientras la entrada cacheada usa la clave **string**
+   * ("9") que construiría `useOrganization` a partir de un parámetro de
+   * ruta: antes del fix, `["panel-organization", 9]` nunca encontraba
+   * `["panel-organization", "9"]`.
+   */
+  it("un envío que sale bien invalida el listado y la ficha de la entidad, con `orgId` de otro tipo que el de la caché", async () => {
+    const updated = buildOrganization({ id: 9, admin_level: "diputacion" });
     apiFetchMock.mockResolvedValue(updated);
 
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-    const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
+    queryClient.setQueryData(["panel-organizations", ""], {
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
+    });
+    queryClient.setQueryData(["panel-organization", "9"], buildOrganization({ id: 9 }));
 
-    const { result } = renderHook(() => useSetOrganizationTerritory(3), {
+    const { result } = renderHook(() => useSetOrganizationTerritory(9), {
       wrapper: ({ children }: { children: ReactNode }) => (
         <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
       ),
@@ -108,7 +117,7 @@ describe("useSetOrganizationTerritory", () => {
     result.current.mutate({ admin_level: "diputacion", territory_kind: "provincia", territory_code: "20" });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["panel-organizations"] });
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["panel-organization", 3] });
+    expect(queryClient.getQueryState(["panel-organizations", ""])?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState(["panel-organization", "9"])?.isInvalidated).toBe(true);
   });
 });
