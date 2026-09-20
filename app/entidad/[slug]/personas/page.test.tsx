@@ -400,7 +400,7 @@ describe("EntidadPersonasPage", () => {
     expect(screen.getByRole("button", { name: "Añadir persona" })).toBeInTheDocument();
   });
 
-  it("dinamizador no ve los botones de gestión ni acciones sobre invitadas", async () => {
+  it("referente no ve los botones de gestión ni acciones sobre invitadas", async () => {
     mockDefaults();
     usePeopleMock.mockReturnValue({
       data: pageData({ results: [PERSON_ROW, buildInvitedPersonRow()] }),
@@ -408,7 +408,7 @@ describe("EntidadPersonasPage", () => {
       error: null,
     });
 
-    await renderPage("dinamizador");
+    await renderPage("referente");
 
     expect(screen.queryByRole("button", { name: "Añadir persona" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Importar Excel/CSV" })).not.toBeInTheDocument();
@@ -810,7 +810,7 @@ describe("EntidadPersonasPage", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("No tienes acceso al listado de personas.");
   });
 
-  it("dinamizador con include_invited ve la fila pero sin Reenviar/Revocar", async () => {
+  it("referente con include_invited ve la fila pero sin Reenviar/Revocar", async () => {
     mockDefaults();
     usePeopleMock.mockReturnValue({
       data: pageData({ results: [buildInvitedPersonRow()] }),
@@ -820,7 +820,7 @@ describe("EntidadPersonasPage", () => {
     useInvitationsMock.mockReturnValue({ data: [], isError: false, error: null });
 
     const user = userEvent.setup();
-    await renderPage("dinamizador");
+    await renderPage("referente");
     await user.click(screen.getByLabelText("Incluir invitadas"));
 
     expect(screen.getByText("Invitada (pendiente)")).toBeInTheDocument();
@@ -996,6 +996,18 @@ describe("EntidadPersonasPage", () => {
     usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
 
     await renderPage("analista");
+
+    expect(screen.getByText("Sin acceso")).toBeInTheDocument();
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  });
+
+  it("dinamizador no ve Personas: «Sin acceso» (A-I3, el backend le da 403)", async () => {
+    // `panel/viewsets.py::ROLES_LISTA_PERSONAS` no incluye `dinamizador`,
+    // y `'ver_ficha'` tampoco: la sección entera era un 403.
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+
+    await renderPage("dinamizador");
 
     expect(screen.getByText("Sin acceso")).toBeInTheDocument();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();

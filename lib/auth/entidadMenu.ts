@@ -5,7 +5,9 @@
  * ver más abajo); qué ve cada rol sale de la matriz `entities/permissions.py`
  * y de las reglas explícitas de la tarea:
  * - `titular`/`moderador`: todo.
- * - `dinamizador`: todo salvo Configuración, Reportes y Comunicaciones.
+ * - `dinamizador`: todo salvo Configuración, Reportes, Comunicaciones,
+ *   Informes, Personas y Guardia (las dos últimas, desde la auditoría de
+ *   2026-09-21 — ver más abajo).
  * - `analista`: solo Inicio, Programas e Informes (nunca lista nominal).
  * - `referente`: solo Inicio, Personas, Actividades y Programas (sus personas asignadas).
  *
@@ -60,6 +62,27 @@
  * (`/api/panel/entidad/{id}/resources/`), ni el del componente
  * (`components/entidad/RecursosPanel.tsx`), ni el namespace de catálogo
  * `entidad.recursos.*`: solo el nombre visible y la ruta.
+ *
+ * **Auditoría de integración (2026-09-21), hallazgos A-I3 y D-I8** — el
+ * menú ofrecía dos secciones que el backend le niega al `dinamizador`, y
+ * escondía una que el backend sí autoriza:
+ * - **Personas** sale del menú de `dinamizador`: `GET /api/panel/entidad/
+ *   {id}/people/` exige `ver_lista_nominal` **y** además un rol de
+ *   `panel/viewsets.py::ROLES_LISTA_PERSONAS` (`titular`/`moderador`/
+ *   `referente`), y la ficha exige `ver_ficha`
+ *   (`entities/permissions.py`, los mismos tres). El `dinamizador`
+ *   recibía 403 en la lista y en cada ficha.
+ * - **Guardia** sale también de su menú: `safety/viewsets.py
+ *   ::HelpRequestViewSet.pending` acepta `es_guardia or puede(user, org,
+ *   'moderar')`, y `'moderar'` es `{titular, moderador}`.
+ * - …pero **cualquier** `OrgMembership` puede ser la persona de guardia
+ *   (`Organization.on_call_user`, validado en `entities/serializers.py`),
+ *   así que una `analista`, `referente` o `dinamizador` nombrada guardia
+ *   recibe los avisos y necesita la sección. De ahí el segundo argumento
+ *   de `entidadMenuFor`: `{ isOnCall }`, que el Server Component calcula
+ *   comparando `organization.on_call_user` con `session.me.id`. Es la
+ *   única parte del menú que no depende solo del rol, porque en el
+ *   backend tampoco depende solo del rol.
  */
 import type { EntidadPanelRole } from "./area";
 
@@ -121,6 +144,11 @@ const DINAMIZADOR_HIDDEN: readonly EntidadMenuItem[] = [
   "reportes",
   "comunicaciones",
   "informes",
+  // A-I3: `people/` y la ficha son de `titular`/`moderador`/`referente`.
+  "personas",
+  // D-I8: `help-requests/pending/` pide `moderar` o ser la guardia; el
+  // segundo caso lo cubre `isOnCall`, no el rol.
+  "guardia",
   ...PENDING_SECTIONS,
 ];
 const ANALISTA_VISIBLE: readonly EntidadMenuItem[] = ["inicio", "programas", "informes"];
@@ -131,7 +159,33 @@ const REFERENTE_VISIBLE: readonly EntidadMenuItem[] = [
   "programas",
 ];
 
-export function entidadMenuFor(role: EntidadPanelRole | string): EntidadMenuItem[] {
+/**
+ * Lo que el menú necesita saber de la entidad además del rol. Hoy solo
+ * `isOnCall` (`organization.on_call_user === session.me.id`): el backend
+ * deja ver los avisos de ayuda a la persona de guardia **sea cual sea su
+ * rol**, así que sin esto una `referente` o una `analista` nombrada
+ * guardia recibía los avisos por API sin tener pantalla donde verlos.
+ */
+export interface EntidadMenuContext {
+  isOnCall?: boolean;
+}
+
+export function entidadMenuFor(
+  role: EntidadPanelRole | string,
+  context: EntidadMenuContext = {},
+): EntidadMenuItem[] {
+  const byRole = menuByRole(role);
+  // `byRole.length === 0` es «este rol no tiene panel» (no está en
+  // `ver_panel`): ser la guardia no le abre una sección suelta, porque el
+  // layout de entidad ya lo devuelve a la raíz antes de llegar aquí.
+  if (!context.isOnCall || byRole.length === 0 || byRole.includes("guardia")) return byRole;
+  // Se reconstruye filtrando `ENTIDAD_MENU_ITEMS` para que «Guardia»
+  // caiga en su sitio del menú, no al final.
+  const visible = new Set<EntidadMenuItem>([...byRole, "guardia"]);
+  return ENTIDAD_MENU_ITEMS.filter((item) => visible.has(item));
+}
+
+function menuByRole(role: EntidadPanelRole | string): EntidadMenuItem[] {
   switch (role) {
     case "titular":
     case "moderador":

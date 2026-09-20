@@ -51,7 +51,7 @@ describe("PageHelp", () => {
       screen.getByText("Invitar a una persona o importar un Excel/CSV (titular y moderador)"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText((_, element) => element?.textContent === "Quién la ve: Titular, moderador, dinamizador y referente."),
+      screen.getByText((_, element) => element?.textContent === "Quién la ve: Titular, moderador y referente."),
     ).toBeInTheDocument();
   });
 

@@ -1307,7 +1307,7 @@
           "Pertsona bakoitzaren fitxa ireki",
           "Zain dauden gonbidapenak sartu eta berbidali edo baliogabetu"
         ],
-        "audience": "Titularra, moderatzailea, dinamizatzailea eta erreferentea."
+        "audience": "Titularra, moderatzailea eta erreferentea."
       },
       "personaFicha": {
         "title": "Pertsonaren fitxa",
@@ -1317,7 +1317,7 @@
           "Bere laguntza-sarea ikusi (bere erreferenteak bakarrik)",
           "Zein jardueratan izena eman zuen eta joan zen ala ez berrikusi"
         ],
-        "audience": "Titularra, moderatzailea, dinamizatzailea eta pertsona horren erreferentea."
+        "audience": "Titularra, moderatzailea eta pertsona horren erreferentea."
       },
       "comunidades": {
         "title": "Komunitateak",
@@ -1449,7 +1449,7 @@
           "Laguntza-telefonoa ezarri eta nor dagoen txandan ikusi",
           "Pertsonaren laguntza-sareko norbait dagoeneko arduratu den ikusi"
         ],
-        "audience": "Titularra, moderatzailea, dinamizatzailea eta txandako pertsona."
+        "audience": "Titularra, moderatzailea eta txandako pertsona."
       },
       "informes": {
         "title": "Txostenak",

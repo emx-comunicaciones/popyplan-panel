@@ -12,8 +12,13 @@ const usePendingHelpRequestsMock = vi.hoisted(() => vi.fn());
 const useAcknowledgeHelpRequestMock = vi.hoisted(() => vi.fn());
 const useOrganizationMock = vi.hoisted(() => vi.fn());
 const useUpdateOrganizationMock = vi.hoisted(() => vi.fn());
+// El gate de la página pide la ficha de la entidad para saber si quien
+// mira es la persona de guardia (D-I8, `lib/auth/organization.ts
+// ::isOnCallUser`): sin guardia nombrada, el menú manda.
+const serverFetchMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
+vi.mock("@/lib/api/serverFetch", () => ({ serverFetch: serverFetchMock }));
 vi.mock("@/hooks/usePendingHelpRequests", async () => {
   const actual = await vi.importActual<typeof import("@/hooks/usePendingHelpRequests")>(
     "@/hooks/usePendingHelpRequests",
@@ -38,9 +43,15 @@ afterEach(() => {
   useAcknowledgeHelpRequestMock.mockReset();
   useOrganizationMock.mockReset();
   useUpdateOrganizationMock.mockReset();
+  serverFetchMock.mockReset();
 });
 
-async function renderPage(role = "titular", slug = "alfaville") {
+async function renderPage(role = "titular", slug = "alfaville", onCallUser: number | null = null) {
+  serverFetchMock.mockResolvedValue({
+    ok: true,
+    status: 200,
+    data: buildOrganization({ id: 7, on_call_user: onCallUser }),
+  });
   getServerSessionMock.mockResolvedValue({
     token: "t",
     me: buildMe({
@@ -154,6 +165,31 @@ describe("EntidadGuardiaPage", () => {
     await renderPage("analista");
 
     expect(screen.getByText("Sin acceso")).toBeInTheDocument();
+  });
+
+  it("dinamizador no ve Guardia: «Sin acceso» (D-I8, `pending` pide `moderar`)", async () => {
+    usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
+    useOrganizationMock.mockReturnValue({ data: buildOrganization(), isError: false, error: null });
+    useUpdateOrganizationMock.mockReturnValue(idleMutation());
+
+    await renderPage("dinamizador");
+
+    expect(screen.getByText("Sin acceso")).toBeInTheDocument();
+  });
+
+  it("la persona de guardia entra aunque su rol no traiga la sección", async () => {
+    // `buildMe()` es la cuenta 42: nombrarla `on_call_user` es lo único
+    // que mira `HelpRequestViewSet.pending` además de `moderar`.
+    usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
+    useOrganizationMock.mockReturnValue({ data: buildOrganization(), isError: false, error: null });
+    useUpdateOrganizationMock.mockReturnValue(idleMutation());
+
+    await renderPage("analista", "alfaville", 42);
+
+    expect(screen.getByRole("heading", { name: "Guardia" })).toBeInTheDocument();
+    expect(screen.queryByText("Sin acceso")).not.toBeInTheDocument();
   });
 
   it("sin sesión redirige a /login", async () => {

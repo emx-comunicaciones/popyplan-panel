@@ -148,6 +148,44 @@ describe("EntidadLayout", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("dinamizador tampoco ve Personas ni Guardia (A-I3/D-I8: 403 del backend)", async () => {
+    getServerSessionMock.mockResolvedValue(session("dinamizador"));
+    serverFetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: buildOrganization(),
+    });
+
+    const element = await EntidadLayout({
+      children: <p>contenido</p>,
+      params: Promise.resolve({ slug: "alfaville" }),
+    });
+    render(element);
+
+    expect(screen.queryByRole("link", { name: "Personas" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Guardia" })).not.toBeInTheDocument();
+  });
+
+  it("la persona de guardia ve «Guardia» aunque su rol no la traiga", async () => {
+    // `buildMe()` es la cuenta 42; `on_call_user: 42` la nombra guardia
+    // de la entidad, que es lo único que mira
+    // `HelpRequestViewSet.pending` además de `moderar`.
+    getServerSessionMock.mockResolvedValue(session("referente"));
+    serverFetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: buildOrganization({ on_call_user: 42 }),
+    });
+
+    const element = await EntidadLayout({
+      children: <p>contenido</p>,
+      params: Promise.resolve({ slug: "alfaville" }),
+    });
+    render(element);
+
+    expect(screen.getByRole("link", { name: "Guardia" })).toBeInTheDocument();
+  });
+
   it("referente ve Inicio, Personas, Actividades y Programas, nada más", async () => {
     getServerSessionMock.mockResolvedValue(session("referente"));
     serverFetchMock.mockResolvedValue({

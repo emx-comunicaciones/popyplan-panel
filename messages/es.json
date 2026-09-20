@@ -1307,7 +1307,7 @@
           "Abrir la ficha de cada persona",
           "Incluir las invitaciones pendientes y reenviarlas o revocarlas"
         ],
-        "audience": "Titular, moderador, dinamizador y referente."
+        "audience": "Titular, moderador y referente."
       },
       "personaFicha": {
         "title": "Ficha de la persona",
@@ -1317,7 +1317,7 @@
           "Ver su red de apoyo (solo su referente)",
           "Revisar a qué actividades se apuntó y si asistió"
         ],
-        "audience": "Titular, moderador, dinamizador y el referente de esa persona."
+        "audience": "Titular, moderador y el referente de esa persona."
       },
       "comunidades": {
         "title": "Comunidades",
@@ -1449,7 +1449,7 @@
           "Fijar el teléfono de ayuda y ver quién está de guardia",
           "Ver si alguien de la red de apoyo de la persona ya se ha hecho cargo"
         ],
-        "audience": "Titular, moderador, dinamizador y la persona de guardia."
+        "audience": "Titular, moderador y la persona de guardia."
       },
       "informes": {
         "title": "Informes",

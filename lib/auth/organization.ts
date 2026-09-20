@@ -21,3 +21,26 @@ export const getServerOrganization = cache(
   async (orgId: number, token: string): Promise<ServerFetchResult<Organization>> =>
     serverFetch<Organization>(ORGANIZATIONS.DETAIL(orgId), token),
 );
+
+/**
+ * ¿Es quien mira la **persona de guardia** de esa entidad
+ * (`Organization.on_call_user`)? Hallazgo D-I8 de la auditoría de
+ * integración: `safety/viewsets.py::HelpRequestViewSet.pending` acepta
+ * `es_guardia or puede(user, org, 'moderar')`, así que la sección
+ * «Guardia» no depende solo del rol — cualquier `OrgMembership` puede
+ * ser la guardia (`entities/serializers.py::validate_on_call_user`). Lo
+ * consumen el layout de entidad (para el menú) y el gate de
+ * `guardia/page.tsx`, los dos vía `entidadMenuFor(role, { isOnCall })`.
+ *
+ * Con la ficha de la entidad no disponible (403/5xx/red) devuelve
+ * `false`: se cae al menú por rol, que es lo que hacía el panel antes de
+ * este arreglo. No añade ninguna petición — `getServerOrganization` está
+ * memoizada por petición con `cache` de React y el layout ya la pide.
+ */
+export async function isOnCallUser(
+  orgId: number,
+  session: { token: string; me: { id: number } },
+): Promise<boolean> {
+  const result = await getServerOrganization(orgId, session.token);
+  return result.ok && result.data.on_call_user === session.me.id;
+}

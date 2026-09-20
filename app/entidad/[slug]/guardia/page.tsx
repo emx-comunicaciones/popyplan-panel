@@ -6,6 +6,7 @@ import { GuardiaPanel } from "@/components/entidad/GuardiaPanel";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { entidadMenuFor } from "@/lib/auth/entidadMenu";
+import { isOnCallUser } from "@/lib/auth/organization";
 import { getServerSession } from "@/lib/auth/session";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -33,7 +34,12 @@ export default async function EntidadGuardiaPage({
 
   const t = await getTranslations();
 
-  if (!entidadMenuFor(membership.role).includes("guardia")) {
+  // El backend deja ver los avisos a la guardia de la entidad aunque su
+  // rol no sea titular/moderador (D-I8), así que el gate mira las dos
+  // cosas, igual que `HelpRequestViewSet.pending`.
+  const isOnCall = await isOnCallUser(membership.organization_id, session);
+
+  if (!entidadMenuFor(membership.role, { isOnCall }).includes("guardia")) {
     return (
       <EmptyState title={t("common.noAccess")} description={t("entidad.guardia.noAccessDescription")} />
     );

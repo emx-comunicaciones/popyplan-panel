@@ -1307,7 +1307,7 @@
           "Open each person's profile",
           "Include pending invitations and resend or revoke them"
         ],
-        "audience": "Owner, moderator, facilitator and referent."
+        "audience": "Owner, moderator and referent."
       },
       "personaFicha": {
         "title": "Person profile",
@@ -1317,7 +1317,7 @@
           "See their support network (only their referent)",
           "Review which activities they signed up for and whether they attended"
         ],
-        "audience": "Owner, moderator, facilitator and that person's referent."
+        "audience": "Owner, moderator and that person's referent."
       },
       "comunidades": {
         "title": "Communities",
@@ -1449,7 +1449,7 @@
           "Set the help phone number and see who's on call",
           "See whether someone from the person's support network has already stepped in"
         ],
-        "audience": "Owner, moderator, facilitator and whoever is on call."
+        "audience": "Owner, moderator and whoever is on call."
       },
       "informes": {
         "title": "Reports & exports",

@@ -51,8 +51,13 @@ export default async function EntidadLayout({
     session.token,
   );
 
-  const menu = entidadMenuFor(membership.role);
   const org = orgResult.ok ? orgResult.data : null;
+  // D-I8: la persona de guardia ve «Guardia» sea cual sea su rol — el
+  // backend autoriza `pending` con `es_guardia or moderar`. La ficha ya
+  // está pedida aquí arriba, así que no cuesta ninguna petición más.
+  const menu = entidadMenuFor(membership.role, {
+    isOnCall: org?.on_call_user === session.me.id,
+  });
   // Cabecera de entidad con color de marca (tarea W1, Fase 6): el color
   // de la entidad no pinta texto directamente. `readableOn` calcula el
   // texto legible (blanco o el oscuro de la app); si aun así el par no

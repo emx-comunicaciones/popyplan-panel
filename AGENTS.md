@@ -16,7 +16,9 @@ Tres áreas por rol, cada una bajo su propia ruta:
   `analista`, `referente`). Menú de 14 secciones (Inicio, Personas,
   Comunidades, Actividades, Asistencia, Comunicaciones, Encuestas,
   Biblioteca, Familias, Programas, Reportes, Guardia, Informes,
-  Configuración), con visibilidad por rol (`lib/auth/entidadMenu.ts`).
+  Configuración), con visibilidad por rol (`lib/auth/entidadMenu.ts`;
+  «Guardia» además la ve la persona de guardia de la entidad sea cual sea
+  su rol — ver «Auditoría de integración» más abajo).
 - **`/paraguas/[slug]`** — **área de administración**: el panel de una
   entidad paraguas (p. ej. una diputación o un ayuntamiento) sobre su
   territorio declarado y sobre sus entidades hijas. Menú de **cuatro**
@@ -377,6 +379,8 @@ sí la excluye explícitamente, y coincide con el contrato: `POST` solo
 admite `titular`/`moderador`, sin otra acción útil para ese rol en la
 página. Familias permaneció oculta hasta la ronda final de Fase 5
 (siguiente sección): `PENDING_SECTIONS` está vacía desde entonces.
+**Al día (auditoría 2026-09-21)**: `dinamizador` pierde además Personas y
+Guardia, que el backend le niega — ver «Auditoría de integración» abajo.
 
 ## Familias (ronda final de Fase 5, cierre de P6)
 
@@ -3036,6 +3040,30 @@ de la app viven en sus propios repos.
   minutos** (F5), que solo existía para no repetir el recorrido caro: con
   una petición por montaje, los badges de `members_count` dejan además de
   quedarse stale tras aprobar o expulsar a alguien.
+
+- **Menú de entidad por permisos reales (A-I3 y D-I8)**
+  (`lib/auth/entidadMenu.ts`): `dinamizador` pierde **Personas** (la
+  lista pide `ver_lista_nominal` **y** un rol de
+  `panel/viewsets.py::ROLES_LISTA_PERSONAS` —titular/moderador/
+  referente—, y la ficha pide `ver_ficha`, los mismos tres: la sección
+  entera era un 403) y **Guardia** (`safety/viewsets.py
+  ::HelpRequestViewSet.pending` acepta `es_guardia or puede(user, org,
+  'moderar')`, y `'moderar'` es titular/moderador). Al revés,
+  `Organization.on_call_user` admite **cualquier** `OrgMembership`
+  (`entities/serializers.py::validate_on_call_user`), así que una
+  `analista`, `referente` o `dinamizador` nombrada guardia recibía los
+  avisos por API sin pantalla donde verlos: `entidadMenuFor(role, {
+  isOnCall })` gana un segundo argumento —la única parte del menú que no
+  depende solo del rol, porque en el backend tampoco— y «Guardia» entra
+  en su sitio del menú. Lo calculan el layout de entidad (que ya tiene la
+  ficha) y `guardia/page.tsx` con `lib/auth/organization.ts
+  ::isOnCallUser(orgId, session)`, que reutiliza la
+  `getServerOrganization` memoizada por petición (ninguna llamada de
+  más) y devuelve `false` si la ficha no se puede leer. Un rol sin panel
+  (`ver_panel`) no gana la sección por ser la guardia: el layout ya lo
+  devuelve a la raíz. Actualizadas las tres audiencias de
+  `messages/*.json::help.entidad.{personas,personaFicha,guardia}`, que
+  nombraban al dinamizador.
 
 ## Comandos
 

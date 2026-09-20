@@ -1307,7 +1307,7 @@
           "Obrir la fitxa de cada persona",
           "Incloure les invitacions pendents i reenviar-les o revocar-les"
         ],
-        "audience": "Titular, moderador, dinamitzador i referent."
+        "audience": "Titular, moderador i referent."
       },
       "personaFicha": {
         "title": "Fitxa de la persona",
@@ -1317,7 +1317,7 @@
           "Veure la seva xarxa de suport (només el seu referent)",
           "Revisar a quines activitats es va apuntar i si hi va assistir"
         ],
-        "audience": "Titular, moderador, dinamitzador i el referent d'aquesta persona."
+        "audience": "Titular, moderador i el referent d'aquesta persona."
       },
       "comunidades": {
         "title": "Comunitats",
@@ -1449,7 +1449,7 @@
           "Fixar el telèfon d'ajuda i veure qui està de guàrdia",
           "Veure si algú de la xarxa de suport de la persona ja se n'ha fet càrrec"
         ],
-        "audience": "Titular, moderador, dinamitzador i la persona de guàrdia."
+        "audience": "Titular, moderador i la persona de guàrdia."
       },
       "informes": {
         "title": "Informes",
