@@ -101,6 +101,43 @@ describe("usePlaces", () => {
     expect(result.current.error?.kind).toBe("desconocido");
   });
 
+  /**
+   * I4 de la revisión final de rama: si `GET /api/places/` acabara
+   * sirviendo un array plano (sin el envoltorio paginado de DRF) — el
+   * mismo tipo de sorpresa que ya le pasó al panel con
+   * `GET /api/safety/reports/queue/`, documentado en `CLAUDE.md` — los
+   * tres hooks leían `results`/`count`/`next` de un valor `undefined` y
+   * degradaban a «vacío» sin ningún error: el mapa decía «ningún
+   * municipio con actividad», el buscador de sede nunca encontraba nada
+   * y la vista previa decía «0 municipios», los tres sin un solo aviso.
+   */
+  it("usePlacesByIne lanza 'desconocido' si la respuesta no trae el envoltorio paginado (I4)", async () => {
+    apiFetchMock.mockResolvedValue([buildPlaceRow()]);
+
+    const { result } = renderHook(() => usePlacesByIne(["20069"]), { wrapper });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.kind).toBe("desconocido");
+  });
+
+  it("useSearchPlaces lanza 'desconocido' si la respuesta no trae el envoltorio paginado (I4)", async () => {
+    apiFetchMock.mockResolvedValue([buildPlaceRow()]);
+
+    const { result } = renderHook(() => useSearchPlaces("irun"), { wrapper });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.kind).toBe("desconocido");
+  });
+
+  it("usePlacesCount lanza 'desconocido' si la respuesta no trae el envoltorio paginado (I4)", async () => {
+    apiFetchMock.mockResolvedValue([buildPlaceRow()]);
+
+    const { result } = renderHook(() => usePlacesCount("provincia", "20"), { wrapper });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.kind).toBe("desconocido");
+  });
+
   it("usePlacesCount traduce cada atajo a su filtro y devuelve solo el total", async () => {
     apiFetchMock.mockResolvedValue({ count: 88, next: null, previous: null, results: [] });
 

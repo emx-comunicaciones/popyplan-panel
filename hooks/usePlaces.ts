@@ -44,6 +44,25 @@ import type { PaginatedPlaceList, PlaceRow, TerritoryKind } from "@/lib/api/type
 
 export type PlacesErrorKind = "demasiadas_paginas" | "desconocido";
 
+/**
+ * Comprueba que la respuesta trae de verdad el envoltorio paginado de
+ * DRF (I4 de la revisión final de rama). Si `GET /api/places/` acabara
+ * sirviendo un array plano —el mismo tipo de sorpresa que ya tuvo el
+ * panel con `GET /api/safety/reports/queue/`, documentado en
+ * `CLAUDE.md`— `data.results`/`.count`/`.next` serían `undefined` y los
+ * tres hooks de abajo degradarían a «vacío» en silencio: el mapa diría
+ * que ningún municipio tiene actividad, el buscador de sede nunca
+ * encontraría nada y la vista previa diría «0 municipios», los tres sin
+ * un solo error visible.
+ */
+function isPaginatedPlaceList(data: unknown): data is PaginatedPlaceList {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    Array.isArray((data as { results?: unknown }).results)
+  );
+}
+
 export class PlacesError extends Error {
   readonly kind: PlacesErrorKind;
 
@@ -78,14 +97,17 @@ export function usePlacesByIne(ineCodes: string[]): UseQueryResult<PlaceRow[], P
         const params = new URLSearchParams(base);
         if (page > 1) params.set("page", String(page));
 
-        let data: PaginatedPlaceList;
+        let data: unknown;
         try {
           data = await apiFetch<PaginatedPlaceList>(`${PLACES.LIST()}?${params.toString()}`);
         } catch {
           throw new PlacesError("desconocido", "No se pudo cargar el listado de municipios.");
         }
+        if (!isPaginatedPlaceList(data)) {
+          throw new PlacesError("desconocido", "No se pudo cargar el listado de municipios.");
+        }
 
-        results.push(...(data.results ?? []));
+        results.push(...data.results);
         if (!data.next) return results;
         page += 1;
       }
@@ -107,12 +129,16 @@ export function useSearchPlaces(search: string): UseQueryResult<PlaceRow[], Plac
     staleTime: STALE_TIME_MS,
     queryFn: async () => {
       const params = new URLSearchParams({ search: term });
+      let data: unknown;
       try {
-        const data = await apiFetch<PaginatedPlaceList>(`${PLACES.LIST()}?${params.toString()}`);
-        return data.results ?? [];
+        data = await apiFetch<PaginatedPlaceList>(`${PLACES.LIST()}?${params.toString()}`);
       } catch {
         throw new PlacesError("desconocido", "No se pudo buscar el municipio.");
       }
+      if (!isPaginatedPlaceList(data)) {
+        throw new PlacesError("desconocido", "No se pudo buscar el municipio.");
+      }
+      return data.results;
     },
   });
 }
@@ -157,12 +183,16 @@ export function usePlacesCount(
         throw new PlacesError("desconocido", "No se pudo contar los municipios del territorio.");
       }
       const params = new URLSearchParams({ [param]: trimmed });
+      let data: unknown;
       try {
-        const data = await apiFetch<PaginatedPlaceList>(`${PLACES.LIST()}?${params.toString()}`);
-        return data.count ?? 0;
+        data = await apiFetch<PaginatedPlaceList>(`${PLACES.LIST()}?${params.toString()}`);
       } catch {
         throw new PlacesError("desconocido", "No se pudo contar los municipios del territorio.");
       }
+      if (!isPaginatedPlaceList(data)) {
+        throw new PlacesError("desconocido", "No se pudo contar los municipios del territorio.");
+      }
+      return data.count ?? 0;
     },
   });
 }
