@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { buildPlaceRow } from "@/test-utils/fixtures/places";
 
-import { placeLabelState, type PlaceQueryLike } from "./placeLabel";
+import { comarcaLabel, placeLabelState, type PlaceQueryLike } from "./placeLabel";
 
 const LOADING: PlaceQueryLike = { data: undefined, isPending: true, isError: false };
 const ERROR: PlaceQueryLike = { data: undefined, isPending: false, isError: true };
@@ -31,5 +31,27 @@ describe("placeLabelState", () => {
   it("con código pero sin ese municipio en la respuesta (o la consulta falló), 'fallback' — nunca inventa un nombre", () => {
     expect(placeLabelState("20069", SUCCESS_EMPTY)).toEqual({ kind: "fallback" });
     expect(placeLabelState("20069", ERROR)).toEqual({ kind: "fallback" });
+  });
+});
+
+describe("comarcaLabel", () => {
+  const bidasoa = { comarca_name_es: "Bidasoa", comarca_name_eu: "Bidasoa Beherea" };
+
+  it("en euskera usa el nombre en euskera si el backend lo trae", () => {
+    expect(comarcaLabel(bidasoa, "eu")).toBe("Bidasoa Beherea");
+  });
+
+  it("en castellano y catalán usa el nombre en castellano", () => {
+    expect(comarcaLabel(bidasoa, "es")).toBe("Bidasoa");
+    expect(comarcaLabel(bidasoa, "ca")).toBe("Bidasoa");
+  });
+
+  it("en euskera cae al castellano si el backend aún no manda comarca_name_eu o viene vacío", () => {
+    expect(comarcaLabel({ comarca_name_es: "Bidasoa" }, "eu")).toBe("Bidasoa");
+    expect(comarcaLabel({ comarca_name_es: "Bidasoa", comarca_name_eu: "" }, "eu")).toBe("Bidasoa");
+  });
+
+  it("sin comarca devuelve cadena vacía para que la vista pinte «Sin comarca»", () => {
+    expect(comarcaLabel({ comarca_name_es: "", comarca_name_eu: "" }, "eu")).toBe("");
   });
 });

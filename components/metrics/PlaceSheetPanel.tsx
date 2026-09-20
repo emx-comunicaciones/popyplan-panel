@@ -12,7 +12,7 @@
  * así que una cifra suprimida se lee «<5» igual que en la tabla.
  */
 import { useId } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { Dialog } from "@/components/ui/Dialog";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -20,6 +20,7 @@ import { StatCard } from "@/components/metrics/StatCard";
 import { usePlaceSheet, type PlaceSheetErrorKind } from "@/hooks/usePlaceSheet";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 import { formatCount, formatPct } from "@/lib/metrics/format";
+import { comarcaLabel } from "@/lib/places/placeLabel";
 import type { Period } from "@/lib/metrics/period";
 
 const PLACE_SHEET_ERROR_KEYS: Record<PlaceSheetErrorKind, string> = {
@@ -38,6 +39,7 @@ export interface PlaceSheetPanelProps {
 
 export function PlaceSheetPanel({ orgId, ineCode, period, onClose }: PlaceSheetPanelProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const titleId = useId();
   const sheet = usePlaceSheet(orgId, ineCode, period);
 
@@ -68,7 +70,7 @@ export function PlaceSheetPanel({ orgId, ineCode, period, onClose }: PlaceSheetP
         <div className="flex flex-col gap-4">
           <p className="text-sm text-text-secondary">
             {t("metrics.placeSheet.location", {
-              comarca: sheet.data.place.comarca_name_es || t("metrics.placeSheet.noComarca"),
+              comarca: comarcaLabel(sheet.data.place, locale) || t("metrics.placeSheet.noComarca"),
               province: sheet.data.place.prov_name,
               ineCode: sheet.data.place.ine_code,
             })}

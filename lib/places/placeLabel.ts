@@ -43,3 +43,17 @@ export function placeLabelState(
   if (place) return { kind: "resolved", name: place.name, province: place.prov_name };
   return { kind: "fallback" };
 }
+
+/**
+ * Nombre de comarca para la interfaz: en euskera (`comarca_name_eu`) cuando el
+ * panel está en euskera y el backend lo trae; si no, el nombre en castellano.
+ * Devuelve `""` cuando el municipio no tiene comarca (fuera de Euskadi), para
+ * que quien pinta decida el texto de «Sin comarca».
+ */
+export function comarcaLabel(
+  place: { comarca_name_es: string; comarca_name_eu?: string },
+  locale: string,
+): string {
+  if (locale === "eu" && place.comarca_name_eu) return place.comarca_name_eu;
+  return place.comarca_name_es;
+}

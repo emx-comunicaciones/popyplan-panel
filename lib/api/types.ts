@@ -867,6 +867,9 @@ export interface PlaceSheetPlace {
   name: string;
   name_local: string;
   comarca_name_es: string;
+  /** Nombre en euskera de la comarca (X6 de la revisión final): opcional
+   *  mientras el backend no lo sirva; vacío fuera de Euskadi. */
+  comarca_name_eu?: string;
   prov_name: string;
   latitude: number | null;
   longitude: number | null;
