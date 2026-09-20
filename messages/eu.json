@@ -108,10 +108,6 @@
     "root": {
       "description": "Popyplanen erakundeen, erakunde aterkien eta plataformaren web panela"
     },
-    "home": {
-      "noAccessTitle": "Ez duzu panelaren atal batera ere sarbiderik",
-      "noAccessDescription": "Zure kontuak ez du plataformako rolik ez eta panela duen erakunde-rolik ere esleituta. Jarri harremanetan zure erakundea kudeatzen duenarekin edo Popyplanekin."
-    },
     "error": {
       "title": "Zerbait hutsegin du",
       "description": "Ezin izan dugu orri hau kargatu. Berriro saiatu edo saioa berriro has dezakezu.",
@@ -273,6 +269,18 @@
     "procedure": {
       "heading": "Aplikazio-prozedura",
       "body": "Kontaktu-helbidera idatzi ondoren erantzunik jasotzen ez baduzu edo jasotakoarekin ados ez bazaude, desadostasun-kexa edo -erreklamazio bat aurkez dezakezu, <rd>1112/2018 Errege Dekretuaren</rd> 13. artikuluaren arabera."
+    }
+  },
+  "landing": {
+    "stores": {
+      "appStore": "Deskargatu App Storen",
+      "playStore": "Eskuratu Google Playn"
+    },
+    "appAccount": {
+      "title": "Zure kontua Popyplan aplikaziokoa da",
+      "description": "Panel hau elkarte, administrazio eta profesionalentzat da. Zure gunea aplikazioan dago: han dituzu zure jarduerak, zure komunitateak eta zure abisuak.",
+      "storesLabel": "Deskargatu aplikazioa",
+      "openApp": "Ireki aplikazioa"
     }
   },
   "entidad": {

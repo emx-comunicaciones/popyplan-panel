@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
+import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
@@ -12,6 +13,7 @@ import Home from "./page";
 
 afterEach(() => {
   getServerSessionMock.mockReset();
+  vi.unstubAllEnvs();
 });
 
 async function renderHomeExpectingRedirect(): Promise<string> {
@@ -86,18 +88,65 @@ describe("Home (app/page.tsx)", () => {
     expect(await renderHomeExpectingRedirect()).toBe("/elegir-entidad");
   });
 
-  it("sin ningún acceso renderiza el estado de 'sin acceso' con salir de sesión", async () => {
-    getServerSessionMock.mockResolvedValue({
+  function sessionWithoutAccess() {
+    return {
       token: "t",
       me: buildMe({ org_memberships: [] }),
       platformRole: buildPlatformRole(null),
-    });
+    };
+  }
 
-    const element = await Home();
-    render(element);
+  it("sin ningún acceso no tiene violaciones de accesibilidad (axe)", async () => {
+    getServerSessionMock.mockResolvedValue(sessionWithoutAccess());
+    vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", "https://apps.apple.com/app/popyplan/id1");
+    vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", "https://play.google.com/store/apps/details?id=com.popyplan");
 
-    expect(screen.getByText("No tienes acceso a ningún área del panel")).toBeInTheDocument();
+    const { container } = render(await Home());
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("sin ningún acceso pinta la pantalla de cuenta de la app con «Abrir la app» y «Cerrar sesión»", async () => {
+    getServerSessionMock.mockResolvedValue(sessionWithoutAccess());
+
+    render(await Home());
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Tu cuenta es de la app Popyplan" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Abrir la app" })).toHaveAttribute(
+      "href",
+      "popyplan://",
+    );
     expect(screen.getByRole("button", { name: "Cerrar sesión" })).toBeInTheDocument();
+  });
+
+  it("sin tiendas configuradas no pinta ningún botón de tienda", async () => {
+    getServerSessionMock.mockResolvedValue(sessionWithoutAccess());
+    vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", undefined);
+    vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", undefined);
+
+    render(await Home());
+
+    expect(screen.queryByRole("link", { name: "Descargar en el App Store" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Descargar en Google Play" })).toBeNull();
+  });
+
+  it("con las tiendas configuradas pinta los dos botones con su URL", async () => {
+    getServerSessionMock.mockResolvedValue(sessionWithoutAccess());
+    vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", "https://apps.apple.com/app/popyplan/id1");
+    vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", "https://play.google.com/store/apps/details?id=com.popyplan");
+
+    render(await Home());
+
+    expect(screen.getByRole("link", { name: "Descargar en el App Store" })).toHaveAttribute(
+      "href",
+      "https://apps.apple.com/app/popyplan/id1",
+    );
+    expect(screen.getByRole("link", { name: "Descargar en Google Play" })).toHaveAttribute(
+      "href",
+      "https://play.google.com/store/apps/details?id=com.popyplan",
+    );
   });
 
   it("con un rol de plataforma desconocido redirige a su entidad, no a /plataforma", async () => {

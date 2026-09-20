@@ -108,10 +108,6 @@
     "root": {
       "description": "Panel web de entidades, paraguas y plataforma de Popyplan"
     },
-    "home": {
-      "noAccessTitle": "No tienes acceso a ningún área del panel",
-      "noAccessDescription": "Tu cuenta no tiene ningún rol de plataforma ni de entidad con panel asignado. Contacta con quien gestiona tu entidad o con Popyplan."
-    },
     "error": {
       "title": "Algo ha fallado",
       "description": "No hemos podido cargar esta página. Puedes reintentarlo o volver a iniciar sesión.",
@@ -273,6 +269,18 @@
     "procedure": {
       "heading": "Procedimiento de aplicación",
       "body": "Si tras dirigirte al correo de contacto no obtienes respuesta o no estás conforme con ella, puedes presentar una queja o una reclamación por disconformidad conforme al artículo 13 del <rd>Real Decreto 1112/2018</rd>."
+    }
+  },
+  "landing": {
+    "stores": {
+      "appStore": "Descargar en el App Store",
+      "playStore": "Descargar en Google Play"
+    },
+    "appAccount": {
+      "title": "Tu cuenta es de la app Popyplan",
+      "description": "Este panel es para asociaciones, administraciones y profesionales. Tu espacio está en la app: ahí tienes tus actividades, tus comunidades y tus avisos.",
+      "storesLabel": "Descarga la app",
+      "openApp": "Abrir la app"
     }
   },
   "entidad": {

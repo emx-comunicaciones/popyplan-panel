@@ -108,10 +108,6 @@
     "root": {
       "description": "Tauler web d'entitats, entitats paraigua i plataforma de Popyplan"
     },
-    "home": {
-      "noAccessTitle": "No tens accés a cap àrea del tauler",
-      "noAccessDescription": "El teu compte no té cap rol de plataforma ni d'entitat amb tauler assignat. Contacta amb qui gestiona la teva entitat o amb Popyplan."
-    },
     "error": {
       "title": "Alguna cosa ha fallat",
       "description": "No hem pogut carregar aquesta pàgina. Pots tornar-ho a provar o tornar a iniciar sessió.",
@@ -273,6 +269,18 @@
     "procedure": {
       "heading": "Procediment d'aplicació",
       "body": "Si després d'adreçar-te al correu de contacte no obtens resposta o no hi estàs conforme, pots presentar una queixa o una reclamació per disconformitat d'acord amb l'article 13 del <rd>Reial decret 1112/2018</rd>."
+    }
+  },
+  "landing": {
+    "stores": {
+      "appStore": "Descarrega'l a l'App Store",
+      "playStore": "Aconsegueix-lo a Google Play"
+    },
+    "appAccount": {
+      "title": "El teu compte és de l'aplicació Popyplan",
+      "description": "Aquest tauler és per a associacions, administracions i professionals. El teu espai és a l'aplicació: allà tens les teves activitats, les teves comunitats i els teus avisos.",
+      "storesLabel": "Descarrega l'aplicació",
+      "openApp": "Obre l'aplicació"
     }
   },
   "entidad": {

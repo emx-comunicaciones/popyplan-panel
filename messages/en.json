@@ -108,10 +108,6 @@
     "root": {
       "description": "Popyplan's web panel for entities, umbrella entities and platform"
     },
-    "home": {
-      "noAccessTitle": "You don't have access to any panel area",
-      "noAccessDescription": "Your account has no platform role or entity role with panel access assigned. Contact whoever manages your entity or Popyplan."
-    },
     "error": {
       "title": "Something went wrong",
       "description": "We couldn't load this page. You can retry or sign in again.",
@@ -273,6 +269,18 @@
     "procedure": {
       "heading": "Enforcement procedure",
       "body": "If after contacting us you don't get a response or aren't satisfied with it, you can file a complaint under article 13 of <rd>Royal Decree 1112/2018</rd>."
+    }
+  },
+  "landing": {
+    "stores": {
+      "appStore": "Download on the App Store",
+      "playStore": "Get it on Google Play"
+    },
+    "appAccount": {
+      "title": "Your account belongs to the Popyplan app",
+      "description": "This panel is for associations, public administrations and professionals. Your space is in the app: that is where your activities, your communities and your notices are.",
+      "storesLabel": "Get the app",
+      "openApp": "Open the app"
     }
   },
   "entidad": {

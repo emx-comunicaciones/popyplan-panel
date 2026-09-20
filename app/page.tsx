@@ -1,8 +1,6 @@
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
 
-import { LogoutButton } from "@/components/LogoutButton";
-import { ErrorState } from "@/components/ui/ErrorState";
+import { AppAccountScreen } from "@/components/landing/AppAccountScreen";
 import { resolveArea } from "@/lib/auth/area";
 import { getServerSession } from "@/lib/auth/session";
 
@@ -16,9 +14,12 @@ import { getServerSession } from "@/lib/auth/session";
  * `/login` — con ella, todos los `redirect("/")` de los layouts
  * —slug ajeno, rol de plataforma revocado— parecían un cierre de sesión y
  * el estado «sin acceso» de abajo era inalcanzable).
+ *
+ * Con sesión y `sin-acceso` se pinta `AppAccountScreen` (spec de diseño
+ * `2026-09-20-landing-login-unico-design.md` §5): la cuenta existe y es
+ * válida, solo que su sitio es la app, no el panel.
  */
 export default async function Home() {
-  const t = await getTranslations("pages.home");
   const session = await getServerSession();
   if (!session) {
     redirect("/login");
@@ -35,13 +36,5 @@ export default async function Home() {
     redirect("/elegir-entidad");
   }
 
-  return (
-    <main className="flex min-h-screen items-center justify-center p-4">
-      <ErrorState
-        title={t("noAccessTitle")}
-        description={t("noAccessDescription")}
-        action={<LogoutButton />}
-      />
-    </main>
-  );
+  return <AppAccountScreen />;
 }
