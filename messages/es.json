@@ -272,9 +272,91 @@
     }
   },
   "landing": {
+    "meta": {
+      "title": "Popyplan — planes, comunidades y actividades",
+      "description": "Popyplan es la app de planes, comunidades y actividades, con un panel para asociaciones, administraciones públicas y profesionales."
+    },
+    "header": {
+      "brand": "Popyplan",
+      "login": "Entrar"
+    },
+    "hero": {
+      "title": "Planes, comunidades y actividades para vivir bien acompañado",
+      "subtitle": "Popyplan reúne en un mismo sitio lo que haces con otras personas: actividades abiertas, comunidades con sus normas y un panel para quien las organiza.",
+      "ctaPanel": "Entrar al panel"
+    },
     "stores": {
       "appStore": "Descargar en el App Store",
       "playStore": "Descargar en Google Play"
+    },
+    "audiences": {
+      "title": "Para quién es",
+      "people": {
+        "title": "Personas",
+        "benefits": [
+          "Actividades y planes cerca de ti, con inscripción desde la app.",
+          "Comunidades con sus normas: abiertas, con solicitud o privadas.",
+          "Tu red de apoyo, si quieres tenerla: tú decides quién la forma."
+        ],
+        "cta": "Descárgala en tu móvil"
+      },
+      "associations": {
+        "title": "Asociaciones y ONG",
+        "benefits": [
+          "Personas, actividades y asistencia con check-in por QR.",
+          "Comunicaciones, biblioteca de recursos y encuestas anónimas.",
+          "Programas con presupuesto declarado e informe final."
+        ],
+        "cta": "Escríbenos para una asociación"
+      },
+      "administrations": {
+        "title": "Administraciones públicas",
+        "benefits": [
+          "Observatorio del territorio que declaras, también donde todavía no hay actividad.",
+          "Red financiada: qué hacen las entidades a las que apoyas.",
+          "Comparativas entre periodos e informes en CSV y PDF."
+        ],
+        "cta": "Escríbenos para una administración"
+      },
+      "professionals": {
+        "title": "Profesionales",
+        "benefits": [
+          "Comunidades privadas para las personas con las que trabajas.",
+          "Tus propios materiales en la biblioteca, por audiencia.",
+          "Nunca datos clínicos: Popyplan no es una historia clínica."
+        ],
+        "cta": "Escríbenos para un uso profesional"
+      }
+    },
+    "how": {
+      "title": "Cómo funciona",
+      "steps": [
+        "La entidad invita a las personas a su espacio; nadie crea la cuenta de nadie.",
+        "Cada actividad se publica, se llena y se pasa lista con el QR de la app.",
+        "El panel resume lo que ha pasado, en agregado y listo para un informe."
+      ]
+    },
+    "privacy": {
+      "title": "Privacidad por diseño",
+      "items": [
+        "El panel no muestra teléfonos ni correos de las personas participantes.",
+        "Popyplan no guarda datos clínicos ni diagnósticos.",
+        "Las encuestas son anónimas y solo se ven agregadas.",
+        "Ningún recuento de personas se muestra por debajo de cinco.",
+        "Nadie declara ser familiar de nadie: los espacios están separados.",
+        "Todo en español, euskera y catalán."
+      ]
+    },
+    "contact": {
+      "title": "Habla con nosotros",
+      "body": "Cuéntanos qué hace tu entidad y te enseñamos el panel.",
+      "cta": "Escríbenos",
+      "subject": {
+        "associations": "Popyplan para una asociación",
+        "administrations": "Popyplan para una administración pública",
+        "professionals": "Popyplan para profesionales",
+        "other": "Consulta sobre Popyplan"
+      }
     },
     "appAccount": {
       "title": "Tu cuenta es de la app Popyplan",

@@ -272,9 +272,91 @@
     }
   },
   "landing": {
+    "meta": {
+      "title": "Popyplan — plans, comunitats i activitats",
+      "description": "Popyplan és l'aplicació de plans, comunitats i activitats, amb un tauler per a associacions, administracions públiques i professionals."
+    },
+    "header": {
+      "brand": "Popyplan",
+      "login": "Entra"
+    },
+    "hero": {
+      "title": "Plans, comunitats i activitats per viure bé acompanyat",
+      "subtitle": "Popyplan reuneix en un sol lloc allò que fas amb altres persones: activitats obertes, comunitats amb les seves normes i un tauler per a qui les organitza.",
+      "ctaPanel": "Entra al tauler"
+    },
     "stores": {
       "appStore": "Descarrega'l a l'App Store",
       "playStore": "Aconsegueix-lo a Google Play"
+    },
+    "audiences": {
+      "title": "Per a qui és",
+      "people": {
+        "title": "Persones",
+        "benefits": [
+          "Activitats i plans a prop teu, amb inscripció des de l'aplicació.",
+          "Comunitats amb les seves normes: obertes, amb sol·licitud o privades.",
+          "La teva xarxa de suport, si en vols una: tu decideixes qui en forma part."
+        ],
+        "cta": "Descarrega-te-la al mòbil"
+      },
+      "associations": {
+        "title": "Associacions i ONG",
+        "benefits": [
+          "Persones, activitats i assistència amb registre per codi QR.",
+          "Comunicacions, biblioteca de recursos i enquestes anònimes.",
+          "Programes amb pressupost declarat i informe final."
+        ],
+        "cta": "Escriu-nos per a una associació"
+      },
+      "administrations": {
+        "title": "Administracions públiques",
+        "benefits": [
+          "Observatori del territori que declares, també on encara no hi ha activitat.",
+          "Xarxa finançada: què fan les entitats que finances.",
+          "Comparatives entre períodes i informes en CSV i PDF."
+        ],
+        "cta": "Escriu-nos per a una administració"
+      },
+      "professionals": {
+        "title": "Professionals",
+        "benefits": [
+          "Comunitats privades per a les persones amb qui treballes.",
+          "Els teus materials a la biblioteca, per audiència.",
+          "Mai dades clíniques: Popyplan no és una història clínica."
+        ],
+        "cta": "Escriu-nos per a un ús professional"
+      }
+    },
+    "how": {
+      "title": "Com funciona",
+      "steps": [
+        "L'entitat convida les persones al seu espai; ningú crea el compte de ningú.",
+        "Cada activitat es publica, s'omple i es passa llista amb el QR de l'aplicació.",
+        "El tauler resumeix què ha passat, en agregat i a punt per a un informe."
+      ]
+    },
+    "privacy": {
+      "title": "Privadesa per disseny",
+      "items": [
+        "El tauler no mostra telèfons ni correus de les persones participants.",
+        "Popyplan no desa dades clíniques ni diagnòstics.",
+        "Les enquestes són anònimes i només es veuen agregades.",
+        "No es mostra cap recompte de persones per sota de cinc.",
+        "Ningú declara ser familiar de ningú: els espais estan separats.",
+        "Tot en castellà, èuscar i català."
+      ]
+    },
+    "contact": {
+      "title": "Parla amb nosaltres",
+      "body": "Explica'ns què fa la teva entitat i et mostrem el tauler.",
+      "cta": "Escriu-nos",
+      "subject": {
+        "associations": "Popyplan per a una associació",
+        "administrations": "Popyplan per a una administració pública",
+        "professionals": "Popyplan per a professionals",
+        "other": "Consulta sobre Popyplan"
+      }
     },
     "appAccount": {
       "title": "El teu compte és de l'aplicació Popyplan",

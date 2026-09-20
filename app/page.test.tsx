@@ -9,7 +9,7 @@ import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
-import Home from "./page";
+import Home, { generateMetadata } from "./page";
 
 afterEach(() => {
   getServerSessionMock.mockReset();
@@ -27,10 +27,89 @@ async function renderHomeExpectingRedirect(): Promise<string> {
 }
 
 describe("Home (app/page.tsx)", () => {
-  it("sin sesión redirige a /login", async () => {
+  it("sin sesión la landing no tiene violaciones de accesibilidad (axe)", async () => {
     getServerSessionMock.mockResolvedValue(null);
 
-    expect(await renderHomeExpectingRedirect()).toBe("/login");
+    const { container } = render(await Home());
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("sin sesión pinta la landing con su portada y las cuatro tarjetas de público", async () => {
+    getServerSessionMock.mockResolvedValue(null);
+
+    render(await Home());
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Planes, comunidades y actividades para vivir bien acompañado",
+      }),
+    ).toBeInTheDocument();
+    for (const name of [
+      "Personas",
+      "Asociaciones y ONG",
+      "Administraciones públicas",
+      "Profesionales",
+    ]) {
+      expect(screen.getByRole("heading", { level: 3, name })).toBeInTheDocument();
+    }
+  });
+
+  it("sin sesión ofrece entrar al panel desde la cabecera", async () => {
+    getServerSessionMock.mockResolvedValue(null);
+
+    render(await Home());
+
+    expect(screen.getByRole("link", { name: "Entrar" })).toHaveAttribute("href", "/login");
+  });
+
+  it("la llamada de contacto es un mailto al correo por defecto, con su asunto", async () => {
+    getServerSessionMock.mockResolvedValue(null);
+    vi.stubEnv("NEXT_PUBLIC_CONTACT_EMAIL", undefined);
+
+    render(await Home());
+
+    expect(screen.getByRole("link", { name: "Escríbenos" })).toHaveAttribute(
+      "href",
+      "mailto:hola@popyplan.com?subject=Consulta%20sobre%20Popyplan",
+    );
+    expect(screen.getByRole("link", { name: "Escríbenos para una asociación" })).toHaveAttribute(
+      "href",
+      "mailto:hola@popyplan.com?subject=Popyplan%20para%20una%20asociaci%C3%B3n",
+    );
+  });
+
+  it("sin tiendas configuradas la landing no pinta botones de tienda", async () => {
+    getServerSessionMock.mockResolvedValue(null);
+    vi.stubEnv("NEXT_PUBLIC_APP_STORE_URL", undefined);
+    vi.stubEnv("NEXT_PUBLIC_PLAY_STORE_URL", undefined);
+
+    render(await Home());
+
+    expect(screen.queryByRole("link", { name: "Descargar en el App Store" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Descargar en Google Play" })).toBeNull();
+  });
+
+  it("generateMetadata describe la landing con su Open Graph", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://popyplan.com");
+
+    const metadata = await generateMetadata();
+
+    expect(metadata.title).toEqual({
+      absolute: "Popyplan — planes, comunidades y actividades",
+    });
+    expect(metadata.description).toBe(
+      "Popyplan es la app de planes, comunidades y actividades, con un panel para asociaciones, administraciones públicas y profesionales.",
+    );
+    expect(metadata.openGraph).toMatchObject({
+      title: "Popyplan — planes, comunidades y actividades",
+      url: "https://popyplan.com",
+      siteName: "Popyplan",
+      images: ["/og.png"],
+      locale: "es_ES",
+    });
+    expect(metadata.twitter).toMatchObject({ card: "summary_large_image" });
   });
 
   it("con rol de plataforma redirige a /plataforma", async () => {

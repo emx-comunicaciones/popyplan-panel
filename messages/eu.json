@@ -272,9 +272,91 @@
     }
   },
   "landing": {
+    "meta": {
+      "title": "Popyplan — planak, komunitateak eta jarduerak",
+      "description": "Popyplan planen, komunitateen eta jardueren aplikazioa da, elkarte, administrazio publiko eta profesionalentzako panel batekin."
+    },
+    "header": {
+      "brand": "Popyplan",
+      "login": "Sartu"
+    },
+    "hero": {
+      "title": "Planak, komunitateak eta jarduerak, ondo eta lagunduta bizitzeko",
+      "subtitle": "Popyplanek leku bakarrean biltzen du beste pertsonekin egiten duzuna: jarduera irekiak, arau propioak dituzten komunitateak eta antolatzen dituenarentzako panel bat.",
+      "ctaPanel": "Panelera sartu"
+    },
     "stores": {
       "appStore": "Deskargatu App Storen",
       "playStore": "Eskuratu Google Playn"
+    },
+    "audiences": {
+      "title": "Norentzat da",
+      "people": {
+        "title": "Pertsonak",
+        "benefits": [
+          "Zure inguruko jarduerak eta planak, aplikaziotik izena emanda.",
+          "Arau propioak dituzten komunitateak: irekiak, eskaeraz edo pribatuak.",
+          "Zure laguntza-sarea, nahi baduzu: zuk erabakitzen duzu nork osatzen duen."
+        ],
+        "cta": "Deskargatu mugikorrean"
+      },
+      "associations": {
+        "title": "Elkarteak eta GKEak",
+        "benefits": [
+          "Pertsonak, jarduerak eta bertaratzea, QR bidezko check-inarekin.",
+          "Komunikazioak, baliabide-liburutegia eta inkesta anonimoak.",
+          "Aurrekontu adierazia eta amaierako txostena dituzten programak."
+        ],
+        "cta": "Idatzi iezaguzu elkarte batentzat"
+      },
+      "administrations": {
+        "title": "Administrazio publikoak",
+        "benefits": [
+          "Adierazten duzun lurraldearen behatokia, oraindik jarduerarik ez dagoen tokietan ere.",
+          "Finantzatutako sarea: laguntzen dituzun erakundeek zer egiten duten.",
+          "Aldien arteko konparaketak eta txostenak CSV eta PDF formatuan."
+        ],
+        "cta": "Idatzi iezaguzu administrazio batentzat"
+      },
+      "professionals": {
+        "title": "Profesionalak",
+        "benefits": [
+          "Komunitate pribatuak zurekin lan egiten duten pertsonentzat.",
+          "Zure material propioak liburutegian, hartzailearen arabera.",
+          "Inoiz ez datu klinikorik: Popyplan ez da historia kliniko bat."
+        ],
+        "cta": "Idatzi iezaguzu erabilera profesionalerako"
+      }
+    },
+    "how": {
+      "title": "Nola funtzionatzen duen",
+      "steps": [
+        "Erakundeak pertsonak gonbidatzen ditu bere gunera; inork ez du besteren konturik sortzen.",
+        "Jarduera bakoitza argitaratu, bete eta aplikazioko QR kodearekin pasatzen da zerrenda.",
+        "Panelak gertatutakoa laburbiltzen du, modu agregatuan eta txosten baterako prest."
+      ]
+    },
+    "privacy": {
+      "title": "Pribatutasuna diseinutik",
+      "items": [
+        "Panelak ez du parte-hartzaileen telefonorik ez helbide elektronikorik erakusten.",
+        "Popyplanek ez du datu klinikorik ez diagnostikorik gordetzen.",
+        "Inkestak anonimoak dira eta beti modu agregatuan ikusten dira.",
+        "Ez da bostetik beherako pertsona-zenbaketarik erakusten.",
+        "Inork ez du besteren senide dela adierazten: guneak bereizita daude.",
+        "Dena gaztelaniaz, euskaraz eta katalanez."
+      ]
+    },
+    "contact": {
+      "title": "Hitz egin gurekin",
+      "body": "Esaguzu zure erakundeak zer egiten duen eta panela erakutsiko dizugu.",
+      "cta": "Idatzi iezaguzu",
+      "subject": {
+        "associations": "Popyplan elkarte batentzat",
+        "administrations": "Popyplan administrazio publiko batentzat",
+        "professionals": "Popyplan profesionalentzat",
+        "other": "Popyplani buruzko galdera"
+      }
     },
     "appAccount": {
       "title": "Zure kontua Popyplan aplikaziokoa da",
