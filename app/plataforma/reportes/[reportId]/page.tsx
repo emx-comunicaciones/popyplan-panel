@@ -36,7 +36,7 @@ export default async function PlataformaReporteDetailPage({
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">{t("plataforma.reporteDetalle.heading")}</h1>
+      <h1 className="text-xl font-semibold text-text-base">{t("plataforma.reporteDetalle.heading")}</h1>
       <ReporteDetail reportId={reportId} readOnly={session.platformRole.role === "support"} />
     </div>
   );

@@ -76,10 +76,10 @@ export function Dialog({
         aria-busy={pending}
         aria-labelledby={titleId}
         tabIndex={-1}
-        className={`w-full ${widthClassName} ${panelPlacement} bg-white p-6 shadow-lg`}
+        className={`w-full ${widthClassName} ${panelPlacement} bg-white p-4 shadow-lg`}
       >
-        <div className="mb-4 flex items-center justify-between gap-4">
-          <h2 id={titleId} className="text-base font-semibold text-text-base">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 id={titleId} className="text-lg font-semibold text-text-base">
             {title}
           </h2>
           <button

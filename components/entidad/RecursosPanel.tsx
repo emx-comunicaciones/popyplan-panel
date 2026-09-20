@@ -241,7 +241,7 @@ function ResourceForm({
             type="text"
             value={form.title}
             onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             required
           />
         </div>
@@ -256,7 +256,7 @@ function ResourceForm({
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, category: event.target.value as ResourceCategory }))
               }
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             >
               {CATEGORY_ORDER.map((category) => (
                 <option key={category} value={category}>
@@ -273,7 +273,7 @@ function ResourceForm({
               id="resource-kind"
               value={form.kind}
               onChange={(event) => setForm((prev) => ({ ...prev, kind: event.target.value as ResourceKind }))}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             >
               {(Object.keys(KIND_KEYS) as ResourceKind[]).map((kind) => (
                 <option key={kind} value={kind}>
@@ -294,7 +294,7 @@ function ResourceForm({
               value={form.body}
               onChange={(event) => setForm((prev) => ({ ...prev, body: event.target.value }))}
               rows={4}
-              className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             />
           </div>
         ) : null}
@@ -309,7 +309,7 @@ function ResourceForm({
               type="url"
               value={form.url}
               onChange={(event) => setForm((prev) => ({ ...prev, url: event.target.value }))}
-              className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             />
           </div>
         ) : null}
@@ -351,7 +351,7 @@ function ResourceForm({
                 setForm((prev) => ({ ...prev, audience: event.target.value as ResourceAudience }))
               }
               aria-describedby={communities.isError ? "resource-audience-error" : undefined}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             >
               <option value="members">{t(AUDIENCE_KEYS.members)}</option>
               <option value="public">{t(AUDIENCE_KEYS.public)}</option>
@@ -497,7 +497,7 @@ export function RecursosPanel({ orgId, canManage }: RecursosPanelProps) {
   })).filter((group) => group.items.length > 0);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       {canManage ? (
         editing ? (
           // `key`: el estado del formulario nace de `editing` en el

@@ -27,12 +27,13 @@ import { apiLogin, DEMO_PASSWORD, newApiContext, TITULAR_BIDASOA_EMAIL } from ".
  * repeticiones futuras necesitan el mismo reinicio — es un efecto
  * secundario esperado de probar una función que persiste de verdad.
  *
- * El código de dos letras del botón (`ES`/`EU`/`CA`) es literal en los
- * tres idiomas (`lang.toUpperCase()`, nunca traducido) — a diferencia
- * del `aria-label` (nombre completo del idioma), que sí cambia con el
- * idioma activo (`language.es` es «Español» en español pero «Gaztelania»
- * en euskera). Por eso los botones se localizan por su texto visible
- * exacto, no por accessible name.
+ * Desde la pasada de densidad (2026-09-20) el selector es un `<select>`
+ * con una etiqueta solo para lectores de pantalla, no tres botones: se
+ * localiza por esa etiqueta (`language.title`) y se cambia con
+ * `selectOption(<código>)`. Ojo, la etiqueta **está traducida** y cambia
+ * con el idioma activo («Idioma» en español, «Hizkuntza» en euskera),
+ * mientras que el `value` de cada opción sigue siendo el código ISO
+ * (`es`/`eu`/`ca`), que nunca se traduce.
  */
 test.beforeAll(async () => {
   const api = await newApiContext();
@@ -52,7 +53,7 @@ test("cambiar a euskera en el login, entrar y ver el panel en euskera, y volver 
 }) => {
   await page.goto("/login");
 
-  await page.locator('button:text-is("EU")').click();
+  await page.getByLabel("Idioma").selectOption("eu");
 
   // El botón de entrar cambia a euskera (`auth.login.submit` = «Sartu»).
   await expect(page.getByRole("button", { name: "Sartu" })).toBeVisible();
@@ -68,12 +69,12 @@ test("cambiar a euskera en el login, entrar y ver el panel en euskera, y volver 
   // (`menu.entidad.personas` = «Pertsonak») y «Cerrar sesión»
   // (`auth.logout.action` = «Saioa itxi») en euskera, sin recargar la
   // página a mano: el `router.refresh()` del selector ya la dejó así al
-  // pulsar «EU» en `/login`.
+  // elegir «Euskara» en `/login`.
   await expect(page.getByRole("heading", { name: "Hasiera" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Pertsonak" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Saioa itxi" })).toBeVisible();
 
-  await page.locator('button:text-is("ES")').click();
+  await page.getByLabel("Hizkuntza").selectOption("es");
 
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
   await expect(page.getByRole("heading", { name: "Inicio" })).toBeVisible();

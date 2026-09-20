@@ -174,7 +174,7 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
             type="tel"
             value={currentHelpPhone}
             onChange={(event) => setHelpPhone(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <Button type="submit" disabled={updateOrganization.isPending}>
@@ -220,7 +220,7 @@ export function GuardiaPanel({ orgId, slug }: GuardiaPanelProps) {
   const requests = usePendingHelpRequests(orgId);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <GuardiaSettings orgId={orgId} />
 
       <section aria-labelledby="avisos-heading">

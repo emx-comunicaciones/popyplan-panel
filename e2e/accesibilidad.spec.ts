@@ -42,21 +42,15 @@ test("en /login, Tab recorre idioma → email → contraseña → botón, siempr
   // Sin `SkipLink` en esta página (solo la llevan los tres layouts de
   // área): el primer Tab desde la carga de la página cae en el primer
   // elemento interactivo del propio formulario de login. Desde la tarea
-  // 6 de i18n eso ya no es el campo de usuario, sino los tres botones
-  // del selector de idioma (`components/layout/LanguageSwitcher.tsx`),
-  // colocado antes del formulario a propósito: alguien que solo use el
-  // teclado también tiene que poder cambiar de idioma antes de rellenar
-  // sus credenciales, no solo quien usa el ratón.
+  // 6 de i18n eso ya no es el campo de usuario, sino el selector de
+  // idioma (`components/layout/LanguageSwitcher.tsx`), colocado antes
+  // del formulario a propósito: alguien que solo use el teclado también
+  // tiene que poder cambiar de idioma antes de rellenar sus
+  // credenciales, no solo quien usa el ratón. Desde la pasada de
+  // densidad (2026-09-20) el selector es un único `<select>`, así que
+  // ocupa una sola parada de tabulación en vez de tres.
   await page.keyboard.press("Tab");
-  await expect(page.getByRole("button", { name: "Español" })).toBeFocused();
-  await expectVisibleFocusRing(page);
-
-  await page.keyboard.press("Tab");
-  await expect(page.getByRole("button", { name: "Euskara" })).toBeFocused();
-  await expectVisibleFocusRing(page);
-
-  await page.keyboard.press("Tab");
-  await expect(page.getByRole("button", { name: "Català" })).toBeFocused();
+  await expect(page.getByLabel("Idioma")).toBeFocused();
   await expectVisibleFocusRing(page);
 
   await page.keyboard.press("Tab");

@@ -32,10 +32,10 @@ export default async function AccesibilidadPage() {
 
   return (
     <>
-      <main className="mx-auto max-w-2xl p-6">
-        <h1 className="mb-6 text-2xl font-semibold text-text-base">{t("heading")}</h1>
+      <main className="mx-auto max-w-2xl p-4">
+        <h1 className="mb-4 text-xl font-semibold text-text-base">{t("heading")}</h1>
 
-        <section aria-labelledby="alcance" className="mb-6">
+        <section aria-labelledby="alcance" className="mb-4">
           <h2 id="alcance" className="mb-2 text-lg font-semibold text-text-base">
             {t("scope.heading")}
           </h2>
@@ -44,7 +44,7 @@ export default async function AccesibilidadPage() {
           </p>
         </section>
 
-        <section aria-labelledby="situacion" className="mb-6">
+        <section aria-labelledby="situacion" className="mb-4">
           <h2 id="situacion" className="mb-2 text-lg font-semibold text-text-base">
             {t("status.heading")}
           </h2>
@@ -53,7 +53,7 @@ export default async function AccesibilidadPage() {
           </p>
         </section>
 
-        <section aria-labelledby="no-accesible" className="mb-6">
+        <section aria-labelledby="no-accesible" className="mb-4">
           <h2 id="no-accesible" className="mb-2 text-lg font-semibold text-text-base">
             {t("nonAccessible.heading")}
           </h2>
@@ -63,7 +63,7 @@ export default async function AccesibilidadPage() {
           </p>
         </section>
 
-        <section aria-labelledby="preparacion" className="mb-6">
+        <section aria-labelledby="preparacion" className="mb-4">
           <h2 id="preparacion" className="mb-2 text-lg font-semibold text-text-base">
             {t("preparation.heading")}
           </h2>
@@ -72,7 +72,7 @@ export default async function AccesibilidadPage() {
           </p>
         </section>
 
-        <section aria-labelledby="contacto" className="mb-6">
+        <section aria-labelledby="contacto" className="mb-4">
           <h2 id="contacto" className="mb-2 text-lg font-semibold text-text-base">
             {t("contact.heading")}
           </h2>

@@ -5,11 +5,16 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, "title">
   children: ReactNode;
 }
 
+/*
+ * Densidad (2026-09-20): relleno de 12px (`p-3`), borde de 1px y radio de
+ * 8px (`rounded-lg`), **sin sombra** — la sombra sobre el fondo claro del
+ * panel solo añadía peso visual; el borde ya separa la tarjeta del fondo.
+ */
 export function Card({ title, children, className = "", ...props }: CardProps) {
   return (
     <div
       {...props}
-      className={`rounded-lg border border-border bg-white p-4 shadow-sm ${className}`}
+      className={`rounded-lg border border-border bg-white p-3 ${className}`}
     >
       {/*
         `<h2>`, no `<h3>` (fix de accesibilidad, tarea W6, hallazgo de
@@ -21,7 +26,7 @@ export function Card({ title, children, className = "", ...props }: CardProps) {
         sea cual sea el contexto en el que se use esta tarjeta.
       */}
       {title ? (
-        <h2 className="mb-2 text-sm font-semibold text-text-secondary">{title}</h2>
+        <h2 className="mb-1 text-sm font-semibold text-text-secondary">{title}</h2>
       ) : null}
       {children}
     </div>

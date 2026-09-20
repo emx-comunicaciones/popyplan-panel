@@ -55,7 +55,7 @@ export function ParaguasHomeDashboard({ orgId, slug, orgName }: ParaguasHomeDash
   const children = useOrganizations({ parent: orgId });
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-4">
       <section aria-labelledby="inicio-territorio-heading" className="flex flex-col gap-3">
         <h2 id="inicio-territorio-heading" className="text-lg font-semibold text-text-base">
           {t("paraguas.inicio.territoryHeading")}
@@ -83,7 +83,7 @@ export function ParaguasHomeDashboard({ orgId, slug, orgName }: ParaguasHomeDash
         ) : !territorio.data ? (
           <p className="text-sm text-text-secondary">{t("metrics.dashboard.loading")}</p>
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <StatCard
               label={t("metrics.stats.activePeople")}
               value={formatCount(territorio.data.people.active, territorio.data.people.suppressed)}
@@ -120,7 +120,7 @@ export function ParaguasHomeDashboard({ orgId, slug, orgName }: ParaguasHomeDash
             {t("metrics.dashboard.loadingWithName", { orgName })}
           </p>
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <StatCard
               label={t("paraguas.inicio.fundedEntities")}
               // I3 de la revisión final de rama: un fallo del listado

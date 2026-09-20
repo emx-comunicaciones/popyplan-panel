@@ -31,7 +31,7 @@ export default async function PlataformaAyudaPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">{t("plataforma.ayuda.heading")}</h1>
+      <h1 className="text-xl font-semibold text-text-base">{t("plataforma.ayuda.heading")}</h1>
       <AyudaPendienteList />
     </div>
   );

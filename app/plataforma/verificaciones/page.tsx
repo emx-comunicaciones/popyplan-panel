@@ -31,7 +31,7 @@ export default async function PlataformaVerificacionesPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">{t("plataforma.verificaciones.heading")}</h1>
+      <h1 className="text-xl font-semibold text-text-base">{t("plataforma.verificaciones.heading")}</h1>
       <VerificacionesQueue />
     </div>
   );

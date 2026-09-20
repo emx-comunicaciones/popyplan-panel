@@ -122,7 +122,7 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
             type="text"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             required
           />
         </div>
@@ -136,7 +136,7 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
               type="datetime-local"
               value={opensAt}
               onChange={(event) => setOpensAt(event.target.value)}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             />
           </div>
           <div>
@@ -148,7 +148,7 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
               type="datetime-local"
               value={closesAt}
               onChange={(event) => setClosesAt(event.target.value)}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             />
           </div>
         </div>
@@ -293,7 +293,7 @@ function SurveyList({ orgId, slug }: { orgId: number | string; slug: string }) {
 export function EncuestasPanel({ orgId, slug, canCreate }: EncuestasPanelProps) {
   const t = useTranslations();
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       {canCreate ? <CreateSurveyForm orgId={orgId} /> : null}
       <section aria-labelledby="encuestas-heading">
         <h2 id="encuestas-heading" className="mb-2 text-lg font-semibold text-text-base">

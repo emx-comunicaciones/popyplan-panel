@@ -42,6 +42,16 @@ describe("LoginPage", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  it("lleva el selector de idioma como <select> sobre el formulario", () => {
+    // Desde la pasada de densidad (2026-09-20) el selector es un
+    // `<select>` con etiqueta solo para lectores de pantalla, no tres
+    // botones: sigue siendo el primer control tabulable de la pantalla
+    // (ver `e2e/accesibilidad.spec.ts`).
+    render(<LoginPage />);
+
+    expect(screen.getByLabelText("Idioma").tagName).toBe("SELECT");
+  });
+
   it("envía usuario y contraseña y redirige según el área tras el éxito", async () => {
     const user = userEvent.setup();
     loginMock.mockResolvedValue({

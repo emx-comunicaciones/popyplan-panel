@@ -187,7 +187,7 @@ function ContratosTab({ canManage, onViewInvoices }: ContratosTabProps) {
                 organization: event.target.value ? Number(event.target.value) : undefined,
               }))
             }
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             <option value="">{t("plataforma.entidades.verifiedFilterAll")}</option>
             {organizations.data?.results.map((org) => (
@@ -210,7 +210,7 @@ function ContratosTab({ canManage, onViewInvoices }: ContratosTabProps) {
                 status: (event.target.value || undefined) as ContractStatus | undefined,
               }))
             }
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             <option value="">{t("plataforma.reportes.statusAll")}</option>
             <option value="draft">{t("plataforma.contratos.statusDraft")}</option>
@@ -422,7 +422,7 @@ function TierForm({ editing, onDone }: TierFormProps) {
           type="text"
           value={name}
           onChange={(event) => setName(event.target.value)}
-          className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+          className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         />
       </div>
       <div className="flex flex-wrap gap-3">
@@ -440,7 +440,7 @@ function TierForm({ editing, onDone }: TierFormProps) {
               setRangeError(null);
               setMinPopulation(event.target.value);
             }}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -457,7 +457,7 @@ function TierForm({ editing, onDone }: TierFormProps) {
               setRangeError(null);
               setMaxPopulation(event.target.value);
             }}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -471,7 +471,7 @@ function TierForm({ editing, onDone }: TierFormProps) {
             min="0"
             value={priceEuros}
             onChange={(event) => setPriceEuros(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
       </div>
@@ -617,7 +617,7 @@ function FacturasTab({ canManage, selectedContractId, onSelectContract }: Factur
           id="facturas-contract"
           value={selectedContractId ?? ""}
           onChange={(event) => onSelectContract(event.target.value ? Number(event.target.value) : null)}
-          className="w-full max-w-md rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+          className="w-full max-w-md rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         >
           <option value="">{t("plataforma.contratos.chooseContract")}</option>
           {contracts.data?.map((contract) => (
@@ -734,7 +734,7 @@ function FacturasTab({ canManage, selectedContractId, onSelectContract }: Factur
                     setPaidOnError(false);
                     setPaidOn(event.target.value);
                   }}
-                  className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+                  className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
                 />
                 {paidOnError ? (
                   <p id="factura-paid-on-error" role="alert" className="text-error">

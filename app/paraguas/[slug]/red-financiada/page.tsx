@@ -56,8 +56,8 @@ export default async function ParaguasRedFinanciadaPage({
   const orgName = orgResult.ok ? orgResult.data.name : membership.organization_name;
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-text-base">
+    <div className="flex flex-col gap-4">
+      <h1 className="text-xl font-semibold text-text-base">
         {t("paraguas.redFinanciada.heading")}
       </h1>
       <ParaguasMetricsDashboard orgId={membership.organization_id} orgName={orgName} />

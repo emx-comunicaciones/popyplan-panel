@@ -67,13 +67,13 @@ export function ConfirmDialog({
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg"
+        className="w-full max-w-sm rounded-lg bg-white p-4 shadow-lg"
       >
-        <h2 id={titleId} className="text-base font-semibold text-text-base">
+        <h2 id={titleId} className="text-lg font-semibold text-text-base">
           {title}
         </h2>
         {description ? <div className="mt-2 text-sm text-text-secondary">{description}</div> : null}
-        <div className="mt-4 flex justify-end gap-2">
+        <div className="mt-3 flex justify-end gap-2">
           <Button type="button" variant="secondary" onClick={onCancel} disabled={pending}>
             {resolvedCancelLabel}
           </Button>

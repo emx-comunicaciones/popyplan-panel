@@ -76,6 +76,45 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/*
+ * Escala tipográfica del panel (pasada de densidad, 2026-09-20).
+ *
+ * El encargo era «los diseños más minimalistas del panel, está todo
+ * enorme». En vez de recortar clase a clase en 200 ficheros, se baja un
+ * peldaño la escala de `text-*` de Tailwind, que es la fuente real de
+ * todos esos tamaños: `text-sm` (el tamaño de trabajo de casi todo el
+ * panel: controles, tablas, menú, párrafos) pasa de 14px a 13px, y cada
+ * peldaño por encima hereda el del anterior. El tamaño base del
+ * navegador **no** se toca (sigue en 16px, requisito de accesibilidad:
+ * nada depende de un `html { font-size }` reducido) y ningún texto baja
+ * de 12px (`text-xs`, que se queda como está y es el mínimo del panel).
+ *
+ * Equivalencias tras el cambio (antes → ahora):
+ *   text-xs    12px → 12px   etiquetas de `StatCard`, insignias
+ *   text-sm    14px → 13px   controles, celdas de tabla, menú, prosa
+ *   text-base  16px → 15px   títulos de `EmptyState`/`ErrorState`
+ *   text-lg    18px → 16px   título de `Dialog`
+ *   text-xl    20px → 18px   `<h1>` de página
+ *   text-2xl   24px → 20px   cifra de `StatCard`
+ *
+ * Las alturas de línea van en rem (no en la proporción calculada por
+ * defecto de Tailwind) para que las alturas de fila y de control salgan
+ * exactas: 13px/18px de línea + 6px+6px de relleno = 30px de fila, y
+ * +1px de borde = 31px; un control con `h-8` mide 32px.
+ */
+@theme {
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.125rem;
+  --text-base: 0.9375rem;
+  --text-base--line-height: 1.375rem;
+  --text-lg: 1rem;
+  --text-lg--line-height: 1.5rem;
+  --text-xl: 1.125rem;
+  --text-xl--line-height: 1.625rem;
+  --text-2xl: 1.25rem;
+  --text-2xl--line-height: 1.75rem;
+}
+
 body {
   background: var(--color-background);
   color: var(--color-text-base);

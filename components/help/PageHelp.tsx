@@ -59,7 +59,7 @@ export function PageHelp() {
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={t("ariaLabel", { title })}
-        className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-primary-700 font-semibold hover:bg-primary-100 focus-visible:outline-primary-700"
+        className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white text-sm text-primary-700 font-semibold hover:bg-primary-100 focus-visible:outline-primary-700"
       >
         <span aria-hidden="true">?</span>
       </button>
@@ -71,13 +71,13 @@ export function PageHelp() {
         widthClassName="max-w-xl"
       >
         <p>{summary}</p>
-        <h3 className="mt-4 text-sm font-semibold text-text-base">{t("whatYouCanDo")}</h3>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-base">
+        <h3 className="mt-3 text-sm font-semibold text-text-base">{t("whatYouCanDo")}</h3>
+        <ul className="mt-1.5 list-disc space-y-0.5 pl-5 text-sm text-text-base">
           {actions.map((action, index) => (
             <li key={index}>{action}</li>
           ))}
         </ul>
-        <p className="mt-4 text-sm text-text-secondary">
+        <p className="mt-3 text-sm text-text-secondary">
           <strong>{t("audienceLabel")}</strong> {audience}
         </p>
       </Dialog>

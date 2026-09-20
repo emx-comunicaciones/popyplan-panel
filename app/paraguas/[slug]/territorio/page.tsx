@@ -43,8 +43,8 @@ export default async function ParaguasTerritorioPage({
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-text-base">{t("paraguas.territorio.heading")}</h1>
+    <div className="flex flex-col gap-4">
+      <h1 className="text-xl font-semibold text-text-base">{t("paraguas.territorio.heading")}</h1>
       <TerritorioDashboard orgId={membership.organization_id} />
     </div>
   );

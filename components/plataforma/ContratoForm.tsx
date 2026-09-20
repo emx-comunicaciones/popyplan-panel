@@ -110,7 +110,7 @@ export function ContratoForm({ editing, onDone }: ContratoFormProps) {
             id="contrato-organization"
             value={organization}
             onChange={(event) => setOrganization(event.target.value)}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             <option value="">{t("plataforma.contratos.chooseOrganization")}</option>
             {organizations.data?.results.map((org) => (
@@ -135,7 +135,7 @@ export function ContratoForm({ editing, onDone }: ContratoFormProps) {
             id="contrato-tier"
             value={tier}
             onChange={(event) => setTier(event.target.value)}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             <option value="">{t("plataforma.contratos.chooseTier")}</option>
             {tiers.data?.map((option) => (
@@ -161,7 +161,7 @@ export function ContratoForm({ editing, onDone }: ContratoFormProps) {
             type="date"
             value={startsOn}
             onChange={(event) => setStartsOn(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -173,7 +173,7 @@ export function ContratoForm({ editing, onDone }: ContratoFormProps) {
             type="date"
             value={endsOn}
             onChange={(event) => setEndsOn(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
       </div>
@@ -187,7 +187,7 @@ export function ContratoForm({ editing, onDone }: ContratoFormProps) {
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
           rows={3}
-          className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+          className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         />
       </div>
 

@@ -49,8 +49,8 @@ export default async function EntidadInformesPage({
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.informes.heading")}</h1>
+    <div className="flex flex-col gap-4">
+      <h1 className="text-xl font-semibold text-text-base">{t("entidad.informes.heading")}</h1>
       <ExportPanel scope="entidad" orgId={membership.organization_id} />
     </div>
   );

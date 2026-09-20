@@ -81,7 +81,7 @@ export function SedeSelector({ id, value, onChange, hintId }: SedeSelectorProps)
         value={search}
         onChange={(event) => setSearch(event.target.value)}
         aria-label={t("searchLabel")}
-        className="mb-2 w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+        className="mb-2 w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
       />
       <select
         id={id}
@@ -89,7 +89,7 @@ export function SedeSelector({ id, value, onChange, hintId }: SedeSelectorProps)
         aria-required="true"
         aria-describedby={describedBy}
         onChange={(event) => onChange(event.target.value || null)}
-        className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+        className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
       >
         {/* El valor ya guardado sigue seleccionable aunque la búsqueda
             actual no lo devuelva: si no, abrir el formulario y no buscar

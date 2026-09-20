@@ -118,7 +118,7 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
             type="text"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -131,7 +131,7 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             onBlur={() => setEmailTouched(true)}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
           {emailTouched && !emailValid ? (
             <p role="alert" className="mt-1 text-xs text-error">
@@ -148,7 +148,7 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
             type="tel"
             value={phone}
             onChange={(event) => setPhone(event.target.value)}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -160,7 +160,7 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
             value={community}
             onChange={(event) => setCommunity(event.target.value)}
             aria-describedby={communities.isError ? "add-person-community-error" : undefined}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             <option value="">{t("communityNone")}</option>
             {(communities.data ?? []).map((c) => (
@@ -184,7 +184,7 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
             value={referentUser}
             onChange={(event) => setReferentUser(event.target.value)}
             aria-describedby={members.isError ? "add-person-referent-error" : undefined}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             <option value="">{t("referentNone")}</option>
             {referentes.map((member) => (

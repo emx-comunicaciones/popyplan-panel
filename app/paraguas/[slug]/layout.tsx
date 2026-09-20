@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
@@ -9,6 +8,7 @@ import { SkipLink } from "@/components/ui/SkipLink";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Footer } from "@/components/layout/Footer";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { SideNav } from "@/components/layout/SideNav";
 import { contrastRatio, readableOn } from "@/lib/a11y/contrast";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { getServerOrganization } from "@/lib/auth/organization";
@@ -71,14 +71,14 @@ export default async function ParaguasLayout({
     <div className="flex min-h-screen flex-col bg-border-light">
       <SkipLink />
       <header
-        className="flex items-center justify-between gap-4 px-6 py-4"
+        className="flex items-center justify-between gap-3 px-4 py-2"
         style={{
           backgroundColor: headerBackground,
           color: headerForeground,
           borderBottom: headerAccent ? `6px solid ${headerAccent}` : undefined,
         }}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {/* `next/image` lanza en render si el host no está en
               `images.remotePatterns`: sin este guard, un logo servido
               desde un dominio que el despliegue no declaró tumbaba el
@@ -88,40 +88,33 @@ export default async function ParaguasLayout({
             <Image
               src={org.logo}
               alt=""
-              width={36}
-              height={36}
+              width={28}
+              height={28}
               className="rounded-full bg-white object-contain"
             />
           ) : null}
-          <span className="text-lg font-semibold">{org?.name ?? membership.organization_name}</span>
+          <span className="text-base font-semibold">{org?.name ?? membership.organization_name}</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <LanguageSwitcher />
           <PageHelp />
           <LogoutButton />
         </div>
       </header>
       {!orgResult.ok ? (
-        <div className="p-4">
+        <div className="p-3">
           <ErrorState title={t("layout.paraguas.loadErrorTitle")} />
         </div>
       ) : null}
       <div className="flex flex-1">
-        <nav aria-label={t("menu.paraguas.navLabel")} className="w-56 shrink-0 border-r border-border bg-white p-4">
-          <ul className="flex flex-col gap-1">
-            {menu.map((item) => (
-              <li key={item}>
-                <Link
-                  href={item === "inicio" ? `/paraguas/${slug}` : `/paraguas/${slug}/${item}`}
-                  className="block rounded-md px-3 py-2 text-sm font-medium text-text-form hover:bg-border-light"
-                >
-                  {t(PARAGUAS_MENU_LABELS[item])}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <main id="main-content" tabIndex={-1} className="flex-1 p-6 focus:outline-none">
+        <SideNav
+          ariaLabel={t("menu.paraguas.navLabel")}
+          items={menu.map((item) => ({
+            href: item === "inicio" ? `/paraguas/${slug}` : `/paraguas/${slug}/${item}`,
+            label: t(PARAGUAS_MENU_LABELS[item]),
+          }))}
+        />
+        <main id="main-content" tabIndex={-1} className="flex-1 p-4 focus:outline-none">
           {children}
         </main>
       </div>

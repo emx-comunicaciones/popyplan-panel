@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 
 import { EntityHomeDashboard } from "@/components/entidad/EntityHomeDashboard";
 import { isEntidadPanelRole } from "@/lib/auth/area";
-import { getServerOrganization } from "@/lib/auth/organization";
 import { getServerSession } from "@/lib/auth/session";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -30,14 +29,16 @@ export default async function EntidadInicioPage({
     redirect("/");
   }
 
-  const orgResult = await getServerOrganization(membership.organization_id, session.token);
-  const orgName = orgResult.ok ? orgResult.data.name : membership.organization_name;
   const t = await getTranslations("entidad.inicio");
 
+  // Sin subtítulo «Panel de <entidad>.» (pasada de densidad,
+  // 2026-09-20): el nombre de la entidad ya preside la cabecera del
+  // layout, así que la línea solo repetía un dato visible y empujaba el
+  // contenido hacia abajo. Al quedarse sin él, esta página tampoco
+  // necesita pedir la ficha de la entidad.
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">{t("heading")}</h1>
-      <p className="text-sm text-text-secondary">{t("panelSubtitle", { orgName })}</p>
+      <h1 className="text-xl font-semibold text-text-base">{t("heading")}</h1>
       <EntityHomeDashboard orgId={membership.organization_id} slug={slug} />
     </div>
   );

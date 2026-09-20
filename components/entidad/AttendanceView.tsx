@@ -203,7 +203,7 @@ function CheckinBox({ eventId, orgId }: { eventId: string; orgId: number | strin
             type="text"
             value={token}
             onChange={(event) => setToken(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <Button type="submit" disabled={checkin.isPending || !token}>
@@ -270,12 +270,12 @@ function AttendeeRow({
 
   return (
     <tr className="border-b border-border-light">
-      <td className="px-3 py-2 text-text-base">{attendee.public_name}</td>
-      <td className="px-3 py-2 text-text-base">
+      <td className="px-3 py-1.5 text-text-base">{attendee.public_name}</td>
+      <td className="px-3 py-1.5 text-text-base">
         <Badge>{STATUS_KEYS[attendee.status] ? tAll(STATUS_KEYS[attendee.status]) : attendee.status}</Badge>
       </td>
-      <td className="px-3 py-2 text-text-base">{attendee.guests}</td>
-      <td className="px-3 py-2 text-text-base">
+      <td className="px-3 py-1.5 text-text-base">{attendee.guests}</td>
+      <td className="px-3 py-1.5 text-text-base">
         <div className="flex flex-wrap gap-2">
           <Button type="button" disabled={isPendingThisRow} onClick={() => mark(true)}>
             {t("markAttended")}
@@ -333,10 +333,10 @@ export function AttendanceView({ eventId, orgId }: AttendanceViewProps) {
               <caption className="sr-only">{t("attendeesTableCaption")}</caption>
               <thead>
                 <tr className="border-b border-border text-text-secondary">
-                  <th scope="col" className="px-3 py-2 font-semibold">{t("colPerson")}</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">{t("colStatus")}</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">{t("colGuests")}</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">{t("colMark")}</th>
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colPerson")}</th>
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colStatus")}</th>
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colGuests")}</th>
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colMark")}</th>
                 </tr>
               </thead>
               <tbody>

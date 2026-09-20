@@ -274,7 +274,6 @@
   "entidad": {
     "inicio": {
       "heading": "Hasiera",
-      "panelSubtitle": "{orgName} erakundearen panela.",
       "todayHeading": "Gaurko jarduerak",
       "loadingToday": "Jarduerak kargatzen…",
       "noEventsToday": "Ez dago gaurko jarduerarik",

@@ -90,9 +90,9 @@ function MemberRow({
 
   return (
     <tr className="border-b border-border-light">
-      <td className="px-3 py-2 text-text-base">{member.full_name}</td>
-      <td className="px-3 py-2 text-text-base">{member.role}</td>
-      <td className="px-3 py-2 text-text-base">
+      <td className="px-3 py-1.5 text-text-base">{member.full_name}</td>
+      <td className="px-3 py-1.5 text-text-base">{member.role}</td>
+      <td className="px-3 py-1.5 text-text-base">
         <div className="flex flex-wrap gap-2">
           {member.role !== "owner" ? (
             <>
@@ -180,8 +180,8 @@ function PendingRow({ member, communityId }: { member: CommunityMember; communit
 
   return (
     <tr className="border-b border-border-light">
-      <td className="px-3 py-2 text-text-base">{member.full_name}</td>
-      <td className="px-3 py-2 text-text-base">
+      <td className="px-3 py-1.5 text-text-base">{member.full_name}</td>
+      <td className="px-3 py-1.5 text-text-base">
         <div className="flex flex-wrap gap-2">
           <Button
             type="button"
@@ -221,7 +221,7 @@ function CommunityDetail({ communityId }: { communityId: string }) {
   const tAll = useTranslations();
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <section aria-labelledby="pendientes-heading">
         <h2 id="pendientes-heading" className="mb-2 text-base font-semibold text-text-base">
           {t("pendingHeading")}
@@ -238,8 +238,8 @@ function CommunityDetail({ communityId }: { communityId: string }) {
               <caption className="sr-only">{t("pendingTableCaption")}</caption>
               <thead>
                 <tr className="border-b border-border text-text-secondary">
-                  <th scope="col" className="px-3 py-2 font-semibold">{t("colPerson")}</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">{t("colActions")}</th>
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colPerson")}</th>
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colActions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -268,9 +268,9 @@ function CommunityDetail({ communityId }: { communityId: string }) {
               <caption className="sr-only">{t("membersTableCaption")}</caption>
               <thead>
                 <tr className="border-b border-border text-text-secondary">
-                  <th scope="col" className="px-3 py-2 font-semibold">{t("colPerson")}</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">{t("colRole")}</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">{t("colActions")}</th>
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colPerson")}</th>
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colRole")}</th>
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colActions")}</th>
                 </tr>
               </thead>
               <tbody>

@@ -17,7 +17,7 @@ export function Footer() {
   const t = useTranslations("layout.footer");
 
   return (
-    <footer className="border-t border-border bg-white px-6 py-4 text-sm text-text-secondary">
+    <footer className="border-t border-border bg-white px-4 py-2 text-xs text-text-secondary">
       <Link href="/accesibilidad" className="font-medium text-primary-700 underline">
         {t("accessibility")}
       </Link>

@@ -60,7 +60,7 @@ export function ReportesQueue({ orgId, slug }: ReportesQueueProps) {
           onChange={(event) => {
             setStatus(event.target.value as ReportsQueueFilters["status"] | "");
           }}
-          className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+          className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         >
           <option value="">{t("entidad.reportes.statusAll")}</option>
           <option value="pending">{t("reports.status.pending")}</option>
@@ -90,19 +90,19 @@ export function ReportesQueue({ orgId, slug }: ReportesQueueProps) {
               <caption className="sr-only">{t("entidad.reportes.tableCaption")}</caption>
               <thead>
                 <tr className="border-b border-border text-text-secondary">
-                  <th scope="col" className="px-3 py-2 font-semibold">
+                  <th scope="col" className="px-3 py-1.5 font-semibold">
                     {t("entidad.reportes.colReason")}
                   </th>
-                  <th scope="col" className="px-3 py-2 font-semibold">
+                  <th scope="col" className="px-3 py-1.5 font-semibold">
                     {t("entidad.reportes.colTarget")}
                   </th>
-                  <th scope="col" className="px-3 py-2 font-semibold">
+                  <th scope="col" className="px-3 py-1.5 font-semibold">
                     {t("entidad.reportes.colStatus")}
                   </th>
-                  <th scope="col" className="px-3 py-2 font-semibold">
+                  <th scope="col" className="px-3 py-1.5 font-semibold">
                     {t("entidad.reportes.colDate")}
                   </th>
-                  <th scope="col" className="px-3 py-2 font-semibold">
+                  <th scope="col" className="px-3 py-1.5 font-semibold">
                     <span className="sr-only">{t("common.actions")}</span>
                   </th>
                 </tr>
@@ -110,15 +110,15 @@ export function ReportesQueue({ orgId, slug }: ReportesQueueProps) {
               <tbody>
                 {reports.data.map((report) => (
                   <tr key={report.id} className="border-b border-border-light">
-                    <td className="px-3 py-2 text-text-base">
+                    <td className="px-3 py-1.5 text-text-base">
                       <Badge tone={report.reason === "self_harm_risk" ? "error" : "neutral"}>
                         {reasonText(report.reason)}
                       </Badge>
                     </td>
-                    <td className="px-3 py-2 text-text-base">{report.target_type}</td>
-                    <td className="px-3 py-2 text-text-base">{statusText(report.status)}</td>
-                    <td className="px-3 py-2 text-text-base">{formatDate(report.created_at)}</td>
-                    <td className="px-3 py-2 text-text-base">
+                    <td className="px-3 py-1.5 text-text-base">{report.target_type}</td>
+                    <td className="px-3 py-1.5 text-text-base">{statusText(report.status)}</td>
+                    <td className="px-3 py-1.5 text-text-base">{formatDate(report.created_at)}</td>
+                    <td className="px-3 py-1.5 text-text-base">
                       <Link
                         href={`/entidad/${slug}/reportes/${report.id}`}
                         className="font-medium text-primary-700 underline"

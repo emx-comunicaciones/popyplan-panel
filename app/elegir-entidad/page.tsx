@@ -34,7 +34,7 @@ export default async function ElegirEntidadPage() {
           <li key={org.slug}>
             <Link
               href={`/entidad/${org.slug}`}
-              className="block rounded-md border border-border px-4 py-3 text-sm font-medium text-text-form hover:bg-border-light"
+              className="block rounded-md border border-border px-3 py-2 text-sm font-medium text-text-form hover:bg-border-light"
             >
               {org.name}
             </Link>

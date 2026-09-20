@@ -1,6 +1,6 @@
 import userEvent from "@testing-library/user-event";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { render as rtlRenderUnwrapped } from "@testing-library/react";
+import { fireEvent, render as rtlRenderUnwrapped } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -22,8 +22,8 @@ const fetchMock = vi.fn();
 
 /**
  * `test-utils/render.tsx::render` fija `locale="es"` sin posibilidad de
- * cambiarlo — necesario aquí para comprobar `aria-pressed` con otro
- * idioma activo. Mismo patrón que `PageHelp.test.tsx` (RTL sin envolver
+ * cambiarlo — necesario aquí para comprobar el valor del `<select>` con
+ * otro idioma activo. Mismo patrón que `PageHelp.test.tsx` (RTL sin envolver
  * + `NextIntlClientProvider` a mano); `QueryClientProvider` se mantiene
  * por si `useUpdatePreferredLanguage` deja de estar mockeado algún día
  * (el hook real usa `useMutation`, que exige ese contexto).
@@ -69,38 +69,43 @@ afterEach(() => {
 });
 
 describe("LanguageSwitcher", () => {
-  it("pinta tres botones, cada uno con su código y su nombre completo como aria-label", () => {
+  it("pinta un <select> con etiqueta «Idioma» y las tres opciones por nombre completo", () => {
     render(<LanguageSwitcher />);
 
-    const esButton = screen.getByRole("button", { name: "Español" });
-    const euButton = screen.getByRole("button", { name: "Euskara" });
-    const caButton = screen.getByRole("button", { name: "Català" });
+    const select = screen.getByLabelText("Idioma");
 
-    expect(esButton).toHaveTextContent("ES");
-    expect(euButton).toHaveTextContent("EU");
-    expect(caButton).toHaveTextContent("CA");
+    expect(select.tagName).toBe("SELECT");
+    expect(
+      Array.from(select.querySelectorAll("option")).map((option) => option.textContent),
+    ).toEqual(["Español", "Euskara", "Català"]);
   });
 
-  it("con locale es (por defecto de los tests), el botón ES aparece pulsado", () => {
+  it("la etiqueta «Idioma» es solo para lectores de pantalla", () => {
+    const { container } = render(<LanguageSwitcher />);
+
+    const label = container.querySelector("label");
+
+    expect(label).not.toBeNull();
+    expect(label?.className).toContain("sr-only");
+  });
+
+  it("con locale es (por defecto de los tests), el valor seleccionado es «es»", () => {
     render(<LanguageSwitcher />);
 
-    expect(screen.getByRole("button", { name: "Español" })).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByRole("button", { name: "Euskara" })).toHaveAttribute("aria-pressed", "false");
-    expect(screen.getByRole("button", { name: "Català" })).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByLabelText("Idioma")).toHaveValue("es");
   });
 
-  it("con locale eu, el botón EU aparece pulsado", () => {
+  it("con locale eu, el valor seleccionado es «eu»", () => {
     renderWithLocale("eu");
 
-    expect(screen.getByRole("button", { name: "Euskara" })).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByRole("button", { name: "Español" })).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByLabelText("Idioma")).toHaveValue("eu");
   });
 
-  it("al pulsar un idioma distinto, fija la cookie con /api/lang y refresca", async () => {
+  it("al elegir un idioma distinto, fija la cookie con /api/lang y refresca", async () => {
     const user = userEvent.setup();
     render(<LanguageSwitcher />);
 
-    await user.click(screen.getByRole("button", { name: "Euskara" }));
+    await user.selectOptions(screen.getByLabelText("Idioma"), "eu");
 
     expect(fetchMock).toHaveBeenCalledWith("/api/lang", {
       method: "POST",
@@ -111,12 +116,24 @@ describe("LanguageSwitcher", () => {
     expect(routerMock.refresh).toHaveBeenCalledTimes(1);
   });
 
+  it("mientras la petición está en vuelo, el select muestra ya el idioma elegido", async () => {
+    // Sin el estado optimista, un `<select>` controlado por `useLocale()`
+    // volvería al idioma anterior hasta que `router.refresh()` repintara
+    // el árbol de servidor: el cambio parecía no haber ocurrido.
+    const user = userEvent.setup();
+    render(<LanguageSwitcher />);
+
+    await user.selectOptions(screen.getByLabelText("Idioma"), "ca");
+
+    expect(screen.getByLabelText("Idioma")).toHaveValue("ca");
+  });
+
   it("con sesión (token en memoria), también guarda la preferencia en la cuenta", async () => {
     setAccessToken("token-1");
     const user = userEvent.setup();
     render(<LanguageSwitcher />);
 
-    await user.click(screen.getByRole("button", { name: "Català" }));
+    await user.selectOptions(screen.getByLabelText("Idioma"), "ca");
 
     expect(mutateAsyncMock).toHaveBeenCalledWith("ca");
     expect(routerMock.refresh).toHaveBeenCalledTimes(1);
@@ -126,16 +143,18 @@ describe("LanguageSwitcher", () => {
     const user = userEvent.setup();
     render(<LanguageSwitcher />);
 
-    await user.click(screen.getByRole("button", { name: "Euskara" }));
+    await user.selectOptions(screen.getByLabelText("Idioma"), "eu");
 
     expect(mutateAsyncMock).not.toHaveBeenCalled();
   });
 
-  it("pulsar el idioma ya activo no hace nada", async () => {
-    const user = userEvent.setup();
+  it("elegir el idioma ya activo no hace nada", async () => {
     render(<LanguageSwitcher />);
 
-    await user.click(screen.getByRole("button", { name: "Español" }));
+    // `selectOptions` sobre la opción ya seleccionada puede no disparar
+    // `change`: se fuerza el evento a mano para ejercitar la guarda del
+    // propio componente pase lo que pase en jsdom.
+    fireEvent.change(screen.getByLabelText("Idioma"), { target: { value: "es" } });
 
     expect(fetchMock).not.toHaveBeenCalled();
     expect(routerMock.refresh).not.toHaveBeenCalled();
@@ -146,9 +165,19 @@ describe("LanguageSwitcher", () => {
     const user = userEvent.setup();
     render(<LanguageSwitcher />);
 
-    await user.click(screen.getByRole("button", { name: "Euskara" }));
+    await user.selectOptions(screen.getByLabelText("Idioma"), "eu");
 
     expect(routerMock.refresh).not.toHaveBeenCalled();
+  });
+
+  it("un fallo al fijar la cookie devuelve el select al idioma activo", async () => {
+    fetchMock.mockResolvedValueOnce({ ok: false, status: 400 });
+    const user = userEvent.setup();
+    render(<LanguageSwitcher />);
+
+    await user.selectOptions(screen.getByLabelText("Idioma"), "eu");
+
+    expect(screen.getByLabelText("Idioma")).toHaveValue("es");
   });
 
   it("un fallo inesperado de la mutación de cuenta no impide refrescar (la cookie ya se fijó)", async () => {
@@ -157,7 +186,7 @@ describe("LanguageSwitcher", () => {
     const user = userEvent.setup();
     render(<LanguageSwitcher />);
 
-    await user.click(screen.getByRole("button", { name: "Euskara" }));
+    await user.selectOptions(screen.getByLabelText("Idioma"), "eu");
 
     expect(routerMock.refresh).toHaveBeenCalledTimes(1);
   });
@@ -169,34 +198,27 @@ describe("LanguageSwitcher", () => {
   });
 
   /**
-   * I3 de la revisión final de la rama: el botón activo usaba
-   * `variant="primary"` (`bg-primary-700`), invisible sobre la cabecera
-   * de entidad por defecto (también `primary-700`, 1,00:1 de contraste
-   * de superficie). Mismo arreglo que `PageHelp.tsx` en `a41bde5`: fondo
-   * blanco fijo para los tres botones, y el activo se distingue por algo
-   * más que el color (aquí `font-semibold` + un borde marcado, además de
-   * `aria-pressed`, que ya era correcto).
+   * I3 de la revisión final de la rama de i18n (se conserva con el
+   * `<select>` de la pasada de densidad): el control vive sobre la
+   * cabecera de marca, que con la entidad por defecto es `primary-700`.
+   * Fondo blanco propio, como `PageHelp` y «Cerrar sesión», para que
+   * funcione sobre cualquier color de cabecera.
    */
-  it("los tres botones tienen fondo blanco (I3): el activo no se confunde con la cabecera de marca", () => {
+  it("el select tiene fondo blanco: no se confunde con la cabecera de marca", () => {
     render(<LanguageSwitcher />);
 
-    const esButton = screen.getByRole("button", { name: "Español" });
-    const euButton = screen.getByRole("button", { name: "Euskara" });
-    const caButton = screen.getByRole("button", { name: "Català" });
-
-    expect(esButton.className).toContain("bg-white");
-    expect(euButton.className).toContain("bg-white");
-    expect(caButton.className).toContain("bg-white");
+    expect(screen.getByLabelText("Idioma").className).toContain("bg-white");
   });
 
-  it("el botón activo se distingue del resto por algo más que el color (I3)", () => {
+  /**
+   * Densidad (2026-09-20): la cabecera de área mide 48px y sus controles
+   * 32px. El `<select>` es uno de ellos y no puede bajar de ahí (objetivo
+   * interactivo mínimo).
+   */
+  it("el select mide 32px de alto (h-8), como el resto de controles de la cabecera", () => {
     render(<LanguageSwitcher />);
 
-    const esButton = screen.getByRole("button", { name: "Español" });
-    const euButton = screen.getByRole("button", { name: "Euskara" });
-
-    expect(esButton.className).toContain("font-semibold");
-    expect(euButton.className).not.toContain("font-semibold");
+    expect(screen.getByLabelText("Idioma").className).toContain("h-8");
   });
 
   /**
@@ -214,7 +236,7 @@ describe("LanguageSwitcher", () => {
     expect(queryClient.getQueryState(someKey)?.isInvalidated).toBe(false);
 
     const user = userEvent.setup();
-    await user.click(screen.getByRole("button", { name: "Euskara" }));
+    await user.selectOptions(screen.getByLabelText("Idioma"), "eu");
 
     await vi.waitFor(() => {
       expect(queryClient.getQueryState(someKey)?.isInvalidated).toBe(true);
@@ -229,7 +251,7 @@ describe("LanguageSwitcher", () => {
     queryClient.setQueryData(someKey, []);
 
     const user = userEvent.setup();
-    await user.click(screen.getByRole("button", { name: "Euskara" }));
+    await user.selectOptions(screen.getByLabelText("Idioma"), "eu");
 
     expect(queryClient.getQueryState(someKey)?.isInvalidated).toBe(false);
   });

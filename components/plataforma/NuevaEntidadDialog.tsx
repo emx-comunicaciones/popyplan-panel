@@ -103,7 +103,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
             type="text"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -115,7 +115,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
             type="text"
             value={slug}
             onChange={(event) => setSlug(event.target.value)}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -126,7 +126,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
             id="nueva-entidad-tipo"
             value={orgType}
             onChange={(event) => setOrgType(event.target.value as OrgTypeEnum)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             {(Object.keys(ORG_TYPE_LABEL_KEYS) as OrgTypeEnum[]).map((value) => (
               <option key={value} value={value}>
@@ -155,7 +155,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
             type="text"
             value={cif}
             onChange={(event) => setCif(event.target.value)}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -167,7 +167,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
             type="number"
             value={parent}
             onChange={(event) => setParent(event.target.value)}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -179,7 +179,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             rows={3}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
 

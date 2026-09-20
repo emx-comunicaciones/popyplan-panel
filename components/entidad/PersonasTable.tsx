@@ -198,7 +198,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
             type="text"
             value={filters.search}
             onChange={(event) => updateFilter("search", event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -213,7 +213,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
               setPage(1);
             }}
             aria-describedby={communities.isError ? "personas-community-error" : undefined}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             <option value="">{t("communityAll")}</option>
             {(communities.data ?? []).map((community) => (
@@ -237,7 +237,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
             type="number"
             value={filters.referent}
             onChange={(event) => updateFilter("referent", event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -249,7 +249,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
             type="date"
             value={filters.activeSince}
             onChange={(event) => updateFilter("activeSince", event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -261,7 +261,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
             type="date"
             value={filters.joinedSince}
             onChange={(event) => updateFilter("joinedSince", event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div className="flex items-center gap-2 pb-2">
@@ -312,14 +312,14 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
               <caption className="sr-only">{t("tableCaption")}</caption>
               <thead>
                 <tr className="border-b border-border text-text-secondary">
-                  <th scope="col" className="px-3 py-2 font-semibold">{t("colName")}</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">{t("colCommunities")}</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">{t("colEventsPeriod")}</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">{t("colAttendedPeriod")}</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">{t("colJoined")}</th>
-                  <th scope="col" className="px-3 py-2 font-semibold">{t("colReferent")}</th>
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colName")}</th>
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colCommunities")}</th>
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colEventsPeriod")}</th>
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colAttendedPeriod")}</th>
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colJoined")}</th>
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colReferent")}</th>
                   {canManage ? (
-                    <th scope="col" className="px-3 py-2 font-semibold">{t("colActions")}</th>
+                    <th scope="col" className="px-3 py-1.5 font-semibold">{t("colActions")}</th>
                   ) : null}
                 </tr>
               </thead>
@@ -331,19 +331,19 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
                         key={`invitation-${row.invitation_id}`}
                         className="border-b border-border-light bg-card-light/40"
                       >
-                        <td className="px-3 py-2 text-text-base">
+                        <td className="px-3 py-1.5 text-text-base">
                           <div className="flex flex-wrap items-center gap-2">
                             <Badge tone="info">{t("invitedBadge")}</Badge>
                             <span className="font-medium">{row.display_name}</span>
                           </div>
                         </td>
-                        <td className="px-3 py-2 text-text-secondary">—</td>
-                        <td className="px-3 py-2 text-text-secondary">—</td>
-                        <td className="px-3 py-2 text-text-secondary">—</td>
-                        <td className="px-3 py-2 text-text-base">{formatDate(row.invited_at, locale)}</td>
-                        <td className="px-3 py-2 text-text-secondary">—</td>
+                        <td className="px-3 py-1.5 text-text-secondary">—</td>
+                        <td className="px-3 py-1.5 text-text-secondary">—</td>
+                        <td className="px-3 py-1.5 text-text-secondary">—</td>
+                        <td className="px-3 py-1.5 text-text-base">{formatDate(row.invited_at, locale)}</td>
+                        <td className="px-3 py-1.5 text-text-secondary">—</td>
                         {canManage ? (
-                          <td className="px-3 py-2">
+                          <td className="px-3 py-1.5">
                             <div className="flex gap-2">
                               <Button
                                 type="button"
@@ -377,7 +377,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
 
                   return (
                     <tr key={row.user_id} className="border-b border-border-light">
-                      <td className="px-3 py-2 text-text-base">
+                      <td className="px-3 py-1.5 text-text-base">
                         <Link
                           href={`/entidad/${slug}/personas/${row.user_id}`}
                           className="font-medium text-primary-700 underline"
@@ -385,14 +385,14 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
                           {row.public_name}
                         </Link>
                       </td>
-                      <td className="px-3 py-2 text-text-base">{row.communities_count}</td>
-                      <td className="px-3 py-2 text-text-base">{row.events_period}</td>
-                      <td className="px-3 py-2 text-text-base">{row.attended_period}</td>
-                      <td className="px-3 py-2 text-text-base">{formatDate(row.joined_at, locale)}</td>
-                      <td className="px-3 py-2 text-text-base">
+                      <td className="px-3 py-1.5 text-text-base">{row.communities_count}</td>
+                      <td className="px-3 py-1.5 text-text-base">{row.events_period}</td>
+                      <td className="px-3 py-1.5 text-text-base">{row.attended_period}</td>
+                      <td className="px-3 py-1.5 text-text-base">{formatDate(row.joined_at, locale)}</td>
+                      <td className="px-3 py-1.5 text-text-base">
                         {row.referent ? row.referent.public_name : t("noReferent")}
                       </td>
-                      {canManage ? <td className="px-3 py-2 text-text-secondary">—</td> : null}
+                      {canManage ? <td className="px-3 py-1.5 text-text-secondary">—</td> : null}
                     </tr>
                   );
                 })}

@@ -190,7 +190,7 @@ export function PlataformaHomeDashboard({ role }: PlataformaHomeDashboardProps) 
   const menu = plataformaMenuFor(role);
 
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
       {role === "superadmin" ? <EstadisticasCards /> : null}
       {menu.includes("reportes") ? <ReportesPendientesCard /> : null}
       {menu.includes("ayuda") ? <AyudaPendienteCard /> : null}

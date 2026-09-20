@@ -274,7 +274,6 @@
   "entidad": {
     "inicio": {
       "heading": "Inicio",
-      "panelSubtitle": "Panel de {orgName}.",
       "todayHeading": "Actividades de hoy",
       "loadingToday": "Cargando actividades…",
       "noEventsToday": "Sin actividades hoy",

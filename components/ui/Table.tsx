@@ -19,6 +19,12 @@ export interface TableProps<Row> {
   getRowKey: (row: Row) => string;
 }
 
+/*
+ * Densidad (2026-09-20): celdas con 12px de relleno horizontal y 6px
+ * vertical, texto de 13px (`text-sm`) — filas de ~31px con el borde
+ * incluido, frente a los ~37px de antes. Ninguna celda es en sí un
+ * objetivo interactivo: los enlaces de fila siguen siendo texto.
+ */
 export function Table<Row>({ caption, columns, rows, getRowKey }: TableProps<Row>) {
   return (
     <div className="overflow-x-auto">
@@ -27,7 +33,7 @@ export function Table<Row>({ caption, columns, rows, getRowKey }: TableProps<Row
         <thead>
           <tr className="border-b border-border text-text-secondary">
             {columns.map((column) => (
-              <th key={column.key} scope="col" className="px-3 py-2 font-semibold">
+              <th key={column.key} scope="col" className="px-3 py-1.5 font-semibold">
                 {column.header}
               </th>
             ))}
@@ -37,7 +43,7 @@ export function Table<Row>({ caption, columns, rows, getRowKey }: TableProps<Row
           {rows.map((row) => (
             <tr key={getRowKey(row)} className="border-b border-border-light">
               {columns.map((column) => (
-                <td key={column.key} className="px-3 py-2 text-text-base">
+                <td key={column.key} className="px-3 py-1.5 text-text-base">
                   {column.render(row)}
                 </td>
               ))}

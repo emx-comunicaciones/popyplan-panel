@@ -140,7 +140,7 @@ export function TerritorioForm({ organization, orgId }: TerritorioFormProps) {
             onChange={(event) =>
               setForm({ ...form, admin_level: event.target.value as AdminLevel })
             }
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             {(Object.keys(ADMIN_LEVEL_LABEL_KEYS) as AdminLevel[]).map((level) => (
               <option key={level} value={level}>
@@ -168,7 +168,7 @@ export function TerritorioForm({ organization, orgId }: TerritorioFormProps) {
                 territory_code: kind === "" ? "" : form.territory_code,
               });
             }}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             {(Object.keys(TERRITORY_KIND_LABEL_KEYS) as TerritoryKind[]).map((kind) => (
               <option key={kind} value={kind}>
@@ -188,7 +188,7 @@ export function TerritorioForm({ organization, orgId }: TerritorioFormProps) {
             type="text"
             value={form.territory_code}
             onChange={(event) => setForm({ ...form, territory_code: event.target.value })}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <p className="text-sm text-text-secondary">{preview}</p>
