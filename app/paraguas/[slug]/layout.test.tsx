@@ -48,6 +48,10 @@ describe("ParaguasLayout", () => {
     render(element);
 
     expect(screen.getByRole("button", { name: /^Ayuda:/ })).toBeInTheDocument();
+    // Selector de idioma: un `<select>` con etiqueta solo para lectores
+    // de pantalla desde la pasada de densidad (2026-09-20), no tres
+    // botones.
+    expect(screen.getByLabelText("Idioma").tagName).toBe("SELECT");
   });
 
   it("pinta la cabecera con el nombre de la entidad paraguas", async () => {
