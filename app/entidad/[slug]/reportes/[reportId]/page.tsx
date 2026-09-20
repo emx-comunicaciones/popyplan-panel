@@ -41,7 +41,7 @@ export default async function EntidadReporteDetailPage({
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.reporteDetalle.heading")}</h1>
+      <h1 className="text-xl font-semibold text-text-base">{t("entidad.reporteDetalle.heading")}</h1>
       <ReporteDetail reportId={reportId} />
     </div>
   );

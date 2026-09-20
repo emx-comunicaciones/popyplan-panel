@@ -40,8 +40,8 @@ export default async function ParaguasInformesPage({
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-text-base">{t("paraguas.informes.heading")}</h1>
+    <div className="flex flex-col gap-4">
+      <h1 className="text-xl font-semibold text-text-base">{t("paraguas.informes.heading")}</h1>
       <ExportPanel scope="paraguas" orgId={membership.organization_id} />
     </div>
   );

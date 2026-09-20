@@ -51,7 +51,7 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
   const locale = useLocale();
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <section aria-labelledby="actividades-hoy-heading">
         <h2 id="actividades-hoy-heading" className="mb-2 text-lg font-semibold text-text-base">
           {t("todayHeading")}
@@ -95,7 +95,7 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
         )}
       </section>
 
-      <section aria-labelledby="avisos-heading" className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <section aria-labelledby="avisos-heading" className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <h2 id="avisos-heading" className="sr-only">
           {t("pendingAlertsHeading")}
         </h2>
@@ -155,7 +155,7 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
         ) : !metrics.data ? (
           <p className="text-sm text-text-secondary">{t("loadingMetrics")}</p>
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <StatCard
               label={t("statActivePeople")}
               value={formatCount(metrics.data.people.active, metrics.data.people.suppressed)}

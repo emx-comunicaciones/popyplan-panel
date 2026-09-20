@@ -83,7 +83,7 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
           type="text"
           value={number}
           onChange={(event) => setNumber(event.target.value)}
-          className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+          className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         />
       </div>
 
@@ -98,7 +98,7 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
           min="0"
           value={amountEuros}
           onChange={(event) => setAmountEuros(event.target.value)}
-          className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+          className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         />
       </div>
 
@@ -116,7 +116,7 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
               setDateError(false);
               setIssuedOn(event.target.value);
             }}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -132,7 +132,7 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
               setDateError(false);
               setDueOn(event.target.value);
             }}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
       </div>
@@ -146,7 +146,7 @@ export function FacturaForm({ contractId, onDone }: FacturaFormProps) {
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
           rows={2}
-          className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+          className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         />
       </div>
 

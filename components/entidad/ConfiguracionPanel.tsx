@@ -134,7 +134,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
             id="config-description"
             value={data.description}
             onChange={(event) => setForm({ ...data, description: event.target.value })}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             rows={3}
           />
         </div>
@@ -148,7 +148,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
               type="email"
               value={data.contact_email}
               onChange={(event) => setForm({ ...data, contact_email: event.target.value })}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             />
           </div>
           <div>
@@ -160,7 +160,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
               type="tel"
               value={data.contact_phone}
               onChange={(event) => setForm({ ...data, contact_phone: event.target.value })}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             />
           </div>
           <div>
@@ -172,7 +172,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
               type="url"
               value={data.website}
               onChange={(event) => setForm({ ...data, website: event.target.value })}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             />
           </div>
         </div>
@@ -186,7 +186,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
               type="color"
               value={data.primary_color}
               onChange={(event) => setForm({ ...data, primary_color: event.target.value })}
-              className="h-10 w-16 rounded-md border border-border"
+              className="h-8 w-14 rounded-md border border-border"
             />
           </div>
           <div>
@@ -198,7 +198,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
               type="color"
               value={data.secondary_color}
               onChange={(event) => setForm({ ...data, secondary_color: event.target.value })}
-              className="h-10 w-16 rounded-md border border-border"
+              className="h-8 w-14 rounded-md border border-border"
             />
           </div>
         </div>
@@ -262,7 +262,7 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
             type="number"
             value={userId}
             onChange={(event) => setUserId(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -273,7 +273,7 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
             id="equipo-role"
             value={role}
             onChange={(event) => setRole(event.target.value as OrgMembershipRole)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             {ROLE_OPTIONS.map((value) => (
               <option key={value} value={value}>
@@ -307,13 +307,13 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
             <caption className="sr-only">{t("entidad.configuracion.teamTableCaption")}</caption>
             <thead>
               <tr className="border-b border-border text-text-secondary">
-                <th scope="col" className="px-3 py-2 font-semibold">
+                <th scope="col" className="px-3 py-1.5 font-semibold">
                   {t("entidad.configuracion.colUser")}
                 </th>
-                <th scope="col" className="px-3 py-2 font-semibold">
+                <th scope="col" className="px-3 py-1.5 font-semibold">
                   {t("entidad.configuracion.colRole")}
                 </th>
-                <th scope="col" className="px-3 py-2 font-semibold">
+                <th scope="col" className="px-3 py-1.5 font-semibold">
                   <span className="sr-only">{t("common.actions")}</span>
                 </th>
               </tr>
@@ -321,9 +321,9 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
             <tbody>
               {members.data.map((member) => (
                 <tr key={member.id} className="border-b border-border-light">
-                  <td className="px-3 py-2 text-text-base">{member.public_name}</td>
-                  <td className="px-3 py-2 text-text-base">{member.role}</td>
-                  <td className="px-3 py-2 text-text-base">
+                  <td className="px-3 py-1.5 text-text-base">{member.public_name}</td>
+                  <td className="px-3 py-1.5 text-text-base">{member.role}</td>
+                  <td className="px-3 py-1.5 text-text-base">
                     <Button
                       type="button"
                       variant="danger"
@@ -452,7 +452,7 @@ function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam
             type="number"
             value={userId}
             onChange={(event) => setUserId(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -464,7 +464,7 @@ function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam
             type="number"
             value={referentUserId}
             onChange={(event) => setReferentUserId(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <Button type="submit" disabled={createReference.isPending}>
@@ -574,7 +574,7 @@ function Ambito({ orgId }: { orgId: number | string }) {
             id="ambito-kind"
             value={kind}
             onChange={(event) => setKind(event.target.value as typeof kind)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             <option value="places">{t("entidad.configuracion.scopeTypePlaces")}</option>
             <option value="comarca">{t("entidad.configuracion.scopeTypeComarca")}</option>
@@ -592,7 +592,7 @@ function Ambito({ orgId }: { orgId: number | string }) {
             type="text"
             value={value}
             onChange={(event) => setValue(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <Button type="submit" disabled={scope.isPending}>
@@ -636,7 +636,7 @@ function Ambito({ orgId }: { orgId: number | string }) {
  */
 export function ConfiguracionPanel({ orgId, role, currentUserId }: ConfiguracionPanelProps) {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <DatosEntidad orgId={orgId} />
       {role === "titular" ? <Equipo orgId={orgId} currentUserId={currentUserId} /> : null}
       <Referencias orgId={orgId} canSeeTeam={role === "titular"} />

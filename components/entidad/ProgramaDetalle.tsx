@@ -128,7 +128,7 @@ function ProgramaMetrics({ orgId, program }: { orgId: number | string; program: 
         <p className="text-sm text-text-secondary">{t("entidad.programaFicha.metricsLoading")}</p>
       ) : (
         <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <StatCard
               label={t("entidad.programaFicha.activePeople")}
               value={formatCount(metrics.data.people.active, metrics.data.people.suppressed)}
@@ -191,7 +191,7 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
   const data = program.data;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <Card>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -315,7 +315,7 @@ export function ProgramaDetalle({ orgId, programId, canManage, canExport }: Prog
               value={closingNotes}
               onChange={(event) => setClosingNotes(event.target.value)}
               rows={3}
-              className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             />
             {/* El mensaje literal del backend (409 «Un programa cerrado no
                 se modifica.», 400 por campo) se lee aquí dentro: el

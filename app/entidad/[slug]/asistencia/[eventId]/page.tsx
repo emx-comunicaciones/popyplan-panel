@@ -51,7 +51,7 @@ export default async function EntidadAsistenciaPage({
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">{t("entidad.asistencia.heading")}</h1>
+      <h1 className="text-xl font-semibold text-text-base">{t("entidad.asistencia.heading")}</h1>
       <AttendanceView eventId={eventId} orgId={membership.organization_id} />
     </div>
   );

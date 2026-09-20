@@ -266,7 +266,6 @@
   "entidad": {
     "inicio": {
       "heading": "Inici",
-      "panelSubtitle": "Tauler de {orgName}.",
       "todayHeading": "Activitats d'avui",
       "loadingToday": "Carregant activitats…",
       "noEventsToday": "Sense activitats avui",

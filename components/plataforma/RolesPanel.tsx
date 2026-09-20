@@ -81,7 +81,7 @@ function GrantRoleForm() {
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+          className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         />
         {results.data && results.data.length > 0 ? (
           <ul className="mt-1 flex flex-col gap-1 rounded-md border border-border p-2 text-sm">
@@ -125,7 +125,7 @@ function GrantRoleForm() {
             type="number"
             value={userId}
             onChange={(event) => setUserId(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -136,7 +136,7 @@ function GrantRoleForm() {
             id="roles-role"
             value={role}
             onChange={(event) => setRole(event.target.value as PlatformRoleName)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             {ROLE_OPTIONS.map((value) => (
               <option key={value} value={value}>
@@ -166,7 +166,7 @@ export function RolesPanel() {
   const [toRevoke, setToRevoke] = useState<number | null>(null);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <GrantRoleForm />
 
       <Card title={t("plataforma.roles.currentTitle")}>

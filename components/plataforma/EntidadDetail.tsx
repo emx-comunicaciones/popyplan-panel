@@ -272,7 +272,7 @@ function ParaguasTab({ orgId, role }: { orgId: number | string; role: string | n
                 type="number"
                 value={newParent}
                 onChange={(event) => setNewParent(event.target.value)}
-                className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+                className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
               />
             </div>
             <Button
@@ -358,7 +358,7 @@ function AmbitoTab({ orgId, role }: { orgId: number | string; role: string | nul
             id="plataforma-ambito-kind"
             value={kind}
             onChange={(event) => setKind(event.target.value as typeof kind)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             <option value="places">{t("plataforma.entidadFicha.scopeKindPlaces")}</option>
             <option value="comarca">{t("metrics.groupBy.comarca")}</option>
@@ -376,7 +376,7 @@ function AmbitoTab({ orgId, role }: { orgId: number | string; role: string | nul
             type="text"
             value={value}
             onChange={(event) => setValue(event.target.value)}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <Button type="submit" disabled={scope.isPending}>
@@ -450,7 +450,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
                 type="number"
                 value={userId}
                 onChange={(event) => setUserId(event.target.value)}
-                className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+                className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
               />
             </div>
             <div>
@@ -461,7 +461,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
                 id="plataforma-equipo-role"
                 value={role}
                 onChange={(event) => setRole(event.target.value as OrgMembershipRole)}
-                className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+                className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
               >
                 {ROLE_OPTIONS.map((value) => (
                   <option key={value} value={value}>
@@ -544,7 +544,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
                 type="number"
                 value={refUser}
                 onChange={(event) => setRefUser(event.target.value)}
-                className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+                className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
               />
             </div>
             <div>
@@ -556,7 +556,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
                 type="number"
                 value={refReferent}
                 onChange={(event) => setRefReferent(event.target.value)}
-                className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+                className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
               />
             </div>
             <Button type="submit" disabled={createReference.isPending}>
@@ -706,7 +706,7 @@ function MetricasTab({ orgId }: { orgId: number | string }) {
 
   return (
     <Card title={t("plataforma.entidadFicha.metricsCardTitle")}>
-      <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div>
           <dt className="text-sm text-text-secondary">{t("metrics.stats.activePeople")}</dt>
           <dd className="text-2xl font-semibold text-text-base">

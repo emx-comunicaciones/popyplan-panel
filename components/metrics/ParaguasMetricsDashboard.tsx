@@ -88,7 +88,7 @@ export function ParaguasMetricsDashboard({ orgId, orgName }: ParaguasMetricsDash
   const compare = useCompare("paraguas", orgId, period, compareGroupBy);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <PeriodSelector value={period} preset={preset} onChange={handlePeriodChange} />
 
       {base.isError ? (
@@ -102,7 +102,7 @@ export function ParaguasMetricsDashboard({ orgId, orgName }: ParaguasMetricsDash
         </p>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <StatCard
               label={t("metrics.stats.activePeople")}
               value={formatCount(base.data.people.active, base.data.people.suppressed)}

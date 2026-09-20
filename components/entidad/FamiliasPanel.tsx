@@ -153,7 +153,7 @@ function NuevaComunidadDialog({
             type="text"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -165,7 +165,7 @@ function NuevaComunidadDialog({
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             rows={3}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -178,7 +178,7 @@ function NuevaComunidadDialog({
             onChange={(event) =>
               setVisibility(event.target.value as "open" | "on_request" | "private")
             }
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             <option value="open">{t("entidad.familias.visibilityOpen")}</option>
             <option value="on_request">{t("entidad.familias.visibilityOnRequest")}</option>
@@ -194,7 +194,7 @@ function NuevaComunidadDialog({
             value={codeOfConduct}
             onChange={(event) => setCodeOfConduct(event.target.value)}
             rows={3}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div className="flex gap-2">
@@ -330,7 +330,7 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
   const data = summary.data;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <p className="rounded-md border border-border bg-category-light p-3 text-sm text-text-form">
         {t("entidad.familias.banner")}
       </p>
@@ -339,7 +339,7 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
         <h2 id="familias-resumen-heading" className="sr-only">
           {t("entidad.familias.summaryHeading")}
         </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <StatCard
             label={t("entidad.familias.communitiesCount")}
             value={formatCount(data.communities.length)}

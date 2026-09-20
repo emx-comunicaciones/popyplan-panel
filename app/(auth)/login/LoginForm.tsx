@@ -107,14 +107,14 @@ export function LoginForm() {
   return (
     <div className="flex min-h-screen flex-col bg-border-light">
       <main className="flex flex-1 items-center justify-center p-4">
-        <div className="w-full max-w-sm rounded-lg border border-border bg-white p-6 shadow-sm">
-          <div className="mb-4 flex justify-end">
+        <div className="w-full max-w-sm rounded-lg border border-border bg-white p-4 shadow-sm">
+          <div className="mb-3 flex justify-end">
             <LanguageSwitcher />
           </div>
           <h1 className="mb-1 text-xl font-semibold text-text-base">{t("brand")}</h1>
-          <p className="mb-6 text-sm text-text-secondary">{t("subtitle")}</p>
+          <p className="mb-4 text-sm text-text-secondary">{t("subtitle")}</p>
           <form onSubmit={handleSubmit} noValidate>
-            <div className="mb-4">
+            <div className="mb-3">
               <label htmlFor="username_or_email" className="mb-1 block text-sm font-medium text-text-form">
                 {t("usernameLabel")}
               </label>
@@ -126,10 +126,10 @@ export function LoginForm() {
                 required
                 value={usernameOrEmail}
                 onChange={(event) => setUsernameOrEmail(event.target.value)}
-                className="w-full rounded-md border border-border px-3 py-2 text-sm text-text-base focus-visible:outline-primary-700"
+                className="w-full rounded-md border border-border px-3 py-1.5 text-sm text-text-base focus-visible:outline-primary-700"
               />
             </div>
-            <div className="mb-4">
+            <div className="mb-3">
               <label htmlFor="password" className="mb-1 block text-sm font-medium text-text-form">
                 {t("passwordLabel")}
               </label>
@@ -141,7 +141,7 @@ export function LoginForm() {
                 required
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                className="w-full rounded-md border border-border px-3 py-2 text-sm text-text-base focus-visible:outline-primary-700"
+                className="w-full rounded-md border border-border px-3 py-1.5 text-sm text-text-base focus-visible:outline-primary-700"
               />
             </div>
             {displayedError ? (

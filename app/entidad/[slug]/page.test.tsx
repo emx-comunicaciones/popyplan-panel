@@ -84,13 +84,12 @@ describe("EntidadInicioPage", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("muestra el nombre de la entidad, actividades de hoy y avisos pendientes", async () => {
+  it("muestra actividades de hoy y avisos pendientes", async () => {
     useEntityHomeMock.mockReturnValue(homeState());
 
     await renderPage();
 
     expect(screen.getByRole("heading", { name: "Inicio" })).toBeInTheDocument();
-    expect(screen.getByText("Panel de Asociación Vecinal Alfaville.")).toBeInTheDocument();
     expect(screen.getByText("Taller de costura")).toBeInTheDocument();
     expect(screen.getByText(/5 inscritos \/ 20 plazas/)).toBeInTheDocument();
     expect(screen.getByText(/Titular/)).toBeInTheDocument();
@@ -208,7 +207,7 @@ describe("EntidadInicioPage", () => {
     ).rejects.toEqual(expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>));
   });
 
-  it("si falla la ficha de la entidad, usa el nombre de la membresía", async () => {
+  it("no pide la ficha de la entidad: su nombre ya está en la cabecera del layout", async () => {
     useEntityHomeMock.mockReturnValue(homeState());
     getServerSessionMock.mockResolvedValue({
       token: "t",
@@ -228,6 +227,10 @@ describe("EntidadInicioPage", () => {
     const element = await EntidadInicioPage({ params: Promise.resolve({ slug: "alfaville" }) });
     render(element);
 
-    expect(screen.getByText("Panel de Alfaville (membresía).")).toBeInTheDocument();
+    // Antes de la pasada de densidad esta página pedía la ficha solo
+    // para pintar «Panel de <entidad>.»; sin ese subtítulo, un fallo de
+    // esa petición ya no puede afectarle porque ni siquiera la hace.
+    expect(serverFetchMock).not.toHaveBeenCalled();
+    expect(screen.getByRole("heading", { name: "Inicio" })).toBeInTheDocument();
   });
 });

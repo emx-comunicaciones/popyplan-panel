@@ -71,7 +71,7 @@ export function EntidadesTable({ canCreate }: EntidadesTableProps) {
                 setVerified(event.target.value as typeof verified);
                 setPage(1);
               }}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             >
               <option value="">{t("plataforma.entidades.verifiedFilterAll")}</option>
               <option value="true">{t("plataforma.entidades.verifiedFilterTrue")}</option>
@@ -87,7 +87,7 @@ export function EntidadesTable({ canCreate }: EntidadesTableProps) {
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+              className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             />
           </div>
         </div>

@@ -30,8 +30,8 @@ export default async function PlataformaMetricasPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-text-base">{t("plataforma.metricas.heading")}</h1>
+    <div className="flex flex-col gap-4">
+      <h1 className="text-xl font-semibold text-text-base">{t("plataforma.metricas.heading")}</h1>
       <PlataformaMetricsDashboard />
     </div>
   );

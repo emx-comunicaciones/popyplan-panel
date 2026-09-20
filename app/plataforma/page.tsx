@@ -24,7 +24,7 @@ export default async function PlataformaInicioPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-text-base">{t("plataforma.inicio.heading")}</h1>
+      <h1 className="text-xl font-semibold text-text-base">{t("plataforma.inicio.heading")}</h1>
       <PlataformaHomeDashboard role={session.platformRole.role} />
     </div>
   );

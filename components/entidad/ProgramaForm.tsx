@@ -140,7 +140,7 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
           type="text"
           value={form.name}
           onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
-          className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+          className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         />
       </div>
 
@@ -153,7 +153,7 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
           type="text"
           value={form.funder}
           onChange={(event) => setForm((prev) => ({ ...prev, funder: event.target.value }))}
-          className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+          className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         />
       </div>
 
@@ -166,7 +166,7 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
           value={form.description}
           onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
           rows={3}
-          className="w-full rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+          className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         />
       </div>
 
@@ -180,7 +180,7 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
             type="date"
             value={form.startsOn}
             onChange={(event) => setForm((prev) => ({ ...prev, startsOn: event.target.value }))}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -192,7 +192,7 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
             type="date"
             value={form.endsOn}
             onChange={(event) => setForm((prev) => ({ ...prev, endsOn: event.target.value }))}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
         <div>
@@ -206,7 +206,7 @@ export function ProgramaForm({ orgId, editing, onDone, onPendingChange }: Progra
             min="0"
             value={form.budgetEuros}
             onChange={(event) => setForm((prev) => ({ ...prev, budgetEuros: event.target.value }))}
-            className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
+            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
       </div>
