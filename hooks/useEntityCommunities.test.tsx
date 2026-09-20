@@ -22,23 +22,52 @@ function wrapper({ children }: { children: ReactNode }) {
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }
 
+const ownedByAlfaville = { type: "organization", id: 7, name: "Alfaville", verified: true } as const;
+
 describe("useEntityCommunities", () => {
-  it("filtra por owner.id === orgId entre las comunidades visibles", async () => {
-    const mine = buildEntityCommunityRow({ id: "c1", owner: { type: "organization", id: 7, name: "Alfaville", verified: true } });
-    const other = buildEntityCommunityRow({ id: "c2", owner: { type: "organization", id: 9, name: "Otra", verified: true } });
-    const personal = buildEntityCommunityRow({ id: "c3", owner: { type: "profile", id: 42, name: "Ana", verified: false } });
-    apiFetchMock.mockResolvedValueOnce({ count: 3, next: null, previous: null, results: [mine, other, personal] });
+  it("pide `?owner_org=` al backend en vez de recorrer el listado global", async () => {
+    const mine = buildEntityCommunityRow({ id: "c1", owner: { ...ownedByAlfaville } });
+    apiFetchMock.mockResolvedValueOnce({ count: 1, next: null, previous: null, results: [mine] });
 
     const { result } = renderHook(() => useEntityCommunities(7), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(apiFetchMock).toHaveBeenCalledWith("/api/communities/?page=1");
+    expect(apiFetchMock).toHaveBeenCalledTimes(1);
+    expect(apiFetchMock).toHaveBeenCalledWith("/api/communities/?owner_org=7&page=1");
     expect(result.current.data).toEqual([mine]);
   });
 
-  it("recorre varias páginas hasta que `next` es null", async () => {
-    const page1 = buildEntityCommunityRow({ id: "c1", owner: { type: "organization", id: 7, name: "Alfaville", verified: true } });
-    const page2 = buildEntityCommunityRow({ id: "c2", owner: { type: "organization", id: 7, name: "Alfaville", verified: true } });
+  it("no filtra en el cliente: el backend ya devuelve solo las de la entidad", async () => {
+    // B-C1 de la auditoría: con `?owner_org=` el titular/moderador recibe
+    // TODAS las suyas (privadas y los dos espacios de POP Familias). Un
+    // filtro por `owner.id` en el cliente sobraba y, peor, escondía filas
+    // que el backend sí autoriza.
+    const familias = buildEntityCommunityRow({
+      id: "c1",
+      space: "families",
+      owner: { ...ownedByAlfaville },
+    });
+    const privada = buildEntityCommunityRow({
+      id: "c2",
+      visibility: "private",
+      owner: { ...ownedByAlfaville },
+    });
+    apiFetchMock.mockResolvedValueOnce({
+      count: 2,
+      next: null,
+      previous: null,
+      results: [familias, privada],
+    });
+
+    const { result } = renderHook(() => useEntityCommunities(7), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toEqual([familias, privada]);
+  });
+
+  it("recorre varias páginas hasta que `next` es null, siempre con `owner_org`", async () => {
+    const page1 = buildEntityCommunityRow({ id: "c1", owner: { ...ownedByAlfaville } });
+    const page2 = buildEntityCommunityRow({ id: "c2", owner: { ...ownedByAlfaville } });
     apiFetchMock
       .mockResolvedValueOnce({ count: 2, next: "http://api.test/?page=2", previous: null, results: [page1] })
       .mockResolvedValueOnce({ count: 2, next: null, previous: null, results: [page2] });
@@ -46,28 +75,9 @@ describe("useEntityCommunities", () => {
     const { result } = renderHook(() => useEntityCommunities(7), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(apiFetchMock).toHaveBeenNthCalledWith(1, "/api/communities/?page=1");
-    expect(apiFetchMock).toHaveBeenNthCalledWith(2, "/api/communities/?page=2");
+    expect(apiFetchMock).toHaveBeenNthCalledWith(1, "/api/communities/?owner_org=7&page=1");
+    expect(apiFetchMock).toHaveBeenNthCalledWith(2, "/api/communities/?owner_org=7&page=2");
     expect(result.current.data).toEqual([page1, page2]);
-  });
-
-  it("concatena las tres páginas de la entidad en un solo listado", async () => {
-    const rows = [1, 2, 3].map((n) =>
-      buildEntityCommunityRow({
-        id: `c${n}`,
-        owner: { type: "organization", id: 7, name: "Alfaville", verified: true },
-      }),
-    );
-    apiFetchMock
-      .mockResolvedValueOnce({ count: 3, next: "http://api.test/?page=2", previous: null, results: [rows[0]] })
-      .mockResolvedValueOnce({ count: 3, next: "http://api.test/?page=3", previous: null, results: [rows[1]] })
-      .mockResolvedValueOnce({ count: 3, next: null, previous: null, results: [rows[2]] });
-
-    const { result } = renderHook(() => useEntityCommunities(7), { wrapper });
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-
-    expect(apiFetchMock).toHaveBeenCalledTimes(3);
-    expect(result.current.data).toEqual(rows);
   });
 
   it("avisa en vez de truncar en silencio cuando `next` sigue vivo tras el tope de páginas", async () => {
@@ -78,7 +88,7 @@ describe("useEntityCommunities", () => {
       count: 99999,
       next: "http://api.test/?page=999",
       previous: null,
-      results: [buildEntityCommunityRow({ id: "c1", owner: { type: "organization", id: 7, name: "Alfaville", verified: true } })],
+      results: [buildEntityCommunityRow({ id: "c1", owner: { ...ownedByAlfaville } })],
     });
 
     const { result } = renderHook(() => useEntityCommunities(7), { wrapper });
@@ -86,6 +96,7 @@ describe("useEntityCommunities", () => {
 
     expect(apiFetchMock).toHaveBeenCalledTimes(250);
     expect(result.current.error).toBeInstanceOf(EntityCommunitiesError);
+    expect(result.current.error?.kind).toBe("demasiadas_paginas");
     expect(result.current.error?.message).toBe(
       "Hay demasiadas comunidades para cargarlas todas; contacta con Popyplan.",
     );
@@ -98,30 +109,6 @@ describe("useEntityCommunities", () => {
     await waitFor(() => expect(result.current.isError).toBe(true));
 
     expect(result.current.error).toBeInstanceOf(EntityCommunitiesError);
-  });
-
-  it("dos montajes seguidos con el mismo cliente hacen UNA sola pasada de páginas", async () => {
-    // Recorrido paginado caro (hasta 250 peticiones en serie): con el
-    // `staleTime` por defecto (0) cada montaje de un select de comunidad
-    // lo repetía entero.
-    const mine = buildEntityCommunityRow({
-      id: "c1",
-      owner: { type: "organization", id: 7, name: "Alfaville", verified: true },
-    });
-    apiFetchMock.mockResolvedValue({ count: 1, next: null, previous: null, results: [mine] });
-    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-    function sharedWrapper({ children }: { children: ReactNode }) {
-      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
-    }
-
-    const first = renderHook(() => useEntityCommunities(7), { wrapper: sharedWrapper });
-    await waitFor(() => expect(first.result.current.isSuccess).toBe(true));
-    first.unmount();
-
-    const second = renderHook(() => useEntityCommunities(7), { wrapper: sharedWrapper });
-    await waitFor(() => expect(second.result.current.isSuccess).toBe(true));
-
-    expect(second.result.current.data).toEqual([mine]);
-    expect(apiFetchMock).toHaveBeenCalledTimes(1);
+    expect(result.current.error?.kind).toBe("desconocido");
   });
 });

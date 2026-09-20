@@ -421,11 +421,13 @@ export interface CommunityOwnerRef {
 /**
  * `GET /api/communities/?...` (`CommunityListSerializer`): fila de la
  * lista general, paginada (`PageNumberPagination` estándar). El panel la
- * usa para «Comunidades» de la entidad filtrando `owner` en el cliente —
- * ver el hueco documentado en el informe de esta tarea: no existe un
- * `?owner_org=` en el backend, así que una comunidad `private` de la
- * entidad que quien mira no integre no aparece (regla de
- * `communities/services/visibility.py::_visibles_para`).
+ * usa para «Comunidades» de la entidad con `?owner_org=<id>`
+ * (`hooks/useEntityCommunities.ts`), que el backend filtra y además
+ * atiende en modo privilegiado para titular/moderador de esa entidad:
+ * con él llegan también sus comunidades `private` y las de los dos
+ * espacios de POP Familias. `docs/schema.yaml` no declara ese parámetro
+ * (el `list` no tiene `@extend_schema(parameters=…)`), así que no sale
+ * en `types.generated.ts`; el lote 2 del backend lo documenta.
  */
 export type EntityCommunityRow = Omit<components["schemas"]["CommunityList"], "owner"> & {
   owner: CommunityOwnerRef;

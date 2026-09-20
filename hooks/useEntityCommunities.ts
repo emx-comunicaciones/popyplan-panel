@@ -1,21 +1,34 @@
 "use client";
 
 /**
- * `GET /api/communities/?page=` (`docs/schema.yaml`, API general de
+ * `GET /api/communities/?owner_org=<id>&page=` (API general de
  * comunidades — el panel de entidad la reutiliza, no hay una ruta propia
- * de `panel` para esto). **Hueco documentado** (ver informe de la tarea
- * W4a): el backend no admite filtrar por `owner_org`, así que este hook
- * recorre todas las páginas visibles para quien mira y filtra en el
- * cliente por `owner.type === 'organization' && owner.id === orgId`.
- * Además, `communities/services/visibility.py::_visibles_para` excluye
- * las comunidades `private` de quien no es ya miembro — un `titular` que
- * no esté personalmente dentro de una comunidad privada de su propia
- * entidad no la verá aquí. Tope de 250 páginas (5000 comunidades, a 20
- * por página) para no recorrer sin fin si algo falla en el filtrado: si
- * al llegar al tope el backend sigue mandando `next`, el hook **avisa**
- * en vez de devolver un listado truncado como si fuera completo (un
- * select de comunidad al que le faltan filas es peor que un error
- * visible: nadie sabría que falta nada).
+ * de `panel` para esto).
+ *
+ * **Hallazgo B-C1 de la auditoría de integración (2026-09-21), ya
+ * corregido aquí**: hasta esta tarea el hook recorría el listado
+ * **global** página a página (hasta 250 peticiones en serie) y filtraba
+ * en el cliente por `owner.type === 'organization' && owner.id ===
+ * orgId`, porque su docstring daba por hecho que el backend no admitía
+ * filtrar por entidad. Sí lo admite (`communities/unified_viewset.py
+ * ::get_queryset`, carry-over P6): `?owner_org=` filtra **y** activa el
+ * modo privilegiado —quien tiene `moderar` en esa entidad
+ * (titular/moderador) ve TODAS sus comunidades, incluidas las `private`
+ * de las que no es miembro y las de los dos espacios de POP Familias—.
+ * El recorrido global, además de caro, escondía justo esas: la entidad de
+ * demo veía 1 de sus 5 comunidades. Solo está sin declarar en
+ * `docs/schema.yaml` (el `list` no tiene `@extend_schema(parameters=…)`),
+ * por eso `npm run gen:types` nunca lo sacó; el lote 2 del backend lo
+ * documenta.
+ *
+ * La respuesta sigue paginada (`PageNumberPagination` estándar), así que
+ * el hook concatena las páginas de esa entidad — hoy una sola salvo
+ * entidades con más de 20 comunidades. El tope de 250 páginas se
+ * mantiene como red de seguridad: si al llegar a él el backend sigue
+ * mandando `next`, el hook **avisa** en vez de devolver un listado
+ * truncado como si fuera completo (un select de comunidad al que le
+ * faltan filas es peor que un error visible: nadie sabría que falta
+ * nada).
  */
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
@@ -44,14 +57,14 @@ export class EntityCommunitiesError extends Error {
 
 const MAX_PAGES = 250;
 
-async function fetchAllPages(): Promise<EntityCommunityRow[]> {
+async function fetchAllPages(orgId: number | string): Promise<EntityCommunityRow[]> {
   const rows: EntityCommunityRow[] = [];
   let page = 1;
   let next: string | null = COMMUNITIES.LIST();
 
   while (next && page <= MAX_PAGES) {
     const data: PaginatedCommunityList = await apiFetch<PaginatedCommunityList>(
-      `${COMMUNITIES.LIST()}?page=${page}`,
+      `${COMMUNITIES.LIST()}?owner_org=${encodeURIComponent(String(orgId))}&page=${page}`,
     );
     rows.push(...data.results);
     next = data.next;
@@ -75,10 +88,7 @@ export function useEntityCommunities(
     queryKey: ["panel-entity-communities", orgId],
     queryFn: async () => {
       try {
-        const all = await fetchAllPages();
-        return all.filter(
-          (community) => community.owner.type === "organization" && String(community.owner.id) === String(orgId),
-        );
+        return await fetchAllPages(orgId);
       } catch (error) {
         // El aviso de «demasiadas páginas» ya trae su propio mensaje: solo
         // los fallos de red o del backend caen al genérico.
@@ -86,15 +96,9 @@ export function useEntityCommunities(
         throw new EntityCommunitiesError("desconocido", "No se pudieron cargar las comunidades de la entidad.");
       }
     },
-    // El listado es **global** y hay que recorrerlo página a página (hasta
-    // 250 peticiones en serie) para filtrar por `owner_org` en el cliente,
-    // porque el backend no admite ese filtro. Con el `staleTime` por
-    // defecto (0), cada montaje de un select de comunidad
-    // (`AddPersonDialog`, `PersonasTable`, `ComunicacionesPanel`,
-    // `RecursosPanel`, `FamiliasPanel`…) repetía el recorrido entero. El
-    // arreglo real es el filtro `owner_org` en el backend, anotado en
-    // «Pendientes conocidos» de CLAUDE.md; mientras no llegue, 5 minutos
-    // de caché: una comunidad nueva la invalidan sus propias mutaciones.
-    staleTime: 5 * 60 * 1000,
+    // Sin `staleTime`: con `?owner_org=` esto es una petición, no un
+    // recorrido de hasta 250 páginas en serie, así que ya no hace falta
+    // la caché de 5 minutos que tapaba ese coste (y que dejaba stale los
+    // badges de `members_count` tras aprobar o expulsar a alguien).
   });
 }

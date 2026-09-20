@@ -179,10 +179,12 @@ export const ORGANIZATIONS = {
  */
 export const COMMUNITIES = {
   /**
-   * `GET /api/communities/?search=&page=` — paginada, sin filtro por
-   * entidad en el backend: `hooks/useEntityCommunities.ts` recorre las
-   * páginas y filtra por `owner.id` en el cliente (ver el hueco
-   * documentado en `lib/api/types.ts::EntityCommunityRow`).
+   * `GET /api/communities/?owner_org=&search=&page=` — paginada.
+   * `?owner_org=<id>` la filtra por entidad **y** activa el modo
+   * privilegiado del backend (titular/moderador de esa entidad ven
+   * también sus comunidades `private` y las de los dos espacios de POP
+   * Familias, `communities/unified_viewset.py::get_queryset`), que es lo
+   * que usa `hooks/useEntityCommunities.ts`.
    */
   LIST: () => "/api/communities/",
   /** `GET /api/communities/{id}/members/` — miembros activos. */

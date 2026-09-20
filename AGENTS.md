@@ -1849,8 +1849,10 @@ sección: **1375 tests**, líneas **99,86 %**.
   así que cada montaje de un select de comunidad lo repetía entero. Ahora
   `staleTime: 5 * 60 * 1000`; las mutaciones que crean o cambian una
   comunidad ya invalidan la clave, así que la caché no esconde nada
-  recién creado. El arreglo real sigue siendo un filtro `owner_org` en el
-  backend (ver «Pendientes conocidos»).
+  recién creado. **Obsoleto desde la auditoría de 2026-09-21** (ver
+  «Auditoría de integración» abajo): el hook pide `?owner_org=`, que es
+  una petición y no un recorrido, así que el `staleTime` se retiró; el
+  tope de páginas y sus dos `kind` de error siguen.
 - **Invalidaciones cruzadas** (B10): atender un aviso de ayuda o resolver
   un reporte invalida ya el Inicio de la entidad y
   `["panel-dashboard-stats"]`; marcar asistencia o hacer check-in
@@ -2139,7 +2141,8 @@ notas de F2).
   documentado (no arreglado en este repo), ver la entrada de
   `lib/auth/clientIp.ts` arriba y `.env.example`.
 - **F5. `useEntityCommunities` con `staleTime`** — ver su entrada en
-  «Hooks de datos» arriba.
+  «Hooks de datos» arriba (retirado en la auditoría de 2026-09-21, que
+  cambió el recorrido global por `?owner_org=`).
 
 Menores:
 
@@ -2192,11 +2195,6 @@ Menores:
 - **«Rechazar» una solicitud pendiente de comunidad** (`ComunidadesPanel
   ::PendingRow`) sigue sin confirmación. Es reversible (la persona puede
   volver a solicitar), pero rompe la coherencia de M12.
-- **Filtro `owner_org` en `GET /api/communities/`, del repo backend.**
-  Sin él, `hooks/useEntityCommunities.ts` recorre el listado global
-  página a página (hasta 250 peticiones en serie) y filtra en el cliente;
-  el `staleTime` de 5 minutos (F5) solo hace que ese recorrido no se
-  repita en cada montaje.
 - **Refresco de sesión sin caché compartida entre runtimes** (F3): el
   single-flight y el `rotationCache` valen dentro de cada proceso. Una
   caché compartida (Redis o equivalente) cerraría también la carrera
@@ -3011,6 +3009,33 @@ público (`/asociaciones`, …); formulario de contacto guardado en plataforma
 («Solicitudes»); alta de entidades desde la web; versión web de la app para
 usuarios finales; material gráfico de marca. Sin cambios en el backend ni en
 el móvil.
+
+## Auditoría de integración app ↔ backend ↔ panel (2026-09-21)
+
+Informes en `.superpowers/audit-2026-09-21/` (A-F) y plan de arreglos en
+`PLAN-ARREGLOS.md` de esa misma carpeta. Esta sección recoge solo los
+arreglos del **panel** (rama `fix/auditoria-panel`); los del backend y los
+de la app viven en sus propios repos.
+
+- **Todas las comunidades de la entidad, por `?owner_org=` (B-C1)**:
+  `hooks/useEntityCommunities.ts` pide
+  `GET /api/communities/?owner_org=<orgId>&page=N` en vez de recorrer el
+  listado **global** página a página y filtrar en el cliente por
+  `owner.id`. El backend sí admite ese filtro desde P6
+  (`communities/unified_viewset.py::get_queryset`) y además atiende la
+  petición en **modo privilegiado** para quien tiene `moderar` en esa
+  entidad: con él llegan también las comunidades `private` de las que
+  quien mira no sea miembro y las de los dos espacios de POP Familias.
+  Sin él, la entidad de demo veía **1 de sus 5** comunidades (y
+  `hasFamilies` de Comunicaciones/Biblioteca decía «no hay espacio de
+  familias» con la comunidad de familias creada). El parámetro no está
+  declarado en `docs/schema.yaml` (el `list` no lleva
+  `@extend_schema(parameters=…)`), así que `npm run gen:types` nunca lo
+  sacó — el lote 2 del backend lo documenta. Se mantienen `MAX_PAGES`
+  (250) y los dos `kind` de error; **desaparece el `staleTime` de 5
+  minutos** (F5), que solo existía para no repetir el recorrido caro: con
+  una petición por montaje, los badges de `members_count` dejan además de
+  quedarse stale tras aprobar o expulsar a alguien.
 
 ## Comandos
 

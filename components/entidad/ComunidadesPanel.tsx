@@ -322,10 +322,14 @@ function CommunityDetail({ communityId }: { communityId: string }) {
  * anterior — mismo motivo que el bug A3 de `ResourceForm` documentado en
  * `CLAUDE.md`.
  *
- * **Hueco conocido** (ver informe): el listado sale de `GET
- * /api/communities/`, que no admite filtrar por entidad ni salta la
- * visibilidad de las comunidades `private` — una comunidad privada de
- * esta entidad de la que quien mira no sea miembro no aparecerá aquí.
+ * **Hueco cerrado (auditoría B-C1, 2026-09-21)**: el listado sale de
+ * `GET /api/communities/?owner_org=<id>`
+ * (`hooks/useEntityCommunities.ts`), que el backend atiende en modo
+ * privilegiado para titular/moderador — así aparecen también las
+ * comunidades `private` de la entidad de las que quien mira no sea
+ * miembro, y las de los dos espacios de POP Familias. Antes se recorría
+ * el listado global y se filtraba en el cliente, y la entidad de demo
+ * veía 1 de sus 5 comunidades.
  */
 export function ComunidadesPanel({ orgId, canManage }: ComunidadesPanelProps) {
   const communities = useEntityCommunities(orgId);
