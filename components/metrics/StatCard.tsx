@@ -25,7 +25,7 @@ export function StatCard({ label, value }: StatCardProps) {
   return (
     <Card>
       <dl>
-        <dt className="text-sm text-text-secondary">{label}</dt>
+        <dt className="text-xs text-text-secondary">{label}</dt>
         <dd className="text-2xl font-semibold text-text-base">{value}</dd>
       </dl>
     </Card>
