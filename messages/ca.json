@@ -1926,12 +1926,13 @@
       "label": "Municipi de la seu",
       "searchLabel": "Cercar un municipi",
       "header": "Seu",
-      "none": "Sense municipi",
       "missing": "Seu sense municipi",
       "current": "Municipi actual (INE {ineCode})",
+      "resolved": "{name} ({province})",
       "option": "{name} ({province}) · {ineCode}",
       "searchError": "No s'ha pogut cercar el municipi.",
-      "requiredHint": "La seu és obligatòria per donar d'alta una entitat."
+      "requiredHint": "La seu és obligatòria per donar d'alta una entitat.",
+      "requiredHintEdit": "La seu és obligatòria: tria un municipi per poder desar."
     },
     "territorio": {
       "cardTitle": "Territori declarat",
@@ -1944,7 +1945,7 @@
       "kindLabel": "Tipus de territori",
       "kindNone": "Sense territori",
       "kindCcaa": "Comunitat autònoma",
-      "kindProvincia": "Provincia",
+      "kindProvincia": "Província",
       "kindComarca": "Comarca",
       "kindMunicipios": "Llista de municipis",
       "codeLabelShortcut": "Codi del territori",
@@ -1972,6 +1973,7 @@
       "noTerritoryHint": "La plataforma declara el territori de cada administració des de la seva fitxa d'entitat.",
       "communitiesStat": "Comunitats actives",
       "openSheet": "Veure fitxa",
+      "openSheetFor": "Veure fitxa de {place}",
       "placesError": "No s'han pogut carregar les coordenades del mapa",
       "tooManyPlaces": "No es pot dibuixar el mapa d'aquest període",
       "tooManyPlacesHint": "Hi ha massa municipis amb activitat per situar-los tots al mapa. Acota el període per veure'l; la taula de sota continua completa."

@@ -1926,12 +1926,13 @@
       "label": "Registered municipality",
       "searchLabel": "Search for a municipality",
       "header": "Registered seat",
-      "none": "No municipality",
       "missing": "No registered municipality",
       "current": "Current municipality (INE {ineCode})",
+      "resolved": "{name} ({province})",
       "option": "{name} ({province}) · {ineCode}",
       "searchError": "The municipality search failed.",
-      "requiredHint": "A registered seat is required to create an entity."
+      "requiredHint": "A registered seat is required to create an entity.",
+      "requiredHintEdit": "A registered seat is required: choose a municipality to be able to save."
     },
     "territorio": {
       "cardTitle": "Declared territory",
@@ -1972,6 +1973,7 @@
       "noTerritoryHint": "The platform declares each administration's territory from its entity record.",
       "communitiesStat": "Active communities",
       "openSheet": "View details",
+      "openSheetFor": "View details for {place}",
       "placesError": "The map coordinates could not be loaded",
       "tooManyPlaces": "The map can't be drawn for this period",
       "tooManyPlacesHint": "There are too many municipalities with activity to place them all on the map. Narrow the period to see it; the table below is still complete."

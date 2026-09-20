@@ -196,6 +196,43 @@ describe("paridad de catálogos (en/es/eu/ca)", () => {
     expect(checked).toContain("entidad.familias.announcementSentOn");
   });
 
+  /**
+   * M3 de la ola final de correcciones (`final-review-report.md`): tres
+   * plurales nuevos de esta rama
+   * (`plataforma.territorio.previewTyped/previewFilter/previewSaved`)
+   * posponían el numeral en su rama `one`
+   * (`{one {udalerri # idatzitako zerrendan} other {# udalerri idatzitako
+   * zerrendan}}`) y el test M18 de arriba no lo cazó: su regex solo
+   * exige que el «#» vaya seguido de un espacio y una letra, y
+   * «udalerri # idatzitako» lo cumple igual que «# udalerri
+   * idatzitako» — el «#» está ahí, solo que delante de un verbo, no del
+   * sustantivo. Comprobación más precisa: la palabra que sigue al
+   * primer «#» de cada rama tiene que ser la misma en `one` y en
+   * `other` (el convenio del catálogo es no declinar nada más que el
+   * propio numeral); si se pospone, esa palabra cambia.
+   */
+  it("eu: la palabra que sigue al «#» es la misma en «one» y en «other» (M3)", () => {
+    const checked: string[] = [];
+    for (const [key, value] of Object.entries(flattened.eu)) {
+      if (!value.includes("plural,")) continue;
+      const branches: Record<string, string> = {};
+      for (const branch of value.matchAll(/\b(one|other) \{([^}]*)\}/g)) {
+        branches[branch[1]] = branch[2];
+      }
+      if (!branches.one || !branches.other) continue;
+      const wordAfterHash = (branch: string) => branch.match(/#\s*(\S+)/)?.[1]?.replace(/[.,;:]+$/, "");
+      const oneWord = wordAfterHash(branches.one);
+      const otherWord = wordAfterHash(branches.other);
+      if (!oneWord || !otherWord) continue;
+      checked.push(key);
+      expect(
+        oneWord,
+        `${key}: "${branches.one}" pospone el numeral respecto a "${branches.other}"`,
+      ).toBe(otherWord);
+    }
+    expect(checked).toContain("plataforma.territorio.previewFilter");
+  });
+
   it("las cabeceras del CSV de Auditoría valen lo mismo en los cuatro idiomas (M16)", () => {
     const csvKeys = [
       "plataforma.auditoria.csvId",

@@ -1926,12 +1926,13 @@
       "label": "Municipio de la sede",
       "searchLabel": "Buscar un municipio",
       "header": "Sede",
-      "none": "Sin municipio",
       "missing": "Sede sin municipio",
       "current": "Municipio actual (INE {ineCode})",
+      "resolved": "{name} ({province})",
       "option": "{name} ({province}) · {ineCode}",
       "searchError": "No se pudo buscar el municipio.",
-      "requiredHint": "La sede es obligatoria para dar de alta una entidad."
+      "requiredHint": "La sede es obligatoria para dar de alta una entidad.",
+      "requiredHintEdit": "La sede es obligatoria: elige un municipio para poder guardar."
     },
     "territorio": {
       "cardTitle": "Territorio declarado",
@@ -1972,6 +1973,7 @@
       "noTerritoryHint": "La plataforma declara el territorio de cada administración desde su ficha de entidad.",
       "communitiesStat": "Comunidades activas",
       "openSheet": "Ver ficha",
+      "openSheetFor": "Ver ficha de {place}",
       "placesError": "No se pudieron cargar las coordenadas del mapa",
       "tooManyPlaces": "No se puede dibujar el mapa de este periodo",
       "tooManyPlacesHint": "Hay demasiados municipios con actividad para situarlos todos en el mapa. Acota el periodo para verlo; la tabla de abajo sigue completa."

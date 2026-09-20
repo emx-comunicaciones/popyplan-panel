@@ -1926,12 +1926,13 @@
       "label": "Egoitzaren udalerria",
       "searchLabel": "Udalerri bat bilatu",
       "header": "Egoitza",
-      "none": "Udalerririk gabe",
       "missing": "Egoitza udalerririk gabe",
       "current": "Egungo udalerria (INE {ineCode})",
+      "resolved": "{name} ({province})",
       "option": "{name} ({province}) · {ineCode}",
       "searchError": "Ezin izan da udalerria bilatu.",
-      "requiredHint": "Egoitza derrigorrezkoa da erakunde bat alta emateko."
+      "requiredHint": "Egoitza derrigorrezkoa da erakunde bat alta emateko.",
+      "requiredHintEdit": "Egoitza derrigorrezkoa da: aukeratu udalerri bat gorde ahal izateko."
     },
     "territorio": {
       "cardTitle": "Adierazitako lurraldea",
@@ -1949,9 +1950,9 @@
       "kindMunicipios": "Udalerrien zerrenda",
       "codeLabelShortcut": "Lurraldearen kodea",
       "codeLabelMunicipios": "INE kodeak komaz bereizita",
-      "previewTyped": "{count, plural, one {udalerri # idatzitako zerrendan} other {# udalerri idatzitako zerrendan}}",
-      "previewFilter": "{count, plural, one {udalerri # idatzitako kodean} other {# udalerri idatzitako kodean}}",
-      "previewSaved": "{count, plural, one {udalerri # gordetako lurraldean} other {# udalerri gordetako lurraldean}}",
+      "previewTyped": "{count, plural, one {# udalerri idatzitako zerrendan} other {# udalerri idatzitako zerrendan}}",
+      "previewFilter": "{count, plural, one {# udalerri idatzitako kodean} other {# udalerri idatzitako kodean}}",
+      "previewSaved": "{count, plural, one {# udalerri gordetako lurraldean} other {# udalerri gordetako lurraldean}}",
       "previewLoading": "Udalerriak zenbatzen…",
       "previewError": "Ezin izan dira kode horretako udalerriak zenbatu.",
       "placesCountLabel": "Adierazitako lurraldeko udalerriak"
@@ -1972,6 +1973,7 @@
       "noTerritoryHint": "Plataformak administrazio bakoitzaren lurraldea bere erakunde-fitxatik adierazten du.",
       "communitiesStat": "Komunitate aktiboak",
       "openSheet": "Fitxa ikusi",
+      "openSheetFor": "«{place}»(r)en fitxa ikusi",
       "placesError": "Ezin izan dira maparen koordenatuak kargatu",
       "tooManyPlaces": "Ezin da aldi honetako mapa marraztu",
       "tooManyPlacesHint": "Jarduera duten udalerri gehiegi daude denak mapan kokatzeko. Murriztu aldia mapa ikusteko; beheko taula osorik dago."
