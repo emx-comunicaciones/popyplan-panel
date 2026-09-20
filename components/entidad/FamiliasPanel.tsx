@@ -13,6 +13,13 @@
  * nadie declara ser familiar de nadie, `communities/services/visibility
  * .py::espacio_bloqueado_para`).
  *
+ * «Nueva comunidad de familias» usa el diálogo compartido
+ * `NuevaComunidadDialog` (`space: 'families'`) — mismo componente que
+ * usa `ComunidadesPanel.tsx` con `space: 'members'` para «Nueva
+ * comunidad», extraído para no duplicar el formulario ni la mutación
+ * (`hooks/useCreateCommunity.ts`, generalizada desde el antiguo
+ * `useCreateFamiliesCommunity`).
+ *
  * **Cadena fija del contrato (i18n, tarea 4 del plan):** la clave
  * `entidad.familias.banner` es la única fuente del texto «Las
  * comunidades de familias están separadas…» — se pinta siempre, sea cual
@@ -37,7 +44,7 @@
  * diálogo); con comunidad ya creada, solo informa de que el alta se
  * completará sola. Nunca se lista quién acompaña a quién.
  */
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -45,14 +52,10 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { Dialog } from "@/components/ui/Dialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { StatCard } from "@/components/metrics/StatCard";
-import {
-  useCreateFamiliesCommunity,
-  type CreateFamiliesCommunityErrorKind,
-} from "@/hooks/useCreateFamiliesCommunity";
+import { NuevaComunidadDialog } from "@/components/entidad/NuevaComunidadDialog";
 import { useFamiliesSummary } from "@/hooks/useFamiliesSummary";
 import { useToggleCrossSpace, type ToggleCrossSpaceErrorKind } from "@/hooks/useToggleCrossSpace";
 import type { FamiliesSummaryCommunityRow } from "@/lib/api/types";
@@ -81,149 +84,6 @@ const TOGGLE_CROSS_SPACE_ERROR_KEYS: Record<ToggleCrossSpaceErrorKind, string> =
   sin_permiso: "errors.toggleCrossSpace.sinPermiso",
   desconocido: "errors.toggleCrossSpace.desconocido",
 };
-
-const CREATE_FAMILIES_COMMUNITY_ERROR_KEYS: Record<CreateFamiliesCommunityErrorKind, string> = {
-  invalido: "errors.createFamiliesCommunity.invalido",
-  sin_permiso: "errors.createFamiliesCommunity.sinPermiso",
-  desconocido: "errors.createFamiliesCommunity.desconocido",
-};
-
-function NuevaComunidadDialog({
-  orgId,
-  open,
-  onClose,
-}: {
-  orgId: number | string;
-  open: boolean;
-  onClose: () => void;
-}) {
-  const t = useTranslations();
-  const createCommunity = useCreateFamiliesCommunity();
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [visibility, setVisibility] = useState<"open" | "on_request" | "private">("open");
-  const [codeOfConduct, setCodeOfConduct] = useState("");
-
-  const canSubmit = name.trim().length > 0;
-
-  function resetForm() {
-    setName("");
-    setDescription("");
-    setVisibility("open");
-    setCodeOfConduct("");
-    createCommunity.reset();
-  }
-
-  function handleClose() {
-    if (createCommunity.isPending) return;
-    resetForm();
-    onClose();
-  }
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!canSubmit) return;
-    createCommunity.mutate(
-      {
-        orgId,
-        name: name.trim(),
-        description: description.trim() || undefined,
-        visibility,
-        codeOfConduct: codeOfConduct.trim() || undefined,
-      },
-      { onSuccess: handleClose },
-    );
-  }
-
-  return (
-    <Dialog
-      open={open}
-      titleId="nueva-comunidad-familias-title"
-      title={t("entidad.familias.newCommunityTitle")}
-      pending={createCommunity.isPending}
-      onClose={handleClose}
-    >
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <div>
-          <label htmlFor="familias-nombre" className="mb-1 block text-sm font-medium text-text-form">
-            {t("entidad.familias.nameLabel")}
-          </label>
-          <input
-            id="familias-nombre"
-            type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-          />
-        </div>
-        <div>
-          <label htmlFor="familias-descripcion" className="mb-1 block text-sm font-medium text-text-form">
-            {t("entidad.familias.descriptionLabel")}
-          </label>
-          <textarea
-            id="familias-descripcion"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            rows={3}
-            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-          />
-        </div>
-        <div>
-          <label htmlFor="familias-visibilidad" className="mb-1 block text-sm font-medium text-text-form">
-            {t("entidad.familias.visibilityLabel")}
-          </label>
-          <select
-            id="familias-visibilidad"
-            value={visibility}
-            onChange={(event) =>
-              setVisibility(event.target.value as "open" | "on_request" | "private")
-            }
-            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-          >
-            <option value="open">{t("entidad.familias.visibilityOpen")}</option>
-            <option value="on_request">{t("entidad.familias.visibilityOnRequest")}</option>
-            <option value="private">{t("entidad.familias.visibilityPrivate")}</option>
-          </select>
-        </div>
-        <div>
-          <label htmlFor="familias-codigo" className="mb-1 block text-sm font-medium text-text-form">
-            {t("entidad.familias.codeOfConductLabel")}
-          </label>
-          <textarea
-            id="familias-codigo"
-            value={codeOfConduct}
-            onChange={(event) => setCodeOfConduct(event.target.value)}
-            rows={3}
-            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-          />
-        </div>
-        <div className="flex gap-2">
-          <Button type="submit" disabled={!canSubmit || createCommunity.isPending}>
-            {t("entidad.familias.createCommunity")}
-          </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={handleClose}
-            disabled={createCommunity.isPending}
-          >
-            {t("common.cancel")}
-          </Button>
-        </div>
-        {createCommunity.isError ? (
-          <p role="alert" className="text-sm text-error">
-            {errorKindText(
-              createCommunity.error,
-              CREATE_FAMILIES_COMMUNITY_ERROR_KEYS,
-              t,
-              "errors.createFamiliesCommunity.desconocido",
-            )}
-          </p>
-        ) : null}
-      </form>
-    </Dialog>
-  );
-}
 
 function CommunityRow({
   orgId,
@@ -502,7 +362,12 @@ export function FamiliasPanel({ orgId, slug, canManage }: FamiliasPanelProps) {
       </section>
 
       {canManage ? (
-        <NuevaComunidadDialog orgId={orgId} open={creating} onClose={() => setCreating(false)} />
+        <NuevaComunidadDialog
+          orgId={orgId}
+          space="families"
+          open={creating}
+          onClose={() => setCreating(false)}
+        />
       ) : null}
     </div>
   );

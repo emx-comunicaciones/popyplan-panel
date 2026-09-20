@@ -489,7 +489,9 @@
       "empty": "Komunitaterik ez",
       "emptyDescription": "Erakunde honek oraindik ez du bere zigilua duen komunitaterik.",
       "choose": "Aukeratu komunitate bat",
-      "chooseDescription": "Aukeratu zerrendako komunitate bat bere kideak eta eskaerak ikusteko."
+      "chooseDescription": "Aukeratu zerrendako komunitate bat bere kideak eta eskaerak ikusteko.",
+      "newCommunityTitle": "Komunitate berria",
+      "newCommunityHint": "Komunitatea erakundearena izango da eta aplikazioan agertuko da, bere ikusgaitasunaren arabera ikus dezaketen pertsonentzat."
     },
     "actividades": {
       "heading": "Jarduerak",
@@ -1061,10 +1063,10 @@
       "sinPermiso": "Titularrak edo moderatzaileak bakarrik alda dezakete espazioen bereizketa.",
       "desconocido": "Ezin izan da espazioen bereizketa aldatu."
     },
-    "createFamiliesCommunity": {
+    "createCommunity": {
       "invalido": "Berrikusi datuak: badago baliozkoa ez den bat.",
-      "sinPermiso": "Titularrak edo moderatzaileak bakarrik sor dezakete familien komunitate bat.",
-      "desconocido": "Ezin izan da familien komunitatea sortu."
+      "sinPermiso": "Titularrak edo moderatzaileak bakarrik sor dezakete komunitate bat.",
+      "desconocido": "Ezin izan da komunitatea sortu."
     },
     "programMutation": {
       "invalido": "Berrikusi datuak: badago baliozkoa ez den bat.",

@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { NuevaComunidadDialog } from "@/components/entidad/NuevaComunidadDialog";
 import {
   useApproveCommunityMember,
   useChangeCommunityMemberRole,
@@ -22,6 +23,8 @@ import { errorKindText } from "@/lib/i18n/errorKindText";
 
 export interface ComunidadesPanelProps {
   orgId: number | string;
+  /** Titular/moderador: ven «Nueva comunidad» (`space: 'members'`, mismo diálogo que Familias). */
+  canManage: boolean;
 }
 
 const MEMBER_ACTION_ERROR_KEYS = {
@@ -294,28 +297,61 @@ function CommunityDetail({ communityId }: { communityId: string }) {
  * API general de comunidades (`lib/api/endpoints.ts::COMMUNITIES`), que el
  * panel reutiliza porque no existe una ruta de `panel` propia para esto.
  *
+ * **«Nueva comunidad» (encargo del propietario, 2026-09-20)**: solo
+ * `canManage` (titular/moderador, calculado en el Server Component igual
+ * que en Familias/Recursos) ve el botón, que abre el mismo
+ * `NuevaComunidadDialog` que usa `FamiliasPanel.tsx` con `space:
+ * 'members'` en vez de `'families'` (`hooks/useCreateCommunity.ts`,
+ * mismo endpoint `POST /api/communities/`). El botón vive también en el
+ * estado vacío (sin él, una entidad sin comunidades no tendría forma de
+ * crear la primera desde aquí). Al crearla con éxito, se selecciona sola
+ * (`onCreated`) para no obligar a buscarla en la lista recién
+ * refrescada.
+ *
  * **Hueco conocido** (ver informe): el listado sale de `GET
  * /api/communities/`, que no admite filtrar por entidad ni salta la
  * visibilidad de las comunidades `private` — una comunidad privada de
  * esta entidad de la que quien mira no sea miembro no aparecerá aquí.
  */
-export function ComunidadesPanel({ orgId }: ComunidadesPanelProps) {
+export function ComunidadesPanel({ orgId, canManage }: ComunidadesPanelProps) {
   const communities = useEntityCommunities(orgId);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
   const t = useTranslations("entidad.comunidades");
   const tAll = useTranslations();
 
+  const newCommunityButton = canManage ? (
+    <div className="flex justify-end">
+      <Button type="button" onClick={() => setCreating(true)}>
+        {t("newCommunityTitle")}
+      </Button>
+    </div>
+  ) : null;
+
+  const dialog = canManage ? (
+    <NuevaComunidadDialog
+      orgId={orgId}
+      space="members"
+      open={creating}
+      onClose={() => setCreating(false)}
+      onCreated={(community) => setSelectedId(community.id)}
+    />
+  ) : null;
+
   if (communities.isError) {
     return (
-      <ErrorState
-        title={t("loadError")}
-        description={errorKindText(
-          communities.error,
-          ENTITY_COMMUNITIES_ERROR_KEYS,
-          tAll,
-          "errors.entityCommunities.desconocido",
-        )}
-      />
+      <>
+        <ErrorState
+          title={t("loadError")}
+          description={errorKindText(
+            communities.error,
+            ENTITY_COMMUNITIES_ERROR_KEYS,
+            tAll,
+            "errors.entityCommunities.desconocido",
+          )}
+        />
+        {dialog}
+      </>
     );
   }
 
@@ -324,30 +360,40 @@ export function ComunidadesPanel({ orgId }: ComunidadesPanelProps) {
   }
 
   if (communities.data.length === 0) {
-    return <EmptyState title={t("empty")} description={t("emptyDescription")} />;
+    return (
+      <div className="flex flex-col gap-4">
+        {newCommunityButton}
+        <EmptyState title={t("empty")} description={t("emptyDescription")} />
+        {dialog}
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col gap-4 md:flex-row">
-      <ul className="flex flex-col gap-3 md:w-80 md:shrink-0">
-        {communities.data.map((community) => (
-          <CommunityCard
-            key={community.id}
-            community={community}
-            selected={community.id === selectedId}
-            onSelect={() => setSelectedId(community.id)}
-          />
-        ))}
-      </ul>
-      <div className="flex-1">
-        {selectedId ? (
-          <Card>
-            <CommunityDetail communityId={selectedId} />
-          </Card>
-        ) : (
-          <EmptyState title={t("choose")} description={t("chooseDescription")} />
-        )}
+    <div className="flex flex-col gap-4">
+      {newCommunityButton}
+      <div className="flex flex-col gap-4 md:flex-row">
+        <ul className="flex flex-col gap-3 md:w-80 md:shrink-0">
+          {communities.data.map((community) => (
+            <CommunityCard
+              key={community.id}
+              community={community}
+              selected={community.id === selectedId}
+              onSelect={() => setSelectedId(community.id)}
+            />
+          ))}
+        </ul>
+        <div className="flex-1">
+          {selectedId ? (
+            <Card>
+              <CommunityDetail communityId={selectedId} />
+            </Card>
+          ) : (
+            <EmptyState title={t("choose")} description={t("chooseDescription")} />
+          )}
+        </div>
       </div>
+      {dialog}
     </div>
   );
 }

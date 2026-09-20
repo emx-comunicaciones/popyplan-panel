@@ -489,7 +489,9 @@
       "empty": "Sin comunidades",
       "emptyDescription": "Esta entidad todavía no tiene comunidades con su sello.",
       "choose": "Elige una comunidad",
-      "chooseDescription": "Selecciona una comunidad de la lista para ver sus miembros y solicitudes."
+      "chooseDescription": "Selecciona una comunidad de la lista para ver sus miembros y solicitudes.",
+      "newCommunityTitle": "Nueva comunidad",
+      "newCommunityHint": "La comunidad será de la entidad y aparecerá en la app para las personas que puedan verla según su visibilidad."
     },
     "actividades": {
       "heading": "Actividades",
@@ -1061,10 +1063,10 @@
       "sinPermiso": "Solo titular o moderador pueden cambiar la separación de espacios.",
       "desconocido": "No se pudo cambiar la separación de espacios."
     },
-    "createFamiliesCommunity": {
+    "createCommunity": {
       "invalido": "Revisa los datos: alguno no es válido.",
-      "sinPermiso": "Solo titular o moderador pueden crear una comunidad de familias.",
-      "desconocido": "No se pudo crear la comunidad de familias."
+      "sinPermiso": "Solo titular o moderador pueden crear una comunidad.",
+      "desconocido": "No se pudo crear la comunidad."
     },
     "programMutation": {
       "invalido": "Revisa los datos: alguno no es válido.",

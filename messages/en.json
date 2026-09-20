@@ -489,7 +489,9 @@
       "empty": "No communities",
       "emptyDescription": "This entity doesn't have any communities with its seal yet.",
       "choose": "Choose a community",
-      "chooseDescription": "Select a community from the list to see its members and requests."
+      "chooseDescription": "Select a community from the list to see its members and requests.",
+      "newCommunityTitle": "New community",
+      "newCommunityHint": "The community will belong to the entity and will appear in the app for anyone who can see it according to its visibility."
     },
     "actividades": {
       "heading": "Activities",
@@ -1061,10 +1063,10 @@
       "sinPermiso": "Only the owner or moderator can change space separation.",
       "desconocido": "Couldn't change space separation."
     },
-    "createFamiliesCommunity": {
+    "createCommunity": {
       "invalido": "Check the details: something isn't valid.",
-      "sinPermiso": "Only the owner or moderator can create a families community.",
-      "desconocido": "Couldn't create the families community."
+      "sinPermiso": "Only the owner or moderator can create a community.",
+      "desconocido": "Couldn't create the community."
     },
     "programMutation": {
       "invalido": "Check the details: something isn't valid.",

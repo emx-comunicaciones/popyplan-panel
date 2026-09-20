@@ -425,15 +425,39 @@ el brief tampoco lo pedía para esos dos).
   antes de mandar `PATCH /api/communities/{id}/ {allow_cross_space}`
   (`hooks/useToggleCrossSpace.ts`); invalida el resumen de Familias y el
   listado general de comunidades de la entidad al tener éxito.
-- **«Nueva comunidad de familias»** (`hooks/useCreateFamiliesCommunity.ts`,
+- **«Nueva comunidad de familias»** (`hooks/useCreateCommunity.ts`,
   `POST /api/communities/ {name, description?, visibility?,
-  code_of_conduct?, space:'families', owner_org}`): mismo endpoint
-  general de comunidades que `ComunidadesPanel.tsx` (§8.1: solo una
-  comunidad con `owner_org` puede marcarse `families`, y el espacio no se
-  puede cambiar después de crearla). Solo titular/moderador; diálogo con
+  code_of_conduct?, space, owner_org}`): mismo endpoint general de
+  comunidades que `ComunidadesPanel.tsx` (§8.1: solo una comunidad con
+  `owner_org` puede marcarse `families`, y el espacio no se puede
+  cambiar después de crearla). Solo titular/moderador; diálogo con
   nombre, descripción, visibilidad (abierta/con solicitud/privada) y
   código de conducta, mismo patrón de `Dialog.tsx` que
-  `AddPersonDialog.tsx`.
+  `AddPersonDialog.tsx`. **«Nueva comunidad» de la propia sección
+  Comunidades (encargo del propietario, 2026-09-20) reutiliza el mismo
+  diálogo** — ver el bullet siguiente.
+- **«Nueva comunidad» en Comunidades** (`components/entidad/
+  ComunidadesPanel.tsx`): mismo `canManage` (titular/moderador) que el
+  resto de secciones gestionadas ve un botón «Nueva comunidad» encima de
+  la lista (también en el estado vacío, para poder crear la primera) que
+  abre `components/entidad/NuevaComunidadDialog.tsx` con `space:
+  'members'` en vez de `'families'` — el diálogo, extraído de
+  `FamiliasPanel.tsx` donde nació, es el único que existe para las dos
+  secciones; solo cambian el título (`entidad.comunidades.
+  newCommunityTitle` «Nueva comunidad» / `entidad.familias.
+  newCommunityTitle` «Nueva comunidad de familias») y una frase de ayuda
+  bajo el título solo para `members`
+  (`entidad.comunidades.newCommunityHint`) — las etiquetas de los campos
+  y las tres opciones de visibilidad siguen en `entidad.familias.*`
+  (genéricas de cualquier comunidad, nunca mencionan familias). Mismo
+  endpoint `POST /api/communities/` de arriba, con `space: 'members'`;
+  al crearla con éxito se selecciona sola en la lista
+  (`onCreated`, sin tener que buscarla tras el refresco).
+  `hooks/useCreateCommunity.ts` (generalizado desde el antiguo
+  `useCreateFamiliesCommunity`, que solo admitía `space: 'families'`)
+  invalida siempre `panel-entity-communities` y, solo con `space:
+  'families'`, además `panel-families-summary` — una comunidad de
+  miembros no aparece en el resumen de Familias.
 - **Comunicaciones y Recursos, audiencia «Familias»** (`docs/PANEL.md`
   §5.2/§7.2, ya operativa desde P6): `ComunicacionesPanel.tsx`/
   `RecursosPanel.tsx` calculan `hasFamilies` a partir de
@@ -3070,6 +3094,12 @@ en CI lo gate el job `e2e`).
   marca; `lib/config/site.ts` sigue al 100 % de líneas, ramas y funciones
   con `legalLinks()` y las fichas de tienda por defecto dentro). El umbral
   sigue en 99,7.
+  Tras «Nueva comunidad» en Comunidades (2026-09-20, generalización de
+  `useCreateFamiliesCommunity` a `useCreateCommunity`): **99,81 %**
+  (2749/2754 líneas, 1992 tests, 197 ficheros — `hooks/
+  useCreateCommunity.ts` al 100 % de líneas; un fichero de test nuevo,
+  `components/entidad/NuevaComunidadDialog.test.tsx`, sin contar para el
+  umbral por ser `.tsx` de componente). El umbral sigue en 99,7.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la

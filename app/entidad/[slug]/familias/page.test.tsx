@@ -9,7 +9,7 @@ import { buildFamiliesSummary, buildFamiliesSummaryCommunityRow } from "@/test-u
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 const useFamiliesSummaryMock = vi.hoisted(() => vi.fn());
 const useToggleCrossSpaceMock = vi.hoisted(() => vi.fn());
-const useCreateFamiliesCommunityMock = vi.hoisted(() => vi.fn());
+const useCreateCommunityMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("@/hooks/useFamiliesSummary", async () => {
@@ -24,11 +24,11 @@ vi.mock("@/hooks/useToggleCrossSpace", async () => {
   );
   return { ...actual, useToggleCrossSpace: useToggleCrossSpaceMock };
 });
-vi.mock("@/hooks/useCreateFamiliesCommunity", async () => {
-  const actual = await vi.importActual<typeof import("@/hooks/useCreateFamiliesCommunity")>(
-    "@/hooks/useCreateFamiliesCommunity",
+vi.mock("@/hooks/useCreateCommunity", async () => {
+  const actual = await vi.importActual<typeof import("@/hooks/useCreateCommunity")>(
+    "@/hooks/useCreateCommunity",
   );
-  return { ...actual, useCreateFamiliesCommunity: useCreateFamiliesCommunityMock };
+  return { ...actual, useCreateCommunity: useCreateCommunityMock };
 });
 
 import EntidadFamiliasPage, { generateMetadata } from "./page";
@@ -37,7 +37,7 @@ afterEach(() => {
   getServerSessionMock.mockReset();
   useFamiliesSummaryMock.mockReset();
   useToggleCrossSpaceMock.mockReset();
-  useCreateFamiliesCommunityMock.mockReset();
+  useCreateCommunityMock.mockReset();
 });
 
 function mockMutationDefaults() {
@@ -47,7 +47,7 @@ function mockMutationDefaults() {
     isError: false,
     error: null,
   });
-  useCreateFamiliesCommunityMock.mockReturnValue({
+  useCreateCommunityMock.mockReturnValue({
     mutate: vi.fn(),
     isPending: false,
     isError: false,

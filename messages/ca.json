@@ -489,7 +489,9 @@
       "empty": "Sense comunitats",
       "emptyDescription": "Aquesta entitat encara no té cap comunitat amb el seu segell.",
       "choose": "Tria una comunitat",
-      "chooseDescription": "Selecciona una comunitat de la llista per veure'n els membres i les sol·licituds."
+      "chooseDescription": "Selecciona una comunitat de la llista per veure'n els membres i les sol·licituds.",
+      "newCommunityTitle": "Nova comunitat",
+      "newCommunityHint": "La comunitat serà de l'entitat i apareixerà a l'aplicació per a les persones que la puguin veure segons la seva visibilitat."
     },
     "actividades": {
       "heading": "Activitats",
@@ -1061,10 +1063,10 @@
       "sinPermiso": "Només el titular o el moderador poden canviar la separació d'espais.",
       "desconocido": "No s'ha pogut canviar la separació d'espais."
     },
-    "createFamiliesCommunity": {
+    "createCommunity": {
       "invalido": "Revisa les dades: alguna no és vàlida.",
-      "sinPermiso": "Només el titular o el moderador poden crear una comunitat de famílies.",
-      "desconocido": "No s'ha pogut crear la comunitat de famílies."
+      "sinPermiso": "Només el titular o el moderador poden crear una comunitat.",
+      "desconocido": "No s'ha pogut crear la comunitat."
     },
     "programMutation": {
       "invalido": "Revisa les dades: alguna no és vàlida.",

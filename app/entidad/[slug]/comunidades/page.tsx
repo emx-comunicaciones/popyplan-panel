@@ -39,10 +39,12 @@ export default async function EntidadComunidadesPage({
     );
   }
 
+  const canManage = membership.role === "titular" || membership.role === "moderador";
+
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-xl font-semibold text-text-base">{t("entidad.comunidades.heading")}</h1>
-      <ComunidadesPanel orgId={membership.organization_id} />
+      <ComunidadesPanel orgId={membership.organization_id} canManage={canManage} />
     </div>
   );
 }

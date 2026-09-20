@@ -557,19 +557,27 @@ export type FamilyAnnouncementRow = components["schemas"]["FamilyAnnouncementRow
 export type FamilyResourceRow = components["schemas"]["FamilyResourceRow"];
 
 /**
- * Cuerpo de `POST /api/communities/` para crear una comunidad de
- * familias (§8.1): `space: 'families'` y `owner_org` son obligatorios en
- * la práctica (sin `owner_org` el backend da 400 — «solo una comunidad
- * con `owner_org` puede ser `families`»), aunque `CommunityRequest` los
- * deje opcionales en el esquema general (una comunidad normal de perfil
- * no los lleva).
+ * Cuerpo de `POST /api/communities/` para crear una comunidad de la
+ * entidad desde el panel, de miembros (`space: 'members'`,
+ * `ComunidadesPanel.tsx`) o de familias (`space: 'families'`,
+ * `FamiliasPanel.tsx`, §8.1): `owner_org` es obligatorio en la práctica
+ * siempre que el panel crea una comunidad (sin él, una `families` da
+ * 400 — «solo una comunidad con `owner_org` puede ser `families`» —, y
+ * una `members` sin `owner_org` no se vería como comunidad de la
+ * entidad), aunque `CommunityRequest` los deje opcionales en el esquema
+ * general (una comunidad normal de perfil libre no los lleva).
+ * `space` usa `SpaceEnum` del esquema (`"members" | "families"`, ya
+ * generalizado — el tipo anterior, `CreateFamiliesCommunityRequest`,
+ * lo fijaba a `"families"` a mano) en vez de dejarlo opcional como en
+ * `CommunityRequest`: los dos únicos llamantes del panel siempre lo
+ * declaran de forma explícita.
  */
-export interface CreateFamiliesCommunityRequest {
+export interface CreateCommunityRequest {
   name: string;
   description?: string;
   visibility?: components["schemas"]["VisibilityEnum"];
   code_of_conduct?: string;
-  space: "families";
+  space: components["schemas"]["SpaceEnum"];
   owner_org: number;
 }
 

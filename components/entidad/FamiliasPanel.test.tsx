@@ -12,7 +12,7 @@ import {
 
 const useFamiliesSummaryMock = vi.hoisted(() => vi.fn());
 const useToggleCrossSpaceMock = vi.hoisted(() => vi.fn());
-const useCreateFamiliesCommunityMock = vi.hoisted(() => vi.fn());
+const useCreateCommunityMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/hooks/useFamiliesSummary", async () => {
   const actual = await vi.importActual<typeof import("@/hooks/useFamiliesSummary")>(
@@ -26,11 +26,11 @@ vi.mock("@/hooks/useToggleCrossSpace", async () => {
   );
   return { ...actual, useToggleCrossSpace: useToggleCrossSpaceMock };
 });
-vi.mock("@/hooks/useCreateFamiliesCommunity", async () => {
-  const actual = await vi.importActual<typeof import("@/hooks/useCreateFamiliesCommunity")>(
-    "@/hooks/useCreateFamiliesCommunity",
+vi.mock("@/hooks/useCreateCommunity", async () => {
+  const actual = await vi.importActual<typeof import("@/hooks/useCreateCommunity")>(
+    "@/hooks/useCreateCommunity",
   );
-  return { ...actual, useCreateFamiliesCommunity: useCreateFamiliesCommunityMock };
+  return { ...actual, useCreateCommunity: useCreateCommunityMock };
 });
 
 import { FamiliasPanel } from "./FamiliasPanel";
@@ -38,7 +38,7 @@ import { FamiliasPanel } from "./FamiliasPanel";
 afterEach(() => {
   useFamiliesSummaryMock.mockReset();
   useToggleCrossSpaceMock.mockReset();
-  useCreateFamiliesCommunityMock.mockReset();
+  useCreateCommunityMock.mockReset();
 });
 
 function mockMutationDefaults() {
@@ -48,7 +48,7 @@ function mockMutationDefaults() {
     isError: false,
     error: null,
   });
-  useCreateFamiliesCommunityMock.mockReturnValue({
+  useCreateCommunityMock.mockReturnValue({
     mutate: vi.fn(),
     isPending: false,
     isError: false,
@@ -202,7 +202,7 @@ describe("FamiliasPanel", () => {
   it("canManage=true: activar el cruce pide confirmación y llama a mutate con el body correcto", async () => {
     const mutate = vi.fn();
     useToggleCrossSpaceMock.mockReturnValue({ mutate, isPending: false, isError: false, error: null });
-    useCreateFamiliesCommunityMock.mockReturnValue({
+    useCreateCommunityMock.mockReturnValue({
       mutate: vi.fn(),
       isPending: false,
       isError: false,
@@ -240,7 +240,7 @@ describe("FamiliasPanel", () => {
   it("cancelar la confirmación no llama a mutate", async () => {
     const mutate = vi.fn();
     useToggleCrossSpaceMock.mockReturnValue({ mutate, isPending: false, isError: false, error: null });
-    useCreateFamiliesCommunityMock.mockReturnValue({
+    useCreateCommunityMock.mockReturnValue({
       mutate: vi.fn(),
       isPending: false,
       isError: false,
@@ -267,7 +267,7 @@ describe("FamiliasPanel", () => {
   it("«Nueva comunidad de familias» crea con space:'families' vía el formulario", async () => {
     const mutate = vi.fn();
     mockMutationDefaults();
-    useCreateFamiliesCommunityMock.mockReturnValue({
+    useCreateCommunityMock.mockReturnValue({
       mutate,
       isPending: false,
       isError: false,
@@ -286,6 +286,7 @@ describe("FamiliasPanel", () => {
     expect(mutate).toHaveBeenCalledWith(
       {
         orgId: 7,
+        space: "families",
         name: "Familias del barrio",
         description: "Espacio para familias",
         visibility: "open",
@@ -296,18 +297,18 @@ describe("FamiliasPanel", () => {
   });
 
   it("«Nueva comunidad de familias» con detalle del backend (400) muestra ese texto tal cual", async () => {
-    const { CreateFamiliesCommunityError } = await import("@/hooks/useCreateFamiliesCommunity");
+    const { CreateCommunityError } = await import("@/hooks/useCreateCommunity");
     useToggleCrossSpaceMock.mockReturnValue({
       mutate: vi.fn(),
       isPending: false,
       isError: false,
       error: null,
     });
-    useCreateFamiliesCommunityMock.mockReturnValue({
+    useCreateCommunityMock.mockReturnValue({
       mutate: vi.fn(),
       isPending: false,
       isError: true,
-      error: new CreateFamiliesCommunityError(
+      error: new CreateCommunityError(
         "invalido",
         "Ya existe una comunidad de familias en esta entidad.",
         "Ya existe una comunidad de familias en esta entidad.",
@@ -460,7 +461,7 @@ describe("FamiliasPanel", () => {
 
   it("con el alta en vuelo, Escape no cierra el diálogo y «Cancelar» está deshabilitado", async () => {
     mockMutationDefaults();
-    useCreateFamiliesCommunityMock.mockReturnValue({
+    useCreateCommunityMock.mockReturnValue({
       mutate: vi.fn(),
       isPending: true,
       isError: false,
