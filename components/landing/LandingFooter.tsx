@@ -30,6 +30,10 @@ import { legalLinks, storeLinks } from "@/lib/config/site";
  * de tienda. «Accesibilidad» y «Acceso al panel» sí son rutas propias,
  * con `next/link`.
  *
+ * Los dos títulos de columna son `h2` (M4 de la revisión de rama), no
+ * `<p>` en negrita: dan navegación por encabezados y no rompen el orden
+ * (el último encabezado antes del pie es el `h2` del banner de descarga).
+ *
  * El QR es una imagen, no un enlace: quien ve la pantalla lo escanea con
  * el móvil, y quien no la ve ya tiene las dos fichas de tienda enlazadas
  * en la columna «Descargas» y en el banner de arriba.
@@ -43,8 +47,18 @@ export function LandingFooter() {
   // separador de millares y el pie diría «© 2.026».
   const year = String(new Date().getFullYear());
 
-  const linkClass = "text-[17px] text-text-inverse underline-offset-4 hover:underline";
-  const smallLinkClass = "text-[14px] text-text-inverse underline-offset-4 hover:underline";
+  // `focus-visible:outline-text-inverse` (I1 de la revisión de rama): el
+  // anillo de foco global de `app/globals.css` es `--color-primary-700`,
+  // que aquí es **exactamente** el color de fondo del pie — 1,00:1, es
+  // decir, ningún indicador de foco al tabular por los once enlaces
+  // (WCAG 2.4.7). En blanco sobre `primary-700` son 5,03:1, par ya
+  // auditado. Misma clase de regresión que `CLAUDE.md` documenta para el
+  // botón «?» de `PageHelp`: la regla de contraste del repo está tabulada
+  // contra blanco y se invierte sobre una superficie de marca.
+  const linkClass =
+    "text-[17px] text-text-inverse underline-offset-4 hover:underline focus-visible:outline-text-inverse";
+  const smallLinkClass =
+    "text-[14px] text-text-inverse underline-offset-4 hover:underline focus-visible:outline-text-inverse";
 
   return (
     <footer className="bg-primary-700 text-text-inverse">
@@ -61,7 +75,7 @@ export function LandingFooter() {
             />
             <nav aria-label={t("navLabel")} className="flex gap-12 sm:gap-20">
               <div className="flex flex-col gap-5">
-                <p className="font-display text-[18px] font-bold">{t("product")}</p>
+                <h2 className="font-display text-[18px] font-bold">{t("product")}</h2>
                 <ul className="flex flex-col gap-4">
                   <li>
                     <a href="#inicio" className={linkClass}>
@@ -81,7 +95,7 @@ export function LandingFooter() {
                 </ul>
               </div>
               <div className="flex flex-col gap-5">
-                <p className="font-display text-[18px] font-bold">{t("downloads")}</p>
+                <h2 className="font-display text-[18px] font-bold">{t("downloads")}</h2>
                 <ul className="flex flex-col gap-4">
                   {appStore ? (
                     <li>
@@ -112,17 +126,23 @@ export function LandingFooter() {
             </nav>
           </div>
 
-          <div className="flex w-full items-center gap-4 self-start rounded-2xl bg-white/10 px-5 py-4 sm:w-auto sm:px-6">
-            <span className="size-[120px] shrink-0 rounded-2xl bg-white p-2 sm:size-[160px]">
-              <Image
-                src="/landing/qr-download.svg"
-                alt={t("qrAlt")}
-                width={160}
-                height={160}
-                unoptimized
-                className="h-full w-full"
-              />
-            </span>
+          {/*
+            Tarjeta **blanca entera** con texto oscuro (I3 de la revisión
+            de rama). El `bg-white/10` que tenía antes se componía sobre
+            `primary-700` y dejaba el texto blanco en 4,20:1, por debajo de
+            AA para 16-18 px; `text-base` sobre blanco son 19,8:1, el par
+            mejor auditado del panel. `lib/a11y/tokens.test.ts` no podía
+            avisar: audita tokens, no colores compuestos con canal alfa.
+          */}
+          <div className="flex w-full items-center gap-4 self-start rounded-2xl bg-white px-5 py-4 text-text-base sm:w-auto sm:px-6">
+            <Image
+              src="/landing/qr-download.svg"
+              alt={t("qrAlt")}
+              width={160}
+              height={160}
+              unoptimized
+              className="size-[120px] shrink-0 sm:size-[160px]"
+            />
             <p className="flex-1 text-right font-display text-[16px] font-bold leading-tight sm:w-[180px] sm:flex-none sm:text-[18px]">
               {t("qrText")}
             </p>

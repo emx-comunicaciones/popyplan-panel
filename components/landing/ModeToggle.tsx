@@ -33,11 +33,17 @@ export function ModeToggle() {
   const t = useTranslations("landing.modes");
   const [mode, setMode] = useState<Mode>("plans");
 
+  // La pastilla inactiva **no cambia de color al pasar el ratón**, se
+  // subraya (M2 de la revisión de rama): `text-primary-700` sobre el
+  // `primary-100` del contenedor da 4,31:1, por debajo de AA para un texto
+  // de 18-20 px con peso normal — es decir, el `hover` empeoraba un texto
+  // que en reposo está en 16,93:1. El subrayado no depende del color ni
+  // mueve el contenido (a diferencia de cambiar el peso de la letra).
   const pill = (active: boolean) =>
     `cursor-pointer rounded-full px-6 py-3 text-[18px] leading-tight transition-colors sm:px-8 sm:text-[20px] ${
       active
         ? "bg-primary-700 font-semibold text-text-inverse"
-        : "font-normal text-text-base hover:text-primary-700"
+        : "font-normal text-text-base underline-offset-4 hover:underline"
     }`;
 
   return (

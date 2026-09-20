@@ -292,11 +292,10 @@
       "mockupAlt": "La app de Popyplan mostrando una comunidad de deporte"
     },
     "stores": {
-      "label": "Descarga la app",
-      "appStoreLabel": "Descargar en el App Store",
+      "appStoreLabel": "Descárgalo en App Store",
       "appStorePrefix": "Descárgalo en",
       "appStoreName": "App Store",
-      "playStoreLabel": "Descargar en Google Play",
+      "playStoreLabel": "Obtenlo en Google Play",
       "playStorePrefix": "Obtenlo en",
       "playStoreName": "Google Play"
     },

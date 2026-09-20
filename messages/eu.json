@@ -292,11 +292,10 @@
       "mockupAlt": "Popyplan aplikazioa kirol komunitate bat erakusten"
     },
     "stores": {
-      "label": "Deskargatu aplikazioa",
-      "appStoreLabel": "Deskargatu App Storen",
+      "appStoreLabel": "Deskargatu hemen App Store",
       "appStorePrefix": "Deskargatu hemen",
       "appStoreName": "App Store",
-      "playStoreLabel": "Eskuratu Google Playn",
+      "playStoreLabel": "Eskuratu hemen Google Play",
       "playStorePrefix": "Eskuratu hemen",
       "playStoreName": "Google Play"
     },

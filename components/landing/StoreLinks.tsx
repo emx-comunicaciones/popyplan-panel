@@ -27,7 +27,12 @@ const BADGE_BASE =
 
 const BADGE_VARIANT: Record<StoreLinksVariant, string> = {
   light: "bg-white hover:bg-primary-100",
-  onDark: "bg-primary-100 hover:bg-white",
+  // `focus-visible:outline-text-inverse` (I1 de la revisión de rama): el
+  // anillo de foco global (`--color-primary-700`) se dibuja **fuera** de
+  // la insignia, sobre el degradado turquesa del banner, donde queda en
+  // 1,29:1; en blanco son 3,90:1 contra el extremo claro del degradado y
+  // 5,03:1 contra el oscuro.
+  onDark: "bg-primary-100 hover:bg-white focus-visible:outline-text-inverse",
 };
 
 /**
@@ -40,12 +45,16 @@ const BADGE_VARIANT: Record<StoreLinksVariant, string> = {
  * (con las dos a `null`, el componente entero devuelve `null` — un
  * rótulo «Descarga la app» sin nada debajo se lee como un fallo).
  *
- * El nombre accesible de cada insignia lo fija un `aria-label` propio
- * («Descargar en el App Store»), no la suma de sus dos líneas de texto:
- * «Descárgalo en» y «App Store» son dos nodos pegados, sin espacio entre
- * ellos, y cada navegador decide por su cuenta si mete uno al calcular el
- * nombre (jsdom no lo hace, Chrome sí) — con el `aria-label` el nombre es
- * el mismo en el navegador, en los tests y en Playwright. Los dos iconos
+ * El nombre accesible de cada insignia lo fija un `aria-label` propio, no
+ * la suma de sus dos líneas de texto: «Descárgalo en» y «App Store» son
+ * dos nodos pegados, sin espacio entre ellos, y cada navegador decide por
+ * su cuenta si mete uno al calcular el nombre (jsdom no lo hace, Chrome
+ * sí) — con el `aria-label` el nombre es el mismo en el navegador, en los
+ * tests y en Playwright. **Su valor es exactamente el texto visible
+ * concatenado** («Descárgalo en App Store»), nunca una redacción propia
+ * (I2 de la revisión de rama): WCAG 2.5.3 «Label in Name» (nivel A) exige
+ * que lo que se ve esté contenido en el nombre accesible, o quien usa
+ * control por voz dice lo que lee y el comando no encuentra el enlace. Los dos iconos
  * son SVG decorativos (`alt=""`) y van con `unoptimized`
  * porque el optimizador de imágenes de Next rechaza los SVG salvo con
  * `dangerouslyAllowSVG`, que no se activa por un icono.

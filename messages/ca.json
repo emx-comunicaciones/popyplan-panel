@@ -292,8 +292,7 @@
       "mockupAlt": "L'aplicació de Popyplan mostrant una comunitat d'esport"
     },
     "stores": {
-      "label": "Descarrega l'aplicació",
-      "appStoreLabel": "Descarrega a l'App Store",
+      "appStoreLabel": "Descarrega'l a App Store",
       "appStorePrefix": "Descarrega'l a",
       "appStoreName": "App Store",
       "playStoreLabel": "Aconsegueix-lo a Google Play",

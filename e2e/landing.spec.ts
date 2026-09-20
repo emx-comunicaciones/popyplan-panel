@@ -48,7 +48,7 @@ test("sin sesión, la raíz muestra la landing y «Entrar» lleva al login", asy
   // Las insignias de tienda salen sin declarar ninguna variable de
   // entorno: `storeLinks()` cae a las fichas reales publicadas.
   await expect(
-    page.getByRole("link", { name: "Descargar en el App Store" }).first(),
+    page.getByRole("link", { name: "Descárgalo en App Store" }).first(),
   ).toHaveAttribute("href", /apps\.apple\.com/);
 
   await page.getByRole("link", { name: "Entrar", exact: true }).click();

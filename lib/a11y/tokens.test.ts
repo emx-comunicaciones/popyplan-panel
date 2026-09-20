@@ -86,6 +86,35 @@ describe("contraste de los tokens de color (app/globals.css)", () => {
       3,
     ],
     ["text-base / primary (tarjetas decorativas sobre el tono de marca)", "color-text-base", "color-primary", 4.5],
+    // Indicador de foco (I1 de la revisión de la rama de la landing):
+    // `app/globals.css` dibuja el anillo global en `--color-primary-700`,
+    // que sobre una superficie **del mismo color de marca** (el pie de la
+    // web pública) queda en 1,00:1 — invisible. Esas superficies fuerzan
+    // `focus-visible:outline-text-inverse`, y estas dos filas fijan que el
+    // anillo blanco pasa el 3:1 de 1.4.11 sobre los dos fondos de marca
+    // que lo usan (el pie y el degradado del banner de descarga, cuyo
+    // extremo claro es `primary-600`).
+    [
+      "text-inverse / primary-700 (anillo de foco sobre el pie de la landing)",
+      "color-text-inverse",
+      "color-primary-700",
+      3,
+    ],
+    [
+      "text-inverse / primary-600 (anillo de foco sobre el banner de descarga)",
+      "color-text-inverse",
+      "color-primary-600",
+      3,
+    ],
+    // El botón negro de la cabecera conserva el anillo global: sobre el
+    // propio botón da 3,93:1 y, con el `outline-offset` de 2 px, sobre el
+    // blanco de la cabecera 5,03:1 — no hace falta invertirlo ahí.
+    [
+      "primary-700 / text-base (anillo de foco sobre el botón negro)",
+      "color-primary-700",
+      "color-text-base",
+      3,
+    ],
   ];
 
   it.each(pairs)("%s ≥ %s:1", (_label, fg, bg, threshold) => {

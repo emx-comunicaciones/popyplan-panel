@@ -15,8 +15,10 @@ import Home, { generateMetadata } from "./page";
 const DEFAULT_APP_STORE = "https://apps.apple.com/us/app/polypop/id6755899118";
 const DEFAULT_PLAY_STORE = "https://play.google.com/store/apps/details?id=com.tikneo.popmobile";
 
-const APP_STORE_NAME = "Descargar en el App Store";
-const PLAY_STORE_NAME = "Descargar en Google Play";
+// El nombre accesible es **el texto visible concatenado** (I2 de la
+// revisión de rama, WCAG 2.5.3 «Label in Name»), no una redacción propia.
+const APP_STORE_NAME = "Descárgalo en App Store";
+const PLAY_STORE_NAME = "Obtenlo en Google Play";
 
 afterEach(() => {
   getServerSessionMock.mockReset();

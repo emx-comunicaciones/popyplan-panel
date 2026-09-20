@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { LogoutButton } from "@/components/LogoutButton";
 import { Footer } from "@/components/layout/Footer";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { SkipLink } from "@/components/ui/SkipLink";
 
 import { LANDING_FONT_CLASS } from "./fonts";
 import { DARK_BUTTON_CLASS } from "./linkStyles";
@@ -32,6 +33,11 @@ import { StoreLinks } from "./StoreLinks";
  * el navegador simplemente no hace nada — por eso los botones de tienda
  * van justo encima.
  *
+ * `<SkipLink />` + `<main id="main-content" tabIndex={-1}>` (M3 de la
+ * revisión de rama), igual que `Landing` y que los tres layouts de área:
+ * son pocos controles, pero el patrón de salto al contenido es el mismo
+ * en todo el producto y esta pantalla se quedaba fuera.
+ *
  * Mantiene el pie común del panel (`components/layout/Footer.tsx`, con
  * el enlace a la declaración de accesibilidad) y no el pie de la
  * landing: esta pantalla no tiene anclas de sección ni columnas de
@@ -43,6 +49,7 @@ export function AppAccountScreen() {
 
   return (
     <div className={`${LANDING_FONT_CLASS} flex min-h-screen flex-col bg-white text-text-base`}>
+      <SkipLink />
       <header className="border-b border-border bg-white">
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-4 py-3 lg:px-12">
           <Image
@@ -56,7 +63,11 @@ export function AppAccountScreen() {
           <LanguageSwitcher />
         </div>
       </header>
-      <main className="flex flex-1 items-center justify-center px-4 py-12">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="flex flex-1 items-center justify-center px-4 py-12 focus:outline-none"
+      >
         <div className="w-full max-w-xl rounded-2xl border border-border bg-white p-6 shadow-sm sm:p-8">
           <h1 className="mb-3 font-display text-[28px] font-bold leading-tight text-text-base">
             {t("title")}
