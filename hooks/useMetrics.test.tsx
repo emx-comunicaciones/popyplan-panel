@@ -152,4 +152,35 @@ describe("useMetrics", () => {
       "Esta administración no tiene territorio declarado.",
     );
   });
+
+  /**
+   * M11 de la revisión final de rama: `useMetrics` era el único hook de
+   * datos que no normalizaba el `orgId` de su clave de caché con
+   * `String()` (mismo patrón que `useOrganization`/`useProgram`
+   * documenta en `CLAUDE.md`). Sin normalizar, el mismo periodo del
+   * mismo ámbito se cachea dos veces si una pantalla pasa el `orgId`
+   * como `number` (p. ej. `membership.organization_id`) y otra como el
+   * `string` del parámetro de ruta — exactamente lo que ocurre entre
+   * `TerritorioDashboard` y la pestaña Métricas de `EntidadDetail`.
+   */
+  it("un `orgId` number y su equivalente string comparten la misma entrada de caché (M11)", async () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    function sharedWrapper({ children }: { children: ReactNode }) {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    }
+    apiFetchMock.mockResolvedValue(buildMetricsResponse());
+
+    const first = renderHook(() => useMetrics("entidad", 7, PERIOD), { wrapper: sharedWrapper });
+    await waitFor(() => expect(first.result.current.isSuccess).toBe(true));
+
+    const second = renderHook(() => useMetrics("entidad", "7", PERIOD), {
+      wrapper: sharedWrapper,
+    });
+    await waitFor(() => expect(second.result.current.isSuccess).toBe(true));
+
+    // Una sola entrada de caché para los dos montajes: si `orgId` no se
+    // normalizara, `number` (7) y `string` ("7") producirían dos claves
+    // distintas y, por tanto, dos entradas.
+    expect(queryClient.getQueryCache().getAll()).toHaveLength(1);
+  });
 });

@@ -113,7 +113,17 @@ export function useCompare(
   const query = buildQuery(period, groupBy);
 
   return useQuery<CompareResponse, CompareError>({
-    queryKey: ["panel-compare", scope, orgId ?? null, period.since, period.until, groupBy],
+    // `String(orgId)` (M11 de la revisión final de rama): mismo motivo
+    // que `useMetrics` — sin normalizar, un `orgId` number y el string
+    // del parámetro de ruta cachean dos veces el mismo periodo.
+    queryKey: [
+      "panel-compare",
+      scope,
+      orgId === undefined ? null : String(orgId),
+      period.since,
+      period.until,
+      groupBy,
+    ],
     queryFn: async () => {
       try {
         return await apiFetch<CompareResponse>(`${path}?${query}`);

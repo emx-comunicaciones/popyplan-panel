@@ -320,6 +320,15 @@ describe("endpoints", () => {
     expect(TERRITORIO.PLACE_SHEET(3, "20069")).toBe("/api/panel/territorio/3/places/20069/");
   });
 
+  /**
+   * M10 de la revisión final de rama: `ineCode` viene de `by_place[].key`
+   * del backend, no de una constante del panel — sin `encodeURIComponent`
+   * un valor con `/` o `?` rompería la ruta en vez de dar un 404 limpio.
+   */
+  it("TERRITORIO.PLACE_SHEET codifica el ineCode en la URL (M10)", () => {
+    expect(TERRITORIO.PLACE_SHEET(3, "20/69")).toBe("/api/panel/territorio/3/places/20%2F69/");
+  });
+
   it("PLACES.LIST() apunta a /api/places/", () => {
     expect(PLACES.LIST()).toBe("/api/places/");
   });

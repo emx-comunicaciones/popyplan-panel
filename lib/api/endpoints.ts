@@ -423,8 +423,11 @@ export const TERRITORIO = {
    * no pertenece al territorio de esa administración (nunca se revela
    * nada de un municipio de fuera). Permiso `ver_panel` + administración.
    */
+  // `encodeURIComponent` (M10 de la revisión final de rama): `ineCode`
+  // viene de `by_place[].key` del backend, no de una constante propia —
+  // hoy son dígitos y no rompe, pero nada garantiza que siga siendo así.
   PLACE_SHEET: (orgId: number | string, ineCode: string) =>
-    `/api/panel/territorio/${orgId}/places/${ineCode}/`,
+    `/api/panel/territorio/${orgId}/places/${encodeURIComponent(ineCode)}/`,
 } as const;
 
 /**

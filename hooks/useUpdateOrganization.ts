@@ -89,6 +89,12 @@ export function useUpdateOrganization(
       // también normaliza — sin esto, invalidar con un `orgId` de otro
       // tipo (number vs. string) nunca encuentra la entrada cacheada.
       queryClient.invalidateQueries({ queryKey: ["panel-organization", String(orgId)] });
+      // M4 de la revisión final de rama: la columna «Sede» de
+      // `EntidadesTable` lee `["panel-organizations", …]` — sin esto, el
+      // listado se quedaba con la sede vieja tras editarla desde la
+      // ficha o desde Configuración, hasta recargar la página a mano.
+      // Mismo patrón que ya sigue `useSetOrganizationTerritory`.
+      queryClient.invalidateQueries({ queryKey: ["panel-organizations"] });
     },
   });
 }

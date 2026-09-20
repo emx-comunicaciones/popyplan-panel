@@ -156,9 +156,18 @@ export function TerritorioForm({ organization, orgId }: TerritorioFormProps) {
           <select
             id={kindId}
             value={form.territory_kind}
-            onChange={(event) =>
-              setForm({ ...form, territory_kind: event.target.value as TerritoryKind })
-            }
+            onChange={(event) => {
+              const kind = event.target.value as TerritoryKind;
+              // M5 de la revisión final de rama: `set_territory(org, '',
+              // '')` (§2.2) limpia el territorio — dejar el código
+              // anterior en el estado al elegir «Sin territorio» mandaba
+              // `{territory_kind: "", territory_code: "20"}` al guardar.
+              setForm({
+                ...form,
+                territory_kind: kind,
+                territory_code: kind === "" ? "" : form.territory_code,
+              });
+            }}
             className="rounded-md border border-border px-3 py-2 text-sm focus-visible:outline-primary-700"
           >
             {(Object.keys(TERRITORY_KIND_LABEL_KEYS) as TerritoryKind[]).map((kind) => (

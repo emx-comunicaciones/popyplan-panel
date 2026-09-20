@@ -84,6 +84,35 @@ describe("useUpdateOrganization (sede)", () => {
       body: { description: "Hola", place: "20069" },
     });
   });
+
+  /**
+   * M4 de la revisión final de rama: la columna «Sede» nueva de
+   * `EntidadesTable` lee `["panel-organizations", …]`, y
+   * `useSetOrganizationTerritory` ya invalidaba las dos claves — esta
+   * mutación solo invalidaba la ficha, así que el listado se quedaba con
+   * la sede vieja hasta recargar la página a mano.
+   */
+  it("invalida también el listado de entidades, no solo la ficha (M4)", async () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    function sharedWrapper({ children }: { children: ReactNode }) {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    }
+    queryClient.setQueryData(["panel-organization", "7"], buildOrganization({ id: 7 }));
+    queryClient.setQueryData(["panel-organizations", "{}"], {
+      count: 1,
+      next: null,
+      previous: null,
+      results: [buildOrganization({ id: 7 })],
+    });
+    apiFetchMock.mockResolvedValueOnce(buildOrganization({ id: 7, place: "20069" }));
+
+    const { result } = renderHook(() => useUpdateOrganization(7), { wrapper: sharedWrapper });
+    result.current.mutate({ place: "20069" });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(queryClient.getQueryState(["panel-organization", "7"])?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState(["panel-organizations", "{}"])?.isInvalidated).toBe(true);
+  });
 });
 
 /**

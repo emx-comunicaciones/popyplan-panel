@@ -129,7 +129,18 @@ export function useMetrics(
   const query = buildQuery(period, groupBy);
 
   return useQuery<MetricsResponse, MetricsError>({
-    queryKey: ["panel-metrics", scope, orgId ?? null, period.since, period.until, groupBy ?? null],
+    // `String(orgId)` (M11 de la revisión final de rama): sin normalizar,
+    // el mismo periodo del mismo ámbito se cachea dos veces si una
+    // pantalla pasa un `orgId` number y otra el string del parámetro de
+    // ruta — mismo patrón que ya siguen `useOrganization`/`useProgram`.
+    queryKey: [
+      "panel-metrics",
+      scope,
+      orgId === undefined ? null : String(orgId),
+      period.since,
+      period.until,
+      groupBy ?? null,
+    ],
     queryFn: async () => {
       try {
         return await apiFetch<MetricsResponse>(`${path}?${query}`);

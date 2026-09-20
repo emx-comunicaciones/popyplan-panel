@@ -127,4 +127,28 @@ describe("useCompare", () => {
       "Esta administración no tiene territorio declarado.",
     );
   });
+
+  /** M11 de la revisión final de rama: ver el mismo test de `useMetrics.test.tsx`. */
+  it("un `orgId` number y su equivalente string comparten la misma entrada de caché (M11)", async () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    function sharedWrapper({ children }: { children: ReactNode }) {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    }
+    apiFetchMock.mockResolvedValue(buildCompareResponse());
+
+    const first = renderHook(() => useCompare("paraguas", 7, PERIOD, "comarca"), {
+      wrapper: sharedWrapper,
+    });
+    await waitFor(() => expect(first.result.current.isSuccess).toBe(true));
+
+    const second = renderHook(() => useCompare("paraguas", "7", PERIOD, "comarca"), {
+      wrapper: sharedWrapper,
+    });
+    await waitFor(() => expect(second.result.current.isSuccess).toBe(true));
+
+    // Una sola entrada de caché para los dos montajes: si `orgId` no se
+    // normalizara, `number` (7) y `string` ("7") producirían dos claves
+    // distintas y, por tanto, dos entradas.
+    expect(queryClient.getQueryCache().getAll()).toHaveLength(1);
+  });
 });

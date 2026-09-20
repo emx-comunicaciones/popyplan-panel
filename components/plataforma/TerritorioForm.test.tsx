@@ -112,6 +112,32 @@ describe("TerritorioForm", () => {
     expect(screen.getByText("Contando municipios…")).toBeInTheDocument();
   });
 
+  /**
+   * M5 de la revisión final de rama: `§2.2` dice `set_territory(org, '',
+   * '')` para limpiar el territorio, pero elegir «Sin territorio» solo
+   * cambiaba `territory_kind` y dejaba el código anterior en el estado —
+   * guardar mandaba `{territory_kind: "", territory_code: "20"}`.
+   */
+  it("cambiar el tipo a «Sin territorio» limpia también el código (M5)", async () => {
+    mockSave();
+    usePlacesCountMock.mockReturnValue({ data: undefined, isError: false, error: null });
+
+    render(
+      <TerritorioForm
+        organization={buildOrganization({ territory_kind: "provincia", territory_code: "20" })}
+        orgId="7"
+      />,
+    );
+    await userEvent.selectOptions(screen.getByLabelText("Tipo de territorio"), "Sin territorio");
+    await userEvent.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(mutateMock).toHaveBeenCalledWith({
+      admin_level: "",
+      territory_kind: "",
+      territory_code: "",
+    });
+  });
+
   it("envía el nivel, el tipo de territorio y el código al guardar", async () => {
     mockSave();
     usePlacesCountMock.mockReturnValue({ data: undefined, isError: false, error: null });
