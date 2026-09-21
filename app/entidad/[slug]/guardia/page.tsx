@@ -39,7 +39,9 @@ export default async function EntidadGuardiaPage({
   // cosas, igual que `HelpRequestViewSet.pending`.
   const isOnCall = await isOnCallUser(membership.organization_id, session);
 
-  if (!entidadMenuFor(membership.role, { isOnCall }).includes("guardia")) {
+  const menu = entidadMenuFor(membership.role, { isOnCall });
+
+  if (!menu.includes("guardia")) {
     return (
       <EmptyState title={t("common.noAccess")} description={t("entidad.guardia.noAccessDescription")} />
     );
@@ -48,7 +50,14 @@ export default async function EntidadGuardiaPage({
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-xl font-semibold text-text-base">{t("entidad.guardia.heading")}</h1>
-      <GuardiaPanel orgId={membership.organization_id} slug={slug} />
+      <GuardiaPanel
+        orgId={membership.organization_id}
+        slug={slug}
+        // I1: una analista o un dinamizador de guardia ven esta pantalla
+        // pero no tienen Personas; sin esto, el nombre de cada aviso les
+        // enlazaba a un «Sin acceso» a página completa.
+        canOpenPersonSheet={menu.includes("personas")}
+      />
     </div>
   );
 }

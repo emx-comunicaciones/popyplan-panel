@@ -309,6 +309,42 @@ describe("EntidadGuardiaPage", () => {
     expect(screen.queryByText("Sin acceso")).not.toBeInTheDocument();
   });
 
+  it("la analista de guardia ve el aviso, pero el nombre no enlaza a la ficha (I1)", async () => {
+    // Tiene Guardia por ser la persona de guardia, pero `analista` no
+    // tiene Personas en su menú: el enlace daría «Sin acceso».
+    usePendingHelpRequestsMock.mockReturnValue({
+      data: [buildHelpRequest({ user_display: { ...buildHelpRequest().user_display, is_member: true } })],
+      isError: false,
+      error: null,
+    });
+    useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
+    useOrganizationMock.mockReturnValue({ data: buildOrganization(), isError: false, error: null });
+    useUpdateOrganizationMock.mockReturnValue(idleMutation());
+
+    await renderPage("analista", "alfaville", 42);
+
+    expect(screen.getByText("Marta L.")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Marta L." })).not.toBeInTheDocument();
+  });
+
+  it("el titular sí enlaza el nombre del aviso a la ficha de la persona", async () => {
+    usePendingHelpRequestsMock.mockReturnValue({
+      data: [buildHelpRequest({ user_display: { ...buildHelpRequest().user_display, is_member: true } })],
+      isError: false,
+      error: null,
+    });
+    useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
+    useOrganizationMock.mockReturnValue({ data: buildOrganization(), isError: false, error: null });
+    useUpdateOrganizationMock.mockReturnValue(idleMutation());
+
+    await renderPage("titular");
+
+    expect(screen.getByRole("link", { name: "Marta L." })).toHaveAttribute(
+      "href",
+      "/entidad/alfaville/personas/5",
+    );
+  });
+
   it("sin sesión redirige a /login", async () => {
     getServerSessionMock.mockResolvedValue(null);
 

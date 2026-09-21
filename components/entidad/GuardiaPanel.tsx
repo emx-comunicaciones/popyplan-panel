@@ -27,6 +27,18 @@ export interface GuardiaPanelProps {
   orgId: number | string;
   /** Slug de la entidad, para enlazar a la ficha de la persona cuando es miembro. */
   slug: string;
+  /**
+   * Si quien mira tiene la sección «Personas» en su menú
+   * (`lib/auth/entidadMenu.ts::entidadMenuFor`). Hallazgo I1 de la
+   * revisión de esta rama, misma clase que el F1 ya documentado para
+   * `ActividadesTable`: desde que la guardia se abre a la persona de
+   * guardia **sea cual sea su rol**, una `analista` o un `dinamizador`
+   * de guardia ven los avisos sin tener Personas, y el enlace al nombre
+   * les aterrizaba en el «Sin acceso» a página completa de
+   * `personas/[userId]/page.tsx`. Lo calcula el Server Component, que ya
+   * tiene el rol y el `isOnCall`.
+   */
+  canOpenPersonSheet: boolean;
 }
 
 const ACKNOWLEDGE_ERROR_KEYS: Record<AcknowledgeHelpRequestErrorKind, string> = {
@@ -67,10 +79,12 @@ function formatDateTime(iso: string): string {
 /**
  * Aviso «no lo llevo mal» al día: no se puede saber si la persona
  * pertenece a la entidad ni cómo contactarla solo con el nombre. Con
- * `is_member`, el nombre enlaza a la ficha (`/entidad/{slug}/personas/
- * {userId}`, invariante 9 — la ficha nunca lleva contacto); sin
- * membresía, un badge explícito («No pertenece a la entidad») en vez de
- * un enlace que daría 404/«Sin acceso». `referent` (si lo hay) se pinta
+ * `is_member` **y** `canOpenPersonSheet`, el nombre enlaza a la ficha
+ * (`/entidad/{slug}/personas/{userId}`, invariante 9 — la ficha nunca
+ * lleva contacto); sin membresía, un badge explícito («No pertenece a la
+ * entidad») en vez de un enlace que daría 404/«Sin acceso»; sin la
+ * sección Personas en el menú de quien mira (I1), el nombre se pinta
+ * como texto, sin `<a>`. `referent` (si lo hay) se pinta
  * aparte, tal cual llega (`{id, public_name}`, mismo patrón que
  * `ReferentRef`).
  */
@@ -78,14 +92,20 @@ function HelpRequestCard({
   request,
   orgId,
   slug,
+  canOpenPersonSheet,
 }: {
   request: HelpRequestRow;
   orgId: number | string;
   slug: string;
+  canOpenPersonSheet: boolean;
 }) {
   const t = useTranslations();
   const acknowledge = useAcknowledgeHelpRequest(orgId);
   const { is_member: isMember, public_name: publicName, referent } = request.user_display;
+  // Las dos condiciones del enlace: que la persona pertenezca a la
+  // entidad (si no, la ficha da 404) y que quien mira pueda abrir la
+  // sección Personas (si no, «Sin acceso»).
+  const linkToSheet = isMember && canOpenPersonSheet;
 
   return (
     <li>
@@ -93,7 +113,7 @@ function HelpRequestCard({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              {isMember ? (
+              {linkToSheet ? (
                 <Link
                   href={`/entidad/${slug}/personas/${request.user_display.id}`}
                   className="font-medium text-primary-700 hover:underline"
@@ -282,10 +302,11 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
  * on_call_user}`, los dos de la misma lista blanca solo-titular). Cada
  * aviso enlaza a la ficha de la persona
  * (`/entidad/{slug}/personas/{userId}`) solo si
- * `user_display.is_member`; si no, un badge «No pertenece a la entidad»
- * (ver `HelpRequestCard`).
+ * `user_display.is_member` y quien mira tiene la sección Personas
+ * (`canOpenPersonSheet`); si no, un badge «No pertenece a la entidad» o
+ * el nombre como texto (ver `HelpRequestCard`).
  */
-export function GuardiaPanel({ orgId, slug }: GuardiaPanelProps) {
+export function GuardiaPanel({ orgId, slug, canOpenPersonSheet }: GuardiaPanelProps) {
   const t = useTranslations();
   const requests = usePendingHelpRequests(orgId);
 
@@ -316,7 +337,13 @@ export function GuardiaPanel({ orgId, slug }: GuardiaPanelProps) {
         ) : (
           <ul className="flex flex-col gap-3">
             {requests.data.map((request) => (
-              <HelpRequestCard key={request.id} request={request} orgId={orgId} slug={slug} />
+              <HelpRequestCard
+                key={request.id}
+                request={request}
+                orgId={orgId}
+                slug={slug}
+                canOpenPersonSheet={canOpenPersonSheet}
+              />
             ))}
           </ul>
         )}

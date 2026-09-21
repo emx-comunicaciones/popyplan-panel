@@ -3132,6 +3132,21 @@ de la app viven en sus propios repos.
   de 1461 días. `asistencia/page.tsx` lo hereda sin tocar nada, porque
   monta la misma tabla.
 
+**Fix round 1 (revisión de rama, `FIX-panel-review.md`)** — I1: el enlace
+de cada aviso de la guardia a la ficha de la persona
+(`GuardiaPanel.tsx::HelpRequestCard`) se pintaba siempre que
+`user_display.is_member`, sin mirar si quien mira tiene la sección
+Personas. Esta misma rama abre Guardia a la persona de guardia **sea cual
+sea su rol** y quita Personas al `dinamizador`, así que una `analista` o
+un `dinamizador` de guardia aterrizaban en el «Sin acceso» a página
+completa de `personas/[userId]/page.tsx` — exactamente el patrón F1 que
+el repo ya había arreglado para `referente` → Asistencia
+(`canOpenAttendance`). `GuardiaPanel` recibe ahora `canOpenPersonSheet`,
+que calcula `guardia/page.tsx` con `entidadMenuFor(role, { isOnCall
+}).includes("personas")`; sin él, el nombre se pinta como texto, sin
+`<a>` (y sin el badge «No pertenece a la entidad», que es otro caso
+distinto).
+
 - **Código de invitación de una comunidad privada (B-I8)**
   (`hooks/useCommunityInviteCode.ts` nuevo, `COMMUNITIES.INVITE_CODE`,
   `ComunidadesPanel.tsx::InviteCode`): el panel ofrecía crear comunidades

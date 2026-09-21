@@ -81,7 +81,7 @@ describe("GuardiaPanel", () => {
     });
     useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
 
-    const { container } = render(<GuardiaPanel orgId={7} slug={SLUG} />);
+    const { container } = render(<GuardiaPanel orgId={7} slug={SLUG} canOpenPersonSheet />);
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -103,7 +103,7 @@ describe("GuardiaPanel", () => {
     usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
     useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
 
-    render(<GuardiaPanel orgId={7} slug={SLUG} />);
+    render(<GuardiaPanel orgId={7} slug={SLUG} canOpenPersonSheet />);
 
     expect(screen.getByText("No se pudieron cargar los ajustes de guardia")).toBeInTheDocument();
     expect(screen.queryByLabelText("Teléfono de ayuda")).not.toBeInTheDocument();
@@ -127,11 +127,41 @@ describe("GuardiaPanel", () => {
     });
     useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
 
-    render(<GuardiaPanel orgId={7} slug={SLUG} />);
+    render(<GuardiaPanel orgId={7} slug={SLUG} canOpenPersonSheet />);
 
     const link = screen.getByRole("link", { name: "Marta L." });
     expect(link).toHaveAttribute("href", `/entidad/${SLUG}/personas/5`);
     expect(screen.getByText("Referente: Ana Referente")).toBeInTheDocument();
+    expect(screen.queryByText("No pertenece a la entidad")).not.toBeInTheDocument();
+  });
+
+  it("sin la sección Personas en el menú, el nombre no enlaza (I1)", () => {
+    // Una analista o un dinamizador de guardia ven esta pantalla pero no
+    // tienen Personas: el enlace les aterrizaba en el «Sin acceso» a
+    // página completa de `personas/[userId]/page.tsx`.
+    mockOrganizationHooks();
+    usePendingHelpRequestsMock.mockReturnValue({
+      data: [
+        buildHelpRequest({
+          user_display: buildHelpRequestUserDisplay({
+            id: 5,
+            public_name: "Marta L.",
+            is_member: true,
+            referent: null,
+          }),
+        }),
+      ],
+      isError: false,
+      error: null,
+    });
+    useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
+
+    render(<GuardiaPanel orgId={7} slug={SLUG} canOpenPersonSheet={false} />);
+
+    expect(screen.queryByRole("link", { name: "Marta L." })).not.toBeInTheDocument();
+    expect(screen.getByText("Marta L.")).toBeInTheDocument();
+    // No es el caso de «no pertenece a la entidad»: sí pertenece, solo
+    // que quien mira no puede abrir su ficha.
     expect(screen.queryByText("No pertenece a la entidad")).not.toBeInTheDocument();
   });
 
@@ -153,7 +183,7 @@ describe("GuardiaPanel", () => {
     });
     useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
 
-    render(<GuardiaPanel orgId={7} slug={SLUG} />);
+    render(<GuardiaPanel orgId={7} slug={SLUG} canOpenPersonSheet />);
 
     expect(screen.getByRole("link", { name: "Marta L." })).toHaveAttribute(
       "href",
@@ -180,7 +210,7 @@ describe("GuardiaPanel", () => {
     });
     useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
 
-    render(<GuardiaPanel orgId={7} slug={SLUG} />);
+    render(<GuardiaPanel orgId={7} slug={SLUG} canOpenPersonSheet />);
 
     expect(screen.queryByRole("link", { name: "Invitado X." })).not.toBeInTheDocument();
     expect(screen.getByText("Invitado X.")).toBeInTheDocument();
@@ -206,7 +236,7 @@ describe("GuardiaPanel", () => {
     });
     useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
 
-    render(<GuardiaPanel orgId={7} slug={SLUG} />);
+    render(<GuardiaPanel orgId={7} slug={SLUG} canOpenPersonSheet />);
 
     expect(screen.getByText(/Laia, de su red de apoyo, se está encargando/)).toBeInTheDocument();
     expect(
@@ -223,7 +253,7 @@ describe("GuardiaPanel", () => {
     });
     useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
 
-    render(<GuardiaPanel orgId={7} slug={SLUG} />);
+    render(<GuardiaPanel orgId={7} slug={SLUG} canOpenPersonSheet />);
 
     expect(
       screen.getByText("Nadie de su red de apoyo se ha encargado todavía."),
@@ -239,7 +269,7 @@ describe("GuardiaPanel", () => {
     });
     useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
 
-    render(<GuardiaPanel orgId={7} slug={SLUG} />);
+    render(<GuardiaPanel orgId={7} slug={SLUG} canOpenPersonSheet />);
 
     expect(
       screen.getByText(
@@ -265,7 +295,7 @@ describe("GuardiaPanel", () => {
     useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
     const user = userEvent.setup();
 
-    render(<GuardiaPanel orgId={7} slug={SLUG} />);
+    render(<GuardiaPanel orgId={7} slug={SLUG} canOpenPersonSheet />);
 
     await user.clear(screen.getByLabelText("Teléfono de ayuda"));
     await user.click(screen.getByRole("button", { name: "Guardar" }));
@@ -289,7 +319,7 @@ describe("GuardiaPanel", () => {
     usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
     useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
 
-    render(<GuardiaPanel orgId={7} slug={SLUG} />);
+    render(<GuardiaPanel orgId={7} slug={SLUG} canOpenPersonSheet />);
 
     // En `es` el texto traducido coincide, letra por letra, con el que
     // manda el hook — la prueba real de que pasa por `errorKindText` (no
@@ -314,7 +344,7 @@ describe("GuardiaPanel", () => {
       error: new Error("No se pudo marcar el aviso como atendido."),
     });
 
-    render(<GuardiaPanel orgId={7} slug={SLUG} />);
+    render(<GuardiaPanel orgId={7} slug={SLUG} canOpenPersonSheet />);
 
     expect(screen.getByRole("button", { name: "He contactado" })).toBeInTheDocument();
     expect(screen.getByRole("alert")).toHaveTextContent("No se pudo marcar el aviso como atendido.");
