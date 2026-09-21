@@ -39,6 +39,14 @@ export interface GuardiaPanelProps {
    * tiene el rol y el `isOnCall`.
    */
   canOpenPersonSheet: boolean;
+  /**
+   * Rol `titular` (M2): el único que puede `PATCH
+   * /api/organizations/{id}/` (`entities/viewsets.py::update` exige
+   * `equipo`, y `'equipo': {'titular'}`). Sin él, los ajustes de guardia
+   * se pintan en solo lectura en vez de ofrecer un formulario que el
+   * backend rechazaría.
+   */
+  canManage: boolean;
 }
 
 const ACKNOWLEDGE_ERROR_KEYS: Record<AcknowledgeHelpRequestErrorKind, string> = {
@@ -182,7 +190,49 @@ function HelpRequestCard({
  * `components/people/AddPersonDialog.tsx`, y se guarda junto al teléfono
  * en el mismo `PATCH` (los dos campos van por la misma lista blanca
  * solo-titular, así que no tiene sentido separarlos en dos peticiones).
+ *
+ * **M2 de la revisión de rama**: este formulario solo se monta con
+ * `canManage` (rol `titular`). `PATCH /api/organizations/{id}/` exige
+ * `equipo`, que en `entities/permissions.py` es `{'titular'}`, así que
+ * todo el que no lo sea —moderador, y desde esta rama también la
+ * analista/referente/dinamizador que esté de guardia— solo se ganaba un
+ * «Solo el titular puede editar la ficha de la entidad.» después de
+ * intentarlo. Se esconde, no se deshabilita, igual que
+ * `ConfiguracionPanel` con la pestaña Equipo; el resto ve
+ * `GuardiaSettingsReadOnly`.
  */
+function GuardiaSettingsReadOnly({ orgId }: { orgId: number | string }) {
+  const t = useTranslations();
+  const organization = useOrganization(orgId);
+
+  if (organization.isError) {
+    return (
+      <Card title={t("entidad.guardia.settingsTitle")}>
+        <ErrorState
+          title={t("entidad.guardia.settingsError")}
+          description={t("entidad.guardia.settingsErrorDescription")}
+        />
+      </Card>
+    );
+  }
+  if (!organization.data) return null;
+
+  // Ni el teléfono ni la guardia se pueden resolver a un nombre sin el
+  // equipo (`GET .../members/` es solo-titular), y un id de cuenta no se
+  // pinta nunca: la vista de solo lectura se limita al teléfono, que sí
+  // llega en la ficha de la entidad.
+  return (
+    <Card title={t("entidad.guardia.settingsTitle")}>
+      <p className="text-sm text-text-base">
+        {organization.data.help_phone
+          ? t("entidad.guardia.helpPhoneValue", { phone: organization.data.help_phone })
+          : t("entidad.guardia.noHelpPhone")}
+      </p>
+      <p className="mt-2 text-sm text-text-secondary">{t("entidad.guardia.settingsOnlyTitular")}</p>
+    </Card>
+  );
+}
+
 function GuardiaSettings({ orgId }: { orgId: number | string }) {
   const t = useTranslations();
   const organization = useOrganization(orgId);
@@ -210,8 +260,23 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
   // `on_call_user` es el id de **cuenta** (`entities/models.py`:
   // `ForeignKey(AUTH_USER_MODEL)`, validado contra las membresías de la
   // entidad), así que el `value` de cada opción es `membership.user`.
+  const savedOnCall = organization.data.on_call_user;
+  // **M1 de la revisión de rama**: `members.delete()`
+  // (`entities/viewsets.py`) no limpia `on_call_user` — es una FK a
+  // `User` con `SET_NULL` solo al borrar la cuenta—, así que la guardia
+  // puede seguir apuntando a alguien que ya no tiene rol en la entidad.
+  // Con el equipo cargado y ese id fuera de la lista, el `<select>`
+  // controlado caía al primer elemento y enseñaba «Sin asignar» (una
+  // mentira: el backend le sigue enrutando los avisos) **y** «Guardar»
+  // reenviaba ese id, que `validate_on_call_user` rechaza con 400 —
+  // impidiendo incluso guardar solo el teléfono. Ahora el valor obsoleto
+  // no se reenvía (se manda `null`) y se dice en voz alta lo que pasa.
+  const staleOnCall =
+    savedOnCall != null && members.data !== undefined
+      ? !members.data.some((member) => member.user === savedOnCall)
+      : false;
   const currentOnCall =
-    onCall ?? (organization.data.on_call_user != null ? String(organization.data.on_call_user) : "");
+    onCall ?? (savedOnCall != null && !staleOnCall ? String(savedOnCall) : "");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -270,6 +335,11 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
           resolver el nombre de quien está de guardia — y el id crudo no
           se pinta nunca (invariante 1/9). Se dice qué pasa, que es lo que
           hace el resto del panel con una consulta auxiliar caída (B15). */}
+      {staleOnCall ? (
+        <p role="alert" className="mt-2 text-sm text-error">
+          {t("entidad.guardia.onCallStale")}
+        </p>
+      ) : null}
       {members.isError ? (
         <p role="alert" className="mt-2 text-sm text-text-secondary">
           {errorKindText(members.error, ORG_MEMBERS_ERROR_KEYS, t, "errors.orgMembers.desconocido")}
@@ -306,13 +376,13 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
  * (`canOpenPersonSheet`); si no, un badge «No pertenece a la entidad» o
  * el nombre como texto (ver `HelpRequestCard`).
  */
-export function GuardiaPanel({ orgId, slug, canOpenPersonSheet }: GuardiaPanelProps) {
+export function GuardiaPanel({ orgId, slug, canOpenPersonSheet, canManage }: GuardiaPanelProps) {
   const t = useTranslations();
   const requests = usePendingHelpRequests(orgId);
 
   return (
     <div className="flex flex-col gap-4">
-      <GuardiaSettings orgId={orgId} />
+      {canManage ? <GuardiaSettings orgId={orgId} /> : <GuardiaSettingsReadOnly orgId={orgId} />}
 
       <section aria-labelledby="avisos-heading">
         <h2 id="avisos-heading" className="mb-2 text-lg font-semibold text-text-base">

@@ -35,12 +35,6 @@ describe("useCommunityInviteCode", () => {
     expect(result.current.data).toBe("9f2c-1111");
   });
 
-  it("no pide nada con `enabled: false` (comunidad no privada o sin gestión)", () => {
-    renderHook(() => useCommunityInviteCode("c1", { enabled: false }), { wrapper });
-
-    expect(apiFetchMock).not.toHaveBeenCalled();
-  });
-
   it("403 → `sin_permiso`, con el `error` del backend tal cual", async () => {
     // El endpoint responde `{"error": …}`, no `{"detail": …}`.
     apiFetchMock.mockRejectedValueOnce(

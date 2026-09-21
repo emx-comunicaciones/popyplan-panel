@@ -823,10 +823,14 @@
       "settingsError": "Couldn't load the on-call settings",
       "settingsErrorDescription": "Couldn't load the entity record.",
       "helpPhoneLabel": "Help phone number",
+      "helpPhoneValue": "Help phone number: {phone}",
+      "noHelpPhone": "No help phone number",
+      "settingsOnlyTitular": "Only the titleholder can change the help phone number and the on-call person.",
       "onCallLabel": "On-call person",
       "onCallUnassigned": "Unassigned",
       "onCallLoading": "Loading the entity team…",
       "onCallOnlyTitular": "Only the titleholder can see and change the on-call person.",
+      "onCallStale": "The person who was on call no longer has a role in this entity. Save to leave it unassigned, or pick someone else.",
       "saved": "Saved.",
       "pendingHeading": "Pending alerts",
       "pendingNoAccessDescription": "You don't have access to the help alerts.",
@@ -1462,7 +1466,7 @@
         "summary": "Your entity's “I'm having a bad day” alerts and the settings for who's on call. Popyplan does not store phone numbers: contact happens through the app chat or through the referent.",
         "actions": [
           "Handle an alert",
-          "Set the help phone number and see who's on call",
+          "Set the help phone number and choose the on-call person (titleholder only)",
           "See whether someone from the person's support network has already stepped in"
         ],
         "audience": "Owner, moderator and whoever is on call."

@@ -3147,6 +3147,29 @@ que calcula `guardia/page.tsx` con `entidadMenuFor(role, { isOnCall
 `<a>` (y sin el badge «No pertenece a la entidad», que es otro caso
 distinto).
 
+En la misma ronda, los cinco menores de esa revisión: **M1**, una guardia
+que ya no está en el equipo (`membership.delete()` **no** limpia
+`Organization.on_call_user`, que es una FK a `User` con `SET_NULL` solo al
+borrar la cuenta) dejaba el `<select>` controlado cayendo al primer
+elemento —«Sin asignar», una mentira: el backend le sigue enrutando los
+avisos— **y** «Guardar» reenviaba ese id, que `validate_on_call_user`
+rechaza con 400, impidiendo incluso guardar solo el teléfono; ahora, con
+el equipo cargado y ese id fuera de la lista, se manda `on_call_user:
+null` y se pinta un `role="alert"` diciendo qué ha pasado. **M2**, el
+formulario de ajustes de guardia solo se monta con rol `titular` (`PATCH
+/api/organizations/{id}/` exige `equipo`, que es solo-titular), y el
+resto —moderador, y la analista/referente/dinamizador que esté de
+guardia— ve una tarjeta de **solo lectura** con el teléfono y quién puede
+cambiarlo; se esconde, no se deshabilita, igual que `ConfiguracionPanel`
+con la pestaña Equipo, y para ese camino ni se pide el equipo (sería un
+403 seguro). **M3**, `help.entidad.guardia.actions` decía «ver quién está
+de guardia» cuando ya se puede **elegir** (cuatro catálogos). **M4**,
+`SupportResponses` formatea su fecha con `activeLanguage()`, la misma
+fuente que la fecha de creación que se pinta justo encima en la misma
+tarjeta. **M5**, `useCommunityInviteCode` pierde la opción `enabled` que
+ningún sitio pasaba (el componente se monta condicionalmente) y su
+docstring deja de describirla.
+
 - **Código de invitación de una comunidad privada (B-I8)**
   (`hooks/useCommunityInviteCode.ts` nuevo, `COMMUNITIES.INVITE_CODE`,
   `ComunidadesPanel.tsx::InviteCode`): el panel ofrecía crear comunidades
@@ -3281,7 +3304,9 @@ en CI lo gate el job `e2e`).
   cuenta para la medición, `hooks/useCommunityInviteCode.ts`, al 100 % de
   líneas; `components/help/SupportResponses.tsx` es `.tsx` de componente
   y se prueba por comportamiento desde `GuardiaPanel.test.tsx` y
-  `AyudaPendienteList.test.tsx`). El umbral sigue en 99,7.
+  `AyudaPendienteList.test.tsx`). Tras el fix round 1 de esa rama (I1 y
+  M1-M5 de `FIX-panel-review.md`): **99,82 %** (2799/2804 líneas, **2047**
+  tests, 201 ficheros — ningún fichero nuevo). El umbral sigue en 99,7.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la

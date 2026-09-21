@@ -57,6 +57,10 @@ export default async function EntidadGuardiaPage({
         // pero no tienen Personas; sin esto, el nombre de cada aviso les
         // enlazaba a un «Sin acceso» a página completa.
         canOpenPersonSheet={menu.includes("personas")}
+        // M2: `PATCH /api/organizations/{id}/` exige `equipo`, que el
+        // backend concede solo al titular; el resto veía un formulario
+        // que siempre terminaba en 403.
+        canManage={membership.role === "titular"}
       />
     </div>
   );

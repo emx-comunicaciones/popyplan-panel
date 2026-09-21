@@ -823,10 +823,14 @@
       "settingsError": "No s'han pogut carregar els ajustos de guàrdia",
       "settingsErrorDescription": "No s'ha pogut carregar la fitxa de l'entitat.",
       "helpPhoneLabel": "Telèfon d'ajuda",
+      "helpPhoneValue": "Telèfon d'ajuda: {phone}",
+      "noHelpPhone": "Sense telèfon d'ajuda",
+      "settingsOnlyTitular": "Només el titular pot canviar el telèfon d'ajuda i la persona de guàrdia.",
       "onCallLabel": "Persona de guàrdia",
       "onCallUnassigned": "Sense assignar",
       "onCallLoading": "Carregant l'equip de l'entitat…",
       "onCallOnlyTitular": "Només el titular pot veure i canviar la persona de guàrdia.",
+      "onCallStale": "La persona que estava de guàrdia ja no té cap rol en aquesta entitat. Desa per deixar-la sense assignar, o tria'n una altra.",
       "saved": "Desat.",
       "pendingHeading": "Avisos pendents",
       "pendingNoAccessDescription": "No tens accés als avisos d'ajuda.",
@@ -1462,7 +1466,7 @@
         "summary": "Els avisos «avui ho porto malament» de les persones de la teva entitat i la configuració de qui està de guàrdia. Popyplan no guarda telèfons: el contacte és pel xat de l'app o a través del referent.",
         "actions": [
           "Atendre un avís",
-          "Fixar el telèfon d'ajuda i veure qui està de guàrdia",
+          "Fixar el telèfon d'ajuda i triar la persona de guàrdia (només el titular)",
           "Veure si algú de la xarxa de suport de la persona ja se n'ha fet càrrec"
         ],
         "audience": "Titular, moderador i la persona de guàrdia."

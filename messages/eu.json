@@ -823,10 +823,14 @@
       "settingsError": "Ezin izan dira txandaren ezarpenak kargatu",
       "settingsErrorDescription": "Ezin izan da erakundearen fitxa kargatu.",
       "helpPhoneLabel": "Laguntza-telefonoa",
+      "helpPhoneValue": "Laguntza-telefonoa: {phone}",
+      "noHelpPhone": "Laguntza-telefonorik ez",
+      "settingsOnlyTitular": "Titularrak bakarrik alda ditzake laguntza-telefonoa eta txandako pertsona.",
       "onCallLabel": "Txandako pertsona",
       "onCallUnassigned": "Esleitu gabe",
       "onCallLoading": "Erakundearen taldea kargatzen…",
       "onCallOnlyTitular": "Titularrak bakarrik ikus eta alda dezake txandako pertsona.",
+      "onCallStale": "Txandan zegoen pertsonak jada ez du rolik erakunde honetan. Gorde esleitu gabe uzteko, edo hautatu beste bat.",
       "saved": "Gorde da.",
       "pendingHeading": "Abisu zain daudenak",
       "pendingNoAccessDescription": "Ez duzu sarbiderik laguntza-abisuetan.",
@@ -1462,7 +1466,7 @@
         "summary": "Zure erakundeko pertsonen «gaur txarto nago» abisuak eta txandan nor dagoen konfiguratzeko atala. Popyplanek ez ditu telefonoak gordetzen: kontaktua aplikazioaren txataren bidez edo erreferentearen bidez da.",
         "actions": [
           "Abisu bati erantzun",
-          "Laguntza-telefonoa ezarri eta nor dagoen txandan ikusi",
+          "Laguntza-telefonoa ezarri eta txandako pertsona hautatu (titularrak bakarrik)",
           "Pertsonaren laguntza-sareko norbait dagoeneko arduratu den ikusi"
         ],
         "audience": "Titularra, moderatzailea eta txandako pertsona."

@@ -219,6 +219,9 @@ describe("EntidadGuardiaPage", () => {
   });
 
   it("el 403 solo-titular del equipo no rompe la pantalla: dice quién puede cambiarla", async () => {
+    // Defensivo: con M2 el formulario solo se monta para `titular`, pero
+    // el rol puede cambiar entre el render del Server Component y la
+    // petición del cliente.
     const { OrgMembersError } = await import("@/hooks/useOrgMembers");
     usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
     useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
@@ -234,7 +237,7 @@ describe("EntidadGuardiaPage", () => {
     });
     useUpdateOrganizationMock.mockReturnValue(idleMutation());
 
-    await renderPage("moderador");
+    await renderPage("titular");
 
     expect(screen.queryByLabelText("Persona de guardia")).not.toBeInTheDocument();
     expect(
@@ -244,6 +247,111 @@ describe("EntidadGuardiaPage", () => {
     expect(screen.queryByText(/11/)).not.toBeInTheDocument();
     // El teléfono de ayuda se sigue pudiendo guardar.
     expect(screen.getByLabelText("Teléfono de ayuda")).toBeInTheDocument();
+  });
+
+  it("un moderador ve los ajustes en solo lectura, sin formulario (M2)", async () => {
+    // `PATCH /api/organizations/{id}/` exige `equipo`, que el backend
+    // concede solo al titular: ofrecer el formulario era garantizar un
+    // 403 después de rellenarlo.
+    usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
+    useOrganizationMock.mockReturnValue({
+      data: buildOrganization({ help_phone: "+34900123456", on_call_user: 11 }),
+      isError: false,
+      error: null,
+    });
+    useUpdateOrganizationMock.mockReturnValue(idleMutation());
+
+    await renderPage("moderador");
+
+    expect(screen.getByText("Teléfono de ayuda: +34900123456")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Solo el titular puede cambiar el teléfono de ayuda y la persona de guardia.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText("Teléfono de ayuda")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Guardar" })).not.toBeInTheDocument();
+    // Ni el equipo se pide (sería un 403 seguro) ni se pinta el id.
+    expect(useOrgMembersMock).not.toHaveBeenCalled();
+    expect(screen.queryByText(/11/)).not.toBeInTheDocument();
+  });
+
+  it("sin teléfono de ayuda, la vista de solo lectura lo dice (M2)", async () => {
+    usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
+    useOrganizationMock.mockReturnValue({
+      data: buildOrganization({ help_phone: "" }),
+      isError: false,
+      error: null,
+    });
+    useUpdateOrganizationMock.mockReturnValue(idleMutation());
+
+    await renderPage("moderador");
+
+    expect(screen.getByText("Sin teléfono de ayuda")).toBeInTheDocument();
+  });
+
+  it("una guardia que ya no está en el equipo no se reenvía y se avisa (M1)", async () => {
+    // `membership.delete()` no limpia `on_call_user`: el `<select>`
+    // enseñaba «Sin asignar» (mentira) y «Guardar» reenviaba el id
+    // obsoleto, que `validate_on_call_user` rechaza con 400 — impidiendo
+    // guardar ni siquiera el teléfono.
+    usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
+    useOrganizationMock.mockReturnValue({
+      data: buildOrganization({ help_phone: "+34900123456", on_call_user: 99 }),
+      isError: false,
+      error: null,
+    });
+    useOrgMembersMock.mockReturnValue({
+      data: [buildOrgMembershipFull({ id: 1, user: 11, role: "titular", public_name: "Ana" })],
+      isError: false,
+      error: null,
+    });
+    const updateMutate = vi.fn();
+    useUpdateOrganizationMock.mockReturnValue({
+      mutate: updateMutate,
+      isPending: false,
+      isError: false,
+      isSuccess: false,
+    });
+    const user = userEvent.setup();
+
+    await renderPage("titular");
+
+    expect(screen.getByLabelText("Persona de guardia")).toHaveValue("");
+    expect(
+      screen.getByText(
+        "La persona que estaba de guardia ya no tiene rol en esta entidad. Guarda para dejarla sin asignar, o elige a otra.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/99/)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(updateMutate).toHaveBeenCalledWith({ help_phone: "+34900123456", on_call_user: null });
+  });
+
+  it("una guardia que sigue en el equipo no dispara el aviso de obsoleta", async () => {
+    usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
+    useOrganizationMock.mockReturnValue({
+      data: buildOrganization({ on_call_user: 11 }),
+      isError: false,
+      error: null,
+    });
+    useOrgMembersMock.mockReturnValue({
+      data: [buildOrgMembershipFull({ id: 1, user: 11, role: "titular", public_name: "Ana" })],
+      isError: false,
+      error: null,
+    });
+    useUpdateOrganizationMock.mockReturnValue(idleMutation());
+
+    await renderPage("titular");
+
+    expect(screen.getByLabelText("Persona de guardia")).toHaveValue("11");
+    expect(screen.queryByText(/ya no tiene rol en esta entidad/)).not.toBeInTheDocument();
   });
 
   it("sin avisos muestra el estado vacío", async () => {

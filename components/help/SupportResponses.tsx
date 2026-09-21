@@ -24,10 +24,10 @@
  * encargado todavía: un hueco en blanco se lee como «no hay red», que es
  * un dato distinto.
  */
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import type { SupportResponse } from "@/lib/api/types";
-import { localeForUseLocale } from "@/lib/i18n/locale";
+import { activeLanguage, localeFor } from "@/lib/i18n/locale";
 
 export interface SupportResponsesProps {
   responses: readonly SupportResponse[];
@@ -35,7 +35,11 @@ export interface SupportResponsesProps {
 
 export function SupportResponses({ responses }: SupportResponsesProps) {
   const t = useTranslations("entidad.guardia");
-  const locale = useLocale();
+  // M4 de la revisión de rama: misma fuente de idioma que la fecha de
+  // creación del aviso, que se pinta justo encima
+  // (`GuardiaPanel.tsx::formatDateTime` usa `activeLanguage()`). Los dos
+  // caminos resuelven al mismo idioma, pero conviven en la misma tarjeta
+  // y tener dos era pedir que se desincronizaran.
 
   if (responses.length === 0) {
     return <p className="text-sm text-text-secondary">{t("supportResponsesEmpty")}</p>;
@@ -47,7 +51,7 @@ export function SupportResponses({ responses }: SupportResponsesProps) {
         <li key={`${response.supporter.id}-${response.responded_at}`} className="text-sm text-success">
           {t("supportResponse", {
             name: response.supporter.public_name,
-            when: new Date(response.responded_at).toLocaleString(localeForUseLocale(locale), {
+            when: new Date(response.responded_at).toLocaleString(localeFor(activeLanguage()), {
               dateStyle: "short",
               timeStyle: "short",
             }),

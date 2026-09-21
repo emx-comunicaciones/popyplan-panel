@@ -18,9 +18,13 @@
  * rechazos; `lib/api/drfError.ts::detailOf` lee las dos formas, así que
  * el mensaje del backend llega tal cual cuando lo trae.
  *
- * Se pide solo con el panel de la comunidad privada abierto (`enabled`),
- * mismo patrón que `hooks/useCommunity.ts`: sin eso, cada comunidad
- * seleccionada dispararía una petición que casi siempre sería un 400.
+ * **No tiene opción `enabled`** (M5 de la revisión de rama): quien lo
+ * consume (`ComunidadesPanel.tsx::InviteCode`) monta el componente solo
+ * con `visibility === 'private'` y `canManage`, que son justo las dos
+ * condiciones del backend, así que el hook nunca llega a ejecutarse en
+ * un caso que fuera a dar 400 o 403. Una opción que ningún sitio pasa
+ * sería superficie muerta, y el docstring que la describía contaba algo
+ * que no ocurría.
  */
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
@@ -54,7 +58,6 @@ export interface CommunityInviteCodeResponse {
 
 export function useCommunityInviteCode(
   communityId: string,
-  options: { enabled?: boolean } = {},
 ): UseQueryResult<string, CommunityInviteCodeError> {
   return useQuery<string, CommunityInviteCodeError>({
     queryKey: ["panel-community-invite-code", communityId],
@@ -87,6 +90,5 @@ export function useCommunityInviteCode(
         );
       }
     },
-    enabled: options.enabled ?? true,
   });
 }

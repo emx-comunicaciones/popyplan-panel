@@ -823,10 +823,14 @@
       "settingsError": "No se pudieron cargar los ajustes de guardia",
       "settingsErrorDescription": "No se pudo cargar la ficha de la entidad.",
       "helpPhoneLabel": "Teléfono de ayuda",
+      "helpPhoneValue": "Teléfono de ayuda: {phone}",
+      "noHelpPhone": "Sin teléfono de ayuda",
+      "settingsOnlyTitular": "Solo el titular puede cambiar el teléfono de ayuda y la persona de guardia.",
       "onCallLabel": "Persona de guardia",
       "onCallUnassigned": "Sin asignar",
       "onCallLoading": "Cargando el equipo de la entidad…",
       "onCallOnlyTitular": "Solo el titular puede ver y cambiar la persona de guardia.",
+      "onCallStale": "La persona que estaba de guardia ya no tiene rol en esta entidad. Guarda para dejarla sin asignar, o elige a otra.",
       "saved": "Guardado.",
       "pendingHeading": "Avisos pendientes",
       "pendingNoAccessDescription": "No tienes acceso a los avisos de ayuda.",
@@ -1462,7 +1466,7 @@
         "summary": "Los avisos «hoy lo llevo mal» de las personas de tu entidad y la configuración de quién está de guardia. Popyplan no guarda teléfonos: el contacto es por el chat de la app o a través del referente.",
         "actions": [
           "Atender un aviso",
-          "Fijar el teléfono de ayuda y ver quién está de guardia",
+          "Fijar el teléfono de ayuda y elegir la persona de guardia (solo el titular)",
           "Ver si alguien de la red de apoyo de la persona ya se ha hecho cargo"
         ],
         "audience": "Titular, moderador y la persona de guardia."
