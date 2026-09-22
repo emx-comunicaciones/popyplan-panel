@@ -522,7 +522,42 @@
       "colResponsible": "Responsable",
       "colRegistered": "Inscritos",
       "colAttended": "Asistió",
-      "colNoShow": "No asistió"
+      "colNoShow": "No asistió",
+      "edit": "Editar",
+      "newActivity": "Nueva actividad",
+      "editActivity": "Editar actividad",
+      "cancelActivity": "Cancelar actividad",
+      "colActions": "Acciones",
+      "cancelConfirmTitle": "Cancelar actividad",
+      "cancelConfirmDescription": "¿Cancelar «{title}»? Se avisará a las personas inscritas y en lista de espera."
+    },
+    "actividadForm": {
+      "titleLabel": "Título",
+      "descriptionLabel": "Descripción",
+      "startsAtLabel": "Empieza",
+      "endsAtLabel": "Termina",
+      "capacityLabel": "Aforo",
+      "audienceLabel": "Quién se puede apuntar",
+      "audienceAnyone": "Abierta a cualquiera",
+      "audienceCommunity": "Solo una comunidad",
+      "audienceOrganization": "Solo la entidad",
+      "communityLabel": "Comunidad",
+      "communityNone": "Sin comunidad",
+      "communitiesError": "No se pudieron cargar las comunidades.",
+      "audienceLockedHint": "La audiencia y la comunidad no se pueden cambiar después de crear la actividad.",
+      "placeLabel": "Municipio",
+      "placeSearchLabel": "Buscar un municipio",
+      "placeNone": "Sin municipio",
+      "placeOption": "{name} ({province})",
+      "placeSearchError": "No se pudo buscar el municipio.",
+      "loading": "Cargando actividad…",
+      "loadError": "No se pudo cargar la actividad",
+      "errors": {
+        "startsAtPast": "La actividad tiene que empezar en el futuro.",
+        "endsAtBeforeStartsAt": "La actividad no puede terminar antes de empezar.",
+        "capacityTooLow": "El aforo mínimo es de una plaza.",
+        "communityRequired": "Una actividad solo para la comunidad necesita comunidad."
+      }
     },
     "asistencia": {
       "heading": "Asistencia",
@@ -1270,6 +1305,18 @@
       "sinPermiso": "No tienes permiso para ver el código de invitación.",
       "noPrivada": "Solo las comunidades privadas tienen código de invitación.",
       "desconocido": "No se pudo cargar el código de invitación."
+    },
+    "event": {
+      "sinAcceso": "No tienes acceso a esta actividad.",
+      "desconocido": "No se pudo cargar la actividad."
+    },
+    "eventMutation": {
+      "invalido": "Revisa los datos: alguno no es válido.",
+      "sinPermiso": "No tienes permiso para gestionar esta actividad.",
+      "noEncontrado": "Esta actividad no existe.",
+      "desconocidoCrear": "No se pudo crear la actividad.",
+      "desconocidoGuardar": "No se pudo guardar la actividad.",
+      "desconocidoCancelar": "No se pudo cancelar la actividad."
     }
   },
   "reports": {

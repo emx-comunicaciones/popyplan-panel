@@ -522,7 +522,42 @@
       "colResponsible": "Arduraduna",
       "colRegistered": "Izena emanda",
       "colAttended": "Joan da",
-      "colNoShow": "Ez da joan"
+      "colNoShow": "Ez da joan",
+      "edit": "Editatu",
+      "newActivity": "Jarduera berria",
+      "editActivity": "Jarduera editatu",
+      "cancelActivity": "Jarduera utzi",
+      "colActions": "Ekintzak",
+      "cancelConfirmTitle": "Jarduera utzi",
+      "cancelConfirmDescription": "«{title}» utzi nahi duzu? Izena emandako eta itxaron zerrendan dauden pertsonei jakinaraziko zaie."
+    },
+    "actividadForm": {
+      "titleLabel": "Izenburua",
+      "descriptionLabel": "Deskribapena",
+      "startsAtLabel": "Hasiera",
+      "endsAtLabel": "Amaiera",
+      "capacityLabel": "Edukiera",
+      "audienceLabel": "Nork eman dezakeen izena",
+      "audienceAnyone": "Edonorentzat irekita",
+      "audienceCommunity": "Komunitate baterako soilik",
+      "audienceOrganization": "Erakundearentzat soilik",
+      "communityLabel": "Komunitatea",
+      "communityNone": "Komunitaterik ez",
+      "communitiesError": "Ezin izan dira komunitateak kargatu.",
+      "audienceLockedHint": "Audientzia eta komunitatea ezin dira aldatu jarduera sortu ondoren.",
+      "placeLabel": "Udalerria",
+      "placeSearchLabel": "Bilatu udalerri bat",
+      "placeNone": "Udalerririk ez",
+      "placeOption": "{name} ({province})",
+      "placeSearchError": "Ezin izan da udalerria bilatu.",
+      "loading": "Jarduera kargatzen…",
+      "loadError": "Ezin izan da jarduera kargatu",
+      "errors": {
+        "startsAtPast": "Jarduerak etorkizunean hasi behar du.",
+        "endsAtBeforeStartsAt": "Jarduera ezin da hasi baino lehen amaitu.",
+        "capacityTooLow": "Gutxieneko edukiera plaza bat da.",
+        "communityRequired": "Komunitaterako soilik den jarduerak komunitatea behar du."
+      }
     },
     "asistencia": {
       "heading": "Bertaratzea",
@@ -1270,6 +1305,18 @@
       "sinPermiso": "Ez duzu baimenik gonbidapen-kodea ikusteko.",
       "noPrivada": "Komunitate pribatuek bakarrik dute gonbidapen-koderik.",
       "desconocido": "Ezin izan da gonbidapen-kodea kargatu."
+    },
+    "event": {
+      "sinAcceso": "Ez duzu jarduera honetarako sarbiderik.",
+      "desconocido": "Ezin izan da jarduera kargatu."
+    },
+    "eventMutation": {
+      "invalido": "Egiaztatu datuak: baten bat ez da baliozkoa.",
+      "sinPermiso": "Ez duzu baimenik jarduera hau kudeatzeko.",
+      "noEncontrado": "Jarduera hau ez dago.",
+      "desconocidoCrear": "Ezin izan da jarduera sortu.",
+      "desconocidoGuardar": "Ezin izan da jarduera gorde.",
+      "desconocidoCancelar": "Ezin izan da jarduera utzi."
     }
   },
   "reports": {

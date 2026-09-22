@@ -522,7 +522,42 @@
       "colResponsible": "Responsable",
       "colRegistered": "Inscrits",
       "colAttended": "Ha assistit",
-      "colNoShow": "No ha assistit"
+      "colNoShow": "No ha assistit",
+      "edit": "Edita",
+      "newActivity": "Activitat nova",
+      "editActivity": "Edita l'activitat",
+      "cancelActivity": "Cancel·la l'activitat",
+      "colActions": "Accions",
+      "cancelConfirmTitle": "Cancel·la l'activitat",
+      "cancelConfirmDescription": "Vols cancel·lar «{title}»? S'avisarà les persones inscrites i en llista d'espera."
+    },
+    "actividadForm": {
+      "titleLabel": "Títol",
+      "descriptionLabel": "Descripció",
+      "startsAtLabel": "Comença",
+      "endsAtLabel": "Acaba",
+      "capacityLabel": "Aforament",
+      "audienceLabel": "Qui es pot inscriure",
+      "audienceAnyone": "Oberta a qualsevol",
+      "audienceCommunity": "Només una comunitat",
+      "audienceOrganization": "Només l'entitat",
+      "communityLabel": "Comunitat",
+      "communityNone": "Sense comunitat",
+      "communitiesError": "No s'han pogut carregar les comunitats.",
+      "audienceLockedHint": "L'audiència i la comunitat no es poden canviar després de crear l'activitat.",
+      "placeLabel": "Municipi",
+      "placeSearchLabel": "Cerca un municipi",
+      "placeNone": "Sense municipi",
+      "placeOption": "{name} ({province})",
+      "placeSearchError": "No s'ha pogut cercar el municipi.",
+      "loading": "Carregant activitat…",
+      "loadError": "No s'ha pogut carregar l'activitat",
+      "errors": {
+        "startsAtPast": "L'activitat ha de començar en el futur.",
+        "endsAtBeforeStartsAt": "L'activitat no pot acabar abans de començar.",
+        "capacityTooLow": "L'aforament mínim és d'una plaça.",
+        "communityRequired": "Una activitat només per a la comunitat necessita una comunitat."
+      }
     },
     "asistencia": {
       "heading": "Assistència",
@@ -1270,6 +1305,18 @@
       "sinPermiso": "No tens permís per veure el codi d'invitació.",
       "noPrivada": "Només les comunitats privades tenen codi d'invitació.",
       "desconocido": "No s'ha pogut carregar el codi d'invitació."
+    },
+    "event": {
+      "sinAcceso": "No tens accés a aquesta activitat.",
+      "desconocido": "No s'ha pogut carregar l'activitat."
+    },
+    "eventMutation": {
+      "invalido": "Revisa les dades: alguna no és vàlida.",
+      "sinPermiso": "No tens permís per gestionar aquesta activitat.",
+      "noEncontrado": "Aquesta activitat no existeix.",
+      "desconocidoCrear": "No s'ha pogut crear l'activitat.",
+      "desconocidoGuardar": "No s'ha pogut desar l'activitat.",
+      "desconocidoCancelar": "No s'ha pogut cancel·lar l'activitat."
     }
   },
   "reports": {

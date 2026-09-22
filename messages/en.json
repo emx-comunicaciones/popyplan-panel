@@ -522,7 +522,42 @@
       "colResponsible": "Organizer",
       "colRegistered": "Registered",
       "colAttended": "Attended",
-      "colNoShow": "No-show"
+      "colNoShow": "No-show",
+      "edit": "Edit",
+      "newActivity": "New activity",
+      "editActivity": "Edit activity",
+      "cancelActivity": "Cancel activity",
+      "colActions": "Actions",
+      "cancelConfirmTitle": "Cancel activity",
+      "cancelConfirmDescription": "Cancel “{title}”? Registered and waitlisted people will be notified."
+    },
+    "actividadForm": {
+      "titleLabel": "Title",
+      "descriptionLabel": "Description",
+      "startsAtLabel": "Starts",
+      "endsAtLabel": "Ends",
+      "capacityLabel": "Capacity",
+      "audienceLabel": "Who can sign up",
+      "audienceAnyone": "Open to anyone",
+      "audienceCommunity": "Only a community",
+      "audienceOrganization": "Only the entity",
+      "communityLabel": "Community",
+      "communityNone": "No community",
+      "communitiesError": "Couldn't load the communities.",
+      "audienceLockedHint": "Audience and community can't be changed after the activity is created.",
+      "placeLabel": "Municipality",
+      "placeSearchLabel": "Search a municipality",
+      "placeNone": "No municipality",
+      "placeOption": "{name} ({province})",
+      "placeSearchError": "Couldn't search the municipality.",
+      "loading": "Loading activity…",
+      "loadError": "Couldn't load the activity",
+      "errors": {
+        "startsAtPast": "The activity must start in the future.",
+        "endsAtBeforeStartsAt": "The activity cannot end before it starts.",
+        "capacityTooLow": "The minimum capacity is one spot.",
+        "communityRequired": "An activity only for the community needs a community."
+      }
     },
     "asistencia": {
       "heading": "Attendance",
@@ -1270,6 +1305,18 @@
       "sinPermiso": "You don't have permission to see the invitation code.",
       "noPrivada": "Only private communities have an invitation code.",
       "desconocido": "Couldn't load the invitation code."
+    },
+    "event": {
+      "sinAcceso": "You don't have access to this activity.",
+      "desconocido": "Couldn't load the activity."
+    },
+    "eventMutation": {
+      "invalido": "Check the details: something isn't valid.",
+      "sinPermiso": "You don't have permission to manage this activity.",
+      "noEncontrado": "This activity doesn't exist.",
+      "desconocidoCrear": "Couldn't create the activity.",
+      "desconocidoGuardar": "Couldn't save the activity.",
+      "desconocidoCancelar": "Couldn't cancel the activity."
     }
   },
   "reports": {
