@@ -3189,6 +3189,129 @@ docstring deja de describirla.
   pedía — es una acción destructiva con su propio diálogo y no estaba en
   el plan de arreglos de esta rama.
 
+## Crear/editar/cancelar actividades desde el panel (2026-09-23)
+
+Encargo del propietario: «una asociación tiene que poder crear sus
+actividades desde el panel, no solo desde el móvil». `app/entidad/[slug]/
+actividades/` gana alta, edición y cancelación; reutiliza la API general
+de `/api/events/` (`events/viewsets.py::EventViewSet`) — no hay (ni hace
+falta) una ruta de `panel/` para escribir, solo para leer (`PANEL.EVENTS`,
+`hooks/useEntityEvents.ts`, sin cambios).
+
+- **Permiso**: `publicar_actividades` (`entities/permissions.py`) —
+  titular, moderador, dinamizador y referente; **nunca** analista (solo
+  lectura). `app/entidad/[slug]/actividades/page.tsx::
+  ENTITY_EVENT_MANAGE_ROLES` lo calcula en el Server Component y lo pasa
+  como `canManage` a `ActividadesTable` (mismo patrón que
+  `canOpenAttendance`); `asistencia/page.tsx` reutiliza la misma tabla
+  solo como selector de actividad y pasa siempre `canManage={false}` —
+  gestionar actividades no es su propósito ahí.
+- **Toda actividad creada desde el panel nace sellada por la entidad**
+  (`owner_org: orgId`, invariante 2): el formulario no ofrece ese campo,
+  lo añade `hooks/useEventMutations.ts::useCreateEvent` a partir del
+  `orgId` con el que se instancia el hook. `audience` es
+  abierta/comunidad/solo-entidad (`anyone`/`community`/`organization`);
+  con `community` solo viaja si `audience === 'community'` (mandarlo con
+  otra audiencia validaría de más, `events/services.py::create_event`) y
+  con `organization` basta el sello ya presente — no hace falta ningún
+  campo adicional (`create_event` exige `owner_org` para esa audiencia,
+  que siempre está).
+- **Edición, con el espacio bloqueado**: `EventUpdateSerializer` (backend)
+  excluye `audience`/`community`/`owner_org`/`recurrence_rule` — cambiar
+  el espacio de una actividad a mitad de camino dejaría dentro a gente
+  que ya no puede estar (se cancela y se crea otra). `lib/api/
+  types.ts::EventUpdateFields` los excluye por tipo (`Omit`, error de
+  compilación si alguien intenta mandarlos en un `PATCH`);
+  `ActividadForm.tsx` los pinta de solo lectura al editar.
+  **`starts_at` solo viaja si cambió**: el backend lo valida como futuro
+  también al editar (`EventCreateSerializer.validate_starts_at`, heredado
+  por `EventUpdateSerializer`), así que reenviar el valor sin tocar de
+  una actividad ya empezada devolvería un 400 que no tiene nada que ver
+  con lo que la persona quería corregir (mismo criterio que
+  `popyplan-mobile/app/_containers/events/NewEvent/
+  createEventPayload.ts::buildUpdateEventPayload`, solo lectura, que
+  inspiró este patrón: ahí compara por minuto con `sameMinute`, aquí
+  basta comparar el ISO reconstruido porque el formulario no rehidrata
+  segundos). Sin este cuidado, corregir una errata del título de una
+  actividad de esta mañana habría dado el mismo 400 que ya documentó la
+  auditoría de la app.
+- **`hooks/useEventMutations.ts`** (`useCreateEvent`/`useUpdateEvent`/
+  `useCancelEvent`, 100 % líneas): `POST/PATCH /api/events/`,
+  `POST .../cancel/`. Tres `kind` de error, no cuatro como Programas —
+  aquí no hay un 409 de transición de estado (cancelar o editar una
+  actividad ya cancelada/celebrada no está bloqueado en
+  `events/services.py`): `invalido` (400), `sin_permiso` (403, no eres
+  organizador ni tienes `publicar_actividades` en la entidad que sella la
+  actividad —`events/permissions.py::IsOrganizerOrReadOnly`—) y
+  `no_encontrado` (404). El mensaje del backend viaja literal cuando lo
+  trae (`detailOf`), mismo patrón que `useProgramMutations.ts`. Las tres
+  invalidan `["panel-entity-events", orgId]` (sin clave aparte para el
+  Inicio de la entidad: `useEntityHome.ts` ya compone sus «actividades de
+  hoy» con `useEntityEvents`, así que invalidar ese prefijo basta).
+- **`hooks/useEvent.ts`** (lectura, `GET /api/events/{id}/`): `
+  EntityEventRow` (la fila del listado, `hooks/useEntityEvents.ts`) no
+  trae `description`/`ends_at`/`latitude`/`longitude`/`place`, así que
+  editar necesita el detalle completo antes de poder prellenar el
+  formulario — `components/entidad/ActividadForm.tsx` resuelve esa carga
+  (estado «cargando»/`ErrorState`/formulario) y delega el formulario real
+  en un componente interno que solo se monta, con `key={editing}` (mismo
+  remedio que el hallazgo A3 de `ResourceForm.tsx`), cuando el detalle ya
+  llegó.
+- **Coordenadas y municipio**: el backend deriva el municipio de la
+  actividad a partir de `latitude`/`longitude` en el propio
+  `Event.save()` (`places/services.py::derive_place`) — el panel nunca
+  manda un código INE directamente, solo las coordenadas del municipio
+  elegido. El picker de `ActividadForm.tsx` reutiliza `hooks/
+  usePlaces.ts::useSearchPlaces` (no `components/plataforma/
+  SedeSelector.tsx`, que es un componente entero con su propio rótulo
+  «Sede» — aquí basta la búsqueda con `useDebouncedValue`, sin las partes
+  específicas de sede obligatoria de plataforma) y guarda en estado tanto
+  el código INE como la latitud/longitud de `PlaceRow`, para no tener que
+  resolverlas de nuevo al enviar. Al editar, el municipio ya guardado se
+  lee directamente de `EventDetail.place`/`latitude`/`longitude` (sin una
+  consulta adicional tipo `usePlacesByIne`: el detalle ya trae nombre,
+  provincia y coordenadas). `lib/events/coords.ts::formatCoordinateForApi`
+  formatea el número a la cadena de 6 decimales que espera el
+  `DecimalField` del backend (mismo algoritmo, reimplementado, que
+  `popyplan-mobile/app/_utils/coords.ts`, que el panel no puede importar
+  al no compartir paquete).
+- **`lib/events/validation.ts`**: mensajes de validación en cliente
+  copiados letra por letra del `.po` en español del backend
+  (`~/Code/popyplan/locale/es/LC_MESSAGES/django.po`) para que coincidan
+  si de todos modos se llega a pedir: «La actividad tiene que empezar en
+  el futuro.» (`starts_at` futuro, y solo si cambió al editar — ver
+  arriba), «La actividad no puede terminar antes de empezar.»
+  (`ends_at`), «El aforo mínimo es de una plaza.» (`capacity`) y «Una
+  actividad solo para la comunidad necesita comunidad.» (`audience:
+  'community'` sin comunidad). Las traducciones eu/ca de esos cuatro
+  mensajes (`messages/{eu,ca}.json::entidad.actividadForm.errors`)
+  también están copiadas del propio `.po` del backend en esos dos
+  idiomas, no traducidas de nuevo — el backend ya las tiene revisadas.
+- **`lib/events/datetimeLocal.ts`**: conversión entre el valor de un
+  `<input type="datetime-local">` (sin zona horaria, interpretado por el
+  motor JS como **hora local**) y el ISO 8601 con zona que espera el
+  backend — para que quien teclea vea siempre su propia hora local, sea
+  cual sea la del servidor.
+- **`components/entidad/ActividadesTable.tsx`**: «Nueva actividad» (solo
+  `canManage`) y, por fila, «Editar» (siempre) y «Cancelar actividad»
+  (solo si `status === 'scheduled'`: cancelar una actividad ya cancelada
+  o celebrada no tiene sentido, aunque el backend no lo impida). Mismo
+  patrón de error en el `ConfirmDialog` que el resto del panel (M6-M10 de
+  la auditoría estática): el mensaje se pinta dentro, `reset()` al abrir
+  y al cancelar, se cierra solo en el `onSuccess`.
+- **Sin cambios en `panel/services/metrics.py` ni en las tarjetas del
+  Inicio**: crear una actividad ya la cuenta el `useMetrics`/
+  `useEntityEvents` de siempre en cuanto se refresca la consulta
+  (invalidación de `panel-entity-events`), sin ningún endpoint ni hook
+  nuevo para eso.
+- **Cobertura tras esta tarea**: **99,82 %** líneas (2903/2908), 2103
+  tests, 207 ficheros — cinco ficheros nuevos que cuentan para la
+  medición (`hooks/useEvent.ts`, `hooks/useEventMutations.ts`,
+  `lib/events/{coords,datetimeLocal,validation}.ts`), los cinco al 100 %
+  de líneas; `components/entidad/{ActividadForm,ActividadesTable}.test.tsx`
+  son `.tsx` de componente y no cuentan para el umbral, que sigue en
+  99,7.
+
 ## Comandos
 
 - `npm run dev` / `npm run build` / `npm run start`
@@ -3307,6 +3430,15 @@ en CI lo gate el job `e2e`).
   `AyudaPendienteList.test.tsx`). Tras el fix round 1 de esa rama (I1 y
   M1-M5 de `FIX-panel-review.md`): **99,82 %** (2799/2804 líneas, **2047**
   tests, 201 ficheros — ningún fichero nuevo). El umbral sigue en 99,7.
+  Tras crear/editar/cancelar actividades desde el panel (2026-09-23, ver
+  «Crear/editar/cancelar actividades» arriba): **99,82 %** (2903/2908
+  líneas, **2103** tests, 207 ficheros — cinco ficheros nuevos que
+  cuentan para la medición (`hooks/useEvent.ts`, `hooks/
+  useEventMutations.ts`, `lib/events/{coords,datetimeLocal,
+  validation}.ts`), los cinco al 100 % de líneas;
+  `components/entidad/{ActividadForm,ActividadesTable}.test.tsx` son
+  `.tsx` de componente y no cuentan para el umbral). El umbral sigue en
+  99,7.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la
