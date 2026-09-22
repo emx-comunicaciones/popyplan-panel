@@ -268,6 +268,67 @@ export type EntityEventCommunityRef = components["schemas"]["EntityEventCommunit
 export type EntityEventOrganizerRef = components["schemas"]["EntityEventOrganizerRef"];
 
 /**
+ * Alta/edición de actividades desde el panel (`events/serializers.py
+ * ::EventCreateSerializer`/`EventUpdateSerializer`, `events/viewsets.py
+ * ::EventViewSet.create`/`update`). `GET/PATCH /api/events/{id}/`
+ * devuelve `EventDetail` (alias directo del esquema generado, sin
+ * discrepancias); `POST /api/events/` también.
+ */
+export type EventDetail = components["schemas"]["EventDetail"];
+export type EventAudience = components["schemas"]["Audience749Enum"];
+
+/**
+ * Campos que el panel escribe al crear/editar una actividad —
+ * `EventCreateRequest`/`PatchedEventUpdateRequest` (generados) usan
+ * `latitude`/`longitude` como `string` (formato `DecimalField` de DRF) y
+ * marcan casi todo opcional de forma poco útil para un formulario; este
+ * tipo manual es lo que de verdad rellena `ActividadForm.tsx`
+ * (`latitude`/`longitude` como `number`, convertidos a la cadena que
+ * espera el backend dentro de `hooks/useEventMutations.ts` con
+ * `lib/events/coords.ts::formatCoordinateForApi`, mismo formato que ya
+ * usa `popyplan-mobile/app/_utils/coords.ts`).
+ *
+ * **`audience`/`community` solo viajan al crear** (`EventUpdateSerializer.
+ * Meta.fields` los excluye a propósito, junto a `owner_org` y
+ * `recurrence_rule`: cambiar el espacio de una actividad a mitad de
+ * camino dejaría dentro a gente que ya no puede estar) —
+ * `EventUpdateFields` los omite con `Omit`, así que intentar mandarlos en
+ * un `PATCH` es un error de compilación, no un 400 en tiempo de
+ * ejecución. `owner_org` tampoco está aquí: lo añade
+ * `useCreateEvent`/`toCreateEventBody` a partir del `orgId` del hook,
+ * nunca lo decide el formulario (toda actividad creada desde el panel
+ * nace sellada por la entidad, invariante 2).
+ */
+export interface EventWriteFields {
+  title: string;
+  description: string;
+  starts_at: string;
+  ends_at: string | null;
+  audience: EventAudience;
+  community: string | null;
+  capacity: number | null;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+/**
+ * Cuerpo de `PATCH /api/events/{id}/` (`docs/PANEL.md`/`events/
+ * serializers.py::EventUpdateSerializer`): todo opcional (solo se manda
+ * lo que cambió) y sin `audience`/`community` (ver `EventWriteFields`).
+ * **`starts_at` es responsabilidad de quien llama**: el backend lo
+ * valida como futuro también al editar
+ * (`EventCreateSerializer.validate_starts_at`, heredado por
+ * `EventUpdateSerializer`), así que `ActividadForm.tsx` solo lo incluye
+ * cuando de verdad cambió — reenviar el valor sin tocar de una actividad
+ * ya empezada devolvería un 400 que no tiene nada que ver con lo que la
+ * persona quería corregir (mismo criterio que
+ * `popyplan-mobile/app/_containers/events/NewEvent/createEventPayload.ts
+ * ::buildUpdateEventPayload`, que solo reenvía `starts_at` si cambió de
+ * minuto).
+ */
+export type EventUpdateFields = Partial<Omit<EventWriteFields, "audience" | "community">>;
+
+/**
  * `GET /api/events/{id}/attendees/`: array plano de `Attendee`, pese a
  * que `docs/schema.yaml` la marca como `PaginatedAttendeeList` —
  * `events/viewsets.py::EventViewSet.attendees` construye la respuesta a

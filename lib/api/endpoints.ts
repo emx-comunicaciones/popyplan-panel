@@ -276,6 +276,16 @@ export const PANEL = {
  * (asistencia manual, ya existente en `events`, ver `docs/schema.yaml`).
  */
 export const EVENTS = {
+  /**
+   * `GET/POST /api/events/` (`events/viewsets.py::EventViewSet`): alta
+   * de actividad desde el panel (tarea de creación de actividades) —
+   * siempre con `owner_org` (el sello de la entidad), nunca de perfil.
+   */
+  LIST: () => `/api/events/`,
+  /** `GET/PATCH /api/events/{id}/` — detalle y edición (solo organizador). */
+  DETAIL: (id: string) => `/api/events/${id}/`,
+  /** `POST /api/events/{id}/cancel/` — solo organizador. */
+  CANCEL: (id: string) => `/api/events/${id}/cancel/`,
   /** `GET /api/events/{id}/attendees/` — lista nominal, solo organizador. */
   ATTENDEES: (id: string) => `/api/events/${id}/attendees/`,
   /** `POST /api/events/{id}/attendance/ {user_id, attended}`. */
