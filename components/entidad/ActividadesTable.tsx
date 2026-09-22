@@ -4,10 +4,16 @@ import Link from "next/link";
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 
+import { ActividadForm } from "@/components/entidad/ActividadForm";
 import { PeriodSelector } from "@/components/metrics/PeriodSelector";
+import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Dialog } from "@/components/ui/Dialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useEntityEvents, type EntityEventStatus } from "@/hooks/useEntityEvents";
+import { useCancelEvent, type EventMutationErrorKind } from "@/hooks/useEventMutations";
+import type { EntityEventRow } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 import { localeForUseLocale } from "@/lib/i18n/locale";
 import { presetPeriod, type Period, type PeriodPreset } from "@/lib/metrics/period";
@@ -25,6 +31,15 @@ export interface ActividadesTableProps {
    * monta la tabla, que ya tiene `membership.role`.
    */
   canOpenAttendance: boolean;
+  /**
+   * Si quien mira tiene `publicar_actividades` en esta entidad
+   * (`entities/permissions.py`: titular, moderador, dinamizador,
+   * referente — nunca analista). Con `true` se ofrecen «Nueva
+   * actividad», «Editar» y «Cancelar»; `asistencia/page.tsx` reutiliza
+   * esta misma tabla solo como selector de actividad y siempre pasa
+   * `false` (gestionar actividades no es su propósito en esa pantalla).
+   */
+  canManage: boolean;
 }
 
 const ENTITY_EVENTS_ERROR_KEYS = {
@@ -63,7 +78,14 @@ function formatDateTime(iso: string, locale: string): string {
  * ponen tope por arriba, solo la diferencia de 1461 días), que es cómo
  * se llega a lo que viene.
  */
-export function ActividadesTable({ orgId, slug, canOpenAttendance }: ActividadesTableProps) {
+const CANCEL_EVENT_ERROR_KEYS: Record<EventMutationErrorKind, string> = {
+  invalido: "errors.eventMutation.invalido",
+  sin_permiso: "errors.eventMutation.sinPermiso",
+  no_encontrado: "errors.eventMutation.noEncontrado",
+  desconocido: "errors.eventMutation.desconocidoCancelar",
+};
+
+export function ActividadesTable({ orgId, slug, canOpenAttendance, canManage }: ActividadesTableProps) {
   const [status, setStatus] = useState<EntityEventStatus | "">("");
   const [preset, setPreset] = useState<PeriodPreset>("mes");
   // El periodo inicial se calcula una vez (no en cada render): `useQuery`
@@ -75,9 +97,23 @@ export function ActividadesTable({ orgId, slug, canOpenAttendance }: Actividades
   const locale = useLocale();
 
   const events = useEntityEvents(orgId, period, status || undefined);
+  const cancelEvent = useCancelEvent(orgId);
+
+  const [creating, setCreating] = useState(false);
+  const [createPending, setCreatePending] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editPending, setEditPending] = useState(false);
+  const [cancelling, setCancelling] = useState<EntityEventRow | null>(null);
 
   return (
     <div className="flex flex-col gap-4">
+      {canManage ? (
+        <div>
+          <Button type="button" onClick={() => setCreating(true)}>
+            {t("newActivity")}
+          </Button>
+        </div>
+      ) : null}
       <PeriodSelector
         value={period}
         preset={preset}
@@ -129,6 +165,9 @@ export function ActividadesTable({ orgId, slug, canOpenAttendance }: Actividades
                 <th scope="col" className="px-3 py-1.5 font-semibold">{t("colRegistered")}</th>
                 <th scope="col" className="px-3 py-1.5 font-semibold">{t("colAttended")}</th>
                 <th scope="col" className="px-3 py-1.5 font-semibold">{t("colNoShow")}</th>
+                {canManage ? (
+                  <th scope="col" className="px-3 py-1.5 font-semibold">{t("colActions")}</th>
+                ) : null}
               </tr>
             </thead>
             <tbody>
@@ -159,12 +198,102 @@ export function ActividadesTable({ orgId, slug, canOpenAttendance }: Actividades
                   <td className="px-3 py-1.5 text-text-base">{event.registered}</td>
                   <td className="px-3 py-1.5 text-text-base">{event.attended}</td>
                   <td className="px-3 py-1.5 text-text-base">{event.no_show}</td>
+                  {canManage ? (
+                    <td className="px-3 py-1.5 text-text-base">
+                      <div className="flex gap-2">
+                        <Button type="button" variant="secondary" onClick={() => setEditingId(event.id)}>
+                          {t("edit")}
+                        </Button>
+                        {event.status === "scheduled" ? (
+                          <Button
+                            type="button"
+                            variant="danger"
+                            onClick={() => {
+                              cancelEvent.reset();
+                              setCancelling(event);
+                            }}
+                          >
+                            {t("cancelActivity")}
+                          </Button>
+                        ) : null}
+                      </div>
+                    </td>
+                  ) : null}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
+
+      {canManage ? (
+        <>
+          <Dialog
+            open={creating}
+            titleId="nueva-actividad-title"
+            title={t("newActivity")}
+            pending={createPending}
+            onClose={() => setCreating(false)}
+          >
+            <ActividadForm
+              orgId={orgId}
+              editing="new"
+              onDone={() => setCreating(false)}
+              onPendingChange={setCreatePending}
+            />
+          </Dialog>
+
+          <Dialog
+            open={editingId !== null}
+            titleId="editar-actividad-title"
+            title={t("editActivity")}
+            pending={editPending}
+            onClose={() => setEditingId(null)}
+          >
+            {editingId !== null ? (
+              <ActividadForm
+                orgId={orgId}
+                editing={editingId}
+                onDone={() => setEditingId(null)}
+                onPendingChange={setEditPending}
+              />
+            ) : null}
+          </Dialog>
+
+          <ConfirmDialog
+            open={cancelling !== null}
+            title={t("cancelConfirmTitle")}
+            description={
+              <div className="flex flex-col gap-2">
+                <p>
+                  {cancelling ? t("cancelConfirmDescription", { title: cancelling.title }) : ""}
+                </p>
+                {cancelEvent.isError ? (
+                  <p role="alert" className="text-error">
+                    {errorKindText(
+                      cancelEvent.error,
+                      CANCEL_EVENT_ERROR_KEYS,
+                      tAll,
+                      "errors.eventMutation.desconocidoCancelar",
+                    )}
+                  </p>
+                ) : null}
+              </div>
+            }
+            confirmLabel={t("cancelActivity")}
+            pending={cancelEvent.isPending}
+            onConfirm={() => {
+              if (!cancelling) return;
+              cancelEvent.mutate(cancelling.id, { onSuccess: () => setCancelling(null) });
+            }}
+            onCancel={() => {
+              if (cancelEvent.isPending) return;
+              cancelEvent.reset();
+              setCancelling(null);
+            }}
+          />
+        </>
+      ) : null}
     </div>
   );
 }

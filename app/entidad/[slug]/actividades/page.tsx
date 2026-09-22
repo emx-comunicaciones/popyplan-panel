@@ -8,6 +8,14 @@ import { isEntidadPanelRole } from "@/lib/auth/area";
 import { entidadMenuFor } from "@/lib/auth/entidadMenu";
 import { getServerSession } from "@/lib/auth/session";
 
+/**
+ * `publicar_actividades` (`entities/permissions.py`): quien puede
+ * crear/editar/cancelar una actividad sellada por la entidad —
+ * titular, moderador, dinamizador y referente. `analista` no está: solo
+ * tiene lectura (`ver_panel`/`exportar_informes`), nunca escritura.
+ */
+const ENTITY_EVENT_MANAGE_ROLES = new Set(["titular", "moderador", "dinamizador", "referente"]);
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("pages.entidad.actividades");
   return { title: t("title") };
@@ -48,6 +56,10 @@ export default async function EntidadActividadesPage({
         // `referente` no tiene Asistencia en su menú: sin esto, el título
         // de cada actividad le enlazaba a una pantalla «Sin acceso».
         canOpenAttendance={menu.includes("asistencia")}
+        // `publicar_actividades` (`entities/permissions.py`): titular,
+        // moderador, dinamizador y referente — nunca analista, que solo
+        // ve el panel de métricas.
+        canManage={ENTITY_EVENT_MANAGE_ROLES.has(membership.role)}
       />
     </div>
   );

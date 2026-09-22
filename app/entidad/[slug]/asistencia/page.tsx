@@ -48,8 +48,11 @@ export default async function EntidadAsistenciaIndexPage({
     <div className="flex flex-col gap-4">
       <h1 className="text-xl font-semibold text-text-base">{t("entidad.asistencia.heading")}</h1>
       <p className="text-sm text-text-secondary">{t("entidad.asistencia.chooseActivity")}</p>
-      {/* Siempre `true`: esta página ya está gateada por `asistencia`. */}
-      <ActividadesTable orgId={membership.organization_id} slug={slug} canOpenAttendance />
+      {/* Siempre `true`: esta página ya está gateada por `asistencia`.
+          `canManage` siempre `false`: aquí la tabla es solo un selector
+          de actividad, gestionar actividades es cosa de la pantalla
+          Actividades. */}
+      <ActividadesTable orgId={membership.organization_id} slug={slug} canOpenAttendance canManage={false} />
     </div>
   );
 }
