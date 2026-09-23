@@ -158,3 +158,12 @@ español, y no se toca en esta ronda):
   dos llamadas de Next. No se ha tocado el e2e en esta ronda (fuera de
   alcance: la tarea solo permite lectura/documentación del hueco, no
   ejecutar `npm run e2e`).
+- **Contenido nuevo de la ayuda por pantalla (tarea «ayuda ampliada»)**:
+  las secciones `details`/`tips`/`related` añadidas a las 34 entradas de
+  `help.*` (y los summaries/actions reescritos donde eran pobres) fueron
+  redactadas en `en` (fuente) y traducidas a `es`/`eu`/`ca` de forma
+  asistida. El `es` recibió pasada de revisión; el `eu` y el `ca` siguen
+  el glosario y las guardas léxicas de `lib/i18n/messages.test.ts`, pero
+  **merecen una revisión nativa** (registro, matices de tuteo y
+  terminología de acompañamiento en adicciones) antes de darlas por
+  cerradas.

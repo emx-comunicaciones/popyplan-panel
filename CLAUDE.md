@@ -2267,6 +2267,26 @@ qué se puede hacer en ella y quién la ve.
      titular/moderador (o de otro rol concreto), el propio texto lo dice
      («Solo titular y moderador pueden…»), en vez de tener variantes por
      rol del mismo registro.
+- **Ampliación de contenido y estructura (2026-09-23)**: el diálogo gana
+  tres secciones, obligatorias en las 34 entradas y las 4 lenguas:
+  `details` («Cómo funciona», las reglas del dominio de la pantalla —
+  supresión <5, periodos ≤1461 días, ventanas de check-in, matriz de
+  roles…), `tips` («Consejos», 1-3), y `related` («Pantallas
+  relacionadas», 1-3 botones que navegan con `useRouter().push` y cierran
+  el diálogo). Las etiquetas viven en `ui.pageHelp.{details,tips,related}
+  Label`. **Reglas duras** (validadas por `lib/help/pageHelp.test.ts`):
+  cada clave de `related` existe en `PAGE_HELP`, sin autorrelaciones ni
+  duplicados, y su ruta solo puede tener `[slug]` como segmento dinámico —
+  **las fichas (`[userId]`/`[eventId]`/`[surveyId]`/`[programId]`/
+  `[reportId]`/`[id]`) nunca son destino de navegación**; la resolución de
+  ruta es `lib/help/pageHelp.ts::resolveRelatedRoute` (pura, testeada):
+  portael `[slug]` del pathname actual solo si ambas entradas son del
+  mismo área; si no se resuelve, el botón no se pinta (defensivo).
+  `components/ui/Dialog.tsx` centra su contenido con `max-h-[70vh]
+  overflow-y-auto` para el diálogo completo. El contenido (en fuente, es/
+  eu/ca traducidos) fue redactado contra CLAUDE.md y los docstrings — **no
+  contra la intuición** — y el eu/ca queda anotado como pendiente de
+  revisión nativa en `docs/i18n/PENDIENTES.md`.
 - **Accesibilidad**: botón redondo 40×40 con `aria-label="Ayuda: <título>"`,
   `aria-haspopup="dialog"`, `aria-expanded`, el signo «?» en
   `aria-hidden`. **Fondo blanco** (`bg-white text-primary-700 border

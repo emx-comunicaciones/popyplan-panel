@@ -27,6 +27,9 @@
     "skipLink": "Skip to main content",
     "pageHelp": {
       "whatYouCanDo": "What you can do here",
+      "detailsLabel": "How it works",
+      "tipsLabel": "Tips",
+      "relatedLabel": "Related screens",
       "audienceLabel": "Who sees it:",
       "ariaLabel": "Help: {title}"
     }
@@ -1356,184 +1359,349 @@
     "entidad": {
       "inicio": {
         "title": "Home",
-        "summary": "Overview of your entity for today: today's activities, pending alerts and this month's metrics.",
+        "summary": "Overview of your entity for today: today's activities, pending alerts, active programs and this month's metrics.",
+        "details": "Everything on Home is already computed by the platform: today's activities, pending help alerts and reports (counts only), this month's metrics and active programs. The on-call counters are hidden — not shown as an error — for roles the backend doesn't let moderate (analyst, facilitator, referent); they simply don't see those cards. A counter that fails for any other reason shows as unavailable rather than as zero.",
         "actions": [
           "See today's activities",
           "See how many help alerts and reports are pending (only whoever moderates or is on call)",
           "Check people, activities and attendance for the month"
+        ],
+        "tips": [
+          "Counters are counts, not lists: open the section to see the actual items.",
+          "Home metrics follow the same <5 privacy rule as the rest of the panel."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.actividades",
+          "entidad.guardia"
         ],
         "audience": "All entity roles."
       },
       "personas": {
         "title": "People",
         "summary": "The people who take part in your entity, with their communities, recent activity and referent. Never shows contact details: Popyplan works with aliases.",
+        "details": "The list mixes active people and, if you tick 'include invited', pending invitations — an invited row has no profile yet, so communities and attendance show as '—'. People are always added by invitation email: the panel never creates accounts and never shows contact details. Importing a file always runs a dry-run preview first; rows with errors are reported per row but don't block confirming the valid ones.",
         "actions": [
           "Search and filter by community, referent or join date",
           "Invite a person or import an Excel/CSV (owner and moderator)",
           "Open each person's profile",
           "Include pending invitations and resend or revoke them"
         ],
+        "tips": [
+          "Filter by community or referent before searching by name — it's faster on long lists.",
+          "A 'already a member' error means that email belongs to an active member."
+        ],
+        "related": [
+          "entidad.comunidades",
+          "entidad.inicio"
+        ],
         "audience": "Owner, moderator and referent."
       },
       "personaFicha": {
         "title": "Person profile",
         "summary": "Summary of a person's participation in your entity: communities, activities for the period and next activity. No email, phone or notes: the relationship always goes through the app.",
+        "details": "The profile shows only participation in your entity: communities, activities for the period with their attendance status, and the next activity. It never shows email, phone, documents or free-text notes — the relationship goes through the app chat. The support-network section appears only for that person's referent; anyone else, including the owner, doesn't see the section at all. A referent without a reference to that person sees a 'no access' state instead of the profile.",
         "actions": [
           "Assign or change their referent (owner and moderator)",
           "See their support network (only their referent)",
           "Review which activities they signed up for and whether they attended"
         ],
+        "tips": [
+          "Only the assigned referent sees the support network — don't look for it as owner.",
+          "The activity period on the profile is the current month, like the People list."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.comunidades",
+          "entidad.programas"
+        ],
         "audience": "Owner, moderator and that person's referent."
       },
       "comunidades": {
         "title": "Communities",
-        "summary": "Your entity's communities and their members: who belongs, who moderates and pending join requests.",
+        "summary": "Your entity's communities and their members: who belongs, who moderates, visibility and pending join requests.",
+        "details": "Communities belong to the entity and each keeps its own visibility (open, on request or private). Join requests wait here until someone accepts them, and removing a member always asks for confirmation first. Families communities live in their own separate space — they never mix with members' communities unless you explicitly enable cross-space viewing from the Families section.",
         "actions": [
           "See each community, its visibility and its members",
           "Accept or reject join requests",
           "Appoint moderators or remove someone (owner and moderator)"
         ],
+        "tips": [
+          "Rejecting a request is reversible — the person can ask to join again."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.actividades",
+          "entidad.familias"
+        ],
         "audience": "Owner, moderator and facilitator."
       },
       "actividades": {
         "title": "Activities",
-        "summary": "The period's activities with their sign-ups, attendees and organiser.",
+        "summary": "The period's activities with their sign-ups, attendees and organiser. Includes upcoming activities when the period reaches the future.",
+        "details": "The list covers the period you choose, including upcoming activities. The organiser column is only filled if your role can see the nominal list; otherwise it shows '—' rather than a guessed name. Opening the attendance sheet is only offered when the Attendance section is in your menu — a referent sees the activities but no attendance link. Counters per row are sign-ups, attended and not attended for the period.",
         "actions": [
           "Change the period (includes upcoming activities)",
           "Filter by status",
           "Open each activity's attendance list",
           "See who is responsible for each one"
         ],
+        "tips": [
+          "Extend the period to see upcoming activities, not just past ones."
+        ],
+        "related": [
+          "entidad.asistencia",
+          "entidad.comunidades",
+          "entidad.programas"
+        ],
         "audience": "Owner, moderator, facilitator and referent."
       },
       "asistencia": {
         "title": "Attendance",
         "summary": "Choose an activity to take attendance or do the QR check-in.",
+        "details": "Attendance is always per activity: pick one from the list to open its attendance sheet. The list shows the period's activities with their status, so you can jump straight to the one that just finished or starts soon. The same screen is the Activities section itself — the list is the selector, there is no separate attendance overview.",
         "actions": [
           "Open an activity's attendance list",
           "Mark attendance by hand or scan the app's QR code"
+        ],
+        "tips": [
+          "Marking by hand only works once the activity has started."
+        ],
+        "related": [
+          "entidad.actividades"
         ],
         "audience": "Owner, moderator and facilitator."
       },
       "asistenciaEvento": {
         "title": "Attendance list",
         "summary": "Who signed up for this activity and who has shown up. QR check-in only works from two hours before to twelve hours after the start.",
+        "details": "Marking attendance by hand is only possible once the activity has started. QR check-in accepts the token pasted from the app or the full 'popyplan://checkin/…' link, and can scan with the camera where the browser supports it. It works from two hours before to twelve hours after the start; outside that window the backend's own message is shown. A repeat check-in shows as a notice, not an error — nothing breaks.",
         "actions": [
           "Mark each person as “attended” or “did not attend”",
           "Scan the QR code shown in the person's app or paste their code"
+        ],
+        "tips": [
+          "No camera? Paste the popyplan:// link from any message and the token is extracted.",
+          "A second scan of the same code shows 'already checked in' — the count stays at one."
+        ],
+        "related": [
+          "entidad.asistencia",
+          "entidad.actividades"
         ],
         "audience": "Owner, moderator and facilitator."
       },
       "comunicaciones": {
         "title": "Announcements",
         "summary": "Official announcements from the entity to all members, to a community or to the families space, with their history and number of recipients.",
+        "details": "Announcements are official entity messages to all members, one community or the families space — the families option only unlocks once a families community exists. There is no recipient preview: the confirmation describes the audience and the real recipient count appears after sending. The support-network welcome template only fills the form; sending is always your decision, and overwriting an existing draft asks for confirmation first.",
         "actions": [
           "Draft and send an announcement (owner and moderator)",
           "Use the welcome-to-the-support-network template once the families space exists",
           "Check the history"
+        ],
+        "tips": [
+          "The recipient count in the history is the real number reached — check it after sending.",
+          "The template overwrites the current draft; cancel if you want to keep your text."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.comunidades",
+          "entidad.encuestas"
         ],
         "audience": "Owner and moderator."
       },
       "encuestas": {
         "title": "Surveys",
         "summary": "Anonymous, aggregated surveys: the periodic ones you create and the ones the app sends on its own after each activity.",
+        "details": "Only periodic surveys are created here; the app sends post-activity surveys on its own after each completed activity, so they appear in the list without anyone creating them. Open or closed status comes from the survey's own start and end dates. All responses are anonymous and aggregated — no answer is ever linked to a person, and any result with fewer than five responses hides its detail.",
         "actions": [
           "Create a periodic survey with its questions (owner and moderator)",
           "See whether it's open or closed and open its results"
+        ],
+        "tips": [
+          "Post-activity surveys are created by the app — don't look for a 'new post-event survey' button."
+        ],
+        "related": [
+          "entidad.comunicaciones"
         ],
         "audience": "Owner, moderator and facilitator."
       },
       "encuestaResultados": {
         "title": "Survey results",
         "summary": "Aggregated results per question. With fewer than five responses the detail isn't shown, so no one can be identified.",
+        "details": "Results are aggregated per question: average and distribution for rating questions, an unordered list for short text — text answers have no author and no order. Any question with fewer than five responses is suppressed and shown as <5, so no one can be worked out from the numbers. The anonymity notice is always on screen because it is the rule, not a detail.",
         "actions": [
           "See each question's average and distribution",
           "Read text answers with no order or author"
+        ],
+        "tips": [
+          "<5 means 'fewer than five responses', not zero — the survey may still be open."
+        ],
+        "related": [
+          "entidad.encuestas",
+          "entidad.comunicaciones"
         ],
         "audience": "Owner, moderator and facilitator."
       },
       "biblioteca": {
         "title": "Library",
         "summary": "The entity's content library: text, PDFs, videos, audio and links, organised by category and aimed at members, families or anyone.",
+        "details": "Resources are grouped by category — help, training, families, habits, activities, about, and 'How to support' for the support network — and each has an audience: members, families or anyone. The families audience only appears once a families community exists. Files are validated before upload (20 MB and common document, audio or video formats) and the server validates again anyway, so a rejected file is explained with the backend's message.",
         "actions": [
           "Create, edit or delete resources (owner and moderator)",
           "Choose category and audience; “How to support” is the category for the support network"
+        ],
+        "tips": [
+          "Editing keeps the existing file unless you pick a new one — the file field starts empty.",
+          "Deleting a resource always asks for confirmation and cannot be undone."
+        ],
+        "related": [
+          "entidad.familias",
+          "entidad.comunicaciones",
+          "entidad.programas"
         ],
         "audience": "Owner, moderator and facilitator."
       },
       "familias": {
         "title": "Families",
         "summary": "The entity's families space, separate from the members' space: its communities, upcoming activities, announcements and resources, and the aggregated support-network counters. Nobody declares being family to anyone.",
+        "details": "The families space is separate from the members' space and the two only mix if you allow cross-space viewing per community — the confirmation explains the separation rule first. Counters follow the same privacy rule as the rest of the panel: any count under five distinct people shows as <5. Supporters waiting for a families community to exist are counted as people, and the panel tells you when creating one would welcome them in.",
         "actions": [
           "Create the families community (owner and moderator)",
           "Turn each community's cross-space viewing on or off",
           "See how many people have a support network and how many supporters are waiting for the community to exist"
+        ],
+        "tips": [
+          "The separation banner is the rule, not a warning: members and families don't see each other.",
+          "Facilitators can see this section but only owner and moderator can create or change communities."
+        ],
+        "related": [
+          "entidad.comunidades",
+          "entidad.biblioteca",
+          "entidad.comunicaciones"
         ],
         "audience": "Owner, moderator and facilitator."
       },
       "programas": {
         "title": "Programs",
         "summary": "Campaigns with fixed dates and a declared budget, with their aggregated final report. A program never lists people.",
+        "details": "A program is a campaign with closed dates and a declared budget, and its status only moves forward: draft → active → closed. A closed program cannot be edited again, and closing asks for closing notes. The report only contains aggregates — a program never lists people, not even for the owner. Metrics on a program's page are computed for the program's own date range.",
         "actions": [
           "Create, activate and close programs (owner and moderator)",
           "Download the CSV or PDF report (owner, moderator and analyst)"
+        ],
+        "tips": [
+          "Closing is irreversible — review the closing notes before confirming."
+        ],
+        "related": [
+          "entidad.informes",
+          "entidad.actividades"
         ],
         "audience": "All entity roles."
       },
       "programaFicha": {
         "title": "Program profile",
-        "summary": "The program's status, dates, budget and metrics for its period.",
+        "summary": "The program's status, dates, budget and metrics for its period, with its final report.",
+        "details": "The profile shows the program's status, dates, budget and metrics computed for its own date range. Editing is only possible before closing: closing asks for notes and is irreversible. If the backend rejects a date change, its exact validation message is shown instead of a generic one. The report downloads as CSV or PDF and contains only aggregates — never a list of people.",
         "actions": [
           "Edit, activate or close the program with closing notes (owner and moderator)",
           "Download its report"
+        ],
+        "tips": [
+          "The page refreshes on its own after activate, close or edit — no manual reload needed."
+        ],
+        "related": [
+          "entidad.programas",
+          "entidad.informes"
         ],
         "audience": "All entity roles; only the owner and moderator can manage it."
       },
       "reportes": {
         "title": "Reports",
         "summary": "Your entity's moderation report queue: what was reported, why and its current status.",
+        "details": "The queue holds reports about content in your entity, with the reason and current status. You can assign a report to a team member, resolve it with a decision, or escalate it to Popyplan when it's beyond the entity — escalated reports also appear in the platform's global queue. Resolution and assignment are moderation decisions recorded in the report's history, along with who made them.",
         "actions": [
           "Open each report",
           "Assign it, resolve it or escalate it to the platform"
+        ],
+        "tips": [
+          "Escalate when the content breaks platform rules, not just entity rules."
+        ],
+        "related": [
+          "entidad.guardia"
         ],
         "audience": "Owner and moderator."
       },
       "reporteDetalle": {
         "title": "Report detail",
         "summary": "Everything needed to decide on a report: reason, reported content, history and who's handling it.",
+        "details": "The detail gathers what you need to decide: the reason, the reported content, the history and who is handling it. Resolving records a decision; escalating hands the report to Popyplan when it's beyond the entity. The assignee is shown as 'a team member', not by name.",
         "actions": [
           "Assign it to a team member",
           "Resolve it with a decision",
           "Escalate it to Popyplan if it's beyond the entity"
+        ],
+        "tips": [
+          "Read the history before deciding — previous moderation actions are part of the context."
+        ],
+        "related": [
+          "entidad.reportes",
+          "entidad.guardia"
         ],
         "audience": "Owner and moderator."
       },
       "guardia": {
         "title": "On call",
         "summary": "Your entity's “I'm having a bad day” alerts and the settings for who's on call. Popyplan does not store phone numbers: contact happens through the app chat or through the referent.",
+        "details": "Alerts are the app-side 'I'm having a bad day' requests from people in your entity. The on-call person — set by the owner — and the guardia see them even if their role isn't owner or moderator. Popyplan doesn't store phone numbers: contact happens through the app chat or the person's referent, and the panel shows whether someone from their support network has already stepped in.",
         "actions": [
           "Handle an alert",
-          "Set the help phone number and choose the on-call person (titleholder only)",
+          "Set the help phone number and choose the on-call person (owner only)",
           "See whether someone from the person's support network has already stepped in"
+        ],
+        "tips": [
+          "The on-call person sees this section even without a moderator role."
+        ],
+        "related": [
+          "entidad.inicio",
+          "entidad.reportes",
+          "entidad.configuracion"
         ],
         "audience": "Owner, moderator and whoever is on call."
       },
       "informes": {
         "title": "Reports & exports",
-        "summary": "Export the entity's metrics as CSV or PDF, by period and breakdown, with the same aggregation rule as the rest of the panel.",
+        "summary": "Export the entity's metrics as CSV or PDF, by period and breakdown, ready to share with funders.",
+        "details": "Reports carry the same figures as the Home metrics for the chosen period — current month, last 3 or 12 months, or multi-year. A period can span at most 1461 days between the two dates. Any cell counting fewer than five distinct people shows as <5 — an aggregation threshold that protects privacy and cannot be turned off. The yearly breakdown groups the series by year instead of by month. Files only contain aggregates, never personal data.",
         "actions": [
           "Choose the period and breakdown (regular or by year)",
           "Download the report"
+        ],
+        "tips": [
+          "Use the yearly breakdown for multi-year memory reports.",
+          "CSV opens in any spreadsheet; use PDF for a document to attach."
+        ],
+        "related": [
+          "entidad.inicio",
+          "entidad.programas"
         ],
         "audience": "Owner, moderator and analyst."
       },
       "configuracion": {
         "title": "Settings",
         "summary": "The entity's details, team with their roles, and references between referents and people.",
+        "details": "Organization details, on-call settings, team and member references, and the entity's territorial scope. The team tab is owner-only: a moderator sees references and details but not the member list. Most writes here are audited and limited to the owner, so changes are traceable to whoever made them.",
         "actions": [
           "Add or remove someone from the team (owner only)",
           "Assign references",
           "Adjust the entity's details and colours"
+        ],
+        "tips": [
+          "Changing who is on call takes effect immediately for new help requests."
+        ],
+        "related": [
+          "entidad.guardia",
+          "entidad.personas"
         ],
         "audience": "Owner and moderator; only the owner sees the team."
       }
@@ -1542,38 +1710,73 @@
       "inicio": {
         "title": "Umbrella home",
         "summary": "A single glance at the administration: the state of your declared territory and of the entities you fund, each with a link to its own section.",
+        "details": "The umbrella home is the entry point to the two umbrella views: the territory observatory and the funded network. Both are aggregated dashboards governed by the same privacy rule as the rest of the panel — any group counting fewer than five distinct people shows as “<5” — and neither ever lists people. Open either view to change the period and explore the breakdowns.",
         "actions": [
           "Open the territory observatory",
           "Open the funded network"
+        ],
+        "tips": [
+          "Everything here is aggregated: no individual person is ever identifiable."
+        ],
+        "related": [
+          "paraguas.territorio",
+          "paraguas.informes",
+          "paraguas.redFinanciada"
         ],
         "audience": "All roles of the umbrella entity."
       },
       "territorio": {
         "title": "Territory",
-        "summary": "Observatory of your declared territory: everything that happens in its municipalities, whoever runs it. Bubble map, table by municipality, monthly series and comparison against the previous period. You never see people: any group of fewer than five shows as “<5”.",
+        "summary": "Everything happening in your declared territory's municipalities, whoever runs it: bubble map, table by municipality, monthly series and comparison with the previous period. Groups under five people show as “<5”.",
+        "details": "The territory view aggregates every activity inside your declared scope, whoever runs it: an entity outside your network still counts if it works on your ground. The fixed schema and privacy threshold apply cell by cell — groups under five distinct people show as “<5”. The comparison measures the previous period of the same length and requires a breakdown. A municipality sheet shows only aggregates — never names of people or entities based there.",
         "actions": [
           "Change the period",
           "Open a municipality to see its aggregated details",
           "Compare districts, municipalities or provinces against the previous period"
         ],
+        "tips": [
+          "The period can't span more than 1461 days (about 4 years).",
+          "A municipality sheet only shows aggregates: never names of people or entities."
+        ],
+        "related": [
+          "paraguas.inicio",
+          "paraguas.redFinanciada"
+        ],
         "audience": "All roles of the administration."
       },
       "informes": {
         "title": "Umbrella reports & exports",
-        "summary": "Aggregated export of the territory or the funded network as CSV or PDF.",
+        "summary": "Aggregated export of the territory or the funded network as CSV or PDF, with the same aggregation rules as the dashboards.",
+        "details": "Exports follow the same fixed schema and the same privacy threshold as the dashboards: groups under five distinct people export as “<5”, and no report ever contains people's names. Pick the scope — territory or funded network — the period and the breakdown, or “by year” for a multi-year record. PDF generation depends on the backend: when it isn't available you get a specific notice instead of a file, while CSV keeps working.",
         "actions": [
           "Choose the scope (territory or funded network)",
           "Choose the period and breakdown",
           "Download the report"
         ],
+        "tips": [
+          "“By year” gives one row per year and leaves the by-municipality section empty.",
+          "If PDF export is unavailable the notice says so explicitly; CSV still works."
+        ],
+        "related": [
+          "paraguas.inicio"
+        ],
         "audience": "Owner, moderator and analyst."
       },
       "redFinanciada": {
         "title": "Funded network",
-        "summary": "Aggregated metrics for the entities that hang off this administration: people, activities and attendance by municipality, by entity and by month, plus the comparison with the previous period. It follows the parent/children tree, not the territory.",
+        "summary": "Metrics for the entities under this administration — people, activities and attendance by municipality, entity and month, plus comparison with the previous period. It follows the parent/children tree, not the territory.",
+        "details": "The funded network aggregates the entities that hang off this administration, following the parent/children tree — an entity outside your territory still counts if it hangs off you. Each period loads the base cards plus the by-municipality, by-entity and monthly breakdowns, under the same threshold: groups under five distinct people show as “<5”. The comparison measures the previous period of the same length and requires a breakdown.",
         "actions": [
           "Change the period",
           "Compare districts, entities or municipalities against the previous period"
+        ],
+        "tips": [
+          "The tree decides membership, not geography: children of your entities count even outside your territory.",
+          "People cells are suppressed under five; event counts are never suppressed."
+        ],
+        "related": [
+          "paraguas.inicio",
+          "paraguas.territorio"
         ],
         "audience": "All roles of the administration."
       }
@@ -1582,98 +1785,196 @@
       "inicio": {
         "title": "Platform home",
         "summary": "Popyplan's overall status: verified and pending entities, escalated reports, unattended help alerts, contracts and invoices.",
+        "details": "Each card opens its queue, and cards only appear for sections your role has: verified and pending entities, escalated reports, unattended help alerts, and — for roles that see Subscriptions — contracts and overdue invoices. The usage figures (active people, scheduled activities) come from an admin-only endpoint, so only superadmin gets them. A card that fails for any other reason reads “Not available” — a failure is never shown as a zero.",
         "actions": [
-          "Open each queue from its card"
+          "Open each queue from its card",
+          "Check the usage overview (superadmin only)"
+        ],
+        "tips": [
+          "Cards follow your role's menu: what you don't see is out of your role, not missing.",
+          "“Not available” means the request failed, not that the count is zero."
+        ],
+        "related": [
+          "plataforma.entidades",
+          "plataforma.reportes",
+          "plataforma.metricas"
         ],
         "audience": "Popyplan's team, according to their role."
       },
       "entidades": {
         "title": "Entities",
-        "summary": "Every entity that has signed up, verified or not.",
+        "summary": "Every entity that has signed up, verified or not, with search and filters. Signing up and verifying are verifier and superadmin tasks.",
+        "details": "The full directory of entities, verified or not. The list is paginated and filters by verification status and free-text search; the search applies shortly after you stop typing. Signing up a new entity is a verifier/superadmin action, and a new entity is born unverified until someone verifies it from its profile. Open a profile to manage its umbrella, scope, team, metrics and contract.",
         "actions": [
           "Search and filter by verification",
           "Sign up a new entity (verifier and superadmin)",
           "Open its profile"
         ],
+        "tips": [
+          "New entities stay unverified until a verifier or superadmin verifies them.",
+          "The search box applies after a short pause while typing."
+        ],
+        "related": [
+          "plataforma.verificaciones"
+        ],
         "audience": "Superadmin and verifier."
       },
       "entidadFicha": {
         "title": "Entity profile",
-        "summary": "An entity's details, umbrella, territorial scope, team, metrics, communities and contract.",
+        "summary": "An entity's details, umbrella, territorial scope, team, metrics, communities and contract, organised in tabs.",
+        "details": "Seven tabs in one profile: details (with verification), umbrella (reassigning the parent is superadmin only), territorial scope (superadmin from here; the entity's own titleholder can also widen it), team, metrics, communities and activities, and a read-only contract tab showing the active contract and its latest invoice. A verifier without a membership in that entity gets an explicit “No access” instead of fake data.",
         "actions": [
           "Verify it",
           "Assign it an umbrella or extend its scope (superadmin)",
           "Manage its team"
         ],
+        "tips": [
+          "With several contracts, the tab prioritises the active one.",
+          "Reassigning the umbrella or widening the scope is superadmin-only from here."
+        ],
+        "related": [
+          "plataforma.entidades",
+          "plataforma.suscripciones"
+        ],
         "audience": "Superadmin and verifier; some tabs are superadmin only."
       },
       "reportes": {
         "title": "Escalated reports",
-        "summary": "Global queue of reports that entities have escalated to Popyplan.",
+        "summary": "Global queue of the reports that entities have escalated to Popyplan, with their entity and escalation date.",
+        "details": "Only escalated reports reach this queue: an entity resolves what it can and escalates the rest to Popyplan. The list is not paginated — every escalated report is on one page — and names the originating entity, with an “Escalated” badge on those pending. Moderator and superadmin can assign and resolve; support has read-only access, so its action buttons are hidden rather than disabled.",
         "actions": [
           "Open each report",
           "Assign or resolve it (moderator and superadmin); support can only view"
+        ],
+        "tips": [
+          "Only reports an entity escalated on purpose appear here; the rest stay in the entity's own queue.",
+          "Support sees the same queue with no action buttons."
+        ],
+        "related": [
+          "plataforma.inicio"
         ],
         "audience": "Superadmin, moderator and support."
       },
       "reporteDetalle": {
         "title": "Report detail",
         "summary": "Reason, content, originating entity and history of an escalated report.",
+        "details": "The full picture of one escalated report: the reason in plain language, the reported content, the originating entity and its handling history. Moderator and superadmin can assign it to a team member or resolve it with a decision; for support every action is hidden, because its role is view-only. What the contract doesn't name is never invented — an assignment shows “a team member”, not an identity the data doesn't carry.",
         "actions": [
-          "Assign or resolve it (moderator and superadmin)"
+          "Assign or resolve it (moderator and superadmin)",
+          "Review the reason, content and history (support reads the same view)"
+        ],
+        "tips": [
+          "Support's view is identical minus the actions: nothing is editable by mistake.",
+          "Reasons and statuses are translated; a value the panel doesn't know falls back to its raw text."
+        ],
+        "related": [
+          "plataforma.reportes"
         ],
         "audience": "Superadmin, moderator and support."
       },
       "ayuda": {
         "title": "Help alerts",
         "summary": "“I'm having a bad day” alerts pending across the whole platform, to spot entities with no one on call to respond.",
+        "details": "One aggregated request lists every pending alert across all entities, so you can spot an entity whose alerts nobody answers. Each alert shows its entity, whether the person belongs to it, and their referent when they have one. Popyplan does not store phone numbers: contact happens through the app chat or via the referent. Handling an alert acknowledges it here and on the entity's own on-call screen at once.",
         "actions": [
           "See the alert, its entity and its referent",
           "Handle it if needed"
+        ],
+        "tips": [
+          "The fixed line under the list explains the no-phone rule — it isn't a missing field.",
+          "A badge marks alerts from someone who isn't a member of that entity."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.reportes"
         ],
         "audience": "Superadmin, moderator and support."
       },
       "verificaciones": {
         "title": "Verifications",
-        "summary": "Pending identity reviews: the person's document and the provider's reason.",
+        "summary": "Pending identity reviews: the person's evidence and the provider's reason, decided with a note.",
+        "details": "The queue of pending identity reviews. Each row pairs the person's evidence (their appeal text) with the reason the provider flagged them, so you decide with both sides in view. Approving or rejecting always asks for a note, and the decision belongs to verifier and superadmin only. As you resolve reviews the queue shrinks; if the page you were on empties out, you return to the first one automatically.",
         "actions": [
-          "Approve or reject with a note"
+          "Approve or reject with a note",
+          "Review the person's evidence and the provider's reason first"
+        ],
+        "tips": [
+          "The note is part of the decision: write what a future auditor needs.",
+          "Resolved reviews leave the queue on their own; an emptied page returns you to the first one."
+        ],
+        "related": [
+          "plataforma.entidades"
         ],
         "audience": "Superadmin and verifier."
       },
       "roles": {
         "title": "Roles",
         "summary": "Who makes up Popyplan's team and with which platform role.",
+        "details": "Platform roles are separate from entity roles: a person can be a platform admin and still hold a role inside an entity. Granting here gives access to the platform area only. Granting searches for the account by email or username; the user id always works as a fallback. Revoking is an explicit confirmation because it removes platform access immediately.",
         "actions": [
           "Grant a role by searching for the account",
           "Revoke it"
+        ],
+        "tips": [
+          "Revoking a role takes effect immediately.",
+          "The account search accepts email; the user id always works as a fallback."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.auditoria"
         ],
         "audience": "Superadmin only."
       },
       "auditoria": {
         "title": "Audit log",
         "summary": "Log of sensitive actions across the whole system, with filters by actor, action, target and dates.",
+        "details": "Every sensitive action across the system, superadmin only. Filters narrow by actor, action, target and date range, and each row renders its metadata as readable key=value pairs. The CSV export is a client-side download of the current page, not a server export: semicolon-separated with a BOM so Excel opens it correctly, every cell quoted, and values that could become spreadsheet formulas defused. Filter before exporting to get the slice you need.",
         "actions": [
           "Filter and review the log",
           "Export the current page to CSV"
+        ],
+        "tips": [
+          "CSV exports the current page only — filter first, then export.",
+          "Downloading a page is not itself audited; only backend actions are."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.roles"
         ],
         "audience": "Superadmin only."
       },
       "metricas": {
         "title": "Metrics",
         "summary": "Aggregated metrics for the whole platform, by territory or by entity, with a comparison between periods.",
+        "details": "Platform-wide metrics with the same fixed schema as entity metrics. The territory/entity selector decides which breakdown each request uses, and the comparison block is mandatory: you must pick a breakdown (province by default) to compare the current period with the previous one of the same length. Cells under 5 distinct people show as <5 — the privacy threshold applies at every scope.",
         "actions": [
           "Change the period and breakdown",
           "Export"
+        ],
+        "tips": [
+          "The yearly breakdown gives one row per year for multi-year views."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.suscripciones"
         ],
         "audience": "Superadmin, moderator and support."
       },
       "suscripciones": {
         "title": "Subscriptions",
         "summary": "Popyplan's subscriptions with each entity: contracts, pricing tiers and invoices.",
+        "details": "Three tabs: contracts, pricing tiers and invoices. Contracts move forward only — draft, active, ended — and invoices compute their own status (paid, pending, overdue). Only superadmin writes: for support the buttons are hidden, never disabled. And an ended contract is billing history alone — it never switches off any feature for the entity.",
         "actions": [
           "Create and activate contracts, tiers and invoices (superadmin)",
           "Mark invoices as paid"
+        ],
+        "tips": [
+          "Invoice status is calculated, not chosen: paying it (or its due date) moves it.",
+          "Ending a contract never affects what the entity can do in the panel."
+        ],
+        "related": [
+          "plataforma.entidades",
+          "plataforma.metricas"
         ],
         "audience": "Superadmin and support; support can only view."
       }

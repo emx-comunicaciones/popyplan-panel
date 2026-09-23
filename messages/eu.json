@@ -27,6 +27,9 @@
     "skipLink": "Saltatu edukira",
     "pageHelp": {
       "whatYouCanDo": "Zer egin dezakezu hemen",
+      "detailsLabel": "Nola funtzionatzen duen",
+      "tipsLabel": "Aholkuak",
+      "relatedLabel": "Lotutako pantailak",
       "audienceLabel": "Nork ikusten duen:",
       "ariaLabel": "Laguntza: {title}"
     }
@@ -1356,184 +1359,349 @@
     "entidad": {
       "inicio": {
         "title": "Hasiera",
-        "summary": "Zure erakundearen ikuspegi orokorra gaurko egunerako: eguneko jarduerak, zain dauden abisuak eta uneko hilabeteko metrikak.",
+        "summary": "Zure erakundearen ikuspegi orokorra gaurko egunerako: eguneko jarduerak, zain dauden abisuak, abian dauden programak eta uneko hilabeteko metrikak.",
+        "details": "Hasierako pantailako guztia plataformak aurretik kalkulatuta dator: eguneko jarduerak, zain dauden laguntza-abisuak eta salaketak (kopuruak soilik), uneko hilabeteko metrikak eta abian dauden programak. Txandako kontagailuak ezkutatzen dira —errore gisa ez—, backendak moderatzeko ez uzten dien roletarako (analista, dinamizatzailea, erreferente); egitura horiek ez dituzte ikusten. Bestelako arrazoi batek huts egiten duen kontagailua ez dago erabilgarri bezala erakusten, zeroren gisa beharrean.",
         "actions": [
           "Gaurko jarduerak ikusi",
           "Zenbat laguntza-abisu eta salaketa dauden zain ikusi (moderatzen duenak edo txandan dagoenak bakarrik)",
           "Hilabeteko pertsonak, jarduerak eta bertaratzea kontsultatu"
+        ],
+        "tips": [
+          "Kontagailuak kopuruak dira, zerrendak ez: elementuak ikusteko, atala ireki.",
+          "Hasierako metrikek panelaren gainerakoak duen <5 pribatutasun-arau bera betetzen dute."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.actividades",
+          "entidad.guardia"
         ],
         "audience": "Erakundeko rol guztiak."
       },
       "personas": {
         "title": "Pertsonak",
         "summary": "Zure erakundean parte hartzen duten pertsonak, beren komunitateekin, azken jarduerarekin eta erreferentearekin. Inoiz ez ditu kontaktu-datuak erakusten: Popyplanek ezizenekin egiten du lan.",
+        "details": "Zerrendak pertsona aktiboak eta, 'Gonbidatuak sartu' markatzen baduzu, zain dauden gonbidapenak nahasten ditu — gonbidatutako lerrorak oraindik ez du fitxarik, beraz komunitateak eta bertaratzea '—' bezala agertzen dira. Pertsonak beti gonbidapen-email bidez gehitzen dira: panelak ez du inoiz konturik sortzen eta ez ditu inoiz kontaktu-datuak erakusten. Fitxategia inportatzeak beti proba-moduko aurrebista bat egiten du aurretik; errorea duten lerrorak lerroz lerro ematen dira, baina ez dituzte baliozkoak direnak baieztatzea oztopatzen.",
         "actions": [
           "Komunitatearen, erreferentearen edo alta-dataren arabera bilatu eta iragazi",
           "Pertsona bat gonbidatu edo Excel/CSV bat inportatu (titularra eta moderatzailea)",
           "Pertsona bakoitzaren fitxa ireki",
           "Zain dauden gonbidapenak sartu eta berbidali edo baliogabetu"
         ],
+        "tips": [
+          "Bilatu izenaren arabera baino lehen, iragazi komunitatearen edo erreferentearen arabera — zerrenda luzeetan azkarragoa da.",
+          "'Dagoeneko kidea da' errorea esan nahi du helbide elektronikoa kide aktibo batena dela."
+        ],
+        "related": [
+          "entidad.comunidades",
+          "entidad.inicio"
+        ],
         "audience": "Titularra, moderatzailea eta erreferentea."
       },
       "personaFicha": {
         "title": "Pertsonaren fitxa",
         "summary": "Pertsona baten zure erakundean izandako parte-hartzearen laburpena: komunitateak, aldiko jarduerak eta hurrengo jarduera. Ez du emailik, telefonorik ez oharrik: harremana beti aplikazioaren bidez da.",
+        "details": "Fitxak zure erakundeako parte-hartzea soilik erakusten du: komunitateak, aldiko jarduerak bere bertaratze-egoerarekin eta hurrengo jarduera. Inoiz ez ditu erakusten emaila, telefonoa, dokumentuak edo testu-libreko oharrak — harremana aplikazioaren txataren bidez da. Laguntza-sarearen atala pertsona horren erreferenteak bakarrik ikusten du; beste edonork, titularra barne, ez du atalik ikusten. Pertsona horri erreferentziarik ez dion erreferenteak 'sarbiderik ez' egoera ikusten du fitxaren ordez.",
         "actions": [
           "Bere erreferentea esleitu edo aldatu (titularra eta moderatzailea)",
           "Bere laguntza-sarea ikusi (bere erreferenteak bakarrik)",
           "Zein jardueratan izena eman zuen eta joan zen ala ez berrikusi"
+        ],
+        "tips": [
+          "Esleitutako erreferenteak bakarrik ikusten du laguntza-sarea — ez bilatu titularra bazara.",
+          "Fitxako jarduera-aldia uneko hilabetea da, Pertsonak zerrendan bezala."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.comunidades",
+          "entidad.programas"
         ],
         "audience": "Titularra, moderatzailea eta pertsona horren erreferentea."
       },
       "comunidades": {
         "title": "Komunitateak",
         "summary": "Zure erakundearen komunitateak eta beren kideak: nor dagoen barruan, nork moderatzen duen eta zain dauden sarrera-eskaerak.",
+        "details": "Komunitateak erakundeari dagozkie eta bakoitzak bere ikusgaitasuna dauka (irekia, eskaerarekin edo pribatua). Sarrera-eskaerak hemen zain geratzen dira inork onartzen dituen arte, eta kide bat kentzeak beti eskatzen du baieztapena aurretik. Familien komunitateak bereizitako espazio propioan daude — ez dira inoiz kideen komunitateekin nahasten, Familiak ataletik espazioen arteko gurutzaketa berez aktibatzen ez baduzu.",
         "actions": [
           "Komunitate bakoitza, bere ikusgaitasuna eta kideak ikusi",
           "Sarrera-eskaerak onartu edo ezetsi",
           "Moderatzaileak izendatu edo norbait bota (titularra eta moderatzailea)"
         ],
+        "tips": [
+          "Eskaera bat ezetzea desegiteko modukoa da — pertsonak berriro eska dezake sartzea."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.actividades",
+          "entidad.familias"
+        ],
         "audience": "Titularra, moderatzailea eta dinamizatzailea."
       },
       "actividades": {
         "title": "Jarduerak",
-        "summary": "Aldiko jarduerak, izena emandakoekin, bertaratutakoekin eta arduradunarekin.",
+        "summary": "Aldiko jarduerak, izena emandakoekin, bertaratutakoekin eta arduradunarekin. Aldiak etorkizunera iristen denean datozen jarduerak ere barne hartzen ditu.",
+        "details": "Zerrendak aukeratzen duzun aldia hartzen du, datozen jarduerak barne. Arduradunaren zutabea soilik betetzen da zure rola zerrenda nominala ikusi dezakeenean; bestela '—' erakusten du, asmatutako izen baten ordez. Bertaratze-orria irekitzeko aukera soilik eskaintzen da Bertaratzea atala zure menuan dagoenean — erreferenteak jarduerak ikusten ditu, baina bertaratzerako estekarik ez. Lerro bakoitzeko kontagailuak aldiko izena-emateak, joan direnak eta ez joan direnak dira.",
         "actions": [
           "Aldatu aldia (datozen jarduerak barne)",
           "Egoeraren arabera iragazi",
           "Jarduera bakoitzaren bertaratze-zerrendan sartu",
           "Bakoitzaren arduraduna nor den ikusi"
         ],
+        "tips": [
+          "Luzatu aldia datozen jarduerak ikusteko, iraganak ez ezik."
+        ],
+        "related": [
+          "entidad.asistencia",
+          "entidad.comunidades",
+          "entidad.programas"
+        ],
         "audience": "Titularra, moderatzailea, dinamizatzailea eta erreferentea."
       },
       "asistencia": {
         "title": "Bertaratzea",
         "summary": "Aukeratu jarduera bat zerrenda pasatzeko edo QR bidezko check-ina egiteko.",
+        "details": "Bertaratzea beti jardueraka da: aukeratu zerrendako bat bere bertaratze-orria irekitzeko. Zerrendak aldiko jarduerak erakusten ditu beren egoerarekin, beraz zuzenean joan zaitezke orain dela gutxi amaitu dena edo laister hasiko dena. Pantaila bera Jarduerak atala da — zerrenda hautatzailea da, ez dago bertaratzerako ikuspegi orokorrik.",
         "actions": [
           "Jarduera baten bertaratze-zerrenda ireki",
           "Bertaratzea eskuz markatu edo aplikazioaren QR kodea eskaneatu"
+        ],
+        "tips": [
+          "Eskuz markatzeak jarduera hasi ondoren bakarrik funtzionatzen du."
+        ],
+        "related": [
+          "entidad.actividades"
         ],
         "audience": "Titularra, moderatzailea eta dinamizatzailea."
       },
       "asistenciaEvento": {
         "title": "Bertaratze-zerrenda",
         "summary": "Nork eman zuen izena jarduera honetan eta nor etorri den. QR bidezko check-inak bi ordu lehenagotik hasi eta hasieratik hamabi ordura arte bakarrik funtzionatzen du.",
+        "details": "Bertaratzea eskuz markatzea jarduera hasi ondoren bakarrik da posible. QR bidezko check-inak aplikaziotik itsatsitako tokena edo 'popyplan://checkin/…' lotura osoa onartzen du, eta kamerarekin eskaneatu dezake, nabigatzaileak onartzen duenean. Hasieraren bi ordu lehenagotik hamabi ordu ondorenera arte funtzionatzen du; leiho horretatik kanpo backendaren berezko mezua erakusten da. Check-in errepikatu bat ohartarazpen gisa agertzen da, errore gisa ez — ez da ezer hautsi.",
         "actions": [
           "Pertsona bakoitza «joan da» edo «ez da joan» gisa markatu",
           "Pertsonak bere aplikazioan erakusten duen QR kodea eskaneatu edo kodea itsatsi"
+        ],
+        "tips": [
+          "Kamararik ez? Itsatsu popyplan:// lotura edozein mezutik eta tokena automatikoki ateratzen da.",
+          "Kode beraren eskaneo bigarren batek 'check-ina jada eginda' erakusten du — kontagailua batean geratzen da."
+        ],
+        "related": [
+          "entidad.asistencia",
+          "entidad.actividades"
         ],
         "audience": "Titularra, moderatzailea eta dinamizatzailea."
       },
       "comunicaciones": {
         "title": "Jakinarazpenak",
         "summary": "Erakundearen jakinarazpen ofizialak kide guztiei, komunitate bati edo familien espazioari, historiarekin eta hartzaile-kopuruarekin.",
+        "details": "Jakinarazpenak erakundearen mezu ofizialak dira kide guztiei, komunitate bati edo familien espazioari — familien aukera ez da desblokeatzen familien komunitate bat existitu arte. Ez dago hartzaileen aurrebistarik: baieztapenak hartzaileak deskribatzen ditu eta hartzaile-kopuru erreala bidali ondoren agertzen da. Laguntza-sarearen ongietorri-txantiloiak inprimakia soilik betetzen du; bidaltzea beti zure erabakia da, eta dagoeneko zirriborro bat gainidazten baduzu baieztapena eskatzen da aurretik.",
         "actions": [
           "Jakinarazpen bat idatzi eta bidali (titularra eta moderatzailea)",
           "Laguntza-sarerako ongietorri txantiloia erabili familien espazioa dagoenean",
           "Historia kontsultatu"
+        ],
+        "tips": [
+          "Historiako hartzaile-kopurua benetan heldutako kopurua da — egiaztatu bidali ondoren.",
+          "Txantiloiak uneko zirriborroa gainidazten du; zure testua mantendu nahi baduzu, utzi."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.comunidades",
+          "entidad.encuestas"
         ],
         "audience": "Titularra eta moderatzailea."
       },
       "encuestas": {
         "title": "Inkestak",
         "summary": "Inkesta anonimo eta agregatuak: zuk sortzen dituzun aldizkakoak eta aplikazioak jarduera bakoitzaren ondoren bakarrik bidaltzen dituenak.",
+        "details": "Hemen inkesta aldizkakoak bakarrik sortzen dira; aplikazioak jarduera osteko inkestak bere kabuz bidaltzen ditu jarduera bakoitza amaitutakoan, beraz zerrendan agertzen dira inork sortu gabe. Irekita edo itxita egoera inkestaren hasiera- eta amaiera-data propioetatik dator. Erantzun guztiak anonimoak eta bilduak dira — ez da erantzunik lotzen inongo pertsonarekin, eta bost erantzun baino gutxiagoko emaitza orok bere xehetasuna ezkutatzen du.",
         "actions": [
           "Inkesta aldizkako bat sortu galderekin (titularra eta moderatzailea)",
           "Irekita edo itxita dagoen ikusi eta emaitzetan sartu"
+        ],
+        "tips": [
+          "Jarduera osteko inkestak aplikazioak sortzen ditu — ez bilatu 'jarduera osteko inkesta berria' botoirik."
+        ],
+        "related": [
+          "entidad.comunicaciones"
         ],
         "audience": "Titularra, moderatzailea eta dinamizatzailea."
       },
       "encuestaResultados": {
         "title": "Inkestaren emaitzak",
         "summary": "Galdera bakoitzeko emaitza agregatuak. Bost erantzun baino gutxiagorekin xehetasuna ez da erakusten, inor identifikagarria ez izateko.",
+        "details": "Emaitzak galderaka bilduta daude: balorazio-galderetarako batez bestekoa eta banaketa, eta testu laburrerako ordenatu gabeko zerrenda — testu-erantzunek ez dute egilerik ezta ordenerik. Bost erantzun baino gutxiagoko galdera oro ezkutatzen da eta <5 gisa erakusten da, inor ezin izan dadin zenbakietatik atera. Anonimotasun-ohartarazpena beti pantailan dago, araua baita, xehetasun bat ez.",
         "actions": [
           "Galdera bakoitzaren batez bestekoa eta banaketa ikusi",
           "Testu-erantzunak ordenarik eta egilerik gabe irakurri"
+        ],
+        "tips": [
+          "<5 esan nahi du 'bost erantzun baino gutxiago', ez zero — inkesta oraindik irekita egon daiteke."
+        ],
+        "related": [
+          "entidad.encuestas",
+          "entidad.comunicaciones"
         ],
         "audience": "Titularra, moderatzailea eta dinamizatzailea."
       },
       "biblioteca": {
         "title": "Liburutegia",
         "summary": "Erakundearen edukien liburutegia: testuak, PDFak, bideoak, audioak eta estekak, kategoriaka antolatuta eta kideei, familiei edo edonori zuzenduta.",
+        "details": "Baliabideak kategoriaka taldekatuta daude — laguntza, prestakuntza, familiak, ohiturak, jarduerak, erakundeari buruz, eta laguntza-sarerako «Nola lagundu» — eta bakoitzak hartzaileak ditu: kideak, familiak edo edonor. Familien hartzaileak soilik agertzen dira familien komunitate bat existitu arte. Fitxategiak igo aurretik balioztatzen dira (20 MB eta dokumentu, audio edo bideo formatu ohikoenak) eta zerbitzariak berriz balioztatzen ditu halere, beraz onartu gabeko fitxategia backendaren mezuarekin azaltzen da.",
         "actions": [
           "Baliabideak sortu, editatu edo ezabatu (titularra eta moderatzailea)",
           "Kategoria eta hartzaileak aukeratu; «Nola lagundu» da laguntza-sarearen kategoria"
+        ],
+        "tips": [
+          "Editatzean dagoen fitxategia mantentzen da beste bat hautatu ezean — fitxategi-eremua hutsik hasten da.",
+          "Baliabide bat ezabatzeak beti eskatzen du baieztapena eta ezin da desegin."
+        ],
+        "related": [
+          "entidad.familias",
+          "entidad.comunicaciones",
+          "entidad.programas"
         ],
         "audience": "Titularra, moderatzailea eta dinamizatzailea."
       },
       "familias": {
         "title": "Familiak",
         "summary": "Erakundearen familien espazioa, kideenatik bereizita: bere komunitateak, datozen jarduerak, jakinarazpenak eta baliabideak, eta laguntza-sarearen kontagailu agregatuak. Inork ez du bere burua inoren familiartzat aitortzen.",
+        "details": "Familien espazioa kideen espaziotik bereizita dago eta bienak nahasten dira komunitatez komunitate espazioen arteko gurutzaketa baimentzen baduzu — baieztapenak bereizketako araua azaltzen du lehenengo. Kontagailuek panelaren gainerakoak duen pribatutasun-arau bera betetzen dute: pertsona desberdin bost baino gutxiagoko edozein kopuru <5 gisa erakusten da. Familien komunitate baten zain dauden laguntzaileak pertsona gisa zenbatzen dira, eta panelak esaten dizu noiz sortuko litzatekeen komunitate bat beraiengan harrera egiteko.",
         "actions": [
           "Familien komunitatea sortu (titularra eta moderatzailea)",
           "Komunitate bakoitzaren espazioen arteko gurutzaketa piztu edo itzali",
           "Zenbat pertsonak duten laguntza-sarea eta zenbat laguntzailek zain dauden komunitatea sortzeko"
+        ],
+        "tips": [
+          "Bereizketako banda araua da, ohartarazpen bat ez: kideek eta familiak ez dute elkar ikusten.",
+          "Dinamizatzaileek atal hau ikusten dute, baina komunitateak sortu edo aldatzeko titularrak eta moderatzaileak bakarrik daude."
+        ],
+        "related": [
+          "entidad.comunidades",
+          "entidad.biblioteca",
+          "entidad.comunicaciones"
         ],
         "audience": "Titularra, moderatzailea eta dinamizatzailea."
       },
       "programas": {
         "title": "Programak",
         "summary": "Data itxiak eta adierazitako aurrekontua dituzten kanpainak, bere azken txosten agregatuarekin. Programa batek inoiz ez ditu pertsonak zerrendatzen.",
+        "details": "Programa data itxieko eta aurrekontu deklaratuko kanpaina bat da, eta bere egoera bakarrik aurrera doa: zirriborroa → aktiboa → itxita. Itxitako programa ezin da berriro editatu, eta ixteak ixte-oharrak eskatzen ditu. Txostenak agregatuak soilik ditu — programa batek inoiz ez ditu pertsonak zerrendatzen, titularrarentzat ere ez. Programa baten orrialdeko metrikak programa horren data-aldia kontuan hartuta kalkulatzen dira.",
         "actions": [
           "Programak sortu, aktibatu eta itxi (titularra eta moderatzailea)",
           "CSV edo PDF txostena deskargatu (titularra, moderatzailea eta analista)"
+        ],
+        "tips": [
+          "Ixtea ezin da desegin — egiaztatu ixte-oharrak baieztatu aurretik."
+        ],
+        "related": [
+          "entidad.informes",
+          "entidad.actividades"
         ],
         "audience": "Erakundeko rol guztiak."
       },
       "programaFicha": {
         "title": "Programaren fitxa",
-        "summary": "Programaren egoera, datak, aurrekontua eta metrikak bere aldian.",
+        "summary": "Programaren egoera, datak, aurrekontua eta metrikak bere aldian, bere azken txostenarekin.",
+        "details": "Fitxak programaren egoera, datak, aurrekontua eta bere data-aldia kontuan hartuta kalkulatutako metrikak erakusten ditu. Editatzea ixtearen aurretik bakarrik da posible: ixteak oharrak eskatzen ditu eta ezin da desegin. Backendak data-aldaketa bat baztertzen badu, bere balioztapen-mezu zehatza erakusten da, orokor baten ordez. Txostena CSV edo PDF gisa deskargatzen da eta agregatuak soilik ditu — inoiz ez pertsonen zerrenda.",
         "actions": [
           "Programa editatu, aktibatu edo itxi ixte-oharrekin (titularra eta moderatzailea)",
           "Bere txostena deskargatu"
+        ],
+        "tips": [
+          "Aktibatu, itxi edo editatu ondoren orrialdea bere kabuz berritzen da — ez da eskuz berriz kargatu behar."
+        ],
+        "related": [
+          "entidad.programas",
+          "entidad.informes"
         ],
         "audience": "Erakundeko rol guztiak; kudeatzea titularrak eta moderatzaileak bakarrik."
       },
       "reportes": {
         "title": "Salaketak",
         "summary": "Zure erakundearen moderazio-salaketen ilara: zer salatu den, zergatik eta zein egoeratan dagoen.",
+        "details": "Ilarak zure erakundeako edukiaren salaketak biltzen ditu, arrazoiarekin eta uneko egoerarekin. Salaketa bat taldeko pertsona bati esleitu, erabaki batekin ebatzi edo Popyplanera igo dezakezu erakundea gainditzen duenean — igotako salaketak plataformaren ilara orokorrean ere agertzen dira. Ebaztea eta esleitzea moderazio-erabakiak dira, salaketaren historian erregistratzen direnak, norbaitek hartu zituen ere.",
         "actions": [
           "Salaketa bakoitza ireki",
           "Esleitu, ebatzi edo plataformara igo"
+        ],
+        "tips": [
+          "Igo edukia plataformaren arauak hautsitzen dituenean, ez soilik erakundearenak."
+        ],
+        "related": [
+          "entidad.guardia"
         ],
         "audience": "Titularra eta moderatzailea."
       },
       "reporteDetalle": {
         "title": "Salaketaren xehetasuna",
         "summary": "Salaketa bati buruz erabakitzeko jakin behar den guztia: arrazoia, salatutako edukia, historia eta nork daraman.",
+        "details": "Xehetasunak erabakitzeko behar duzun guztia biltzen du: arrazoia, salatutako edukia, historia eta nork daraman. Ebazteak erabakia erregistratzen du; igotzeak salaketa Popyplanen esku uzten du erakundea gainditzen duenean. Esleitutako pertsona 'taldeko pertsona bat' gisa erakusten da, izenik gabe.",
         "actions": [
           "Taldeko pertsona bati esleitu",
           "Erabaki batekin ebatzi",
           "Popyplanera igo erakundea gainditzen badu"
+        ],
+        "tips": [
+          "Irakurri historia erabaki aurretik — moderazio-ekintza aurrekoak testuinguruaren parte dira."
+        ],
+        "related": [
+          "entidad.reportes",
+          "entidad.guardia"
         ],
         "audience": "Titularra eta moderatzailea."
       },
       "guardia": {
         "title": "Txanda",
         "summary": "Zure erakundeko pertsonen «gaur txarto nago» abisuak eta txandan nor dagoen konfiguratzeko atala. Popyplanek ez ditu telefonoak gordetzen: kontaktua aplikazioaren txataren bidez edo erreferentearen bidez da.",
+        "details": "Abisuak zure erakundeako pertsonen aplikazioko «gaur txarto nago» eskaerak dira. Titularrak ezarritako txandako pertsonak eta txandakoek ikusten dituzte, beren rola titularra edo moderatzailea ez izan arren. Popyplanek ez ditu telefonoak gordetzen: kontaktua aplikazioaren txataren bidez edo pertsonaren erreferentearen bidez da, eta panelak erakusten du bere laguntza-sareko norbaitek hartu duen jadanik ardura.",
         "actions": [
           "Abisu bati erantzun",
           "Laguntza-telefonoa ezarri eta txandako pertsona hautatu (titularrak bakarrik)",
           "Pertsonaren laguntza-sareko norbait dagoeneko arduratu den ikusi"
         ],
+        "tips": [
+          "Txandako pertsonak atal hau ikusten du moderatzaile-rolik izan gabe ere."
+        ],
+        "related": [
+          "entidad.inicio",
+          "entidad.reportes",
+          "entidad.configuracion"
+        ],
         "audience": "Titularra, moderatzailea eta txandako pertsona."
       },
       "informes": {
         "title": "Txostenak",
-        "summary": "Erakundearen metrikak CSV edo PDF gisa esportatzea, aldiaren eta banaketaren arabera, panelaren gainerakoak duen agregazio-arau berarekin.",
+        "summary": "Erakundearen metrikak CSV edo PDF gisa esportatzea, aldiaren eta banaketaren arabera, finantzatzaileekin partekatzeko prest.",
+        "details": "Txostenek Hasierako metrikekin berdinak diren zifrak daramatzate aukeratutako aldiarentzat — hilabete hau, azken 3 edo 12 hilabeteak, edo urte anitzekoa. Aldiak gehienez 1461 egun hartzen ditu bi dataren artean. Pertsona desberdin bost baino gutxiago zenbatzen duen edozein gelaxka <5 gisa erakusten da — pribatutasuna babesten duen agregazio-atalase bat, ezgaitu ezin dena. Urteko banaketak seriea hilabetearen ordez urtez taldekatzen du. Fitxategiek agregatuak soilik dute, inoiz ez datu pertsonalik.",
         "actions": [
           "Aldia eta banaketa aukeratu (ohikoa edo urteka)",
           "Txostena deskargatu"
+        ],
+        "tips": [
+          "Erabili urteko banaketa urte anitzeko memoria-txostenetarako.",
+          "CSV edozein kalkulu-orrian irekitzen da; erabili PDF erantsiko duzun dokumentu baterako."
+        ],
+        "related": [
+          "entidad.inicio",
+          "entidad.programas"
         ],
         "audience": "Titularra, moderatzailea eta analista."
       },
       "configuracion": {
         "title": "Konfigurazioa",
         "summary": "Erakundearen datuak, taldea bere roleekin eta erreferenteen eta pertsonen arteko erreferentziak.",
+        "details": "Erakundearen datuak, txandako ezarpenak, taldea eta kideen erreferentziak, eta erakundearen lurralde-eremua. Taldeko fitxa titularrarena bakarrik da: moderatzaileak erreferentziak eta datuak ikusten ditu, baina ez kideen zerrenda. Hemen egiten den idazketa gehiena auditatuta dago eta titularrara mugatuta, beraz aldaketak norbaitek egin zituen jarraitu daiteke.",
         "actions": [
           "Taldean norbait alta edo baja eman (titularrak bakarrik)",
           "Erreferentziak esleitu",
           "Erakundearen datuak eta koloreak doitu"
+        ],
+        "tips": [
+          "Txandako pertsona aldatzeak berehala hartzen du eraguna laguntza-eskaera berrietan."
+        ],
+        "related": [
+          "entidad.guardia",
+          "entidad.personas"
         ],
         "audience": "Titularra eta moderatzailea; taldea titularrak bakarrik ikusten du."
       }
@@ -1542,38 +1710,73 @@
       "inicio": {
         "title": "Aterkiaren hasiera",
         "summary": "Administrazioaren begiratu bat: nola dagoen adierazitako zure lurraldea eta nola dagoen finantzatzen duzun erakunde-sarea, bloke bakoitza bere atalerako estekarekin.",
+        "details": "Aterkiaren hasiera aterkiaren bi ikuspegien sarbidea da: lurraldearen behatokia eta finantzatutako sarea. Biak panelaren gainerakoak duen pribatutasun-arau bera betetzen duten agregatu-panelak dira — pertsona desberdin bost baino gutxiago zenbatzen duen edozein talde «<5» gisa erakusten da — eta ez da batak ere pertsonarik zerrendatzen. Ireki ikuspegi bata zein bestea aldia aldatzeko eta banaketak arakatzeko.",
         "actions": [
           "Lurraldearen behatokia ireki",
           "Finantzatutako sarea ireki"
+        ],
+        "tips": [
+          "Hemen dena agregatua da: ez da inongo pertsona identifikagarria izaten."
+        ],
+        "related": [
+          "paraguas.territorio",
+          "paraguas.informes",
+          "paraguas.redFinanciada"
         ],
         "audience": "Erakunde aterkiko rol guztiak."
       },
       "territorio": {
         "title": "Lurraldea",
         "summary": "Adierazitako zure lurraldearen behatokia: bere udalerrietan gertatzen den guztia, edozein erakunderena dela ere. Burbuila-mapa, udalerrika banatutako taula, hileko seriea eta aurreko aldiarekiko konparaketa. Inoiz ez dituzu pertsonak ikusten: bost baino gutxiagoko talde oro «<5» gisa erakusten da.",
+        "details": "Lurralde-ikuspegiak zure adierazitako eremuaren barruko jarduera guztiak biltzen ditu, norbaitek bultzatzen dituen ere: saretik kanpoko erakunde bat ere zenbatzen da zure lurraldean lan egiten badu. Eskema finkoa eta pribatutasun-atalasea gelaxkaz gelaxka aplikatzen dira — pertsona desberdin bost baino gutxiagoko taldeak «<5» gisa erakusten dira. Konparaketak luzera bereko aurreko aldia neurtzen du eta banaketa bat eskatzen du. Udalerri-fitxak agregatuak soilik erakusten ditu — ez ditu inoiz han dauden pertsona edo erakundeen izenik.",
         "actions": [
           "Aldia aldatu",
           "Udalerri bat ireki bere fitxa agregatua ikusteko",
           "Eskualdeak, udalerriak edo probintziak aurreko aldiarekin konparatu"
+        ],
+        "tips": [
+          "Aldiak ezin ditu bi dataren artean 1461 egun baino gehiago hartu (4 urte inguru).",
+          "Udalerri-fitxa agregatuak soilik erakusten ditu: ez pertsona ez erakundeen izenik."
+        ],
+        "related": [
+          "paraguas.inicio",
+          "paraguas.redFinanciada"
         ],
         "audience": "Administrazioko rol guztiak."
       },
       "informes": {
         "title": "Aterkiaren txostenak",
         "summary": "Lurraldearen edo finantzatutako sarearen esportazio agregatua CSV edo PDF gisa.",
+        "details": "Esportazioek panela beraren eskema finkoa eta pribatutasun-atalase bera betetzen dute: pertsona desberdin bost baino gutxiagoko taldeak «<5» gisa esportatzen dira, eta ez da inongo txostentan pertsonen izenik. Aukeratu esparrua —lurraldea edo finantzatutako sarea—, aldia eta banaketa, edo 'urteka' urte anitzeko memoria baterako. PDFa sortzeak backendaren araberakoa da: ez dagoenean fitxategiaren ordez ohartarazpen zehatza jasotzen duzu, CSV ordea lanean jarraitzen du.",
         "actions": [
           "Esparrua aukeratu (lurraldea edo finantzatutako sarea)",
           "Aldia eta banaketa aukeratu",
           "Txostena deskargatu"
+        ],
+        "tips": [
+          "'Urteka' urteko lerro bat ematen du eta udalerrizko atala hutsik uzten du.",
+          "PDF esportazioa ez dagoenean ohartarazpenak hori zehazki ematen du; CSV ordea lanean dago."
+        ],
+        "related": [
+          "paraguas.inicio"
         ],
         "audience": "Titularra, moderatzailea eta analista."
       },
       "redFinanciada": {
         "title": "Finantzatutako sarea",
         "summary": "Administrazio honen menpe dauden erakundeen metrika agregatuak: pertsonak, jarduerak eta bertaratzea udalerriz, erakundez eta hilabetez, eta aurreko aldiarekiko konparaketa. Erakundeen zuhaitzari jarraitzen dio, ez lurraldeari.",
+        "details": "Finantzatutako sareak administrazio honen menpe dauden erakundeak biltzen ditu, guraso-ume zuhaitzari jarraituz — lurraldetik kanpoko erakunde bat ere zenbatzen da zure menpe badago. Aldi bakoitzean oinarrizko txartelak eta udalerrizko, erakundezko eta hileko banaketak kargatzen dira, atalase berarekin: pertsona desberdin bost baino gutxiagoko taldeak «<5» gisa erakusten dira. Konparaketak luzera bereko aurreko aldia neurtzen du eta banaketa bat eskatzen du.",
         "actions": [
           "Aldia aldatu",
           "Eskualdeak, erakundeak edo udalerriak aurreko aldiarekin konparatu"
+        ],
+        "tips": [
+          "Zuhaitzak erabakitzen du nortzuk sartzen diren, ez geografia: zure erakundeen umeak zenbatzen dira, zure lurraldetik kanpo daudenean ere.",
+          "Pertsonen gelaxkak bost baino gutxiago zirenean ezkutatzen dira; jarduera-kopuruak ez dira inoiz ezkutatzen."
+        ],
+        "related": [
+          "paraguas.inicio",
+          "paraguas.territorio"
         ],
         "audience": "Administrazioko rol guztiak."
       }
@@ -1582,98 +1785,196 @@
       "inicio": {
         "title": "Plataformaren hasiera",
         "summary": "Popyplanen egoera orokorra: egiaztatutako eta zain dauden erakundeak, plataformara igotako salaketak, erantzun gabeko laguntza-abisuak, kontratuak eta fakturak.",
+        "details": "Txartel bakoitzak bere ilara irekitzen du, eta txartelak zure rolak dituen ataletakoak baino ez dira agertzen: egiaztatutako eta zain dauden erakundeak, plataformara igotako salaketak, erantzun gabeko laguntza-abisuak, eta —Harpidetzak ikusten duten roletarako— kontratuak eta mugaeguna igarota duten fakturak. Erabilera-datuak (pertsona aktiboak, programatutako jarduerak) administrazioaren endpoint batetik datoz, beraz superadminek bakarrik jasotzen ditu. Bestelako arrazoi batek huts egiten duen txartelak «Ez dago erabilgarri» dio — hutsegitea ez da inoiz zeroren gisa erakusten.",
         "actions": [
-          "Ilara bakoitzean sartu bere txartelatik"
+          "Ilara bakoitzean sartu bere txartelatik",
+          "Erabilera-ikuspegia ikusi (superadmin bakarrik)"
+        ],
+        "tips": [
+          "Txartelek zure rolaren menua jarraitzen dute: ez ikusten duzuna zure roletik kanpo dago, ez da falta.",
+          "«Ez dago erabilgarri» esan nahi du eskaerak huts egin duela, ez kopurua zeroren dela."
+        ],
+        "related": [
+          "plataforma.entidades",
+          "plataforma.reportes",
+          "plataforma.metricas"
         ],
         "audience": "Popyplan taldea, bere rolaren arabera."
       },
       "entidades": {
         "title": "Erakundeak",
-        "summary": "Alta emandako erakunde guztiak, egiaztatuta egon zein ez.",
+        "summary": "Alta emandako erakunde guztiak, egiaztatuta egon zein ez, bilaketa eta iragazkiekin. Alta ematea eta egiaztatzea egiaztatzailearen eta superadminaren zereginak dira.",
+        "details": "Erakunde guztien direktorioa, egiaztatuta egon zein ez. Zerrenda orrikatuta dago eta egiaztapen-egoera eta testu-libreko bilaketaren arabera iragazten da; bilaketa gelditzen zaren laister ondoren aplikatzen da. Erakunde berri bat alta egitea egiaztatzailearen/superadminaren ekintza da, eta erakunde berria egiaztatu gabe jaio da, bere fitxatik egiaztatu ezean. Ireki fitxa bat bere aterkia, eremua, taldea, metrikak eta kontratua kudeatzeko.",
         "actions": [
           "Egiaztapenaren arabera bilatu eta iragazi",
           "Erakunde berri bat alta eman (egiaztatzailea eta superadmin)",
           "Bere fitxa ireki"
+        ],
+        "tips": [
+          "Erakunde berriak egiaztatu gabe geratzen dira egiaztatzaile edo superadmin batek egiaztatzen dituen arte.",
+          "Bilaketa-kaxak idazten duzun bitartean pausa labur baten ondoren aplikatzen du."
+        ],
+        "related": [
+          "plataforma.verificaciones"
         ],
         "audience": "Superadmin eta egiaztatzailea."
       },
       "entidadFicha": {
         "title": "Erakundearen fitxa",
         "summary": "Erakunde baten datuak, aterkia, lurralde-eremua, taldea, metrikak, komunitateak eta kontratua.",
+        "details": "Fitxa bakarrean zazpi fitxa: datuak (egiaztapenarekin), aterkia (gurasoa berriro esleitzea superadimena da bakarrik), lurralde-eremua (hemendik superadimena; erakundearen titularrak ere zabal dezake), taldea, metrikak, komunitateak eta jarduerak, eta irakurketako kontratu-fitxa, aktiboa den kontratua eta bere azken faktura erakusten dituena. Erakunde horretako kiderik ez duen egiaztatzaileak «Sarbiderik ez» zehatza jasotzen du, datu faltsuren ordez.",
         "actions": [
           "Egiaztatu",
           "Aterki bat esleitu edo bere eremua zabaldu (superadmin)",
           "Bere taldea kudeatu"
         ],
+        "tips": [
+          "Kontratu bat baino gehiago dagoenean, fitxak aktiboa dagoena lehenesten du.",
+          "Aterkia berriro esleitzea edo eremua zabaltzea hemendik superadimenarena bakarrik da."
+        ],
+        "related": [
+          "plataforma.entidades",
+          "plataforma.suscripciones"
+        ],
         "audience": "Superadmin eta egiaztatzailea; fitxa batzuk superadminek bakarrik."
       },
       "reportes": {
         "title": "Plataformara igotako salaketak",
-        "summary": "Erakundeek Popyplanera igotako salaketen ilara orokorra.",
+        "summary": "Erakundeek Popyplanera igotako salaketen ilara orokorra, beren erakundearekin eta igoera-datarekin.",
+        "details": "Igotako salaketak bakarrik iristen dira ilara honetara: erakundeak beregan ebatzi dezakeena ebatzi eta besteak Popyplanera igotzen ditu. Zerrenda ez dago orrikatuta — igotako salaketa guztiak orri bakarrean daude — eta jatorrizko erakundea aipatzen du, zain daudenetan «Plataformara eskalatuta» etiketarekin. Moderatzaileak eta superadminek esleitu eta ebatz dezakete; laguntzak irakurketako sarbidea du, beraz bere ekintza-botoiak ezkutatuta daude, desgaituta ez.",
         "actions": [
           "Salaketa bakoitza ireki",
           "Esleitu edo ebatzi (moderatzailea eta superadmin); laguntzak kontsulta bakarrik egin dezake"
+        ],
+        "tips": [
+          "Hemen erakunde batek asmoz igotako salaketak bakarrik agertzen dira; gainerakoak erakundearen ilara propioan geratzen dira.",
+          "Laguntzak ilara bera ikusten du ekintza-botoirik gabe."
+        ],
+        "related": [
+          "plataforma.inicio"
         ],
         "audience": "Superadmin, moderatzailea eta laguntza."
       },
       "reporteDetalle": {
         "title": "Salaketaren xehetasuna",
         "summary": "Plataformara igotako salaketa baten arrazoia, edukia, jatorrizko erakundea eta historia.",
+        "details": "Igotako salaketa baten irudi osoa: hizkera arrunteko arrazoia, salatutako edukia, jatorrizko erakundea eta bere tramitazio-historia. Moderatzaileak eta superadminek taldeko pertsona bati esleitu edo erabaki batekin ebatz dezakete; laguntzarako ekintza guztiak ezkutatuta daude, bere rola irakurketakoa baita. Kontratua ez duena izendatzen ez da inoiz asmatzen — esleitze batek 'taldeko pertsona bat' erakusten du, datuak ez duen identitate baten ordez.",
         "actions": [
-          "Esleitu edo ebatzi (moderatzailea eta superadmin)"
+          "Esleitu edo ebatzi (moderatzailea eta superadmin)",
+          "Arrazoia, edukia eta historia berrikusi (laguntzak ikuspegi bera irakurtzen du)"
+        ],
+        "tips": [
+          "Laguntzaren ikuspegia ekintzak kenduta bera da: ez da ezer nahastuta editatzen.",
+          "Arrazoiak eta egoerak itzulita daude; panelak ez duen balio batek bere testu gordina erabiltzen du."
+        ],
+        "related": [
+          "plataforma.reportes"
         ],
         "audience": "Superadmin, moderatzailea eta laguntza."
       },
       "ayuda": {
         "title": "Laguntza-abisuak",
         "summary": "Plataforma osoan zain dauden «gaur txarto nago» abisuak, erantzuteko txandarik ez duten erakundeak antzemateko.",
+        "details": "Eskaera agregatu batek plataforma osoko abisu zainak zerrendatzen ditu, beraz antzematen duzu abisuak inork erantzuten ez dizkion erakunde bat. Abisu bakoitzak bere erakundea erakusten du, pertsona bertakoa den ala ez, eta bere erreferentea hau badu. Popyplanek ez ditu telefonoak gordetzen: kontaktua aplikazioaren txataren bidez edo erreferentearen bidez da. Abisu bati erantzuteak hemen eta erakundearen txanda-pantailan bertan jaso gisa markatzen du.",
         "actions": [
           "Abisua, bere erakundea eta erreferentea ikusi",
           "Behar bada erantzun"
+        ],
+        "tips": [
+          "Zerrendaren azpiko lerro finkoak telefonorik-ez araua azaltzen du — ez da falta den eremurik.",
+          "Etiketa batek erakusten du ez-bertako pertsona baten abisuak."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.reportes"
         ],
         "audience": "Superadmin, moderatzailea eta laguntza."
       },
       "verificaciones": {
         "title": "Egiaztapenak",
-        "summary": "Zain dauden identitate-berrikuspenak: pertsonaren dokumentua eta hornitzailearen arrazoia.",
+        "summary": "Zain dauden identitate-berrikuspenak: pertsonaren dokumentua eta hornitzailearen arrazoia, ohar batekin ebatzita.",
+        "details": "Zain dauden identitate-berrikuspenen ilara. Lerro bakoitzak pertsonaren errekurtso-testua hornitzaileak hura markatu zuen arrazoiarekin parekatzen du, bi aldeak ikusita erabaki dezazun. Onartzeak edo ezetzeak beti eskatzen du ohar bat, eta erabakia egiaztatzailearena eta superadminarena bakarrik da. Berrikuspenak ebatzen dituzun heinean ilara txikitzen da; zeuden orria husten bada, lehenengora itzultzen zara automatikoki.",
         "actions": [
-          "Onartu edo ezetsi ohar batekin"
+          "Onartu edo ezetsi ohar batekin",
+          "Lehenengo pertsonaren errekurtsoa eta hornitzailearen arrazoia berrikusi"
+        ],
+        "tips": [
+          "Oharra erabakiaren parte da: idatzi etorkizuneko auditore batek behar duena.",
+          "Ebatzitako berrikuspenak ilara uzten dute beren kabuz; hustutako orri bat lehenengo orrira itzultzen zaitu."
+        ],
+        "related": [
+          "plataforma.entidades"
         ],
         "audience": "Superadmin eta egiaztatzailea."
       },
       "roles": {
         "title": "Rolak",
         "summary": "Nortzuk osatzen duten Popyplan taldea eta zein plataforma-rolekin.",
+        "details": "Plataforma-rolek erakunde-rolei dagozkienetik bereizita daude: pertsona bat plataformako administratzailea izan daiteke eta, hala ere, rola eduki erakunde baten barruan. Hemen emandako rola plataforma-eremurako sarbidea ematen du soilik. Emateak kontua bilatzen du emailaren edo erabiltzaile-izenaren arabera; erabiltzailearen identifikatzailea beti dabil bigarren aukera gisa. Baliogabetzeak baieztapen zehatza eskatzen du, berehala kentzen baitu plataformako sarbidea.",
         "actions": [
           "Kontua bilatuz rol bat eman",
           "Baliogabetu"
+        ],
+        "tips": [
+          "Rol bat baliogabetzeak berehala hartzen du eraguna.",
+          "Kontu-bilaketak emaila onartzen du; erabiltzailearen identifikatzailea beti dabil bigarren aukera gisa."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.auditoria"
         ],
         "audience": "Superadmin bakarrik."
       },
       "auditoria": {
         "title": "Auditoria",
         "summary": "Sistema osoko ekintza sentikorren erregistroa, egilearen, ekintzaren, objektuaren eta dataren araberako iragazkiekin.",
+        "details": "Sistema osoko ekintza sentikor guztiak, superadmin bakarrik. Iragazkiek egilearen, ekintzaren, objektuaren eta data-tartearen araberakoa estutzen dute, eta lerro bakoitzak bere metadatua irakurgarri gako=balio paretan erakusten du. CSV esportazioa uneko orrialdearen bezero-aldekoa da, ez zerbitzari-aldekoa: puntu eta komaz bereizita, BOM batekin Excelek ondo irekitzeko, gelaxka guztiak komatxo artean, eta kalkulu-orriko formula bihur daitezkeen balioak desaktibatuta. Esportatu behar duzun zatia lortzeko, esportatu aurretik iragazi.",
         "actions": [
           "Erregistroa iragazi eta berrikusi",
           "Uneko orrialdea CSV gisa esportatu"
+        ],
+        "tips": [
+          "CSVk uneko orria soilik esportatzen du — lehenengo iragazi, gero esportatu.",
+          "Orrialde bat deskargatzea ez da berez auditatzen; backendaren ekintzak baino ez."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.roles"
         ],
         "audience": "Superadmin bakarrik."
       },
       "metricas": {
         "title": "Metrikak",
         "summary": "Plataforma osoaren metrika agregatuak, lurraldeka edo erakundeka, aldien arteko konparaketarekin.",
+        "details": "Plataforma osoko metrikak, erakunde-metrikekin eskema finko berarekin. Lurraldea/erakundea hautatzaileak erabakitzen du eskaera bakoitzak zein banaketa erabiltzen duen, eta konparaketa-blokea derrigorrekoa da: banaketa bat aukeratu behar duzu (lehenetsita probintzia) uneko aldia luzera bereko aurrekoarekin konparatzeko. Pertsona desberdin bost baino gutxiagoko gelaxkak <5 gisa erakusten dira — pribatutasun-atalasea esparru guztietan aplikatzen da.",
         "actions": [
           "Aldia eta banaketa aldatu",
           "Esportatu"
+        ],
+        "tips": [
+          "Urteko banaketak urteko lerro bat ematen du urte anitzeko ikuspegi baterako."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.suscripciones"
         ],
         "audience": "Superadmin, moderatzailea eta laguntza."
       },
       "suscripciones": {
         "title": "Harpidetzak",
         "summary": "Popyplanek erakunde bakoitzarekin dituen harpidetzak: kontratuak, prezio-tarteak eta fakturak.",
+        "details": "Hiru fitxa: kontratuak, prezio-tarteak eta fakturak. Kontratuak aurrera bakarrik doaz —zirriborroa, aktiboa, amaituta— eta fakturak bere egoera kalkulatzen dute (ordainduta, zain, mugaeguna igarota). Superadminek bakarrik idazten dezakete: laguntzarako botoiak ezkutatuta daude, inoiz desgaituta ez. Eta amaitutako kontratuak fakturazio-historia hutsa dira — ez du inoiz erakundearentzako eginbiderik desaktibatzen.",
         "actions": [
           "Kontratuak, tarteak eta fakturak sortu eta aktibatu (superadmin)",
           "Fakturak ordainduta gisa markatu"
+        ],
+        "tips": [
+          "Faktura-egoera kalkulatzen da, ez aukeratzen: ordaintzeak (edo epe-mugak) mugitzen du.",
+          "Kontratu bat amaitzeak ez du inoiz eraginik erakundeak panela egin dezakeenari."
+        ],
+        "related": [
+          "plataforma.entidades",
+          "plataforma.metricas"
         ],
         "audience": "Superadmin eta laguntza; laguntzak kontsulta bakarrik egin dezake."
       }

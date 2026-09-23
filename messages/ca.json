@@ -27,6 +27,9 @@
     "skipLink": "Vés al contingut principal",
     "pageHelp": {
       "whatYouCanDo": "Què pots fer aquí",
+      "detailsLabel": "Com funciona",
+      "tipsLabel": "Consells",
+      "relatedLabel": "Pantalles relacionades",
       "audienceLabel": "Qui la veu:",
       "ariaLabel": "Ajuda: {title}"
     }
@@ -1356,184 +1359,349 @@
     "entidad": {
       "inicio": {
         "title": "Inici",
-        "summary": "Vista general de la teva entitat per avui: activitats del dia, avisos pendents i les mètriques del mes en curs.",
+        "summary": "Vista general de la teva entitat per avui: activitats del dia, avisos pendents, programes actius i les mètriques del mes en curs.",
+        "details": "Tot el que veus a l'Inici ja està calculat per la plataforma: les activitats d'avui, els avisos d'ajuda i els informes pendents (només comptadors), les mètriques del mes en curs i els programes actius. Els comptadors de guàrdia s'amaguen —no es mostren com un error— pels rols que el backend no deixa moderar (analista, dinamitzador, referent); simplement no veuen aquestes targetes. Un comptador que falla per qualsevol altre motiu es mostra com a no disponible, no com un zero.",
         "actions": [
           "Veure les activitats d'avui",
           "Veure quants avisos d'ajuda i informes hi ha pendents (només qui modera o està de guàrdia)",
           "Consultar persones, activitats i assistència del mes"
+        ],
+        "tips": [
+          "Els comptadors són recomptes, no llistats: obre la secció per veure els elements reals.",
+          "Les mètriques de l'Inici segueixen la mateixa regla de privacitat «<5» que la resta del tauler."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.actividades",
+          "entidad.guardia"
         ],
         "audience": "Tots els rols de l'entitat."
       },
       "personas": {
         "title": "Persones",
         "summary": "Les persones que participen a la teva entitat, amb les seves comunitats, la seva activitat recent i el seu referent. Mai mostra dades de contacte: Popyplan treballa amb àlies.",
+        "details": "La llista mescla persones actives i, si marques «incloure invitades», invitacions pendents —una fila invitada encara no té fitxa, així que les comunitats i l'assistència es mostren com a «—». Les persones s'afegeixen sempre per correu d'invitació: el tauler mai crea comptes ni mostra dades de contacte. La importació d'un fitxer sempre fa primer una vista prèvia de simulació; les files amb errors es reporten una a una però no impedeixen confirmar les vàlides.",
         "actions": [
           "Cercar i filtrar per comunitat, referent o data d'alta",
           "Convidar una persona o importar un Excel/CSV (titular i moderador)",
           "Obrir la fitxa de cada persona",
           "Incloure les invitacions pendents i reenviar-les o revocar-les"
         ],
+        "tips": [
+          "Filtra per comunitat o referent abans de cercar per nom: és més ràpid en llistes llargues.",
+          "Un error de «ja n'és membre» vol dir que aquest correu pertany a una persona membre activa."
+        ],
+        "related": [
+          "entidad.comunidades",
+          "entidad.inicio"
+        ],
         "audience": "Titular, moderador i referent."
       },
       "personaFicha": {
         "title": "Fitxa de la persona",
         "summary": "Resum de la participació d'una persona a la teva entitat: comunitats, activitats del període i propera activitat. Sense email, telèfon ni notes: la relació és sempre a través de l'app.",
+        "details": "La fitxa mostra només la participació a la teva entitat: comunitats, activitats del període amb el seu estat d'assistència i la propera activitat. Mai mostra correu, telèfon, documents ni notes de text lliure —la relació és pel xat de l'app. La secció de xarxa de suport només apareix per al referent d'aquella persona; qualsevol altre, inclòs el titular, no veu la secció en absolut. Un referent sense referència cap a aquella persona veu un estat de «sense accés» en lloc de la fitxa.",
         "actions": [
           "Assignar o canviar el seu referent (titular i moderador)",
           "Veure la seva xarxa de suport (només el seu referent)",
           "Revisar a quines activitats es va apuntar i si hi va assistir"
+        ],
+        "tips": [
+          "Només el referent assignat veu la xarxa de suport: no la busquis com a titular.",
+          "El període d'activitat de la fitxa és el mes en curs, igual que a la llista de Persones."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.comunidades",
+          "entidad.programas"
         ],
         "audience": "Titular, moderador i el referent d'aquesta persona."
       },
       "comunidades": {
         "title": "Comunitats",
         "summary": "Les comunitats de la teva entitat i els seus membres: qui en forma part, qui modera i les sol·licituds d'entrada pendents.",
+        "details": "Les comunitats pertanyen a l'entitat i cadascuna té la seva visibilitat (oberta, amb sol·licitud o privada). Les sol·licituds d'entrada esperen aquí fins que algú les accepta, i treure una persona membre sempre demana confirmació abans. Les comunitats de famílies viuen al seu espai separat: mai es barregen amb les de membres tret que activis explícitament l'encreuament d'espais des de la secció de Famílies.",
         "actions": [
           "Veure cada comunitat, la seva visibilitat i els seus membres",
           "Acceptar o rebutjar sol·licituds d'entrada",
           "Nomenar moderadors o expulsar algú (titular i moderador)"
         ],
+        "tips": [
+          "Rebutjar una sol·licitud és reversible: la persona pot tornar a demanar entrar."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.actividades",
+          "entidad.familias"
+        ],
         "audience": "Titular, moderador i dinamitzador."
       },
       "actividades": {
         "title": "Activitats",
-        "summary": "Les activitats del període amb els seus inscrits, assistents i responsable.",
+        "summary": "Les activitats del període amb els seus inscrits, assistents i responsable. Inclou les activitats que vénen quan el període arriba al futur.",
+        "details": "La llista cobreix el període que tries, incloses les activitats que vénen. La columna de responsable només s'omple si el teu rol pot veure la llista nominal; si no, mostra «—» en lloc d'un nom inventat. Obrir la llista d'assistència només s'ofereix quan la secció d'Assistència és al teu menú: un referent veu les activitats però cap enllaç d'assistència. Els comptadors de cada fila són inscrits, ha assistit i no ha assistit del període.",
         "actions": [
           "Canviar el període (inclou les activitats que vénen)",
           "Filtrar per estat",
           "Entrar a la llista d'assistència de cada activitat",
           "Veure qui n'és el responsable"
         ],
+        "tips": [
+          "Amplia el període per veure també les activitats que vénen, no només les passades."
+        ],
+        "related": [
+          "entidad.asistencia",
+          "entidad.comunidades",
+          "entidad.programas"
+        ],
         "audience": "Titular, moderador, dinamitzador i referent."
       },
       "asistencia": {
         "title": "Assistència",
         "summary": "Tria una activitat per passar llista o fer el check-in per QR.",
+        "details": "L'assistència és sempre per activitat: tria'n una de la llista per obrir-ne la llista nominal. La llista mostra les activitats del període amb el seu estat, així pots anar directament a la que acaba d'acabar o comença aviat. La mateixa pantalla és la pròpia secció d'Activitats: la llista és el selector, no hi ha cap vista general d'assistència separada.",
         "actions": [
           "Obrir la llista nominal d'una activitat",
           "Marcar l'assistència a mà o escanejar el QR de l'app"
+        ],
+        "tips": [
+          "Marcar a mà només funciona un cop l'activitat ha començat."
+        ],
+        "related": [
+          "entidad.actividades"
         ],
         "audience": "Titular, moderador i dinamitzador."
       },
       "asistenciaEvento": {
         "title": "Llista d'assistència",
         "summary": "Qui es va apuntar a aquesta activitat i qui hi ha vingut. El check-in per QR només funciona des de dues hores abans fins a dotze després de l'inici.",
+        "details": "Marcar l'assistència a mà només és possible un cop l'activitat ha començat. El check-in per QR accepta el codi enganxat des de l'app o l'enllaç complet «popyplan://checkin/…», i pot escanejar amb la càmera on el navegador ho suporta. Funciona des de dues hores abans fins a dotze hores després de l'inici; fora d'aquesta finestra es mostra el missatge del backend tal qual. Un check-in repetit es mostra com un avís, no com un error: no es trenca res.",
         "actions": [
           "Marcar «ha assistit» o «no ha assistit» a cada persona",
           "Escanejar el QR que la persona mostra a la seva app o enganxar el seu codi"
+        ],
+        "tips": [
+          "Sense càmera? Enganxa l'enllaç popyplan:// des de qualsevol missatge i el codi se n'extreu sol.",
+          "Un segon escaneig del mateix codi mostra «ja ha fet check-in»: el recompte es queda en un."
+        ],
+        "related": [
+          "entidad.asistencia",
+          "entidad.actividades"
         ],
         "audience": "Titular, moderador i dinamitzador."
       },
       "comunicaciones": {
         "title": "Comunicacions",
         "summary": "Comunicacions oficials de l'entitat a tots els membres, a una comunitat o a l'espai de famílies, amb el seu historial i el nombre de destinataris.",
+        "details": "Les comunicacions són missatges oficials de l'entitat a tots els membres, a una comunitat o a l'espai de famílies: l'opció de famílies només es desbloqueja quan existeix una comunitat de famílies. No hi ha vista prèvia de destinataris: la confirmació descriu l'audiència i el nombre real de destinataris apareix després d'enviar. La plantilla de benvinguda a la xarxa de suport només omple el formulari; enviar és sempre la teva decisió, i sobreescriure un esborrany existent demana confirmació abans.",
         "actions": [
           "Redactar i enviar una comunicació (titular i moderador)",
           "Fer servir la plantilla de benvinguda a la xarxa de suport quan existeixi l'espai de famílies",
           "Consultar l'historial"
+        ],
+        "tips": [
+          "El nombre de destinataris de l'historial és el nombre real de persones assolides: comprova'l després d'enviar.",
+          "La plantilla sobreescriu l'esborrany actual; cancel·la si vols conservar el teu text."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.comunidades",
+          "entidad.encuestas"
         ],
         "audience": "Titular i moderador."
       },
       "encuestas": {
         "title": "Enquestes",
         "summary": "Enquestes anònimes i agregades: les periòdiques que crees tu i les que l'app envia sola després de cada activitat.",
+        "details": "Aquí només es creen enquestes periòdiques; l'app envia sola les enquestes post-activitat després de cada activitat completada, així que apareixen a la llista sense que ningú les hagi creat. L'estat d'oberta o tancada surt de les dates d'inici i fi de la pròpia enquesta. Totes les respostes són anònimes i agregades: cap resposta s'associa mai a una persona, i qualsevol resultat amb menys de cinc respostes n'amaga el detall.",
         "actions": [
           "Crear una enquesta periòdica amb les seves preguntes (titular i moderador)",
           "Veure si està oberta o tancada i entrar-hi als resultats"
+        ],
+        "tips": [
+          "Les enquestes post-activitat les crea l'app: no busquis cap botó de «nova enquesta post-activitat»."
+        ],
+        "related": [
+          "entidad.comunicaciones"
         ],
         "audience": "Titular, moderador i dinamitzador."
       },
       "encuestaResultados": {
         "title": "Resultats de l'enquesta",
         "summary": "Resultats agregats per pregunta. Amb menys de cinc respostes no es mostra el detall, perquè ningú sigui identificable.",
+        "details": "Els resultats s'agreguen per pregunta: mitjana i distribució per a les preguntes de valoració, una llista sense ordre per al text breu —les respostes de text no tenen autor ni ordre—. Qualsevol pregunta amb menys de cinc respostes queda suprimida i es mostra com a «<5», perquè ningú pugui deduir-se de les xifres. L'avis d'anonimat és sempre a la pantalla perquè és la regla, no un detall.",
         "actions": [
           "Veure la mitjana i la distribució de cada pregunta",
           "Llegir les respostes de text sense ordre ni autor"
+        ],
+        "tips": [
+          "«<5» vol dir «menys de cinc respostes», no zero: l'enquesta pot continuar oberta."
+        ],
+        "related": [
+          "entidad.encuestas",
+          "entidad.comunicaciones"
         ],
         "audience": "Titular, moderador i dinamitzador."
       },
       "biblioteca": {
         "title": "Biblioteca",
         "summary": "La biblioteca de continguts de l'entitat: textos, PDF, vídeos, àudios i enllaços, organitzats per categoria i adreçats a membres, famílies o a qualsevol.",
+        "details": "Els recursos s'agrupen per categoria —ajuda, formació, famílies, hàbits, activitats, sobre l'entitat i «Com acompanyar» per a la xarxa de suport— i cadascun té una audiència: membres, famílies o qualsevol. L'audiència de famílies només apareix quan existeix una comunitat de famílies. Els fitxers es validen abans de pujar-los (20 MB i formats habituals de document, àudio o vídeo) i el servidor torna a validar-los de totes maneres: un fitxer rebutjat s'explica amb el missatge del backend.",
         "actions": [
           "Crear, editar o esborrar recursos (titular i moderador)",
           "Triar categoria i audiència; «Com acompanyar» és la categoria per a la xarxa de suport"
+        ],
+        "tips": [
+          "Editar conserva el fitxer existent tret que en triïs un de nou: el camp de fitxer comença buit.",
+          "Esborrar un recurs sempre demana confirmació i no es pot desfer."
+        ],
+        "related": [
+          "entidad.familias",
+          "entidad.comunicaciones",
+          "entidad.programas"
         ],
         "audience": "Titular, moderador i dinamitzador."
       },
       "familias": {
         "title": "Famílies",
         "summary": "L'espai de famílies de l'entitat, separat del de membres: les seves comunitats, properes activitats, comunicacions i recursos, i els comptadors agregats de la xarxa de suport. Ningú declara ser familiar de ningú.",
+        "details": "L'espai de famílies és separat del de membres i els dos només es barregen si permets l'encreuament d'espais per comunitat: la confirmació t'explica primer la regla de separació. Els comptadors segueixen la mateixa regla de privacitat que la resta del tauler: qualsevol recompte inferior a cinc persones distintes es mostra com a «<5». Les persones de suport que esperen que existeixi una comunitat de famílies es recompten com a persones, i el tauler t'ho diu quan crear-ne una les donaria la benvinguda.",
         "actions": [
           "Crear la comunitat de famílies (titular i moderador)",
           "Activar o desactivar l'encreuament d'espais de cada comunitat",
           "Veure quantes persones tenen xarxa de suport i quants suports esperen que existeixi la comunitat"
+        ],
+        "tips": [
+          "El bàner de separació és la regla, no un avís: membres i famílies no es veuen entre si.",
+          "Els dinamitzadors veuen aquesta secció, però només titular i moderador poden crear o canviar comunitats."
+        ],
+        "related": [
+          "entidad.comunidades",
+          "entidad.biblioteca",
+          "entidad.comunicaciones"
         ],
         "audience": "Titular, moderador i dinamitzador."
       },
       "programas": {
         "title": "Programes",
         "summary": "Campanyes amb dates tancades i pressupost declarat, amb el seu informe final agregat. Un programa mai llista persones.",
+        "details": "Un programa és una campanya amb dates tancades i pressupost declarat, i el seu estat només avança: esborrany → actiu → tancat. Un programa tancat no es pot tornar a editar, i tancar-ne un demana notes de tancament. L'informe només conté agregats: un programa mai llista persones, ni tan sols per al titular. Les mètriques de la fitxa d'un programa es calculen per al seu propi rang de dates.",
         "actions": [
           "Crear, activar i tancar programes (titular i moderador)",
           "Descarregar l'informe CSV o PDF (titular, moderador i analista)"
+        ],
+        "tips": [
+          "Tancar és irreversible: revisa les notes de tancament abans de confirmar."
+        ],
+        "related": [
+          "entidad.informes",
+          "entidad.actividades"
         ],
         "audience": "Tots els rols de l'entitat."
       },
       "programaFicha": {
         "title": "Fitxa del programa",
-        "summary": "Estat, dates, pressupost i mètriques del programa en el seu període.",
+        "summary": "Estat, dates, pressupost i mètriques del programa en el seu període, amb el seu informe final.",
+        "details": "La fitxa mostra l'estat del programa, les dates, el pressupost i les mètriques calculades per al seu propi rang de dates. Editar només és possible abans de tancar: tancar demana notes i és irreversible. Si el backend rebutja un canvi de dates, se'n mostra el missatge de validació exacte en lloc d'un de genèric. L'informe es descarrega en CSV o PDF i només conté agregats: mai una llista de persones.",
         "actions": [
           "Editar, activar o tancar el programa amb notes de tancament (titular i moderador)",
           "Descarregar el seu informe"
+        ],
+        "tips": [
+          "La pàgina s'actualitza sola després d'activar, tancar o editar: no cal recarregar-la a mà."
+        ],
+        "related": [
+          "entidad.programas",
+          "entidad.informes"
         ],
         "audience": "Tots els rols de l'entitat; gestionar-lo només titular i moderador."
       },
       "reportes": {
         "title": "Informes de moderació",
         "summary": "Cua d'informes de moderació de la teva entitat: què s'ha informat, per què i en quin estat es troba.",
+        "details": "La cua conté informes sobre contingut de la teva entitat, amb el motiu i l'estat actual. Pots assignar un informe a una persona de l'equip, resoldre'l amb una decisió o escalar-lo a Popyplan quan excedeix l'entitat: els informes escalats també apareixen a la cua global de la plataforma. La resolució i l'assignació són decisions de moderació que queden registrades a l'historial de l'informe, amb qui les va prendre.",
         "actions": [
           "Obrir cada informe",
           "Assignar-lo, resoldre'l o escalar-lo a la plataforma"
+        ],
+        "tips": [
+          "Escalar quan el contingut incompleix les normes de la plataforma, no només les de l'entitat."
+        ],
+        "related": [
+          "entidad.guardia"
         ],
         "audience": "Titular i moderador."
       },
       "reporteDetalle": {
         "title": "Detall de l'informe",
         "summary": "Tot el que cal saber d'un informe per decidir: motiu, contingut informat, historial i qui el porta.",
+        "details": "El detall reuneix el que cal per decidir: el motiu, el contingut informat, l'historial i qui el porta. Resoldre registra una decisió; escalar passa l'informe a Popyplan quan excedeix l'entitat. L'assignació es mostra com a «una persona de l'equip», no pel seu nom.",
         "actions": [
           "Assignar-lo a una persona de l'equip",
           "Resoldre'l amb una decisió",
           "Escalar-lo a Popyplan si excedeix l'entitat"
+        ],
+        "tips": [
+          "Llegeix l'historial abans de decidir: les accions de moderació anteriors són part del context."
+        ],
+        "related": [
+          "entidad.reportes",
+          "entidad.guardia"
         ],
         "audience": "Titular i moderador."
       },
       "guardia": {
         "title": "Guàrdia",
         "summary": "Els avisos «avui ho porto malament» de les persones de la teva entitat i la configuració de qui està de guàrdia. Popyplan no guarda telèfons: el contacte és pel xat de l'app o a través del referent.",
+        "details": "Els avisos són les sol·licituds «avui ho porto malament» de l'app fetes per persones de la teva entitat. La persona de guàrdia —fixada pel titular— i la guàrdia els veuen encara que el seu rol no sigui titular ni moderador. Popyplan no guarda telèfons: el contacte és pel xat de l'app o a través del referent de la persona, i el tauler mostra si algú de la seva xarxa de suport ja se n'ha fet càrrec.",
         "actions": [
           "Atendre un avís",
           "Fixar el telèfon d'ajuda i triar la persona de guàrdia (només el titular)",
           "Veure si algú de la xarxa de suport de la persona ja se n'ha fet càrrec"
         ],
+        "tips": [
+          "La persona de guàrdia veu aquesta secció encara que no tingui rol de moderador."
+        ],
+        "related": [
+          "entidad.inicio",
+          "entidad.reportes",
+          "entidad.configuracion"
+        ],
         "audience": "Titular, moderador i la persona de guàrdia."
       },
       "informes": {
         "title": "Informes",
-        "summary": "Exportació de les mètriques de l'entitat en CSV o PDF, per període i desglossament, amb la mateixa regla d'agregació que la resta del tauler.",
+        "summary": "Exporta les mètriques de l'entitat en CSV o PDF, per període i desglossament, a punt per compartir amb els finançadors.",
+        "details": "Els informes porten les mateixes xifres que les mètriques de l'Inici per al període triat: mes en curs, últims 3 o 12 mesos, o plurianual. Un període pot abastar com a màxim 1461 dies entre les dues dates. Qualsevol cel·la que recompti menys de cinc persones distintes es mostra com a «<5»: un llindar d'agregació que protegeix la privacitat i que no es pot desactivar. El desglossament anual agrupa la sèrie per any en lloc de per mes. Els fitxers només contenen agregats, mai dades personals.",
         "actions": [
           "Triar període i desglossament (habitual o per any)",
           "Descarregar l'informe"
+        ],
+        "tips": [
+          "Fes servir el desglossament anual per a informes de memòria plurianual.",
+          "El CSV s'obre a qualsevol full de càlcul; fes servir el PDF per a un document a adjuntar."
+        ],
+        "related": [
+          "entidad.inicio",
+          "entidad.programas"
         ],
         "audience": "Titular, moderador i analista."
       },
       "configuracion": {
         "title": "Configuració",
         "summary": "Dades de l'entitat, equip amb els seus rols i referències entre referents i persones.",
+        "details": "Dades de l'organització, configuració de la guàrdia, equip i referències entre persones membres, i l'àmbit territorial de l'entitat. La pestanya d'equip és només per al titular: un moderador veu les referències i les dades però no la llista de membres. La majoria d'escriptures aquí queden auditades i limitades al titular, així els canvis es poden rastrejar fins a qui els va fer.",
         "actions": [
           "Donar d'alta o baixa algú de l'equip (només titular)",
           "Assignar referències",
           "Ajustar les dades i els colors de l'entitat"
+        ],
+        "tips": [
+          "Canviar qui està de guàrdia té efecte immediat per a les noves sol·licituds d'ajuda."
+        ],
+        "related": [
+          "entidad.guardia",
+          "entidad.personas"
         ],
         "audience": "Titular i moderador; l'equip només el veu el titular."
       }
@@ -1542,38 +1710,73 @@
       "inicio": {
         "title": "Inici del paraigua",
         "summary": "Una ullada a l'administració: com està el teu territori declarat i com està la xarxa d'entitats que finances, cada bloc amb enllaç a la seva secció.",
+        "details": "L'inici del paraigua és la porta d'entrada a les dues vistes del paraigua: l'observatori del territori i la xarxa finançada. Totes dues són taulers agregats regits per la mateixa regla de privacitat que la resta del tauler — qualsevol grup amb menys de cinc persones distintes es mostra com a «<5»— i cap de les dues llista mai persones. Obre qualsevol de les dues vistes per canviar el període i explorar els desglossaments.",
         "actions": [
           "Obrir l'observatori del territori",
           "Obrir la xarxa finançada"
+        ],
+        "tips": [
+          "Tot el que hi ha aquí és agregat: cap persona individual no és mai identificable."
+        ],
+        "related": [
+          "paraguas.territorio",
+          "paraguas.informes",
+          "paraguas.redFinanciada"
         ],
         "audience": "Tots els rols de l'entitat paraigua."
       },
       "territorio": {
         "title": "Territori",
         "summary": "Observatori del teu territori declarat: tot el que passa als seus municipis, sigui de l'entitat que sigui. Mapa de bombolles, taula per municipi, sèrie mensual i comparativa amb el període anterior. Mai veus persones: qualsevol grup amb menys de cinc es mostra com a «<5».",
+        "details": "La vista de territori agrega cada activitat dins del teu àmbit declarat, la faci qui la faci: una entitat externa a la teva xarxa compta igualment si treballa al teu territori. L'esquema fix i el llindar de privacitat s'apliquen cel·la a cel·la: els grups amb menys de cinc persones distintes es mostren com a «<5». La comparativa mesura el període anterior de la mateixa durada i requereix un desglossament. La fitxa d'un municipi mostra només agregats: mai noms de persones ni d'entitats ubicades allà.",
         "actions": [
           "Canviar el període",
           "Obrir un municipi per veure'n la fitxa agregada",
           "Comparar comarques, municipis o províncies amb el període anterior"
         ],
+        "tips": [
+          "El període no pot abastar més de 1461 dies (uns 4 anys).",
+          "La fitxa d'un municipi només mostra agregats: mai noms de persones ni d'entitats."
+        ],
+        "related": [
+          "paraguas.inicio",
+          "paraguas.redFinanciada"
+        ],
         "audience": "Tots els rols de l'administració."
       },
       "informes": {
         "title": "Informes del paraigua",
-        "summary": "Exportació agregada del territori o de la xarxa finançada en CSV o PDF.",
+        "summary": "Exportació agregada del territori o de la xarxa finançada en CSV o PDF, amb les mateixes regles d'agregació que els taulers.",
+        "details": "Les exportacions segueixen el mateix esquema fix i el mateix llindar de privacitat que els taulers: els grups amb menys de cinc persones distintes s'exporten com a «<5», i cap informe conté mai noms de persones. Tria l'àmbit —territori o xarxa finançada—, el període i el desglossament, o «per any» per a una memòria plurianual. La generació del PDF depèn del backend: quan no està disponible reps un avís específic en lloc d'un fitxer, mentre el CSV continua funcionant.",
         "actions": [
           "Triar l'àmbit (territori o xarxa finançada)",
           "Triar període i desglossament",
           "Descarregar l'informe"
+        ],
+        "tips": [
+          "«Per any» dóna una fila per any i deixa buida la secció per municipi.",
+          "Si l'exportació a PDF no està disponible, l'avis ho diu explícitament; el CSV continua funcionant."
+        ],
+        "related": [
+          "paraguas.inicio"
         ],
         "audience": "Titular, moderador i analista."
       },
       "redFinanciada": {
         "title": "Xarxa finançada",
         "summary": "Mètriques agregades de les entitats que pengen d'aquesta administració: persones, activitats i assistència per municipi, per entitat i per mes, i la comparativa amb el període anterior. Segueix l'arbre d'entitats, no el territori.",
+        "details": "La xarxa finançada agrega les entitats que pengen d'aquesta administració seguint l'arbre de pare-fills: una entitat fora del teu territori compta igualment si penja de tu. Cada període carrega les targetes base més els desglossaments per municipi, per entitat i mensual, amb el mateix llindar: els grups amb menys de cinc persones distintes es mostren com a «<5». La comparativa mesura el període anterior de la mateixa durada i requereix un desglossament.",
         "actions": [
           "Canviar el període",
           "Comparar comarques, entitats o municipis amb el període anterior"
+        ],
+        "tips": [
+          "L'arbre decideix la pertinença, no la geografia: les entitats filles de les teves compten encara que siguin fora del teu territori.",
+          "Les cel·les de persones es suprimeixen per sota de cinc; els comptadors d'activitats mai es suprimeixen."
+        ],
+        "related": [
+          "paraguas.inicio",
+          "paraguas.territorio"
         ],
         "audience": "Tots els rols de l'administració."
       }
@@ -1582,98 +1785,196 @@
       "inicio": {
         "title": "Inici de plataforma",
         "summary": "Estat general de Popyplan: entitats verificades i pendents, informes escalats, avisos d'ajuda sense atendre, contractes i factures.",
+        "details": "Cada targeta obre la seva cua, i les targetes només apareixen per a les seccions del teu rol: entitats verificades i pendents, informes escalats, avisos d'ajuda sense atendre i —per als rols que veuen Subscripcions— contractes i factures vençudes. Les xifres d'ús (persones actives, activitats programades) venen d'un endpoint només d'administració, així que només hi accedeix el superadmin. Una targeta que falla per qualsevol altre motiu es llegeix «No disponible»: un error mai es mostra com un zero.",
         "actions": [
-          "Entrar a cada cua des de la seva targeta"
+          "Entrar a cada cua des de la seva targeta",
+          "Consultar el resum d'ús (només superadmin)"
+        ],
+        "tips": [
+          "Les targetes segueixen el menú del teu rol: el que no veus no és que falti, és que no és del teu rol.",
+          "«No disponible» vol dir que la petició ha fallat, no que el recompte sigui zero."
+        ],
+        "related": [
+          "plataforma.entidades",
+          "plataforma.reportes",
+          "plataforma.metricas"
         ],
         "audience": "Equip de Popyplan segons el seu rol."
       },
       "entidades": {
         "title": "Entitats",
-        "summary": "Totes les entitats donades d'alta, verificades o no.",
+        "summary": "Totes les entitats donades d'alta, verificades o no, amb cerca i filtres. Donar d'alta i verificar són tasques de verificador i superadmin.",
+        "details": "El directori complet d'entitats, verificades o no. La llista és paginada i es filtra per estat de verificació i cerca de text lliure; la cerca s'aplica poc després de parar de teclejar. Donar d'alta una entitat nova és una acció de verificador/superadmin, i una entitat nova neix sense verificar fins que algú la verifica des de la seva fitxa. Obre una fitxa per gestionar-ne el paraigua, l'àmbit, l'equip, les mètriques i el contracte.",
         "actions": [
           "Cercar i filtrar per verificació",
           "Donar d'alta una entitat nova (verificador i superadmin)",
           "Obrir la seva fitxa"
         ],
+        "tips": [
+          "Les entitats noves es queden sense verificar fins que un verificador o superadmin les verifica.",
+          "El quadre de cerca s'aplica al cap d'una breu pausa mentre tecleges."
+        ],
+        "related": [
+          "plataforma.verificaciones"
+        ],
         "audience": "Superadmin i verificador."
       },
       "entidadFicha": {
         "title": "Fitxa de l'entitat",
-        "summary": "Dades, paraigua, àmbit territorial, equip, mètriques, comunitats i contracte d'una entitat.",
+        "summary": "Dades, paraigua, àmbit territorial, equip, mètriques, comunitats i contracte d'una entitat, organitzats en pestanyes.",
+        "details": "Set pestanyes en una sola fitxa: dades (amb verificació), paraigua (reassignar el pare és només del superadmin), àmbit territorial (superadmin des d'aquí; el titular de la pròpia entitat també el pot ampliar), equip, mètriques, comunitats i activitats, i una pestanya de contracte de només lectura que mostra el contracte actiu i la seva última factura. Un verificador sense membresia en aquella entitat rep un «Sense accés» explícit en lloc de dades falses.",
         "actions": [
           "Verificar-la",
           "Assignar-li un paraigua o ampliar el seu àmbit (superadmin)",
           "Gestionar el seu equip"
         ],
+        "tips": [
+          "Amb diversos contractes, la pestanya prioritza l'actiu.",
+          "Reassignar el paraigua o ampliar l'àmbit és només del superadmin des d'aquí."
+        ],
+        "related": [
+          "plataforma.entidades",
+          "plataforma.suscripciones"
+        ],
         "audience": "Superadmin i verificador; algunes pestanyes només superadmin."
       },
       "reportes": {
         "title": "Informes escalats",
-        "summary": "Cua global d'informes que les entitats han escalat a Popyplan.",
+        "summary": "Cua global d'informes que les entitats han escalat a Popyplan, amb la seva entitat i la data d'escalat.",
+        "details": "Només arriben a aquesta cua els informes escalats: una entitat resol el que pot i escala la resta a Popyplan. La llista no està paginada —tots els informes escalats són en una sola pàgina— i n'indica l'entitat d'origen, amb una insígnia «Escalat» als pendents. Moderador i superadmin poden assignar i resoldre; suport té accés de només lectura, així que els seus botons d'acció s'amaguen en lloc de desactivar-se.",
         "actions": [
           "Obrir cada informe",
           "Assignar-lo o resoldre'l (moderador i superadmin); suport només consulta"
+        ],
+        "tips": [
+          "Aquí només apareixen els informes que una entitat ha escalat expressament; la resta es queden a la seva pròpia cua.",
+          "Suport veu la mateixa cua sense botons d'acció."
+        ],
+        "related": [
+          "plataforma.inicio"
         ],
         "audience": "Superadmin, moderador i suport."
       },
       "reporteDetalle": {
         "title": "Detall de l'informe",
         "summary": "Motiu, contingut, entitat d'origen i historial d'un informe escalat.",
+        "details": "La fotografia completa d'un informe escalat: el motiu en llenguatge planer, el contingut informat, l'entitat d'origen i el seu historial de tramitació. Moderador i superadmin poden assignar-lo a una persona de l'equip o resoldre'l amb una decisió; per a suport totes les accions s'amaguen, perquè el seu rol és de només consulta. El que el contracte no diu mai s'inventa: una assignació es mostra com a «una persona de l'equip», no com una identitat que les dades no porten.",
         "actions": [
-          "Assignar o resoldre (moderador i superadmin)"
+          "Assignar o resoldre (moderador i superadmin)",
+          "Revisar el motiu, el contingut i l'historial (suport llegeix la mateixa vista)"
+        ],
+        "tips": [
+          "La vista de suport és idèntica menys les accions: res no es pot editar per error.",
+          "Els motius i els estats estan traduïts; un valor que el tauler no coneix es mostra en text cru."
+        ],
+        "related": [
+          "plataforma.reportes"
         ],
         "audience": "Superadmin, moderador i suport."
       },
       "ayuda": {
         "title": "Avisos d'ajuda",
         "summary": "Avisos «avui ho porto malament» pendents a tota la plataforma, per detectar entitats sense guàrdia que respongui.",
+        "details": "Una sola petició agregada llista tots els avisos pendents de totes les entitats, perquè puguis detectar una entitat els avisos de la qual ningú respon. Cada avís mostra la seva entitat, si la persona hi pertany i el seu referent quan en té. Popyplan no guarda telèfons: el contacte és pel xat de l'app o a través del referent. Atendre un avís el reconeix aquí i a la pantalla de guàrdia de la pròpia entitat a l'hora.",
         "actions": [
           "Veure l'avís, la seva entitat i el seu referent",
           "Atendre'l si escau"
+        ],
+        "tips": [
+          "La línia fixa sota la llista explica la regla del «sense telèfons»: no és un camp que falti.",
+          "Una insígnia marca els avisos d'algú que no és membre d'aquella entitat."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.reportes"
         ],
         "audience": "Superadmin, moderador i suport."
       },
       "verificaciones": {
         "title": "Verificacions",
-        "summary": "Revisions d'identitat pendents: el document de la persona i el motiu del proveïdor.",
+        "summary": "Revisions d'identitat pendents: el document de la persona i el motiu del proveïdor, decidides amb una nota.",
+        "details": "La cua de revisions d'identitat pendents. Cada fila aparella el document de la persona (el seu text d'al·legació) amb el motiu pel qual el proveïdor la va marcar, perquè decideixis amb les dues cares a la vista. Aprovar o rebutjar sempre demana una nota, i la decisió és només de verificador i superadmin. A mesura que resols revisions la cua s'encongeix; si la pàgina on eres es buida, tornes a la primera automàticament.",
         "actions": [
-          "Aprovar o rebutjar amb una nota"
+          "Aprovar o rebutjar amb una nota",
+          "Revisar primer el document de la persona i el motiu del proveïdor"
+        ],
+        "tips": [
+          "La nota forma part de la decisió: escriu el que una auditoria futura necessitarà.",
+          "Les revisions resoludes surten de la cua soles; una pàgina buidada et retorna a la primera."
+        ],
+        "related": [
+          "plataforma.entidades"
         ],
         "audience": "Superadmin i verificador."
       },
       "roles": {
         "title": "Rols",
         "summary": "Qui forma l'equip de Popyplan i amb quin rol de plataforma.",
+        "details": "Els rols de plataforma són separats dels rols d'entitat: una persona pot ser administradora de plataforma i tenir igualment un rol dins d'una entitat. Concedir aquí dóna accés només a l'àrea de plataforma. La concessió cerca el compte per correu o nom d'usuari; l'id d'usuari sempre funciona com a alternativa. Revocar és una confirmació explícita perquè treu l'accés a la plataforma immediatament.",
         "actions": [
           "Concedir un rol cercant el compte",
           "Revocar-lo"
+        ],
+        "tips": [
+          "Revocar un rol té efecte immediat.",
+          "La cerca de comptes accepta correu; l'id d'usuari sempre funciona com a alternativa."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.auditoria"
         ],
         "audience": "Només superadmin."
       },
       "auditoria": {
         "title": "Auditoria",
         "summary": "Registre d'accions sensibles de tot el sistema, amb filtres per actor, acció, objecte i dates.",
+        "details": "Cada acció sensible de tot el sistema, només per al superadmin. Els filtres redueixen per actor, acció, objecte i rang de dates, i cada fila mostra les seves metadades com a parells clau=valor llegibles. L'exportació CSV és una descàrrega del client de la pàgina actual, no una exportació del servidor: separada per punts i coma i amb BOM perquè l'Excel l'obri correctament, amb cada cel·la entre cometes i amb els valors que podrien convertir-se en fórmules de full de càlcul desactivats. Filtra abans d'exportar per obtenir el tall que necessites.",
         "actions": [
           "Filtrar i revisar el registre",
           "Exportar la pàgina actual a CSV"
+        ],
+        "tips": [
+          "El CSV exporta només la pàgina actual: filtra primer i exporta després.",
+          "Descarregar una pàgina no queda auditat en si; només les accions del backend."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.roles"
         ],
         "audience": "Només superadmin."
       },
       "metricas": {
         "title": "Mètriques",
         "summary": "Mètriques agregades de tota la plataforma, per territori o per entitat, amb comparativa entre períodes.",
+        "details": "Mètriques de tota la plataforma amb el mateix esquema fix que les de les entitats. El selector territori/entitat decideix quin desglossament fa servir cada petició, i el bloc de comparativa és obligatori: has de triar un desglossament (per defecte, província) per comparar el període actual amb l'anterior de la mateixa durada. Les cel·les amb menys de 5 persones distintes es mostren com a «<5»: el llindar de privacitat s'aplica a tot àmbit.",
         "actions": [
           "Canviar període i desglossament",
           "Exportar"
+        ],
+        "tips": [
+          "El desglossament anual dóna una fila per any per a vistes plurianuals."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.suscripciones"
         ],
         "audience": "Superadmin, moderador i suport."
       },
       "suscripciones": {
         "title": "Subscripcions",
         "summary": "Subscripcions de Popyplan amb cada entitat: contractes, trams de preu i factures.",
+        "details": "Tres pestanyes: contractes, trams de preu i factures. Els contractes només avancen —esborrany, actiu, finalitzat— i les factures calculen el seu propi estat (pagada, pendent, vençuda). Només el superadmin escriu: per a suport els botons s'amaguen, mai es desactiven. I un contracte finalitzat és només històric de facturació: mai desactiva cap funció de l'entitat.",
         "actions": [
           "Crear i activar contractes, trams i factures (superadmin)",
           "Marcar factures com a pagades"
+        ],
+        "tips": [
+          "L'estat de la factura es calcula, no es tria: pagar-la (o la seva data de venciment) el mou.",
+          "Finalitzar un contracte mai afecta el que l'entitat pot fer al tauler."
+        ],
+        "related": [
+          "plataforma.entidades",
+          "plataforma.metricas"
         ],
         "audience": "Superadmin i suport; suport només consulta."
       }

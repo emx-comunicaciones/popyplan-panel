@@ -27,6 +27,9 @@
     "skipLink": "Saltar al contenido principal",
     "pageHelp": {
       "whatYouCanDo": "Qué puedes hacer aquí",
+      "detailsLabel": "Cómo funciona",
+      "tipsLabel": "Consejos",
+      "relatedLabel": "Pantallas relacionadas",
       "audienceLabel": "Quién la ve:",
       "ariaLabel": "Ayuda: {title}"
     }
@@ -1356,184 +1359,349 @@
     "entidad": {
       "inicio": {
         "title": "Inicio",
-        "summary": "Vista general de tu entidad para hoy: actividades del día, avisos pendientes y las métricas del mes en curso.",
+        "summary": "Vista general de tu entidad para hoy: actividades del día, avisos pendientes, programas activos y las métricas del mes en curso.",
+        "details": "Todo lo que ves en Inicio ya está calculado por la plataforma: las actividades de hoy, los avisos de ayuda y los reportes pendientes (solo el recuento), las métricas del mes en curso y los programas activos. Los contadores de guardia se ocultan —no se muestran como error— para los roles a los que el backend no deja moderar (analista, dinamizador, referente): esas tarjetas simplemente no las ven. Un contador que falla por cualquier otra razón se muestra como no disponible, nunca como un cero.",
         "actions": [
           "Ver las actividades de hoy",
           "Ver cuántos avisos de ayuda y reportes hay pendientes (solo quien modera o está de guardia)",
           "Consultar personas, actividades y asistencia del mes"
+        ],
+        "tips": [
+          "Los contadores son recuentos, no listas: abre la sección para ver los elementos de verdad.",
+          "Las métricas de Inicio siguen la misma regla de privacidad «<5» que el resto del panel."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.actividades",
+          "entidad.guardia"
         ],
         "audience": "Todos los roles de la entidad."
       },
       "personas": {
         "title": "Personas",
         "summary": "Las personas que participan en tu entidad, con sus comunidades, su actividad reciente y su referente. Nunca muestra datos de contacto: Popyplan trabaja con alias.",
+        "details": "La lista mezcla personas activas y, si marcas «Incluir invitadas», invitaciones pendientes: una fila invitada aún no tiene ficha, así que comunidades y asistencia aparecen como «—». Las personas se dan de alta siempre por correo de invitación: el panel nunca crea cuentas ni muestra datos de contacto. La importación de un fichero pasa siempre primero por una vista previa de simulación; las filas con error se informan una a una, pero no impiden confirmar las válidas.",
         "actions": [
           "Buscar y filtrar por comunidad, referente o fecha de alta",
           "Invitar a una persona o importar un Excel/CSV (titular y moderador)",
           "Abrir la ficha de cada persona",
           "Incluir las invitaciones pendientes y reenviarlas o revocarlas"
         ],
+        "tips": [
+          "Filtra por comunidad o referente antes de buscar por nombre: es más rápido en listas largas.",
+          "Un error de «ya es miembro» significa que ese correo pertenece a una persona miembro activa."
+        ],
+        "related": [
+          "entidad.comunidades",
+          "entidad.inicio"
+        ],
         "audience": "Titular, moderador y referente."
       },
       "personaFicha": {
         "title": "Ficha de la persona",
         "summary": "Resumen de la participación de una persona en tu entidad: comunidades, actividades del periodo y próxima actividad. Sin email, teléfono ni notas: la relación es siempre a través de la app.",
+        "details": "La ficha muestra solo la participación de la persona en tu entidad: comunidades, actividades del periodo con su estado de asistencia y la próxima actividad. Nunca muestra email, teléfono, documentos ni notas libres: la relación es a través del chat de la app. La sección de red de apoyo aparece solo para el referente de esa persona; cualquier otro, incluido el titular, no ve la sección en absoluto. Un referente sin referencia hacia esa persona ve un estado de «sin acceso» en lugar de la ficha.",
         "actions": [
           "Asignar o cambiar su referente (titular y moderador)",
           "Ver su red de apoyo (solo su referente)",
           "Revisar a qué actividades se apuntó y si asistió"
+        ],
+        "tips": [
+          "Solo el referente asignado ve la red de apoyo: no la busques como titular.",
+          "El periodo de actividades de la ficha es el mes en curso, igual que en la lista de Personas."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.comunidades",
+          "entidad.programas"
         ],
         "audience": "Titular, moderador y el referente de esa persona."
       },
       "comunidades": {
         "title": "Comunidades",
         "summary": "Las comunidades de tu entidad y sus miembros: quién forma parte, quién modera y las solicitudes de entrada pendientes.",
+        "details": "Las comunidades pertenecen a la entidad y cada una tiene su propia visibilidad (abierta, con solicitud o privada). Las solicitudes de entrada esperan aquí hasta que alguien las acepta, y expulsar a un miembro siempre pide confirmación antes. Las comunidades de familias viven en su propio espacio separado: nunca se mezclan con las de miembros salvo que actives expresamente el cruce de espacios desde la sección de Familias.",
         "actions": [
           "Ver cada comunidad, su visibilidad y sus miembros",
           "Aceptar o rechazar solicitudes de entrada",
           "Nombrar moderadores o expulsar a alguien (titular y moderador)"
         ],
+        "tips": [
+          "Rechazar una solicitud es reversible: la persona puede volver a pedir entrar."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.actividades",
+          "entidad.familias"
+        ],
         "audience": "Titular, moderador y dinamizador."
       },
       "actividades": {
         "title": "Actividades",
-        "summary": "Las actividades del periodo con sus inscritos, asistentes y responsable.",
+        "summary": "Las actividades del periodo con sus inscritos, asistentes y responsable. Incluye las actividades que vienen cuando el periodo alcanza el futuro.",
+        "details": "La lista cubre el periodo que elijas, incluidas las actividades que aún no han empezado. La columna de responsable solo se rellena si tu rol puede ver la lista nominal; si no, muestra «—» en lugar de un nombre inventado. La entrada a la lista de asistencia solo se ofrece cuando la sección Asistencia está en tu menú: un referente ve las actividades pero sin enlace a asistencia. Los contadores de cada fila son inscritos, asistió y no asistió del periodo.",
         "actions": [
           "Cambiar el periodo (incluye las actividades que vienen)",
           "Filtrar por estado",
           "Entrar en la lista de asistencia de cada actividad",
           "Ver quién es responsable de cada una"
         ],
+        "tips": [
+          "Amplía el periodo para ver las actividades que vienen, no solo las pasadas."
+        ],
+        "related": [
+          "entidad.asistencia",
+          "entidad.comunidades",
+          "entidad.programas"
+        ],
         "audience": "Titular, moderador, dinamizador y referente."
       },
       "asistencia": {
         "title": "Asistencia",
         "summary": "Elige una actividad para pasar lista o hacer el check-in por QR.",
+        "details": "La asistencia es siempre por actividad: elige una de la lista para abrir su lista nominal. La lista muestra las actividades del periodo con su estado, así que puedes ir directo a la que acaba de terminar o a la que empieza pronto. Esta pantalla es la propia sección de Actividades: la lista es el selector, no hay un resumen de asistencia aparte.",
         "actions": [
           "Abrir la lista nominal de una actividad",
           "Marcar asistencia a mano o escanear el QR de la app"
+        ],
+        "tips": [
+          "Marcar a mano solo funciona cuando la actividad ya ha empezado."
+        ],
+        "related": [
+          "entidad.actividades"
         ],
         "audience": "Titular, moderador y dinamizador."
       },
       "asistenciaEvento": {
         "title": "Lista de asistencia",
         "summary": "Quién se apuntó a esta actividad y quién ha venido. El check-in por QR solo funciona desde dos horas antes hasta doce después del inicio.",
+        "details": "Marcar la asistencia a mano solo es posible una vez empezada la actividad. El check-in por QR acepta el token pegado desde la app o el enlace completo «popyplan://checkin/…», y puede escanear con la cámara donde el navegador lo permite. Funciona desde dos horas antes hasta doce horas después del inicio; fuera de esa ventana se muestra el mensaje del propio backend. Un check-in repetido se muestra como aviso, no como error: no pasa nada.",
         "actions": [
           "Marcar «asistió» o «no asistió» a cada persona",
           "Escanear el QR que la persona muestra en su app o pegar su código"
+        ],
+        "tips": [
+          "¿Sin cámara? Pega el enlace popyplan:// desde cualquier mensaje y el token se extrae solo.",
+          "Un segundo escaneo del mismo código muestra «ya ha hecho check-in»: el recuento sigue siendo uno."
+        ],
+        "related": [
+          "entidad.asistencia",
+          "entidad.actividades"
         ],
         "audience": "Titular, moderador y dinamizador."
       },
       "comunicaciones": {
         "title": "Comunicaciones",
         "summary": "Comunicaciones oficiales de la entidad a todos los miembros, a una comunidad o al espacio de familias, con su historial y el número de destinatarios.",
+        "details": "Las comunicaciones son mensajes oficiales de la entidad a todos los miembros, a una comunidad o al espacio de familias: la opción de familias solo se desbloquea cuando existe una comunidad de familias. No hay vista previa de destinatarios: la confirmación describe la audiencia y el número real de destinatarios aparece tras el envío. La plantilla de bienvenida a la red de apoyo solo rellena el formulario; enviar siempre es tu decisión, y sobrescribir un borrador existente pide confirmación antes.",
         "actions": [
           "Redactar y enviar una comunicación (titular y moderador)",
           "Usar la plantilla de bienvenida a la red de apoyo cuando exista el espacio de familias",
           "Consultar el historial"
+        ],
+        "tips": [
+          "El número de destinatarios del historial es el real: compruébalo tras enviar.",
+          "La plantilla sobrescribe el borrador actual; cancela si quieres conservar tu texto."
+        ],
+        "related": [
+          "entidad.personas",
+          "entidad.comunidades",
+          "entidad.encuestas"
         ],
         "audience": "Titular y moderador."
       },
       "encuestas": {
         "title": "Encuestas",
         "summary": "Encuestas anónimas y agregadas: las periódicas que creas tú y las que la app envía sola tras cada actividad.",
+        "details": "Aquí solo se crean las encuestas periódicas; la app envía sola las encuestas post-actividad tras cada actividad completada, así que aparecen en la lista sin que nadie las cree. El estado abierta o cerrada se calcula con las propias fechas de inicio y fin de la encuesta. Todas las respuestas son anónimas y agregadas: ninguna respuesta se vincula a una persona, y cualquier resultado con menos de cinco respuestas oculta su detalle.",
         "actions": [
           "Crear una encuesta periódica con sus preguntas (titular y moderador)",
           "Ver si está abierta o cerrada y entrar en sus resultados"
+        ],
+        "tips": [
+          "Las encuestas post-actividad las crea la app: no busques un botón de «nueva encuesta post-actividad»."
+        ],
+        "related": [
+          "entidad.comunicaciones"
         ],
         "audience": "Titular, moderador y dinamizador."
       },
       "encuestaResultados": {
         "title": "Resultados de la encuesta",
         "summary": "Resultados agregados por pregunta. Con menos de cinco respuestas no se muestra el detalle, para que nadie sea identificable.",
+        "details": "Los resultados se agregan por pregunta: media y distribución para las preguntas de valoración, una lista sin orden para el texto corto — las respuestas de texto no tienen autor ni orden. Cualquier pregunta con menos de cinco respuestas se suprime y se muestra como «<5», para que nadie pueda deducirse de las cifras. El aviso de anonimato está siempre en pantalla porque es la regla, no un detalle.",
         "actions": [
           "Ver la media y la distribución de cada pregunta",
           "Leer las respuestas de texto sin orden ni autor"
+        ],
+        "tips": [
+          "«<5» significa «menos de cinco respuestas», no cero: la encuesta puede seguir abierta."
+        ],
+        "related": [
+          "entidad.encuestas",
+          "entidad.comunicaciones"
         ],
         "audience": "Titular, moderador y dinamizador."
       },
       "biblioteca": {
         "title": "Biblioteca",
         "summary": "La biblioteca de contenidos de la entidad: textos, PDF, vídeos, audios y enlaces, organizados por categoría y dirigidos a miembros, familias o a cualquiera.",
+        "details": "Los recursos se agrupan por categoría —ayuda, formación, familias, hábitos, actividades, sobre Popyplan y «Cómo acompañar» para la red de apoyo— y cada uno tiene una audiencia: miembros, familias o cualquiera. La audiencia de familias solo aparece cuando existe una comunidad de familias. Los ficheros se validan antes de subir (20 MB y formatos habituales de documento, audio o vídeo) y el servidor vuelve a validarlos de todos modos: un fichero rechazado se explica con el mensaje del backend.",
         "actions": [
           "Crear, editar o borrar recursos (titular y moderador)",
           "Elegir categoría y audiencia; «Cómo acompañar» es la categoría para la red de apoyo"
+        ],
+        "tips": [
+          "Al editar se conserva el fichero existente salvo que elijas uno nuevo: el campo de fichero empieza vacío.",
+          "Borrar un recurso siempre pide confirmación y no se puede deshacer."
+        ],
+        "related": [
+          "entidad.familias",
+          "entidad.comunicaciones",
+          "entidad.programas"
         ],
         "audience": "Titular, moderador y dinamizador."
       },
       "familias": {
         "title": "Familias",
         "summary": "El espacio de familias de la entidad, separado del de miembros: sus comunidades, próximas actividades, comunicaciones y recursos, y los contadores agregados de la red de apoyo. Nadie declara ser familiar de nadie.",
+        "details": "El espacio de familias está separado del de miembros y los dos solo se mezclan si permites el cruce de espacios por comunidad: la confirmación explica primero la regla de separación. Los contadores siguen la misma regla de privacidad que el resto del panel: cualquier recuento con menos de cinco personas distintas se muestra como «<5». Los apoyos que esperan a que exista una comunidad de familias se cuentan como personas, y el panel te avisa cuando crearla les daría la bienvenida.",
         "actions": [
           "Crear la comunidad de familias (titular y moderador)",
           "Activar o desactivar el cruce de espacios de cada comunidad",
           "Ver cuántas personas tienen red de apoyo y cuántos apoyos esperan a que exista la comunidad"
+        ],
+        "tips": [
+          "El cartel de separación es la regla, no un aviso: miembros y familias no se ven entre sí.",
+          "El dinamizador ve esta sección, pero solo titular y moderador pueden crear o cambiar comunidades."
+        ],
+        "related": [
+          "entidad.comunidades",
+          "entidad.biblioteca",
+          "entidad.comunicaciones"
         ],
         "audience": "Titular, moderador y dinamizador."
       },
       "programas": {
         "title": "Programas",
         "summary": "Campañas con fechas cerradas y presupuesto declarado, con su informe final agregado. Un programa nunca lista personas.",
+        "details": "Un programa es una campaña con fechas cerradas y un presupuesto declarado, y su estado solo avanza: borrador → activo → cerrado. Un programa cerrado no se puede volver a editar, y cerrarlo pide notas de cierre. El informe solo contiene agregados: un programa nunca lista personas, ni siquiera para el titular. Las métricas de la ficha del programa se calculan para su propio rango de fechas.",
         "actions": [
           "Crear, activar y cerrar programas (titular y moderador)",
           "Descargar el informe CSV o PDF (titular, moderador y analista)"
+        ],
+        "tips": [
+          "Cerrar es irreversible: revisa las notas de cierre antes de confirmar."
+        ],
+        "related": [
+          "entidad.informes",
+          "entidad.actividades"
         ],
         "audience": "Todos los roles de la entidad."
       },
       "programaFicha": {
         "title": "Ficha del programa",
-        "summary": "Estado, fechas, presupuesto y métricas del programa en su periodo.",
+        "summary": "Estado, fechas, presupuesto y métricas del programa en su periodo, con su informe final.",
+        "details": "La ficha muestra el estado del programa, sus fechas, presupuesto y métricas calculadas para su propio rango de fechas. Editar solo es posible antes de cerrar: cerrar pide notas y es irreversible. Si el backend rechaza un cambio de fechas, se muestra su mensaje exacto de validación en lugar de uno genérico. El informe se descarga en CSV o PDF y solo contiene agregados: nunca una lista de personas.",
         "actions": [
           "Editar, activar o cerrar el programa con notas de cierre (titular y moderador)",
           "Descargar su informe"
+        ],
+        "tips": [
+          "La página se actualiza sola tras activar, cerrar o editar: no hace falta recargar a mano."
+        ],
+        "related": [
+          "entidad.programas",
+          "entidad.informes"
         ],
         "audience": "Todos los roles de la entidad; gestionar solo titular y moderador."
       },
       "reportes": {
         "title": "Reportes",
         "summary": "Cola de reportes de moderación de tu entidad: qué se ha reportado, por qué y en qué estado está.",
+        "details": "La cola reúne los reportes sobre contenidos de tu entidad, con su motivo y su estado actual. Puedes asignar un reporte a una persona del equipo, resolverlo con una decisión o escalarlo a Popyplan cuando excede a la entidad: los reportes escalados aparecen también en la cola global de la plataforma. Resolver y asignar son decisiones de moderación que quedan registradas en el historial del reporte, junto a quién las tomó.",
         "actions": [
           "Abrir cada reporte",
           "Asignarlo, resolverlo o escalarlo a la plataforma"
+        ],
+        "tips": [
+          "Escala cuando el contenido incumple las normas de la plataforma, no solo las de la entidad."
+        ],
+        "related": [
+          "entidad.guardia"
         ],
         "audience": "Titular y moderador."
       },
       "reporteDetalle": {
         "title": "Detalle del reporte",
         "summary": "Todo lo que hay que saber de un reporte para decidir: motivo, contenido reportado, historial y quién lo lleva.",
+        "details": "El detalle reúne lo que necesitas para decidir: el motivo, el contenido reportado, el historial y quién lo lleva. Resolver registra una decisión; escalar entrega el reporte a Popyplan cuando excede a la entidad. La persona asignada se muestra como «una persona del equipo», no por su nombre.",
         "actions": [
           "Asignar a una persona del equipo",
           "Resolver con una decisión",
           "Escalar a Popyplan si excede a la entidad"
+        ],
+        "tips": [
+          "Lee el historial antes de decidir: las acciones de moderación anteriores son parte del contexto."
+        ],
+        "related": [
+          "entidad.reportes",
+          "entidad.guardia"
         ],
         "audience": "Titular y moderador."
       },
       "guardia": {
         "title": "Guardia",
         "summary": "Los avisos «hoy lo llevo mal» de las personas de tu entidad y la configuración de quién está de guardia. Popyplan no guarda teléfonos: el contacto es por el chat de la app o a través del referente.",
+        "details": "Los avisos son las peticiones «hoy lo llevo mal» de la app de las personas de tu entidad. La persona de guardia — elegida por el titular — y la guardia los ven aunque su rol no sea titular ni moderador. Popyplan no guarda teléfonos: el contacto es por el chat de la app o por el referente de la persona, y el panel indica si alguien de su red de apoyo ya se ha hecho cargo.",
         "actions": [
           "Atender un aviso",
           "Fijar el teléfono de ayuda y elegir la persona de guardia (solo el titular)",
           "Ver si alguien de la red de apoyo de la persona ya se ha hecho cargo"
         ],
+        "tips": [
+          "La persona de guardia ve esta sección aunque no tenga rol de moderación."
+        ],
+        "related": [
+          "entidad.inicio",
+          "entidad.reportes",
+          "entidad.configuracion"
+        ],
         "audience": "Titular, moderador y la persona de guardia."
       },
       "informes": {
         "title": "Informes",
-        "summary": "Exportación de las métricas de la entidad en CSV o PDF, por periodo y desglose, con la misma regla de agregación que el resto del panel.",
+        "summary": "Exportación de las métricas de la entidad en CSV o PDF, por periodo y desglose, lista para compartir con financiadores.",
+        "details": "Los informes llevan las mismas cifras que las métricas de Inicio para el periodo elegido: mes en curso, últimos 3 o 12 meses o varios años. Un periodo puede abarcar como máximo 1461 días entre las dos fechas. Cualquier celda que cuente menos de cinco personas distintas se muestra como «<5»: es un umbral de agregación que protege la privacidad y no se puede desactivar. El desglose por año agrupa la serie por años en lugar de por meses. Los ficheros solo contienen agregados, nunca datos personales.",
         "actions": [
           "Elegir periodo y desglose (habitual o por año)",
           "Descargar el informe"
+        ],
+        "tips": [
+          "Usa el desglose por año para informes de memoria plurianual.",
+          "El CSV se abre en cualquier hoja de cálculo; usa el PDF para un documento que adjuntar."
+        ],
+        "related": [
+          "entidad.inicio",
+          "entidad.programas"
         ],
         "audience": "Titular, moderador y analista."
       },
       "configuracion": {
         "title": "Configuración",
         "summary": "Datos de la entidad, equipo con sus roles y referencias entre referentes y personas.",
+        "details": "Datos de la organización, ajustes de guardia, equipo y referencias de las personas, y el ámbito territorial de la entidad. La pestaña de equipo es solo para el titular: un moderador ve las referencias y los datos, pero no la lista de miembros. La mayoría de los cambios de aquí están auditados y limitados al titular, así que cualquier modificación queda trazada.",
         "actions": [
           "Dar de alta o baja a alguien del equipo (solo titular)",
           "Asignar referencias",
           "Ajustar los datos y colores de la entidad"
+        ],
+        "tips": [
+          "Cambiar la persona de guardia surte efecto inmediatamente para los avisos nuevos."
+        ],
+        "related": [
+          "entidad.guardia",
+          "entidad.personas"
         ],
         "audience": "Titular y moderador; el equipo solo lo ve el titular."
       }
@@ -1542,38 +1710,73 @@
       "inicio": {
         "title": "Inicio del paraguas",
         "summary": "Un vistazo a la administración: cómo está tu territorio declarado y cómo está la red de entidades que financias, cada bloque con enlace a su sección.",
+        "details": "El inicio del paraguas es la puerta de entrada a las dos vistas del paraguas: el observatorio del territorio y la red financiada. Ambas son cuadros de mando agregados, gobernados por la misma regla de privacidad que el resto del panel — cualquier grupo con menos de cinco personas distintas se muestra como «<5» — y ninguna lista personas. Abre cualquiera de las dos vistas para cambiar el periodo y explorar los desgloses.",
         "actions": [
           "Abrir el observatorio del territorio",
           "Abrir la red financiada"
+        ],
+        "tips": [
+          "Todo lo de aquí está agregado: ninguna persona es identificable."
+        ],
+        "related": [
+          "paraguas.territorio",
+          "paraguas.informes",
+          "paraguas.redFinanciada"
         ],
         "audience": "Todos los roles de la entidad paraguas."
       },
       "territorio": {
         "title": "Territorio",
         "summary": "Observatorio de tu territorio declarado: todo lo que ocurre en sus municipios, sea de la entidad que sea. Mapa de burbujas, tabla por municipio, serie mensual y comparativa con el periodo anterior. Nunca ves personas: cualquier grupo con menos de cinco se muestra como «<5».",
+        "details": "La vista de territorio agrega toda actividad dentro de tu ámbito declarado, sea de la entidad que sea: una entidad fuera de tu red cuenta si trabaja en tu terreno. El esquema fijo y el umbral de privacidad se aplican celda a celda — grupos con menos de cinco personas distintas se muestran como «<5» —. La comparativa mide el periodo anterior de la misma longitud y exige un desglose. La ficha de un municipio solo muestra agregados: nunca nombres de personas ni de entidades con sede allí.",
         "actions": [
           "Cambiar el periodo",
           "Abrir un municipio para ver su ficha agregada",
           "Comparar comarcas, municipios o provincias con el periodo anterior"
+        ],
+        "tips": [
+          "El periodo no puede abarcar más de 1461 días (unos 4 años).",
+          "La ficha de un municipio solo muestra agregados: nunca nombres de personas ni de entidades."
+        ],
+        "related": [
+          "paraguas.inicio",
+          "paraguas.redFinanciada"
         ],
         "audience": "Todos los roles de la administración."
       },
       "informes": {
         "title": "Informes del paraguas",
         "summary": "Exportación agregada del territorio o de la red financiada en CSV o PDF.",
+        "details": "Las exportaciones siguen el mismo esquema fijo y el mismo umbral de privacidad que los cuadros de mando: los grupos con menos de cinco personas distintas se exportan como «<5» y ningún informe contiene nombres de personas. Elige el ámbito — territorio o red financiada —, el periodo y el desglose, o «por año» para una memoria plurianual. La generación del PDF depende del backend: cuando no está disponible recibes un aviso específico en lugar del fichero, mientras el CSV sigue funcionando.",
         "actions": [
           "Elegir el ámbito (territorio o red financiada)",
           "Elegir periodo y desglose",
           "Descargar el informe"
+        ],
+        "tips": [
+          "«Por año» da una fila por año y deja vacía la sección por municipios.",
+          "Si la exportación a PDF no está disponible, el aviso lo dice con claridad; el CSV sigue funcionando."
+        ],
+        "related": [
+          "paraguas.inicio"
         ],
         "audience": "Titular, moderador y analista."
       },
       "redFinanciada": {
         "title": "Red financiada",
         "summary": "Métricas agregadas de las entidades que cuelgan de esta administración: personas, actividades y asistencia por municipio, por entidad y por mes, y la comparativa con el periodo anterior. Sigue el árbol de entidades, no el territorio.",
+        "details": "La red financiada agrega las entidades que cuelgan de esta administración, siguiendo el árbol padre/hijas: una entidad fuera de tu territorio cuenta si cuelga de ti. Cada periodo carga las tarjetas base más los desgloses por municipio, por entidad y por mes, bajo el mismo umbral: grupos con menos de cinco personas distintas se muestran como «<5». La comparativa mide el periodo anterior de la misma longitud y exige un desglose.",
         "actions": [
           "Cambiar el periodo",
           "Comparar comarcas, entidades o municipios con el periodo anterior"
+        ],
+        "tips": [
+          "La membresía la decide el árbol, no la geografía: las hijas de tus entidades cuentan aunque estén fuera de tu territorio.",
+          "Las celdas de personas se suprimen por debajo de cinco; el recuento de actividades nunca se suprime."
+        ],
+        "related": [
+          "paraguas.inicio",
+          "paraguas.territorio"
         ],
         "audience": "Todos los roles de la administración."
       }
@@ -1582,98 +1785,196 @@
       "inicio": {
         "title": "Inicio de plataforma",
         "summary": "Estado general de Popyplan: entidades verificadas y pendientes, reportes escalados, avisos de ayuda sin atender, contratos y facturas.",
+        "details": "Cada tarjeta abre su cola, y las tarjetas solo aparecen para las secciones que tiene tu rol: entidades verificadas y pendientes, reportes escalados, avisos de ayuda sin atender y — para los roles que ven Suscripciones — contratos y facturas vencidas. Las cifras de uso (personas activas, actividades programadas) vienen de un endpoint solo para administración, así que solo las ve el superadmin. Una tarjeta que falla por cualquier otra razón muestra «No disponible»: un fallo nunca se presenta como un cero.",
         "actions": [
-          "Entrar en cada cola desde su tarjeta"
+          "Entrar en cada cola desde su tarjeta",
+          "Consultar el resumen de uso (solo superadmin)"
+        ],
+        "tips": [
+          "Las tarjetas siguen el menú de tu rol: lo que no ves está fuera de tu rol, no falta.",
+          "«No disponible» significa que la petición falló, no que el recuento sea cero."
+        ],
+        "related": [
+          "plataforma.entidades",
+          "plataforma.reportes",
+          "plataforma.metricas"
         ],
         "audience": "Equipo de Popyplan según su rol."
       },
       "entidades": {
         "title": "Entidades",
-        "summary": "Todas las entidades dadas de alta, verificadas o no.",
+        "summary": "Todas las entidades dadas de alta, verificadas o no, con búsqueda y filtros. Dar de alta y verificar son tareas del verificador y del superadmin.",
+        "details": "El directorio completo de entidades, verificadas o no. La lista está paginada y filtra por estado de verificación y búsqueda de texto; la búsqueda se aplica poco después de que dejes de teclear. Dar de alta una entidad nueva es acción del verificador o el superadmin, y una entidad nueva nace sin verificar hasta que alguien la verifica desde su ficha. Abre una ficha para gestionar su paraguas, su ámbito, su equipo, sus métricas y su contrato.",
         "actions": [
           "Buscar y filtrar por verificación",
           "Dar de alta una entidad nueva (verificador y superadmin)",
           "Abrir su ficha"
         ],
+        "tips": [
+          "Las entidades nuevas siguen sin verificar hasta que un verificador o el superadmin las verifica.",
+          "El cuadro de búsqueda se aplica tras una breve pausa mientras tecleas."
+        ],
+        "related": [
+          "plataforma.verificaciones"
+        ],
         "audience": "Superadmin y verificador."
       },
       "entidadFicha": {
         "title": "Ficha de la entidad",
-        "summary": "Datos, paraguas, ámbito territorial, equipo, métricas, comunidades y contrato de una entidad.",
+        "summary": "Datos, paraguas, ámbito territorial, equipo, métricas, comunidades y contrato de una entidad, organizados en pestañas.",
+        "details": "Siete pestañas en una sola ficha: datos (con la verificación), paraguas (reasignar el paraguas es solo superadmin), ámbito territorial (superadmin desde aquí; el titular de la propia entidad también puede ampliarlo), equipo, métricas, comunidades y actividades, y una pestaña de contrato de solo lectura con el contrato activo y su última factura. Un verificador sin membresía en esa entidad recibe un «Sin acceso» explícito en lugar de datos inventados.",
         "actions": [
           "Verificarla",
           "Asignarle un paraguas o ampliar su ámbito (superadmin)",
           "Gestionar su equipo"
         ],
+        "tips": [
+          "Con varios contratos, la pestaña prioriza el activo.",
+          "Reasignar el paraguas o ampliar el ámbito desde aquí es solo superadmin."
+        ],
+        "related": [
+          "plataforma.entidades",
+          "plataforma.suscripciones"
+        ],
         "audience": "Superadmin y verificador; algunas pestañas solo superadmin."
       },
       "reportes": {
         "title": "Reportes escalados",
-        "summary": "Cola global de reportes que las entidades han escalado a Popyplan.",
+        "summary": "Cola global de reportes que las entidades han escalado a Popyplan, con su entidad y su fecha de escalado.",
+        "details": "Solo llegan a esta cola los reportes escalados: una entidad resuelve lo que puede y escala el resto a Popyplan. La lista no está paginada — todos los reportes escalados caben en una página — e indica la entidad de origen, con una insignia «Escalado» en los pendientes. Moderador y superadmin pueden asignar y resolver; soporte tiene acceso de solo lectura, así que sus botones de acción se ocultan en lugar de deshabilitarse.",
         "actions": [
           "Abrir cada reporte",
           "Asignarlo o resolverlo (moderador y superadmin); soporte solo consulta"
+        ],
+        "tips": [
+          "Solo aparecen aquí los reportes que una entidad escaló a propósito; el resto se queda en la cola de la entidad.",
+          "Soporte ve la misma cola sin botones de acción."
+        ],
+        "related": [
+          "plataforma.inicio"
         ],
         "audience": "Superadmin, moderador y soporte."
       },
       "reporteDetalle": {
         "title": "Detalle del reporte",
         "summary": "Motivo, contenido, entidad de origen e historial de un reporte escalado.",
+        "details": "El panorama completo de un reporte escalado: el motivo en lenguaje claro, el contenido reportado, la entidad de origen y su historial de gestión. Moderador y superadmin pueden asignarlo a una persona del equipo o resolverlo con una decisión; para soporte todas las acciones están ocultas, porque su rol es de solo lectura. Lo que el contrato no nombra nunca se inventa: una asignación muestra «una persona del equipo», no una identidad que el dato no lleva.",
         "actions": [
-          "Asignar o resolver (moderador y superadmin)"
+          "Asignar o resolver (moderador y superadmin)",
+          "Revisar el motivo, el contenido y el historial (soporte lee la misma vista)"
+        ],
+        "tips": [
+          "La vista de soporte es idéntica menos las acciones: nada es editable por error.",
+          "Los motivos y estados están traducidos; un valor que el panel no conoce se muestra en crudo."
+        ],
+        "related": [
+          "plataforma.reportes"
         ],
         "audience": "Superadmin, moderador y soporte."
       },
       "ayuda": {
         "title": "Avisos de ayuda",
         "summary": "Avisos «hoy lo llevo mal» pendientes en toda la plataforma, para detectar entidades sin guardia que responda.",
+        "details": "Una sola petición agregada lista todos los avisos pendientes de todas las entidades, para detectar una entidad cuyos avisos no responde nadie. Cada aviso muestra su entidad, si la persona pertenece a ella y su referente cuando lo tiene. Popyplan no guarda teléfonos: el contacto es por el chat de la app o a través del referente. Atender un aviso lo reconoce aquí y en la propia pantalla de guardia de la entidad a la vez.",
         "actions": [
           "Ver el aviso, su entidad y su referente",
           "Atenderlo si procede"
+        ],
+        "tips": [
+          "La línea fija bajo la lista explica la regla de «sin teléfonos»: no es un dato que falte.",
+          "Una insignia marca los avisos de alguien que no es miembro de esa entidad."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.reportes"
         ],
         "audience": "Superadmin, moderador y soporte."
       },
       "verificaciones": {
         "title": "Verificaciones",
-        "summary": "Revisiones de identidad pendientes: el recurso de la persona y el motivo del proveedor.",
+        "summary": "Revisiones de identidad pendientes: el recurso de la persona y el motivo del proveedor, decididas con una nota.",
+        "details": "La cola de revisiones de identidad pendientes. Cada fila junta el recurso de la persona (su texto de recurso) con el motivo por el que el proveedor la marcó, para que decidas con las dos partes delante. Aprobar o rechazar siempre pide una nota, y la decisión es solo del verificador y el superadmin. A medida que resuelves revisiones la cola se reduce; si la página en la que estabas se vacía, vuelves a la primera automáticamente.",
         "actions": [
-          "Aprobar o rechazar con una nota"
+          "Aprobar o rechazar con una nota",
+          "Revisar primero el recurso de la persona y el motivo del proveedor"
+        ],
+        "tips": [
+          "La nota es parte de la decisión: escribe lo que una auditoría futura necesite.",
+          "Las revisiones resueltas salen de la cola solas; una página vaciada te devuelve a la primera."
+        ],
+        "related": [
+          "plataforma.entidades"
         ],
         "audience": "Superadmin y verificador."
       },
       "roles": {
         "title": "Roles",
         "summary": "Quién forma el equipo de Popyplan y con qué rol de plataforma.",
+        "details": "Los roles de plataforma son aparte de los roles de entidad: una persona puede ser de la plataforma y aun así tener un rol dentro de una entidad. Conceder aquí da acceso solo al área de plataforma. La concesión busca la cuenta por correo o nombre de usuario; el id de usuario siempre funciona como alternativa. Revocar es una confirmación explícita porque quita el acceso a la plataforma de inmediato.",
         "actions": [
           "Conceder un rol buscando la cuenta",
           "Revocarlo"
+        ],
+        "tips": [
+          "Revocar un rol surte efecto de inmediato.",
+          "La búsqueda de cuentas acepta correo; el id de usuario siempre funciona como alternativa."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.auditoria"
         ],
         "audience": "Solo superadmin."
       },
       "auditoria": {
         "title": "Auditoría",
         "summary": "Registro de acciones sensibles de todo el sistema, con filtros por actor, acción, objeto y fechas.",
+        "details": "Toda acción sensible del sistema, solo superadmin. Los filtros acotan por actor, acción, objeto y rango de fechas, y cada fila muestra sus metadatos como pares clave=valor legibles. La exportación CSV es una descarga en el cliente de la página actual, no una exportación del servidor: separada por punto y coma y con BOM para que Excel la abra bien, con cada celda entrecomillada y los valores que podrían convertirse en fórmulas de hoja de cálculo desactivados. Filtra antes de exportar para quedarte con el corte que necesitas.",
         "actions": [
           "Filtrar y revisar el registro",
           "Exportar la página actual a CSV"
+        ],
+        "tips": [
+          "El CSV exporta solo la página actual: filtra primero y exporta después.",
+          "Descargar una página no se audita a sí mismo; solo las acciones del backend."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.roles"
         ],
         "audience": "Solo superadmin."
       },
       "metricas": {
         "title": "Métricas",
         "summary": "Métricas agregadas de toda la plataforma, por territorio o por entidad, con comparativa entre periodos.",
+        "details": "Métricas de toda la plataforma con el mismo esquema fijo que las de entidad. El selector territorio/entidad decide qué desglose usa cada petición, y el bloque de comparativa es obligatorio: hay que elegir un desglose (provincia por defecto) para comparar el periodo actual con el anterior de la misma longitud. Las celdas con menos de 5 personas distintas se muestran como «<5»: el umbral de privacidad se aplica en cualquier ámbito.",
         "actions": [
           "Cambiar periodo y desglose",
           "Exportar"
+        ],
+        "tips": [
+          "El desglose por año da una fila por año para vistas plurianuales."
+        ],
+        "related": [
+          "plataforma.inicio",
+          "plataforma.suscripciones"
         ],
         "audience": "Superadmin, moderador y soporte."
       },
       "suscripciones": {
         "title": "Suscripciones",
         "summary": "Suscripciones de Popyplan con cada entidad: contratos, tramos de precio y facturas.",
+        "details": "Tres pestañas: contratos, tramos de precio y facturas. Los contratos solo avanzan — borrador, activo, finalizado — y las facturas calculan su propio estado (pagada, pendiente, vencida). Solo el superadmin escribe: para soporte los botones están ocultos, nunca deshabilitados. Y un contrato finalizado es solo historia de facturación: nunca desactiva ninguna función de la entidad.",
         "actions": [
           "Crear y activar contratos, tramos y facturas (superadmin)",
           "Marcar facturas como pagadas"
+        ],
+        "tips": [
+          "El estado de la factura se calcula, no se elige: pagarla (o su fecha de vencimiento) lo cambia.",
+          "Finalizar un contrato nunca afecta a lo que la entidad puede hacer en el panel."
+        ],
+        "related": [
+          "plataforma.entidades",
+          "plataforma.metricas"
         ],
         "audience": "Superadmin y soporte; soporte solo consulta."
       }
