@@ -8,7 +8,7 @@ import en from "@/messages/en.json";
 import es from "@/messages/es.json";
 import eu from "@/messages/eu.json";
 
-import { matchPageHelp, PAGE_HELP, routeToRegExp } from "./pageHelp";
+import { dynamicSegments, matchPageHelp, PAGE_HELP, resolveRelatedRoute, routeToRegExp } from "./pageHelp";
 
 type HelpCatalog = {
   help?: Record<string, unknown>;
@@ -89,10 +89,18 @@ describe("PAGE_HELP", () => {
       (["en", "es", "eu", "ca"] as const).map((lang) => [entry.route, entry.key, lang] as const),
     ),
   )(
-    "%s (help.%s, %s) tiene title, summary, audience no vacíos y entre 1 y 4 actions",
+    "%s (help.%s, %s) tiene title, summary, details, audience no vacíos, entre 1 y 4 actions y entre 1 y 3 tips y related",
     (_route, key, lang) => {
       const entry = resolveHelpEntry(CATALOGS[lang], key) as
-        | { title?: unknown; summary?: unknown; audience?: unknown; actions?: unknown }
+        | {
+            title?: unknown;
+            summary?: unknown;
+            details?: unknown;
+            audience?: unknown;
+            actions?: unknown;
+            tips?: unknown;
+            related?: unknown;
+          }
         | undefined;
 
       expect(entry, `help.${key} falta en ${lang}.json`).toBeDefined();
@@ -100,6 +108,8 @@ describe("PAGE_HELP", () => {
       expect((entry?.title as string).length).toBeGreaterThan(0);
       expect(typeof entry?.summary).toBe("string");
       expect((entry?.summary as string).length).toBeGreaterThan(0);
+      expect(typeof entry?.details).toBe("string");
+      expect((entry?.details as string).length).toBeGreaterThan(0);
       expect(typeof entry?.audience).toBe("string");
       expect((entry?.audience as string).length).toBeGreaterThan(0);
 
@@ -111,6 +121,66 @@ describe("PAGE_HELP", () => {
         expect(typeof action).toBe("string");
         expect((action as string).length).toBeGreaterThan(0);
       }
+
+      expect(Array.isArray(entry?.tips), `help.${key}.tips en ${lang}.json`).toBe(true);
+      const tips = entry?.tips as unknown[];
+      expect(tips.length).toBeGreaterThanOrEqual(1);
+      expect(tips.length).toBeLessThanOrEqual(3);
+      for (const tip of tips) {
+        expect(typeof tip).toBe("string");
+        expect((tip as string).length).toBeGreaterThan(0);
+      }
+
+      expect(Array.isArray(entry?.related), `help.${key}.related en ${lang}.json`).toBe(true);
+      const related = entry?.related as unknown[];
+      expect(related.length).toBeGreaterThanOrEqual(1);
+      expect(related.length).toBeLessThanOrEqual(3);
+      for (const relatedKey of related) {
+        expect(typeof relatedKey).toBe("string");
+        expect((relatedKey as string).length).toBeGreaterThan(0);
+      }
+    },
+  );
+
+  /**
+   * Cruce de `related` con el registro (fase 1 de la ampliación): cada
+   * clave tiene que apuntar a otra entrada de `PAGE_HELP` — nunca a sí
+   * misma, nunca repetida dentro del mismo array — y esa entrada no puede
+   * tener segmentos dinámicos distintos de `[slug]`: las fichas
+   * (`[userId]`, `[eventId]`, `[id]`) no tienen una ruta navegable sin
+   * conocer el recurso concreto, así que jamás son destino del botón
+   * «Pantallas relacionadas». Se lee en `en` (catálogo fuente): las
+   * cuatro lenguas comparten las mismas claves por paridad de catálogos.
+   */
+  it.each(PAGE_HELP.map((entry) => [entry.key] as const))(
+    "help.%s: related solo apunta a entradas navegables del registro",
+    (key) => {
+      const entry = resolveHelpEntry(CATALOGS.en, key) as { related?: unknown };
+      const related = entry?.related as unknown[];
+      expect(Array.isArray(related), `help.${key}.related falta en en.json`).toBe(true);
+
+      for (const relatedKey of related) {
+        expect(relatedKey, `help.${key}.related se relaciona consigo misma`).not.toBe(key);
+        const relatedEntry = PAGE_HELP.find((candidate) => candidate.key === relatedKey);
+        expect(
+          relatedEntry,
+          `help.${key}.related apunta a la clave desconocida "${String(relatedKey)}"`,
+        ).toBeDefined();
+        // `expect` no estrecha tipos: sin entrada, el `expect` de arriba
+        // ya ha fallado el test y este throw solo satisface a `tsc`.
+        if (!relatedEntry) throw new Error(`related sin entrada: ${String(relatedKey)}`);
+        for (const segment of dynamicSegments(relatedEntry.route)) {
+          expect(
+            segment,
+            `help.${key}.related → "${String(relatedKey)}" (${relatedEntry.route}) tiene un segmento dinámico que no es [slug]`,
+          ).toBe("[slug]");
+        }
+      }
+
+      expect(
+        new Set(related).size,
+        `help.${key}.related tiene claves duplicadas`,
+      ).toBe(related.length);
     },
   );
 });
@@ -175,5 +245,60 @@ describe("matchPageHelp", () => {
   it("devuelve la entrada exacta para una ruta raíz de área", () => {
     expect(matchPageHelp("/plataforma")?.route).toBe("/plataforma");
     expect(matchPageHelp("/paraguas/x")?.route).toBe("/paraguas/[slug]");
+  });
+});
+
+describe("dynamicSegments", () => {
+  it("recoge solo los segmentos dinámicos, en orden", () => {
+    expect(dynamicSegments("/entidad/[slug]/personas/[userId]")).toEqual(["[slug]", "[userId]"]);
+    expect(dynamicSegments("/plataforma/roles")).toEqual([]);
+    expect(dynamicSegments("/entidad/[slug]")).toEqual(["[slug]"]);
+  });
+});
+
+describe("resolveRelatedRoute", () => {
+  const personas = PAGE_HELP.find((entry) => entry.key === "entidad.personas")!;
+  const actividades = PAGE_HELP.find((entry) => entry.key === "entidad.actividades")!;
+  const personasFicha = PAGE_HELP.find((entry) => entry.key === "entidad.personaFicha")!;
+  const plataformaRoles = PAGE_HELP.find((entry) => entry.key === "plataforma.roles")!;
+
+  it("una ruta estática se navega tal cual, sin slug que portar", () => {
+    expect(
+      resolveRelatedRoute("/entidad/alfaville/personas", personas, plataformaRoles),
+    ).toBe("/plataforma/roles");
+  });
+
+  it("con [slug] en la misma área, porta el slug del pathname actual", () => {
+    expect(
+      resolveRelatedRoute("/entidad/alfaville/personas", personas, actividades),
+    ).toBe("/entidad/alfaville/actividades");
+  });
+
+  it("con [slug] pero pathname de otra área, no hay ruta resoluble", () => {
+    expect(
+      resolveRelatedRoute("/paraguas/dipu/personas", personas, actividades),
+    ).toBeNull();
+  });
+
+  it("una ficha (otro segmento dinámico) nunca es destino de navegación", () => {
+    expect(
+      resolveRelatedRoute("/entidad/alfaville/personas", personas, personasFicha),
+    ).toBeNull();
+    expect(
+      resolveRelatedRoute("/entidad/alfaville/personas", personasFicha, personas),
+    ).toBe("/entidad/alfaville/personas");
+  });
+
+  it("sin slug en el pathname actual, [slug] no se puede resolver", () => {
+    const plataformaInicio = PAGE_HELP.find((entry) => entry.key === "plataforma.inicio")!;
+    expect(
+      resolveRelatedRoute("/plataforma", plataformaInicio, personas),
+    ).toBeNull();
+  });
+
+  it("desde plataforma, el segundo segmento del pathname es un literal, no un slug", () => {
+    expect(
+      resolveRelatedRoute("/plataforma/roles", plataformaRoles, personas),
+    ).toBeNull();
   });
 });

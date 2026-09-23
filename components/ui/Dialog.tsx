@@ -63,9 +63,14 @@ export function Dialog({
     placement === "side" ? "justify-end" : "justify-center items-center";
   // El radio va en la rama, no en la clase base: `rounded-none` y
   // `rounded-lg` juntos dependerían del orden del CSS generado, no del
-  // orden del atributo `class`.
+  // orden del atributo `class`. El diálogo centrado limita su altura y
+  // enrolla su contenido: con secciones largas (p. ej. la ayuda por
+  // pantalla con «Cómo funciona»/«Consejos»/«Pantallas relacionadas»)
+  // el panel completo cabe siempre en la vista.
   const panelPlacement =
-    placement === "side" ? "h-full overflow-y-auto rounded-none" : "rounded-lg";
+    placement === "side"
+      ? "h-full overflow-y-auto rounded-none"
+      : "max-h-[70vh] overflow-y-auto rounded-lg";
 
   return (
     <div className={`fixed inset-0 z-50 flex ${overlayPlacement} bg-black/40 p-4`}>

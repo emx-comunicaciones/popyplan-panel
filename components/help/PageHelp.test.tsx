@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import { axe } from "@/test-utils/axe";
 import { fireEvent, render, screen } from "@/test-utils/render";
-import { setPathname } from "@/test-utils/nextNavigationMock";
+import { routerMock, setPathname } from "@/test-utils/nextNavigationMock";
 import es from "@/messages/es.json";
 
 import { PageHelp } from "./PageHelp";
@@ -113,6 +113,174 @@ describe("PageHelp", () => {
     const { container } = render(<PageHelp />);
 
     expect(await axe(container)).toHaveNoViolations();
+
+    await user.click(screen.getByRole("button", { name: "Ayuda: Personas" }));
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  /**
+   * Mensajes con `help.entidad.personas` ampliado localmente: el catálogo
+   * real ya incluye `details`/`tips`/`related`, pero este fixture fija texto
+   * concreto (p. ej. una relacionada no navegable de otra área) sin depender
+   * de la redacción vigente — si cambia el catálogo, estos tests no se
+   * mueven. Inyectado con un merge en el provider, sin tocar el JSON.
+   */
+  const messagesConAmpliacion = {
+    ...es,
+    help: {
+      ...es.help,
+      entidad: {
+        ...es.help.entidad,
+        personas: {
+          ...es.help.entidad.personas,
+          details:
+            "El listado mezcla personas activas con las invitaciones pendientes cuando marcas «Incluir invitadas»; cada fila enlaza a su ficha de participación.",
+          tips: [
+            "Combina la búsqueda de texto con el filtro de comunidad para acotar de verdad.",
+            "El filtro «Participación desde» cuenta solo actividades del mes en curso.",
+          ],
+          related: ["entidad.actividades", "entidad.personaFicha", "plataforma.roles"],
+        },
+      },
+    },
+  };
+
+  /**
+   * Mensajes con `help.entidad.personas` SIN el contenido ampliado: el
+   * catálogo real ya lo trae, así que para probar el render defensivo
+   * (secciones ausentes cuando no hay contenido) hay que quitarlo aquí en
+   * el provider en vez de montar `messages/es.json` tal cual.
+   */
+  const messagesSinAmpliacion = JSON.parse(JSON.stringify(es)) as typeof es;
+  delete (messagesSinAmpliacion.help.entidad.personas as Partial<
+    (typeof es.help.entidad)["personas"]
+  >).details;
+  delete (messagesSinAmpliacion.help.entidad.personas as Partial<
+    (typeof es.help.entidad)["personas"]
+  >).tips;
+  delete (messagesSinAmpliacion.help.entidad.personas as Partial<
+    (typeof es.help.entidad)["personas"]
+  >).related;
+
+  function renderConAmpliacion(pathname: string) {
+    setPathname(pathname);
+    return rtlRenderUnwrapped(
+      <NextIntlClientProvider locale="es" messages={messagesConAmpliacion}>
+        <PageHelp />
+      </NextIntlClientProvider>,
+    );
+  }
+
+  function renderSinAmpliacion(pathname: string) {
+    setPathname(pathname);
+    return rtlRenderUnwrapped(
+      <NextIntlClientProvider locale="es" messages={messagesSinAmpliacion}>
+        <PageHelp />
+      </NextIntlClientProvider>,
+    );
+  }
+
+  it("con contenido ampliado, pinta «Cómo funciona», «Consejos» y «Pantallas relacionadas»", async () => {
+    const user = userEvent.setup();
+    renderConAmpliacion("/entidad/alfaville/personas");
+
+    await user.click(screen.getByRole("button", { name: "Ayuda: Personas" }));
+
+    expect(
+      screen.getByRole("heading", { level: 3, name: "Cómo funciona" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "El listado mezcla personas activas con las invitaciones pendientes cuando marcas «Incluir invitadas»; cada fila enlaza a su ficha de participación.",
+      ),
+    ).toBeInTheDocument();
+
+    expect(screen.getByRole("heading", { level: 3, name: "Consejos" })).toBeInTheDocument();
+    expect(
+      screen.getByText("Combina la búsqueda de texto con el filtro de comunidad para acotar de verdad."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("El filtro «Participación desde» cuenta solo actividades del mes en curso."),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", { level: 3, name: "Pantallas relacionadas" }),
+    ).toBeInTheDocument();
+    // Resoluble: misma área, solo `[slug]` → se pinta con el slug actual.
+    expect(screen.getByRole("button", { name: "Actividades" })).toBeInTheDocument();
+    // Estática de plataforma: se navega tal cual.
+    expect(screen.getByRole("button", { name: "Roles" })).toBeInTheDocument();
+    // Ficha (`[userId]`): nunca es destino de navegación, no pinta botón.
+    expect(
+      screen.queryByRole("button", { name: "Ficha de la persona" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("una relacionada de otra área no pinta botón", async () => {
+    const messagesPlataforma = {
+      ...es,
+      help: {
+        ...es.help,
+        plataforma: {
+          ...es.help.plataforma,
+          roles: {
+            ...es.help.plataforma.roles,
+            details: "Concede y revoca los roles de plataforma sobre las cuentas del buscador.",
+            tips: ["Revocar un rol es inmediato: pide confirmación antes."],
+            related: ["entidad.personas"],
+          },
+        },
+      },
+    };
+    setPathname("/plataforma/roles");
+    const user = userEvent.setup();
+    rtlRenderUnwrapped(
+      <NextIntlClientProvider locale="es" messages={messagesPlataforma}>
+        <PageHelp />
+      </NextIntlClientProvider>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Ayuda: Roles" }));
+
+    expect(
+      screen.getByRole("heading", { level: 3, name: "Pantallas relacionadas" }),
+    ).toBeInTheDocument();
+    // `entidad.personas` usa `[slug]` y plataforma no tiene slug que portar.
+    expect(screen.queryByRole("button", { name: "Personas" })).not.toBeInTheDocument();
+  });
+
+  it("clic en una relacionada resoluble navega a su ruta y cierra el diálogo", async () => {
+    const user = userEvent.setup();
+    renderConAmpliacion("/entidad/alfaville/personas");
+
+    await user.click(screen.getByRole("button", { name: "Ayuda: Personas" }));
+    await user.click(screen.getByRole("button", { name: "Actividades" }));
+
+    expect(routerMock.push).toHaveBeenCalledWith("/entidad/alfaville/actividades");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Ayuda: Personas" })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+  });
+
+  it("sin el contenido nuevo en el catálogo, no pinta las secciones vacías", async () => {
+    const user = userEvent.setup();
+    renderSinAmpliacion("/entidad/alfaville/personas");
+
+    await user.click(screen.getByRole("button", { name: "Ayuda: Personas" }));
+
+    expect(screen.queryByRole("heading", { name: "Cómo funciona" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Consejos" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Pantallas relacionadas" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("con todo el contenido abierto, no tiene violaciones de accesibilidad (axe)", async () => {
+    const user = userEvent.setup();
+    const { container } = renderConAmpliacion("/entidad/alfaville/personas");
 
     await user.click(screen.getByRole("button", { name: "Ayuda: Personas" }));
 

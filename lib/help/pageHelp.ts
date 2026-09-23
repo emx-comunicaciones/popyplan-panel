@@ -22,8 +22,19 @@
  * page.tsx real..."` recorre `app/` de verdad y falla si una página
  * nueva no tiene entrada aquí, o si una entrada sobra sin fichero; un
  * segundo bloque de tests comprueba que la `key` de cada entrada existe,
- * con `title`/`summary`/`audience` no vacíos y entre 1 y 4 `actions` no
- * vacías, en los cuatro catálogos.
+ * con `title`/`summary`/`details`/`audience` no vacíos, entre 1 y 4
+ * `actions`, 1-3 `tips` y 1-3 `related` no vacíos, en los cuatro
+ * catálogos, y que cada clave de `related` apunta a otra entrada cuya
+ * `route` solo usa `[slug]` como segmento dinámico (las fichas, con
+ * `[userId]`/`[eventId]`/`[id]`, nunca son destino de la navegación
+ * «Pantallas relacionadas»).
+ *
+ * `resolveRelatedRoute` (fase 1 de la ampliación) resuelve a qué ruta
+ * navega cada botón de «Pantallas relacionadas»: las rutas estáticas se
+ * navegan tal cual; con exactamente `[slug]` como segmento dinámico se
+ * porta el slug del pathname actual si ambas entradas son de la misma
+ * área (`/entidad/<slug>/…`, `/paraguas/<slug>/…`); cualquier otra cosa
+ * devuelve `null` y `PageHelp` no pinta ese botón.
  */
 export interface PageHelpEntry {
   /** Plantilla de ruta tal y como está en `app/` (con `[slug]`, `[userId]`…). */
@@ -95,6 +106,62 @@ export function routeToRegExp(route: string): RegExp {
     )
     .join("\\/");
   return new RegExp(`^\\/${pattern}\\/?$`);
+}
+
+/**
+ * Segmentos dinámicos (`[slug]`, `[userId]`…) de una plantilla, en el
+ * orden en que aparecen; los literales no entran.
+ */
+export function dynamicSegments(route: string): string[] {
+  return route
+    .split("/")
+    .filter((segment) => DYNAMIC_SEGMENT.test(segment));
+}
+
+/**
+ * Resuelve la ruta de destino del botón «Pantallas relacionadas» para la
+ * entrada `relatedEntry` cuando la pantalla actual es `currentPathname`
+ * (entrada `entry`). Tres casos:
+ *
+ * - Ruta estática (`/plataforma/roles`, `/plataforma`…): se navega tal
+ *   cual — plataforma no tiene slug, así que no hay nada que portar.
+ * - Segmentos dinámicos exactamente `["[slug]"]` y área compartida: si la
+ *   entrada **actual** también usa `[slug]` (solo entidad/paraguas) y el
+ *   pathname tiene un segmento real en esa posición, se sustituye y se
+ *   navega dentro del mismo área. Exigir `[slug]` en la entrada actual no
+ *   es redundante: en `/plataforma/roles` el segundo segmento es un
+ *   literal de la propia ruta (`roles`), no un slug, y portarlo generaría
+ *   `/entidad/roles/personas`.
+ * - Cualquier otro caso (fichas con `[userId]`/`[eventId]`/`[id]`,
+ *   entrada actual sin `[slug]`, áreas distintas): `null`
+ *   — `PageHelp` no pinta el botón, nunca navega a una ruta sin resolver.
+ *
+ * No usa `matchPageHelp` para extraer el slug: la validación de `related`
+ * garantiza que la entrada actual ya es la que casa, así que basta con
+ * comparar el primer segmento del área y tomar el siguiente.
+ */
+export function resolveRelatedRoute(
+  currentPathname: string,
+  entry: PageHelpEntry,
+  relatedEntry: PageHelpEntry,
+): string | null {
+  const relatedDynamic = dynamicSegments(relatedEntry.route);
+  if (relatedDynamic.length === 0) return relatedEntry.route;
+
+  const area = entry.route.split("/").filter(Boolean)[0];
+  const currentSegments = currentPathname.split("/").filter(Boolean);
+
+  if (
+    relatedDynamic.length === 1 &&
+    relatedDynamic[0] === "[slug]" &&
+    dynamicSegments(entry.route)[0] === "[slug]" &&
+    currentSegments[0] === area &&
+    currentSegments.length >= 2
+  ) {
+    return relatedEntry.route.replace("[slug]", currentSegments[1]);
+  }
+
+  return null;
 }
 
 /**
