@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 
@@ -12,6 +12,7 @@ import { resolveArea } from "@/lib/auth/area";
 import { consumeSessionExpiredMessage, SESSION_EXPIRED_MESSAGE } from "@/lib/auth/sessionEvents";
 import { safeReturnTo } from "@/lib/auth/returnTo";
 import { applyAccountLanguage, login } from "@/hooks/useAuth";
+import { hardNavigate } from "@/lib/navigation/hardNavigate";
 
 function areaPath(area: ReturnType<typeof resolveArea>): string {
   if (area === "plataforma") return "/plataforma";
@@ -44,14 +45,13 @@ function errorMessage(
 }
 
 /**
- * Formulario de login, componente cliente (`useState`/`useRouter`).
+ * Formulario de login, componente cliente (`useState`/`useSearchParams`).
  * Carry-over de accesibilidad (tarea W6): separado de `page.tsx` para
  * que la página pueda ser un Server Component con su propio `<title>`
  * (`export const metadata`, imposible en un Client Component) — patrón
  * estándar de Next.js App Router.
  */
 export function LoginForm() {
-  const router = useRouter();
   const t = useTranslations("auth.login");
   const tErrors = useTranslations("auth.login.errors");
   // Destino guardado por `middleware.ts` cuando la sesión no llegó a la
@@ -87,17 +87,15 @@ export function LoginForm() {
     try {
       const session = await login(usernameOrEmail, password);
       // Idioma de la cuenta (spec de diseño `2026-09-19-i18n-es-eu-ca`,
-      // decisión 2): si difiere del idioma con el que se ha visto este
-      // formulario, `router.refresh()` antes de navegar para que el
-      // destino ya se pinte en el idioma correcto — sin esto, la cookie
-      // quedaría fijada pero la navegación reutilizaría el árbol de
-      // Server Components (incluida la raíz, que fija `<html lang>`) ya
-      // cacheado del idioma anterior.
-      if (await applyAccountLanguage(session.user)) {
-        router.refresh();
-      }
+      // decisión 2). La cookie la fija ya el propio `POST /api/session`
+      // con `preferred_language`; esto solo cubre un backend antiguo que
+      // no lo mande. El valor de retorno ya no dispara `router.refresh()`:
+      // refrescar y navegar a la vez era una carrera que dejaba la
+      // pantalla a medias (menú en un idioma, contenido en otro).
+      await applyAccountLanguage(session.user);
       const area = resolveArea(session.user, session.platformRole);
-      router.replace(safeReturnTo(searchParams.get("returnTo")) ?? areaPath(area));
+      // Navegación completa: ver `lib/navigation/hardNavigate.ts`.
+      hardNavigate(safeReturnTo(searchParams.get("returnTo")) ?? areaPath(area));
     } catch (caught) {
       setError(errorMessage(caught, tErrors));
       setSubmitting(false);

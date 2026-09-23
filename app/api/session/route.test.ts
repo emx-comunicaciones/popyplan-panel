@@ -319,3 +319,38 @@ describe("DELETE /api/session", () => {
     expect(res.cookies.get(SESSION_COOKIE_NAME)?.maxAge).toBe(0);
   });
 });
+
+describe("POST /api/session · idioma de la cuenta (fix 2026-09-23)", () => {
+  it("fija `pp_lang` con el idioma de la cuenta en la misma respuesta del login", async () => {
+    fetchMock.mockImplementation(async (url: string) => {
+      if (String(url).includes("/api/auth/login/")) {
+        return response({ key: "acceso", refresh: "refresco", user: {} }, 200);
+      }
+      if (String(url).includes("/users/me/")) {
+        return response({ ...buildMe(), preferred_language: "eu" }, 200);
+      }
+      return response(buildPlatformRole(), 200);
+    });
+
+    const res = await POST(loginRequest({ username_or_email: "a@b.c", password: "x" }));
+
+    expect(res.status).toBe(200);
+    expect(res.cookies.get(LANG_COOKIE_NAME)?.value).toBe("eu");
+  });
+
+  it("una cuenta sin idioma guardado no toca la cookie", async () => {
+    fetchMock.mockImplementation(async (url: string) => {
+      if (String(url).includes("/api/auth/login/")) {
+        return response({ key: "acceso", refresh: "refresco", user: {} }, 200);
+      }
+      if (String(url).includes("/users/me/")) {
+        return response({ ...buildMe(), preferred_language: "" }, 200);
+      }
+      return response(buildPlatformRole(), 200);
+    });
+
+    const res = await POST(loginRequest({ username_or_email: "a@b.c", password: "x" }));
+
+    expect(res.cookies.get(LANG_COOKIE_NAME)).toBeUndefined();
+  });
+});

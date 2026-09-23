@@ -17,6 +17,11 @@ const loginMock = vi.hoisted(() => vi.fn());
 // hace resolver `true` para comprobar el `router.refresh()` de
 // `LoginForm.tsx`.
 const applyAccountLanguageMock = vi.hoisted(() => vi.fn().mockResolvedValue(false));
+// Navegación de documento completa tras entrar (fix 2026-09-23): evita la
+// carrera entre fijar el idioma de la cuenta y navegar. Ver
+// `lib/navigation/hardNavigate.ts`.
+const hardNavigateMock = vi.hoisted(() => vi.fn());
+vi.mock("@/lib/navigation/hardNavigate", () => ({ hardNavigate: hardNavigateMock }));
 vi.mock("@/hooks/useAuth", () => ({
   login: loginMock,
   applyAccountLanguage: applyAccountLanguageMock,
@@ -26,6 +31,7 @@ import LoginPage, { generateMetadata } from "./page";
 
 afterEach(() => {
   loginMock.mockReset();
+  hardNavigateMock.mockReset();
   applyAccountLanguageMock.mockReset();
   applyAccountLanguageMock.mockResolvedValue(false);
   resetSessionEventsForTests();
@@ -69,10 +75,10 @@ describe("LoginPage", () => {
     expect(loginMock).toHaveBeenCalledWith("titular@alfaville.test", "correcta-1234");
     expect(applyAccountLanguageMock).toHaveBeenCalledWith(expect.objectContaining({ id: 42 }));
     expect(routerMock.refresh).not.toHaveBeenCalled();
-    expect(routerMock.replace).toHaveBeenCalledWith("/entidad/alfaville");
+    expect(hardNavigateMock).toHaveBeenCalledWith("/entidad/alfaville");
   });
 
-  it("si el idioma de la cuenta difiere del actual, refresca antes de navegar", async () => {
+  it("el idioma de la cuenta se aplica antes de navegar, sin refrescar (la navegación es completa)", async () => {
     const user = userEvent.setup();
     applyAccountLanguageMock.mockResolvedValueOnce(true);
     loginMock.mockResolvedValue({
@@ -90,8 +96,8 @@ describe("LoginPage", () => {
     await user.type(screen.getByLabelText("Contraseña"), "correcta-1234");
     await user.click(screen.getByRole("button", { name: "Entrar" }));
 
-    expect(routerMock.refresh).toHaveBeenCalled();
-    expect(routerMock.replace).toHaveBeenCalledWith("/entidad/alfaville");
+    expect(routerMock.refresh).not.toHaveBeenCalled();
+    expect(hardNavigateMock).toHaveBeenCalledWith("/entidad/alfaville");
   });
 
   it("redirige a /plataforma cuando el área es plataforma", async () => {
@@ -108,7 +114,7 @@ describe("LoginPage", () => {
     await user.type(screen.getByLabelText("Contraseña"), "correcta-1234");
     await user.click(screen.getByRole("button", { name: "Entrar" }));
 
-    expect(routerMock.replace).toHaveBeenCalledWith("/plataforma");
+    expect(hardNavigateMock).toHaveBeenCalledWith("/plataforma");
   });
 
   it("redirige a /paraguas/{slug} cuando el área es una entidad paraguas", async () => {
@@ -133,7 +139,7 @@ describe("LoginPage", () => {
     await user.type(screen.getByLabelText("Contraseña"), "correcta-1234");
     await user.click(screen.getByRole("button", { name: "Entrar" }));
 
-    expect(routerMock.replace).toHaveBeenCalledWith("/paraguas/diputacion-demo");
+    expect(hardNavigateMock).toHaveBeenCalledWith("/paraguas/diputacion-demo");
   });
 
   it("redirige a /elegir-entidad con varias entidades", async () => {
@@ -155,7 +161,7 @@ describe("LoginPage", () => {
     await user.type(screen.getByLabelText("Contraseña"), "correcta-1234");
     await user.click(screen.getByRole("button", { name: "Entrar" }));
 
-    expect(routerMock.replace).toHaveBeenCalledWith("/elegir-entidad");
+    expect(hardNavigateMock).toHaveBeenCalledWith("/elegir-entidad");
   });
 
   it("con returnTo válido vuelve al destino que pidió el middleware", async () => {
@@ -175,7 +181,7 @@ describe("LoginPage", () => {
     await user.type(screen.getByLabelText("Contraseña"), "correcta-1234");
     await user.click(screen.getByRole("button", { name: "Entrar" }));
 
-    expect(routerMock.replace).toHaveBeenCalledWith("/entidad/alfaville/personas?page=3");
+    expect(hardNavigateMock).toHaveBeenCalledWith("/entidad/alfaville/personas?page=3");
   });
 
   it("con un returnTo que apunta fuera del panel, ignora el destino y va al área", async () => {
@@ -195,7 +201,7 @@ describe("LoginPage", () => {
     await user.type(screen.getByLabelText("Contraseña"), "correcta-1234");
     await user.click(screen.getByRole("button", { name: "Entrar" }));
 
-    expect(routerMock.replace).toHaveBeenCalledWith("/entidad/alfaville");
+    expect(hardNavigateMock).toHaveBeenCalledWith("/entidad/alfaville");
   });
 
   it("un error de servidor (500) muestra el mensaje genérico", async () => {

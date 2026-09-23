@@ -25,6 +25,8 @@ import { serverFetch } from "@/lib/api/serverFetch";
 import type { MeForArea, PlatformRoleMe } from "@/lib/api/types";
 import { forwardedForHeaders } from "@/lib/auth/clientIp";
 import { SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/cookie";
+import { LANG_COOKIE_NAME, langCookieOptions } from "@/lib/i18n/cookie";
+import { isSupportedLanguage } from "@/lib/i18n/languages";
 import { clearRecentRotations } from "@/lib/auth/rotationCache";
 import { requestLanguageHeader } from "@/lib/i18n/requestLanguage";
 
@@ -104,6 +106,21 @@ export async function POST(request: NextRequest) {
     platformRole: roleResult.data,
   });
   response.cookies.set(SESSION_COOKIE_NAME, refresh, sessionCookieOptions());
+  // El idioma de la cuenta se fija **aquí**, en la misma respuesta que abre
+  // la sesión (decisión 2 del diseño de i18n: «la cuenta manda al entrar»).
+  // Antes lo hacía el cliente después de entrar (`applyAccountLanguage` +
+  // `router.refresh()`), y esa carrera dejaba la pantalla a medias: el
+  // documento ya se había pintado en el idioma anterior, el refresco
+  // repintaba el árbol de servidor (menú lateral, títulos) en el idioma de
+  // la cuenta y los componentes de cliente se quedaban con el catálogo
+  // viejo del proveedor — menú en euskera y contenido en español en la
+  // misma pantalla. Con la cookie ya puesta, la primera navegación tras
+  // entrar se pinta entera en el idioma correcto y `applyAccountLanguage`
+  // no encuentra nada que cambiar.
+  const preferido = (meResult.data as { preferred_language?: unknown })?.preferred_language;
+  if (typeof preferido === "string" && isSupportedLanguage(preferido)) {
+    response.cookies.set(LANG_COOKIE_NAME, preferido, langCookieOptions());
+  }
   return response;
 }
 
