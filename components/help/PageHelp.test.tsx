@@ -163,11 +163,11 @@ describe("PageHelp", () => {
     (typeof es.help.entidad)["personas"]
   >).related;
 
-  function renderConAmpliacion(pathname: string) {
+  function renderConAmpliacion(pathname: string, visibleSections?: readonly string[]) {
     setPathname(pathname);
     return rtlRenderUnwrapped(
       <NextIntlClientProvider locale="es" messages={messagesConAmpliacion}>
-        <PageHelp />
+        <PageHelp visibleSections={visibleSections} />
       </NextIntlClientProvider>,
     );
   }
@@ -217,7 +217,7 @@ describe("PageHelp", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("una relacionada de otra área no pinta botón", async () => {
+  it("una relacionada de otra área no pinta botón ni deja la cabecera sola", async () => {
     const messagesPlataforma = {
       ...es,
       help: {
@@ -243,11 +243,13 @@ describe("PageHelp", () => {
 
     await user.click(screen.getByRole("button", { name: "Ayuda: Roles" }));
 
-    expect(
-      screen.getByRole("heading", { level: 3, name: "Pantallas relacionadas" }),
-    ).toBeInTheDocument();
     // `entidad.personas` usa `[slug]` y plataforma no tiene slug que portar.
     expect(screen.queryByRole("button", { name: "Personas" })).not.toBeInTheDocument();
+    // Y sin ningún botón que pintar tampoco se pinta la cabecera: una
+    // cabecera sobre una fila vacía se lee como contenido que falta.
+    expect(
+      screen.queryByRole("heading", { level: 3, name: "Pantallas relacionadas" }),
+    ).not.toBeInTheDocument();
   });
 
   it("clic en una relacionada resoluble navega a su ruta y cierra el diálogo", async () => {
@@ -275,6 +277,33 @@ describe("PageHelp", () => {
     expect(screen.queryByRole("heading", { name: "Consejos" })).not.toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Pantallas relacionadas" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("con el rol que sí ve la sección, la relacionada se pinta", async () => {
+    const user = userEvent.setup();
+    renderConAmpliacion("/entidad/alfaville/personas", ["inicio", "personas", "actividades"]);
+
+    await user.click(screen.getByRole("button", { name: "Ayuda: Personas" }));
+
+    expect(screen.getByRole("button", { name: "Actividades" })).toBeInTheDocument();
+  });
+
+  it("una relacionada fuera del menú del rol no pinta botón ni cabecera", async () => {
+    const user = userEvent.setup();
+    // Sin «actividades» en el menú (p. ej. una `analista`, que solo ve
+    // inicio/programas/informes), ese botón llevaría al «Sin acceso» del
+    // gate de la página. Las otras dos del fixture tampoco salen:
+    // `entidad.personaFicha` es una ficha (nunca navegable) y
+    // `plataforma.roles` es una sección de otra área, fuera de este menú.
+    renderConAmpliacion("/entidad/alfaville/personas", ["inicio", "personas"]);
+
+    await user.click(screen.getByRole("button", { name: "Ayuda: Personas" }));
+
+    expect(screen.queryByRole("button", { name: "Actividades" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Roles" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { level: 3, name: "Pantallas relacionadas" }),
     ).not.toBeInTheDocument();
   });
 

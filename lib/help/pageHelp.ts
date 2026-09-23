@@ -119,6 +119,28 @@ export function dynamicSegments(route: string): string[] {
 }
 
 /**
+ * Sección del menú lateral a la que pertenece una plantilla de ruta:
+ * el primer segmento **literal** después del área (`entidad`,
+ * `paraguas`, `plataforma`), o `"inicio"` cuando no queda ninguno — la
+ * raíz de cada área (`/plataforma`, `/entidad/[slug]`) es su Inicio.
+ * Una ficha comparte sección con su listado (`/entidad/[slug]/personas/
+ * [userId]` → `"personas"`), que es justo lo que gatean las páginas con
+ * `entidadMenuFor`.
+ *
+ * Existe para que `PageHelp` pueda descartar una «pantalla relacionada»
+ * que el rol de quien mira no tiene en su menú: el botón llevaría al
+ * «Sin acceso» del gate de esa página. Misma clase de fallo que ya
+ * corrigieron `ActividadesTable` (`canOpenAttendance`) y `GuardiaPanel`
+ * (`canOpenPersonSheet`), y por el mismo motivo: quien pinta el enlace
+ * no puede suponer el permiso de destino.
+ */
+export function menuSectionFor(route: string): string {
+  const [, ...resto] = route.split("/").filter((segment) => segment.length > 0);
+  const literal = resto.find((segment) => !DYNAMIC_SEGMENT.test(segment));
+  return literal ?? "inicio";
+}
+
+/**
  * Resuelve la ruta de destino del botón «Pantallas relacionadas» para la
  * entrada `relatedEntry` cuando la pantalla actual es `currentPathname`
  * (entrada `entry`). Tres casos:

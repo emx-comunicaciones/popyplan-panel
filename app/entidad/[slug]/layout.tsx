@@ -122,7 +122,7 @@ export default async function EntidadLayout({
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <PageHelp />
+          <PageHelp visibleSections={menu} />
           <UserMenu email={session.me.email} name={displayName(session.me)} />
         </div>
       </header>

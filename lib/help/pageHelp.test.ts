@@ -8,7 +8,11 @@ import en from "@/messages/en.json";
 import es from "@/messages/es.json";
 import eu from "@/messages/eu.json";
 
-import { dynamicSegments, matchPageHelp, PAGE_HELP, resolveRelatedRoute, routeToRegExp } from "./pageHelp";
+import { ENTIDAD_MENU_ITEMS } from "@/lib/auth/entidadMenu";
+import { PARAGUAS_MENU_ITEMS } from "@/lib/auth/paraguasMenu";
+import { PLATAFORMA_MENU_ITEMS } from "@/lib/auth/plataformaMenu";
+
+import { dynamicSegments, matchPageHelp, menuSectionFor, PAGE_HELP, resolveRelatedRoute, routeToRegExp } from "./pageHelp";
 
 type HelpCatalog = {
   help?: Record<string, unknown>;
@@ -246,6 +250,66 @@ describe("matchPageHelp", () => {
     expect(matchPageHelp("/plataforma")?.route).toBe("/plataforma");
     expect(matchPageHelp("/paraguas/x")?.route).toBe("/paraguas/[slug]");
   });
+  /**
+   * `related` no es texto traducible: son **claves** del registro. El
+   * cruce de arriba solo lee `en` (catálogo fuente), y el test de
+   * paridad (`lib/i18n/messages.test.ts`) compara rutas de clave, no
+   * valores — así que una errata en `es`/`eu`/`ca` pasaría los dos y el
+   * botón desaparecería **solo en ese idioma** (`PAGE_HELP.find`
+   * devuelve `undefined` y `PageHelp` no pinta nada). Aquí se exige que
+   * las cuatro lenguas lleven exactamente las mismas claves, en el mismo
+   * orden.
+   */
+  it.each(PAGE_HELP.map((entry) => [entry.key] as const))(
+    "help.%s: related es idéntico en los cuatro catálogos",
+    (key) => {
+      const esperado = (resolveHelpEntry(CATALOGS.en, key) as { related?: unknown }).related;
+      for (const lang of ["es", "eu", "ca"] as const) {
+        const entry = resolveHelpEntry(CATALOGS[lang], key) as { related?: unknown };
+        expect(entry?.related, `help.${key}.related difiere en ${lang}.json`).toEqual(esperado);
+      }
+    },
+  );
+});
+
+describe("menuSectionFor", () => {
+  it("la raíz de cada área es su Inicio", () => {
+    expect(menuSectionFor("/plataforma")).toBe("inicio");
+    expect(menuSectionFor("/entidad/[slug]")).toBe("inicio");
+    expect(menuSectionFor("/paraguas/[slug]")).toBe("inicio");
+  });
+
+  it("una ficha comparte sección con su listado", () => {
+    expect(menuSectionFor("/entidad/[slug]/personas/[userId]")).toBe("personas");
+    expect(menuSectionFor("/plataforma/entidades/[id]")).toBe("entidades");
+    expect(menuSectionFor("/entidad/[slug]/asistencia/[eventId]")).toBe("asistencia");
+  });
+
+  it("toma el primer segmento literal tras el área", () => {
+    expect(menuSectionFor("/plataforma/roles")).toBe("roles");
+    expect(menuSectionFor("/paraguas/[slug]/red-financiada")).toBe("red-financiada");
+  });
+
+  /**
+   * La sección que devuelve tiene que ser una de las que de verdad
+   * devuelven `entidadMenuFor`/`paraguasMenuFor`/`plataformaMenuFor`: si
+   * no, el filtro por rol de `PageHelp` escondería *todos* los botones de
+   * esa pantalla sin que nadie se enterase (un filtro que no casa nunca
+   * es indistinguible de «este rol no la ve»).
+   */
+  it.each(PAGE_HELP.map((entry) => [entry.route, entry.key] as const))(
+    "%s (help.%s) cae en una sección real del menú de su área",
+    (route) => {
+      const area = route.split("/").filter(Boolean)[0];
+      const items =
+        area === "entidad"
+          ? ENTIDAD_MENU_ITEMS
+          : area === "paraguas"
+            ? PARAGUAS_MENU_ITEMS
+            : PLATAFORMA_MENU_ITEMS;
+      expect(items as readonly string[]).toContain(menuSectionFor(route));
+    },
+  );
 });
 
 describe("dynamicSegments", () => {

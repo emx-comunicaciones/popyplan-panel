@@ -2287,6 +2287,39 @@ qué se puede hacer en ella y quién la ve.
   eu/ca traducidos) fue redactado contra CLAUDE.md y los docstrings — **no
   contra la intuición** — y el eu/ca queda anotado como pendiente de
   revisión nativa en `docs/i18n/PENDIENTES.md`.
+- **Las relacionadas se filtran por el menú del rol (revisión de esa
+  ampliación, misma fecha)**: `PageHelp` recibe `visibleSections` — el
+  mismo array que cada layout de área ya calcula con `entidadMenuFor`/
+  `paraguasMenuFor`/`plataformaMenuFor` para `SideNav` — y descarta toda
+  relacionada cuya sección no esté ahí. Sin ese filtro había **29**
+  combinaciones rol×pantalla con un botón que aterrizaba en el «Sin
+  acceso» del gate de destino; la peor, una `analista` abriendo la ayuda
+  del Inicio de entidad, donde las tres relacionadas (Personas,
+  Actividades, Guardia) están fuera de su menú. Es la misma clase de
+  fallo que ya corrigieron `ActividadesTable` (`canOpenAttendance`, F1) y
+  `GuardiaPanel` (`canOpenPersonSheet`, I1): quien pinta el enlace no
+  puede suponer el permiso de destino. La sección del menú de una
+  plantilla la da `lib/help/pageHelp.ts::menuSectionFor` (primer segmento
+  literal tras el área, `"inicio"` si no queda ninguno — una ficha
+  comparte sección con su listado, que es justo lo que gatean las
+  páginas), con un test que exige que el valor devuelto sea siempre una
+  sección real de `ENTIDAD/PARAGUAS/PLATAFORMA_MENU_ITEMS`: un filtro que
+  no casara nunca escondería *todos* los botones sin que nadie se
+  enterase. **La lista definitiva se resuelve antes de pintar** y la
+  cabecera «Pantallas relacionadas» solo aparece si queda al menos un
+  botón — antes, con todas las relacionadas descartadas (ficha, otra
+  área, y ahora también el rol), quedaba una cabecera sobre una fila
+  vacía, que se lee como contenido que falta. `visibleSections` es
+  **opcional a propósito**: omitirla no filtra nada, para que un montaje
+  que no conozca el rol (tests, cualquier uso futuro) pinte de más en vez
+  de esconder por accidente; los tres layouts reales siempre la pasan.
+- **`related` es idéntico en los cuatro catálogos, con test**: son
+  claves, no texto traducible. El cruce contra `PAGE_HELP` solo lee `en`
+  y el test de paridad (`lib/i18n/messages.test.ts`) compara rutas de
+  clave, no valores, así que una errata en `es`/`eu`/`ca` pasaba los dos
+  y hacía desaparecer ese botón **solo en ese idioma** (`PAGE_HELP.find`
+  devuelve `undefined` y no se pinta nada). `lib/help/pageHelp.test.ts`
+  exige ahora las mismas claves en el mismo orden en las cuatro lenguas.
 - **Accesibilidad**: botón redondo 40×40 con `aria-label="Ayuda: <título>"`,
   `aria-haspopup="dialog"`, `aria-expanded`, el signo «?» en
   `aria-hidden`. **Fondo blanco** (`bg-white text-primary-700 border

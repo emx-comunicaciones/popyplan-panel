@@ -31,7 +31,7 @@ import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
-import { matchPageHelp, PAGE_HELP, resolveRelatedRoute } from "@/lib/help/pageHelp";
+import { matchPageHelp, menuSectionFor, PAGE_HELP, resolveRelatedRoute } from "@/lib/help/pageHelp";
 
 /**
  * Lee un valor opcional del catálogo de ayuda: `t.raw` no lanza con una
@@ -52,7 +52,23 @@ function safeRaw(
   }
 }
 
-export function PageHelp() {
+export interface PageHelpProps {
+  /**
+   * Secciones del menú lateral que el rol de quien mira sí puede abrir,
+   * tal y como las devuelve `entidadMenuFor`/`paraguasMenuFor`/
+   * `plataformaMenuFor` — cada layout de área ya las calcula para
+   * `SideNav` y las pasa aquí tal cual. Sirven para no ofrecer una
+   * «pantalla relacionada» cuyo gate respondería «Sin acceso».
+   *
+   * Omitirlas **no** filtra nada: el componente se usa también en tests
+   * y en cualquier montaje que no conozca el rol, y ahí es mejor pintar
+   * de más que esconder por accidente. Los tres layouts reales siempre
+   * las pasan.
+   */
+  visibleSections?: readonly string[];
+}
+
+export function PageHelp({ visibleSections }: PageHelpProps = {}) {
   const pathname = usePathname();
   const router = useRouter();
   // Textos de UI fijos del propio componente (tarea i18n 2, sin cambios).
@@ -97,6 +113,21 @@ export function PageHelp() {
   const related = Array.isArray(rawRelated)
     ? rawRelated.filter((key): key is string => typeof key === "string" && key.length > 0)
     : [];
+  // La lista definitiva se resuelve **antes** de pintar: una clave sin
+  // entrada, sin ruta resoluble (ficha u otra área) o cuya sección no
+  // está en el menú del rol no da botón, y si no queda ninguna tampoco
+  // se pinta la cabecera «Pantallas relacionadas» — una cabecera sobre
+  // una fila vacía se lee como contenido que falta.
+  const relatedLinks = related.flatMap((relatedKey) => {
+    const relatedEntry = PAGE_HELP.find((candidate) => candidate.key === relatedKey);
+    if (!relatedEntry) return [];
+    const route = resolveRelatedRoute(pathname, entry, relatedEntry);
+    if (!route) return [];
+    if (visibleSections && !visibleSections.includes(menuSectionFor(relatedEntry.route))) {
+      return [];
+    }
+    return [{ key: relatedKey, route }];
+  });
 
   return (
     <>
@@ -140,32 +171,23 @@ export function PageHelp() {
             </ul>
           </>
         )}
-        {related.length > 0 && (
+        {relatedLinks.length > 0 && (
           <>
             <h3 className="mt-3 text-sm font-semibold text-text-base">{t("relatedLabel")}</h3>
             <div className="mt-1.5 flex flex-wrap gap-2">
-              {related.map((relatedKey) => {
-                const relatedEntry = PAGE_HELP.find((candidate) => candidate.key === relatedKey);
-                if (!relatedEntry) return null;
-                const route = resolveRelatedRoute(pathname, entry, relatedEntry);
-                // Sin ruta resoluble (ficha de otra área, slug no
-                // portable): no se pinta el botón, nunca se navega a una
-                // ruta a medias.
-                if (!route) return null;
-                return (
-                  <Button
-                    key={relatedKey}
-                    type="button"
-                    variant="secondary"
-                    onClick={() => {
-                      setOpen(false);
-                      router.push(route);
-                    }}
-                  >
-                    {tHelp(`${relatedKey}.title`)}
-                  </Button>
-                );
-              })}
+              {relatedLinks.map(({ key, route }) => (
+                <Button
+                  key={key}
+                  type="button"
+                  variant="secondary"
+                  onClick={() => {
+                    setOpen(false);
+                    router.push(route);
+                  }}
+                >
+                  {tHelp(`${key}.title`)}
+                </Button>
+              ))}
             </div>
           </>
         )}
