@@ -1,6 +1,6 @@
-# AGENTS.md — Popyplan Panel
+# CLAUDE.md — Popyplan Panel
 
-> Copia de `CLAUDE.md`: si actualizas uno, actualiza el otro (el contenido debe mantenerse idéntico salvo este encabezado).
+> `AGENTS.md` es una copia de este fichero: si actualizas uno, actualiza el otro.
 
 Panel web de Popyplan (Next.js 15, App Router, TypeScript estricto,
 Tailwind CSS 4, TanStack Query 5). Consume la misma API Django/DRF que
@@ -2624,6 +2624,62 @@ cerradas.
   cada tarea, pendiente de que el propietario revise `eu`/`ca` (decisión
   9); `docs/i18n/PENDIENTES.md` recoge lo que no se corrigió por ser una
   migración de infraestructura, no una revisión de contenido.
+
+## Idioma de la cuenta al entrar: sin pantallas a medias (2026-09-23)
+
+Bug de producto que el propietario vio en `/paraguas/{slug}/territorio`:
+**el menú en un idioma y el contenido en otro** en la misma pantalla,
+justo después de entrar. Reproducido con Playwright (`html.lang="es"`
+con `pp_lang=eu` y el HTML de servidor mayoritariamente en euskera) y
+verificado en las cuatro lenguas antes y después del arreglo.
+
+La causa eran dos navegaciones compitiendo. `LoginForm.tsx` hacía
+`applyAccountLanguage()` (que fija la cookie `pp_lang` desde el cliente
+con `POST /api/lang`) y, si el idioma cambiaba, `router.refresh()`;
+inmediatamente después, `router.replace(areaPath(area))`. Las dos
+navegaciones de App Router se solapan: el árbol de Server Components se
+repintaba a caballo entre el catálogo viejo y el nuevo, y el
+`NextIntlClientProvider` del layout se quedaba con el que hubiera
+ganado la carrera. Recargar a mano lo arreglaba siempre, que es la
+firma clásica de este fallo.
+
+Dos cambios que se refuerzan, ninguno suficiente por separado:
+
+- **`app/api/session/route.ts` fija `pp_lang` en la misma respuesta que
+  abre la sesión**, leyendo `preferred_language` de la respuesta de
+  `/me/` que ese handler ya pedía (`isSupportedLanguage` descarta un
+  valor vacío o desconocido). Así la **primera** petición de documento
+  posterior al login ya lleva el idioma bueno, sin depender de ninguna
+  llamada del cliente. `applyAccountLanguage` (`hooks/useAuth.ts`)
+  **no se retira**: sigue cubriendo un backend que no sirva el campo y
+  el arranque en frío de `app/providers.tsx` (recarga completa con
+  sesión ya abierta), donde no hay ninguna navegación con la que
+  competir y su `router.refresh()` es correcto.
+- **`lib/navigation/hardNavigate.ts`** (`window.location.assign`) y
+  `LoginForm.tsx` navegando con él en vez de `refresh()` + `replace()`.
+  Una petición de documento completa no puede quedarse a medio catálogo:
+  el servidor lee la cookie recién puesta y el cliente nace hidratado
+  con esos mismos mensajes. Se pierde la navegación cliente de App
+  Router justo en el login, que es el único sitio del panel donde da
+  igual (se viene de una pantalla sin estado que conservar).
+
+`LoginForm.tsx` deja de usar `useRouter` por completo.
+`app/(auth)/login/page.test.tsx` comprueba el destino sobre
+`hardNavigate` (mockeado) y que **no** se llama a `router.refresh()`;
+`app/api/session/route.test.ts` cubre la cookie de idioma con
+`preferred_language` válido y su ausencia con uno vacío o desconocido.
+
+**Lo que NO es un bug, y conviene no "arreglar"**: el contenido que
+escribe una entidad (nombres de comunidad, títulos de actividad,
+comunicaciones) se pinta **siempre tal cual**, en el idioma en que lo
+escribió la entidad, sea cual sea el idioma de la interfaz. Una persona
+con la interfaz en castellano que pertenece a una asociación que escribe
+en euskera ve el menú en castellano y las actividades en euskera, y eso
+es correcto: el panel traduce su propia interfaz, nunca el contenido
+ajeno. Lo mismo en la app móvil (`app/_context/AuthContext.tsx` aplica
+`preferred_language` a la interfaz, y nada más). En la demo sembrada
+(`seed_panel_demo`) cinco de las siete asociaciones escriben en euskera
+y una en catalán a propósito, así que el caso aparece a la primera.
 
 ## Densidad del panel y selector de idioma desplegable (2026-09-20)
 
