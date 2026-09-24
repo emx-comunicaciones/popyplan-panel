@@ -5,6 +5,7 @@ import {
   EVENT_COMMUNITY_REQUIRED_ERROR_KEY,
   EVENT_ENDS_AT_BEFORE_STARTS_AT_ERROR_KEY,
   EVENT_STARTS_AT_PAST_ERROR_KEY,
+  sameMinute,
   validateEventCapacity,
   validateEventCommunity,
   validateEventEndsAt,
@@ -96,5 +97,52 @@ describe("validateEventCommunity", () => {
   it("otras audiencias no exigen comunidad", () => {
     expect(validateEventCommunity("anyone", "")).toBeNull();
     expect(validateEventCommunity("organization", "")).toBeNull();
+  });
+});
+
+describe("validateEventStartsAt — editar una actividad que ya pasó", () => {
+  /**
+   * Bug encontrado pulsando «Editar» en el panel (auditoría 2026-09-24):
+   * no se podía guardar **ninguna** actividad pasada. El valor guardado
+   * lleva segundos (`21:16:12.933473Z`) y un `<input type="datetime-local">`
+   * solo rehidrata hasta el minuto, así que el ISO reconstruido nunca era
+   * igual al original: el formulario creía que la fecha había cambiado,
+   * exigía que fuera futura y dejaba «Guardar» muerto con «La actividad
+   * tiene que empezar en el futuro» aunque solo quisieras corregir una
+   * errata del título.
+   */
+  const originalConSegundos = "2026-09-10T21:16:12.933473Z";
+  const reconstruidoDelInput = "2026-09-10T21:16:00.000Z";
+
+  it("no se queja si solo se perdieron los segundos al rehidratar", () => {
+    expect(validateEventStartsAt(reconstruidoDelInput, originalConSegundos)).toBeNull();
+  });
+
+  it("sigue quejándose si de verdad se mueve la fecha al pasado", () => {
+    expect(validateEventStartsAt("2026-09-09T21:16:00.000Z", originalConSegundos)).not.toBeNull();
+  });
+
+  it("deja mover una actividad pasada a una fecha futura", () => {
+    const futuro = new Date(Date.now() + 86400000).toISOString();
+    expect(validateEventStartsAt(futuro, originalConSegundos)).toBeNull();
+  });
+});
+
+describe("sameMinute", () => {
+  it("ignora segundos y milisegundos", () => {
+    expect(sameMinute("2026-09-10T21:16:12.933Z", "2026-09-10T21:16:00.000Z")).toBe(true);
+  });
+
+  it("distingue minutos distintos", () => {
+    expect(sameMinute("2026-09-10T21:16:59Z", "2026-09-10T21:17:00Z")).toBe(false);
+  });
+
+  it("compara instantes, no cadenas: la misma hora en otra zona es la misma", () => {
+    expect(sameMinute("2026-09-10T23:16:12+02:00", "2026-09-10T21:16:00Z")).toBe(true);
+  });
+
+  it("con algo ilegible o vacío dice que no son iguales", () => {
+    expect(sameMinute("", "2026-09-10T21:16:00Z")).toBe(false);
+    expect(sameMinute("aqui", "2026-09-10T21:16:00Z")).toBe(false);
   });
 });

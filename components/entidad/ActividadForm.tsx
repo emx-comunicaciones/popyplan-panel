@@ -39,6 +39,7 @@ import { useSearchPlaces } from "@/hooks/usePlaces";
 import type { EventAudience, EventDetail } from "@/lib/api/types";
 import { isoToLocalInput, localInputToIso } from "@/lib/events/datetimeLocal";
 import {
+  sameMinute,
   validateEventCapacity,
   validateEventCommunity,
   validateEventEndsAt,
@@ -270,7 +271,11 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
     };
     // Nunca reenviar `starts_at` si no cambió: el backend lo valida como
     // futuro también al editar (`lib/api/types.ts::EventUpdateFields`).
-    if (startsAtIso !== originalStartsAtIso) {
+    // La comparación va **por minuto**: el input no rehidrata los
+    // segundos que sí guarda el backend, así que comparando cadenas
+    // «siempre había cambiado» y se reenviaba una fecha pasada que el
+    // backend rechaza con 400 (auditoría del panel, 2026-09-24).
+    if (!originalStartsAtIso || !sameMinute(startsAtIso, originalStartsAtIso)) {
       fields.starts_at = startsAtIso;
     }
     updateEvent.mutate(

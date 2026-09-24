@@ -34,12 +34,45 @@ export const EVENT_COMMUNITY_REQUIRED_ERROR_KEY = "entidad.actividadForm.errors.
  * valor original, no hay nada que validar — no se va a reenviar (ver
  * `EventUpdateFields` en `lib/api/types.ts`).
  */
+/**
+ * ¿Son `a` y `b` el mismo minuto?
+ *
+ * Un `<input type="datetime-local">` solo rehidrata hasta el minuto, así
+ * que el ISO que se reconstruye de él nunca es igual, carácter a
+ * carácter, al que guarda el backend (que lleva segundos y
+ * microsegundos). Comparar las dos cadenas hacía creer al formulario que
+ * la fecha había cambiado siempre. Se comparan instantes, no textos, así
+ * que dos zonas horarias distintas del mismo momento también coinciden.
+ *
+ * Mismo criterio que `popyplan-mobile/app/_containers/events/NewEvent
+ * ::sameMinute`, que ya lo resolvía así.
+ */
+export function sameMinute(a: string, b: string): boolean {
+  if (!a || !b) return false;
+  const ma = new Date(a).getTime();
+  const mb = new Date(b).getTime();
+  if (Number.isNaN(ma) || Number.isNaN(mb)) return false;
+  return Math.floor(ma / 60000) === Math.floor(mb / 60000);
+}
+
+/**
+ * `starts_at` tiene que ser futuro **salvo que no se haya tocado**: si
+ * no, no se podría corregir una errata del título de una actividad ya
+ * celebrada.
+ *
+ * La comparación con el valor original va **por minuto**
+ * (`sameMinute`) y no por cadena: comparando cadenas, editar cualquier
+ * actividad pasada era imposible —«Guardar» se quedaba deshabilitado con
+ * «La actividad tiene que empezar en el futuro»— porque el valor guardado
+ * lleva segundos y el input no los rehidrata (auditoría del panel,
+ * 2026-09-24).
+ */
 export function validateEventStartsAt(
   startsAtIso: string,
   originalStartsAtIso?: string,
 ): string | null {
   if (!startsAtIso) return null;
-  if (originalStartsAtIso && startsAtIso === originalStartsAtIso) return null;
+  if (originalStartsAtIso && sameMinute(startsAtIso, originalStartsAtIso)) return null;
   return new Date(startsAtIso).getTime() <= Date.now() ? EVENT_STARTS_AT_PAST_ERROR_KEY : null;
 }
 
