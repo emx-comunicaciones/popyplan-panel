@@ -50,7 +50,14 @@ export interface ActividadFormProps {
   orgId: number | string;
   /** `"new"` para crear, o el id de la actividad a editar. */
   editing: "new" | string;
-  onDone: () => void;
+  /**
+   * Se llama al cerrar el formulario. Al guardar con éxito recibe el
+   * `starts_at` de la actividad, para que quien lo monta pueda asegurarse
+   * de que la fila queda a la vista: una actividad nueva es siempre
+   * futura y el periodo de la tabla llega hasta hoy, así que sin esto se
+   * creaba y desaparecía (auditoría del panel, 2026-09-24).
+   */
+  onDone: (startsAt?: string) => void;
   onPendingChange?: (pending: boolean) => void;
 }
 
@@ -102,7 +109,7 @@ export function ActividadForm({ orgId, editing, onDone, onPendingChange }: Activ
 interface ActividadFormFieldsProps {
   orgId: number | string;
   editing: "new" | EventDetail;
-  onDone: () => void;
+  onDone: (startsAt?: string) => void;
   onPendingChange?: (pending: boolean) => void;
 }
 
@@ -248,7 +255,7 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
           latitude: selectedPlace?.latitude ?? null,
           longitude: selectedPlace?.longitude ?? null,
         },
-        { onSuccess: onDone },
+        { onSuccess: () => onDone(startsAtIso) },
       );
       return;
     }
@@ -266,7 +273,10 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
     if (startsAtIso !== originalStartsAtIso) {
       fields.starts_at = startsAtIso;
     }
-    updateEvent.mutate({ eventId: editing.id, ...fields }, { onSuccess: onDone });
+    updateEvent.mutate(
+      { eventId: editing.id, ...fields },
+      { onSuccess: () => onDone(startsAtIso) },
+    );
   }
 
   return (
@@ -453,7 +463,7 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
         <Button type="submit" disabled={!canSubmit || isPending}>
           {t("common.save")}
         </Button>
-        <Button type="button" variant="secondary" onClick={onDone} disabled={isPending}>
+        <Button type="button" variant="secondary" onClick={() => onDone()} disabled={isPending}>
           {t("common.cancel")}
         </Button>
       </div>

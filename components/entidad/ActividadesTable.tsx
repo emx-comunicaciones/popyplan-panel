@@ -16,7 +16,12 @@ import { useCancelEvent, type EventMutationErrorKind } from "@/hooks/useEventMut
 import type { EntityEventRow } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 import { localeForUseLocale } from "@/lib/i18n/locale";
-import { presetPeriod, type Period, type PeriodPreset } from "@/lib/metrics/period";
+import {
+  periodIncluding,
+  presetPeriod,
+  type Period,
+  type PeriodPreset,
+} from "@/lib/metrics/period";
 
 export interface ActividadesTableProps {
   orgId: number | string;
@@ -95,6 +100,25 @@ export function ActividadesTable({ orgId, slug, canOpenAttendance, canManage }: 
   const t = useTranslations("entidad.actividades");
   const tAll = useTranslations();
   const locale = useLocale();
+
+  /**
+   * Tras guardar, el periodo se amplía hasta la fecha de la actividad si
+   * hacía falta: una actividad nueva es **siempre futura** (el backend
+   * exige `starts_at` en el futuro) y «Este mes» llega hasta hoy, así que
+   * sin esto se creaba y desaparecía de esta misma pantalla — parecía que
+   * no se había guardado (auditoría del panel, 2026-09-24).
+   */
+  function cerrarFormulario(startsAt?: string) {
+    setCreating(false);
+    setEditingId(null);
+    if (!startsAt) return;
+    // Se calcula fuera del updater: llamar a otro `setState` dentro de él
+    // es un efecto colateral que React puede ejecutar dos veces.
+    const ampliado = periodIncluding(period, startsAt);
+    if (ampliado === period) return;
+    setPeriod(ampliado);
+    setPreset("personalizado");
+  }
 
   const events = useEntityEvents(orgId, period, status || undefined);
   const cancelEvent = useCancelEvent(orgId);
@@ -238,7 +262,7 @@ export function ActividadesTable({ orgId, slug, canOpenAttendance, canManage }: 
             <ActividadForm
               orgId={orgId}
               editing="new"
-              onDone={() => setCreating(false)}
+              onDone={cerrarFormulario}
               onPendingChange={setCreatePending}
             />
           </Dialog>
@@ -254,7 +278,7 @@ export function ActividadesTable({ orgId, slug, canOpenAttendance, canManage }: 
               <ActividadForm
                 orgId={orgId}
                 editing={editingId}
-                onDone={() => setEditingId(null)}
+                onDone={cerrarFormulario}
                 onPendingChange={setEditPending}
               />
             ) : null}

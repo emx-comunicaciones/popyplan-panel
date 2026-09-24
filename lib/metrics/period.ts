@@ -146,3 +146,41 @@ export function customPeriod(since: string, until: string): CustomPeriodResult {
   if (error) return { period: null, error };
   return { period: { since, until }, error: null };
 }
+
+/**
+ * El mismo periodo, ampliado lo justo para que `fecha` quede dentro.
+ *
+ * Existe por un fallo que encontró la auditoría del panel (2026-09-24):
+ * una actividad recién creada es **siempre futura** —el backend exige
+ * `starts_at` en el futuro— y la tabla de Actividades arranca en «Este
+ * mes», que llega **hasta hoy**. Resultado: la creabas y desaparecía de
+ * la pantalla donde la acababas de crear, así que parecía que no se
+ * había guardado. Ampliando el periodo con la fecha de lo que se acaba
+ * de guardar, la fila se ve donde tiene que verse.
+ *
+ * Admite una fecha ISO o un instante completo (se queda con el día). Una
+ * fecha ilegible devuelve el periodo tal cual: ampliar a ciegas sería
+ * peor que no hacer nada. Si la ampliación se pasara del tope de días que
+ * acepta el backend, se recorta el extremo contrario en vez de devolver
+ * un periodo que daría 400.
+ */
+export function periodIncluding(period: Period, fecha: string): Period {
+  const dia = fecha.slice(0, 10);
+  if (!parseIsoDate(dia)) return period;
+  if (dia >= period.since && dia <= period.until) return period;
+
+  const ampliado: Period =
+    dia > period.until ? { since: period.since, until: dia } : { since: dia, until: period.until };
+  if (validatePeriod(ampliado.since, ampliado.until) !== "periodo_demasiado_largo") {
+    return ampliado;
+  }
+
+  // Se pasa del tope: el extremo que acabamos de mover manda, y el otro
+  // se acerca hasta que el periodo vuelve a caber.
+  const anclaje = parseIsoDate(dia);
+  if (!anclaje) return period;
+  const topeMs = MAX_DAYS * MS_PER_DAY;
+  return dia > period.until
+    ? { since: toIso(new Date(anclaje.getTime() - topeMs)), until: dia }
+    : { since: dia, until: toIso(new Date(anclaje.getTime() + topeMs)) };
+}

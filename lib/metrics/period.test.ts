@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { customPeriod, presetPeriod, validatePeriod } from "./period";
+import { customPeriod, periodIncluding, presetPeriod, validatePeriod } from "./period";
 
 const TODAY = new Date("2026-03-15T12:00:00Z");
 
@@ -136,5 +136,49 @@ describe("customPeriod", () => {
       period: null,
       error: "rango_invertido",
     });
+  });
+});
+
+describe("periodIncluding", () => {
+  // Una actividad recién creada es **siempre futura** (el backend exige
+  // `starts_at` en el futuro), así que cae fuera del «Este mes» de la
+  // tabla, que llega hasta hoy: se creaba y desaparecía de la pantalla
+  // donde la acababas de crear. Auditoría del panel, 2026-09-24.
+  const mes = { since: "2026-09-01", until: "2026-09-24" };
+
+  it("amplía el final para que entre una fecha posterior", () => {
+    expect(periodIncluding(mes, "2026-09-25")).toEqual({
+      since: "2026-09-01",
+      until: "2026-09-25",
+    });
+  });
+
+  it("amplía el principio para que entre una fecha anterior", () => {
+    expect(periodIncluding(mes, "2026-08-30")).toEqual({
+      since: "2026-08-30",
+      until: "2026-09-24",
+    });
+  });
+
+  it("devuelve el mismo periodo si la fecha ya está dentro", () => {
+    expect(periodIncluding(mes, "2026-09-10")).toBe(mes);
+    expect(periodIncluding(mes, "2026-09-01")).toBe(mes);
+    expect(periodIncluding(mes, "2026-09-24")).toBe(mes);
+  });
+
+  it("acepta un instante ISO completo, no solo la fecha", () => {
+    expect(periodIncluding(mes, "2026-09-25T18:30:00+02:00").until).toBe("2026-09-25");
+  });
+
+  it("no se pasa del tope de días: recorta el extremo contrario", () => {
+    // 1461 días es el máximo que acepta el backend entre las dos fechas.
+    const ampliado = periodIncluding({ since: "2020-01-01", until: "2026-09-24" }, "2027-01-01");
+    expect(ampliado.until).toBe("2027-01-01");
+    expect(validatePeriod(ampliado.since, ampliado.until)).toBeNull();
+  });
+
+  it("una fecha ilegible deja el periodo como estaba", () => {
+    expect(periodIncluding(mes, "aqui")).toBe(mes);
+    expect(periodIncluding(mes, "")).toBe(mes);
   });
 });

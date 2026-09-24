@@ -2,6 +2,8 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { axe } from "@/test-utils/axe";
+import { waitFor } from "@testing-library/react";
+
 import { render, screen, within } from "@/test-utils/render";
 
 const useEntityEventsMock = vi.hoisted(() => vi.fn());
@@ -152,6 +154,31 @@ describe("ActividadesTable — gestión de actividades", () => {
     expect(fields.title).toBe("Ruta en bici");
     expect(fields.audience).toBe("anyone");
     expect(fields.community).toBeNull();
+  });
+
+  it("tras crear una actividad futura, el periodo se amplía para que se vea", async () => {
+    // Una actividad nueva es **siempre** futura (el backend exige
+    // `starts_at` en el futuro) y el periodo arranca en «Este mes», que
+    // llega hasta hoy: sin ampliarlo, la actividad se creaba y
+    // desaparecía de esta misma pantalla. Auditoría del panel, 2026-09-24.
+    setDefaults();
+    const createMutate = vi.fn((_fields, opciones) => opciones?.onSuccess?.());
+    useCreateEventMock.mockReturnValue(mutationDefaults({ mutate: createMutate }));
+    const user = userEvent.setup();
+
+    render(<ActividadesTable orgId={7} slug="alfaville" canOpenAttendance canManage />);
+    await user.click(screen.getByRole("button", { name: "Nueva actividad" }));
+    const dialog = screen.getByRole("dialog", { name: "Nueva actividad" });
+    await user.type(within(dialog).getByLabelText("Título"), "Ruta en bici");
+    await user.type(within(dialog).getByLabelText("Empieza"), "2027-01-01T10:00");
+    await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
+
+    // La última llamada al hook de listado ya pide un periodo que llega a
+    // 2027-01-01: es lo que hace visible la fila recién creada.
+    await waitFor(() => {
+      const [, periodo] = useEntityEventsMock.mock.calls.at(-1)!;
+      expect(periodo.until >= "2027-01-01").toBe(true);
+    });
   });
 
   it("«Editar» carga el detalle real y precarga el formulario", async () => {
