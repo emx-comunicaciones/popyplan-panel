@@ -3449,6 +3449,24 @@ panel con un navegador), no leyéndolo. Informe y traspaso completos en
   punto **mide** la distancia, mientras que recortar por cercanía lo pide
   quien manda `radius_km`.
 
+- **Editar una actividad ya celebrada era imposible**
+  (`lib/events/validation.ts::sameMinute`): el formulario comparaba
+  `starts_at` con el original **por cadena** para no reenviarlo si no
+  cambió, pero el valor guardado lleva segundos y un `datetime-local` solo
+  rehidrata hasta el minuto, así que «siempre había cambiado» → exigía
+  futuro → «Guardar» muerto con «La actividad tiene que empezar en el
+  futuro». Ahora se compara por minuto, como ya hacía la app móvil. La
+  nota que decía que «basta comparar el ISO reconstruido porque el
+  formulario no rehidrata segundos» era justo la suposición equivocada.
+- **Una actividad recién creada desaparecía de la lista**
+  (`lib/metrics/period.ts::periodIncluding`): la tabla arranca en «Este
+  mes», que llega hasta hoy, y toda actividad nueva es futura por
+  definición. Al guardar, el periodo se amplía hasta su fecha.
+- **Programas exige presupuesto y no lo dice**: `budget_cents` es
+  obligatorio en el backend, así que el formulario hace bien en pedirlo,
+  pero «Guardar» nace deshabilitado sin ninguna pista de qué falta.
+  Anotado como deuda de UX, sin tocar.
+
 **Lo que no es un fallo:** al entrar, la primera carga de cada Inicio
 dispara varios 401 que se resuelven solos — es el refresco de sesión que ya
 documenta «Diseño de sesión». Con la página asentada, todo responde 200.
