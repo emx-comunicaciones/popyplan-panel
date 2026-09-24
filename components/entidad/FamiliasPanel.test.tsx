@@ -289,7 +289,9 @@ describe("FamiliasPanel", () => {
         space: "families",
         name: "Familias del barrio",
         description: "Espacio para familias",
-        visibility: "open",
+        // El espacio de familias nace privado: se entra porque la entidad
+        // invita, nunca por curiosidad (decisión de producto 2026-09-24).
+        visibility: "private",
         codeOfConduct: undefined,
       },
       expect.anything(),

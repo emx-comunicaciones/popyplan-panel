@@ -50,7 +50,15 @@ export function NuevaComunidadDialog({ orgId, space, open, onClose, onCreated }:
   const createCommunity = useCreateCommunity();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [visibility, setVisibility] = useState<"open" | "on_request" | "private">("open");
+  // El espacio de familias nace **privado** (decisión de producto del
+  // 2026-09-24): ahí se entra porque la entidad invita, nunca por
+  // curiosidad, y con «abierta» cualquiera ya vinculado a una asociación
+  // se metía de un toque —lo que además le cerraba el espacio de
+  // miembros de esa entidad, en silencio. Se puede cambiar en el propio
+  // formulario: es un valor por defecto, no un candado.
+  const [visibility, setVisibility] = useState<"open" | "on_request" | "private">(
+    space === "families" ? "private" : "open",
+  );
   const [codeOfConduct, setCodeOfConduct] = useState("");
 
   const canSubmit = name.trim().length > 0;
