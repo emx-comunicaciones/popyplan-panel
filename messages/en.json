@@ -1089,7 +1089,8 @@
     },
     "surveys": {
       "sinAcceso": "You don't have access to this entity's surveys.",
-      "desconocido": "Couldn't load the surveys."
+      "desconocido": "Couldn't load the surveys.",
+      "demasiadasPaginas": "There are too many surveys to load them all; contact Popyplan."
     },
     "createSurvey": {
       "invalido": "Check the details: a question isn't valid.",

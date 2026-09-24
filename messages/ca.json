@@ -1089,7 +1089,8 @@
     },
     "surveys": {
       "sinAcceso": "No tens accés a les enquestes d'aquesta entitat.",
-      "desconocido": "No s'han pogut carregar les enquestes."
+      "desconocido": "No s'han pogut carregar les enquestes.",
+      "demasiadasPaginas": "Hi ha massa enquestes per carregar-les totes; contacta amb Popyplan."
     },
     "createSurvey": {
       "invalido": "Revisa les dades: alguna pregunta no és vàlida.",

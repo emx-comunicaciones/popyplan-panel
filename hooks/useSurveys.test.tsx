@@ -26,13 +26,37 @@ function wrapper({ children }: { children: ReactNode }) {
 describe("useSurveys", () => {
   it("pide las encuestas de la entidad", async () => {
     const survey = buildSurvey();
-    apiFetchMock.mockResolvedValueOnce([survey]);
+    // El endpoint **pagina** (`{count, next, previous, results}`), pese a
+    // que el esquema y el docstring de este hook lo daban por un array
+    // plano: con la forma real, `surveys.data.map` reventaba la página
+    // entera de Encuestas. Es la misma clase de fallo que ya escondió el
+    // mock de `reports/queue` (ver CLAUDE.md, «Bugs reales encontrados
+    // por el e2e»): un mock con la forma equivocada no prueba nada.
+    apiFetchMock.mockResolvedValueOnce({
+      count: 1, next: null, previous: null, results: [survey],
+    });
 
     const { result } = renderHook(() => useSurveys(7), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(apiFetchMock).toHaveBeenCalledWith("/api/panel/entidad/7/surveys/");
+    expect(apiFetchMock).toHaveBeenCalledWith("/api/panel/entidad/7/surveys/?page=1");
     expect(result.current.data).toEqual([survey]);
+  });
+
+  it("recorre todas las páginas", async () => {
+    const primera = buildSurvey({ id: 1 });
+    const segunda = buildSurvey({ id: 2 });
+    apiFetchMock
+      .mockResolvedValueOnce({
+        count: 2, next: "http://x/?page=2", previous: null, results: [primera],
+      })
+      .mockResolvedValueOnce({ count: 2, next: null, previous: null, results: [segunda] });
+
+    const { result } = renderHook(() => useSurveys(7), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toEqual([primera, segunda]);
+    expect(apiFetchMock).toHaveBeenLastCalledWith("/api/panel/entidad/7/surveys/?page=2");
   });
 
   it("403 surge como sin acceso", async () => {

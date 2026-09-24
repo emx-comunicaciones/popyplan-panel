@@ -1089,7 +1089,8 @@
     },
     "surveys": {
       "sinAcceso": "Ez duzu sarbiderik erakunde honetako inkestetan.",
-      "desconocido": "Ezin izan dira inkestak kargatu."
+      "desconocido": "Ezin izan dira inkestak kargatu.",
+      "demasiadasPaginas": "Inkesta gehiegi daude denak kargatzeko; jarri harremanetan Popyplanekin."
     },
     "createSurvey": {
       "invalido": "Berrikusi datuak: galderaren bat ez da baliozkoa.",

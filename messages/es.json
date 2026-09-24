@@ -1089,7 +1089,8 @@
     },
     "surveys": {
       "sinAcceso": "No tienes acceso a las encuestas de esta entidad.",
-      "desconocido": "No se pudieron cargar las encuestas."
+      "desconocido": "No se pudieron cargar las encuestas.",
+      "demasiadasPaginas": "Hay demasiadas encuestas para cargarlas todas; contacta con Popyplan."
     },
     "createSurvey": {
       "invalido": "Revisa los datos: alguna pregunta no es válida.",

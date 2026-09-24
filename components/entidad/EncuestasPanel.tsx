@@ -42,6 +42,7 @@ const SURVEY_KIND_KEYS: Record<Survey["kind"], string> = {
 
 const SURVEYS_ERROR_KEYS: Record<SurveysErrorKind, string> = {
   sin_acceso: "errors.surveys.sinAcceso",
+  demasiadas_paginas: "errors.surveys.demasiadasPaginas",
   desconocido: "errors.surveys.desconocido",
 };
 

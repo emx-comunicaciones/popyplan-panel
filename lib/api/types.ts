@@ -556,6 +556,25 @@ export type AnnouncementAudienceInput = "members" | "families" | `community:${st
  */
 export type Survey = components["schemas"]["Survey"];
 export type SurveyCreateRequest = components["schemas"]["SurveyCreateRequest"];
+
+/**
+ * `GET /api/panel/entidad/{org_id}/surveys/` **pagina**, aunque el esquema
+ * la declare como `Survey[]` a secas.
+ *
+ * Mismatch encontrado recorriendo el panel de verdad (auditoría de
+ * producto, 2026-09-23): el hook la trataba como array plano y la página
+ * de Encuestas reventaba con `surveys.data.map is not a function` en
+ * cuanto la entidad tenía alguna. Misma clase que el de `reports/queue`
+ * (que resultó ser al revés: paginada en el panel, array plano de
+ * verdad), y por el mismo motivo — los tests mockeaban la forma, así que
+ * nunca se ejercitaba la real.
+ */
+export interface PaginatedSurveyList {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Survey[];
+}
 export type SurveyQuestion = components["schemas"]["SurveyQuestion"];
 export type SurveyQuestionInput = components["schemas"]["SurveyQuestionInputRequest"];
 /** `kind` de una encuesta: `post_event` (automática) o `periodic` (creada desde el panel). */
