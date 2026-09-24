@@ -3421,6 +3421,38 @@ falta) una ruta de `panel/` para escribir, solo para leer (`PANEL.EVENTS`,
   son `.tsx` de componente y no cuentan para el umbral, que sigue en
   99,7.
 
+## Auditoría de producto y reglas de visibilidad (2026-09-24)
+
+Recorrido del producto **ejecutándolo** (la app contra el backend real, el
+panel con un navegador), no leyéndolo. Informe y traspaso completos en
+`.superpowers/audit-producto-2026-09-23/` (fuera de git: está en
+`.gitignore`). Lo que afecta a este repo:
+
+- **Encuestas paginaba y el panel la trataba como array plano**
+  (`hooks/useSurveys.ts`): `surveys.data.map is not a function` tumbaba la
+  sección entera de cualquier entidad con encuestas. Es el fallo gemelo del
+  de `reports/queue` que ya documenta este fichero, y por el mismo motivo —
+  **el test mockeaba la forma de la respuesta, no la real**. El hook recorre
+  ahora todas las páginas (tope + aviso, como `useEntityCommunities`) y
+  `PaginatedSurveyList` queda como tipo manual en `lib/api/types.ts`.
+- **El espacio de familias nace `private`**
+  (`components/entidad/NuevaComunidadDialog.tsx`): al espacio de familias se
+  entra porque la entidad invita, no por curiosidad. Estando `open`,
+  cualquiera vinculado a una asociación se metía de un toque, y eso le
+  cerraba el espacio de miembros de esa entidad sin aviso. Solo cambia el
+  valor de partida del formulario cuando `space === "families"`; las tres
+  visibilidades se siguen ofreciendo y `members` sigue proponiendo abierta.
+- **Reglas de visibilidad del backend que este panel consume** (detalle en
+  el `CLAUDE.md` de `~/Code/popyplan`): una comunidad con `owner_org` solo
+  la ve quien está vinculado a alguna entidad; las actividades no entran en
+  esa regla (lo decide su `audience`); y en el descubrimiento y la agenda el
+  punto **mide** la distancia, mientras que recortar por cercanía lo pide
+  quien manda `radius_km`.
+
+**Lo que no es un fallo:** al entrar, la primera carga de cada Inicio
+dispara varios 401 que se resuelven solos — es el refresco de sesión que ya
+documenta «Diseño de sesión». Con la página asentada, todo responde 200.
+
 ## Comandos
 
 - `npm run dev` / `npm run build` / `npm run start`
