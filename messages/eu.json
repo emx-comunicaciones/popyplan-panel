@@ -770,7 +770,8 @@
       "goToAnnouncements": "Jakinarazpenetara joan",
       "recentResourcesHeading": "Azken baliabideak",
       "recentResourcesEmpty": "Ez dago familientzako baliabiderik oraindik",
-      "goToResources": "Baliabideetara joan"
+      "goToResources": "Baliabideetara joan",
+      "visibilityPrivateListed": "Pribatua baina ikusgai (kodearekin sartzen da)"
     },
     "programas": {
       "heading": "Programak",

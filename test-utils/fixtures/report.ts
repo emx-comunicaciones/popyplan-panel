@@ -29,6 +29,9 @@ export function buildReportDetail(overrides: Partial<ReportDetail> = {}): Report
   return {
     ...buildReportRow(),
     target: { type: "user", id: "4", name: "Persona reportada" },
+    // El esquema lo declara obligatorio desde que se regeneró con la
+    // cuarta visibilidad: el backend ya lo servía.
+    target_display: { id: 4, public_name: "Persona reportada" },
     ...overrides,
   };
 }

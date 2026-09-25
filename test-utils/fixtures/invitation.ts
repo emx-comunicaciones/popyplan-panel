@@ -4,6 +4,7 @@ export function buildEntityInvitation(overrides: Partial<EntityInvitation> = {})
   return {
     id: 3,
     organization: 7,
+    organization_name: "Asociación Bidasoa",
     email: "ana@example.com",
     display_name: "Ana",
     community: null,

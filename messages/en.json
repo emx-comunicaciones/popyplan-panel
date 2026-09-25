@@ -770,7 +770,8 @@
       "goToAnnouncements": "Go to Announcements",
       "recentResourcesHeading": "Recent resources",
       "recentResourcesEmpty": "No resources for families yet",
-      "goToResources": "Go to Resources"
+      "goToResources": "Go to Resources",
+      "visibilityPrivateListed": "Private but listed (join with a code)"
     },
     "programas": {
       "heading": "Programs",

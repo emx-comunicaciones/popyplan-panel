@@ -27,7 +27,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { useCreateCommunity, type CreateCommunityErrorKind } from "@/hooks/useCreateCommunity";
-import type { CreateCommunityRequest, EntityCommunityRow } from "@/lib/api/types";
+import type { CreateCommunityRequest, EntityCommunityRow, CommunityVisibility } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 
 export interface NuevaComunidadDialogProps {
@@ -56,7 +56,7 @@ export function NuevaComunidadDialog({ orgId, space, open, onClose, onCreated }:
   // se metía de un toque —lo que además le cerraba el espacio de
   // miembros de esa entidad, en silencio. Se puede cambiar en el propio
   // formulario: es un valor por defecto, no un candado.
-  const [visibility, setVisibility] = useState<"open" | "on_request" | "private">(
+  const [visibility, setVisibility] = useState<CommunityVisibility>(
     space === "families" ? "private" : "open",
   );
   const [codeOfConduct, setCodeOfConduct] = useState("");
@@ -150,12 +150,13 @@ export function NuevaComunidadDialog({ orgId, space, open, onClose, onCreated }:
             id="nueva-comunidad-visibilidad"
             value={visibility}
             onChange={(event) =>
-              setVisibility(event.target.value as "open" | "on_request" | "private")
+              setVisibility(event.target.value as CommunityVisibility)
             }
             className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             <option value="open">{t("entidad.familias.visibilityOpen")}</option>
             <option value="on_request">{t("entidad.familias.visibilityOnRequest")}</option>
+            <option value="private_listed">{t("entidad.familias.visibilityPrivateListed")}</option>
             <option value="private">{t("entidad.familias.visibilityPrivate")}</option>
           </select>
         </div>

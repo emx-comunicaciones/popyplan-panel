@@ -770,7 +770,8 @@
       "goToAnnouncements": "Ir a Comunicaciones",
       "recentResourcesHeading": "Recursos recientes",
       "recentResourcesEmpty": "Sin recursos para familias todavía",
-      "goToResources": "Ir a Recursos"
+      "goToResources": "Ir a Recursos",
+      "visibilityPrivateListed": "Privada pero visible (se entra con código)"
     },
     "programas": {
       "heading": "Programas",

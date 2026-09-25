@@ -770,7 +770,8 @@
       "goToAnnouncements": "Anar a Comunicacions",
       "recentResourcesHeading": "Recursos recents",
       "recentResourcesEmpty": "Encara no hi ha recursos per a famílies",
-      "goToResources": "Anar a Recursos"
+      "goToResources": "Anar a Recursos",
+      "visibilityPrivateListed": "Privada però visible (s’hi entra amb codi)"
     },
     "programas": {
       "heading": "Programes",

@@ -216,6 +216,16 @@ export type ComparePeriodo = components["schemas"]["ComparePeriodo"];
  */
 export type PersonRow = components["schemas"]["PersonRow"];
 export type PersonDetail = components["schemas"]["PersonDetail"];
+/**
+ * Las cuatro visibilidades de una comunidad. `private_listed` («privada
+ * pero visible», decisión del 2026-09-25) se lista como una abierta, pero
+ * para entrar hace falta el código de invitación: una `private` no se ve
+ * en ningún sitio, lo que mata a las comunidades de la gente —nadie puede
+ * querer entrar en algo que no sabe que existe— aunque sea lo correcto
+ * para el grupo de apoyo de una asociación.
+ */
+export type CommunityVisibility = components["schemas"]["VisibilityEnum"];
+
 export type PersonCommunityRow = components["schemas"]["PersonCommunityRow"];
 export type PersonEventRow = components["schemas"]["PersonEventRow"];
 export type ReferentRef = components["schemas"]["ReferentRef"];

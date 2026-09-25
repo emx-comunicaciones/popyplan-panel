@@ -8,6 +8,7 @@ const PERSON_ROW: PersonRow = {
   user_id: 42,
   public_name: "Ana",
   photo: null,
+  is_blocked: false,
   joined_at: "2025-01-01T09:00:00Z",
   communities_count: 1,
   events_period: 3,

@@ -477,10 +477,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * @description Takes a refresh type JSON web token and returns an access type JSON web
-         *     token if the refresh token is valid.
-         */
+        /** @description `TokenRefreshView` con el gate de suspensión de arriba. */
         post: operations["auth_token_refresh_create"];
         delete?: never;
         options?: never;
@@ -1262,6 +1259,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * Listar comunidades
+         * @description Listado filtrado por visibilidad. Con `?owner_org=<id>`, el titular o el moderador de esa entidad recibe **todas** sus comunidades: también las `private` y las de los dos espacios de POP Familias, sea o no miembro de ellas. El resto de personas sigue el filtro normal.
+         */
         get: operations["communities_list"];
         put?: never;
         /** @description Crea la comunidad por el servicio: propietario, chat y membresía. */
@@ -1975,6 +1976,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/communities/join-by-code/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Entrar con un código de invitación
+         * @description Une a quien llama a la comunidad cuyo `invite_code` coincida, sin necesidad de conocer su id. Es la **única** puerta a una comunidad `private`: no se lista en ninguna parte y su ficha responde 404 a quien no está dentro, así que el campo del código que vive en esa ficha era inalcanzable. Mismas reglas que `join/`: el bloqueo gana y el código de conducta hay que aceptarlo.
+         */
+        post: operations["communities_join_by_code_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/communities/my/": {
         parameters: {
             query?: never;
@@ -2362,7 +2383,16 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description `POST /api/events/{id}/attendance/` — pasar asistencia. */
+        /**
+         * @description `POST /api/events/{id}/attendance/` — pasar asistencia.
+         *
+         *     Con `attended: true`, una persona que no estaba inscrita queda
+         *     inscrita y presente en el acto (asistencia de puerta, auditoría
+         *     2026-09-21, hallazgo C-C3): en una actividad abierta aparecer sin
+         *     haberse apuntado es la norma y hasta ahora esas personas no
+         *     contaban para nadie. `attended: false` sobre quien no estaba
+         *     inscrita sigue siendo 404.
+         */
         post: operations["events_attendance_create"];
         delete?: never;
         options?: never;
@@ -2621,6 +2651,32 @@ export interface paths {
         get: operations["readiness_check"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/invitations/{iid}/accept/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description `POST /api/invitations/{iid}/accept/` (app, `docs/PANEL.md` §3b.8).
+         *
+         *     Acepta por id la invitación que `GET /api/invitations/mine/` ya
+         *     devuelve, sin necesitar el `token` ni el `code` del correo. 404 si el
+         *     id no existe, si la invitación no está dirigida al correo de quien
+         *     llama o si ya no se puede aceptar; **409** (sin cuerpo de invitación,
+         *     solo el nombre de la entidad) si quien llama ya es miembro y vuelve a
+         *     tocar la tarjeta — repetir la acción no puede ser un error.
+         */
+        post: operations["invitations_accept_create_2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3304,6 +3360,23 @@ export interface paths {
          *     -members`): nunca lleva `ip` (esa la ve únicamente `superadmin` en
          *     `GET /api/safety/audit/`). Sin paginar, igual que `EntidadEventsView`
          *     (no crece tan rápido como para necesitarlo en esta tarea).
+         *
+         *     **Dos exclusiones de higiene** (auditoría 2026-09-21, hallazgos D-I1 y
+         *     D-I2), que no afectan a `GET /api/safety/audit/`: `superadmin` sigue
+         *     viéndolo todo.
+         *
+         *     1. Nada del espacio `support.*` (red de apoyo). `support/services/
+         *        referent.py` audita cada consulta del referente con
+         *        `organization=<la entidad>`, así que el titular podía leer
+         *        `support.viewed_by_referent` con el id de la persona mirada:
+         *        exactamente el dato que el 404 de `.../people/{id}/support/` existe
+         *        para ocultar. La entidad nunca interviene en la red de apoyo
+         *        (invariante 1), así que tampoco la audita.
+         *     2. Nada sobre un reporte **escalado**. `report.resolved` guarda en
+         *        `metadata` la nota libre de quien resuelve; un reporte escalado sale
+         *        de la cola de la entidad (`safety.services.reports.queue` filtra
+         *        `escalated_at__isnull=True`) pero su resolución seguía llegándole,
+         *        con la nota interna de la moderación de plataforma dentro.
          */
         get: operations["panel_entidad_audit_list"];
         put?: never;
@@ -3566,8 +3639,9 @@ export interface paths {
          * @description `GET /api/panel/entidad/{org_id}/programs/{program_id}/report/?format=csv|pdf`.
          *
          *     Informe final: `report_for` (métricas mensuales del periodo del
-         *     programa) más la cabecera del programa (nombre, financiador,
-         *     presupuesto) vía `panel.services.exports`. Siempre audita
+         *     programa, con el mismo umbral de agregación que la ficha en pantalla
+         *     — `ver_lista_nominal` de quien descarga) más la cabecera del programa
+         *     (nombre, financiador, presupuesto) vía `panel.services.exports`. Siempre audita
          *     `panel.export` con `program_id` (salvo un PDF que responde 503: no se
          *     exportó nada, igual que el resto de exportaciones del panel).
          */
@@ -3587,8 +3661,15 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description `GET/POST /api/panel/entidad/{org_id}/surveys/`. */
-        get: operations["panel_entidad_surveys_list"];
+        /**
+         * @description Paginada, con `select_related`/`prefetch_related` (revisión de
+         *     la rama, hallazgo I3): `localize_post_event` (en el serializer)
+         *     toca `survey.event` en cada `post_event` — una consulta por fila
+         *     sin `select_related('event')` — y con una encuesta por cada
+         *     actividad celebrada (hallazgo C1/C-C1) la respuesta sin paginar
+         *     podía llegar a cientos de filas.
+         */
+        get: operations["panel_entidad_surveys_retrieve"];
         put?: never;
         /** @description `GET/POST /api/panel/entidad/{org_id}/surveys/`. */
         post: operations["panel_entidad_surveys_create"];
@@ -6604,6 +6685,16 @@ export interface components {
          * @enum {string}
          */
         ChatTypeEnum: "individual" | "group";
+        /**
+         * @description Cuerpo del 409 de `POST {id}/checkin/` (revisión de la rama, I4).
+         *
+         *     `detail` viaja traducido (idioma de `Accept-Language`); `code` es la
+         *     etiqueta estable con la que el cliente distingue los dos casos.
+         */
+        CheckinConflict: {
+            detail: string;
+            code: components["schemas"]["CodeEnum"];
+        };
         /** @description Cuerpo de `POST {id}/checkin/` (Fase 5, tarea P4). */
         CheckinRequest: {
             /** Format: uuid */
@@ -6614,6 +6705,12 @@ export interface components {
             status: string;
             already: boolean;
         };
+        /**
+         * @description * `fuera_de_ventana` - fuera_de_ventana
+         *     * `inscripcion_anulada` - inscripcion_anulada
+         * @enum {string}
+         */
+        CodeEnum: "fuera_de_ventana" | "inscripcion_anulada";
         CommunitiesMetrics: {
             active: number;
             members: number | null;
@@ -6678,7 +6775,7 @@ export interface components {
                 [key: string]: unknown;
             } | null;
             /** Format: uuid */
-            readonly chat_room_id: string;
+            readonly chat_room_id: string | null;
             readonly can_request_help: boolean;
             readonly recent_posts_count: number;
             readonly active_members_count: number;
@@ -6787,6 +6884,48 @@ export interface components {
             /** Format: date-time */
             readonly created_at: string;
         };
+        /**
+         * @description Miembro de una comunidad: alias público, nunca nombre legal ni
+         *     `username` (auditoría 2026-09-21, B-I5/A-C1 — quien eligió un alias
+         *     para estar en una comunidad de apoyo aparecía con su nombre y
+         *     apellidos ante el equipo de la entidad, y con su correo como
+         *     `@handle` ante el resto de miembros).
+         */
+        CommunityMember: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            readonly user_id: string;
+            readonly full_name: string;
+            /** Format: uri */
+            readonly profile_picture: string | null;
+            role?: components["schemas"]["CommunityMemberRoleEnum"];
+            /** Estado */
+            status?: components["schemas"]["CommunityMemberStatusEnum"];
+            /**
+             * Código de conducta aceptado el
+             * Format: date-time
+             */
+            readonly accepted_conduct_at: string | null;
+            readonly is_online: boolean;
+            /** Format: date-time */
+            readonly joined_at: string;
+        };
+        /**
+         * @description * `owner` - Propietario
+         *     * `moderator` - Moderador de comunidad
+         *     * `member` - Miembro
+         * @enum {string}
+         */
+        CommunityMemberRoleEnum: "owner" | "moderator" | "member";
+        /**
+         * @description * `pending` - Pendiente
+         *     * `active` - Activo
+         *     * `rejected` - Rechazado
+         *     * `left` - Salido
+         * @enum {string}
+         */
+        CommunityMemberStatusEnum: "pending" | "active" | "rejected" | "left";
         CommunityPost: {
             /** Format: uuid */
             readonly id: string;
@@ -7141,6 +7280,7 @@ export interface components {
             readonly id: number;
             /** Entidad */
             readonly organization: number;
+            readonly organization_name: string;
             /**
              * Correo
              * Format: email
@@ -7917,6 +8057,19 @@ export interface components {
         InvoicePayRequest: {
             /** Format: date */
             paid_on: string;
+        };
+        /**
+         * @description Cuerpo de `POST /api/communities/join-by-code/`.
+         *
+         *     Solo el código: quien entra así no conoce el id de la comunidad —de
+         *     hecho no puede, porque una `private` no se lista y su ficha le
+         *     responde 404—. `accept_conduct` es el mismo de `join/`.
+         */
+        JoinByCodeRequest: {
+            /** Format: uuid */
+            code: string;
+            /** @default false */
+            accept_conduct: boolean;
         };
         /**
          * @description * `post_event` - Post-actividad
@@ -9345,6 +9498,8 @@ export interface components {
             user_id: number;
             public_name: string;
             photo: string | null;
+            /** @description The platform suspended this account: it is still a person of the entity, but cannot use Popyplan. */
+            is_blocked: boolean;
             /**
              * Format: date-time
              * @description Primera membresía en la entidad.
@@ -9371,6 +9526,8 @@ export interface components {
             user_id: number;
             public_name: string;
             photo: string | null;
+            /** @description The platform suspended this account: it is still a person of the entity, but cannot use Popyplan. */
+            is_blocked: boolean;
             /**
              * Format: date-time
              * @description Primera membresía en la entidad.
@@ -9789,8 +9946,9 @@ export interface components {
          */
         PublicProfile: {
             readonly id: number;
-            readonly username: string;
             readonly public_name: string;
+            readonly first_name: string;
+            readonly last_name: string;
             readonly photo: string;
             bio?: string;
             /** Intereses */
@@ -10050,6 +10208,7 @@ export interface components {
             readonly organization_display: components["schemas"]["OrganizationRef"] | null;
             readonly community_display: components["schemas"]["CommunityRef"] | null;
             readonly target: components["schemas"]["ReportTarget"];
+            readonly target_display: components["schemas"]["ReportTargetDisplay"] | null;
         };
         /** @description Cuerpo del escalado: una nota opcional para quien lo reciba. */
         ReportEscalateRequest: {
@@ -10081,6 +10240,17 @@ export interface components {
             title?: string;
             name?: string;
             sender?: number;
+        };
+        /**
+         * @description La persona señalada por un reporte `target_type='user'`.
+         *
+         *     Solo el id y el **alias público** (`Profile.public_name`): nunca el
+         *     correo ni el nombre de cuenta (invariante 9). `null` para cualquier
+         *     otro objetivo, y también si esa cuenta ya no existe.
+         */
+        ReportTargetDisplay: {
+            id: number;
+            public_name: string;
         };
         /**
          * @description * `none` - Sin resolución
@@ -10359,6 +10529,19 @@ export interface components {
             closes_at?: string | null;
             questions: components["schemas"]["SurveyQuestionInputRequest"][];
         };
+        /**
+         * @description Sobre de paginación real de `GET /api/panel/entidad/{id}/surveys/`
+         *     (`PageNumberPagination`, 20 por página, revisión de la rama, hallazgo
+         *     I3) — declarado aparte porque `SurveyListView` es un `APIView` plano
+         *     (drf-spectacular no infiere la paginación sin un `GenericAPIView`),
+         *     mismo patrón que `PersonRowPageSerializer`.
+         */
+        SurveyPage: {
+            count: number;
+            next: string | null;
+            previous: string | null;
+            results: components["schemas"]["Survey"][];
+        };
         /** @description Salida de `GET /api/surveys/pending/`: encuesta abierta sin responder. */
         SurveyPending: {
             readonly id: number;
@@ -10469,10 +10652,24 @@ export interface components {
          * @enum {string}
          */
         TerritoryKindEnum: "ccaa" | "provincia" | "comarca" | "municipios";
+        /**
+         * @description `POST /api/auth/token/refresh/` de una cuenta suspendida → 401.
+         *
+         *     `TokenRefreshSerializer` no carga la cuenta (solo valida la firma del
+         *     refresh), así que sin esto una persona suspendida seguiría renovando
+         *     su acceso durante los 30 días de vida del refresh.
+         */
         TokenRefresh: {
-            readonly access: string;
             refresh: string;
+            readonly access: string;
         };
+        /**
+         * @description `POST /api/auth/token/refresh/` de una cuenta suspendida → 401.
+         *
+         *     `TokenRefreshSerializer` no carga la cuenta (solo valida la firma del
+         *     refresh), así que sin esto una persona suspendida seguiría renovando
+         *     su acceso durante los 30 días de vida del refresh.
+         */
         TokenRefreshRequest: {
             refresh: string;
         };
@@ -10713,12 +10910,9 @@ export interface components {
          */
         UserProfile: {
             readonly id: number;
-            /**
-             * Nombre de usuario
-             * @description Requerido. 150 carácteres como máximo. Únicamente letras, dígitos y @/./+/-/_
-             */
-            readonly username: string;
             readonly public_name: string;
+            readonly first_name: string;
+            readonly last_name: string;
             /** Format: uri */
             readonly photo: string | null;
             readonly verification_level: number;
@@ -10819,10 +11013,11 @@ export interface components {
         /**
          * @description * `open` - Abierta
          *     * `on_request` - A petición
+         *     * `private_listed` - Private but listed
          *     * `private` - Privada
          * @enum {string}
          */
-        VisibilityEnum: "open" | "on_request" | "private";
+        VisibilityEnum: "open" | "on_request" | "private_listed" | "private";
         /**
          * @description * `no_show` - No Show
          *     * `ghosting` - Ghosting
@@ -13664,10 +13859,16 @@ export interface operations {
     communities_list: {
         parameters: {
             query?: {
+                /** @description Nombre (parcial) de la categoría. */
+                category?: string;
                 /** @description Which field to use when ordering the results. */
                 ordering?: string;
+                /** @description Id de la entidad dueña. Para su titular/moderador devuelve todas sus comunidades (privadas y ambos espacios). */
+                owner_org?: number;
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Código INE del municipio de la comunidad. */
+                place?: string;
                 /** @description A search term. */
                 search?: string;
             };
@@ -14743,6 +14944,31 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Discover"];
+                };
+            };
+        };
+    };
+    communities_join_by_code_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JoinByCodeRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["JoinByCodeRequest"];
+                "multipart/form-data": components["schemas"]["JoinByCodeRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunityMember"];
                 };
             };
         };
@@ -15829,12 +16055,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description No response body */
             409: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["CheckinConflict"];
+                };
             };
         };
     };
@@ -15975,7 +16202,7 @@ export interface operations {
                 from?: string;
                 lat?: number;
                 lng?: number;
-                /** @description Código INE del municipio. */
+                /** @description Código INE del municipio. Con `lat`/`lng` se SUMA al radio (unión), no se cruza: salen las actividades del municipio y además las que caigan dentro del radio. */
                 place?: string;
                 radius_km?: number;
                 to?: string;
@@ -16087,6 +16314,41 @@ export interface operations {
                         timestamp?: string;
                     };
                 };
+            };
+        };
+    };
+    invitations_accept_create_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                iid: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntityInvitation"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -18714,7 +18976,7 @@ export interface operations {
             };
         };
     };
-    panel_entidad_surveys_list: {
+    panel_entidad_surveys_retrieve: {
         parameters: {
             query?: never;
             header?: never;
@@ -18730,7 +18992,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Survey"][];
+                    "application/json": components["schemas"]["SurveyPage"];
                 };
             };
             /** @description No response body */
