@@ -33,9 +33,9 @@ Tres áreas por rol, cada una bajo su propia ruta:
   de ella (`parent`), sin relación necesaria con su territorio. Ver
   «Administraciones multinivel y territorio (bloque 1)» más abajo.
 - **`/plataforma`** — panel del equipo de Popyplan (`safety.PlatformRole`:
-  `superadmin`, `verifier`, `moderator`, `support`). Menú de 9 secciones
-  (Inicio, Entidades, Reportes, Ayuda, Verificaciones, Roles, Auditoría,
-  Métricas, Suscripciones), con visibilidad por rol
+  `superadmin`, `verifier`, `moderator`, `support`). Menú de 11 secciones
+  (Inicio, Entidades, Usuarios, Reportes, Bloqueos, Ayuda, Verificaciones,
+  Roles, Auditoría, Métricas, Suscripciones), con visibilidad por rol
   (`lib/auth/plataformaMenu.ts`) —
   ver «Área de plataforma» más abajo.
 
@@ -615,7 +615,9 @@ filtra el propio menú lateral con la misma función).
 sacada del permiso real de cada endpoint, no inventada): `superadmin` ve
 todas las secciones (las 8 de W5, más Suscripciones —antes «Contratos»—
 desde W4 de Fase 6, `support` también la ve, ver «Suscripciones y
-facturación de plataforma» más abajo);
+facturación de plataforma» más abajo; y Usuarios/Bloqueos desde el
+bloque 1 del admin de plataforma, **solo** `superadmin`, ver «Admin de
+plataforma: usuarios y bloqueos» más abajo);
 `verifier` solo Inicio/Entidades/Verificaciones
 (`organization-list/create/verify` y `verification-review-*` piden
 `verifier`/`superadmin`); `moderator` y `support` ven Inicio/Reportes/
@@ -962,7 +964,8 @@ Hallazgos desmentidos (no había bug contra el contrato vigente):
   `grep -rln "toHaveNoViolations" app components`; tras el bloque 1 de
   «Administraciones multinivel y territorio» (que además cierra dos
   excepciones que arrastraba esta lista, `paraguas/[slug]/informes` y
-  `plataforma/entidades/[id]`) son **28 páginas y 10 componentes**:
+  `plataforma/entidades/[id]`) y del bloque 1 del admin de plataforma
+  (tres páginas más) son **31 páginas y 10 componentes**:
   `app/page` (la raíz: la web pública sin sesión y la pantalla «Tu cuenta
   es de la app» con sesión sin rol), `app/(auth)/login`,
   `app/accesibilidad` (declaración pública, tarea
@@ -983,7 +986,9 @@ Hallazgos desmentidos (no había bug contra el contrato vigente):
   `plataforma/entidades/[id]` (ficha, con `SedeSelector`/`TerritorioForm`
   del bloque 1 en la pestaña Datos), `plataforma/reportes` (cola) y
   `plataforma/reportes/[reportId]`, `plataforma/metricas`,
-  `plataforma/suscripciones`, más las dos rutas de error (`app/error`,
+  `plataforma/suscripciones`, `plataforma/usuarios` (con «Nueva cuenta»
+  abierto), `plataforma/usuarios/[id]` (con «Borrar cuenta» abierto) y
+  `plataforma/bloqueos` (con «Revocar» abierto), más las dos rutas de error (`app/error`,
   `app/not-found`); y, a nivel de componente,
   `components/entidad/GuardiaPanel`, `components/help/PageHelp`,
   `components/landing/ModeToggle` (el conmutador de la web pública, el
@@ -2223,9 +2228,9 @@ qué se puede hacer en ella y quién la ve.
 - **Registro**: `lib/help/pageHelp.ts::PAGE_HELP`, una entrada
   (`PageHelpEntry {route, key}`) por cada `page.tsx` real de
   `app/entidad/[slug]/**`, `app/paraguas/[slug]/**` y
-  `app/plataforma/**` — **34** pantallas (19 entidad, **4** paraguas —
-  Inicio/Territorio/Red financiada/Informes, bloque 1 de territorio — 11
-  plataforma). **Actualizado en la tarea 5 de i18n**: `title`/`summary`/
+  `app/plataforma/**` — **37** pantallas (19 entidad, **4** paraguas —
+  Inicio/Territorio/Red financiada/Informes, bloque 1 de territorio — 14
+  plataforma, tres de ellas del admin de plataforma de 2026-09-26). **Actualizado en la tarea 5 de i18n**: `title`/`summary`/
   `actions`/`audience` ya no viven en el registro como texto en español
   — `key` (p. ej. `"entidad.personas"`, mismos segmentos que
   `pages.<area>.<slug>` de la tarea 2) apunta a
@@ -3471,6 +3476,88 @@ panel con un navegador), no leyéndolo. Informe y traspaso completos en
 dispara varios 401 que se resuelven solos — es el refresco de sesión que ya
 documenta «Diseño de sesión». Con la página asentada, todo responde 200.
 
+## Admin de plataforma: usuarios y bloqueos (bloque 1, 2026-09-26)
+
+Spec: `docs/superpowers/specs/2026-09-26-admin-plataforma-design.md`
+(portar el admin antiguo `~/Code/admin-popylop` al panel). Solo panel,
+sin cambios de backend. Dos secciones nuevas del menú de plataforma,
+**solo `superadmin`** (`lib/auth/plataformaMenu.ts`: todo lo de Usuarios
+es `IsAdminUser`/`is_staff`, que hoy solo tiene `superadmin`; Bloqueos
+admitiría `moderator` en el backend, pero elegir la cuenta pasa por el
+buscador `is_staff`, así que sin él no tendría puerta de entrada). El
+menú pasa de 9 a **11** secciones.
+
+- **`/plataforma/usuarios`** (`UsuariosTable`, `hooks/usePlatformUsers.ts`):
+  `GET /api/users/users/?ordering=-created_at&page=&search=&is_active=&is_verified=`
+  (`users/unified_viewset.py::list_users`; `PAGE_SIZE` fijo de 20,
+  `?page_size=` no hace nada; sin `ordering` el queryset no tiene orden).
+  Columnas nombre (enlace a la ficha), correo, usuario, alta, estado +
+  verificación y rol de plataforma — este último de **una** llamada a
+  `GET /api/safety/platform-roles/`, nunca una por fila. «Nueva cuenta»
+  (`NuevaCuentaDialog`) → `POST /api/auth/admin-register/` y abre la
+  ficha; no ofrece `is_staff`/`is_superuser` a propósito (el acceso a la
+  plataforma se da con un rol en Roles, que se audita).
+- **`/plataforma/usuarios/[id]`** (`UsuarioDetail`, `hooks/usePlatformUser.ts`):
+  `notFound()` con id no numérico. Desactivar/Reactivar (`PATCH
+  /api/users/{id}/ {is_active}`), Borrar cuenta (`DELETE`, borrado
+  **real**, `user.delete()`, no el `soft_delete` de la baja propia; vuelve
+  al listado) y «Enviar restablecimiento de contraseña» (`POST
+  /api/auth/password/reset/ {email}`, la ruta pública: no hay una de
+  staff; comparte el límite `ip:<ip>:auth` del login, 429 →
+  `demasiados_intentos`). Todas con `ConfirmDialog` y el error dentro,
+  salvo el restablecimiento (aviso `role="status"`). Ni desactivar ni
+  borrar sobre la propia cuenta. Nunca teléfono, fecha de nacimiento,
+  biografía, documentos ni notas.
+- **`/plataforma/bloqueos`** (`BloqueosPanel`, `hooks/useBlocksAdmin.ts`):
+  **no hay listado global** — `GET /api/safety/blocks/admin/?user=<id>`
+  exige la cuenta (400 sin ella) y devuelve los bloqueos hechos por ella
+  o contra ella. Se elige con el buscador de Roles (`useUserSearch`, con
+  retardo) o llega por `?user=` (+ `?email=`) desde la ficha. Revocar
+  (`DELETE /api/safety/blocks/{id}/admin/ {reason}`) pide motivo
+  obligatorio (≤300, queda en Auditoría como `block.revoked_by_staff`),
+  validado también en el cliente.
+
+**El estado de una cuenta no viaja en ninguna respuesta** — el hallazgo
+que condiciona todo el diseño. `list_users` y `admin_register` serializan
+con `MeSerializer`, que no lleva `is_active` (ni `is_staff`), y
+`GET /api/users/{id}/` es el **perfil público** (`PublicProfileSerializer`:
+alias, foto, municipio, nivel), no la cuenta, con 404 para una suspendida
+(`is_blocked`) o borrada. Ninguna ruta localiza una cuenta por id con sus
+datos de admin. Por eso:
+- el listado solo pinta «Activa»/«Desactivada» cuando el filtro «Estado»
+  lo fija (`knownActive`), con una pista visible cuando no;
+- la ficha localiza la cuenta **por correo**, que viaja en el enlace del
+  listado (`/plataforma/usuarios/{id}?email=…`), con dos búsquedas: la
+  normal y la misma con `?is_active=false` (si sale ahí, está
+  desactivada). Sin `?email=` (URL a mano) la ficha lo dice y solo
+  enseña el perfil público y «Borrar». El correo en la URL es un
+  trade-off asumido (`Referrer-Policy` ya lo corta en peticiones de otro
+  origen); el arreglo de verdad es del backend: una ficha de cuenta para
+  staff con `is_active`, o `is_active` en `MeSerializer` para staff.
+
+**Mismatches esquema/código** (documentados en `lib/api/types.ts` junto a
+`PlatformAccount`/`PlatformPublicProfile`/`BlockAdmin`, tipos manuales,
+**sin** regenerar `types.generated.ts`): listado y alta devuelven
+`MeSerializer`, no `UserListResponse`/`RegistrationResponse`;
+`verification_level` es entero (el esquema dice `string`) y
+`verification_pending_review` booleano; `photo`/`place` pueden ser
+`null`; `blocks/admin/` es un **array plano**, no la
+`PaginatedBlockAdminList` del esquema; `BlockAdminSerializer` nombra a
+las personas por **nombre de usuario** (no trae alias público), así que
+la tabla de bloqueos pinta usernames. Los rechazos de `UserViewSet` son
+`{"error": …}`, que `detailOf` ya lee.
+
+**Verificado contra el backend sembrado** (Playwright sobre `next start`,
+no `next dev`: los ficheros que escribe el MCP de Playwright en la raíz
+del repo disparan un bucle de Fast Refresh que rompe la navegación):
+listado de 228 cuentas, ficha de `panel-demo-…-p02`, desactivar y
+reactivar, alta + restablecimiento + borrado de una cuenta de prueba, y
+revocar un bloqueo real p01→p02.
+
+**Pendientes, del backend**: la ficha de cuenta para staff (arriba); un
+listado global de bloqueos; alias público en `BlockAdminSerializer`. i18n
+`eu`/`ca` pendiente de revisión nativa (`docs/i18n/PENDIENTES.md`).
+
 ## Comandos
 
 - `npm run dev` / `npm run build` / `npm run start`
@@ -3598,6 +3685,10 @@ en CI lo gate el job `e2e`).
   `components/entidad/{ActividadForm,ActividadesTable}.test.tsx` son
   `.tsx` de componente y no cuentan para el umbral). El umbral sigue en
   99,7.
+  Tras el bloque 1 del admin de plataforma (usuarios y bloqueos,
+  2026-09-26): **99,80 %** (3101/3107 líneas, **2337** tests, 214
+  ficheros — tres hooks nuevos, `usePlatformUsers.ts`, `usePlatformUser.ts`
+  y `useBlocksAdmin.ts`, al 100 % de líneas). El umbral sigue en 99,7.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la

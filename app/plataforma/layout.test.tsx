@@ -42,7 +42,7 @@ describe("PlataformaLayout", () => {
     ).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("pinta las 9 secciones del menú de plataforma", async () => {
+  it("pinta las 11 secciones del menú de plataforma", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",
       me: buildMe({ org_memberships: [] }),
@@ -55,7 +55,9 @@ describe("PlataformaLayout", () => {
     for (const label of [
       "Inicio",
       "Entidades",
+      "Usuarios",
       "Reportes",
+      "Bloqueos",
       "Ayuda",
       "Verificaciones",
       "Roles",
@@ -86,6 +88,8 @@ describe("PlataformaLayout", () => {
       "Roles",
       "Auditoría",
       "Suscripciones",
+      "Usuarios",
+      "Bloqueos",
     ]) {
       expect(
         screen.queryByRole("link", { name: label }),
@@ -112,7 +116,7 @@ describe("PlataformaLayout", () => {
     ]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
-    for (const label of ["Entidades", "Verificaciones", "Roles", "Auditoría"]) {
+    for (const label of ["Entidades", "Verificaciones", "Roles", "Auditoría", "Usuarios", "Bloqueos"]) {
       expect(
         screen.queryByRole("link", { name: label }),
       ).not.toBeInTheDocument();

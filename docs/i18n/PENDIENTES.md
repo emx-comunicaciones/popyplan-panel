@@ -167,3 +167,15 @@ español, y no se toca en esta ronda):
   **merecen una revisión nativa** (registro, matices de tuteo y
   terminología de acompañamiento en adicciones) antes de darlas por
   cerradas.
+- **Admin de plataforma, bloque 1 (usuarios y bloqueos, 2026-09-26)**:
+  las claves nuevas de `menu.plataforma.{usuarios,bloqueos}`,
+  `pages.plataforma.{usuarios,usuarioFicha,bloqueos}`,
+  `plataforma.{usuarios,usuarioFicha,bloqueos}.*`,
+  `errors.{platformUsers,platformProfile,platformUserMutation,blocksAdmin}.*`
+  y `help.plataforma.{usuarios,usuarioFicha,bloqueos}.*` se escribieron en
+  `es` y `en` y se tradujeron a `eu`/`ca` de forma asistida («tauler»
+  para *panel* en catalán, como fija el glosario). **Pendientes de
+  revisión nativa**, igual que la ayuda ampliada. Dudas concretas: en
+  euskera, «Baliogabetu» para *revocar* un bloqueo y «Erabiltzaileak»
+  en el menú frente a «Kontuak» en el título de la página (el castellano
+  hace la misma distinción, «Usuarios»/«Cuentas», a propósito).

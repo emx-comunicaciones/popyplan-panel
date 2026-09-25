@@ -40,11 +40,22 @@
  * sigue siendo `Contract` (app `billing`, sin cambios de API): la
  * pestaña «Contratos» de dentro del panel (`ContratosPanel.tsx`) no se
  * toca, solo el nombre visible de la sección y su ruta.
+ *
+ * Admin de plataforma, bloque 1 (2026-09-26): **Usuarios** y
+ * **Bloqueos**, solo `superadmin`. Usuarios usa `GET /api/users/users/`,
+ * `POST /api/auth/admin-register/` y `PATCH`/`DELETE /api/users/{id}/`,
+ * todos `IsAdminUser` (`is_staff`, que hoy solo tiene `superadmin`; mismo
+ * razonamiento que `dashboard-stats`). Bloqueos admitiría también
+ * `moderator` (`HasPlatformRole('moderator', 'superadmin')`), pero elegir
+ * la cuenta pasa por el mismo buscador `is_staff`, así que para un
+ * moderador la pantalla no tendría puerta de entrada.
  */
 export const PLATAFORMA_MENU_ITEMS = [
   "inicio",
   "entidades",
+  "usuarios",
   "reportes",
+  "bloqueos",
   "ayuda",
   "verificaciones",
   "roles",
@@ -65,7 +76,9 @@ export type PlataformaMenuItem = (typeof PLATAFORMA_MENU_ITEMS)[number];
 export const PLATAFORMA_MENU_LABELS: Record<PlataformaMenuItem, string> = {
   inicio: "menu.plataforma.inicio",
   entidades: "menu.plataforma.entidades",
+  usuarios: "menu.plataforma.usuarios",
   reportes: "menu.plataforma.reportes",
+  bloqueos: "menu.plataforma.bloqueos",
   ayuda: "menu.plataforma.ayuda",
   verificaciones: "menu.plataforma.verificaciones",
   roles: "menu.plataforma.roles",

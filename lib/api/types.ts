@@ -1068,3 +1068,104 @@ export interface PlaceSheet {
   communities: { count: number };
   organizations_based_here: number;
 }
+
+// ---------------------------------------------------------------------------
+// Admin de plataforma, bloque 1: usuarios y bloqueos (2026-09-26).
+// ---------------------------------------------------------------------------
+
+/**
+ * Una cuenta tal como la sirve `GET /api/users/users/` (`users/
+ * unified_viewset.py::list_users`) y `POST /api/auth/admin-register/`.
+ *
+ * **Tipo manual, con cuatro mismatches frente a `docs/schema.yaml`**
+ * (verificados contra el código y contra el backend sembrado):
+ * 1. El listado declara `UserListResponse` y el alta
+ *    `RegistrationResponse`; las dos vistas serializan en realidad con
+ *    `MeSerializer` (el listado, sobre la paginación estándar de DRF).
+ * 2. `verification_level` llega como **entero** 0-3 (el esquema dice
+ *    `string`), igual que en `PersonDetail`; `verification_pending_review`
+ *    llega como booleano.
+ * 3. `profile.photo` y `profile.place` pueden llegar `null` (el esquema
+ *    los marca obligatorios).
+ * 4. **Ni `is_active` ni `is_staff` salen en ninguna respuesta** —
+ *    `MeSerializer` no los lleva—, así que el estado de una cuenta solo
+ *    se sabe filtrando (`?is_active=false`), nunca leyéndolo de la fila.
+ *    Ver `hooks/usePlatformUsers.ts`.
+ * Se limita a lo que pintan el listado y la ficha: nada de teléfono,
+ * fecha de nacimiento ni biografía (el admin gestiona cuentas, no
+ * personas; spec del admin de plataforma, bloque 1).
+ */
+export interface PlatformAccount {
+  id: number;
+  email: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  is_verified: boolean;
+  verification_level: number;
+  created_at: string;
+  profile: {
+    public_name: string;
+    photo: string | null;
+    place: components["schemas"]["PlaceRef"] | null;
+  };
+  org_memberships: OrgMembershipRef[];
+}
+
+export interface PaginatedPlatformAccountList {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: PlatformAccount[];
+}
+
+/**
+ * `GET /api/users/{id}/` (`UserViewSet.retrieve`): el **perfil público**
+ * (`PublicProfileSerializer`), no la cuenta — sin correo ni estado. 404
+ * para una cuenta suspendida (`is_blocked`) o borrada. Tipo manual
+ * acotado: `verification_level` es entero y `photo`/`place` pueden ser
+ * `null` (el esquema `PublicProfile` dice `string` y obligatorios).
+ */
+export interface PlatformPublicProfile {
+  id: number;
+  public_name: string;
+  photo: string | null;
+  place: components["schemas"]["PlaceRef"] | null;
+  verification_level: number;
+}
+
+/**
+ * Cuerpo de `POST /api/auth/admin-register/` (`AdminUserCreateSerializer`).
+ * `is_staff`/`is_superuser` existen en el serializer pero el panel no los
+ * ofrece a propósito: el acceso a la plataforma se da con un rol de
+ * plataforma (`/plataforma/roles`), que queda auditado, no con un flag de
+ * Django que no audita nadie.
+ */
+export interface AdminRegisterRequest {
+  email: string;
+  username: string;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  password?: string;
+}
+
+/** Cuerpo de `PATCH /api/users/{id}/` que usa el panel (`AdminUserUpdateSerializer`). */
+export interface AdminUserUpdateRequest {
+  is_active: boolean;
+}
+
+/**
+ * Un bloqueo visto por la moderación (`safety/serializers.py
+ * ::BlockAdminSerializer`): quién a quién por **nombre de usuario** (el
+ * serializer no trae alias público) y si es un bloqueo preventivo por
+ * teléfono (`phone_blocked`, sin el número). `GET .../blocks/admin/`
+ * devuelve un **array plano** de estos, no la `PaginatedBlockAdminList`
+ * que declara el esquema.
+ */
+export type BlockAdmin = components["schemas"]["BlockAdmin"];
+
+/** Cuerpo de `DELETE /api/safety/blocks/{id}/admin/` (`BlockRevokeSerializer`). */
+export interface BlockRevokeRequest {
+  reason: string;
+}

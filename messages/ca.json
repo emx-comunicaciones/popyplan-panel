@@ -83,7 +83,9 @@
       "navLabel": "Seccions de la plataforma",
       "inicio": "Inici",
       "entidades": "Entitats",
+      "usuarios": "Usuaris",
       "reportes": "Informes (moderació)",
+      "bloqueos": "Bloquejos",
       "ayuda": "Ajuda",
       "verificaciones": "Verificacions",
       "roles": "Rols",
@@ -243,6 +245,15 @@
       },
       "suscripciones": {
         "title": "Subscripcions"
+      },
+      "usuarios": {
+        "title": "Comptes"
+      },
+      "usuarioFicha": {
+        "title": "Fitxa del compte"
+      },
+      "bloqueos": {
+        "title": "Bloquejos"
       }
     }
   },
@@ -1322,6 +1333,30 @@
       "desconocidoCrear": "No s'ha pogut crear l'activitat.",
       "desconocidoGuardar": "No s'ha pogut desar l'activitat.",
       "desconocidoCancelar": "No s'ha pogut cancel·lar l'activitat."
+    },
+    "platformUsers": {
+      "sinAcceso": "Només el personal de plataforma veu els comptes.",
+      "paginaInexistente": "Aquesta pàgina del llistat ja no existeix.",
+      "desconocido": "No s'han pogut carregar els comptes."
+    },
+    "platformProfile": {
+      "noEncontrado": "Sense perfil públic: el compte no existeix o està suspès.",
+      "desconocido": "No s'ha pogut carregar el perfil d'aquest compte."
+    },
+    "platformUserMutation": {
+      "invalido": "Revisa les dades.",
+      "sinPermiso": "Només el personal de plataforma pot fer això.",
+      "noEncontrado": "Aquest compte ja no existeix.",
+      "demasiadosIntentos": "Massa intents; espera un minut i torna-ho a provar.",
+      "desconocido": "No s'ha pogut completar l'acció."
+    },
+    "blocksAdmin": {
+      "invalido": "Escriu el motiu de la revocació.",
+      "sinAcceso": "Només la moderació i el superadmin veuen els bloquejos.",
+      "noEncontrado": "Aquest compte no existeix.",
+      "desconocido": "No s'han pogut carregar els bloquejos.",
+      "revokeNoEncontrado": "Aquest bloqueig ja no existeix.",
+      "revokeDesconocido": "No s'ha pogut revocar el bloqueig."
     }
   },
   "reports": {
@@ -1979,6 +2014,65 @@
           "plataforma.metricas"
         ],
         "audience": "Superadmin i suport; suport només consulta."
+      },
+      "usuarios": {
+        "title": "Comptes",
+        "summary": "Tots els comptes de Popyplan: cercar-los, filtrar-los i donar-ne d'alta un de nou.",
+        "details": "És gestió de comptes, no de persones d'una entitat: aquí sí que es veu el correu, però mai documents ni notes. El llistat va del més recent al més antic, de 20 en 20, i la cerca mira el correu, l'usuari, el nom i els cognoms. L'estat actiu/desactivat no ve a cada fila: per veure'l, filtra per «Estat». Un compte creat aquí neix actiu i verificat; l'accés a la plataforma no es dona en crear-lo, sinó amb un rol a Rols.",
+        "actions": [
+          "Cercar i filtrar comptes",
+          "Donar d'alta un compte",
+          "Obrir la fitxa d'un compte"
+        ],
+        "tips": [
+          "Si crees un compte sense contrasenya, envia després el restabliment des de la seva fitxa.",
+          "Obre la fitxa sempre des d'aquest llistat: així porta les dades del compte."
+        ],
+        "related": [
+          "plataforma.roles",
+          "plataforma.bloqueos"
+        ],
+        "audience": "Només superadmin."
+      },
+      "usuarioFicha": {
+        "title": "Fitxa del compte",
+        "summary": "Dades d'un compte, el seu perfil públic i les accions de gestió.",
+        "details": "La fitxa aplega el compte (correu, usuari, alta, verificació, rol de plataforma i entitats) i el seu perfil públic (nom, municipi, nivell de verificació). Un compte suspès no té perfil públic. Desactivar impedeix entrar sense perdre res i es pot desfer; esborrar elimina el compte de debò i no es pot desfer. Cap de les dues s'ofereix sobre el teu propi compte. El restabliment de contrasenya envia a la persona un codi per correu, en la seva llengua.",
+        "actions": [
+          "Desactivar o reactivar el compte",
+          "Enviar el restabliment de contrasenya",
+          "Esborrar el compte",
+          "Veure els seus bloquejos"
+        ],
+        "tips": [
+          "En cas de dubte, desactiva: esborrar no té marxa enrere.",
+          "El restabliment comparteix el límit d'intents de l'inici de sessió: cinc per minut."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.bloqueos",
+          "plataforma.roles"
+        ],
+        "audience": "Només superadmin."
+      },
+      "bloqueos": {
+        "title": "Bloquejos",
+        "summary": "Els bloquejos que ha fet o rebut un compte, i revocar-los.",
+        "details": "No hi ha un llistat de tots els bloquejos: es consulten els d'un compte, triat amb el cercador o des de la seva fitxa. Cada fila diu qui bloqueja a qui pel nom d'usuari i la data; un bloqueig preventiu per telèfon s'indica sense el número. Revocar desfà un bloqueig que és d'una altra persona, per això demana un motiu obligatori, que queda a Auditoria.",
+        "actions": [
+          "Triar un compte",
+          "Veure els seus bloquejos",
+          "Revocar un bloqueig amb motiu"
+        ],
+        "tips": [
+          "Revoca només amb un motiu clar: bloquejar és un dret de la persona.",
+          "El motiu es pot consultar després a Auditoria."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.auditoria"
+        ],
+        "audience": "Només superadmin."
       }
     }
   },
@@ -2425,6 +2519,94 @@
       "previewLoading": "Comptant municipis…",
       "previewError": "No s'han pogut comptar els municipis d'aquest codi.",
       "placesCountLabel": "Municipis al territori declarat"
+    },
+    "usuarios": {
+      "heading": "Comptes",
+      "noAccessDescription": "Només el superadmin gestiona els comptes.",
+      "searchLabel": "Cerca (correu, usuari o nom)",
+      "activeLabel": "Estat",
+      "filterAll": "Tots",
+      "activeTrue": "Actius",
+      "activeFalse": "Desactivats",
+      "verifiedLabel": "Verificació",
+      "verifiedTrue": "Verificats",
+      "verifiedFalse": "Sense verificar",
+      "newAccount": "Compte nou",
+      "loadError": "No s'han pogut carregar els comptes",
+      "emptyTitle": "No hi ha comptes amb aquests filtres",
+      "tableCaption": "Comptes de Popyplan",
+      "nameHeader": "Nom",
+      "emailHeader": "Correu",
+      "usernameHeader": "Usuari",
+      "createdHeader": "Alta",
+      "stateHeader": "Estat",
+      "activeBadge": "Actiu",
+      "inactiveBadge": "Desactivat",
+      "verifiedBadge": "Verificat",
+      "unverifiedBadge": "Sense verificar",
+      "roleHeader": "Rol de plataforma",
+      "stateHint": "Per veure si un compte està actiu o desactivat, filtra per «Estat»: el llistat no ho porta fila a fila.",
+      "previous": "Anterior",
+      "next": "Següent",
+      "count": "{count, plural, one {# compte} other {# comptes}}",
+      "firstNameLabel": "Nom",
+      "lastNameLabel": "Cognoms",
+      "passwordLabel": "Contrasenya (opcional)",
+      "passwordTooShort": "La contrasenya ha de tenir almenys 8 caràcters.",
+      "passwordHint": "Si la deixes buida se'n genera una d'aleatòria; després envia el restabliment de contrasenya des de la fitxa.",
+      "createAction": "Crea el compte"
+    },
+    "usuarioFicha": {
+      "heading": "Fitxa del compte",
+      "backToList": "Torna als comptes",
+      "accountTitle": "Compte",
+      "noEmailHint": "Obre la fitxa des del llistat de comptes per veure'n el correu, l'estat i les entitats.",
+      "accountLoadError": "No s'han pogut carregar les dades del compte",
+      "accountNotFound": "No hi ha cap compte amb aquest correu i aquest id",
+      "profileTitle": "Perfil públic",
+      "publicNameLabel": "Nom públic",
+      "placeLabel": "Municipi",
+      "verificationLabel": "Nivell de verificació",
+      "membershipsTitle": "Entitats",
+      "noMemberships": "No pertany a cap entitat.",
+      "actionsTitle": "Accions",
+      "deactivate": "Desactiva",
+      "reactivate": "Reactiva",
+      "sendPasswordReset": "Envia el restabliment de contrasenya",
+      "viewBlocks": "Mostra els seus bloquejos",
+      "delete": "Esborra el compte",
+      "selfHint": "És el teu propi compte: no el pots desactivar ni esborrar des d'aquí.",
+      "passwordResetSent": "S'ha enviat un codi de restabliment a {email}.",
+      "deactivateTitle": "Vols desactivar aquest compte?",
+      "reactivateTitle": "Vols reactivar aquest compte?",
+      "deactivateDescription": "La persona no podrà entrar a l'app ni al tauler fins que el reactivis. Les seves dades es conserven.",
+      "reactivateDescription": "La persona podrà tornar a entrar amb la seva contrasenya de sempre.",
+      "deleteTitle": "Vols esborrar aquest compte?",
+      "deleteDescription": "S'esborra el compte i tot el que en depèn. No es pot desfer. Si només vols impedir que entri, desactiva'l."
+    },
+    "bloqueos": {
+      "heading": "Bloquejos",
+      "intro": "Bloquejos entre persones d'un compte concret: els que ha fet i els que ha rebut.",
+      "noAccessDescription": "Només el superadmin revisa els bloquejos des del tauler.",
+      "pickTitle": "Compte",
+      "searchLabel": "Cerca un compte (correu o usuari)",
+      "searchResult": "{username} ({email})",
+      "selectedLabel": "Bloquejos de {name}.",
+      "selectedById": "Bloquejos del compte núm. {id}.",
+      "openAccount": "Obre la seva fitxa",
+      "pickHint": "Tria un compte per veure els seus bloquejos.",
+      "loadError": "No s'han pogut carregar els bloquejos",
+      "emptyTitle": "Aquest compte no té bloquejos",
+      "tableCaption": "Bloquejos del compte",
+      "blockerHeader": "Qui bloqueja",
+      "blockedHeader": "A qui",
+      "phoneBlock": "Un telèfon (bloqueig preventiu)",
+      "dateHeader": "Data",
+      "revoke": "Revoca",
+      "revokeTitle": "Vols revocar aquest bloqueig?",
+      "revokeDescription": "Les dues persones es tornaran a veure a l'app. El motiu queda a Auditoria.",
+      "reasonLabel": "Motiu",
+      "reasonRequired": "Escriu el motiu de la revocació."
     }
   },
   "paraguas": {

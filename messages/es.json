@@ -83,7 +83,9 @@
       "navLabel": "Secciones de plataforma",
       "inicio": "Inicio",
       "entidades": "Entidades",
+      "usuarios": "Usuarios",
       "reportes": "Reportes",
+      "bloqueos": "Bloqueos",
       "ayuda": "Ayuda",
       "verificaciones": "Verificaciones",
       "roles": "Roles",
@@ -243,6 +245,15 @@
       },
       "suscripciones": {
         "title": "Suscripciones"
+      },
+      "usuarios": {
+        "title": "Cuentas"
+      },
+      "usuarioFicha": {
+        "title": "Ficha de la cuenta"
+      },
+      "bloqueos": {
+        "title": "Bloqueos"
       }
     }
   },
@@ -1322,6 +1333,30 @@
       "desconocidoCrear": "No se pudo crear la actividad.",
       "desconocidoGuardar": "No se pudo guardar la actividad.",
       "desconocidoCancelar": "No se pudo cancelar la actividad."
+    },
+    "platformUsers": {
+      "sinAcceso": "Solo el personal de plataforma ve las cuentas.",
+      "paginaInexistente": "Esa página del listado ya no existe.",
+      "desconocido": "No se pudieron cargar las cuentas."
+    },
+    "platformProfile": {
+      "noEncontrado": "Sin perfil público: la cuenta no existe o está suspendida.",
+      "desconocido": "No se pudo cargar el perfil de esta cuenta."
+    },
+    "platformUserMutation": {
+      "invalido": "Revisa los datos.",
+      "sinPermiso": "Solo el personal de plataforma puede hacer esto.",
+      "noEncontrado": "Esta cuenta ya no existe.",
+      "demasiadosIntentos": "Demasiados intentos; espera un minuto y vuelve a probar.",
+      "desconocido": "No se pudo completar la acción."
+    },
+    "blocksAdmin": {
+      "invalido": "Escribe el motivo de la revocación.",
+      "sinAcceso": "Solo moderación y superadmin ven los bloqueos.",
+      "noEncontrado": "Esa cuenta no existe.",
+      "desconocido": "No se pudieron cargar los bloqueos.",
+      "revokeNoEncontrado": "Este bloqueo ya no existe.",
+      "revokeDesconocido": "No se pudo revocar el bloqueo."
     }
   },
   "reports": {
@@ -1979,6 +2014,65 @@
           "plataforma.metricas"
         ],
         "audience": "Superadmin y soporte; soporte solo consulta."
+      },
+      "usuarios": {
+        "title": "Cuentas",
+        "summary": "Todas las cuentas de Popyplan: buscarlas, filtrarlas y dar de alta una nueva.",
+        "details": "Es gestión de cuentas, no de personas de una entidad: aquí sí se ve el correo, pero nunca documentos ni notas. El listado va de la más reciente a la más antigua, de 20 en 20, y la búsqueda mira correo, usuario, nombre y apellidos. El estado activa/desactivada no viaja en cada fila: para verlo, filtra por «Estado». Una cuenta creada aquí nace activa y verificada; el acceso a la plataforma no se da al crearla, sino con un rol en Roles.",
+        "actions": [
+          "Buscar y filtrar cuentas",
+          "Dar de alta una cuenta",
+          "Abrir la ficha de una cuenta"
+        ],
+        "tips": [
+          "Si creas una cuenta sin contraseña, envía después el restablecimiento desde su ficha.",
+          "Abre la ficha siempre desde este listado: así lleva los datos de la cuenta."
+        ],
+        "related": [
+          "plataforma.roles",
+          "plataforma.bloqueos"
+        ],
+        "audience": "Solo superadmin."
+      },
+      "usuarioFicha": {
+        "title": "Ficha de la cuenta",
+        "summary": "Datos de una cuenta, su perfil público y las acciones de gestión.",
+        "details": "La ficha junta la cuenta (correo, usuario, alta, verificación, rol de plataforma y entidades) y su perfil público (nombre, municipio, nivel de verificación). Una cuenta suspendida no tiene perfil público. Desactivar impide entrar sin perder nada y se puede deshacer; borrar elimina la cuenta de verdad y no se puede deshacer. Ninguna de las dos se ofrece sobre tu propia cuenta. El restablecimiento de contraseña manda a la persona un código por correo, en su idioma.",
+        "actions": [
+          "Desactivar o reactivar la cuenta",
+          "Enviar el restablecimiento de contraseña",
+          "Borrar la cuenta",
+          "Ver sus bloqueos"
+        ],
+        "tips": [
+          "Ante la duda, desactiva: borrar no tiene vuelta atrás.",
+          "El restablecimiento comparte el límite de intentos del login: cinco por minuto."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.bloqueos",
+          "plataforma.roles"
+        ],
+        "audience": "Solo superadmin."
+      },
+      "bloqueos": {
+        "title": "Bloqueos",
+        "summary": "Los bloqueos que ha hecho o recibido una cuenta, y revocarlos.",
+        "details": "No hay un listado de todos los bloqueos: se consultan los de una cuenta, elegida con el buscador o desde su ficha. Cada fila dice quién bloquea a quién por nombre de usuario y la fecha; un bloqueo preventivo por teléfono se indica sin el número. Revocar deshace un bloqueo que es de otra persona, así que pide un motivo obligatorio, que queda en Auditoría.",
+        "actions": [
+          "Elegir una cuenta",
+          "Ver sus bloqueos",
+          "Revocar un bloqueo con motivo"
+        ],
+        "tips": [
+          "Revoca solo con un motivo claro: bloquear es un derecho de la persona.",
+          "El motivo se puede consultar después en Auditoría."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.auditoria"
+        ],
+        "audience": "Solo superadmin."
       }
     }
   },
@@ -2425,6 +2519,94 @@
       "previewLoading": "Contando municipios…",
       "previewError": "No se pudo contar los municipios de ese código.",
       "placesCountLabel": "Municipios en el territorio declarado"
+    },
+    "usuarios": {
+      "heading": "Cuentas",
+      "noAccessDescription": "Solo superadmin gestiona las cuentas.",
+      "searchLabel": "Buscar (correo, usuario o nombre)",
+      "activeLabel": "Estado",
+      "filterAll": "Todas",
+      "activeTrue": "Activas",
+      "activeFalse": "Desactivadas",
+      "verifiedLabel": "Verificación",
+      "verifiedTrue": "Verificadas",
+      "verifiedFalse": "Sin verificar",
+      "newAccount": "Nueva cuenta",
+      "loadError": "No se pudieron cargar las cuentas",
+      "emptyTitle": "No hay cuentas con estos filtros",
+      "tableCaption": "Cuentas de Popyplan",
+      "nameHeader": "Nombre",
+      "emailHeader": "Correo",
+      "usernameHeader": "Usuario",
+      "createdHeader": "Alta",
+      "stateHeader": "Estado",
+      "activeBadge": "Activa",
+      "inactiveBadge": "Desactivada",
+      "verifiedBadge": "Verificada",
+      "unverifiedBadge": "Sin verificar",
+      "roleHeader": "Rol de plataforma",
+      "stateHint": "Para ver si una cuenta está activa o desactivada, filtra por «Estado»: el listado no lo trae fila a fila.",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "count": "{count, plural, one {# cuenta} other {# cuentas}}",
+      "firstNameLabel": "Nombre",
+      "lastNameLabel": "Apellidos",
+      "passwordLabel": "Contraseña (opcional)",
+      "passwordTooShort": "La contraseña tiene que tener al menos 8 caracteres.",
+      "passwordHint": "Si la dejas vacía se genera una aleatoria; después envía el restablecimiento de contraseña desde la ficha.",
+      "createAction": "Crear cuenta"
+    },
+    "usuarioFicha": {
+      "heading": "Ficha de la cuenta",
+      "backToList": "Volver a las cuentas",
+      "accountTitle": "Cuenta",
+      "noEmailHint": "Abre la ficha desde el listado de cuentas para ver el correo, el estado y las entidades de la cuenta.",
+      "accountLoadError": "No se pudieron cargar los datos de la cuenta",
+      "accountNotFound": "No hay ninguna cuenta con este correo y este id",
+      "profileTitle": "Perfil público",
+      "publicNameLabel": "Nombre público",
+      "placeLabel": "Municipio",
+      "verificationLabel": "Nivel de verificación",
+      "membershipsTitle": "Entidades",
+      "noMemberships": "No pertenece a ninguna entidad.",
+      "actionsTitle": "Acciones",
+      "deactivate": "Desactivar",
+      "reactivate": "Reactivar",
+      "sendPasswordReset": "Enviar restablecimiento de contraseña",
+      "viewBlocks": "Ver sus bloqueos",
+      "delete": "Borrar cuenta",
+      "selfHint": "Es tu propia cuenta: no puedes desactivarla ni borrarla desde aquí.",
+      "passwordResetSent": "Se ha enviado un código de restablecimiento a {email}.",
+      "deactivateTitle": "¿Desactivar esta cuenta?",
+      "reactivateTitle": "¿Reactivar esta cuenta?",
+      "deactivateDescription": "La persona no podrá entrar en la app ni en el panel hasta que la reactives. Sus datos se conservan.",
+      "reactivateDescription": "La persona podrá volver a entrar con su contraseña de siempre.",
+      "deleteTitle": "¿Borrar esta cuenta?",
+      "deleteDescription": "Se borra la cuenta y todo lo que depende de ella. No se puede deshacer. Si solo quieres impedir que entre, desactívala."
+    },
+    "bloqueos": {
+      "heading": "Bloqueos",
+      "intro": "Bloqueos entre personas de una cuenta concreta: los que ha hecho y los que ha recibido.",
+      "noAccessDescription": "Solo superadmin revisa los bloqueos desde el panel.",
+      "pickTitle": "Cuenta",
+      "searchLabel": "Buscar cuenta (correo o usuario)",
+      "searchResult": "{username} ({email})",
+      "selectedLabel": "Bloqueos de {name}.",
+      "selectedById": "Bloqueos de la cuenta n.º {id}.",
+      "openAccount": "Abrir su ficha",
+      "pickHint": "Elige una cuenta para ver sus bloqueos.",
+      "loadError": "No se pudieron cargar los bloqueos",
+      "emptyTitle": "Esta cuenta no tiene bloqueos",
+      "tableCaption": "Bloqueos de la cuenta",
+      "blockerHeader": "Quién bloquea",
+      "blockedHeader": "A quién",
+      "phoneBlock": "Un teléfono (bloqueo preventivo)",
+      "dateHeader": "Fecha",
+      "revoke": "Revocar",
+      "revokeTitle": "¿Revocar este bloqueo?",
+      "revokeDescription": "Las dos personas volverán a verse en la app. El motivo queda en Auditoría.",
+      "reasonLabel": "Motivo",
+      "reasonRequired": "Escribe el motivo de la revocación."
     }
   },
   "paraguas": {

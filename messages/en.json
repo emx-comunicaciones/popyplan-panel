@@ -83,7 +83,9 @@
       "navLabel": "Platform sections",
       "inicio": "Home",
       "entidades": "Entities",
+      "usuarios": "Users",
       "reportes": "Reports",
+      "bloqueos": "Blocks",
       "ayuda": "Help",
       "verificaciones": "Verifications",
       "roles": "Roles",
@@ -243,6 +245,15 @@
       },
       "suscripciones": {
         "title": "Subscriptions"
+      },
+      "usuarios": {
+        "title": "Accounts"
+      },
+      "usuarioFicha": {
+        "title": "Account details"
+      },
+      "bloqueos": {
+        "title": "Blocks"
       }
     }
   },
@@ -1322,6 +1333,30 @@
       "desconocidoCrear": "Couldn't create the activity.",
       "desconocidoGuardar": "Couldn't save the activity.",
       "desconocidoCancelar": "Couldn't cancel the activity."
+    },
+    "platformUsers": {
+      "sinAcceso": "Only platform staff can see accounts.",
+      "paginaInexistente": "That page of the list no longer exists.",
+      "desconocido": "The accounts could not be loaded."
+    },
+    "platformProfile": {
+      "noEncontrado": "No public profile: the account does not exist or is suspended.",
+      "desconocido": "This account’s profile could not be loaded."
+    },
+    "platformUserMutation": {
+      "invalido": "Check the data.",
+      "sinPermiso": "Only platform staff can do this.",
+      "noEncontrado": "This account no longer exists.",
+      "demasiadosIntentos": "Too many attempts; wait a minute and try again.",
+      "desconocido": "The action could not be completed."
+    },
+    "blocksAdmin": {
+      "invalido": "Write the reason for revoking it.",
+      "sinAcceso": "Only moderation and superadmin can see blocks.",
+      "noEncontrado": "That account does not exist.",
+      "desconocido": "The blocks could not be loaded.",
+      "revokeNoEncontrado": "This block no longer exists.",
+      "revokeDesconocido": "The block could not be revoked."
     }
   },
   "reports": {
@@ -1979,6 +2014,65 @@
           "plataforma.metricas"
         ],
         "audience": "Superadmin and support; support can only view."
+      },
+      "usuarios": {
+        "title": "Accounts",
+        "summary": "Every Popyplan account: search them, filter them and create a new one.",
+        "details": "This is account management, not managing an entity’s people: the email is visible here, but never documents or notes. The list goes from newest to oldest, 20 at a time, and the search looks at email, username, first and last name. The active/deactivated status does not come with each row: to see it, filter by “Status”. An account created here starts active and verified; platform access is not granted on creation but with a role in Roles.",
+        "actions": [
+          "Search and filter accounts",
+          "Create an account",
+          "Open an account page"
+        ],
+        "tips": [
+          "If you create an account without a password, send the password reset from its page afterwards.",
+          "Always open the account page from this list: that way it carries the account data."
+        ],
+        "related": [
+          "plataforma.roles",
+          "plataforma.bloqueos"
+        ],
+        "audience": "Superadmin only."
+      },
+      "usuarioFicha": {
+        "title": "Account details",
+        "summary": "An account’s data, its public profile and the management actions.",
+        "details": "The page brings together the account (email, username, join date, verification, platform role and entities) and its public profile (name, municipality, verification level). A suspended account has no public profile. Deactivating stops sign-in without losing anything and can be undone; deleting really removes the account and cannot be undone. Neither is offered on your own account. The password reset sends the person a code by email, in their language.",
+        "actions": [
+          "Deactivate or reactivate the account",
+          "Send the password reset",
+          "Delete the account",
+          "See their blocks"
+        ],
+        "tips": [
+          "When in doubt, deactivate: deleting cannot be undone.",
+          "The password reset shares the sign-in attempt limit: five per minute."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.bloqueos",
+          "plataforma.roles"
+        ],
+        "audience": "Superadmin only."
+      },
+      "bloqueos": {
+        "title": "Blocks",
+        "summary": "The blocks an account has made or received, and revoking them.",
+        "details": "There is no list of every block: you look up those of one account, chosen with the search or from its page. Each row says who blocks whom by username and the date; a preventive block by phone number is shown without the number. Revoking undoes a block that belongs to someone else, so it asks for a mandatory reason, which is recorded in Audit.",
+        "actions": [
+          "Choose an account",
+          "See its blocks",
+          "Revoke a block with a reason"
+        ],
+        "tips": [
+          "Only revoke with a clear reason: blocking is the person’s right.",
+          "The reason can be checked later in Audit."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.auditoria"
+        ],
+        "audience": "Superadmin only."
       }
     }
   },
@@ -2425,6 +2519,94 @@
       "previewLoading": "Counting municipalities…",
       "previewError": "The municipalities for that code could not be counted.",
       "placesCountLabel": "Municipalities in the declared territory"
+    },
+    "usuarios": {
+      "heading": "Accounts",
+      "noAccessDescription": "Only superadmin manages accounts.",
+      "searchLabel": "Search (email, username or name)",
+      "activeLabel": "Status",
+      "filterAll": "All",
+      "activeTrue": "Active",
+      "activeFalse": "Deactivated",
+      "verifiedLabel": "Verification",
+      "verifiedTrue": "Verified",
+      "verifiedFalse": "Unverified",
+      "newAccount": "New account",
+      "loadError": "The accounts could not be loaded",
+      "emptyTitle": "No accounts match these filters",
+      "tableCaption": "Popyplan accounts",
+      "nameHeader": "Name",
+      "emailHeader": "Email",
+      "usernameHeader": "Username",
+      "createdHeader": "Joined",
+      "stateHeader": "Status",
+      "activeBadge": "Active",
+      "inactiveBadge": "Deactivated",
+      "verifiedBadge": "Verified",
+      "unverifiedBadge": "Unverified",
+      "roleHeader": "Platform role",
+      "stateHint": "To see whether an account is active or deactivated, filter by “Status”: the list does not carry it row by row.",
+      "previous": "Previous",
+      "next": "Next",
+      "count": "{count, plural, one {# account} other {# accounts}}",
+      "firstNameLabel": "First name",
+      "lastNameLabel": "Last name",
+      "passwordLabel": "Password (optional)",
+      "passwordTooShort": "The password must be at least 8 characters long.",
+      "passwordHint": "If you leave it empty a random one is generated; then send the password reset from the account page.",
+      "createAction": "Create account"
+    },
+    "usuarioFicha": {
+      "heading": "Account details",
+      "backToList": "Back to accounts",
+      "accountTitle": "Account",
+      "noEmailHint": "Open this page from the accounts list to see the account’s email, status and entities.",
+      "accountLoadError": "The account data could not be loaded",
+      "accountNotFound": "There is no account with this email and this id",
+      "profileTitle": "Public profile",
+      "publicNameLabel": "Public name",
+      "placeLabel": "Municipality",
+      "verificationLabel": "Verification level",
+      "membershipsTitle": "Entities",
+      "noMemberships": "Does not belong to any entity.",
+      "actionsTitle": "Actions",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "sendPasswordReset": "Send password reset",
+      "viewBlocks": "See their blocks",
+      "delete": "Delete account",
+      "selfHint": "This is your own account: you cannot deactivate or delete it from here.",
+      "passwordResetSent": "A reset code has been sent to {email}.",
+      "deactivateTitle": "Deactivate this account?",
+      "reactivateTitle": "Reactivate this account?",
+      "deactivateDescription": "The person will not be able to sign in to the app or the panel until you reactivate it. Their data is kept.",
+      "reactivateDescription": "The person will be able to sign in again with their usual password.",
+      "deleteTitle": "Delete this account?",
+      "deleteDescription": "The account and everything that depends on it are deleted. This cannot be undone. If you only want to stop them signing in, deactivate it."
+    },
+    "bloqueos": {
+      "heading": "Blocks",
+      "intro": "Blocks between people for one account: the ones it made and the ones it received.",
+      "noAccessDescription": "Only superadmin reviews blocks from the panel.",
+      "pickTitle": "Account",
+      "searchLabel": "Search account (email or username)",
+      "searchResult": "{username} ({email})",
+      "selectedLabel": "Blocks of {name}.",
+      "selectedById": "Blocks of account no. {id}.",
+      "openAccount": "Open their account page",
+      "pickHint": "Choose an account to see its blocks.",
+      "loadError": "The blocks could not be loaded",
+      "emptyTitle": "This account has no blocks",
+      "tableCaption": "Blocks of the account",
+      "blockerHeader": "Who blocks",
+      "blockedHeader": "Whom",
+      "phoneBlock": "A phone number (preventive block)",
+      "dateHeader": "Date",
+      "revoke": "Revoke",
+      "revokeTitle": "Revoke this block?",
+      "revokeDescription": "Both people will see each other again in the app. The reason is recorded in Audit.",
+      "reasonLabel": "Reason",
+      "reasonRequired": "Write the reason for revoking it."
     }
   },
   "paraguas": {

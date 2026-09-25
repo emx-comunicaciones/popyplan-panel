@@ -83,7 +83,9 @@
       "navLabel": "Plataformaren atalak",
       "inicio": "Hasiera",
       "entidades": "Erakundeak",
+      "usuarios": "Erabiltzaileak",
       "reportes": "Salaketak",
+      "bloqueos": "Blokeoak",
       "ayuda": "Laguntza",
       "verificaciones": "Egiaztapenak",
       "roles": "Rolak",
@@ -243,6 +245,15 @@
       },
       "suscripciones": {
         "title": "Harpidetzak"
+      },
+      "usuarios": {
+        "title": "Kontuak"
+      },
+      "usuarioFicha": {
+        "title": "Kontuaren fitxa"
+      },
+      "bloqueos": {
+        "title": "Blokeoak"
       }
     }
   },
@@ -1322,6 +1333,30 @@
       "desconocidoCrear": "Ezin izan da jarduera sortu.",
       "desconocidoGuardar": "Ezin izan da jarduera gorde.",
       "desconocidoCancelar": "Ezin izan da jarduera utzi."
+    },
+    "platformUsers": {
+      "sinAcceso": "Plataformako langileek bakarrik ikusten dituzte kontuak.",
+      "paginaInexistente": "Zerrendaren orri hori jada ez dago.",
+      "desconocido": "Ezin izan dira kontuak kargatu."
+    },
+    "platformProfile": {
+      "noEncontrado": "Ez dago profil publikorik: kontua ez dago edo etenda dago.",
+      "desconocido": "Ezin izan da kontu honen profila kargatu."
+    },
+    "platformUserMutation": {
+      "invalido": "Berrikusi datuak.",
+      "sinPermiso": "Plataformako langileek bakarrik egin dezakete hau.",
+      "noEncontrado": "Kontu hau jada ez dago.",
+      "demasiadosIntentos": "Saiakera gehiegi; itxaron minutu bat eta saiatu berriro.",
+      "desconocido": "Ezin izan da ekintza osatu."
+    },
+    "blocksAdmin": {
+      "invalido": "Idatzi baliogabetzearen arrazoia.",
+      "sinAcceso": "Moderazioak eta superadminak bakarrik ikusten dituzte blokeoak.",
+      "noEncontrado": "Kontu hori ez dago.",
+      "desconocido": "Ezin izan dira blokeoak kargatu.",
+      "revokeNoEncontrado": "Blokeo hau jada ez dago.",
+      "revokeDesconocido": "Ezin izan da blokeoa baliogabetu."
     }
   },
   "reports": {
@@ -1979,6 +2014,65 @@
           "plataforma.metricas"
         ],
         "audience": "Superadmin eta laguntza; laguntzak kontsulta bakarrik egin dezake."
+      },
+      "usuarios": {
+        "title": "Kontuak",
+        "summary": "Popyplaneko kontu guztiak: bilatu, iragazi eta berri bat sortu.",
+        "details": "Kontuen kudeaketa da, ez erakunde bateko pertsonena: hemen posta ikusten da, baina inoiz ez dokumenturik edo oharrik. Zerrenda berrienetik zaharrenera doa, 20naka, eta bilaketak posta, erabiltzailea, izena eta abizenak begiratzen ditu. Aktibo/desaktibatuta egoera ez dator errenkada bakoitzean: ikusteko, iragazi «Egoera»ren arabera. Hemen sortutako kontua aktibo eta egiaztatuta sortzen da; plataformarako sarbidea ez da sortzean ematen, Roletako rol batekin baizik.",
+        "actions": [
+          "Kontuak bilatu eta iragazi",
+          "Kontu bat sortu",
+          "Kontu baten fitxa ireki"
+        ],
+        "tips": [
+          "Pasahitzik gabe kontu bat sortzen baduzu, bidali gero berrezartzeko mezua bere fitxatik.",
+          "Ireki fitxa beti zerrenda honetatik: horrela kontuaren datuak ekartzen ditu."
+        ],
+        "related": [
+          "plataforma.roles",
+          "plataforma.bloqueos"
+        ],
+        "audience": "Superadminak bakarrik."
+      },
+      "usuarioFicha": {
+        "title": "Kontuaren fitxa",
+        "summary": "Kontu baten datuak, bere profil publikoa eta kudeaketa-ekintzak.",
+        "details": "Fitxak kontua (posta, erabiltzailea, alta, egiaztapena, plataformako rola eta erakundeak) eta bere profil publikoa (izena, udalerria, egiaztapen-maila) biltzen ditu. Etenda dagoen kontu batek ez du profil publikorik. Desaktibatzeak sartzea eragozten du ezer galdu gabe, eta desegin daiteke; ezabatzeak kontua benetan kentzen du eta ezin da desegin. Bietako bat ere ez da eskaintzen zure kontuan. Pasahitza berrezartzeak kode bat bidaltzen dio pertsonari posta bidez, bere hizkuntzan.",
+        "actions": [
+          "Kontua desaktibatu edo berriro aktibatu",
+          "Pasahitza berrezartzeko mezua bidali",
+          "Kontua ezabatu",
+          "Bere blokeoak ikusi"
+        ],
+        "tips": [
+          "Zalantzarik baduzu, desaktibatu: ezabatzeak ez du atzera bueltarik.",
+          "Berrezartzeak saioa hasteko saiakeren muga partekatzen du: bost minutuko."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.bloqueos",
+          "plataforma.roles"
+        ],
+        "audience": "Superadminak bakarrik."
+      },
+      "bloqueos": {
+        "title": "Blokeoak",
+        "summary": "Kontu batek egin edo jaso dituen blokeoak, eta haiek baliogabetzea.",
+        "details": "Ez dago blokeo guztien zerrendarik: kontu batenak kontsultatzen dira, bilatzailearekin edo bere fitxatik aukeratuta. Errenkada bakoitzak nork nori blokeatzen dion esaten du erabiltzaile-izenaz, eta data; telefono bidezko prebentziozko blokeoa zenbakirik gabe adierazten da. Baliogabetzeak beste pertsona batena den blokeo bat desegiten du; horregatik nahitaezko arrazoi bat eskatzen du, Auditorian geratzen dena.",
+        "actions": [
+          "Kontu bat aukeratu",
+          "Bere blokeoak ikusi",
+          "Blokeo bat arrazoiarekin baliogabetu"
+        ],
+        "tips": [
+          "Baliogabetu arrazoi argi batekin bakarrik: blokeatzea pertsonaren eskubidea da.",
+          "Arrazoia gero Auditorian kontsulta daiteke."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.auditoria"
+        ],
+        "audience": "Superadminak bakarrik."
       }
     }
   },
@@ -2425,6 +2519,94 @@
       "previewLoading": "Udalerriak zenbatzen…",
       "previewError": "Ezin izan dira kode horretako udalerriak zenbatu.",
       "placesCountLabel": "Adierazitako lurraldeko udalerriak"
+    },
+    "usuarios": {
+      "heading": "Kontuak",
+      "noAccessDescription": "Superadminak bakarrik kudeatzen ditu kontuak.",
+      "searchLabel": "Bilatu (posta, erabiltzailea edo izena)",
+      "activeLabel": "Egoera",
+      "filterAll": "Denak",
+      "activeTrue": "Aktiboak",
+      "activeFalse": "Desaktibatuak",
+      "verifiedLabel": "Egiaztapena",
+      "verifiedTrue": "Egiaztatuak",
+      "verifiedFalse": "Egiaztatu gabeak",
+      "newAccount": "Kontu berria",
+      "loadError": "Ezin izan dira kontuak kargatu",
+      "emptyTitle": "Ez dago iragazki hauekin bat datorren konturik",
+      "tableCaption": "Popyplaneko kontuak",
+      "nameHeader": "Izena",
+      "emailHeader": "Posta elektronikoa",
+      "usernameHeader": "Erabiltzailea",
+      "createdHeader": "Alta",
+      "stateHeader": "Egoera",
+      "activeBadge": "Aktiboa",
+      "inactiveBadge": "Desaktibatua",
+      "verifiedBadge": "Egiaztatua",
+      "unverifiedBadge": "Egiaztatu gabea",
+      "roleHeader": "Plataformako rola",
+      "stateHint": "Kontu bat aktibo edo desaktibatuta dagoen jakiteko, iragazi «Egoera»ren arabera: zerrendak ez du errenkadaz errenkada ematen.",
+      "previous": "Aurrekoa",
+      "next": "Hurrengoa",
+      "count": "{count, plural, one {# kontu} other {# kontu}}",
+      "firstNameLabel": "Izena",
+      "lastNameLabel": "Abizenak",
+      "passwordLabel": "Pasahitza (aukerakoa)",
+      "passwordTooShort": "Pasahitzak gutxienez 8 karaktere izan behar ditu.",
+      "passwordHint": "Hutsik uzten baduzu, ausazko bat sortzen da; gero bidali pasahitza berrezartzeko mezua fitxatik.",
+      "createAction": "Sortu kontua"
+    },
+    "usuarioFicha": {
+      "heading": "Kontuaren fitxa",
+      "backToList": "Itzuli kontuetara",
+      "accountTitle": "Kontua",
+      "noEmailHint": "Ireki fitxa kontuen zerrendatik kontuaren posta, egoera eta erakundeak ikusteko.",
+      "accountLoadError": "Ezin izan dira kontuaren datuak kargatu",
+      "accountNotFound": "Ez dago posta eta id hau dituen konturik",
+      "profileTitle": "Profil publikoa",
+      "publicNameLabel": "Izen publikoa",
+      "placeLabel": "Udalerria",
+      "verificationLabel": "Egiaztapen-maila",
+      "membershipsTitle": "Erakundeak",
+      "noMemberships": "Ez da inongo erakundetakoa.",
+      "actionsTitle": "Ekintzak",
+      "deactivate": "Desaktibatu",
+      "reactivate": "Berriro aktibatu",
+      "sendPasswordReset": "Bidali pasahitza berrezartzeko mezua",
+      "viewBlocks": "Ikusi bere blokeoak",
+      "delete": "Ezabatu kontua",
+      "selfHint": "Zure kontua da: hemendik ezin duzu desaktibatu edo ezabatu.",
+      "passwordResetSent": "Berrezartzeko kode bat bidali da helbide honetara: {email}.",
+      "deactivateTitle": "Kontu hau desaktibatu?",
+      "reactivateTitle": "Kontu hau berriro aktibatu?",
+      "deactivateDescription": "Pertsonak ezingo du aplikaziora edo panelera sartu berriro aktibatu arte. Bere datuak gordetzen dira.",
+      "reactivateDescription": "Pertsonak ohiko pasahitzarekin sartu ahal izango du berriro.",
+      "deleteTitle": "Kontu hau ezabatu?",
+      "deleteDescription": "Kontua eta haren mendeko guztia ezabatzen dira. Ezin da desegin. Sartzea eragotzi besterik ez baduzu nahi, desaktibatu."
+    },
+    "bloqueos": {
+      "heading": "Blokeoak",
+      "intro": "Kontu jakin baten pertsonen arteko blokeoak: egin dituenak eta jaso dituenak.",
+      "noAccessDescription": "Superadminak bakarrik berrikusten ditu blokeoak paneletik.",
+      "pickTitle": "Kontua",
+      "searchLabel": "Bilatu kontua (posta edo erabiltzailea)",
+      "searchResult": "{username} ({email})",
+      "selectedLabel": "{name} kontuaren blokeoak.",
+      "selectedById": "{id}. zenbakiko kontuaren blokeoak.",
+      "openAccount": "Ireki bere fitxa",
+      "pickHint": "Aukeratu kontu bat bere blokeoak ikusteko.",
+      "loadError": "Ezin izan dira blokeoak kargatu",
+      "emptyTitle": "Kontu honek ez du blokeorik",
+      "tableCaption": "Kontuaren blokeoak",
+      "blockerHeader": "Nork blokeatzen du",
+      "blockedHeader": "Nori",
+      "phoneBlock": "Telefono bat (prebentziozko blokeoa)",
+      "dateHeader": "Data",
+      "revoke": "Baliogabetu",
+      "revokeTitle": "Blokeo hau baliogabetu?",
+      "revokeDescription": "Bi pertsonek elkar ikusiko dute berriro aplikazioan. Arrazoia Auditorian geratzen da.",
+      "reasonLabel": "Arrazoia",
+      "reasonRequired": "Idatzi baliogabetzearen arrazoia."
     }
   },
   "paraguas": {

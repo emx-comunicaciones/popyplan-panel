@@ -25,6 +25,25 @@ export const AUTH = {
    * refresh token al cerrar sesión (`docs/PANEL.md` §0).
    */
   LOGOUT: "/api/auth/logout/",
+  /**
+   * `POST /api/auth/admin-register/` (`users/auth_viewsets.py
+   * ::AuthViewSet.admin_register`, `IsAdminUser`): alta de una cuenta
+   * desde el admin de plataforma (`AdminUserCreateSerializer`: `email`,
+   * `username`, `first_name?`, `last_name?`, `phone?`, `password?`). Nace
+   * activa y verificada; sin `password` el backend genera uno aleatorio.
+   * Responde 201 con `MeSerializer`, no con el `RegistrationResponse` que
+   * declara el esquema (ver `lib/api/types.ts::PlatformAccount`).
+   */
+  ADMIN_REGISTER: "/api/auth/admin-register/",
+  /**
+   * `POST /api/auth/password/reset/ {email}` (`AuthViewSet.password_reset`,
+   * público): manda a esa cuenta un código de 6 dígitos por correo, en su
+   * idioma. El admin de plataforma lo usa en la ficha de una cuenta
+   * («Enviar restablecimiento de contraseña»): no hay una acción propia
+   * de staff para esto. 400 si el correo no existe. Comparte el límite
+   * de peticiones del login (clave `ip:<ip>:auth`, 5/min).
+   */
+  PASSWORD_RESET: "/api/auth/password/reset/",
 } as const;
 
 export const USERS = {
@@ -37,7 +56,10 @@ export const USERS = {
    * `roles/page.tsx` para buscar a quién conceder un rol de plataforma;
    * un 403 (rol de plataforma sin `is_staff`, aunque hoy solo `superadmin`
    * llega a esta página) se traduce a «sin buscador», cayendo al id a
-   * mano.
+   * mano. El listado de cuentas del admin de plataforma
+   * (`/plataforma/usuarios`, `hooks/usePlatformUsers.ts`) usa la misma
+   * ruta con `?is_active=`/`?is_verified=`/`?ordering=-created_at`/`?page=`
+   * (`PAGE_SIZE` fijo de 20: `?page_size=` no hace nada).
    */
   SEARCH: () => "/api/users/users/",
   /**
@@ -52,6 +74,19 @@ export const USERS = {
    * interfaz sin depender de esta llamada.
    */
   UPDATE_PROFILE: "/api/users/users/update_profile/",
+  /**
+   * `GET`/`PATCH`/`DELETE /api/users/{id}/` (`users/unified_viewset.py
+   * ::UserViewSet.retrieve/partial_update/destroy`). **Tres contratos
+   * distintos en la misma ruta** (admin de plataforma, bloque 1):
+   * - `GET` es el **perfil público** (`PublicProfileSerializer`: alias,
+   *   foto, municipio, nivel de verificación), no la cuenta — y responde
+   *   404 para una cuenta suspendida (`is_blocked`) o borrada.
+   * - `PATCH` con `is_staff` usa `AdminUserUpdateSerializer` (`is_active`
+   *   incluido) y responde `MeSerializer`, que **no** lleva `is_active`.
+   * - `DELETE` (solo `is_staff`) es un borrado **real** (`user.delete()`),
+   *   no el `soft_delete` de la baja propia; 400 si es la propia cuenta.
+   */
+  DETAIL: (id: number | string) => `/api/users/${id}/`,
 } as const;
 
 export const SAFETY = {
@@ -100,6 +135,22 @@ export const SAFETY = {
    * tarea). Solo `superadmin`.
    */
   AUDIT: () => "/api/safety/audit/",
+  /**
+   * `GET /api/safety/blocks/admin/?user=<id>` (`safety/viewsets.py
+   * ::BlockViewSet.admin_list`, `HasPlatformRole('moderator',
+   * 'superadmin')`): bloqueos hechos **por** esa cuenta o **contra** ella.
+   * `?user=` es obligatorio (400 sin él, 404 si la cuenta no existe) — no
+   * hay un listado global de bloqueos — y la respuesta es un **array
+   * plano**, no la `PaginatedBlockAdminList` que declara el esquema.
+   */
+  BLOCKS_ADMIN: () => "/api/safety/blocks/admin/",
+  /**
+   * `DELETE /api/safety/blocks/{id}/admin/ {reason}` (`BlockViewSet
+   * .admin_destroy`, mismo permiso): deshace un bloqueo ajeno; el motivo
+   * (`BlockRevokeSerializer`, ≤300 caracteres, obligatorio) queda en el
+   * `AuditLog` (`block.revoked_by_staff`). 204; 404 si ya no existe.
+   */
+  BLOCK_ADMIN_REVOKE: (id: string) => `/api/safety/blocks/${id}/admin/`,
 } as const;
 
 export const ORGANIZATIONS = {

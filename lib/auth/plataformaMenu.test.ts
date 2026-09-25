@@ -13,7 +13,9 @@ describe("plataformaMenuFor", () => {
     expect(plataformaMenuFor("superadmin")).toEqual([
       "inicio",
       "entidades",
+      "usuarios",
       "reportes",
+      "bloqueos",
       "ayuda",
       "verificaciones",
       "roles",
