@@ -608,7 +608,8 @@
         "endsAtBeforeStartsAt": "The activity cannot end before it starts.",
         "capacityTooLow": "The minimum capacity is one spot.",
         "communityRequired": "An activity only for the community needs a community."
-      }
+      },
+      "levelLabel": "Level"
     },
     "asistencia": {
       "heading": "Attendance",
@@ -1447,6 +1448,14 @@
       "sinAcceso": "Only superadmin can manage the treasure hunt.",
       "noEncontrado": "This game (or what you were looking for in it) no longer exists.",
       "desconocido": "The operation could not be completed. Try again."
+    },
+    "trainingCatalog": {
+      "invalido": "Check the data.",
+      "sinAcceso": "Only superadmin manages the training catalogue.",
+      "noEncontrado": "That item no longer exists.",
+      "enUso": "It is in use and cannot be deleted; deactivate it instead.",
+      "demasiadasPaginas": "There are too many items to load them all.",
+      "desconocido": "The action could not be completed."
     }
   },
   "reports": {
@@ -1566,7 +1575,7 @@
       "actividades": {
         "title": "Activities",
         "summary": "The period's activities with their sign-ups, attendees and organiser. Includes upcoming activities when the period reaches the future.",
-        "details": "The list covers the period you choose, including upcoming activities. The organiser column is only filled if your role can see the nominal list; otherwise it shows '—' rather than a guessed name. Opening the attendance sheet is only offered when the Attendance section is in your menu — a referent sees the activities but no attendance link. Counters per row are sign-ups, attended and not attended for the period.",
+        "details": "The list covers the period you choose, including upcoming activities. The organiser column is only filled if your role can see the nominal list; otherwise it shows '—' rather than a guessed name. Opening the attendance sheet is only offered when the Attendance section is in your menu — a referent sees the activities but no attendance link. Counters per row are sign-ups, attended and not attended for the period. When creating or editing an activity you can set an optional level (beginner, intermediate or advanced); without it, the activity is for all levels.",
         "actions": [
           "Change the period (includes upcoming activities)",
           "Filter by status",
@@ -2295,8 +2304,8 @@
       },
       "nomencladores": {
         "title": "Catalogues",
-        "summary": "The app catalogues: languages, hobbies and community and activity categories.",
-        "details": "Choose a catalogue and edit its items. Inactive ones, which the app no longer offers, are shown too. Deleting is final and sometimes cascades: a community or activity category takes its subcategories with it, and a hobby category with hobbies cannot be deleted. The server also rejects a repeated name within the same category. Community category images are not uploaded from here.",
+        "summary": "The app's catalogues: languages, hobbies, community and activity categories, and training (disciplines, exercises and Popyplan templates).",
+        "details": "Choose a catalogue and edit its items. Inactive ones, which the app no longer offers, are shown too. Deleting is final and sometimes cascades: a community or activity category takes its subcategories with it, and a hobby category with hobbies cannot be deleted. The server also rejects a repeated name within the same category. Community category images are not uploaded from here. Training: each discipline has a measure type (Strength, Endurance or Route); a discipline in use cannot be deleted (the server says so and it is deactivated instead). Names are edited in Spanish, Basque and Catalan. Only Popyplan templates are edited here, and saving a template replaces its whole list of exercises. The panel never shows anyone's workouts, routines or sports profile.",
         "actions": [
           "Choose a catalogue",
           "Add or edit items",
@@ -2930,7 +2939,8 @@
       "cancelDescription": "“{title}” is cancelled and everyone registered or on the waiting list is notified. It cannot be undone and is not recorded in Audit.",
       "previous": "Previous",
       "next": "Next",
-      "count": "{count, plural, one {# activity} other {# activities}}"
+      "count": "{count, plural, one {# activity} other {# activities}}",
+      "levelHeader": "Level"
     },
     "chats": {
       "heading": "Chats",
@@ -3150,7 +3160,7 @@
     "nomencladores": {
       "noAccessDescription": "Only superadmin edits the catalogues.",
       "heading": "Catalogues",
-      "intro": "The catalogues used by the app and the panel: languages, hobbies and community and activity categories.",
+      "intro": "The catalogues used by the app and the panel: languages, hobbies, community and activity categories, and the training catalogue.",
       "catalogLabel": "Catalogue",
       "catalogs": {
         "languages": "Languages",
@@ -3212,7 +3222,106 @@
       "loadError": "The catalogue could not be loaded",
       "empty": "This catalogue is empty",
       "count": "{count, plural, one {# item} other {# items}}",
-      "deleteTitle": "Delete “{name}”?"
+      "deleteTitle": "Delete “{name}”?",
+      "training": {
+        "catalogs": {
+          "disciplines": "Training disciplines",
+          "exercises": "Exercises",
+          "templates": "Training templates"
+        },
+        "hints": {
+          "disciplines": "Each sport and how it is measured: Strength (exercises with sets, reps and weight), Endurance (duration and distance) or Route (distance, elevation and duration). A discipline in use cannot be deleted: deactivate it.",
+          "exercises": "Exercises of each discipline. The metric decides the shape of each set: weight and reps, reps, time or distance. The code is unique.",
+          "templates": "Popyplan templates that the app offers to log a workout quickly. Only Popyplan templates are shown here: the panel never shows anyone's workouts, routines or sports profile."
+        },
+        "fields": {
+          "name": "Name",
+          "nameEs": "Name (Spanish)",
+          "nameEu": "Name (Basque)",
+          "nameCa": "Name (Catalan)",
+          "code": "Code",
+          "kind": "Measured by",
+          "icon": "Icon",
+          "order": "Order",
+          "discipline": "Discipline",
+          "muscleGroup": "Muscle group",
+          "metric": "Metric",
+          "description": "Description",
+          "duration": "Duration (minutes)",
+          "distance": "Distance (km)",
+          "itemsCount": "Exercises"
+        },
+        "kinds": {
+          "strength": "Strength",
+          "endurance": "Endurance",
+          "route": "Route"
+        },
+        "metrics": {
+          "weightReps": "Weight and reps",
+          "reps": "Reps",
+          "time": "Time",
+          "distance": "Distance"
+        },
+        "muscleGroups": {
+          "none": "No group",
+          "chest": "Chest",
+          "back": "Back",
+          "shoulders": "Shoulders",
+          "biceps": "Biceps",
+          "triceps": "Triceps",
+          "legs": "Legs",
+          "glutes": "Glutes",
+          "core": "Core",
+          "fullBody": "Full body",
+          "cardio": "Cardio"
+        },
+        "allDisciplines": "All",
+        "chooseDiscipline": "Choose a discipline",
+        "disciplinesLoadError": "The disciplines could not be loaded.",
+        "newDiscipline": "New discipline",
+        "editDiscipline": "Edit discipline",
+        "newExercise": "New exercise",
+        "editExercise": "Edit exercise",
+        "newTemplate": "New template",
+        "editTemplate": "Edit template",
+        "deleteWarnings": {
+          "discipline": "A discipline with exercises, templates or workouts cannot be deleted: deactivate it instead.",
+          "exercise": "The exercise is removed from the catalogue. Templates and workouts that used it keep its name as a free exercise.",
+          "template": "The Popyplan template is deleted and the app stops offering it. Workouts logged with it do not change."
+        },
+        "items": {
+          "heading": "Template exercises",
+          "hint": "Saving replaces the whole list, in this order. Each exercise comes from the discipline's catalogue or has a free name with its metric.",
+          "empty": "No exercises yet.",
+          "add": "Add exercise",
+          "exercisesLoadError": "The discipline's exercises could not be loaded.",
+          "itemLabel": "Exercise {n}",
+          "moveUp": "Move exercise {n} up",
+          "moveDown": "Move exercise {n} down",
+          "remove": "Remove exercise {n}",
+          "source": "Catalogue exercise ({n})",
+          "freeName": "Free name",
+          "inactiveOption": "{name} (inactive)",
+          "name": "Name ({n})",
+          "metric": "Metric ({n})",
+          "sets": "Sets ({n})",
+          "reps": "Reps ({n})",
+          "weight": "Weight, kg ({n})",
+          "seconds": "Seconds ({n})",
+          "distance": "Distance, km ({n})"
+        },
+        "formErrors": {
+          "nameRequired": "The name in Spanish is required.",
+          "disciplineRequired": "Choose a discipline.",
+          "invalidNumber": "Some number is not valid.",
+          "itemNameRequired": "Every free exercise needs a name.",
+          "itemSetsRange": "Each exercise has between 1 and 50 sets."
+        }
+      },
+      "groups": {
+        "general": "General",
+        "training": "Training"
+      }
     },
     "tesoro": {
       "heading": "Treasure hunt",
@@ -3452,6 +3561,14 @@
     "redFinanciada": {
       "heading": "Funded network",
       "noAccessDescription": "Your role doesn't have access to the Funded network."
+    }
+  },
+  "events": {
+    "levels": {
+      "all": "All levels",
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
     }
   }
 }

@@ -608,7 +608,8 @@
         "endsAtBeforeStartsAt": "Jarduera ezin da hasi baino lehen amaitu.",
         "capacityTooLow": "Gutxieneko edukiera plaza bat da.",
         "communityRequired": "Komunitaterako soilik den jarduerak komunitatea behar du."
-      }
+      },
+      "levelLabel": "Maila"
     },
     "asistencia": {
       "heading": "Bertaratzea",
@@ -1447,6 +1448,14 @@
       "sinAcceso": "Superadminak bakarrik kudea dezake altxorraren bila jokoa.",
       "noEncontrado": "Joko hau (edo bertan bilatzen zenuena) ez dago jada.",
       "desconocido": "Ezin izan da eragiketa osatu. Saiatu berriro."
+    },
+    "trainingCatalog": {
+      "invalido": "Berrikusi datuak.",
+      "sinAcceso": "Superadminek soilik kudeatzen du entrenamendu-katalogoa.",
+      "noEncontrado": "Elementu hori ez dago jada.",
+      "enUso": "Erabiltzen ari da eta ezin da ezabatu; desaktibatu horren ordez.",
+      "demasiadasPaginas": "Elementu gehiegi daude denak kargatzeko.",
+      "desconocido": "Ezin izan da ekintza osatu."
     }
   },
   "reports": {
@@ -1566,7 +1575,7 @@
       "actividades": {
         "title": "Jarduerak",
         "summary": "Aldiko jarduerak, izena emandakoekin, bertaratutakoekin eta arduradunarekin. Aldiak etorkizunera iristen denean datozen jarduerak ere barne hartzen ditu.",
-        "details": "Zerrendak aukeratzen duzun aldia hartzen du, datozen jarduerak barne. Arduradunaren zutabea soilik betetzen da zure rola zerrenda nominala ikusi dezakeenean; bestela '—' erakusten du, asmatutako izen baten ordez. Bertaratze-orria irekitzeko aukera soilik eskaintzen da Bertaratzea atala zure menuan dagoenean — erreferenteak jarduerak ikusten ditu, baina bertaratzerako estekarik ez. Lerro bakoitzeko kontagailuak aldiko izena-emateak, joan direnak eta ez joan direnak dira.",
+        "details": "Zerrendak aukeratzen duzun aldia hartzen du, datozen jarduerak barne. Arduradunaren zutabea soilik betetzen da zure rola zerrenda nominala ikusi dezakeenean; bestela '—' erakusten du, asmatutako izen baten ordez. Bertaratze-orria irekitzeko aukera soilik eskaintzen da Bertaratzea atala zure menuan dagoenean — erreferenteak jarduerak ikusten ditu, baina bertaratzerako estekarik ez. Lerro bakoitzeko kontagailuak aldiko izena-emateak, joan direnak eta ez joan direnak dira. Jarduera bat sortzean edo editatzean aukerako maila bat adieraz dezakezu (hasiberria, ertaina edo aurreratua); hori gabe, jarduera maila guztietarako da.",
         "actions": [
           "Aldatu aldia (datozen jarduerak barne)",
           "Egoeraren arabera iragazi",
@@ -2295,8 +2304,8 @@
       },
       "nomencladores": {
         "title": "Katalogoak",
-        "summary": "Aplikazioaren katalogoak: hizkuntzak, zaletasunak eta komunitate eta jardueren kategoriak.",
-        "details": "Aukeratu katalogo bat eta editatu bere elementuak. Inaktiboak ere ikusten dira, aplikazioak jada eskaintzen ez dituenak. Ezabatzea behin betikoa da eta batzuetan ondorioak ditu: komunitate edo jarduera kategoria batek bere azpikategoriak eramaten ditu, eta zaletasunak dituen zaletasun kategoria bat ezin da ezabatu. Kategoria berean errepikatutako izena ere zerbitzariak baztertzen du. Komunitate kategorien irudia ez da hemendik igotzen.",
+        "summary": "Aplikazioaren katalogoak: hizkuntzak, zaletasunak, komunitate- eta jarduera-kategoriak, eta entrenamendua (diziplinak, ariketak eta Popyplan-en txantiloiak).",
+        "details": "Aukeratu katalogo bat eta editatu bere elementuak. Inaktiboak ere ikusten dira, aplikazioak jada eskaintzen ez dituenak. Ezabatzea behin betikoa da eta batzuetan ondorioak ditu: komunitate edo jarduera kategoria batek bere azpikategoriak eramaten ditu, eta zaletasunak dituen zaletasun kategoria bat ezin da ezabatu. Kategoria berean errepikatutako izena ere zerbitzariak baztertzen du. Komunitate kategorien irudia ez da hemendik igotzen. Entrenamendua: diziplina bakoitzak neurketa mota bat du (Indarra, Erresistentzia edo Ibilbidea); erabiltzen ari den diziplina bat ezin da ezabatu (zerbitzariak esaten du, eta desaktibatu egiten da). Izenak gaztelaniaz, euskaraz eta katalanez editatzen dira. Hemen Popyplan-en txantiloiak baino ez dira editatzen, eta txantiloi bat gordetzeak ariketen zerrenda osoa ordezkatzen du. Panelak ez du inoren entrenamendurik, errutinarik edo kirol-profilik erakusten.",
         "actions": [
           "Katalogo bat aukeratu",
           "Elementuak gehitu edo editatu",
@@ -2930,7 +2939,8 @@
       "cancelDescription": "«{title}» bertan behera geratzen da eta izena emanda eta itxaron-zerrendan dauden guztiei abisua ematen zaie. Ezin da desegin eta ez da Auditorian geratzen.",
       "previous": "Aurrekoa",
       "next": "Hurrengoa",
-      "count": "{count, plural, one {# jarduera} other {# jarduera}}"
+      "count": "{count, plural, one {# jarduera} other {# jarduera}}",
+      "levelHeader": "Maila"
     },
     "chats": {
       "heading": "Txatak",
@@ -3150,7 +3160,7 @@
     "nomencladores": {
       "noAccessDescription": "Superadminak bakarrik editatzen ditu katalogoak.",
       "heading": "Katalogoak",
-      "intro": "Aplikazioak eta panelak erabiltzen dituzten katalogoak: hizkuntzak, zaletasunak eta komunitate eta jardueren kategoriak.",
+      "intro": "Aplikazioak eta panelak erabiltzen dituzten katalogoak: hizkuntzak, zaletasunak, komunitate- eta jarduera-kategoriak, eta entrenamendu-katalogoa.",
       "catalogLabel": "Katalogoa",
       "catalogs": {
         "languages": "Hizkuntzak",
@@ -3212,7 +3222,106 @@
       "loadError": "Ezin izan da katalogoa kargatu",
       "empty": "Katalogo hau hutsik dago",
       "count": "{count, plural, one {# elementu} other {# elementu}}",
-      "deleteTitle": "«{name}» ezabatu?"
+      "deleteTitle": "«{name}» ezabatu?",
+      "training": {
+        "catalogs": {
+          "disciplines": "Entrenamendu-diziplinak",
+          "exercises": "Ariketak",
+          "templates": "Entrenamendu-txantiloiak"
+        },
+        "hints": {
+          "disciplines": "Kirol bakoitza eta nola neurtzen den: Indarra (serieak, errepikapenak eta pisua dituzten ariketak), Erresistentzia (iraupena eta distantzia) edo Ibilbidea (distantzia, desnibela eta iraupena). Erabiltzen ari den diziplina bat ezin da ezabatu: desaktibatu.",
+          "exercises": "Diziplina bakoitzeko ariketak. Metrikak serie bakoitzaren forma erabakitzen du: pisua eta errepikapenak, errepikapenak, denbora edo distantzia. Kodea ez da errepikatzen.",
+          "templates": "Aplikazioak entrenamendu bat azkar erregistratzeko eskaintzen dituen Popyplan-en txantiloiak. Hemen Popyplan-enak baino ez dira agertzen: panelak ez du inoren entrenamendurik, errutinarik edo kirol-profilik erakusten."
+        },
+        "fields": {
+          "name": "Izena",
+          "nameEs": "Izena (gaztelania)",
+          "nameEu": "Izena (euskara)",
+          "nameCa": "Izena (katalana)",
+          "code": "Kodea",
+          "kind": "Neurketa mota",
+          "icon": "Ikonoa",
+          "order": "Ordena",
+          "discipline": "Diziplina",
+          "muscleGroup": "Muskulu-taldea",
+          "metric": "Metrika",
+          "description": "Deskribapena",
+          "duration": "Iraupena (minutuak)",
+          "distance": "Distantzia (km)",
+          "itemsCount": "Ariketak"
+        },
+        "kinds": {
+          "strength": "Indarra",
+          "endurance": "Erresistentzia",
+          "route": "Ibilbidea"
+        },
+        "metrics": {
+          "weightReps": "Pisua eta errepikapenak",
+          "reps": "Errepikapenak",
+          "time": "Denbora",
+          "distance": "Distantzia"
+        },
+        "muscleGroups": {
+          "none": "Talderik gabe",
+          "chest": "Bularra",
+          "back": "Bizkarra",
+          "shoulders": "Sorbaldak",
+          "biceps": "Bizepsa",
+          "triceps": "Trizepsa",
+          "legs": "Hankak",
+          "glutes": "Ipurmasailak",
+          "core": "Core-a",
+          "fullBody": "Gorputz osoa",
+          "cardio": "Kardioa"
+        },
+        "allDisciplines": "Guztiak",
+        "chooseDiscipline": "Aukeratu diziplina bat",
+        "disciplinesLoadError": "Ezin izan dira diziplinak kargatu.",
+        "newDiscipline": "Diziplina berria",
+        "editDiscipline": "Editatu diziplina",
+        "newExercise": "Ariketa berria",
+        "editExercise": "Editatu ariketa",
+        "newTemplate": "Txantiloi berria",
+        "editTemplate": "Editatu txantiloia",
+        "deleteWarnings": {
+          "discipline": "Ariketak, txantiloiak edo entrenamenduak dituen diziplina bat ezin da ezabatu: desaktibatu horren ordez.",
+          "exercise": "Ariketa katalogotik ezabatzen da. Erabiltzen zuten txantiloiek eta entrenamenduek haren izena gordetzen dute ariketa libre gisa.",
+          "template": "Popyplan-en txantiloia ezabatzen da eta aplikazioak ez du gehiago eskainiko. Harekin erregistratutako entrenamenduak ez dira aldatzen."
+        },
+        "items": {
+          "heading": "Txantiloiaren ariketak",
+          "hint": "Gordetzeak zerrenda osoa ordezkatzen du, ordena honetan. Ariketa bakoitza diziplinaren katalogotik dator edo izen librea du bere metrikarekin.",
+          "empty": "Oraindik ez dago ariketarik.",
+          "add": "Gehitu ariketa",
+          "exercisesLoadError": "Ezin izan dira diziplinaren ariketak kargatu.",
+          "itemLabel": "{n}. ariketa",
+          "moveUp": "Igo {n}. ariketa",
+          "moveDown": "Jaitsi {n}. ariketa",
+          "remove": "Kendu {n}. ariketa",
+          "source": "Katalogoko ariketa ({n})",
+          "freeName": "Izen librea",
+          "inactiveOption": "{name} (inaktiboa)",
+          "name": "Izena ({n})",
+          "metric": "Metrika ({n})",
+          "sets": "Serieak ({n})",
+          "reps": "Errepikapenak ({n})",
+          "weight": "Pisua, kg ({n})",
+          "seconds": "Segundoak ({n})",
+          "distance": "Distantzia, km ({n})"
+        },
+        "formErrors": {
+          "nameRequired": "Gaztelaniazko izena falta da.",
+          "disciplineRequired": "Aukeratu diziplina bat.",
+          "invalidNumber": "Zenbakiren bat ez da baliozkoa.",
+          "itemNameRequired": "Ariketa libre bakoitzak izen bat behar du.",
+          "itemSetsRange": "Ariketa bakoitzak 1 eta 50 serie artean ditu."
+        }
+      },
+      "groups": {
+        "general": "Orokorrak",
+        "training": "Entrenamendua"
+      }
     },
     "tesoro": {
       "heading": "Altxorraren bila",
@@ -3452,6 +3561,14 @@
     "redFinanciada": {
       "heading": "Finantzatutako sarea",
       "noAccessDescription": "Zure rolak ez du sarbiderik Finantzatutako sarean."
+    }
+  },
+  "events": {
+    "levels": {
+      "all": "Maila guztiak",
+      "beginner": "Hasiberria",
+      "intermediate": "Ertaina",
+      "advanced": "Aurreratua"
     }
   }
 }

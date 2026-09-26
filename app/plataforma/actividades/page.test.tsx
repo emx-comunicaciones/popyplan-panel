@@ -81,6 +81,7 @@ function mockBackend(overrides: Handler = () => undefined) {
         description: "Sesión de hatha suave.",
         address: "Monte Ulia",
         category: { id: 2, name: "Deporte" },
+        level: "beginner",
       };
     }
     throw new Error(`sin mock para ${path}`);
@@ -228,6 +229,8 @@ describe("PlataformaActividadesPage", () => {
     const dialog = await screen.findByRole("dialog");
     expect(within(dialog).getByText("Monte Ulia")).toBeInTheDocument();
     expect(within(dialog).getByText("Deporte")).toBeInTheDocument();
+    expect(within(dialog).getByText("Nivel")).toBeInTheDocument();
+    expect(within(dialog).getByText("Principiante")).toBeInTheDocument();
     await userEvent.click(within(dialog).getByRole("button", { name: "Cerrar" }));
 
     mockBackend((path) => {

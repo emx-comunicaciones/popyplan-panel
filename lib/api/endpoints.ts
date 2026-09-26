@@ -692,3 +692,28 @@ export const TREASURE_HUNT = {
   COMPLETION_VALIDATE: (id: string, completionId: string) =>
     `/api/treasure-hunt/${id}/completions/${completionId}/validate/`,
 } as const;
+
+/**
+ * Catálogo de entrenamiento y plantillas de Popyplan (Nomencladores de
+ * plataforma, 2026-09-26; `docs/PANEL.md` §17.1-§17.2 del backend,
+ * `training/viewsets.py`). Leer, cualquier cuenta; escribir, `is_staff` o
+ * `PlatformRole` superadmin. Los tres listados **paginan** (20 por página,
+ * se recorren con tope). Las plantillas se piden **siempre** con
+ * `?scope=system`: el panel nunca lista rutinas de nadie (ni las del
+ * propio staff), y no hay aquí ninguna ruta de entrenos, rutinas ni
+ * perfiles deportivos — a propósito (el entrenamiento es privado).
+ */
+export const TRAINING = {
+  /** `GET` (paginado; staff ve también las inactivas), `POST`. */
+  DISCIPLINES: () => "/api/training/disciplines/",
+  /** `PATCH`/`DELETE` (409 «Está en uso…» si tiene ejercicios, plantillas o entrenos). */
+  DISCIPLINE: (id: number) => `/api/training/disciplines/${id}/`,
+  /** `GET ?discipline=<id>` (paginado), `POST` (con `discipline_id`). */
+  EXERCISES: () => "/api/training/exercises/",
+  /** `PATCH`/`DELETE`. */
+  EXERCISE: (id: number) => `/api/training/exercises/${id}/`,
+  /** `GET ?scope=system` (paginado), `POST {…, system: true}`. */
+  TEMPLATES: () => "/api/training/templates/",
+  /** `PATCH` (`items`, si viene, reemplaza la lista entera) y `DELETE`. */
+  TEMPLATE: (id: number) => `/api/training/templates/${id}/`,
+} as const;

@@ -36,6 +36,7 @@ import {
   type PlatformEventsErrorKind,
 } from "@/hooks/usePlatformEvents";
 import type { PlatformEventRow } from "@/lib/api/types";
+import { levelLabelKey } from "@/lib/events/level";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 import { activeLanguage, localeFor } from "@/lib/i18n/locale";
 
@@ -405,6 +406,9 @@ function EventDetailDialog({ eventId, onClose }: { eventId: string; onClose: () 
           </Row>
           <Row label={t("plataforma.actividades.communityHeader")}>{data.community?.name ?? "—"}</Row>
           <Row label={t("plataforma.actividades.categoryHeader")}>{data.category?.name ?? "—"}</Row>
+          <Row label={t("plataforma.actividades.levelHeader")}>
+            {levelLabelKey(data.level) ? t(levelLabelKey(data.level) as string) : data.level}
+          </Row>
           <Row label={t("plataforma.actividades.placeHeader")}>{data.place?.name ?? "—"}</Row>
           <Row label={t("plataforma.actividades.addressHeader")}>{data.address || "—"}</Row>
           <Row label={t("plataforma.actividades.seatsHeader")}>

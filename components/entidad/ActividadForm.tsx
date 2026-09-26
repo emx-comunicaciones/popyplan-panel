@@ -36,8 +36,9 @@ import {
   type EventMutationErrorKind,
 } from "@/hooks/useEventMutations";
 import { useSearchPlaces } from "@/hooks/usePlaces";
-import type { EventAudience, EventDetail } from "@/lib/api/types";
+import type { EventAudience, EventDetail, EventLevel } from "@/lib/api/types";
 import { isoToLocalInput, localInputToIso } from "@/lib/events/datetimeLocal";
+import { EVENT_LEVELS, levelLabelKey, toEventLevel } from "@/lib/events/level";
 import {
   sameMinute,
   validateEventCapacity,
@@ -175,6 +176,8 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
   const [capacity, setCapacity] = useState(
     isEditing && editing.capacity !== null ? String(editing.capacity) : "",
   );
+  const originalLevel = isEditing ? toEventLevel(editing.level) : "";
+  const [level, setLevel] = useState<EventLevel>(originalLevel);
   const [placeSearch, setPlaceSearch] = useState("");
   const [selectedPlace, setSelectedPlace] = useState<SelectedPlace | null>(
     initialSelectedPlace(editing),
@@ -255,6 +258,7 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
           capacity: capacity.trim() ? Number(capacity) : null,
           latitude: selectedPlace?.latitude ?? null,
           longitude: selectedPlace?.longitude ?? null,
+          level,
         },
         { onSuccess: () => onDone(startsAtIso) },
       );
@@ -278,6 +282,8 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
     if (!originalStartsAtIso || !sameMinute(startsAtIso, originalStartsAtIso)) {
       fields.starts_at = startsAtIso;
     }
+    // El nivel solo viaja si cambió (`""` para volver a «todos los niveles»).
+    if (level !== originalLevel) fields.level = level;
     updateEvent.mutate(
       { eventId: editing.id, ...fields },
       { onSuccess: () => onDone(startsAtIso) },
@@ -350,6 +356,24 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
             className="w-28 rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
+      </div>
+
+      <div>
+        <label htmlFor="actividad-level" className="mb-1 block text-sm font-medium text-text-form">
+          {t("entidad.actividadForm.levelLabel")}
+        </label>
+        <select
+          id="actividad-level"
+          value={level}
+          onChange={(event) => setLevel(event.target.value as EventLevel)}
+          className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
+        >
+          {EVENT_LEVELS.map((value) => (
+            <option key={value || "all"} value={value}>
+              {t(levelLabelKey(value) as string)}
+            </option>
+          ))}
+        </select>
       </div>
 
       {startsAtError ? (

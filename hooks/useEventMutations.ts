@@ -98,6 +98,7 @@ function toCreateEventBody(orgId: number | string, fields: EventWriteFields): Re
   if (fields.ends_at) body.ends_at = fields.ends_at;
   if (fields.capacity !== null) body.capacity = fields.capacity;
   if (fields.audience === "community" && fields.community) body.community = fields.community;
+  if (fields.level) body.level = fields.level;
   if (fields.latitude !== null && fields.longitude !== null) {
     body.latitude = formatCoordinateForApi(fields.latitude);
     body.longitude = formatCoordinateForApi(fields.longitude);
@@ -113,6 +114,7 @@ function toUpdateEventBody(fields: EventUpdateFields): Record<string, unknown> {
   if (fields.starts_at !== undefined) body.starts_at = fields.starts_at;
   if (fields.ends_at !== undefined) body.ends_at = fields.ends_at;
   if (fields.capacity !== undefined) body.capacity = fields.capacity;
+  if (fields.level !== undefined) body.level = fields.level;
   if (fields.latitude !== undefined && fields.longitude !== undefined) {
     body.latitude = fields.latitude !== null ? formatCoordinateForApi(fields.latitude) : null;
     body.longitude = fields.longitude !== null ? formatCoordinateForApi(fields.longitude) : null;

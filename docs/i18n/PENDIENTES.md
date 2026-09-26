@@ -199,3 +199,15 @@ español, y no se toca en esta ronda):
   nativa.** Dudas concretas: el nombre del juego —«Altxorraren bila» en
   euskera y «Caça del tresor» en catalán—, «Baliozkotzeak» para
   *validaciones* y «Sailkapena»/«Classificació» para *ranking*.
+- **Entrenamiento (catálogo en Nomencladores y nivel de actividad,
+  2026-09-26)**: las claves nuevas de `plataforma.nomencladores.training.*`,
+  `plataforma.nomencladores.groups.*`, `errors.trainingCatalog.*`,
+  `events.levels.*`, `entidad.actividadForm.levelLabel`,
+  `plataforma.actividades.levelHeader` y las ampliaciones de
+  `help.plataforma.nomencladores`/`help.entidad.actividades` se escribieron
+  en `es`/`en`. En `eu`/`ca`, los tipos de medida, métricas, grupos
+  musculares y niveles se copiaron del `.po` del backend (ya revisados
+  allí); el resto es traducción asistida. **Pendientes de revisión
+  nativa.** Dudas concretas: «Neurketa mota»/«Tipus de mesura» para *tipo
+  de medida*, «Core-a» en euskera y el orden «{n}. ariketa» en las
+  etiquetas de cada ejercicio de plantilla.

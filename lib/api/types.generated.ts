@@ -5384,6 +5384,289 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/training/disciplines/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Disciplinas: `GET` cualquiera (solo activas); escribir, staff/superadmin. */
+        get: operations["training_disciplines_list"];
+        put?: never;
+        /** @description Disciplinas: `GET` cualquiera (solo activas); escribir, staff/superadmin. */
+        post: operations["training_disciplines_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/training/disciplines/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Disciplinas: `GET` cualquiera (solo activas); escribir, staff/superadmin. */
+        get: operations["training_disciplines_retrieve"];
+        /** @description Disciplinas: `GET` cualquiera (solo activas); escribir, staff/superadmin. */
+        put: operations["training_disciplines_update"];
+        post?: never;
+        /** @description Disciplinas: `GET` cualquiera (solo activas); escribir, staff/superadmin. */
+        delete: operations["training_disciplines_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Disciplinas: `GET` cualquiera (solo activas); escribir, staff/superadmin. */
+        patch: operations["training_disciplines_partial_update"];
+        trace?: never;
+    };
+    "/api/training/exercises/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Ejercicios del catálogo, filtrables con `?discipline=`. */
+        get: operations["training_exercises_list"];
+        put?: never;
+        /** @description Ejercicios del catálogo, filtrables con `?discipline=`. */
+        post: operations["training_exercises_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/training/exercises/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Ejercicios del catálogo, filtrables con `?discipline=`. */
+        get: operations["training_exercises_retrieve"];
+        /** @description Ejercicios del catálogo, filtrables con `?discipline=`. */
+        put: operations["training_exercises_update"];
+        post?: never;
+        /** @description Ejercicios del catálogo, filtrables con `?discipline=`. */
+        delete: operations["training_exercises_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Ejercicios del catálogo, filtrables con `?discipline=`. */
+        patch: operations["training_exercises_partial_update"];
+        trace?: never;
+    };
+    "/api/training/profile/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET|PUT|DELETE /api/training/profile/` — el perfil deportivo propio. */
+        get: operations["training_profile_retrieve"];
+        /** @description Crea o reemplaza entero: lo que no viene vuelve a su valor vacío. */
+        put: operations["training_profile_update"];
+        post?: never;
+        /** @description `GET|PUT|DELETE /api/training/profile/` — el perfil deportivo propio. */
+        delete: operations["training_profile_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/training/stats/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/training/stats/?since&until` — mi historial (ver `training/stats.py`). */
+        get: operations["training_stats_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/training/templates/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Plantillas de Popyplan y rutinas propias.
+         *
+         *     Orden: primero las de las disciplinas del perfil deportivo de quien
+         *     mira; después por `order` y nombre.
+         */
+        get: operations["training_templates_list"];
+        put?: never;
+        /**
+         * @description Plantillas de Popyplan y rutinas propias.
+         *
+         *     Orden: primero las de las disciplinas del perfil deportivo de quien
+         *     mira; después por `order` y nombre.
+         */
+        post: operations["training_templates_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/training/templates/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Plantillas de Popyplan y rutinas propias.
+         *
+         *     Orden: primero las de las disciplinas del perfil deportivo de quien
+         *     mira; después por `order` y nombre.
+         */
+        get: operations["training_templates_retrieve"];
+        /**
+         * @description Plantillas de Popyplan y rutinas propias.
+         *
+         *     Orden: primero las de las disciplinas del perfil deportivo de quien
+         *     mira; después por `order` y nombre.
+         */
+        put: operations["training_templates_update"];
+        post?: never;
+        /**
+         * @description Plantillas de Popyplan y rutinas propias.
+         *
+         *     Orden: primero las de las disciplinas del perfil deportivo de quien
+         *     mira; después por `order` y nombre.
+         */
+        delete: operations["training_templates_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description Plantillas de Popyplan y rutinas propias.
+         *
+         *     Orden: primero las de las disciplinas del perfil deportivo de quien
+         *     mira; después por `order` y nombre.
+         */
+        patch: operations["training_templates_partial_update"];
+        trace?: never;
+    };
+    "/api/training/workouts/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Mis entrenos. Nunca los de nadie más (ver el docstring del módulo).
+         *
+         *     Repetir un entreno no tiene ruta: la app abre el formulario con el
+         *     detalle y hace un `POST` nuevo.
+         */
+        get: operations["training_workouts_list"];
+        put?: never;
+        /**
+         * @description Mis entrenos. Nunca los de nadie más (ver el docstring del módulo).
+         *
+         *     Repetir un entreno no tiene ruta: la app abre el formulario con el
+         *     detalle y hace un `POST` nuevo.
+         */
+        post: operations["training_workouts_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/training/workouts/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Mis entrenos. Nunca los de nadie más (ver el docstring del módulo).
+         *
+         *     Repetir un entreno no tiene ruta: la app abre el formulario con el
+         *     detalle y hace un `POST` nuevo.
+         */
+        get: operations["training_workouts_retrieve"];
+        /**
+         * @description Mis entrenos. Nunca los de nadie más (ver el docstring del módulo).
+         *
+         *     Repetir un entreno no tiene ruta: la app abre el formulario con el
+         *     detalle y hace un `POST` nuevo.
+         */
+        put: operations["training_workouts_update"];
+        post?: never;
+        /**
+         * @description Mis entrenos. Nunca los de nadie más (ver el docstring del módulo).
+         *
+         *     Repetir un entreno no tiene ruta: la app abre el formulario con el
+         *     detalle y hace un `POST` nuevo.
+         */
+        delete: operations["training_workouts_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description Mis entrenos. Nunca los de nadie más (ver el docstring del módulo).
+         *
+         *     Repetir un entreno no tiene ruta: la app abre el formulario con el
+         *     detalle y hace un `POST` nuevo.
+         */
+        patch: operations["training_workouts_partial_update"];
+        trace?: never;
+    };
+    "/api/training/workouts/{id}/publish/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Publica la tarjeta del entreno en el muro de una comunidad donde quien llama es miembro activo. Responde con el post (forma de `CommunityPost`, con `workout_card`). 409 si ya está publicado. */
+        post: operations["training_workouts_publish_create"];
+        /** @description Despublica: el post sale del muro. 404 si no estaba publicado. */
+        delete: operations["training_workouts_publish_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/training/workouts/{id}/save-as-template/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description `POST /api/training/workouts/{id}/save-as-template/` — «mi rutina». */
+        post: operations["training_workouts_save_as_template_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/treasure-hunt/": {
         parameters: {
             query?: never;
@@ -7627,6 +7910,7 @@ export interface components {
             readonly video_url: string | null;
             readonly hashtags: string[];
             readonly surface: components["schemas"]["SurfaceEnum"];
+            readonly workout_card: unknown;
             readonly likes_count: number;
             readonly comments_count: number;
             readonly is_liked: boolean;
@@ -7867,6 +8151,61 @@ export interface components {
         DirectMessageRequestRequest: {
             user_id: number;
             message: string;
+        };
+        /** @description `name` localizado al leer; `name_es` es el castellano crudo. */
+        Discipline: {
+            readonly id: number;
+            /** Código */
+            code: string;
+            /** Nombre */
+            name: string;
+            readonly name_es: string;
+            /** Nombre (euskera) */
+            name_eu?: string;
+            /** Nombre (catalán) */
+            name_ca?: string;
+            /** Tipo */
+            kind: components["schemas"]["KindA97Enum"];
+            /** Icono */
+            icon?: string;
+            /**
+             * Orden
+             * Format: int64
+             */
+            order?: number;
+            /** Activo */
+            is_active?: boolean;
+        };
+        /** @description La disciplina dentro de otro objeto: lo justo para pintarla. */
+        DisciplineRef: {
+            readonly id: number;
+            /** Código */
+            readonly code: string;
+            readonly name: string;
+            /** Tipo */
+            readonly kind: components["schemas"]["KindA97Enum"];
+        };
+        /** @description `name` localizado al leer; `name_es` es el castellano crudo. */
+        DisciplineRequest: {
+            /** Código */
+            code: string;
+            /** Nombre */
+            name: string;
+            /** Nombre (euskera) */
+            name_eu?: string;
+            /** Nombre (catalán) */
+            name_ca?: string;
+            /** Tipo */
+            kind: components["schemas"]["KindA97Enum"];
+            /** Icono */
+            icon?: string;
+            /**
+             * Orden
+             * Format: int64
+             */
+            order?: number;
+            /** Activo */
+            is_active?: boolean;
         };
         /**
          * @description Forma de `GET /api/communities/discover/` (solo documenta el esquema).
@@ -8134,6 +8473,15 @@ export interface components {
             /** Format: uuid */
             vibe?: string | null;
             /**
+             * Nivel
+             * @description Vacío = todos los niveles.
+             *
+             *     * `beginner` - Principiante
+             *     * `intermediate` - Intermedio
+             *     * `advanced` - Avanzado
+             */
+            level?: components["schemas"]["LevelCaaEnum"] | components["schemas"]["BlankEnum"];
+            /**
              * Coste estimado
              * Format: decimal
              */
@@ -8199,6 +8547,15 @@ export interface components {
             subcategories?: string[];
             /** Format: uuid */
             vibe?: string | null;
+            /**
+             * Nivel
+             * @description Vacío = todos los niveles.
+             *
+             *     * `beginner` - Principiante
+             *     * `intermediate` - Intermedio
+             *     * `advanced` - Avanzado
+             */
+            level?: components["schemas"]["LevelCaaEnum"] | components["schemas"]["BlankEnum"];
             /**
              * Coste estimado
              * Format: decimal
@@ -8289,6 +8646,15 @@ export interface components {
              * Format: decimal
              */
             readonly estimated_cost: string | null;
+            /**
+             * Nivel
+             * @description Vacío = todos los niveles.
+             *
+             *     * `beginner` - Principiante
+             *     * `intermediate` - Intermedio
+             *     * `advanced` - Avanzado
+             */
+            readonly level: components["schemas"]["LevelCaaEnum"];
             readonly address: string | null;
             readonly chat_room_id: string | null;
             readonly waitlist_count: number;
@@ -8374,6 +8740,15 @@ export interface components {
              * Format: decimal
              */
             readonly estimated_cost: string | null;
+            /**
+             * Nivel
+             * @description Vacío = todos los niveles.
+             *
+             *     * `beginner` - Principiante
+             *     * `intermediate` - Intermedio
+             *     * `advanced` - Avanzado
+             */
+            readonly level: components["schemas"]["LevelCaaEnum"];
         };
         /** @description La actividad del aviso, con lo justo para pintar la lista. */
         EventRef: {
@@ -8433,6 +8808,15 @@ export interface components {
             subcategories?: string[];
             /** Format: uuid */
             vibe?: string | null;
+            /**
+             * Nivel
+             * @description Vacío = todos los niveles.
+             *
+             *     * `beginner` - Principiante
+             *     * `intermediate` - Intermedio
+             *     * `advanced` - Avanzado
+             */
+            level?: components["schemas"]["LevelCaaEnum"] | components["schemas"]["BlankEnum"];
             /**
              * Coste estimado
              * Format: decimal
@@ -8495,6 +8879,15 @@ export interface components {
             /** Format: uuid */
             vibe?: string | null;
             /**
+             * Nivel
+             * @description Vacío = todos los niveles.
+             *
+             *     * `beginner` - Principiante
+             *     * `intermediate` - Intermedio
+             *     * `advanced` - Avanzado
+             */
+            level?: components["schemas"]["LevelCaaEnum"] | components["schemas"]["BlankEnum"];
+            /**
              * Coste estimado
              * Format: decimal
              */
@@ -8514,6 +8907,54 @@ export interface components {
             held: number;
             cancelled: number;
             by_audience: components["schemas"]["EventsByAudience"];
+        };
+        /** @description `name` localizado al leer; `name_es` es el castellano crudo. */
+        Exercise: {
+            readonly id: number;
+            /** Código */
+            code: string;
+            /** Nombre */
+            name: string;
+            readonly name_es: string;
+            /** Nombre (euskera) */
+            name_eu?: string;
+            /** Nombre (catalán) */
+            name_ca?: string;
+            readonly discipline: components["schemas"]["DisciplineRef"];
+            /** Grupo muscular */
+            muscle_group?: components["schemas"]["MuscleGroupEnum"] | components["schemas"]["BlankEnum"];
+            /** Métrica */
+            metric: components["schemas"]["MetricEnum"];
+            /**
+             * Orden
+             * Format: int64
+             */
+            order?: number;
+            /** Activo */
+            is_active?: boolean;
+        };
+        /** @description `name` localizado al leer; `name_es` es el castellano crudo. */
+        ExerciseRequest: {
+            /** Código */
+            code: string;
+            /** Nombre */
+            name: string;
+            /** Nombre (euskera) */
+            name_eu?: string;
+            /** Nombre (catalán) */
+            name_ca?: string;
+            discipline_id: number;
+            /** Grupo muscular */
+            muscle_group?: components["schemas"]["MuscleGroupEnum"] | components["schemas"]["BlankEnum"];
+            /** Métrica */
+            metric: components["schemas"]["MetricEnum"];
+            /**
+             * Orden
+             * Format: int64
+             */
+            order?: number;
+            /** Activo */
+            is_active?: boolean;
         };
         /**
          * @description `GET /api/panel/entidad/{id}/families/` — resumen del espacio POP
@@ -8981,6 +9422,15 @@ export interface components {
             time_bonus_seconds?: number;
         };
         /**
+         * @description * `muscle` - Ganar músculo
+         *     * `fat_loss` - Perder grasa
+         *     * `strength` - Ganar fuerza
+         *     * `active` - Mantenerme activo
+         *     * `endurance` - Mejorar la resistencia
+         * @enum {string}
+         */
+        GoalsEnum: "muscle" | "fat_loss" | "strength" | "active" | "endurance";
+        /**
          * @description Un aviso de ayuda tal y como lo lee quien lo atiende (`pending`) o
          *     la propia persona que lo pidió.
          *
@@ -9187,6 +9637,13 @@ export interface components {
          */
         Kind839Enum: "text" | "pdf" | "video" | "audio" | "link" | "document";
         /**
+         * @description * `strength` - Fuerza
+         *     * `endurance` - Resistencia
+         *     * `route` - Ruta
+         * @enum {string}
+         */
+        KindA97Enum: "strength" | "endurance" | "route";
+        /**
          * @description * `stars_1_5` - Estrellas (1-5)
          *     * `scale_4` - Escala (1-4)
          *     * `text_short` - Texto corto
@@ -9209,12 +9666,12 @@ export interface components {
             is_active?: boolean;
         };
         /**
-         * @description * `1` - Teléfono verificado
-         *     * `2` - Mayoría de edad
-         *     * `3` - Identidad completa
-         * @enum {integer}
+         * @description * `beginner` - Principiante
+         *     * `intermediate` - Intermedio
+         *     * `advanced` - Avanzado
+         * @enum {string}
          */
-        LevelEnum: 1 | 2 | 3;
+        LevelCaaEnum: "beginner" | "intermediate" | "advanced";
         /** @description Serializer para respuesta de login exitoso */
         LoginResponse: {
             /** @description Token de acceso (JWT) */
@@ -9356,6 +9813,14 @@ export interface components {
          * @enum {string}
          */
         MethodEnum: "app" | "sms" | "email";
+        /**
+         * @description * `weight_reps` - Peso y repeticiones
+         *     * `reps` - Repeticiones
+         *     * `time` - Tiempo
+         *     * `distance` - Distancia
+         * @enum {string}
+         */
+        MetricEnum: "weight_reps" | "reps" | "time" | "distance";
         /** @description Esquema fijo de respuesta de las tres rutas de métricas del panel. */
         MetricsResponse: {
             people: components["schemas"]["PeopleMetrics"];
@@ -9366,6 +9831,20 @@ export interface components {
             by_weekday_hour: components["schemas"]["ByWeekdayHourRow"][];
             series: components["schemas"]["SeriesRow"][];
         };
+        /**
+         * @description * `chest` - Pecho
+         *     * `back` - Espalda
+         *     * `shoulders` - Hombros
+         *     * `biceps` - Bíceps
+         *     * `triceps` - Tríceps
+         *     * `legs` - Piernas
+         *     * `glutes` - Glúteos
+         *     * `core` - Core
+         *     * `full_body` - Cuerpo completo
+         *     * `cardio` - Cardio
+         * @enum {string}
+         */
+        MuscleGroupEnum: "chest" | "back" | "shoulders" | "biceps" | "triceps" | "legs" | "glutes" | "core" | "full_body" | "cardio";
         /**
          * @description Respuesta de `GET {id}/my-checkin/`: solo documentación de esquema,
          *     la vista construye la respuesta directamente.
@@ -9903,6 +10382,21 @@ export interface components {
             previous?: string | null;
             results?: components["schemas"]["CommunityPost"][];
         };
+        PaginatedDisciplineList: {
+            /** @example 123 */
+            count?: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results?: components["schemas"]["Discipline"][];
+        };
         PaginatedEventListList: {
             /** @example 123 */
             count?: number;
@@ -9917,6 +10411,21 @@ export interface components {
              */
             previous?: string | null;
             results?: components["schemas"]["EventList"][];
+        };
+        PaginatedExerciseList: {
+            /** @example 123 */
+            count?: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results?: components["schemas"]["Exercise"][];
         };
         PaginatedHelpRequestList: {
             /** @example 123 */
@@ -10113,6 +10622,36 @@ export interface components {
             previous?: string | null;
             results?: components["schemas"]["WallPost"][];
         };
+        PaginatedWorkoutListList: {
+            /** @example 123 */
+            count?: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results?: components["schemas"]["WorkoutList"][];
+        };
+        PaginatedWorkoutTemplateList: {
+            /** @example 123 */
+            count?: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results?: components["schemas"]["WorkoutTemplate"][];
+        };
         /** @description Serializer para salas de chat - Solo campos seguros */
         PatchedChatRoomRequest: {
             chat_type?: components["schemas"]["ChatTypeEnum"];
@@ -10198,6 +10737,28 @@ export interface components {
             username_or_email?: string;
             password?: string;
         };
+        /** @description `name` localizado al leer; `name_es` es el castellano crudo. */
+        PatchedDisciplineRequest: {
+            /** Código */
+            code?: string;
+            /** Nombre */
+            name?: string;
+            /** Nombre (euskera) */
+            name_eu?: string;
+            /** Nombre (catalán) */
+            name_ca?: string;
+            /** Tipo */
+            kind?: components["schemas"]["KindA97Enum"];
+            /** Icono */
+            icon?: string;
+            /**
+             * Orden
+             * Format: int64
+             */
+            order?: number;
+            /** Activo */
+            is_active?: boolean;
+        };
         /** @description Entrada de `POST`/`PATCH` sobre un recurso. */
         PatchedEntityResourceWriteRequest: {
             /** Título */
@@ -10274,6 +10835,15 @@ export interface components {
             /** Format: uuid */
             vibe?: string | null;
             /**
+             * Nivel
+             * @description Vacío = todos los niveles.
+             *
+             *     * `beginner` - Principiante
+             *     * `intermediate` - Intermedio
+             *     * `advanced` - Avanzado
+             */
+            level?: components["schemas"]["LevelCaaEnum"] | components["schemas"]["BlankEnum"];
+            /**
              * Coste estimado
              * Format: decimal
              */
@@ -10283,6 +10853,29 @@ export interface components {
              * Format: binary
              */
             image?: string | null;
+        };
+        /** @description `name` localizado al leer; `name_es` es el castellano crudo. */
+        PatchedExerciseRequest: {
+            /** Código */
+            code?: string;
+            /** Nombre */
+            name?: string;
+            /** Nombre (euskera) */
+            name_eu?: string;
+            /** Nombre (catalán) */
+            name_ca?: string;
+            discipline_id?: number;
+            /** Grupo muscular */
+            muscle_group?: components["schemas"]["MuscleGroupEnum"] | components["schemas"]["BlankEnum"];
+            /** Métrica */
+            metric?: components["schemas"]["MetricEnum"];
+            /**
+             * Orden
+             * Format: int64
+             */
+            order?: number;
+            /** Activo */
+            is_active?: boolean;
         };
         /**
          * @description Alta y edición de un juego (admin).
@@ -10661,6 +11254,67 @@ export interface components {
         };
         PatchedVerificationReviewAppealRequest: {
             appeal_text?: string;
+        };
+        /** @description Alta y edición. `system: true` (solo al crear) = plantilla de Popyplan. */
+        PatchedWorkoutTemplateWriteRequest: {
+            /** Nombre */
+            name?: string;
+            /** Nombre (euskera) */
+            name_eu?: string;
+            /** Nombre (catalán) */
+            name_ca?: string;
+            /** Descripción */
+            description?: string;
+            discipline_id?: number;
+            /**
+             * Duración (minutos)
+             * Format: int64
+             */
+            duration_minutes?: number | null;
+            /**
+             * Distancia (km)
+             * Format: decimal
+             */
+            distance_km?: string | null;
+            /**
+             * Orden
+             * Format: int64
+             */
+            order?: number;
+            /** Activo */
+            is_active?: boolean;
+            items?: components["schemas"]["TemplateItemRequest"][];
+            /** @default false */
+            system: boolean;
+        };
+        PatchedWorkoutWriteRequest: {
+            /** Título */
+            title?: string;
+            discipline_id?: number;
+            /**
+             * Realizado el
+             * Format: date-time
+             */
+            performed_on?: string;
+            /**
+             * Duración (minutos)
+             * Format: int64
+             */
+            duration_minutes?: number | null;
+            /** Notas */
+            notes?: string;
+            template_id?: number | null;
+            /**
+             * Distancia (km)
+             * Format: decimal
+             */
+            distance_km?: string | null;
+            /**
+             * Desnivel positivo (m)
+             * Format: int64
+             */
+            elevation_gain_m?: number | null;
+            entries?: components["schemas"]["WorkoutEntryRequest"][];
         };
         Payment: {
             /** Format: uuid */
@@ -11222,6 +11876,21 @@ export interface components {
             readonly verification_level: string;
             readonly adult_verified: string;
         };
+        PublishRequest: {
+            /** Format: uuid */
+            community_id: string;
+            /** @default false */
+            show_weights: boolean;
+            /** @default  */
+            content: string;
+        };
+        PublishedRef: {
+            /** Format: uuid */
+            post_id: string;
+            community: {
+                [key: string]: string;
+            };
+        };
         Ranking: {
             /** Format: uuid */
             readonly id: string;
@@ -11620,6 +12289,9 @@ export interface components {
          * @enum {string}
          */
         Role636Enum: "superadmin" | "verifier" | "moderator" | "support";
+        SaveAsTemplateRequest: {
+            name?: string;
+        };
         /**
          * @description Con `group_by=month`, `month` ("YYYY-MM"); con `group_by=year`
          *     (memoria plurianual, tarea B2), `year` ("YYYY") en su lugar — nunca los
@@ -11640,6 +12312,26 @@ export interface components {
          * @enum {string}
          */
         SpaceEnum: "members" | "families";
+        /** @description Forma de respuesta del perfil (para el esquema). */
+        SportProfileOut: {
+            disciplines: components["schemas"]["DisciplineRef"][];
+            gym: string;
+            level: string;
+            goals: string[];
+            usual_days: number[];
+            /** Format: date-time */
+            updated_at: string | null;
+        };
+        /** @description Perfil deportivo. Al escribir, `disciplines` son ids de disciplinas activas. */
+        SportProfileRequest: {
+            disciplines?: number[];
+            /** Gimnasio habitual */
+            gym?: string;
+            /** Nivel */
+            level?: components["schemas"]["LevelCaaEnum"] | components["schemas"]["BlankEnum"];
+            goals?: components["schemas"]["GoalsEnum"][];
+            usual_days?: number[];
+        };
         /**
          * @description * `scheduled` - Programada
          *     * `cancelled` - Cancelada
@@ -12058,6 +12750,67 @@ export interface components {
          * @enum {string}
          */
         TeamVisibilityEnum: "public" | "private";
+        /** @description Un ejercicio de una plantilla. Al leer, el del catálogo va traducido. */
+        TemplateItem: {
+            readonly id: number;
+            /** Orden */
+            readonly order: number;
+            exercise_id?: number | null;
+            /** Nombre */
+            name?: string;
+            metric?: components["schemas"]["MetricEnum"];
+            /** @default 3 */
+            sets: number;
+            /**
+             * Repeticiones
+             * Format: int64
+             */
+            reps?: number | null;
+            /**
+             * Peso (kg)
+             * Format: decimal
+             */
+            weight_kg?: string | null;
+            /**
+             * Segundos
+             * Format: int64
+             */
+            seconds?: number | null;
+            /**
+             * Distancia (km)
+             * Format: decimal
+             */
+            distance_km?: string | null;
+        };
+        /** @description Un ejercicio de una plantilla. Al leer, el del catálogo va traducido. */
+        TemplateItemRequest: {
+            exercise_id?: number | null;
+            /** Nombre */
+            name?: string;
+            metric?: components["schemas"]["MetricEnum"];
+            /** @default 3 */
+            sets: number;
+            /**
+             * Repeticiones
+             * Format: int64
+             */
+            reps?: number | null;
+            /**
+             * Peso (kg)
+             * Format: decimal
+             */
+            weight_kg?: string | null;
+            /**
+             * Segundos
+             * Format: int64
+             */
+            seconds?: number | null;
+            /**
+             * Distancia (km)
+             * Format: decimal
+             */
+            distance_km?: string | null;
+        };
         /**
          * @description * `ccaa` - Comunidad autónoma
          *     * `provincia` - Provincia
@@ -12086,6 +12839,53 @@ export interface components {
          */
         TokenRefreshRequest: {
             refresh: string;
+        };
+        TrainingStats: {
+            weeks: components["schemas"]["TrainingStatsWeek"][];
+            by_discipline: components["schemas"]["TrainingStatsDiscipline"][];
+            records: components["schemas"]["TrainingStatsRecord"][];
+            /** Format: date */
+            since: string;
+            /** Format: date */
+            until: string;
+            workouts_count: number;
+            total_minutes: number;
+            days_trained: number;
+            streak: components["schemas"]["TrainingStreak"];
+        };
+        TrainingStatsDiscipline: {
+            code: string;
+            name: string;
+            kind: string;
+            workouts: number;
+            minutes: number;
+            /** Format: double */
+            distance_km: number | null;
+            elevation_gain_m: number | null;
+        };
+        TrainingStatsRecord: {
+            exercise_id: number | null;
+            name: string;
+            metric: string;
+            /** Format: double */
+            max_weight_kg: number | null;
+            reps_at_max_weight: number | null;
+            max_reps: number | null;
+            max_seconds: number | null;
+            /** Format: double */
+            max_distance_km: number | null;
+        };
+        TrainingStatsWeek: {
+            week: string;
+            /** Format: date */
+            starts_on: string;
+            days_trained: number;
+            workouts: number;
+            minutes: number;
+        };
+        TrainingStreak: {
+            days: number;
+            weeks: number;
         };
         TreasureHuntTeam: {
             /** Format: uuid */
@@ -12418,7 +13218,7 @@ export interface components {
             readonly user: number;
             readonly username: string;
             /** Nivel */
-            readonly level: components["schemas"]["LevelEnum"];
+            readonly level: components["schemas"]["VerificationReviewLevelEnum"];
             /** Proveedor */
             readonly provider: string;
             /** Referencia del proveedor */
@@ -12449,6 +13249,13 @@ export interface components {
             /** @default  */
             note: string;
         };
+        /**
+         * @description * `1` - Teléfono verificado
+         *     * `2` - Mayoría de edad
+         *     * `3` - Identidad completa
+         * @enum {integer}
+         */
+        VerificationReviewLevelEnum: 1 | 2 | 3;
         /**
          * @description * `pending` - Pendiente
          *     * `approved` - Aprobada
@@ -12493,6 +13300,7 @@ export interface components {
             readonly video_url: string | null;
             readonly hashtags: string[];
             readonly surface: components["schemas"]["SurfaceEnum"];
+            readonly workout_card: unknown;
             readonly likes_count: number;
             readonly comments_count: number;
             readonly is_liked: boolean;
@@ -12509,6 +13317,167 @@ export interface components {
          * @enum {string}
          */
         WarningTypeEnum: "no_show" | "ghosting" | "abuse";
+        WorkoutDetail: {
+            readonly id: number;
+            /** Título */
+            readonly title: string;
+            readonly discipline: components["schemas"]["DisciplineRef"];
+            /**
+             * Realizado el
+             * Format: date-time
+             */
+            readonly performed_on: string;
+            /** Duración (minutos) */
+            readonly duration_minutes: number | null;
+            /** Notas */
+            readonly notes: string;
+            readonly template_id: number;
+            /**
+             * Distancia (km)
+             * Format: decimal
+             */
+            readonly distance_km: string | null;
+            /** Desnivel positivo (m) */
+            readonly elevation_gain_m: number | null;
+            readonly entries: components["schemas"]["WorkoutEntry"][];
+            readonly published: components["schemas"]["PublishedRef"] | null;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        /** @description Un ejercicio hecho, con sus series (forma según `metric`). */
+        WorkoutEntry: {
+            readonly id: number;
+            /** Orden */
+            readonly order: number;
+            exercise_id?: number | null;
+            name?: string;
+            metric?: components["schemas"]["MetricEnum"];
+            sets?: unknown[];
+        };
+        /** @description Un ejercicio hecho, con sus series (forma según `metric`). */
+        WorkoutEntryRequest: {
+            exercise_id?: number | null;
+            name?: string;
+            metric?: components["schemas"]["MetricEnum"];
+            sets?: unknown[];
+        };
+        /** @description Fila de «Realizadas»: sin series, con el número de ejercicios. */
+        WorkoutList: {
+            readonly id: number;
+            /** Título */
+            readonly title: string;
+            readonly discipline: components["schemas"]["DisciplineRef"];
+            /**
+             * Realizado el
+             * Format: date-time
+             */
+            readonly performed_on: string;
+            /** Duración (minutos) */
+            readonly duration_minutes: number | null;
+            /**
+             * Distancia (km)
+             * Format: decimal
+             */
+            readonly distance_km: string | null;
+            /** Desnivel positivo (m) */
+            readonly elevation_gain_m: number | null;
+            readonly exercises_count: number;
+            readonly is_published: boolean;
+        };
+        /** @description `name` localizado al leer; `name_es` es el castellano crudo. */
+        WorkoutTemplate: {
+            readonly id: number;
+            /** Nombre */
+            readonly name: string;
+            readonly name_es: string;
+            /** Nombre (euskera) */
+            readonly name_eu: string;
+            /** Nombre (catalán) */
+            readonly name_ca: string;
+            /** Descripción */
+            readonly description: string;
+            readonly discipline: components["schemas"]["DisciplineRef"];
+            readonly is_system: boolean;
+            /** Duración (minutos) */
+            readonly duration_minutes: number | null;
+            /**
+             * Distancia (km)
+             * Format: decimal
+             */
+            readonly distance_km: string | null;
+            /** Orden */
+            readonly order: number;
+            /** Activo */
+            readonly is_active: boolean;
+            readonly items: components["schemas"]["TemplateItem"][];
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        /** @description Alta y edición. `system: true` (solo al crear) = plantilla de Popyplan. */
+        WorkoutTemplateWriteRequest: {
+            /** Nombre */
+            name: string;
+            /** Nombre (euskera) */
+            name_eu?: string;
+            /** Nombre (catalán) */
+            name_ca?: string;
+            /** Descripción */
+            description?: string;
+            discipline_id: number;
+            /**
+             * Duración (minutos)
+             * Format: int64
+             */
+            duration_minutes?: number | null;
+            /**
+             * Distancia (km)
+             * Format: decimal
+             */
+            distance_km?: string | null;
+            /**
+             * Orden
+             * Format: int64
+             */
+            order?: number;
+            /** Activo */
+            is_active?: boolean;
+            items?: components["schemas"]["TemplateItemRequest"][];
+            /** @default false */
+            system: boolean;
+        };
+        WorkoutWriteRequest: {
+            /** Título */
+            title: string;
+            discipline_id: number;
+            /**
+             * Realizado el
+             * Format: date-time
+             */
+            performed_on: string;
+            /**
+             * Duración (minutos)
+             * Format: int64
+             */
+            duration_minutes?: number | null;
+            /** Notas */
+            notes?: string;
+            template_id?: number | null;
+            /**
+             * Distancia (km)
+             * Format: decimal
+             */
+            distance_km?: string | null;
+            /**
+             * Desnivel positivo (m)
+             * Format: int64
+             */
+            elevation_gain_m?: number | null;
+            entries?: components["schemas"]["WorkoutEntryRequest"][];
+        };
         /** @description Referencia mínima `{id, name}` de un catálogo (categoría, comunidad…). */
         _Nombrado: {
             id: string;
@@ -17716,6 +18685,8 @@ export interface operations {
                 category?: string;
                 from?: string;
                 lat?: number;
+                /** @description `beginner`, `intermediate` o `advanced`: las de ese nivel **y** las de todos los niveles (sin nivel). Cualquier otro valor no filtra. */
+                level?: string;
                 lng?: number;
                 /** @description Código INE del municipio. Con `lat`/`lng` se SUMA al radio (unión), no se cruza: salen las actividades del municipio y además las que caigan dentro del radio. */
                 place?: string;
@@ -23864,6 +24835,877 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SurveyPending"][];
+                };
+            };
+        };
+    };
+    training_disciplines_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedDisciplineList"];
+                };
+            };
+        };
+    };
+    training_disciplines_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DisciplineRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["DisciplineRequest"];
+                "multipart/form-data": components["schemas"]["DisciplineRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Discipline"];
+                };
+            };
+        };
+    };
+    training_disciplines_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Disciplina. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Discipline"];
+                };
+            };
+        };
+    };
+    training_disciplines_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Disciplina. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DisciplineRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["DisciplineRequest"];
+                "multipart/form-data": components["schemas"]["DisciplineRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Discipline"];
+                };
+            };
+        };
+    };
+    training_disciplines_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Disciplina. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    training_disciplines_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Disciplina. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedDisciplineRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedDisciplineRequest"];
+                "multipart/form-data": components["schemas"]["PatchedDisciplineRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Discipline"];
+                };
+            };
+        };
+    };
+    training_exercises_list: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedExerciseList"];
+                };
+            };
+        };
+    };
+    training_exercises_create: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExerciseRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ExerciseRequest"];
+                "multipart/form-data": components["schemas"]["ExerciseRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Exercise"];
+                };
+            };
+        };
+    };
+    training_exercises_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Ejercicio. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Exercise"];
+                };
+            };
+        };
+    };
+    training_exercises_update: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Ejercicio. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExerciseRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ExerciseRequest"];
+                "multipart/form-data": components["schemas"]["ExerciseRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Exercise"];
+                };
+            };
+        };
+    };
+    training_exercises_destroy: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Ejercicio. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    training_exercises_partial_update: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Ejercicio. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedExerciseRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedExerciseRequest"];
+                "multipart/form-data": components["schemas"]["PatchedExerciseRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Exercise"];
+                };
+            };
+        };
+    };
+    training_profile_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SportProfileOut"];
+                };
+            };
+        };
+    };
+    training_profile_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["SportProfileRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SportProfileRequest"];
+                "multipart/form-data": components["schemas"]["SportProfileRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SportProfileOut"];
+                };
+            };
+        };
+    };
+    training_profile_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    training_stats_retrieve: {
+        parameters: {
+            query?: {
+                since?: string;
+                until?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrainingStats"];
+                };
+            };
+        };
+    };
+    training_templates_list: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description `system` (plantillas de Popyplan) o `mine` (mis rutinas). Sin el parámetro, las dos. */
+                scope?: string;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedWorkoutTemplateList"];
+                };
+            };
+        };
+    };
+    training_templates_create: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description `system` (plantillas de Popyplan) o `mine` (mis rutinas). Sin el parámetro, las dos. */
+                scope?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkoutTemplateWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["WorkoutTemplateWriteRequest"];
+                "multipart/form-data": components["schemas"]["WorkoutTemplateWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkoutTemplate"];
+                };
+            };
+        };
+    };
+    training_templates_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description `system` (plantillas de Popyplan) o `mine` (mis rutinas). Sin el parámetro, las dos. */
+                scope?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Plantilla de entrenamiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkoutTemplate"];
+                };
+            };
+        };
+    };
+    training_templates_update: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description `system` (plantillas de Popyplan) o `mine` (mis rutinas). Sin el parámetro, las dos. */
+                scope?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Plantilla de entrenamiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkoutTemplateWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["WorkoutTemplateWriteRequest"];
+                "multipart/form-data": components["schemas"]["WorkoutTemplateWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkoutTemplate"];
+                };
+            };
+        };
+    };
+    training_templates_destroy: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description `system` (plantillas de Popyplan) o `mine` (mis rutinas). Sin el parámetro, las dos. */
+                scope?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Plantilla de entrenamiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    training_templates_partial_update: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description `system` (plantillas de Popyplan) o `mine` (mis rutinas). Sin el parámetro, las dos. */
+                scope?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Plantilla de entrenamiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedWorkoutTemplateWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedWorkoutTemplateWriteRequest"];
+                "multipart/form-data": components["schemas"]["PatchedWorkoutTemplateWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkoutTemplate"];
+                };
+            };
+        };
+    };
+    training_workouts_list: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description A search term. */
+                search?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedWorkoutListList"];
+                };
+            };
+        };
+    };
+    training_workouts_create: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkoutWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["WorkoutWriteRequest"];
+                "multipart/form-data": components["schemas"]["WorkoutWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkoutDetail"];
+                };
+            };
+        };
+    };
+    training_workouts_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Entrenamiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkoutDetail"];
+                };
+            };
+        };
+    };
+    training_workouts_update: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Entrenamiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkoutWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["WorkoutWriteRequest"];
+                "multipart/form-data": components["schemas"]["WorkoutWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkoutDetail"];
+                };
+            };
+        };
+    };
+    training_workouts_destroy: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Entrenamiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    training_workouts_partial_update: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Entrenamiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedWorkoutWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedWorkoutWriteRequest"];
+                "multipart/form-data": components["schemas"]["PatchedWorkoutWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkoutDetail"];
+                };
+            };
+        };
+    };
+    training_workouts_publish_create: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Entrenamiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublishRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PublishRequest"];
+                "multipart/form-data": components["schemas"]["PublishRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    training_workouts_publish_destroy: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Entrenamiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    training_workouts_save_as_template_create: {
+        parameters: {
+            query?: {
+                /** @description Id o código de la disciplina. */
+                discipline?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Entrenamiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["SaveAsTemplateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SaveAsTemplateRequest"];
+                "multipart/form-data": components["schemas"]["SaveAsTemplateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkoutTemplate"];
                 };
             };
         };

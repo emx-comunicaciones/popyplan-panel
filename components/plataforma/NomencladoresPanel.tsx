@@ -38,6 +38,30 @@ import {
 } from "@/hooks/useCatalogs";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 
+import { DisciplinasCatalog } from "./nomencladores/DisciplinasCatalog";
+import { EjerciciosCatalog } from "./nomencladores/EjerciciosCatalog";
+import { PlantillasEntrenamientoCatalog } from "./nomencladores/PlantillasEntrenamientoCatalog";
+
+const TRAINING_CATALOG_KEYS = ["trainingDisciplines", "trainingExercises", "trainingTemplates"] as const;
+type TrainingCatalogKey = (typeof TRAINING_CATALOG_KEYS)[number];
+type SelectorKey = CatalogKey | TrainingCatalogKey;
+
+const TRAINING_CATALOG_LABEL_KEYS: Record<TrainingCatalogKey, string> = {
+  trainingDisciplines: "plataforma.nomencladores.training.catalogs.disciplines",
+  trainingExercises: "plataforma.nomencladores.training.catalogs.exercises",
+  trainingTemplates: "plataforma.nomencladores.training.catalogs.templates",
+};
+
+function isTrainingCatalog(key: SelectorKey): key is TrainingCatalogKey {
+  return (TRAINING_CATALOG_KEYS as readonly string[]).includes(key);
+}
+
+function TrainingCatalog({ catalog }: { catalog: TrainingCatalogKey }) {
+  if (catalog === "trainingDisciplines") return <DisciplinasCatalog />;
+  if (catalog === "trainingExercises") return <EjerciciosCatalog />;
+  return <PlantillasEntrenamientoCatalog />;
+}
+
 const CATALOG_LABEL_KEYS: Record<CatalogKey, string> = {
   languages: "plataforma.nomencladores.catalogs.languages",
   hobbyCategories: "plataforma.nomencladores.catalogs.hobbyCategories",
@@ -414,7 +438,7 @@ function CatalogTable({ catalog }: { catalog: CatalogKey }) {
 
 export function NomencladoresPanel() {
   const t = useTranslations();
-  const [catalog, setCatalog] = useState<CatalogKey>("languages");
+  const [catalog, setCatalog] = useState<SelectorKey>("languages");
 
   return (
     <div className="flex flex-col gap-4">
@@ -425,17 +449,30 @@ export function NomencladoresPanel() {
         <select
           id="nomencladores-catalog"
           value={catalog}
-          onChange={(event) => setCatalog(event.target.value as CatalogKey)}
+          onChange={(event) => setCatalog(event.target.value as SelectorKey)}
           className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         >
-          {CATALOG_KEYS.map((key) => (
-            <option key={key} value={key}>
-              {t(CATALOG_LABEL_KEYS[key])}
-            </option>
-          ))}
+          <optgroup label={t("plataforma.nomencladores.groups.general")}>
+            {CATALOG_KEYS.map((key) => (
+              <option key={key} value={key}>
+                {t(CATALOG_LABEL_KEYS[key])}
+              </option>
+            ))}
+          </optgroup>
+          <optgroup label={t("plataforma.nomencladores.groups.training")}>
+            {TRAINING_CATALOG_KEYS.map((key) => (
+              <option key={key} value={key}>
+                {t(TRAINING_CATALOG_LABEL_KEYS[key])}
+              </option>
+            ))}
+          </optgroup>
         </select>
       </div>
-      <CatalogTable key={catalog} catalog={catalog} />
+      {isTrainingCatalog(catalog) ? (
+        <TrainingCatalog key={catalog} catalog={catalog} />
+      ) : (
+        <CatalogTable key={catalog} catalog={catalog} />
+      )}
     </div>
   );
 }

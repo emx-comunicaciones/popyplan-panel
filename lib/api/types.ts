@@ -286,6 +286,12 @@ export type EntityEventOrganizerRef = components["schemas"]["EntityEventOrganize
  */
 export type EventDetail = components["schemas"]["EventDetail"];
 export type EventAudience = components["schemas"]["Audience749Enum"];
+/**
+ * Nivel de una actividad (`events.Event.level`, `docs/PANEL.md` §17.6 del
+ * backend): `""` es «todos los niveles». El esquema lo parte en
+ * `LevelCaaEnum | BlankEnum`; aquí se une en un solo tipo.
+ */
+export type EventLevel = components["schemas"]["LevelCaaEnum"] | "";
 
 /**
  * Campos que el panel escribe al crear/editar una actividad —
@@ -319,6 +325,11 @@ export interface EventWriteFields {
   capacity: number | null;
   latitude: number | null;
   longitude: number | null;
+  /**
+   * Opcional: `""` (todos los niveles) no se manda al crear; al editar
+   * viaja si está presente, también `""` (para quitar el nivel).
+   */
+  level?: EventLevel;
 }
 
 /**
@@ -1402,4 +1413,100 @@ export interface TreasureCompletionValidateResponse {
   points_earned?: number;
   message?: string;
   detail?: string;
+}
+
+/**
+ * Entrenamiento: catálogo y plantillas de Popyplan (Nomencladores de
+ * plataforma, `docs/PANEL.md` §17.1-§17.2 del backend). Lectura, alias
+ * directos del esquema generado. `name` sale **traducido** al idioma de la
+ * petición; el panel edita siempre desde `name_es`/`name_eu`/`name_ca` y
+ * escribe `name` (castellano), `name_eu` y `name_ca` — si leyera `name`
+ * con la interfaz en euskera y lo guardara, pisaría el castellano.
+ *
+ * El panel **nunca** tipa ni pide entrenos, rutinas propias ni perfiles
+ * deportivos (el entrenamiento es privado): por eso aquí no hay alias de
+ * `Workout*` ni de `SportProfile*`.
+ */
+export type TrainingDiscipline = components["schemas"]["Discipline"];
+export type TrainingDisciplineKind = components["schemas"]["KindA97Enum"];
+export type TrainingExercise = components["schemas"]["Exercise"];
+export type TrainingMetric = components["schemas"]["MetricEnum"];
+export type TrainingMuscleGroup = components["schemas"]["MuscleGroupEnum"];
+export type TrainingTemplate = components["schemas"]["WorkoutTemplate"];
+/**
+ * `TemplateItem.metric` sale opcional en el esquema (el serializer lo
+ * declara `required=False` para la escritura), pero al leer siempre viene
+ * (`training/serializers.py::TemplateItemSerializer`, el modelo tiene
+ * `default='weight_reps'`). Se estrecha a obligatorio.
+ */
+export type TrainingTemplateItem = components["schemas"]["TemplateItem"] & { metric: TrainingMetric };
+
+/**
+ * Cuerpo de `POST/PATCH /api/training/disciplines/`. Manual porque el
+ * panel manda siempre el formulario completo (en alta y en edición) y así
+ * queda un solo tipo, sin los opcionales de `DisciplineRequest`.
+ */
+export interface TrainingDisciplineWrite {
+  code: string;
+  name: string;
+  name_eu: string;
+  name_ca: string;
+  kind: TrainingDisciplineKind;
+  icon: string;
+  order: number;
+  is_active: boolean;
+}
+
+/** Cuerpo de `POST/PATCH /api/training/exercises/` (se escribe con `discipline_id`). */
+export interface TrainingExerciseWrite {
+  code: string;
+  name: string;
+  name_eu: string;
+  name_ca: string;
+  discipline_id: number;
+  muscle_group: TrainingMuscleGroup | "";
+  metric: TrainingMetric;
+  order: number;
+  is_active: boolean;
+}
+
+/**
+ * Un ejercicio de plantilla al escribir. Manual: con `exercise_id` no se
+ * manda `name` (el backend copia el del catálogo,
+ * `training/services.py::_escribir_items`); sin él, `name` + `metric`.
+ * Decimales como cadena (`"60.5"`), igual que los sirve el backend.
+ */
+export interface TrainingTemplateItemWrite {
+  exercise_id: number | null;
+  name?: string;
+  metric?: TrainingMetric;
+  sets: number;
+  reps: number | null;
+  weight_kg: string | null;
+  seconds: number | null;
+  distance_km: string | null;
+}
+
+/**
+ * Cuerpo de `POST/PATCH /api/training/templates/`. Manual:
+ * `PatchedWorkoutTemplateWriteRequest` (generado) marca `system`
+ * obligatorio también al editar (quirk de spectacular con un campo con
+ * `default`), y en un `PATCH` el backend lo descarta (no se cambia de
+ * dueña). `system: true` solo al crear; `discipline_id` al editar solo si
+ * cambió (el backend solo acepta disciplinas activas, y reenviar la de una
+ * plantilla cuya disciplina ya se desactivó daría 400 sin motivo).
+ * `items` **reemplaza** la lista entera.
+ */
+export interface TrainingTemplateWrite {
+  name: string;
+  name_eu: string;
+  name_ca: string;
+  description: string;
+  discipline_id?: number;
+  duration_minutes: number | null;
+  distance_km: string | null;
+  order: number;
+  is_active: boolean;
+  items: TrainingTemplateItemWrite[];
+  system?: true;
 }

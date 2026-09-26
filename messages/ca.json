@@ -608,7 +608,8 @@
         "endsAtBeforeStartsAt": "L'activitat no pot acabar abans de començar.",
         "capacityTooLow": "L'aforament mínim és d'una plaça.",
         "communityRequired": "Una activitat només per a la comunitat necessita una comunitat."
-      }
+      },
+      "levelLabel": "Nivell"
     },
     "asistencia": {
       "heading": "Assistència",
@@ -1447,6 +1448,14 @@
       "sinAcceso": "Només el superadmin pot gestionar la caça del tresor.",
       "noEncontrado": "Aquest joc (o el que hi buscaves) ja no existeix.",
       "desconocido": "No s'ha pogut completar l'operació. Torna-ho a provar."
+    },
+    "trainingCatalog": {
+      "invalido": "Revisa les dades.",
+      "sinAcceso": "Només el superadmin gestiona el catàleg d'entrenament.",
+      "noEncontrado": "Aquest element ja no existeix.",
+      "enUso": "Està en ús i no es pot esborrar; desactiva'l en lloc seu.",
+      "demasiadasPaginas": "Hi ha massa elements per carregar-los tots.",
+      "desconocido": "No s'ha pogut completar l'acció."
     }
   },
   "reports": {
@@ -1566,7 +1575,7 @@
       "actividades": {
         "title": "Activitats",
         "summary": "Les activitats del període amb els seus inscrits, assistents i responsable. Inclou les activitats que vénen quan el període arriba al futur.",
-        "details": "La llista cobreix el període que tries, incloses les activitats que vénen. La columna de responsable només s'omple si el teu rol pot veure la llista nominal; si no, mostra «—» en lloc d'un nom inventat. Obrir la llista d'assistència només s'ofereix quan la secció d'Assistència és al teu menú: un referent veu les activitats però cap enllaç d'assistència. Els comptadors de cada fila són inscrits, ha assistit i no ha assistit del període.",
+        "details": "La llista cobreix el període que tries, incloses les activitats que vénen. La columna de responsable només s'omple si el teu rol pot veure la llista nominal; si no, mostra «—» en lloc d'un nom inventat. Obrir la llista d'assistència només s'ofereix quan la secció d'Assistència és al teu menú: un referent veu les activitats però cap enllaç d'assistència. Els comptadors de cada fila són inscrits, ha assistit i no ha assistit del període. En crear o editar una activitat pots indicar un nivell opcional (principiant, intermedi o avançat); sense ell, l'activitat és per a tots els nivells.",
         "actions": [
           "Canviar el període (inclou les activitats que vénen)",
           "Filtrar per estat",
@@ -2295,8 +2304,8 @@
       },
       "nomencladores": {
         "title": "Nomenclàtors",
-        "summary": "Els catàlegs de l'app: idiomes, aficions i categories de comunitats i activitats.",
-        "details": "Tria un nomenclàtor i edita'n els elements. També es veuen els inactius, que l'app ja no ofereix. Esborrar és definitiu i de vegades arrossega: una categoria de comunitat o d'activitat s'emporta les seves subcategories, i una categoria d'aficions amb aficions no es deixa esborrar. El servidor també rebutja un nom repetit dins la mateixa categoria. La imatge de les categories de comunitat no es puja des d'aquí.",
+        "summary": "Els catàlegs de l'app: idiomes, aficions, categories de comunitats i activitats, i entrenament (disciplines, exercicis i plantilles de Popyplan).",
+        "details": "Tria un nomenclàtor i edita'n els elements. També es veuen els inactius, que l'app ja no ofereix. Esborrar és definitiu i de vegades arrossega: una categoria de comunitat o d'activitat s'emporta les seves subcategories, i una categoria d'aficions amb aficions no es deixa esborrar. El servidor també rebutja un nom repetit dins la mateixa categoria. La imatge de les categories de comunitat no es puja des d'aquí. Entrenament: cada disciplina té un tipus de mesura (Força, Resistència o Ruta); una disciplina en ús no es pot esborrar (el servidor ho diu i es desactiva en lloc seu). Els noms s'editen en castellà, basc i català. Aquí només s'editen les plantilles de Popyplan, i desar una plantilla substitueix tota la seva llista d'exercicis. El tauler no mostra mai entrenaments, rutines ni perfils esportius de ningú.",
         "actions": [
           "Triar un nomenclàtor",
           "Afegir o editar elements",
@@ -2930,7 +2939,8 @@
       "cancelDescription": "Es cancel·la «{title}» i s'avisa totes les persones inscrites i en llista d'espera. No es pot desfer i no queda a Auditoria.",
       "previous": "Anterior",
       "next": "Següent",
-      "count": "{count, plural, one {# activitat} other {# activitats}}"
+      "count": "{count, plural, one {# activitat} other {# activitats}}",
+      "levelHeader": "Nivell"
     },
     "chats": {
       "heading": "Xats",
@@ -3150,7 +3160,7 @@
     "nomencladores": {
       "noAccessDescription": "Només el superadmin edita els nomenclàtors.",
       "heading": "Nomenclàtors",
-      "intro": "Els catàlegs que fan servir l'app i el tauler: idiomes, aficions i categories de comunitats i activitats.",
+      "intro": "Els catàlegs que fan servir l'app i el tauler: idiomes, aficions, categories de comunitats i activitats, i el catàleg d'entrenament.",
       "catalogLabel": "Nomenclàtor",
       "catalogs": {
         "languages": "Idiomes",
@@ -3212,7 +3222,106 @@
       "loadError": "No s'ha pogut carregar el nomenclàtor",
       "empty": "Aquest nomenclàtor és buit",
       "count": "{count, plural, one {# element} other {# elements}}",
-      "deleteTitle": "Esborrar «{name}»?"
+      "deleteTitle": "Esborrar «{name}»?",
+      "training": {
+        "catalogs": {
+          "disciplines": "Disciplines d'entrenament",
+          "exercises": "Exercicis",
+          "templates": "Plantilles d'entrenament"
+        },
+        "hints": {
+          "disciplines": "Cada esport i com es mesura: Força (exercicis amb sèries, repeticions i pes), Resistència (durada i distància) o Ruta (distància, desnivell i durada). Una disciplina en ús no es pot esborrar: desactiva-la.",
+          "exercises": "Exercicis de cada disciplina. La mètrica decideix la forma de cada sèrie: pes i repeticions, repeticions, temps o distància. El codi no es repeteix.",
+          "templates": "Plantilles de Popyplan que l'app ofereix per registrar un entrenament ràpid. Aquí només surten les de Popyplan: el tauler no mostra mai entrenaments, rutines ni perfils esportius de ningú."
+        },
+        "fields": {
+          "name": "Nom",
+          "nameEs": "Nom (castellà)",
+          "nameEu": "Nom (basc)",
+          "nameCa": "Nom (català)",
+          "code": "Codi",
+          "kind": "Tipus de mesura",
+          "icon": "Icona",
+          "order": "Ordre",
+          "discipline": "Disciplina",
+          "muscleGroup": "Grup muscular",
+          "metric": "Mètrica",
+          "description": "Descripció",
+          "duration": "Durada (minuts)",
+          "distance": "Distància (km)",
+          "itemsCount": "Exercicis"
+        },
+        "kinds": {
+          "strength": "Força",
+          "endurance": "Resistència",
+          "route": "Ruta"
+        },
+        "metrics": {
+          "weightReps": "Pes i repeticions",
+          "reps": "Repeticions",
+          "time": "Temps",
+          "distance": "Distància"
+        },
+        "muscleGroups": {
+          "none": "Sense grup",
+          "chest": "Pit",
+          "back": "Esquena",
+          "shoulders": "Espatlles",
+          "biceps": "Bíceps",
+          "triceps": "Tríceps",
+          "legs": "Cames",
+          "glutes": "Glutis",
+          "core": "Core",
+          "fullBody": "Cos sencer",
+          "cardio": "Cardio"
+        },
+        "allDisciplines": "Totes",
+        "chooseDiscipline": "Tria una disciplina",
+        "disciplinesLoadError": "No s'han pogut carregar les disciplines.",
+        "newDiscipline": "Disciplina nova",
+        "editDiscipline": "Edita la disciplina",
+        "newExercise": "Exercici nou",
+        "editExercise": "Edita l'exercici",
+        "newTemplate": "Plantilla nova",
+        "editTemplate": "Edita la plantilla",
+        "deleteWarnings": {
+          "discipline": "Una disciplina amb exercicis, plantilles o entrenaments no es pot esborrar: desactiva-la en lloc seu.",
+          "exercise": "S'esborra l'exercici del catàleg. Les plantilles i els entrenaments que el feien servir conserven el nom com a exercici lliure.",
+          "template": "S'esborra la plantilla de Popyplan i l'app deixa d'oferir-la. Els entrenaments que s'hi van registrar no canvien."
+        },
+        "items": {
+          "heading": "Exercicis de la plantilla",
+          "hint": "Desar substitueix tota la llista, en aquest ordre. Cada exercici surt del catàleg de la disciplina o porta un nom lliure amb la seva mètrica.",
+          "empty": "Encara no hi ha exercicis.",
+          "add": "Afegeix un exercici",
+          "exercisesLoadError": "No s'han pogut carregar els exercicis de la disciplina.",
+          "itemLabel": "Exercici {n}",
+          "moveUp": "Puja l'exercici {n}",
+          "moveDown": "Baixa l'exercici {n}",
+          "remove": "Treu l'exercici {n}",
+          "source": "Exercici del catàleg ({n})",
+          "freeName": "Nom lliure",
+          "inactiveOption": "{name} (inactiu)",
+          "name": "Nom ({n})",
+          "metric": "Mètrica ({n})",
+          "sets": "Sèries ({n})",
+          "reps": "Repeticions ({n})",
+          "weight": "Pes, kg ({n})",
+          "seconds": "Segons ({n})",
+          "distance": "Distància, km ({n})"
+        },
+        "formErrors": {
+          "nameRequired": "Falta el nom en castellà.",
+          "disciplineRequired": "Tria una disciplina.",
+          "invalidNumber": "Algun número no és vàlid.",
+          "itemNameRequired": "Cada exercici lliure necessita un nom.",
+          "itemSetsRange": "Cada exercici porta entre 1 i 50 sèries."
+        }
+      },
+      "groups": {
+        "general": "Generals",
+        "training": "Entrenament"
+      }
     },
     "tesoro": {
       "heading": "Caça del tresor",
@@ -3452,6 +3561,14 @@
     "redFinanciada": {
       "heading": "Xarxa finançada",
       "noAccessDescription": "El teu rol no té accés a la Xarxa finançada."
+    }
+  },
+  "events": {
+    "levels": {
+      "all": "Tots els nivells",
+      "beginner": "Principiant",
+      "intermediate": "Intermedi",
+      "advanced": "Avançat"
     }
   }
 }

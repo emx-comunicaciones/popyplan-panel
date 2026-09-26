@@ -62,6 +62,21 @@ describe("useCreateEvent", () => {
     });
   });
 
+  it("manda level si hay uno; «todos los niveles» (vacío) no viaja", async () => {
+    apiFetchMock.mockResolvedValue(EVENT_DETAIL);
+
+    const { result } = renderHook(() => useCreateEvent(7), { wrapper });
+    result.current.mutate({ ...FULL_FIELDS, level: "beginner" });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    const withLevel = apiFetchMock.mock.calls[0][1] as { body: Record<string, unknown> };
+    expect(withLevel.body.level).toBe("beginner");
+
+    result.current.mutate({ ...FULL_FIELDS, level: "" });
+    await waitFor(() => expect(apiFetchMock).toHaveBeenCalledTimes(2));
+    const withoutLevel = apiFetchMock.mock.calls[1][1] as { body: Record<string, unknown> };
+    expect(withoutLevel.body).not.toHaveProperty("level");
+  });
+
   it("con audience=community solo manda community si hay una elegida", async () => {
     apiFetchMock.mockResolvedValueOnce(EVENT_DETAIL);
 
@@ -216,6 +231,23 @@ describe("useUpdateEvent", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     const call = apiFetchMock.mock.calls[0][1] as { body: Record<string, unknown> };
     expect(call.body).not.toHaveProperty("starts_at");
+  });
+
+  it("level viaja si está presente, también vacío (vuelve a «todos los niveles»)", async () => {
+    apiFetchMock.mockResolvedValue(EVENT_DETAIL);
+
+    const { result } = renderHook(() => useUpdateEvent(7), { wrapper });
+    result.current.mutate({ eventId: "e1", level: "" });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(apiFetchMock).toHaveBeenLastCalledWith(EVENTS.DETAIL("e1"), { method: "PATCH", body: { level: "" } });
+
+    result.current.mutate({ eventId: "e1", level: "advanced" });
+    await waitFor(() =>
+      expect(apiFetchMock).toHaveBeenLastCalledWith(EVENTS.DETAIL("e1"), {
+        method: "PATCH",
+        body: { level: "advanced" },
+      }),
+    );
   });
 
   it("capacity: null borra el aforo explícitamente", async () => {

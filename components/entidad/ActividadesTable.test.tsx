@@ -195,6 +195,52 @@ describe("ActividadesTable — gestión de actividades", () => {
     expect(within(dialog).queryByLabelText("Quién se puede apuntar")).not.toBeInTheDocument();
   });
 
+  it("crear: el nivel es opcional y arranca en «Todos los niveles»", async () => {
+    setDefaults();
+    const createMutate = vi.fn();
+    useCreateEventMock.mockReturnValue(mutationDefaults({ mutate: createMutate }));
+    const user = userEvent.setup();
+
+    render(<ActividadesTable orgId={7} slug="alfaville" canOpenAttendance canManage />);
+    await user.click(screen.getByRole("button", { name: "Nueva actividad" }));
+    const dialog = screen.getByRole("dialog", { name: "Nueva actividad" });
+    const level = within(dialog).getByLabelText("Nivel");
+    expect(level).toHaveValue("");
+    expect(within(level).getAllByRole("option").map((o) => o.textContent)).toEqual([
+      "Todos los niveles",
+      "Principiante",
+      "Intermedio",
+      "Avanzado",
+    ]);
+
+    await user.type(within(dialog).getByLabelText("Título"), "Iniciación al pádel");
+    await user.type(within(dialog).getByLabelText("Empieza"), "2027-01-01T10:00");
+    await user.selectOptions(level, "beginner");
+    await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
+
+    expect(createMutate.mock.calls[0][0].level).toBe("beginner");
+  });
+
+  it("editar: precarga el nivel y solo lo manda si cambia", async () => {
+    setDefaults();
+    useEventMock.mockReturnValue({ data: { ...EVENT_DETAIL, level: "advanced" }, isError: false, error: null });
+    const updateMutate = vi.fn();
+    useUpdateEventMock.mockReturnValue(mutationDefaults({ mutate: updateMutate }));
+    const user = userEvent.setup();
+
+    render(<ActividadesTable orgId={7} slug="alfaville" canOpenAttendance canManage />);
+    await user.click(screen.getByRole("button", { name: "Editar" }));
+    const dialog = screen.getByRole("dialog", { name: "Editar actividad" });
+    expect(within(dialog).getByLabelText("Nivel")).toHaveValue("advanced");
+
+    await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
+    expect(updateMutate.mock.calls[0][0]).not.toHaveProperty("level");
+
+    await user.selectOptions(within(dialog).getByLabelText("Nivel"), "");
+    await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
+    expect(updateMutate.mock.calls[1][0].level).toBe("");
+  });
+
   it("«Cancelar actividad» pide confirmación antes de llamar a la mutación", async () => {
     setDefaults();
     const cancelMutate = vi.fn();

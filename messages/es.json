@@ -608,7 +608,8 @@
         "endsAtBeforeStartsAt": "La actividad no puede terminar antes de empezar.",
         "capacityTooLow": "El aforo mínimo es de una plaza.",
         "communityRequired": "Una actividad solo para la comunidad necesita comunidad."
-      }
+      },
+      "levelLabel": "Nivel"
     },
     "asistencia": {
       "heading": "Asistencia",
@@ -1447,6 +1448,14 @@
       "sinAcceso": "Solo superadmin puede gestionar la búsqueda del tesoro.",
       "noEncontrado": "Este juego (o lo que buscabas dentro de él) ya no existe.",
       "desconocido": "No se pudo completar la operación. Inténtalo de nuevo."
+    },
+    "trainingCatalog": {
+      "invalido": "Revisa los datos.",
+      "sinAcceso": "Solo superadmin gestiona el catálogo de entrenamiento.",
+      "noEncontrado": "Ese elemento ya no existe.",
+      "enUso": "Está en uso y no se puede borrar; desactívalo en su lugar.",
+      "demasiadasPaginas": "Hay demasiados elementos para cargarlos todos.",
+      "desconocido": "No se pudo completar la acción."
     }
   },
   "reports": {
@@ -1566,7 +1575,7 @@
       "actividades": {
         "title": "Actividades",
         "summary": "Las actividades del periodo con sus inscritos, asistentes y responsable. Incluye las actividades que vienen cuando el periodo alcanza el futuro.",
-        "details": "La lista cubre el periodo que elijas, incluidas las actividades que aún no han empezado. La columna de responsable solo se rellena si tu rol puede ver la lista nominal; si no, muestra «—» en lugar de un nombre inventado. La entrada a la lista de asistencia solo se ofrece cuando la sección Asistencia está en tu menú: un referente ve las actividades pero sin enlace a asistencia. Los contadores de cada fila son inscritos, asistió y no asistió del periodo.",
+        "details": "La lista cubre el periodo que elijas, incluidas las actividades que aún no han empezado. La columna de responsable solo se rellena si tu rol puede ver la lista nominal; si no, muestra «—» en lugar de un nombre inventado. La entrada a la lista de asistencia solo se ofrece cuando la sección Asistencia está en tu menú: un referente ve las actividades pero sin enlace a asistencia. Los contadores de cada fila son inscritos, asistió y no asistió del periodo. Al crear o editar una actividad puedes indicar un nivel opcional (principiante, intermedio o avanzado); sin él, la actividad es para todos los niveles.",
         "actions": [
           "Cambiar el periodo (incluye las actividades que vienen)",
           "Filtrar por estado",
@@ -2295,8 +2304,8 @@
       },
       "nomencladores": {
         "title": "Nomencladores",
-        "summary": "Los catálogos de la app: idiomas, aficiones y categorías de comunidades y actividades.",
-        "details": "Elige un nomenclador y edita sus elementos. Se ven también los inactivos, que la app ya no ofrece. Borrar es definitivo y a veces arrastra: una categoría de comunidad o de actividad se lleva sus subcategorías, y una categoría de aficiones con aficiones no se deja borrar. Un nombre repetido dentro de la misma categoría también lo rechaza el servidor. La imagen de las categorías de comunidad no se sube desde aquí.",
+        "summary": "Los catálogos de la app: idiomas, aficiones, categorías de comunidades y actividades, y entrenamiento (disciplinas, ejercicios y plantillas de Popyplan).",
+        "details": "Elige un nomenclador y edita sus elementos. Se ven también los inactivos, que la app ya no ofrece. Borrar es definitivo y a veces arrastra: una categoría de comunidad o de actividad se lleva sus subcategorías, y una categoría de aficiones con aficiones no se deja borrar. Un nombre repetido dentro de la misma categoría también lo rechaza el servidor. La imagen de las categorías de comunidad no se sube desde aquí. Entrenamiento: cada disciplina tiene un tipo de medida (Fuerza, Resistencia o Ruta); una disciplina en uso no se puede borrar (el servidor lo dice y se desactiva en su lugar). Los nombres se editan en castellano, euskera y catalán. Aquí solo se editan las plantillas de Popyplan, y guardar una plantilla reemplaza su lista entera de ejercicios. El panel nunca muestra entrenos, rutinas ni perfiles deportivos de nadie.",
         "actions": [
           "Elegir un nomenclador",
           "Añadir o editar elementos",
@@ -2930,7 +2939,8 @@
       "cancelDescription": "Se cancela «{title}» y se avisa a todas las personas inscritas y en lista de espera. No se puede deshacer y no queda en Auditoría.",
       "previous": "Anterior",
       "next": "Siguiente",
-      "count": "{count, plural, one {# actividad} other {# actividades}}"
+      "count": "{count, plural, one {# actividad} other {# actividades}}",
+      "levelHeader": "Nivel"
     },
     "chats": {
       "heading": "Chats",
@@ -3150,7 +3160,7 @@
     "nomencladores": {
       "noAccessDescription": "Solo superadmin edita los nomencladores.",
       "heading": "Nomencladores",
-      "intro": "Los catálogos que usan la app y el panel: idiomas, aficiones y categorías de comunidades y actividades.",
+      "intro": "Los catálogos que usan la app y el panel: idiomas, aficiones, categorías de comunidades y actividades, y el catálogo de entrenamiento.",
       "catalogLabel": "Nomenclador",
       "catalogs": {
         "languages": "Idiomas",
@@ -3212,7 +3222,106 @@
       "loadError": "No se pudo cargar el nomenclador",
       "empty": "Este nomenclador está vacío",
       "count": "{count, plural, one {# elemento} other {# elementos}}",
-      "deleteTitle": "¿Borrar «{name}»?"
+      "deleteTitle": "¿Borrar «{name}»?",
+      "training": {
+        "catalogs": {
+          "disciplines": "Disciplinas de entrenamiento",
+          "exercises": "Ejercicios",
+          "templates": "Plantillas de entrenamiento"
+        },
+        "hints": {
+          "disciplines": "Cada deporte y cómo se mide: Fuerza (ejercicios con series, repeticiones y peso), Resistencia (duración y distancia) o Ruta (distancia, desnivel y duración). Una disciplina en uso no se puede borrar: desactívala.",
+          "exercises": "Ejercicios de cada disciplina. La métrica decide la forma de cada serie: peso y repeticiones, repeticiones, tiempo o distancia. El código no se repite.",
+          "templates": "Plantillas de Popyplan que la app ofrece para registrar un entreno rápido. Aquí solo salen las de Popyplan: el panel nunca muestra entrenos, rutinas ni perfiles deportivos de nadie."
+        },
+        "fields": {
+          "name": "Nombre",
+          "nameEs": "Nombre (castellano)",
+          "nameEu": "Nombre (euskera)",
+          "nameCa": "Nombre (catalán)",
+          "code": "Código",
+          "kind": "Tipo de medida",
+          "icon": "Icono",
+          "order": "Orden",
+          "discipline": "Disciplina",
+          "muscleGroup": "Grupo muscular",
+          "metric": "Métrica",
+          "description": "Descripción",
+          "duration": "Duración (minutos)",
+          "distance": "Distancia (km)",
+          "itemsCount": "Ejercicios"
+        },
+        "kinds": {
+          "strength": "Fuerza",
+          "endurance": "Resistencia",
+          "route": "Ruta"
+        },
+        "metrics": {
+          "weightReps": "Peso y repeticiones",
+          "reps": "Repeticiones",
+          "time": "Tiempo",
+          "distance": "Distancia"
+        },
+        "muscleGroups": {
+          "none": "Sin grupo",
+          "chest": "Pecho",
+          "back": "Espalda",
+          "shoulders": "Hombros",
+          "biceps": "Bíceps",
+          "triceps": "Tríceps",
+          "legs": "Pierna",
+          "glutes": "Glúteos",
+          "core": "Core",
+          "fullBody": "Cuerpo entero",
+          "cardio": "Cardio"
+        },
+        "allDisciplines": "Todas",
+        "chooseDiscipline": "Elige una disciplina",
+        "disciplinesLoadError": "No se pudieron cargar las disciplinas.",
+        "newDiscipline": "Nueva disciplina",
+        "editDiscipline": "Editar disciplina",
+        "newExercise": "Nuevo ejercicio",
+        "editExercise": "Editar ejercicio",
+        "newTemplate": "Nueva plantilla",
+        "editTemplate": "Editar plantilla",
+        "deleteWarnings": {
+          "discipline": "Una disciplina con ejercicios, plantillas o entrenos no se puede borrar: desactívala en su lugar.",
+          "exercise": "Se borra el ejercicio del catálogo. Las plantillas y los entrenos que lo usaban conservan su nombre como ejercicio libre.",
+          "template": "Se borra la plantilla de Popyplan y la app deja de ofrecerla. Los entrenos que se registraron con ella no cambian."
+        },
+        "items": {
+          "heading": "Ejercicios de la plantilla",
+          "hint": "Guardar reemplaza la lista entera, en este orden. Cada ejercicio sale del catálogo de la disciplina o lleva un nombre libre con su métrica.",
+          "empty": "Sin ejercicios todavía.",
+          "add": "Añadir ejercicio",
+          "exercisesLoadError": "No se pudieron cargar los ejercicios de la disciplina.",
+          "itemLabel": "Ejercicio {n}",
+          "moveUp": "Subir ejercicio {n}",
+          "moveDown": "Bajar ejercicio {n}",
+          "remove": "Quitar ejercicio {n}",
+          "source": "Ejercicio del catálogo ({n})",
+          "freeName": "Nombre libre",
+          "inactiveOption": "{name} (inactivo)",
+          "name": "Nombre ({n})",
+          "metric": "Métrica ({n})",
+          "sets": "Series ({n})",
+          "reps": "Repeticiones ({n})",
+          "weight": "Peso, kg ({n})",
+          "seconds": "Segundos ({n})",
+          "distance": "Distancia, km ({n})"
+        },
+        "formErrors": {
+          "nameRequired": "Falta el nombre en castellano.",
+          "disciplineRequired": "Elige una disciplina.",
+          "invalidNumber": "Algún número no es válido.",
+          "itemNameRequired": "Cada ejercicio libre necesita un nombre.",
+          "itemSetsRange": "Cada ejercicio lleva entre 1 y 50 series."
+        }
+      },
+      "groups": {
+        "general": "Generales",
+        "training": "Entrenamiento"
+      }
     },
     "tesoro": {
       "heading": "Búsqueda del tesoro",
@@ -3452,6 +3561,14 @@
     "redFinanciada": {
       "heading": "Red financiada",
       "noAccessDescription": "Tu rol no tiene acceso a la Red financiada."
+    }
+  },
+  "events": {
+    "levels": {
+      "all": "Todos los niveles",
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzado"
     }
   }
 }

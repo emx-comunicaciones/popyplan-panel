@@ -269,6 +269,20 @@ entidades normales, `/elegir-entidad`.
   `AuditLog`; los chats de soporte salen con la cuenta propia de staff.
   Plantillas de notificación nuevas nacen **inactivas**. 500 de unicidad
   en nomencladores → `conflicto_servidor`.
+- **Entrenamiento** (`docs/PANEL.md` §17 del backend): el panel solo toca
+  el catálogo (disciplinas, ejercicios) y las plantillas **de Popyplan**
+  en Nomencladores (`hooks/useTrainingCatalog.ts`,
+  `components/plataforma/nomencladores/`). Plantillas siempre con
+  `?scope=system`; **nunca** entrenos, rutinas ni perfiles deportivos de
+  nadie (no hay endpoint ni tipo para ellos en el panel, a propósito).
+  Nombres: se editan `name_es`/`name_eu`/`name_ca` y se escribe
+  `name`/`name_eu`/`name_ca` (`name` sale traducido: guardarlo pisaría el
+  castellano). Borrar una disciplina en uso → 409 literal (`en_uso`).
+  Guardar una plantilla manda `items` entero (reemplaza) y
+  `discipline_id` solo si cambió. Nivel de actividad
+  (`lib/events/level.ts`): `""` = todos los niveles; al editar solo viaja
+  si cambió. La fila de `panel/.../events/` no trae `level`, así que la
+  tabla de Actividades no lo enseña.
 - **Exportación**: `ExportPanel` con `group_by=year` **sustituye** al
   desglose del dashboard, nunca lo combina. `Content-Disposition` llega
   porque el backend declara `CORS_EXPOSE_HEADERS`.
@@ -487,6 +501,8 @@ cuando haya backend local sembrado — en CI lo gatea el job `e2e`).
   facturación.
 - `admin-plataforma-2026-09-26.md` — usuarios y bloqueos, búsqueda del
   tesoro, resto del admin antiguo; mismatches y pendientes del backend.
+- `entrenamiento-2026-09-26.md` — catálogo de entrenamiento en
+  Nomencladores y nivel de actividad: decisiones, mismatches y pendientes.
 - `sesion-y-seguridad.md` — diseño de sesión completo y hardening.
 - `accesibilidad-y-e2e.md` — cierre W6: carry-overs, bugs hallados por e2e,
   accesibilidad (tabla de contraste, declaración), e2e y CI.
