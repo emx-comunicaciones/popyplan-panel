@@ -252,8 +252,11 @@ entidades normales, `/elegir-entidad`.
   la fecha nueva (`periodIncluding`). El municipio lo deriva el backend
   de las coordenadas: el panel nunca manda código INE. Mensajes de
   validación copiados literalmente del `.po` del backend.
-- **Comunidades**: el código de invitación solo existe para `private`
-  (no montes el hook con otra visibilidad: 400).
+- **Comunidades**: el código de invitación existe para `private` y
+  `private_listed` (backend 75a8b85; `InviteCode.tsx::hasInviteCode`);
+  no montes el hook con otra visibilidad (400). También sale en Familias
+  para quien gestiona (el resumen no trae la visibilidad: se cruza con
+  `useEntityCommunities`).
 - **Programas**: `budget_cents` obligatorio; el informe se descarga con
   `format` solo (el periodo lo pone el programa).
 - **Territorio**: el ámbito `territorio` puede responder **409

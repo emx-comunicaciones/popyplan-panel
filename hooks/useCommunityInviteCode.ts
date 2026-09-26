@@ -3,10 +3,11 @@
 /**
  * `GET /api/communities/{id}/invite-code/`
  * (`communities/unified_viewset.py::CommunityViewSet.invite_code`, «Solo
- * para gestores y solo en comunidades `private`»): devuelve
- * `{invite_code}` a quien pasa `Community.can_manage` —para una
+ * para gestores y solo en comunidades que se entran con código»):
+ * devuelve `{invite_code}` a quien pasa `Community.can_manage` —para una
  * comunidad con `owner_org`, el titular/moderador de esa entidad— y solo
- * si la visibilidad es `private`.
+ * si la visibilidad es `private` o `private_listed` (esta última desde el
+ * backend 75a8b85; antes solo `private`).
  *
  * **Hallazgo B-I8 de la auditoría de integración (2026-09-21)**: el
  * panel ofrecía crear comunidades `private` (`NuevaComunidadDialog`)
@@ -19,8 +20,8 @@
  * el mensaje del backend llega tal cual cuando lo trae.
  *
  * **No tiene opción `enabled`** (M5 de la revisión de rama): quien lo
- * consume (`ComunidadesPanel.tsx::InviteCode`) monta el componente solo
- * con `visibility === 'private'` y `canManage`, que son justo las dos
+ * consume (`components/entidad/InviteCode.tsx`) se monta solo con
+ * `hasInviteCode(visibility)` y `canManage`, que son justo las dos
  * condiciones del backend, así que el hook nunca llega a ejecutarse en
  * un caso que fuera a dar 400 o 403. Una opción que ningún sitio pasa
  * sería superficie muerta, y el docstring que la describía contaba algo

@@ -516,6 +516,7 @@
       "visibilityOpen": "Irekia",
       "visibilityOnRequest": "Eskaera bidez",
       "visibilityPrivate": "Pribatua",
+      "visibilityPrivateListed": "Pribatua baina ikusgai",
       "membersBadge": "{count, plural, one {# kide} other {# kide}}",
       "activeMembersBadge": "{count, plural, one {# aktibo} other {# aktibo}}",
       "upcomingEventsBadge": "{count, plural, one {# hurrengo jarduera} other {# hurrengo jarduera}}",

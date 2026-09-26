@@ -10,6 +10,13 @@ const getServerSessionMock = vi.hoisted(() => vi.fn());
 const useFamiliesSummaryMock = vi.hoisted(() => vi.fn());
 const useToggleCrossSpaceMock = vi.hoisted(() => vi.fn());
 const useCreateCommunityMock = vi.hoisted(() => vi.fn());
+// `canManage` monta, por cada comunidad de familias, la búsqueda de su
+// visibilidad (`useEntityCommunities`, el resumen no la trae) para decidir
+// si enseña el código de invitación. Por defecto, ninguna fila: sin código.
+const useEntityCommunitiesMock = vi.hoisted(() =>
+  vi.fn(() => ({ data: [] as unknown[], isError: false, error: null })),
+);
+const useCommunityInviteCodeMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("@/hooks/useFamiliesSummary", async () => {
@@ -30,6 +37,13 @@ vi.mock("@/hooks/useCreateCommunity", async () => {
   );
   return { ...actual, useCreateCommunity: useCreateCommunityMock };
 });
+vi.mock("@/hooks/useEntityCommunities", () => ({ useEntityCommunities: useEntityCommunitiesMock }));
+vi.mock("@/hooks/useCommunityInviteCode", async () => {
+  const actual = await vi.importActual<typeof import("@/hooks/useCommunityInviteCode")>(
+    "@/hooks/useCommunityInviteCode",
+  );
+  return { ...actual, useCommunityInviteCode: useCommunityInviteCodeMock };
+});
 
 import EntidadFamiliasPage, { generateMetadata } from "./page";
 
@@ -38,6 +52,8 @@ afterEach(() => {
   useFamiliesSummaryMock.mockReset();
   useToggleCrossSpaceMock.mockReset();
   useCreateCommunityMock.mockReset();
+  useEntityCommunitiesMock.mockReset();
+  useCommunityInviteCodeMock.mockReset();
 });
 
 function mockMutationDefaults() {

@@ -516,6 +516,7 @@
       "visibilityOpen": "Oberta",
       "visibilityOnRequest": "Amb sol·licitud",
       "visibilityPrivate": "Privada",
+      "visibilityPrivateListed": "Privada però visible",
       "membersBadge": "{count, plural, one {# membre} other {# membres}}",
       "activeMembersBadge": "{count, plural, one {# actiu} other {# actius}}",
       "upcomingEventsBadge": "{count, plural, one {# activitat propera} other {# activitats properes}}",

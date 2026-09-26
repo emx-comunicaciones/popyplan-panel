@@ -516,6 +516,7 @@
       "visibilityOpen": "Open",
       "visibilityOnRequest": "By request",
       "visibilityPrivate": "Private",
+      "visibilityPrivateListed": "Private but listed",
       "membersBadge": "{count, plural, one {# member} other {# members}}",
       "activeMembersBadge": "{count, plural, one {# active} other {# active}}",
       "upcomingEventsBadge": "{count, plural, one {# upcoming activity} other {# upcoming activities}}",

@@ -9,10 +9,18 @@ import {
   buildFamilyResourceRow,
   buildFamilyUpcomingEvent,
 } from "@/test-utils/fixtures/families";
+import { buildEntityCommunityRow } from "@/test-utils/fixtures/community";
 
 const useFamiliesSummaryMock = vi.hoisted(() => vi.fn());
 const useToggleCrossSpaceMock = vi.hoisted(() => vi.fn());
 const useCreateCommunityMock = vi.hoisted(() => vi.fn());
+// `canManage` monta, por cada comunidad de familias, la búsqueda de su
+// visibilidad (`useEntityCommunities`, el resumen no la trae) para decidir
+// si enseña el código de invitación. Por defecto, ninguna fila: sin código.
+const useEntityCommunitiesMock = vi.hoisted(() =>
+  vi.fn(() => ({ data: [] as unknown[], isError: false, error: null })),
+);
+const useCommunityInviteCodeMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/hooks/useFamiliesSummary", async () => {
   const actual = await vi.importActual<typeof import("@/hooks/useFamiliesSummary")>(
@@ -32,6 +40,13 @@ vi.mock("@/hooks/useCreateCommunity", async () => {
   );
   return { ...actual, useCreateCommunity: useCreateCommunityMock };
 });
+vi.mock("@/hooks/useEntityCommunities", () => ({ useEntityCommunities: useEntityCommunitiesMock }));
+vi.mock("@/hooks/useCommunityInviteCode", async () => {
+  const actual = await vi.importActual<typeof import("@/hooks/useCommunityInviteCode")>(
+    "@/hooks/useCommunityInviteCode",
+  );
+  return { ...actual, useCommunityInviteCode: useCommunityInviteCodeMock };
+});
 
 import { FamiliasPanel } from "./FamiliasPanel";
 
@@ -39,6 +54,8 @@ afterEach(() => {
   useFamiliesSummaryMock.mockReset();
   useToggleCrossSpaceMock.mockReset();
   useCreateCommunityMock.mockReset();
+  useEntityCommunitiesMock.mockReset();
+  useCommunityInviteCodeMock.mockReset();
 });
 
 function mockMutationDefaults() {
@@ -197,6 +214,66 @@ describe("FamiliasPanel", () => {
       screen.queryByRole("button", { name: "Nueva comunidad de familias" }),
     ).not.toBeInTheDocument();
     expect(screen.getByText("Espacios separados")).toBeInTheDocument();
+  });
+
+  it("canManage=true: una comunidad de familias privada enseña su código de invitación", () => {
+    // El espacio de familias nace `private`: sin el código, nadie puede entrar.
+    mockMutationDefaults();
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [
+        buildEntityCommunityRow({ id: "c-1", name: "Familias Alfaville", visibility: "private", space: "families" }),
+      ],
+      isError: false,
+      error: null,
+    });
+    useCommunityInviteCodeMock.mockReturnValue({ data: "fam-3333", isError: false, error: null });
+    useFamiliesSummaryMock.mockReturnValue({
+      data: buildFamiliesSummary({
+        communities: [buildFamiliesSummaryCommunityRow({ id: "c-1", name: "Familias Alfaville" })],
+      }),
+      isError: false,
+      error: null,
+    });
+
+    render(<FamiliasPanel orgId={7} slug="alfaville" canManage />);
+
+    expect(useEntityCommunitiesMock).toHaveBeenCalledWith(7);
+    expect(useCommunityInviteCodeMock).toHaveBeenCalledWith("c-1");
+    expect(screen.getByText("Código de invitación")).toBeInTheDocument();
+    expect(screen.getByText("fam-3333")).toBeInTheDocument();
+  });
+
+  it("canManage=true: una comunidad de familias abierta no enseña código (el backend daría 400)", () => {
+    mockMutationDefaults();
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c-1", visibility: "open", space: "families" })],
+      isError: false,
+      error: null,
+    });
+    useFamiliesSummaryMock.mockReturnValue({
+      data: buildFamiliesSummary({ communities: [buildFamiliesSummaryCommunityRow({ id: "c-1" })] }),
+      isError: false,
+      error: null,
+    });
+
+    render(<FamiliasPanel orgId={7} slug="alfaville" canManage />);
+
+    expect(screen.queryByText("Código de invitación")).not.toBeInTheDocument();
+    expect(useCommunityInviteCodeMock).not.toHaveBeenCalled();
+  });
+
+  it("canManage=false: no pide ni enseña el código de invitación (el backend daría 403)", () => {
+    mockMutationDefaults();
+    useFamiliesSummaryMock.mockReturnValue({
+      data: buildFamiliesSummary({ communities: [buildFamiliesSummaryCommunityRow({ id: "c-1" })] }),
+      isError: false,
+      error: null,
+    });
+
+    render(<FamiliasPanel orgId={7} slug="alfaville" canManage={false} />);
+
+    expect(useEntityCommunitiesMock).not.toHaveBeenCalled();
+    expect(useCommunityInviteCodeMock).not.toHaveBeenCalled();
   });
 
   it("canManage=true: activar el cruce pide confirmación y llama a mutate con el body correcto", async () => {

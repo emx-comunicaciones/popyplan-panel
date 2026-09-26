@@ -55,7 +55,9 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { StatCard } from "@/components/metrics/StatCard";
+import { InviteCode, hasInviteCode } from "@/components/entidad/InviteCode";
 import { NuevaComunidadDialog } from "@/components/entidad/NuevaComunidadDialog";
+import { useEntityCommunities } from "@/hooks/useEntityCommunities";
 import { useFamiliesSummary } from "@/hooks/useFamiliesSummary";
 import { useToggleCrossSpace, type ToggleCrossSpaceErrorKind } from "@/hooks/useToggleCrossSpace";
 import type { FamiliesSummaryCommunityRow } from "@/lib/api/types";
@@ -84,6 +86,28 @@ const TOGGLE_CROSS_SPACE_ERROR_KEYS: Record<ToggleCrossSpaceErrorKind, string> =
   sin_permiso: "errors.toggleCrossSpace.sinPermiso",
   desconocido: "errors.toggleCrossSpace.desconocido",
 };
+
+/**
+ * Código de invitación de una comunidad de familias, solo para quien la
+ * gestiona (el padre lo monta con `canManage`). El espacio de familias
+ * nace `private` (`NuevaComunidadDialog`), y sin enseñar el código nadie
+ * puede entrar en él. `FamilyCommunityRow` (el resumen) no trae la
+ * visibilidad, así que se busca en `useEntityCommunities` — la misma
+ * consulta que ya usan Comunidades/Comunicaciones/Biblioteca, compartida
+ * por clave de caché. Mientras carga, o si esa consulta falla, no se pinta
+ * nada: sin visibilidad no se puede saber si hay código, y pedirlo a
+ * ciegas daría 400 en una comunidad abierta.
+ */
+function FamilyInviteCode({ orgId, communityId }: { orgId: number | string; communityId: string }) {
+  const entityCommunities = useEntityCommunities(orgId);
+  const row = entityCommunities.data?.find((community) => community.id === communityId);
+  if (!row || !hasInviteCode(row.visibility)) return null;
+  return (
+    <div className="mt-3">
+      <InviteCode communityId={communityId} />
+    </div>
+  );
+}
 
 function CommunityRow({
   orgId,
@@ -141,6 +165,7 @@ function CommunityRow({
             </label>
           ) : null}
         </div>
+        {canManage ? <FamilyInviteCode orgId={orgId} communityId={community.id} /> : null}
         {toggle.isError ? (
           <p role="alert" className="mt-2 text-xs text-error">
             {errorKindText(

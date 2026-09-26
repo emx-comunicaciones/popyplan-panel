@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { EditarComunidadDialog } from "@/components/entidad/EditarComunidadDialog";
 import { NuevaComunidadDialog } from "@/components/entidad/NuevaComunidadDialog";
+import { InviteCode, hasInviteCode } from "@/components/entidad/InviteCode";
 import {
   useApproveCommunityMember,
   useChangeCommunityMemberRole,
@@ -18,7 +19,6 @@ import {
   useRejectCommunityMember,
 } from "@/hooks/useCommunityMemberActions";
 import { useCommunityMembers, useCommunityPendingRequests } from "@/hooks/useCommunityMembers";
-import { useCommunityInviteCode, type CommunityInviteCodeErrorKind } from "@/hooks/useCommunityInviteCode";
 import { useEntityCommunities } from "@/hooks/useEntityCommunities";
 import type { CommunityMember, EntityCommunityRow } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
@@ -35,76 +35,6 @@ const MEMBER_ACTION_ERROR_KEYS = {
   kick: "errors.communityMemberAction.kick",
   changeRole: "errors.communityMemberAction.changeRole",
 } as const;
-
-const INVITE_CODE_ERROR_KEYS: Record<CommunityInviteCodeErrorKind, string> = {
-  sin_permiso: "errors.communityInviteCode.sinPermiso",
-  no_privada: "errors.communityInviteCode.noPrivada",
-  desconocido: "errors.communityInviteCode.desconocido",
-};
-
-/**
- * Código de invitación de una comunidad `private` (hallazgo B-I8 de la
- * auditoría de integración): el panel ofrecía crear comunidades privadas
- * pero no enseñaba el código en ninguna parte, así que la comunidad
- * nacía sin forma de que entrara nadie. Solo se monta con
- * `visibility === 'private'` y `canManage` — las dos condiciones que el
- * backend exige (`invite_code` responde 400 y 403 respectivamente).
- */
-function InviteCode({ communityId }: { communityId: string }) {
-  const t = useTranslations("entidad.comunidades");
-  const tAll = useTranslations();
-  const inviteCode = useCommunityInviteCode(communityId);
-  const [copied, setCopied] = useState<boolean | null>(null);
-
-  async function copy(code: string) {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-    } catch {
-      // Sin permiso de portapapeles (o sin API en ese navegador): el
-      // código sigue visible y seleccionable, solo se avisa.
-      setCopied(false);
-    }
-  }
-
-  return (
-    <div className="mb-3 rounded-md border border-border bg-border-light p-3">
-      <h3 className="text-sm font-semibold text-text-base">{t("inviteCodeTitle")}</h3>
-      <p className="mt-1 text-xs text-text-secondary">{t("inviteCodeHint")}</p>
-      {inviteCode.isError ? (
-        <p role="alert" className="mt-2 text-sm text-error">
-          {errorKindText(
-            inviteCode.error,
-            INVITE_CODE_ERROR_KEYS,
-            tAll,
-            "errors.communityInviteCode.desconocido",
-          )}
-        </p>
-      ) : !inviteCode.data ? (
-        <p className="mt-2 text-sm text-text-secondary">{t("inviteCodeLoading")}</p>
-      ) : (
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <code className="rounded border border-border bg-white px-2 py-1 text-sm text-text-base">
-            {inviteCode.data}
-          </code>
-          <Button type="button" variant="secondary" onClick={() => copy(inviteCode.data)}>
-            {t("inviteCodeCopy")}
-          </Button>
-          {copied === true ? (
-            <span role="status" className="text-sm text-success">
-              {t("inviteCodeCopied")}
-            </span>
-          ) : null}
-          {copied === false ? (
-            <span role="alert" className="text-sm text-error">
-              {t("inviteCodeCopyError")}
-            </span>
-          ) : null}
-        </div>
-      )}
-    </div>
-  );
-}
 
 const ENTITY_COMMUNITIES_ERROR_KEYS = {
   demasiadas_paginas: "errors.entityCommunities.demasiadasPaginas",
@@ -138,7 +68,9 @@ function CommunityCard({
             ? t("visibilityOpen")
             : community.visibility === "on_request"
               ? t("visibilityOnRequest")
-              : t("visibilityPrivate")}
+              : community.visibility === "private_listed"
+                ? t("visibilityPrivateListed")
+                : t("visibilityPrivate")}
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
           <Badge tone="info">{t("membersBadge", { count: community.members_count })}</Badge>
@@ -509,7 +441,7 @@ export function ComunidadesPanel({ orgId, canManage }: ComunidadesPanelProps) {
                   </Button>
                 ) : null}
               </div>
-              {canManage && selectedCommunity.visibility === "private" ? (
+              {canManage && hasInviteCode(selectedCommunity.visibility) ? (
                 <InviteCode key={selectedCommunity.id} communityId={selectedCommunity.id} />
               ) : null}
               <CommunityMembersSection communityId={selectedCommunity.id} />

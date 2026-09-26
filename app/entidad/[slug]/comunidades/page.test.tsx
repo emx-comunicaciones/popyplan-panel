@@ -398,6 +398,35 @@ describe("EntidadComunidadesPage", () => {
     expect(screen.getByRole("button", { name: "Copiar código" })).toBeInTheDocument();
   });
 
+  it("una comunidad privada pero visible se etiqueta como tal y enseña su código a quien la gestiona", async () => {
+    // El backend sirve el código también para `private_listed` desde
+    // 75a8b85: se entra con código igual que en una `private`.
+    const user = userEvent.setup();
+    mockCreateCommunityDefault();
+    useCommunityInviteCodeMock.mockReturnValue({ data: "7a1b-2222", isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "c1", name: "Grupo a la vista", visibility: "private_listed" })],
+      isError: false,
+      error: null,
+    });
+    useCommunityMembersMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useCommunityPendingRequestsMock.mockReturnValue({ data: undefined, isError: false, error: null });
+    useApproveCommunityMemberMock.mockReturnValue(idleMutation());
+    useRejectCommunityMemberMock.mockReturnValue(idleMutation());
+    useKickCommunityMemberMock.mockReturnValue(idleMutation());
+    useChangeCommunityMemberRoleMock.mockReturnValue(idleMutation());
+
+    await renderPage("titular");
+
+    expect(screen.getByText("Privada pero visible")).toBeInTheDocument();
+    expect(screen.queryByText("Privada")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /Grupo a la vista/ }));
+
+    expect(useCommunityInviteCodeMock).toHaveBeenCalledWith("c1");
+    expect(screen.getByText("7a1b-2222")).toBeInTheDocument();
+  });
+
   it("una comunidad abierta no enseña código de invitación (el backend daría 400)", async () => {
     const user = userEvent.setup();
     mockCreateCommunityDefault();
