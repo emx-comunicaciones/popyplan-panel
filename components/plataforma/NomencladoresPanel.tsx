@@ -119,6 +119,7 @@ const ERROR_KEYS: Record<CatalogsErrorKind, string> = {
   no_encontrado: "errors.catalogs.noEncontrado",
   conflicto_servidor: "errors.catalogs.conflictoServidor",
   demasiadas_paginas: "errors.catalogs.demasiadasPaginas",
+  lectura_fallida: "errors.catalogs.lecturaFallida",
   desconocido: "errors.catalogs.desconocido",
 };
 

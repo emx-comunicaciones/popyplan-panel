@@ -1527,6 +1527,7 @@
       "noEncontrado": "Aquest element ja no existeix.",
       "conflictoServidor": "El servidor no ho ha acceptat: potser l'element està en ús o el nom està repetit.",
       "demasiadasPaginas": "Hi ha massa categories per carregar-les totes.",
+      "lecturaFallida": "El servidor ha fallat en carregar el nomenclàtor. Torna-ho a provar d'aquí a una estona.",
       "desconocido": "No s'ha pogut completar l'acció."
     },
     "treasureHunt": {

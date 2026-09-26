@@ -151,7 +151,9 @@ describe("useCatalog", () => {
   it.each([
     [403, "sin_acceso"],
     [404, "no_encontrado"],
-    [500, "conflicto_servidor"],
+    // Al **leer**, un 500 no es «en uso o repetido» (eso es solo al escribir).
+    [500, "lectura_fallida"],
+    [503, "lectura_fallida"],
   ])("traduce un %s a %s", async (status, kind) => {
     freshClient();
     apiFetchMock.mockRejectedValueOnce(new ApiError(status, null));

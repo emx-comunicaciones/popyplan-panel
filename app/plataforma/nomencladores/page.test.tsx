@@ -269,6 +269,19 @@ describe("PlataformaNomencladoresPage", () => {
     expect(screen.getByText("Solo el personal de plataforma edita los nomencladores.")).toBeInTheDocument();
   });
 
+  it("un 500 al leer no se explica con la pista de escritura", async () => {
+    mockBackend({
+      list: () => {
+        throw new ApiError(500, null);
+      },
+    });
+    superadmin();
+    await renderPage();
+    expect(await screen.findByText("No se pudo cargar el nomenclador")).toBeInTheDocument();
+    expect(screen.getByText("El servidor falló al cargar el nomenclador. Prueba de nuevo en un momento.")).toBeInTheDocument();
+    expect(screen.queryByText(/puede que el elemento esté en uso/)).not.toBeInTheDocument();
+  });
+
   it("moderator ve «Sin acceso»; sin sesión va a /login; sin rol de plataforma a /", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",

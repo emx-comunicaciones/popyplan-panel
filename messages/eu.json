@@ -1527,6 +1527,7 @@
       "noEncontrado": "Elementu hori jada ez dago.",
       "conflictoServidor": "Zerbitzariak ez du onartu: baliteke elementua erabiltzen egotea edo izena errepikatuta egotea.",
       "demasiadasPaginas": "Kategoria gehiegi daude denak kargatzeko.",
+      "lecturaFallida": "Zerbitzariak huts egin du katalogoa kargatzean. Saiatu berriro une batean.",
       "desconocido": "Ezin izan da ekintza osatu."
     },
     "treasureHunt": {

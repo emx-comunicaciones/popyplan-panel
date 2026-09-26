@@ -1527,6 +1527,7 @@
       "noEncontrado": "Ese elemento ya no existe.",
       "conflictoServidor": "El servidor no lo aceptó: puede que el elemento esté en uso o que el nombre esté repetido.",
       "demasiadasPaginas": "Hay demasiadas categorías para cargarlas todas.",
+      "lecturaFallida": "El servidor falló al cargar el nomenclador. Prueba de nuevo en un momento.",
       "desconocido": "No se pudo completar la acción."
     },
     "treasureHunt": {

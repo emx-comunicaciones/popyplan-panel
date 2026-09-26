@@ -1527,6 +1527,7 @@
       "noEncontrado": "That item no longer exists.",
       "conflictoServidor": "The server did not accept it: the item may be in use or the name may be repeated.",
       "demasiadasPaginas": "There are too many categories to load them all.",
+      "lecturaFallida": "The server failed to load the catalogue. Try again in a moment.",
       "desconocido": "The action could not be completed."
     },
     "treasureHunt": {

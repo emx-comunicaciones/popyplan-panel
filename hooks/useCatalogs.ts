@@ -23,7 +23,8 @@
  * en 400, así que borrar una categoría de afición con aficiones o repetir
  * el nombre de una subcategoría en la misma categoría llegan como 500
  * genérico. Se traducen a `conflicto_servidor`, con una pista, sin
- * inventar un motivo exacto.
+ * inventar un motivo exacto. **Solo al escribir**: un 5xx al leer es
+ * `lectura_fallida`, sin esa pista.
  */
 import {
   useMutation,
@@ -215,6 +216,7 @@ export type CatalogsErrorKind =
   | "no_encontrado"
   | "conflicto_servidor"
   | "demasiadas_paginas"
+  | "lectura_fallida"
   | "desconocido";
 
 export class CatalogsError extends Error {
@@ -273,6 +275,11 @@ export function useCatalog(key: CatalogKey | null): UseQueryResult<CatalogItem[]
         return (await fetchRows(config)).map(config.normalize);
       } catch (error) {
         if (error instanceof CatalogsError) throw error;
+        // La pista de `conflicto_servidor` («en uso o repetido») solo tiene
+        // sentido al escribir: un 5xx al **leer** es un fallo del servidor.
+        if (error instanceof ApiError && error.status >= 500) {
+          throw new CatalogsError("lectura_fallida", "El servidor falló al cargar el nomenclador.");
+        }
         throw toError(error, "No se pudo cargar el nomenclador.");
       }
     },
