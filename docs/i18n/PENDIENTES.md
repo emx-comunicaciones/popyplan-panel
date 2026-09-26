@@ -211,3 +211,15 @@ español, y no se toca en esta ronda):
   nativa.** Dudas concretas: «Neurketa mota»/«Tipus de mesura» para *tipo
   de medida*, «Core-a» en euskera y el orden «{n}. ariketa» en las
   etiquetas de cada ejercicio de plantilla.
+- **Programa de seguimiento (2026-09-26)**: las claves nuevas de
+  `menu.entidad.seguimiento`, `pages.entidad.seguimiento`, `tracking.*`,
+  `entidad.seguimiento.*`, `plataforma.entidadFicha.tracking*`,
+  `errors.{enrollments,enrollmentMutation,sharedTracking,proposeGoal,setTrackingProgram}.*`,
+  `help.entidad.seguimiento.*` y la frase añadida a
+  `help.entidad.personaFicha.details` se escribieron en `es`/`en` y se
+  tradujeron a `eu`/`ca` de forma asistida. **Pendientes de revisión
+  nativa** (y del texto de datos de salud, que revisará un abogado antes de
+  producción). Dudas concretas: «Jarraipen-programa» / «Programa de
+  seguiment», «Kontsumitzeko gogoa» / «Ganes de consumir» para las ganas,
+  y las casillas del check-in en tercera persona («Ondo lo egin zuen»,
+  «Va quedar amb algú»); conviene alinearlas con los textos de la app.

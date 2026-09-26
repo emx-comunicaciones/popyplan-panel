@@ -283,6 +283,20 @@ entidades normales, `/elegir-entidad`.
   (`lib/events/level.ts`): `""` = todos los niveles; al editar solo viaja
   si cambió. La fila de `panel/.../events/` no trae `level`, así que la
   tabla de Actividades no lo enseña.
+- **Programa de seguimiento** (`docs/PANEL.md` §18 del backend, datos
+  de salud): el backend responde **404** (nunca 403) a quien no puede usar
+  una ruta del programa, y el panel sigue igual: el menú «Programa de
+  seguimiento» (`seguimiento`) solo existe para titular/moderador con
+  `tracking_program_enabled` (`entidadMenuFor(role, { trackingEnabled })`),
+  su página hace `notFound()` en cualquier otro caso, y en la ficha el
+  bloque de inscripción solo se monta para titular/moderador con el
+  servicio. Titular/moderador ven **estado y configuración, nunca datos**.
+  «Seguimiento compartido» solo se pide con `role === 'referente'` y el
+  servicio encendido (cada lectura va a `AuditLog`); en vuelo o con 404
+  **no se pinta nada** (misma regla que la red de apoyo). El referente de
+  una inscripción es el id de la **`OrgMembership`** (`m.id`). El
+  interruptor de plataforma es solo `superadmin`, con `ConfirmDialog` y el
+  400 del backend literal.
 - **Exportación**: `ExportPanel` con `group_by=year` **sustituye** al
   desglose del dashboard, nunca lo combina. `Content-Disposition` llega
   porque el backend declara `CORS_EXPOSE_HEADERS`.
@@ -503,6 +517,8 @@ cuando haya backend local sembrado — en CI lo gatea el job `e2e`).
   tesoro, resto del admin antiguo; mismatches y pendientes del backend.
 - `entrenamiento-2026-09-26.md` — catálogo de entrenamiento en
   Nomencladores y nivel de actividad: decisiones, mismatches y pendientes.
+- `programa-seguimiento-2026-09-26.md` — programa de seguimiento (fase 1
+  del panel + vista del referente): permisos, decisiones y mismatches.
 - `sesion-y-seguridad.md` — diseño de sesión completo y hardening.
 - `accesibilidad-y-e2e.md` — cierre W6: carry-overs, bugs hallados por e2e,
   accesibilidad (tabla de contraste, declaración), e2e y CI.
