@@ -223,3 +223,14 @@ español, y no se toca en esta ronda):
   seguiment», «Kontsumitzeko gogoa» / «Ganes de consumir» para las ganas,
   y las casillas del check-in en tercera persona («Ondo lo egin zuen»,
   «Va quedar amb algú»); conviene alinearlas con los textos de la app.
+- **Revisión externa del panel (2026-09-27)**: claves nuevas escritas en
+  `es`/`en` y traducidas a `eu`/`ca` de forma asistida —
+  `entidad.comunidades.visibilityPrivateListed` (copiada de
+  `plataforma.comunidades.visibilityPrivateListed`),
+  `plataforma.bloqueos.selectedUnnamed`,
+  `errors.platformUsers.demasiadasCoincidencias`,
+  `plataforma.usuarios.{rolesLoadError,roleUnavailable}`,
+  `plataforma.usuarioFicha.roleLoadError`, `plataforma.userSearch.error`,
+  `errors.catalogs.lecturaFallida` y
+  `plataforma.tesoro.form.{durationInvalid,maxParticipantsInvalid}`.
+  **Pendientes de revisión nativa.**

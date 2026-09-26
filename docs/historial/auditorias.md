@@ -870,3 +870,49 @@ panel con un navegador), no leyéndolo. Informe y traspaso completos en
 **Lo que no es un fallo:** al entrar, la primera carga de cada Inicio
 dispara varios 401 que se resuelven solos — es el refresco de sesión que ya
 documenta «Diseño de sesión». Con la página asentada, todo responde 200.
+
+## Revisión externa del panel (2026-09-27)
+
+Diez hallazgos de una revisión de código externa, verificados uno a uno
+contra el código antes de tocar nada; todos eran reales. Cada arreglo con
+su test en rojo primero:
+
+- **M1/M2 — `private_listed` en Comunidades y código en Familias**: la
+  tarjeta pintaba «Privada» para `private_listed` y el código de
+  invitación solo salía con `private`. El backend (75a8b85) sirve el
+  código para las dos visibilidades que se entran con código, así que
+  `InviteCode` sale a `components/entidad/InviteCode.tsx` con
+  `hasInviteCode()` y lo reutiliza Familias para quien gestiona
+  (`FamilyCommunityRow` no trae visibilidad: se cruza con
+  `useEntityCommunities`, misma clave de caché que el resto de secciones;
+  mientras carga o si falla, no se pinta nada, porque pedir el código a
+  ciegas daría 400 en una comunidad abierta).
+- **L1** — `NuevaComunidadDialog::resetForm` volvía a «Abierta» también en
+  el espacio de familias; ahora respeta el mismo valor por defecto que al
+  montar (`private` para familias).
+- **L2** — `periodIncluding` calculaba el recorte sobre medianoche UTC y lo
+  formateaba con la fecha local: al oeste de UTC salían 1462 días y el
+  backend daba 400. Aritmética y formato, ahora los dos en UTC; test con
+  `process.env.TZ` en cuatro zonas.
+- **L3** — Bloqueos sin `?email=` pintaba «Bloqueos de la cuenta n.º 13»;
+  ahora «Bloqueos de la cuenta elegida». El enlace «Ver sus bloqueos» de
+  la ficha ya llevaba el correo cuando la ficha lo tiene (sin correo en la
+  URL la ficha tampoco lo conoce: el perfil público no lo trae).
+- **L4** — `usePlatformAccount` solo miraba la primera página de sus dos
+  búsquedas (`icontains`, 20 por página). Ahora pagina hasta encontrar la
+  cuenta o agotarlas, con tope de 50 páginas que lanza
+  `demasiadas_coincidencias`.
+- **L5** — con `usePlatformRoles` en error, «Rol de plataforma» pintaba
+  «—» como si no hubiera rol; ahora hay aviso `role="alert"` y «No
+  disponible».
+- **L6** — `useUserSearch` se tragaba todo error de la API; solo el 403
+  sigue cayendo a lista vacía (Roles lo necesita), el resto lanza
+  `UserSearchError` y Roles/Bloqueos/Notificaciones lo dicen.
+- **L7** — un 500 al **leer** un nomenclador salía con la pista de
+  escritura («puede que esté en uso…»); ahora `lectura_fallida`.
+- **L8** — duración/máximo de participantes no válidos del juego del tesoro
+  explican por qué «Guardar» no se activa.
+- **L9** — «Cambios guardados.» de la pestaña Datos del tesoro se retira
+  al volver a editar (`TesoroJuegoForm::onEdit`).
+- **L10** — docblock huérfano del antiguo `validateEventStartsAt` encima de
+  `sameMinute`, retirado.
