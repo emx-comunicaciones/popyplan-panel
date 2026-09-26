@@ -15,6 +15,9 @@
  *   editar se compara por minuto (`sameMinute`, el `datetime-local` no
  *   rehidrata segundos) y solo viaja si cambió — el mismo fallo que ya
  *   costó un «Guardar» muerto en Actividades.
+ * - **Duración y máximo de participantes**: enteros ≥ 1 (el máximo, o
+ *   vacío). Si no lo son, «Guardar» se desactiva **y** el campo dice por
+ *   qué, en vez de dejar un botón muerto sin explicación.
  * - **Imagen**: opcional; con ella el cuerpo va en multipart
  *   (`buildGamePayload`). Validada en el cliente (`validateGameImage`).
  */
@@ -183,8 +186,14 @@ export function TesoroJuegoForm({
             min={1}
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
+            aria-describedby={durationValid ? undefined : id("duration-error")}
             className={FIELD_CLASS}
           />
+          {durationValid ? null : (
+            <p id={id("duration-error")} role="alert" className="mt-1 text-xs text-error">
+              {t("plataforma.tesoro.form.durationInvalid")}
+            </p>
+          )}
         </div>
         <div className="min-w-40 flex-1">
           <label htmlFor={id("max")} className={LABEL_CLASS}>
@@ -196,9 +205,14 @@ export function TesoroJuegoForm({
             min={1}
             value={maxParticipants}
             onChange={(e) => setMaxParticipants(e.target.value)}
-            aria-describedby={id("max-hint")}
+            aria-describedby={maxValid ? id("max-hint") : `${id("max-error")} ${id("max-hint")}`}
             className={FIELD_CLASS}
           />
+          {maxValid ? null : (
+            <p id={id("max-error")} role="alert" className="mt-1 text-xs text-error">
+              {t("plataforma.tesoro.form.maxParticipantsInvalid")}
+            </p>
+          )}
           <p id={id("max-hint")} className="mt-1 text-xs text-text-secondary">
             {t("plataforma.tesoro.form.maxParticipantsHint")}
           </p>
