@@ -3016,7 +3016,7 @@
       "searchLabel": "Bilatu kontua (posta edo erabiltzailea)",
       "searchResult": "{username} ({email})",
       "selectedLabel": "{name} kontuaren blokeoak.",
-      "selectedById": "{id}. zenbakiko kontuaren blokeoak.",
+      "selectedUnnamed": "Aukeratutako kontuaren blokeoak.",
       "openAccount": "Ireki bere fitxa",
       "pickHint": "Aukeratu kontu bat bere blokeoak ikusteko.",
       "loadError": "Ezin izan dira blokeoak kargatu",

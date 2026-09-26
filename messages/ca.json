@@ -3016,7 +3016,7 @@
       "searchLabel": "Cerca un compte (correu o usuari)",
       "searchResult": "{username} ({email})",
       "selectedLabel": "Bloquejos de {name}.",
-      "selectedById": "Bloquejos del compte núm. {id}.",
+      "selectedUnnamed": "Bloquejos del compte triat.",
       "openAccount": "Obre la seva fitxa",
       "pickHint": "Tria un compte per veure els seus bloquejos.",
       "loadError": "No s'han pogut carregar els bloquejos",

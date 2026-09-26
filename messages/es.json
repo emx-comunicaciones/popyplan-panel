@@ -3016,7 +3016,7 @@
       "searchLabel": "Buscar cuenta (correo o usuario)",
       "searchResult": "{username} ({email})",
       "selectedLabel": "Bloqueos de {name}.",
-      "selectedById": "Bloqueos de la cuenta n.º {id}.",
+      "selectedUnnamed": "Bloqueos de la cuenta elegida.",
       "openAccount": "Abrir su ficha",
       "pickHint": "Elige una cuenta para ver sus bloqueos.",
       "loadError": "No se pudieron cargar los bloqueos",

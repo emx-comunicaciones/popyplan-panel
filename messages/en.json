@@ -3016,7 +3016,7 @@
       "searchLabel": "Search account (email or username)",
       "searchResult": "{username} ({email})",
       "selectedLabel": "Blocks of {name}.",
-      "selectedById": "Blocks of account no. {id}.",
+      "selectedUnnamed": "Blocks of the selected account.",
       "openAccount": "Open their account page",
       "pickHint": "Choose an account to see its blocks.",
       "loadError": "The blocks could not be loaded",

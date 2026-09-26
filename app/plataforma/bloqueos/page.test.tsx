@@ -103,7 +103,9 @@ describe("PlataformaBloqueosPage", () => {
     mockBackend();
     superadmin();
     await renderPage({ user: "13" });
-    expect(screen.getByText("Bloqueos de la cuenta n.º 13.")).toBeInTheDocument();
+    // Sin `?email=` no hay nombre que dar, y nunca se pinta el id de cuenta.
+    expect(screen.getByText("Bloqueos de la cuenta elegida.")).toBeInTheDocument();
+    expect(screen.queryByText(/n\.º 13/)).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Abrir su ficha" })).toHaveAttribute("href", "/plataforma/usuarios/13");
     const rows = await screen.findAllByRole("row");
     expect(within(rows[1]).getByText("panel_demo_asociacion_bidasoa_p01")).toBeInTheDocument();

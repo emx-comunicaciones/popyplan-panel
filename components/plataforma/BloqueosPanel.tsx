@@ -120,7 +120,7 @@ export function BloqueosPanel({ initialUserId, initialEmail = null }: BloqueosPa
           <p className="mt-2 text-sm text-text-base">
             {selected.label
               ? t("plataforma.bloqueos.selectedLabel", { name: selected.label })
-              : t("plataforma.bloqueos.selectedById", { id: selected.id })}{" "}
+              : t("plataforma.bloqueos.selectedUnnamed")}{" "}
             <Link
               href={
                 selected.email
