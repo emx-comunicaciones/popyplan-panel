@@ -70,6 +70,34 @@ describe("EntidadLayout", () => {
     ).toBeInTheDocument();
   });
 
+  it("«Programa de seguimiento» solo aparece a titular/moderador con el servicio encendido", async () => {
+    for (const [role, enabled, visible] of [
+      ["titular", true, true],
+      ["moderador", true, true],
+      ["titular", false, false],
+      ["referente", true, false],
+    ] as const) {
+      getServerSessionMock.mockResolvedValue(session(role));
+      serverFetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        data: buildOrganization({ tracking_program_enabled: enabled }),
+      });
+      const element = await EntidadLayout({
+        children: <p>contenido</p>,
+        params: Promise.resolve({ slug: "alfaville" }),
+      });
+      const { unmount } = render(element);
+      const link = screen.queryByRole("link", { name: "Programa de seguimiento" });
+      if (visible) {
+        expect(link).toHaveAttribute("href", "/entidad/alfaville/seguimiento");
+      } else {
+        expect(link).not.toBeInTheDocument();
+      }
+      unmount();
+    }
+  });
+
   it("la cabecera lleva el botón de ayuda de la pantalla actual", async () => {
     setPathname("/entidad/alfaville");
     getServerSessionMock.mockResolvedValue(session("titular"));

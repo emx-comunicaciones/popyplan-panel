@@ -90,6 +90,58 @@ describe("PlataformaEntidadDetailPage", () => {
     expect(screen.getByRole("button", { name: "Verificar entidad" })).toBeInTheDocument();
   });
 
+  describe("Programa de seguimiento", () => {
+    function mockOrg(enabled: boolean) {
+      apiFetchMock.mockImplementation(async (path: string, options?: { method?: string }) => {
+        if (path === "/api/organizations/9/" && options?.method === "PATCH") {
+          return buildOrganization({ id: 9, tracking_program_enabled: !enabled });
+        }
+        if (path === "/api/organizations/9/") {
+          return buildOrganization({ id: 9, name: "Asociación Bidasoa", tracking_program_enabled: enabled });
+        }
+        throw new Error(`sin mock para ${path}`);
+      });
+    }
+
+    it("superadmin ve el interruptor y encenderlo pide confirmación antes del PATCH", async () => {
+      mockOrg(false);
+      getServerSessionMock.mockResolvedValue({
+        token: "t",
+        me: buildMe({ org_memberships: [] }),
+        platformRole: buildPlatformRole("superadmin"),
+      });
+      render(await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) }));
+
+      const toggle = await screen.findByRole("switch", { name: "Programa de seguimiento activado" });
+      expect(toggle).toHaveAttribute("aria-checked", "false");
+      await userEvent.click(toggle);
+      const dialog = screen.getByRole("alertdialog");
+      await userEvent.click(within(dialog).getByRole("button", { name: "Activar" }));
+
+      await waitFor(() =>
+        expect(apiFetchMock).toHaveBeenCalledWith("/api/organizations/9/", {
+          method: "PATCH",
+          body: { tracking_program_enabled: true },
+        }),
+      );
+    });
+
+    it("otro rol de plataforma ve el estado en solo lectura, sin interruptor", async () => {
+      mockOrg(true);
+      getServerSessionMock.mockResolvedValue({
+        token: "t",
+        me: buildMe({ org_memberships: [] }),
+        platformRole: buildPlatformRole("verifier"),
+      });
+      render(await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) }));
+
+      await waitFor(() => expect(screen.getByText("Asociación Bidasoa")).toBeInTheDocument());
+      expect(screen.getByText("Programa de seguimiento")).toBeInTheDocument();
+      expect(screen.getByText("Activado")).toBeInTheDocument();
+      expect(screen.queryByRole("switch")).not.toBeInTheDocument();
+    });
+  });
+
   it("pinta el bloque «Contrato» con tramo, vigencia y última factura", async () => {
     apiFetchMock.mockImplementation(async (path: string) => {
       if (path === "/api/organizations/9/") {

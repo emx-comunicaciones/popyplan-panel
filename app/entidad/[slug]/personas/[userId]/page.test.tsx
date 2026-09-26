@@ -6,17 +6,32 @@ import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { PERSON_SUPPORT_ROWS } from "@/test-utils/fixtures/support";
+import { buildEnrollment, buildSharedTracking } from "@/test-utils/fixtures/tracking";
 
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 const usePersonMock = vi.hoisted(() => vi.fn());
 const useAssignReferentMock = vi.hoisted(() => vi.fn());
 const useOrgMembersMock = vi.hoisted(() => vi.fn());
 const usePersonSupportMock = vi.hoisted(() => vi.fn());
+const isTrackingProgramEnabledMock = vi.hoisted(() => vi.fn());
+const useEnrollmentsMock = vi.hoisted(() => vi.fn());
+const useSharedTrackingMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("@/hooks/usePerson", () => ({ usePerson: usePersonMock }));
 vi.mock("@/hooks/useAssignReferent", () => ({ useAssignReferent: useAssignReferentMock }));
 vi.mock("@/hooks/useOrgMembers", () => ({ useOrgMembers: useOrgMembersMock }));
 vi.mock("@/hooks/usePersonSupport", () => ({ usePersonSupport: usePersonSupportMock }));
+vi.mock("@/lib/auth/organization", () => ({ isTrackingProgramEnabled: isTrackingProgramEnabledMock }));
+vi.mock("@/hooks/useProgramEnrollments", () => ({
+  useEnrollments: useEnrollmentsMock,
+  useCreateEnrollment: () => ({ mutate: vi.fn(), reset: vi.fn(), isPending: false, isError: false }),
+  useUpdateEnrollment: () => ({ mutate: vi.fn(), reset: vi.fn(), isPending: false, isError: false }),
+  useCloseEnrollment: () => ({ mutate: vi.fn(), reset: vi.fn(), isPending: false, isError: false }),
+}));
+vi.mock("@/hooks/useSharedTracking", () => ({
+  useSharedTracking: useSharedTrackingMock,
+  useProposeGoal: () => ({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false }),
+}));
 
 import { buildOrgMembershipFull } from "@/test-utils/fixtures/orgMembershipFull";
 
@@ -44,6 +59,9 @@ beforeEach(() => {
     error: null,
   });
   usePersonSupportMock.mockReturnValue({ data: undefined, isPending: true, isError: false, error: null });
+  isTrackingProgramEnabledMock.mockResolvedValue(false);
+  useEnrollmentsMock.mockReturnValue({ data: [], isError: false, error: null });
+  useSharedTrackingMock.mockReturnValue({ data: undefined, isPending: true, isError: false, error: null });
 });
 
 afterEach(() => {
@@ -52,6 +70,9 @@ afterEach(() => {
   useAssignReferentMock.mockReset();
   useOrgMembersMock.mockReset();
   usePersonSupportMock.mockReset();
+  isTrackingProgramEnabledMock.mockReset();
+  useEnrollmentsMock.mockReset();
+  useSharedTrackingMock.mockReset();
   vi.unstubAllEnvs();
 });
 
@@ -77,9 +98,24 @@ describe("EntidadPersonaPage", () => {
     usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
     useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
     usePersonSupportMock.mockReturnValue({ data: PERSON_SUPPORT_ROWS, isError: false, error: null });
+    isTrackingProgramEnabledMock.mockResolvedValue(true);
+    useSharedTrackingMock.mockReturnValue({ data: buildSharedTracking(), isPending: false, isError: false, error: null });
 
     const { container } = await renderPage("referente");
 
+    expect(screen.getByRole("heading", { name: "Seguimiento compartido" })).toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("no tiene violaciones de accesibilidad con el bloque de inscripción del titular (axe)", async () => {
+    usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
+    useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
+    isTrackingProgramEnabledMock.mockResolvedValue(true);
+    useEnrollmentsMock.mockReturnValue({ data: [buildEnrollment()], isError: false, error: null });
+
+    const { container } = await renderPage("titular");
+
+    expect(screen.getByText("Pendiente de aceptar")).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
 
@@ -371,6 +407,72 @@ describe("EntidadPersonaPage", () => {
       // el resto de la ficha sigue en pie
       expect(screen.getByText("Ana")).toBeInTheDocument();
       expect(screen.getByText("Comunidad Uno")).toBeInTheDocument();
+    });
+  });
+  describe("Programa de seguimiento", () => {
+    beforeEach(() => {
+      usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
+      useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
+    });
+
+    it("titular con el servicio encendido ve el estado de la inscripción, el tipo y el referente", async () => {
+      isTrackingProgramEnabledMock.mockResolvedValue(true);
+      useEnrollmentsMock.mockReturnValue({ data: [buildEnrollment()], isError: false, error: null });
+
+      await renderPage("titular");
+
+      expect(screen.getByText("Programa de seguimiento")).toBeInTheDocument();
+      expect(screen.getByText("Pendiente de aceptar")).toBeInTheDocument();
+      expect(screen.getByText("Alcohol")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Dar de baja" })).toBeInTheDocument();
+      expect(useEnrollmentsMock).toHaveBeenCalledWith(7, { user: "42" });
+      // Titular nunca pide lo compartido.
+      expect(useSharedTrackingMock).toHaveBeenCalledWith(7, "42", false);
+    });
+
+    it("sin el servicio encendido no hay bloque ni petición de inscripciones", async () => {
+      isTrackingProgramEnabledMock.mockResolvedValue(false);
+
+      await renderPage("moderador");
+
+      expect(screen.queryByText("Programa de seguimiento")).not.toBeInTheDocument();
+      expect(useEnrollmentsMock).not.toHaveBeenCalled();
+    });
+
+    it("referente: nunca ve el bloque de inscripción; lo compartido solo se pide con el servicio encendido", async () => {
+      isTrackingProgramEnabledMock.mockResolvedValue(true);
+      useSharedTrackingMock.mockReturnValue({ data: buildSharedTracking(), isPending: false, isError: false, error: null });
+
+      await renderPage("referente");
+
+      expect(useEnrollmentsMock).not.toHaveBeenCalled();
+      expect(useSharedTrackingMock).toHaveBeenCalledWith(7, "42", true);
+      expect(
+        screen.getByText("Solo ves lo que la persona ha decidido compartir contigo; cada consulta queda registrada."),
+      ).toBeInTheDocument();
+    });
+
+    it("referente con 404 (pendiente o no asignado): no se pinta nada del programa", async () => {
+      isTrackingProgramEnabledMock.mockResolvedValue(true);
+      useSharedTrackingMock.mockReturnValue({
+        data: undefined,
+        isPending: false,
+        isError: true,
+        error: { kind: "sin_acceso", message: "Sin acceso al seguimiento de esta persona." },
+      });
+
+      const { container } = await renderPage("referente");
+
+      expect(screen.queryByText("Seguimiento compartido")).not.toBeInTheDocument();
+      expect(container.textContent).not.toMatch(/seguimiento/i);
+    });
+
+    it("referente sin el servicio: el hook se llama deshabilitado", async () => {
+      isTrackingProgramEnabledMock.mockResolvedValue(false);
+
+      await renderPage("referente");
+
+      expect(useSharedTrackingMock).toHaveBeenCalledWith(7, "42", false);
     });
   });
 });
