@@ -13,7 +13,9 @@
  *   lo fija (`isActive` `true`/`false`), y lo devuelve en `knownActive`;
  * - la ficha (`usePlatformAccount`) lo averigua con dos búsquedas por
  *   correo — la normal y la misma con `?is_active=false` —: si la cuenta
- *   aparece en la segunda, está desactivada. Buscar por correo es lo
+ *   aparece en la segunda, está desactivada. Las dos recorren páginas
+ *   hasta encontrarla (`search` es `icontains`: un correo puede casar con
+ *   más de 20 cuentas). Buscar por correo es lo
  *   único que permite el backend: ni el id ni ningún otro campo exacto
  *   están en `filterset_fields`/`search_fields`.
  *
@@ -26,7 +28,11 @@ import { ApiError, apiFetch } from "@/lib/api/client";
 import { USERS } from "@/lib/api/endpoints";
 import type { PaginatedPlatformAccountList, PlatformAccount } from "@/lib/api/types";
 
-export type PlatformUsersErrorKind = "sin_acceso" | "pagina_inexistente" | "desconocido";
+export type PlatformUsersErrorKind =
+  | "sin_acceso"
+  | "pagina_inexistente"
+  | "demasiadas_coincidencias"
+  | "desconocido";
 
 export class PlatformUsersError extends Error {
   readonly kind: PlatformUsersErrorKind;
@@ -92,6 +98,39 @@ export function usePlatformUsers(
   });
 }
 
+/**
+ * Tope de páginas por búsqueda en `usePlatformAccount` (× PAGE_SIZE 20 del
+ * backend = 1000 coincidencias). Un correo completo casa con muy pocas
+ * cuentas; si aun así se agota, se lanza en vez de responder «no
+ * encontrada» con un recorrido a medias (mismo criterio que
+ * `useEntityCommunities`).
+ */
+export const ACCOUNT_SEARCH_MAX_PAGES = 50;
+
+/**
+ * Recorre las páginas de una búsqueda hasta dar con `userId` o agotarlas.
+ * `search` es un `icontains`, así que un correo exacto también casa con
+ * los que lo contienen (`ana@x.com` ⊂ `mariana@x.com`) y la cuenta puede
+ * no estar en la primera página.
+ */
+async function findAccountAcrossPages(
+  params: Record<string, string>,
+  userId: string,
+): Promise<PlatformAccount | null> {
+  for (let page = 1; page <= ACCOUNT_SEARCH_MAX_PAGES; page += 1) {
+    const data = await apiFetch<PaginatedPlatformAccountList>(
+      usersQuery(page === 1 ? params : { ...params, page: String(page) }),
+    );
+    const found = data.results.find((row) => String(row.id) === String(userId));
+    if (found) return found;
+    if (!data.next) return null;
+  }
+  throw new PlatformUsersError(
+    "demasiadas_coincidencias",
+    "Hay demasiadas cuentas que coinciden con ese correo para localizar esta.",
+  );
+}
+
 export interface PlatformAccountState {
   /** `null` si ninguna cuenta con ese correo tiene ese id. */
   account: PlatformAccount | null;
@@ -113,16 +152,13 @@ export function usePlatformAccount(
     queryKey: [PLATFORM_ACCOUNT_KEY, String(userId), trimmed],
     queryFn: async () => {
       try {
-        const [all, inactive] = await Promise.all([
-          apiFetch<PaginatedPlatformAccountList>(usersQuery({ search: trimmed })),
-          apiFetch<PaginatedPlatformAccountList>(usersQuery({ search: trimmed, is_active: "false" })),
+        const [account, inactive] = await Promise.all([
+          findAccountAcrossPages({ search: trimmed }, userId),
+          findAccountAcrossPages({ search: trimmed, is_active: "false" }, userId),
         ]);
-        const matches = (row: PlatformAccount) => String(row.id) === String(userId);
-        return {
-          account: all.results.find(matches) ?? null,
-          isActive: !inactive.results.some(matches),
-        };
+        return { account, isActive: inactive === null };
       } catch (error) {
+        if (error instanceof PlatformUsersError) throw error;
         throw toUsersError(error);
       }
     },

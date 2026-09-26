@@ -54,6 +54,7 @@ const VERIFICATION_LEVEL_KEYS: Record<number, string> = {
 const ACCOUNT_ERROR_KEYS: Record<PlatformUsersErrorKind, string> = {
   sin_acceso: "errors.platformUsers.sinAcceso",
   pagina_inexistente: "errors.platformUsers.desconocido",
+  demasiadas_coincidencias: "errors.platformUsers.demasiadasCoincidencias",
   desconocido: "errors.platformUsers.desconocido",
 };
 

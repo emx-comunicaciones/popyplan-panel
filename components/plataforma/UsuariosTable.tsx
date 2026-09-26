@@ -35,6 +35,7 @@ type TriState = "" | "true" | "false";
 const USERS_ERROR_KEYS: Record<PlatformUsersErrorKind, string> = {
   sin_acceso: "errors.platformUsers.sinAcceso",
   pagina_inexistente: "errors.platformUsers.paginaInexistente",
+  demasiadas_coincidencias: "errors.platformUsers.demasiadasCoincidencias",
   desconocido: "errors.platformUsers.desconocido",
 };
 

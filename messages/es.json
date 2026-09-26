@@ -1460,6 +1460,7 @@
     "platformUsers": {
       "sinAcceso": "Solo el personal de plataforma ve las cuentas.",
       "paginaInexistente": "Esa página del listado ya no existe.",
+      "demasiadasCoincidencias": "Hay demasiadas cuentas que coinciden con ese correo para localizar esta.",
       "desconocido": "No se pudieron cargar las cuentas."
     },
     "platformProfile": {

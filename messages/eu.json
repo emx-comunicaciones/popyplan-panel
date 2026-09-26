@@ -1460,6 +1460,7 @@
     "platformUsers": {
       "sinAcceso": "Plataformako langileek bakarrik ikusten dituzte kontuak.",
       "paginaInexistente": "Zerrendaren orri hori jada ez dago.",
+      "demasiadasCoincidencias": "Kontu gehiegi datoz bat helbide elektroniko horrekin, hau aurkitzeko.",
       "desconocido": "Ezin izan dira kontuak kargatu."
     },
     "platformProfile": {

@@ -1460,6 +1460,7 @@
     "platformUsers": {
       "sinAcceso": "Only platform staff can see accounts.",
       "paginaInexistente": "That page of the list no longer exists.",
+      "demasiadasCoincidencias": "Too many accounts match that email to locate this one.",
       "desconocido": "The accounts could not be loaded."
     },
     "platformProfile": {

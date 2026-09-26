@@ -101,6 +101,51 @@ describe("usePlatformAccount", () => {
     expect(result.current.data?.account).toBeNull();
   });
 
+  it("con 20 coincidencias o más, recorre las páginas hasta dar con la cuenta (en las dos búsquedas)", async () => {
+    // `search` es un icontains con PAGE_SIZE 20: `ana@x.com` casa también
+    // con `mariana@x.com`, `ana@x.com.es`… y la cuenta puede no estar en
+    // la primera página. Antes se decía «No se encontró la cuenta».
+    const account = buildPlatformAccount({ id: 13, email: "ana@x.com" });
+    const others = (from: number) =>
+      Array.from({ length: 20 }, (_, i) => buildPlatformAccount({ id: from + i, email: `x${from + i}ana@x.com` }));
+    const paged = (results: unknown[], next: string | null) => ({ count: 41, next, previous: null, results });
+    apiFetchMock.mockImplementation(async (path: string) => {
+      const inactive = path.includes("is_active=false");
+      if (path.includes("page=3")) return paged(inactive ? [account] : [], null);
+      if (path.includes("page=2")) return paged(inactive ? others(200) : [account], inactive ? "p3" : null);
+      return paged(others(inactive ? 100 : 300), "p2");
+    });
+
+    const { result } = renderHook(() => usePlatformAccount("13", "ana@x.com"), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toEqual({ account, isActive: false });
+    expect(apiFetchMock).toHaveBeenCalledWith("/api/users/users/?ordering=-created_at&search=ana%40x.com&page=2");
+    expect(apiFetchMock).toHaveBeenCalledWith(
+      "/api/users/users/?ordering=-created_at&search=ana%40x.com&is_active=false&page=3",
+    );
+    // La búsqueda normal para en cuanto la encuentra: no pide la página 3.
+    expect(apiFetchMock).not.toHaveBeenCalledWith("/api/users/users/?ordering=-created_at&search=ana%40x.com&page=3");
+  });
+
+  it("se agotan las páginas sin encontrarla: account null y activa", async () => {
+    apiFetchMock.mockImplementation(async (path: string) =>
+      path.includes("page=2")
+        ? { count: 21, next: null, previous: null, results: [buildPlatformAccount({ id: 7 })] }
+        : { count: 21, next: "p2", previous: null, results: [buildPlatformAccount({ id: 5 })] },
+    );
+    const { result } = renderHook(() => usePlatformAccount("13", "x@test.com"), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toEqual({ account: null, isActive: true });
+  });
+
+  it("con más páginas que el tope, falla en voz alta en vez de decir «no encontrada»", async () => {
+    apiFetchMock.mockResolvedValue({ count: 99999, next: "otra", previous: null, results: [buildPlatformAccount({ id: 5 })] });
+    const { result } = renderHook(() => usePlatformAccount("13", "a"), { wrapper });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.kind).toBe("demasiadas_coincidencias");
+  });
+
   it("sin correo no pide nada", () => {
     const { result } = renderHook(() => usePlatformAccount("13", null), { wrapper });
     expect(result.current.fetchStatus).toBe("idle");

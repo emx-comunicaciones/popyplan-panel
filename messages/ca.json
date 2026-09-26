@@ -1460,6 +1460,7 @@
     "platformUsers": {
       "sinAcceso": "Només el personal de plataforma veu els comptes.",
       "paginaInexistente": "Aquesta pàgina del llistat ja no existeix.",
+      "demasiadasCoincidencias": "Hi ha massa comptes que coincideixen amb aquest correu per localitzar aquest.",
       "desconocido": "No s'han pogut carregar els comptes."
     },
     "platformProfile": {
