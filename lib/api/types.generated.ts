@@ -2036,6 +2036,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/communities/wall/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Muro general: las fotos de mis comunidades
+         * @description Las publicaciones **con foto** de las comunidades donde quien llama es miembro activo, de la más nueva a la más vieja y paginadas. Es el muro del menú principal de la app: junta lo de todas tus comunidades para que haya algo que mirar cada día. No hay «seguir a personas»: lo que decide qué ves es dónde estás.
+         */
+        get: operations["communities_wall_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/community-categories/": {
         parameters: {
             query?: never;
@@ -5364,6 +5384,661 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/treasure-hunt/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar juegos
+         * @description Devuelve todos los juegos de Búsqueda del Tesoro. Filtrables por ciudad, estado y comunidad.
+         */
+        get: operations["treasure_hunt_list"];
+        put?: never;
+        /**
+         * Crear juego (admin)
+         * @description Crea un nuevo juego de Búsqueda del Tesoro. Solo administradores.
+         */
+        post: operations["treasure_hunt_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description ViewSet unificado para todas las operaciones de Búsqueda del Tesoro.
+         *     Agrupa: juegos, pasos, equipos, sesiones y ranking.
+         */
+        get: operations["treasure_hunt_retrieve"];
+        /**
+         * Editar juego (admin)
+         * @description Edita y responde con el detalle completo (`GameDetail`), no con
+         *     los campos de escritura: el panel refresca su ficha con esto.
+         */
+        put: operations["treasure_hunt_update"];
+        post?: never;
+        /**
+         * @description Borra el juego y su actividad espejo (`Game.event`): sin esto la
+         *     actividad seguiría en la agenda apuntando a un juego que ya no
+         *     existe.
+         */
+        delete: operations["treasure_hunt_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * Editar juego parcialmente (admin)
+         * @description ViewSet unificado para todas las operaciones de Búsqueda del Tesoro.
+         *     Agrupa: juegos, pasos, equipos, sesiones y ranking.
+         */
+        patch: operations["treasure_hunt_partial_update"];
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/access-options/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Opciones de acceso al juego
+         * @description Devuelve las opciones individual/pareja/equipo. Ya no incluye la lista de «matches» (el emparejamiento se retiró en Fase 2).
+         */
+        get: operations["treasure_hunt_access_options"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/completions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar envíos pendientes de validación (admin)
+         * @description Devuelve las respuestas de tipo foto/social pendientes de revisión manual en este juego.
+         */
+        get: operations["treasure_hunt_list_pending_completions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/completions/{completion_id}/validate/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Validar respuesta foto/social (admin)
+         * @description Aprueba o rechaza una respuesta de tipo foto o prueba social. Si se aprueba (is_valid=true): se otorgan puntos, se avanza el paso y se notifica al equipo. Si se rechaza (is_valid=false): se elimina el envío para que el equipo pueda reintentar. Opcionalmente se puede indicar points_override para sobreescribir los puntos base.
+         */
+        post: operations["treasure_hunt_validate_completion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/finish/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finalizar juego (admin)
+         * @description Marca el juego como finalizado.
+         */
+        post: operations["treasure_hunt_finish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/join/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Unirse al juego
+         * @description El usuario autenticado se une al juego. Solo posible cuando el juego está en estado "open".
+         */
+        post: operations["treasure_hunt_join"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/leave/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Abandonar el juego
+         * @description El usuario abandona el juego. Solo posible antes de que empiece.
+         */
+        post: operations["treasure_hunt_leave"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/my-session/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mi sesión de juego
+         * @description Devuelve la sesión del equipo del usuario, incluyendo la pista actual y el progreso.
+         */
+        get: operations["treasure_hunt_my_session"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/open/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Abrir inscripciones (admin)
+         * @description Cambia el estado del juego a "open" para que los usuarios puedan unirse.
+         */
+        post: operations["treasure_hunt_open"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/participants/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar participantes (admin)
+         * @description Devuelve todos los participantes del juego. Filtrable por estado: pending, accepted, rejected.
+         */
+        get: operations["treasure_hunt_list_participants"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/participants/{participant_id}/approve/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Aprobar participante (admin)
+         * @description Aprueba la solicitud de un participante para unirse al juego.
+         */
+        post: operations["treasure_hunt_approve_participant"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/participants/{participant_id}/reject/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rechazar participante (admin)
+         * @description Rechaza la solicitud de un participante para unirse al juego.
+         */
+        post: operations["treasure_hunt_reject_participant"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/payment-status/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Estado de pago del usuario para este juego
+         * @description Los juegos de pago están fuera de esta versión (reconexión 2026-09-26): un juego gratuito responde `is_paid_game=false` y `has_paid=true`; uno de pago heredado responde `error="paid_games_unavailable"` y no admite inscripciones.
+         */
+        get: operations["treasure_hunt_payment_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/prize-tiers/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar tramos de premio
+         * @description Devuelve los tramos de premio del juego ordenados por rank_from.
+         */
+        get: operations["treasure_hunt_list_prize_tiers"];
+        put?: never;
+        /**
+         * Añadir tramo de premio (admin)
+         * @description Añade un tramo de premio estructurado al juego (ej. 1º-3º Principal).
+         */
+        post: operations["treasure_hunt_add_prize_tier"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/prize-tiers/{tier_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Eliminar tramo de premio (admin)
+         * @description ViewSet unificado para todas las operaciones de Búsqueda del Tesoro.
+         *     Agrupa: juegos, pasos, equipos, sesiones y ranking.
+         */
+        delete: operations["treasure_hunt_prize_tier_delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Actualizar tramo de premio (admin)
+         * @description ViewSet unificado para todas las operaciones de Búsqueda del Tesoro.
+         *     Agrupa: juegos, pasos, equipos, sesiones y ranking.
+         */
+        patch: operations["treasure_hunt_prize_tier_detail"];
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/ranking/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ranking en tiempo real
+         * @description Devuelve el ranking de equipos del juego ordenado por puntuación.
+         */
+        get: operations["treasure_hunt_ranking"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/start/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Iniciar juego (admin)
+         * @description Crea equipos aleatorios con los participantes inscritos e inicia el juego.
+         */
+        post: operations["treasure_hunt_start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/steps/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Añadir paso al juego (admin)
+         * @description Añade una pista/prueba al juego. Solo administradores.
+         */
+        post: operations["treasure_hunt_add_step"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/steps/{step_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Eliminar pista (admin)
+         * @description ViewSet unificado para todas las operaciones de Búsqueda del Tesoro.
+         *     Agrupa: juegos, pasos, equipos, sesiones y ranking.
+         */
+        delete: operations["treasure_hunt_step_delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Actualizar pista (admin)
+         * @description ViewSet unificado para todas las operaciones de Búsqueda del Tesoro.
+         *     Agrupa: juegos, pasos, equipos, sesiones y ranking.
+         */
+        patch: operations["treasure_hunt_step_detail"];
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/steps/list/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar pasos del juego
+         * @description Devuelve las pistas/pruebas de un juego (sin respuestas correctas). Solo administradores.
+         */
+        get: operations["treasure_hunt_list_steps"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/submit/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Enviar respuesta al paso actual
+         * @description El equipo envía la respuesta al paso actual. Para pruebas de texto: campo "answer". Para fotos: campo "photo". Para geolocalización: campos "latitude" y "longitude". Las respuestas de texto se validan automáticamente (sin distinción de mayúsculas). Las fotos y pruebas sociales requieren validación manual por el admin.
+         */
+        post: operations["treasure_hunt_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/teams/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar equipos
+         * @description Lista los equipos del juego con sus miembros, puntuación y plazas disponibles. Usa ?joinable=true para filtrar sólo equipos públicos con plazas libres (disponibles para unirse).
+         */
+        get: operations["treasure_hunt_list_teams"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/teams/{team_id}/chat/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Obtener sala de chat del equipo
+         * @description Devuelve el chat_room_id del chat grupal del equipo. Solo accesible para miembros del equipo. Si el equipo no tiene sala de chat asignada, se crea en este momento.
+         */
+        get: operations["treasure_hunt_team_chat"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/teams/{team_id}/invite/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Invitar usuario al equipo
+         * @description Invita a un usuario (salvo bloqueo entre los dos). Se envía un mensaje a su chat privado.
+         */
+        post: operations["treasure_hunt_invite_user"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/teams/{team_id}/join/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Unirse a un equipo
+         * @description Únete a un equipo público directamente (salvo bloqueo con algún miembro). En equipos privados, envía una solicitud al creador.
+         */
+        post: operations["treasure_hunt_join_team"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/teams/{team_id}/respond/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Aceptar o rechazar invitación/solicitud
+         * @description El destinatario acepta o rechaza una invitación. El creador del equipo acepta o rechaza una solicitud de unión.
+         */
+        post: operations["treasure_hunt_respond_invitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/teams/create/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Crear equipo con invitaciones batch
+         * @description Crea un equipo para el juego y opcionalmente envía invitaciones a varios usuarios en un solo paso. El creador se añade automáticamente. No se puede invitar a alguien con quien haya un bloqueo. La respuesta incluye el equipo creado, la lista de invitaciones enviadas y los fallos con su motivo.
+         */
+        post: operations["treasure_hunt_create_team"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/teams/leave/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Salir de mi equipo
+         * @description El usuario sale de su equipo actual sin abandonar el juego, para poder elegir otro modo o unirse a otro equipo. No permitido si el equipo ya empezó a jugar (tiene pruebas completadas).
+         */
+        post: operations["treasure_hunt_leave_team"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/{id}/welcome-seen/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Marcar la bienvenida como vista
+         * @description Marca que el usuario autenticado ya vio el modal de bienvenida de este juego, para no volver a mostrarlo en próximas visitas.
+         */
+        post: operations["treasure_hunt_mark_welcome_seen"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasure-hunt/featured/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Juegos destacados
+         * @description Devuelve los juegos de Búsqueda del Tesoro marcados como evento destacado.
+         */
+        get: operations["treasure_hunt_featured"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/user-images/": {
         parameters: {
             query?: never;
@@ -6579,6 +7254,14 @@ export interface components {
          * @enum {string}
          */
         CategoryTypeEnum: "sports" | "cultural" | "leisure" | "travel" | "party" | "motorcycle" | "other";
+        /**
+         * @description * `answer` - Respuesta de texto
+         *     * `photo` - Foto / Vídeo
+         *     * `location` - Geolocalización
+         *     * `social` - Prueba social
+         * @enum {string}
+         */
+        ChallengeTypeEnum: "answer" | "photo" | "location" | "social";
         /** @description Serializer para respuestas de error de chat */
         ChatErrorResponse: {
             /** @description Mensaje de error */
@@ -6941,7 +7624,9 @@ export interface components {
             /** Format: uri */
             image?: string | null;
             readonly images: components["schemas"]["CommunityPostImage"][];
+            readonly video_url: string | null;
             readonly hashtags: string[];
+            readonly surface: components["schemas"]["SurfaceEnum"];
             readonly likes_count: number;
             readonly comments_count: number;
             readonly is_liked: boolean;
@@ -7880,6 +8565,420 @@ export interface components {
             /** Format: date-time */
             starts_at: string;
             community: components["schemas"]["EntityEventCommunityRef"];
+        };
+        Game: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Nombre */
+            name: string;
+            /** Descripción */
+            description: string;
+            /** Ciudad */
+            city: string;
+            /** Premio */
+            prize_description: string;
+            /**
+             * Hora de inicio
+             * Format: date-time
+             */
+            start_time: string;
+            /**
+             * Duración (minutos)
+             * Format: int64
+             */
+            duration_minutes?: number;
+            /** Modo de juego */
+            game_mode?: components["schemas"]["GameModeEnum"];
+            /**
+             * Mínimo de jugadores por equipo
+             * Format: int64
+             */
+            team_size_min?: number;
+            /**
+             * Máximo de jugadores por equipo
+             * Format: int64
+             */
+            team_size_max?: number;
+            /**
+             * Máximo de participantes
+             * Format: int64
+             */
+            max_participants?: number | null;
+            /** Estado */
+            status?: components["schemas"]["GameStatusEnum"];
+            readonly status_display: string;
+            /** Evento destacado */
+            is_featured?: boolean;
+            /**
+             * Imagen del evento
+             * Format: uri
+             */
+            image?: string | null;
+            readonly participants_count: number;
+            readonly is_joinable: boolean;
+            readonly steps_count: number;
+            readonly created_by_username: string;
+            /**
+             * Actividad asociada
+             * Format: uuid
+             */
+            readonly event_id: string | null;
+            /** Format: uuid */
+            readonly my_team_id: string | null;
+            readonly my_team_is_ready_to_play: boolean | null;
+            /** Format: uuid */
+            readonly my_team_chat_room_id: string | null;
+            readonly my_team_capacity: number | null;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description Alta y edición de un juego (admin).
+         *
+         *     Reconexión 2026-09-26: el juego ya no crea un `plans.Plan`; su reflejo
+         *     en la agenda es una actividad (`Game.event`) que escribe
+         *     `services.sync_game_event` — nace al abrir inscripciones, así que un
+         *     alta (siempre en borrador) todavía no publica nada, y cada edición la
+         *     resincroniza. Juegos de pago fuera de esta versión: `is_paid=True` es
+         *     400 (`price`/`stripe_price_id` ya no se aceptan).
+         */
+        GameCreateRequest: {
+            /** Nombre */
+            name: string;
+            /** Descripción */
+            description: string;
+            /** Ciudad */
+            city: string;
+            /** Premio */
+            prize_description: string;
+            /**
+             * Hora de inicio
+             * Format: date-time
+             */
+            start_time: string;
+            /**
+             * Duración (minutos)
+             * Format: int64
+             */
+            duration_minutes?: number;
+            /** Modo de juego */
+            game_mode?: components["schemas"]["GameModeEnum"];
+            /**
+             * Mínimo de jugadores por equipo
+             * Format: int64
+             */
+            team_size_min?: number;
+            /**
+             * Máximo de jugadores por equipo
+             * Format: int64
+             */
+            team_size_max?: number;
+            /**
+             * Máximo de participantes
+             * Format: int64
+             */
+            max_participants?: number | null;
+            /** Evento destacado */
+            is_featured?: boolean;
+            /**
+             * Imagen del evento
+             * Format: binary
+             */
+            image?: string | null;
+            /** Requiere pago */
+            is_paid?: boolean;
+        };
+        GameDetail: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Nombre */
+            name: string;
+            /** Descripción */
+            description: string;
+            /** Ciudad */
+            city: string;
+            /** Premio */
+            prize_description: string;
+            /**
+             * Hora de inicio
+             * Format: date-time
+             */
+            start_time: string;
+            /**
+             * Duración (minutos)
+             * Format: int64
+             */
+            duration_minutes?: number;
+            /** Modo de juego */
+            game_mode?: components["schemas"]["GameModeEnum"];
+            /**
+             * Mínimo de jugadores por equipo
+             * Format: int64
+             */
+            team_size_min?: number;
+            /**
+             * Máximo de jugadores por equipo
+             * Format: int64
+             */
+            team_size_max?: number;
+            /**
+             * Máximo de participantes
+             * Format: int64
+             */
+            max_participants?: number | null;
+            /** Estado */
+            status?: components["schemas"]["GameStatusEnum"];
+            readonly status_display: string;
+            /** Evento destacado */
+            is_featured?: boolean;
+            /**
+             * Imagen del evento
+             * Format: uri
+             */
+            image?: string | null;
+            readonly participants_count: number;
+            readonly is_joinable: boolean;
+            readonly steps_count: number;
+            readonly created_by_username: string;
+            /**
+             * Actividad asociada
+             * Format: uuid
+             */
+            readonly event_id: string | null;
+            /** Format: uuid */
+            readonly my_team_id: string | null;
+            readonly my_team_is_ready_to_play: boolean | null;
+            /** Format: uuid */
+            readonly my_team_chat_room_id: string | null;
+            readonly my_team_capacity: number | null;
+            /** Format: date-time */
+            readonly created_at: string;
+            readonly steps: components["schemas"]["GameStep"][];
+            readonly teams: components["schemas"]["TreasureHuntTeam"][];
+            readonly prize_tiers: components["schemas"]["PrizeTier"][];
+            readonly my_welcome_seen: boolean;
+        };
+        /**
+         * @description * `individual` - Individual
+         *     * `teams` - Equipos
+         *     * `pairs` - Parejas
+         * @enum {string}
+         */
+        GameModeEnum: "individual" | "teams" | "pairs";
+        GameParticipant: {
+            readonly id: number;
+            readonly user_id: number;
+            readonly username: string;
+            readonly first_name: string;
+            readonly last_name: string;
+            readonly full_name: string;
+            readonly profile_picture: string | null;
+            /** Estado */
+            status?: components["schemas"]["GameParticipantStatusEnum"];
+            readonly status_display: string;
+            /** Format: uuid */
+            readonly team_id: string | null;
+            readonly team_name: string | null;
+            /** Format: date-time */
+            readonly joined_at: string;
+        };
+        /**
+         * @description * `pending` - Pendiente
+         *     * `accepted` - Aceptado
+         *     * `rejected` - Rechazado
+         * @enum {string}
+         */
+        GameParticipantStatusEnum: "pending" | "accepted" | "rejected";
+        GameRequest: {
+            /** Nombre */
+            name: string;
+            /** Descripción */
+            description: string;
+            /** Ciudad */
+            city: string;
+            /** Premio */
+            prize_description: string;
+            /**
+             * Hora de inicio
+             * Format: date-time
+             */
+            start_time: string;
+            /**
+             * Duración (minutos)
+             * Format: int64
+             */
+            duration_minutes?: number;
+            /** Modo de juego */
+            game_mode?: components["schemas"]["GameModeEnum"];
+            /**
+             * Mínimo de jugadores por equipo
+             * Format: int64
+             */
+            team_size_min?: number;
+            /**
+             * Máximo de jugadores por equipo
+             * Format: int64
+             */
+            team_size_max?: number;
+            /**
+             * Máximo de participantes
+             * Format: int64
+             */
+            max_participants?: number | null;
+            /** Estado */
+            status?: components["schemas"]["GameStatusEnum"];
+            /** Evento destacado */
+            is_featured?: boolean;
+            /**
+             * Imagen del evento
+             * Format: binary
+             */
+            image?: string | null;
+        };
+        GameSession: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly team: components["schemas"]["TreasureHuntTeam"];
+            /** Format: date-time */
+            started_at?: string | null;
+            /** Format: date-time */
+            finished_at?: string | null;
+            /** Format: int64 */
+            current_step_order?: number;
+            readonly total_steps: number;
+            readonly current_step: components["schemas"]["GameStepPublic"] | null;
+            readonly elapsed_seconds: number;
+            readonly is_finished: boolean;
+            readonly completions: components["schemas"]["StepCompletion"][];
+            readonly step_progresses: components["schemas"]["TeamStepProgress"][];
+            readonly personal_score: number | null;
+            readonly game_mode: string | null;
+        };
+        /**
+         * @description * `draft` - Borrador
+         *     * `open` - Abierto
+         *     * `in_progress` - En progreso
+         *     * `finished` - Finalizado
+         *     * `cancelled` - Cancelado
+         * @enum {string}
+         */
+        GameStatusEnum: "draft" | "open" | "in_progress" | "finished" | "cancelled";
+        /**
+         * @description Serializer completo (admin/creador). `correct_answer` no está en
+         *     `fields`, así que nunca se serializa — no hace falta write_only.
+         */
+        GameStep: {
+            /** Format: uuid */
+            readonly id: string;
+            /**
+             * Orden
+             * Format: int64
+             */
+            order: number;
+            /** Pista */
+            clue: string;
+            /** Pista adicional (opcional) */
+            hint?: string;
+            /** Tipo de prueba */
+            challenge_type: components["schemas"]["ChallengeTypeEnum"];
+            readonly challenge_type_display: string;
+            /** Format: double */
+            readonly latitude: number | null;
+            /** Format: double */
+            readonly longitude: number | null;
+            /**
+             * Radio de validación (metros)
+             * Format: int64
+             */
+            location_radius_meters?: number;
+            /**
+             * Puntos base
+             * Format: int64
+             */
+            points_base?: number;
+            /**
+             * Tiempo para bonus (segundos)
+             * Format: int64
+             * @description Si el equipo completa el paso en menos de este tiempo, recibe puntos extra.
+             */
+            time_bonus_seconds?: number;
+        };
+        GameStepCreateRequest: {
+            /**
+             * Orden
+             * Format: int64
+             */
+            order: number;
+            /** Pista */
+            clue: string;
+            /** Pista adicional (opcional) */
+            hint?: string;
+            /** Tipo de prueba */
+            challenge_type: components["schemas"]["ChallengeTypeEnum"];
+            /** Respuesta correcta */
+            correct_answer?: string;
+            /** Format: decimal */
+            latitude?: string | null;
+            /** Format: decimal */
+            longitude?: string | null;
+            /**
+             * Radio de validación (metros)
+             * Format: int64
+             */
+            location_radius_meters?: number;
+            /**
+             * Puntos base
+             * Format: int64
+             */
+            points_base?: number;
+            /**
+             * Tiempo para bonus (segundos)
+             * Format: int64
+             * @description Si el equipo completa el paso en menos de este tiempo, recibe puntos extra.
+             */
+            time_bonus_seconds?: number;
+        };
+        /**
+         * @description Serializer para jugadores — oculta la respuesta correcta.
+         *
+         *     Incluye `hint`: es la pista extra que la UI muestra bajo demanda ("Ver
+         *     pista extra"). Sin él, el desplegable nunca aparecía en gameplay.
+         */
+        GameStepPublic: {
+            /** Format: uuid */
+            readonly id: string;
+            /**
+             * Orden
+             * Format: int64
+             */
+            order: number;
+            /** Pista */
+            clue: string;
+            /** Pista adicional (opcional) */
+            hint?: string;
+            /** Tipo de prueba */
+            challenge_type: components["schemas"]["ChallengeTypeEnum"];
+            readonly challenge_type_display: string;
+            /** Format: double */
+            readonly latitude: number | null;
+            /** Format: double */
+            readonly longitude: number | null;
+            /**
+             * Radio de validación (metros)
+             * Format: int64
+             */
+            location_radius_meters?: number;
+            /**
+             * Puntos base
+             * Format: int64
+             */
+            points_base?: number;
+            /**
+             * Tiempo para bonus (segundos)
+             * Format: int64
+             * @description Si el equipo completa el paso en menos de este tiempo, recibe puntos extra.
+             */
+            time_bonus_seconds?: number;
         };
         /**
          * @description Un aviso de ayuda tal y como lo lee quien lo atiende (`pending`) o
@@ -8999,6 +10098,21 @@ export interface components {
             previous?: string | null;
             results?: components["schemas"]["VerificationReview"][];
         };
+        PaginatedWallPostList: {
+            /** @example 123 */
+            count?: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results?: components["schemas"]["WallPost"][];
+        };
         /** @description Serializer para salas de chat - Solo campos seguros */
         PatchedChatRoomRequest: {
             chat_type?: components["schemas"]["ChatTypeEnum"];
@@ -9169,6 +10283,97 @@ export interface components {
              * Format: binary
              */
             image?: string | null;
+        };
+        /**
+         * @description Alta y edición de un juego (admin).
+         *
+         *     Reconexión 2026-09-26: el juego ya no crea un `plans.Plan`; su reflejo
+         *     en la agenda es una actividad (`Game.event`) que escribe
+         *     `services.sync_game_event` — nace al abrir inscripciones, así que un
+         *     alta (siempre en borrador) todavía no publica nada, y cada edición la
+         *     resincroniza. Juegos de pago fuera de esta versión: `is_paid=True` es
+         *     400 (`price`/`stripe_price_id` ya no se aceptan).
+         */
+        PatchedGameCreateRequest: {
+            /** Nombre */
+            name?: string;
+            /** Descripción */
+            description?: string;
+            /** Ciudad */
+            city?: string;
+            /** Premio */
+            prize_description?: string;
+            /**
+             * Hora de inicio
+             * Format: date-time
+             */
+            start_time?: string;
+            /**
+             * Duración (minutos)
+             * Format: int64
+             */
+            duration_minutes?: number;
+            /** Modo de juego */
+            game_mode?: components["schemas"]["GameModeEnum"];
+            /**
+             * Mínimo de jugadores por equipo
+             * Format: int64
+             */
+            team_size_min?: number;
+            /**
+             * Máximo de jugadores por equipo
+             * Format: int64
+             */
+            team_size_max?: number;
+            /**
+             * Máximo de participantes
+             * Format: int64
+             */
+            max_participants?: number | null;
+            /** Evento destacado */
+            is_featured?: boolean;
+            /**
+             * Imagen del evento
+             * Format: binary
+             */
+            image?: string | null;
+            /** Requiere pago */
+            is_paid?: boolean;
+        };
+        PatchedGameStepCreateRequest: {
+            /**
+             * Orden
+             * Format: int64
+             */
+            order?: number;
+            /** Pista */
+            clue?: string;
+            /** Pista adicional (opcional) */
+            hint?: string;
+            /** Tipo de prueba */
+            challenge_type?: components["schemas"]["ChallengeTypeEnum"];
+            /** Respuesta correcta */
+            correct_answer?: string;
+            /** Format: decimal */
+            latitude?: string | null;
+            /** Format: decimal */
+            longitude?: string | null;
+            /**
+             * Radio de validación (metros)
+             * Format: int64
+             */
+            location_radius_meters?: number;
+            /**
+             * Puntos base
+             * Format: int64
+             */
+            points_base?: number;
+            /**
+             * Tiempo para bonus (segundos)
+             * Format: int64
+             * @description Si el equipo completa el paso en menos de este tiempo, recibe puntos extra.
+             */
+            time_bonus_seconds?: number;
         };
         PatchedHobbyCategoryRequest: {
             code?: string;
@@ -9358,6 +10563,22 @@ export interface components {
             /** @default true */
             is_active: boolean;
         };
+        PatchedPrizeTierRequest: {
+            /**
+             * Posición desde
+             * Format: int64
+             */
+            rank_from?: number;
+            /**
+             * Posición hasta
+             * Format: int64
+             */
+            rank_to?: number;
+            /** Nombre del tramo */
+            tier_name?: string;
+            /** Descripción del premio */
+            description?: string;
+        };
         /** @description Entrada de creación (`POST`) y edición (`PATCH`, `partial=True`). */
         PatchedProgramInputRequest: {
             name?: string;
@@ -9474,6 +10695,11 @@ export interface components {
          * @enum {string}
          */
         PaymentStatusEnum: "requires_payment_method" | "requires_confirmation" | "requires_action" | "processing" | "succeeded" | "canceled" | "failed";
+        PaymentStatusResponse: {
+            is_paid_game: boolean;
+            has_paid: boolean;
+            error: string | null;
+        };
         PeopleMetrics: {
             active: number | null;
             new: number | null;
@@ -9793,6 +11019,40 @@ export interface components {
          * @enum {string}
          */
         PriorityEnum: "low" | "medium" | "high" | "urgent";
+        PrizeTier: {
+            /** Format: uuid */
+            readonly id: string;
+            /**
+             * Posición desde
+             * Format: int64
+             */
+            rank_from: number;
+            /**
+             * Posición hasta
+             * Format: int64
+             */
+            rank_to: number;
+            /** Nombre del tramo */
+            tier_name: string;
+            /** Descripción del premio */
+            description?: string;
+        };
+        PrizeTierRequest: {
+            /**
+             * Posición desde
+             * Format: int64
+             */
+            rank_from: number;
+            /**
+             * Posición hasta
+             * Format: int64
+             */
+            rank_to: number;
+            /** Nombre del tramo */
+            tier_name: string;
+            /** Descripción del premio */
+            description?: string;
+        };
         /** @description Perfil tal y como lo ve su dueño (incluye coordenadas). */
         ProfileOwn: {
             /** Alias */
@@ -9961,6 +11221,32 @@ export interface components {
             readonly place: components["schemas"]["PlaceRef"];
             readonly verification_level: string;
             readonly adult_verified: string;
+        };
+        Ranking: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            readonly team_id: string;
+            /** Nombre del equipo */
+            name: string;
+            readonly team_name: string;
+            readonly rank: number | null;
+            /**
+             * Puntuación
+             * Format: int64
+             */
+            score?: number;
+            /** Format: date-time */
+            readonly finished_at: string | null;
+            readonly steps_completed: number;
+            readonly members_count: number;
+            /**
+             * Capacidad máxima
+             * Format: int64
+             * @description Número máximo de miembros. Null = sin límite (equipos auto-creados).
+             */
+            capacity?: number | null;
+            readonly game_mode: string;
         };
         /**
          * @description * `harassment` - Acoso
@@ -10368,6 +11654,76 @@ export interface components {
          * @enum {string}
          */
         StatusA0fEnum: "pending" | "in_review" | "resolved";
+        StepCompletion: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly step_order: number;
+            /**
+             * Puntos obtenidos
+             * Format: int64
+             */
+            points_earned?: number;
+            /**
+             * Tiempo empleado (segundos)
+             * Format: int64
+             */
+            time_taken_seconds?: number;
+            /** Válido */
+            is_valid?: boolean;
+            /** Format: date-time */
+            readonly completed_at: string;
+        };
+        StepCompletionAdmin: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly step_order: number;
+            readonly step_clue: string;
+            readonly challenge_type: string;
+            /** Format: uuid */
+            readonly team_id: string;
+            readonly team_name: string;
+            /** Respuesta enviada */
+            answer?: string;
+            /**
+             * Foto enviada
+             * Format: uri
+             */
+            photo?: string | null;
+            /**
+             * Puntos obtenidos
+             * Format: int64
+             */
+            points_earned?: number;
+            /**
+             * Tiempo empleado (segundos)
+             * Format: int64
+             */
+            time_taken_seconds?: number;
+            /** Válido */
+            is_valid?: boolean;
+            /** Format: date-time */
+            readonly completed_at: string;
+        };
+        StepSubmitRequest: {
+            answer?: string;
+            /** Format: binary */
+            photo?: string;
+            /** Format: decimal */
+            latitude?: string;
+            /** Format: decimal */
+            longitude?: string;
+        };
+        StepSubmitResponse: {
+            is_valid: boolean;
+            points_earned: number;
+            failed_attempts: number;
+            message: string;
+            next_step: components["schemas"]["GameStepPublic"] | null;
+        };
+        StepValidationRequest: {
+            is_valid: boolean;
+            points_override?: number;
+        };
         /** @description Serializer para respuestas de éxito genéricas */
         SuccessResponse: {
             /** @description Mensaje de confirmación */
@@ -10490,6 +11846,12 @@ export interface components {
             value: number | null;
             suppressed: boolean;
         };
+        /**
+         * @description * `forum` - Forum
+         *     * `wall` - Wall
+         * @enum {string}
+         */
+        SurfaceEnum: "forum" | "wall";
         /** @description Salida: una encuesta, con sus preguntas. */
         Survey: {
             readonly id: number;
@@ -10640,10 +12002,62 @@ export interface components {
             /** Format: date-time */
             readonly updated_at: string;
         };
+        TeamCreateRequest: {
+            name: string;
+            /** @default  */
+            description: string;
+            capacity: number;
+            visibility: components["schemas"]["TeamCreateVisibilityEnum"];
+            /** @description Lista de IDs de usuarios a invitar al equipo. No se puede invitar a alguien con quien haya un bloqueo. Si no están inscritos en el juego, al aceptar la invitación se les inscribe automáticamente. Máximo 50. */
+            invitees?: number[];
+        };
+        TeamCreateResponse: {
+            team: components["schemas"]["TreasureHuntTeam"];
+            invitations_sent: {
+                [key: string]: unknown;
+            }[];
+            invitations_failed: {
+                [key: string]: unknown;
+            }[];
+        };
+        /**
+         * @description * `public` - public
+         *     * `private` - private
+         * @enum {string}
+         */
+        TeamCreateVisibilityEnum: "public" | "private";
         TeamListResponse: {
             results: components["schemas"]["Team"][];
             count: number;
         };
+        TeamMember: {
+            id: string;
+            username: string;
+        };
+        TeamStepProgress: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly step_order: number;
+            status?: components["schemas"]["TeamStepProgressStatusEnum"];
+            readonly status_display: string;
+            /** Format: date-time */
+            unlocked_at?: string | null;
+            /** Format: date-time */
+            completed_at?: string | null;
+        };
+        /**
+         * @description * `locked` - Bloqueada
+         *     * `unlocked` - Desbloqueada
+         *     * `completed` - Completada
+         * @enum {string}
+         */
+        TeamStepProgressStatusEnum: "locked" | "unlocked" | "completed";
+        /**
+         * @description * `public` - Público
+         *     * `private` - Privado
+         * @enum {string}
+         */
+        TeamVisibilityEnum: "public" | "private";
         /**
          * @description * `ccaa` - Comunidad autónoma
          *     * `provincia` - Provincia
@@ -10672,6 +12086,41 @@ export interface components {
          */
         TokenRefreshRequest: {
             refresh: string;
+        };
+        TreasureHuntTeam: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Nombre del equipo */
+            name: string;
+            /** Descripción del equipo */
+            description?: string;
+            /**
+             * Puntuación
+             * Format: int64
+             */
+            score?: number;
+            /**
+             * Capacidad máxima
+             * Format: int64
+             * @description Número máximo de miembros. Null = sin límite (equipos auto-creados).
+             */
+            capacity?: number | null;
+            /** Visibilidad */
+            visibility?: components["schemas"]["TeamVisibilityEnum"];
+            readonly creator_username: string | null;
+            readonly members_count: number;
+            readonly available_spots: number | null;
+            readonly members: components["schemas"]["TeamMember"][];
+            readonly is_full: boolean;
+            readonly is_ready_to_play: boolean;
+            readonly pending_invitations_count: number;
+            /**
+             * Sala de chat del equipo
+             * Format: uuid
+             */
+            readonly chat_room_id: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
         };
         /**
          * @description * `app` - App Authenticator
@@ -11018,6 +12467,41 @@ export interface components {
          * @enum {string}
          */
         VisibilityEnum: "open" | "on_request" | "private_listed" | "private";
+        /**
+         * @description Una foto del **muro general** (el del menú de la app).
+         *
+         *     Igual que la del muro de una comunidad, pero diciendo de qué comunidad
+         *     sale: en un feed que junta varias, sin el nombre no se sabe de dónde
+         *     viene cada foto.
+         */
+        WallPost: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly community: {
+                [key: string]: string;
+            };
+            /** Format: uuid */
+            readonly author_id: string;
+            readonly author_name: string;
+            readonly author: {
+                [key: string]: unknown;
+            };
+            content: string;
+            /** Format: uri */
+            image?: string | null;
+            readonly images: components["schemas"]["CommunityPostImage"][];
+            readonly video_url: string | null;
+            readonly hashtags: string[];
+            readonly surface: components["schemas"]["SurfaceEnum"];
+            readonly likes_count: number;
+            readonly comments_count: number;
+            readonly is_liked: boolean;
+            is_active?: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
         /**
          * @description * `no_show` - No Show
          *     * `ghosting` - Ghosting
@@ -14414,7 +15898,10 @@ export interface operations {
     };
     communities_posts_retrieve: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description `forum` o `wall`. Sin el parámetro salen las dos, que es lo que necesitan la moderación y el detalle. */
+                surface?: string;
+            };
             header?: never;
             path: {
                 /** @description A UUID string identifying this Comunidad. */
@@ -15020,6 +16507,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedCommunityListList"];
+                };
+            };
+        };
+    };
+    communities_wall_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedWallPostList"];
                 };
             };
         };
@@ -16197,6 +17710,8 @@ export interface operations {
     events_agenda_retrieve: {
         parameters: {
             query?: {
+                /** @description `anyone` (lo abierto) u `organization` (lo de tus entidades). Cualquier otro valor no filtra. */
+                audience?: string;
                 /** @description Id de la categoría (PlanCategory). */
                 category?: string;
                 from?: string;
@@ -22349,6 +23864,1026 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SurveyPending"][];
+                };
+            };
+        };
+    };
+    treasure_hunt_list: {
+        parameters: {
+            query?: {
+                /** @description Filtrar por ciudad */
+                city?: string;
+                /** @description Filtrar solo eventos destacados: true/false */
+                featured?: boolean;
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A search term. */
+                search?: string;
+                /** @description Filtrar por estado: draft, open, in_progress, finished, cancelled */
+                status?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Game"][];
+                };
+            };
+        };
+    };
+    treasure_hunt_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameCreateRequest"];
+                "multipart/form-data": components["schemas"]["GameCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Game"];
+                };
+            };
+        };
+    };
+    treasure_hunt_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameDetail"];
+                };
+            };
+        };
+    };
+    treasure_hunt_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameCreateRequest"];
+                "multipart/form-data": components["schemas"]["GameCreateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameDetail"];
+                };
+            };
+        };
+    };
+    treasure_hunt_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    treasure_hunt_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedGameCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedGameCreateRequest"];
+                "multipart/form-data": components["schemas"]["PatchedGameCreateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameDetail"];
+                };
+            };
+        };
+    };
+    treasure_hunt_access_options: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    treasure_hunt_list_pending_completions: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StepCompletionAdmin"][];
+                };
+            };
+        };
+    };
+    treasure_hunt_validate_completion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                completion_id: string;
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StepValidationRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["StepValidationRequest"];
+                "multipart/form-data": components["schemas"]["StepValidationRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    treasure_hunt_finish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameRequest"];
+                "multipart/form-data": components["schemas"]["GameRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Game"];
+                };
+            };
+        };
+    };
+    treasure_hunt_join: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameRequest"];
+                "multipart/form-data": components["schemas"]["GameRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Game"];
+                };
+            };
+        };
+    };
+    treasure_hunt_leave: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameRequest"];
+                "multipart/form-data": components["schemas"]["GameRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Game"];
+                };
+            };
+        };
+    };
+    treasure_hunt_my_session: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameSession"];
+                };
+            };
+        };
+    };
+    treasure_hunt_open: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameRequest"];
+                "multipart/form-data": components["schemas"]["GameRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Game"];
+                };
+            };
+        };
+    };
+    treasure_hunt_list_participants: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A search term. */
+                search?: string;
+                /** @description Filtrar por estado: pending, accepted, rejected */
+                status?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameParticipant"][];
+                };
+            };
+        };
+    };
+    treasure_hunt_approve_participant: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+                participant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameRequest"];
+                "multipart/form-data": components["schemas"]["GameRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    treasure_hunt_reject_participant: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+                participant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameRequest"];
+                "multipart/form-data": components["schemas"]["GameRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    treasure_hunt_payment_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentStatusResponse"];
+                };
+            };
+        };
+    };
+    treasure_hunt_list_prize_tiers: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrizeTier"][];
+                };
+            };
+        };
+    };
+    treasure_hunt_add_prize_tier: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PrizeTierRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PrizeTierRequest"];
+                "multipart/form-data": components["schemas"]["PrizeTierRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrizeTier"];
+                };
+            };
+        };
+    };
+    treasure_hunt_prize_tier_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+                tier_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    treasure_hunt_prize_tier_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+                tier_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedPrizeTierRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedPrizeTierRequest"];
+                "multipart/form-data": components["schemas"]["PatchedPrizeTierRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrizeTier"];
+                };
+            };
+        };
+    };
+    treasure_hunt_ranking: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ranking"][];
+                };
+            };
+        };
+    };
+    treasure_hunt_start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameRequest"];
+                "multipart/form-data": components["schemas"]["GameRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Game"];
+                };
+            };
+        };
+    };
+    treasure_hunt_add_step: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameStepCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameStepCreateRequest"];
+                "multipart/form-data": components["schemas"]["GameStepCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameStepPublic"];
+                };
+            };
+        };
+    };
+    treasure_hunt_step_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+                step_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    treasure_hunt_step_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+                step_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedGameStepCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedGameStepCreateRequest"];
+                "multipart/form-data": components["schemas"]["PatchedGameStepCreateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameStepPublic"];
+                };
+            };
+        };
+    };
+    treasure_hunt_list_steps: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameStep"][];
+                };
+            };
+        };
+    };
+    treasure_hunt_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["StepSubmitRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["StepSubmitRequest"];
+                "multipart/form-data": components["schemas"]["StepSubmitRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StepSubmitResponse"];
+                };
+            };
+        };
+    };
+    treasure_hunt_list_teams: {
+        parameters: {
+            query?: {
+                /** @description Si es "true", devuelve sólo equipos públicos con plazas disponibles. */
+                joinable?: string;
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TreasureHuntTeam"][];
+                };
+            };
+        };
+    };
+    treasure_hunt_team_chat: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+                team_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        chat_room_id?: string;
+                    };
+                };
+            };
+        };
+    };
+    treasure_hunt_invite_user: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+                team_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameRequest"];
+                "multipart/form-data": components["schemas"]["GameRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Game"];
+                };
+            };
+        };
+    };
+    treasure_hunt_join_team: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+                team_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameRequest"];
+                "multipart/form-data": components["schemas"]["GameRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Game"];
+                };
+            };
+        };
+    };
+    treasure_hunt_respond_invitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+                team_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameRequest"];
+                "multipart/form-data": components["schemas"]["GameRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Game"];
+                };
+            };
+        };
+    };
+    treasure_hunt_create_team: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TeamCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TeamCreateRequest"];
+                "multipart/form-data": components["schemas"]["TeamCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamCreateResponse"];
+                };
+            };
+        };
+    };
+    treasure_hunt_leave_team: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameRequest"];
+                "multipart/form-data": components["schemas"]["GameRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Game"];
+                };
+            };
+        };
+    };
+    treasure_hunt_mark_welcome_seen: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this Juego. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameRequest"];
+                "multipart/form-data": components["schemas"]["GameRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Game"];
+                };
+            };
+        };
+    };
+    treasure_hunt_featured: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Game"][];
                 };
             };
         };

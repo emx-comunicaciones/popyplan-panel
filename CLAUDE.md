@@ -33,10 +33,11 @@ Tres áreas por rol, cada una bajo su propia ruta:
   de ella (`parent`), sin relación necesaria con su territorio. Ver
   «Administraciones multinivel y territorio (bloque 1)» más abajo.
 - **`/plataforma`** — panel del equipo de Popyplan (`safety.PlatformRole`:
-  `superadmin`, `verifier`, `moderator`, `support`). Menú de 17 secciones
+  `superadmin`, `verifier`, `moderator`, `support`). Menú de 18 secciones
   (Inicio, Entidades, Usuarios, Comunidades, Actividades, Reportes,
   Bloqueos, Reseñas, Chats, Notificaciones, Ayuda, Verificaciones, Roles,
-  Auditoría, Métricas, Suscripciones, Nomencladores), con visibilidad por rol
+  Auditoría, Métricas, Suscripciones, Nomencladores, Búsqueda del
+  tesoro), con visibilidad por rol
   (`lib/auth/plataformaMenu.ts`) —
   ver «Área de plataforma» más abajo.
 
@@ -621,7 +622,8 @@ bloque 1 del admin de plataforma, **solo** `superadmin`, ver «Admin de
 plataforma: usuarios y bloqueos» más abajo; y Comunidades/Actividades/
 Reseñas/Chats/Notificaciones/Nomencladores desde el bloque 3, también
 **solo** `superadmin`, ver «Admin de plataforma: el resto del admin
-antiguo» más abajo);
+antiguo» más abajo; y Búsqueda del tesoro desde el bloque 2, **solo**
+`superadmin`, ver «Admin de plataforma: búsqueda del tesoro» más abajo);
 `verifier` solo Inicio/Entidades/Verificaciones
 (`organization-list/create/verify` y `verification-review-*` piden
 `verifier`/`superadmin`); `moderator` y `support` ven Inicio/Reportes/
@@ -969,8 +971,8 @@ Hallazgos desmentidos (no había bug contra el contrato vigente):
   «Administraciones multinivel y territorio» (que además cierra dos
   excepciones que arrastraba esta lista, `paraguas/[slug]/informes` y
   `plataforma/entidades/[id]`) y del bloque 1 del admin de plataforma
-  (tres páginas más) y del bloque 3 (ocho páginas más) son **39 páginas
-  y 10 componentes**:
+  (tres páginas más), del bloque 3 (ocho páginas más) y del bloque 2
+  (dos páginas más) son **41 páginas y 10 componentes**:
   `app/page` (la raíz: la web pública sin sesión y la pantalla «Tu cuenta
   es de la app» con sesión sin rol), `app/(auth)/login`,
   `app/accesibilidad` (declaración pública, tarea
@@ -997,7 +999,10 @@ Hallazgos desmentidos (no había bug contra el contrato vigente):
   (`plataforma/comunidades` y `comunidades/[id]`,
   `plataforma/actividades`, `plataforma/resenas`, `plataforma/chats` y
   `chats/[id]`, `plataforma/notificaciones`, `plataforma/nomencladores`,
-  cada una con un diálogo abierto), más las dos rutas de error (`app/error`,
+  cada una con un diálogo abierto), las dos del bloque 2
+  (`plataforma/busca-del-tesoro` con «Nuevo juego» abierto y
+  `busca-del-tesoro/[id]` con una confirmación y un diálogo de prueba
+  abiertos), más las dos rutas de error (`app/error`,
   `app/not-found`); y, a nivel de componente,
   `components/entidad/GuardiaPanel`, `components/help/PageHelp`,
   `components/landing/ModeToggle` (el conmutador de la web pública, el
@@ -2237,10 +2242,10 @@ qué se puede hacer en ella y quién la ve.
 - **Registro**: `lib/help/pageHelp.ts::PAGE_HELP`, una entrada
   (`PageHelpEntry {route, key}`) por cada `page.tsx` real de
   `app/entidad/[slug]/**`, `app/paraguas/[slug]/**` y
-  `app/plataforma/**` — **45** pantallas (19 entidad, **4** paraguas —
-  Inicio/Territorio/Red financiada/Informes, bloque 1 de territorio — 22
-  plataforma, tres del bloque 1 y ocho del bloque 3 del admin de
-  plataforma de 2026-09-26). **Actualizado en la tarea 5 de i18n**: `title`/`summary`/
+  `app/plataforma/**` — **47** pantallas (19 entidad, **4** paraguas —
+  Inicio/Territorio/Red financiada/Informes, bloque 1 de territorio — 24
+  plataforma, tres del bloque 1, dos del bloque 2 y ocho del bloque 3 del
+  admin de plataforma de 2026-09-26). **Actualizado en la tarea 5 de i18n**: `title`/`summary`/
   `actions`/`audience` ya no viven en el registro como texto en español
   — `key` (p. ej. `"entidad.personas"`, mismos segmentos que
   `pages.<area>.<slug>` de la tarea 2) apunta a
@@ -3568,6 +3573,95 @@ revocar un bloqueo real p01→p02.
 listado global de bloqueos; alias público en `BlockAdminSerializer`. i18n
 `eu`/`ca` pendiente de revisión nativa (`docs/i18n/PENDIENTES.md`).
 
+## Admin de plataforma: búsqueda del tesoro (bloque 2, 2026-09-26)
+
+Mismo spec que los bloques 1 y 3. Contrato del backend en
+`~/Code/popyplan/docs/PANEL.md` §16 (`treasure_hunt/unified_viewset.py`,
+reconectado en `ad2ce56`). Una sección nueva del menú de plataforma,
+**Búsqueda del tesoro** (`/plataforma/busca-del-tesoro`, clave de menú
+`busca-del-tesoro`), **solo `superadmin`**: el backend exige `is_staff`
+**o** `PlatformRole` superadmin (`treasure_hunt/permissions.py
+::es_gestor_de_juegos`) y cualquier otro rol de plataforma recibe 403. El
+menú pasa de 17 a **18** secciones. Tipos regenerados (`npm run
+gen:types` contra el `docs/schema.yaml` final del backend); lecturas como
+alias del generado (`TreasureGame`, `TreasureGameDetail`, `TreasureStep`,
+`TreasurePrizeTier`, `TreasureParticipant`, `TreasureRankingRow`,
+`TreasureCompletion`), escrituras a mano con el motivo al lado
+(`lib/api/types.ts`, bloque «Búsqueda del tesoro»).
+
+- **Listado** (`TesoroJuegosTable`, `hooks/useTreasureHunt.ts`): `GET
+  /api/treasure-hunt/` — **array plano** (el viewset no pagina nada),
+  borradores incluidos para quien administra. Nombre (enlace a la
+  ficha), estado, inicio, participantes (`N de M` con aforo), pruebas y
+  destacado. «Nuevo juego» en `Dialog` (`TesoroJuegoForm`) → `POST`
+  (nace `draft`, `event_id: null`) y abre la ficha; «Borrar» con
+  `ConfirmDialog` (borra también la actividad publicada).
+- **Formulario** (`TesoroJuegoForm`, compartido por el alta y la pestaña
+  Datos): nombre, descripción, ciudad, premio, inicio
+  (`datetime-local`), duración, máximo de participantes (vacío = sin
+  límite, es también el aforo de la actividad), destacado e imagen
+  (multipart solo si la hay, `buildGamePayload`; `png`/`jpg`/`webp` hasta
+  5 MB, `lib/treasureHunt/validation.ts::validateGameImage`). **Sin pago**
+  (`is_paid` solo admite `false`; el panel ni lo manda) y **sin elegir
+  modo**: esta versión de la app es solo individual, el alta manda
+  `game_mode: "individual"` (el modelo nace `teams`) y la edición no lo
+  toca (un juego heredado por equipos lo avisa). `start_time` solo viaja
+  si cambió **por minuto** (`sameMinute`, la lección de Actividades): el
+  backend lo exige futuro solo cuando cambia.
+- **Ficha** (`/plataforma/busca-del-tesoro/[id]`, `notFound()` si el id no
+  es UUID; `TesoroJuegoDetail`), seis pestañas con el selector de botones
+  + `aria-pressed` de `EntidadDetail`, cada una su componente en
+  `components/plataforma/tesoro/` y montada solo cuando se ve:
+  **Datos** (resumen, un botón de ciclo de vida según estado —Abrir
+  inscripciones / Empezar el juego / Terminar el juego— con
+  `ConfirmDialog` y el error dentro; «Empezar» deshabilitado sin pruebas;
+  la actividad enlazada con `useEvent` cuando hay `event_id`, o la
+  explicación de que un borrador no se publica; y la edición),
+  **Pruebas** (CRUD ordenado; `answer` exige la respuesta correcta —solo
+  de escritura: al editar, vacío = conservar la guardada—, `location`
+  pide latitud/longitud en dos campos y radio en metros, `photo`/
+  `social` avisan de la revisión a mano), **Premios** (tramos por
+  posición con la validación de solape del backend replicada en el
+  cliente, `validatePrizeTier`), **Participantes** (filtro por estado;
+  aprobar directo, rechazar con confirmación porque quien es rechazada no
+  puede volver a unirse; solo con el juego en `draft`/`open`),
+  **Validaciones** (envíos `photo`/`social` pendientes; aprobar con puntos
+  opcionales, rechazar —borra el envío— con confirmación; la foto con
+  `next/image` solo si `isAllowedImageSrc`, si no un enlace) y **Ranking**
+  (solo lectura).
+- **Caché**: claves `panel-treasure-*` con `String(gameId)` (el id es un
+  UUID, pero se normaliza igual). Toda mutación invalida lo que cambia
+  (el listado enseña estado, pruebas y participantes). El `PATCH` del
+  juego responde `GameDetail` y se escribe en la caché antes de
+  invalidar, y el formulario de Datos se remonta con una `key` derivada
+  de sus valores: un contador subido en el `onSuccess` remontaba **antes**
+  de que la caché notificara el detalle nuevo y dejaba los valores viejos
+  (lo encontró el test de la ficha).
+
+**Mismatches esquema/código** (en `lib/api/types.ts`): `image` es un
+`File` en multipart (el esquema dice `string`); `correct_answer` es solo
+de escritura (no está en `GameStep`); `latitude`/`longitude` se escriben
+como cadena `DecimalField` y se leen como número; la respuesta de
+`completions/{id}/validate/` es `{type: object}` en el esquema; el
+ranking se llama `Ranking`. Y uno de comportamiento, no de tipos:
+`order` es `unique_together` con el juego pero el serializer no incluye
+`game`, así que un orden repetido da un **500**, no un 400 — el panel
+propone el siguiente libre y rechaza uno repetido antes de mandar nada
+(`validateStep`).
+
+**Verificado contra el backend sembrado** (`next start` en el puerto
+3400, superadmin `plataforma@test.com`): alta de **«Búsqueda del tesoro
+de prueba»** (Donostia, 17-oct-2026 11:00, aforo 40), dos pruebas (una de
+respuesta y una de ubicación a 80 m del Ayuntamiento), un tramo de
+premio «Podio» (1.º-3.º), abrir inscripciones —la actividad espejo se
+pinta desde `GET /api/events/{event_id}/`, «Programada»— y editar
+(destacado) sin reenviar la fecha. Ese juego **se queda en la demo**,
+abierto; no se empezó ni se terminó.
+
+**Pendientes, del backend**: validar `order` repetido con un 400;
+auditar las acciones de administración del juego. i18n `eu`/`ca`
+pendiente de revisión nativa (`docs/i18n/PENDIENTES.md`).
+
 ## Admin de plataforma: el resto del admin antiguo (bloque 3, 2026-09-26)
 
 Mismo spec que el bloque 1. Seis secciones nuevas del menú de plataforma,
@@ -3832,6 +3926,12 @@ en CI lo gate el job `e2e`).
   `usePlatformCommunities.ts`, `useReviewsAdmin.ts`, `usePlatformEvents.ts`,
   `useAdminChats.ts`, `useAdminNotifications.ts` y `useCatalogs.ts`, al
   100 % de líneas). El umbral sigue en 99,7.
+  Tras el bloque 2 del admin de plataforma (búsqueda del tesoro,
+  2026-09-26, rebasado sobre el bloque 3): **99,83 %** de líneas
+  (**2663** tests, 233 ficheros — tres ficheros nuevos que cuentan para
+  la medición, `hooks/useTreasureHunt.ts`, `hooks/useTreasureHuntMutations.ts`
+  y `lib/treasureHunt/validation.ts`, al 100 % de líneas). El umbral sigue
+  en 99,7.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la

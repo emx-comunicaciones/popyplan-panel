@@ -97,7 +97,8 @@
       "auditoria": "Audit log",
       "metricas": "Metrics",
       "suscripciones": "Subscriptions",
-      "nomencladores": "Catalogues"
+      "nomencladores": "Catalogues",
+      "buscaDelTesoro": "Treasure hunt"
     }
   },
   "layout": {
@@ -284,6 +285,12 @@
       },
       "nomencladores": {
         "title": "Catalogues"
+      },
+      "tesoro": {
+        "title": "Treasure hunt"
+      },
+      "tesoroFicha": {
+        "title": "Game details"
       }
     }
   },
@@ -1434,6 +1441,12 @@
       "conflictoServidor": "The server did not accept it: the item may be in use or the name may be repeated.",
       "demasiadasPaginas": "There are too many categories to load them all.",
       "desconocido": "The action could not be completed."
+    },
+    "treasureHunt": {
+      "invalido": "Check the data: something is not valid.",
+      "sinAcceso": "Only superadmin can manage the treasure hunt.",
+      "noEncontrado": "This game (or what you were looking for in it) no longer exists.",
+      "desconocido": "The operation could not be completed. Try again."
     }
   },
   "reports": {
@@ -2299,6 +2312,45 @@
           "plataforma.actividades"
         ],
         "audience": "Superadmin only."
+      },
+      "tesoro": {
+        "title": "Treasure hunt",
+        "summary": "Marketing games organised by Popyplan: a slightly more complex activity, with clues and a prize.",
+        "details": "A game starts as a draft and is not visible in the app. When registration opens it is published in the agenda as an open activity, organised by whoever created the game, and whoever joins the game is registered in that activity. This version only supports individual, free games. Deleting a game also deletes its activity.",
+        "actions": [
+          "Create a game",
+          "See its status, participants and challenges",
+          "Delete a game"
+        ],
+        "tips": [
+          "Prepare the challenges and prizes before opening registration.",
+          "Mark as featured the game you want to promote in the app."
+        ],
+        "related": [
+          "plataforma.actividades",
+          "plataforma.inicio"
+        ],
+        "audience": "Superadmin only."
+      },
+      "tesoroFicha": {
+        "title": "Game details",
+        "summary": "A whole game in six tabs: details, challenges, prizes, participants, reviews and ranking.",
+        "details": "The cycle always moves forward: draft → registration open → in play → finished. Starting needs at least one challenge and rejects pending requests. Answer challenges store the correct answer without ever showing it; location challenges check a radius in metres; photo and social challenges are reviewed by hand in Reviews. Prizes go by position bands that cannot overlap.",
+        "actions": [
+          "Open registration, start and finish",
+          "Add, edit and delete challenges and prizes",
+          "Approve or reject requests",
+          "Review photos and social challenges"
+        ],
+        "tips": [
+          "Rejecting a submission deletes it: the person can try again.",
+          "If you change the date of a finished game, it goes back to draft."
+        ],
+        "related": [
+          "plataforma.tesoro",
+          "plataforma.actividades"
+        ],
+        "audience": "Superadmin only."
       }
     }
   },
@@ -3161,6 +3213,216 @@
       "empty": "This catalogue is empty",
       "count": "{count, plural, one {# item} other {# items}}",
       "deleteTitle": "Delete “{name}”?"
+    },
+    "tesoro": {
+      "heading": "Treasure hunt",
+      "intro": "Games organised by Popyplan. When registration opens, each game is published in the agenda as an open activity.",
+      "noAccessDescription": "Only superadmin manages the treasure hunt.",
+      "newGame": "New game",
+      "createAction": "Create game",
+      "loadError": "The games could not be loaded",
+      "empty": "There are no games yet",
+      "emptyHint": "Create the first one with «New game»: it starts as a draft and is not published until registration opens.",
+      "tableCaption": "Treasure hunt games",
+      "nameHeader": "Name",
+      "statusHeader": "Status",
+      "startHeader": "Start",
+      "participantsHeader": "Participants",
+      "participantsOf": "{count} of {max}",
+      "stepsHeader": "Challenges",
+      "featuredHeader": "Featured",
+      "featuredBadge": "Featured",
+      "delete": "Delete",
+      "deleteTitle": "Delete this game?",
+      "deleteDescription": "«{name}» will be deleted with its challenges, prizes and participants, and also its agenda activity if it was already published. This cannot be undone.",
+      "status": {
+        "draft": "Draft",
+        "open": "Registration open",
+        "inProgress": "In play",
+        "finished": "Finished",
+        "cancelled": "Cancelled"
+      },
+      "challenge": {
+        "answer": "Text answer",
+        "photo": "Photo",
+        "location": "Location",
+        "social": "Social challenge"
+      },
+      "participantes": {
+        "status": {
+          "pending": "Pending",
+          "accepted": "Accepted",
+          "rejected": "Rejected"
+        }
+      },
+      "form": {
+        "name": "Name",
+        "description": "Description",
+        "city": "City",
+        "start": "Start",
+        "startInPast": "The start has to be a future date.",
+        "prize": "Prize",
+        "duration": "Duration (minutes)",
+        "maxParticipants": "Maximum participants",
+        "maxParticipantsHint": "Empty = no limit. It is also the capacity of the published activity.",
+        "individualOnlyNote": "This version of the app only supports individual play: each person plays on their own.",
+        "legacyModeNote": "This game was created for teams; the current app plays it individually. The mode is not changed from here.",
+        "featured": "Featured game",
+        "image": "Image",
+        "imageHint": "PNG, JPG or WEBP, up to {max} MB. Optional.",
+        "imageKeepHint": "PNG, JPG or WEBP, up to {max} MB. If you choose none, the current one is kept.",
+        "imageWrongType": "Unsupported format: use PNG, JPG or WEBP.",
+        "imageTooBig": "The image is larger than {max} MB."
+      }
+    },
+    "tesoroFicha": {
+      "heading": "Game details",
+      "backToList": "Back to the games",
+      "loadError": "The game could not be loaded",
+      "notFound": "This game does not exist or has been deleted",
+      "sectionsLegend": "Game sections",
+      "sections": {
+        "datos": "Details",
+        "pruebas": "Challenges",
+        "premios": "Prizes",
+        "participantes": "Participants",
+        "validaciones": "Reviews",
+        "ranking": "Ranking"
+      },
+      "datos": {
+        "summaryTitle": "Summary",
+        "createdBy": "Created by",
+        "open": "Open registration",
+        "openTitle": "Open registration?",
+        "openDescription": "The game is published in the agenda as an open activity and people can join from the app. It cannot go back to draft.",
+        "start": "Start the game",
+        "startTitle": "Start the game?",
+        "startDescription": "The game starts for everyone who joined: each person gets their first clue. Pending requests are rejected.",
+        "finish": "Finish the game",
+        "finishTitle": "Finish the game?",
+        "finishDescription": "The game closes and the ranking is fixed. The agenda activity becomes completed.",
+        "noNextAction": "The game has already finished: there are no more steps in its cycle.",
+        "startNeedsSteps": "Add at least one challenge before starting.",
+        "activityCardTitle": "Agenda activity",
+        "noActivity": "There is no activity yet: a draft is not published. It is created when registration opens.",
+        "activityLoadError": "The linked activity could not be loaded.",
+        "activityTitle": "Title",
+        "activityStatus": "Status",
+        "activityStart": "Start",
+        "activityId": "Identifier",
+        "editTitle": "Edit details",
+        "saved": "Changes saved."
+      },
+      "pruebas": {
+        "newTitle": "New challenge",
+        "editTitle": "Edit challenge",
+        "createAction": "Add challenge",
+        "loadError": "The challenges could not be loaded",
+        "empty": "This game has no challenges",
+        "emptyHint": "Add the clues in the order they are played. At least one is needed to start.",
+        "tableCaption": "Game challenges, in order",
+        "order": "Order",
+        "type": "Challenge type",
+        "clue": "Clue",
+        "hint": "Extra hint",
+        "hintHelp": "Optional: the person only sees it if they ask for it.",
+        "correctAnswer": "Correct answer",
+        "correctAnswerHelp": "Required. It is never shown to players.",
+        "correctAnswerKeep": "Empty = the saved answer is kept (it cannot be shown).",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "radius": "Radius (metres)",
+        "locationHelp": "The exact point of the challenge, in decimal degrees (e.g. 43.3183 and -1.9812). It checks whether the person is within the radius.",
+        "manualReviewHelp": "These submissions are reviewed by hand in the «Reviews» tab.",
+        "points": "Points",
+        "bonus": "Time for bonus (seconds)",
+        "bonusHelp": "Solving it before this time adds extra points.",
+        "where": "Location",
+        "whereValue": "{lat}, {lng} · {radius} m",
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleteTitle": "Delete this challenge?",
+        "deleteDescription": "Challenge no. {order} will be deleted; the following ones move up one place.",
+        "errors": {
+          "orderInvalid": "The order has to be a whole number from 1.",
+          "orderTaken": "Another challenge already has that order.",
+          "noClue": "Write the clue.",
+          "noAnswer": "Answer challenges need the correct answer.",
+          "noCoordinates": "Location challenges need latitude and longitude.",
+          "badCoordinates": "Invalid coordinates: latitude goes from -90 to 90 and longitude from -180 to 180.",
+          "badNumbers": "Points, time and radius have to be whole numbers from 0."
+        }
+      },
+      "premios": {
+        "newTitle": "New prize",
+        "editTitle": "Edit prize",
+        "createAction": "Add prize",
+        "loadError": "The prizes could not be loaded",
+        "empty": "This game has no prizes by position",
+        "emptyHint": "Optional: award prizes by ranking bands (e.g. 1st, or 2nd to 5th).",
+        "tableCaption": "Prizes by position",
+        "rankHeader": "Positions",
+        "rankSingle": "No. {rank}",
+        "rankRange": "No. {from} to {to}",
+        "rankFrom": "From position",
+        "rankTo": "To position",
+        "name": "Prize name",
+        "description": "Description",
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleteTitle": "Delete this prize?",
+        "deleteDescription": "The prize «{name}» will be deleted.",
+        "errors": {
+          "badRange": "Positions have to be whole numbers from 1.",
+          "fromAfterTo": "The first position cannot be higher than the last.",
+          "overlap": "The position range overlaps an existing prize band."
+        }
+      },
+      "participantes": {
+        "filterLabel": "Status",
+        "filterAll": "All",
+        "hint": "Joining from the app is accepted straight away; pending requests can only be approved or rejected before the game starts.",
+        "loadError": "The participants could not be loaded",
+        "empty": "Nobody with this status",
+        "tableCaption": "Game participants",
+        "nameHeader": "Name",
+        "usernameHeader": "Username",
+        "statusHeader": "Status",
+        "teamHeader": "Team",
+        "joinedHeader": "Joined",
+        "approve": "Approve",
+        "reject": "Reject",
+        "rejectTitle": "Reject this request?",
+        "rejectDescription": "{name} will not be able to join this game again."
+      },
+      "validaciones": {
+        "loadError": "The submissions could not be loaded",
+        "empty": "No pending submissions",
+        "emptyHint": "Photos and social challenges that need a manual review arrive here.",
+        "cardTitle": "Challenge no. {order} · {team}",
+        "meta": "{type} · sent {date}",
+        "answerLabel": "Submitted text:",
+        "photoAlt": "Photo sent by {team}",
+        "openPhoto": "Open the photo",
+        "noPhoto": "No photo.",
+        "pointsOverride": "Points (optional)",
+        "pointsHelp": "Empty = the challenge's base points.",
+        "approve": "Approve",
+        "reject": "Reject",
+        "rejectTitle": "Reject this submission?",
+        "rejectDescription": "The submission is deleted and the person can try again."
+      },
+      "ranking": {
+        "loadError": "The ranking could not be loaded",
+        "empty": "There is no ranking yet",
+        "emptyHint": "It appears when the game starts.",
+        "tableCaption": "Game ranking",
+        "rankHeader": "Position",
+        "nameHeader": "Participant",
+        "scoreHeader": "Points",
+        "stepsHeader": "Challenges passed",
+        "finishedHeader": "Finished"
+      }
     }
   },
   "paraguas": {

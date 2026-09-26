@@ -42,7 +42,7 @@ describe("PlataformaLayout", () => {
     ).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("pinta las 17 secciones del menú de plataforma", async () => {
+  it("pinta las 18 secciones del menú de plataforma", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",
       me: buildMe({ org_memberships: [] }),
@@ -70,6 +70,7 @@ describe("PlataformaLayout", () => {
       "Métricas",
       "Suscripciones",
       "Nomencladores",
+      "Búsqueda del tesoro",
     ]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
@@ -102,6 +103,7 @@ describe("PlataformaLayout", () => {
       "Chats",
       "Notificaciones",
       "Nomencladores",
+      "Búsqueda del tesoro",
     ]) {
       expect(
         screen.queryByRole("link", { name: label }),
@@ -138,6 +140,7 @@ describe("PlataformaLayout", () => {
       "Comunidades",
       "Chats",
       "Nomencladores",
+      "Búsqueda del tesoro",
     ]) {
       expect(
         screen.queryByRole("link", { name: label }),

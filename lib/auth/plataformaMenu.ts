@@ -59,6 +59,12 @@
  * amplio por `is_staff` —`IsAdminUser` o un `user.is_staff` en el
  * código—, nunca por `PlatformRole`; y `is_staff` hoy solo lo tiene
  * `superadmin`.
+ *
+ * Admin de plataforma, bloque 2 (2026-09-26): **Búsqueda del tesoro**
+ * (`/plataforma/busca-del-tesoro`), solo `superadmin`: el backend exige
+ * `is_staff` o `PlatformRole` superadmin
+ * (`treasure_hunt/permissions.py::es_gestor_de_juegos`) y cualquier otro
+ * rol de plataforma recibe 403.
  */
 export const PLATAFORMA_MENU_ITEMS = [
   "inicio",
@@ -78,6 +84,7 @@ export const PLATAFORMA_MENU_ITEMS = [
   "metricas",
   "suscripciones",
   "nomencladores",
+  "busca-del-tesoro",
 ] as const;
 
 export type PlataformaMenuItem = (typeof PLATAFORMA_MENU_ITEMS)[number];
@@ -107,6 +114,7 @@ export const PLATAFORMA_MENU_LABELS: Record<PlataformaMenuItem, string> = {
   metricas: "menu.plataforma.metricas",
   suscripciones: "menu.plataforma.suscripciones",
   nomencladores: "menu.plataforma.nomencladores",
+  "busca-del-tesoro": "menu.plataforma.buscaDelTesoro",
 };
 
 /**

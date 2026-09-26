@@ -647,3 +647,48 @@ export const CATALOGS = {
   EVENT_SUBCATEGORIES: () => "/api/event-subcategories/",
   EVENT_SUBCATEGORY: (id: string) => `/api/event-subcategories/${id}/`,
 } as const;
+
+/**
+ * Búsqueda del tesoro (admin de plataforma, bloque 2, 2026-09-26;
+ * `docs/PANEL.md` §16 del backend, `treasure_hunt/unified_viewset.py`).
+ * Todas las rutas de administración piden `is_staff` o `PlatformRole`
+ * superadmin (`treasure_hunt/permissions.py::es_gestor_de_juegos`).
+ * `{id}` es el **UUID** del juego; **ningún listado pagina**
+ * (`pagination_class = None`): todos son arrays planos.
+ */
+export const TREASURE_HUNT = {
+  /** `GET` (filtros `?status=`/`?city=`/`?featured=`) y `POST` (alta, nace `draft`, `event_id: null`). */
+  LIST: () => "/api/treasure-hunt/",
+  /** `GET` `GameDetail`, `PATCH` (→ `GameDetail`, no los campos de escritura) y `DELETE` (borra también su actividad). */
+  DETAIL: (id: string) => `/api/treasure-hunt/${id}/`,
+  /** `draft` → `open`: aquí nace la actividad espejo (`event_id`). 400 si no es borrador. */
+  OPEN: (id: string) => `/api/treasure-hunt/${id}/open/`,
+  /** `open` → `in_progress`. 400 sin pistas o si no está abierto. */
+  START: (id: string) => `/api/treasure-hunt/${id}/start/`,
+  /** `in_progress` → `finished` (actividad `completed`). */
+  FINISH: (id: string) => `/api/treasure-hunt/${id}/finish/`,
+  /** `GET` pistas completas (`GameStep[]`, sin `correct_answer`, que nunca viaja de vuelta). */
+  STEPS_LIST: (id: string) => `/api/treasure-hunt/${id}/steps/list/`,
+  /** `POST` alta de pista (`GameStepCreate`) → 201 `GameStepPublic`. */
+  STEPS: (id: string) => `/api/treasure-hunt/${id}/steps/`,
+  /** `PATCH`/`DELETE` de una pista (borrar reordena las posteriores). */
+  STEP: (id: string, stepId: string) => `/api/treasure-hunt/${id}/steps/${stepId}/`,
+  /** `GET` (ordenados por `rank_from`) y `POST` tramos de premio. */
+  PRIZE_TIERS: (id: string) => `/api/treasure-hunt/${id}/prize-tiers/`,
+  /** `PATCH`/`DELETE` de un tramo. */
+  PRIZE_TIER: (id: string, tierId: string) => `/api/treasure-hunt/${id}/prize-tiers/${tierId}/`,
+  /** `GET ?status=pending|accepted|rejected` (`GameParticipant[]`). */
+  PARTICIPANTS: (id: string) => `/api/treasure-hunt/${id}/participants/`,
+  /** `POST`: solo con solicitud `pending` y juego `draft`/`open`; `participantId` es un entero. */
+  PARTICIPANT_APPROVE: (id: string, participantId: number) =>
+    `/api/treasure-hunt/${id}/participants/${participantId}/approve/`,
+  PARTICIPANT_REJECT: (id: string, participantId: number) =>
+    `/api/treasure-hunt/${id}/participants/${participantId}/reject/`,
+  /** `GET` (`Ranking[]`, solo equipos listos para jugar). */
+  RANKING: (id: string) => `/api/treasure-hunt/${id}/ranking/`,
+  /** `GET` envíos de foto/prueba social pendientes de revisión (`StepCompletionAdmin[]`). */
+  COMPLETIONS: (id: string) => `/api/treasure-hunt/${id}/completions/`,
+  /** `POST {is_valid, points_override?}`: aprobar da puntos y avanza; rechazar borra el envío (el equipo reintenta). */
+  COMPLETION_VALIDATE: (id: string, completionId: string) =>
+    `/api/treasure-hunt/${id}/completions/${completionId}/validate/`,
+} as const;

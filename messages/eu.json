@@ -97,7 +97,8 @@
       "auditoria": "Auditoria",
       "metricas": "Metrikak",
       "suscripciones": "Harpidetzak",
-      "nomencladores": "Katalogoak"
+      "nomencladores": "Katalogoak",
+      "buscaDelTesoro": "Altxorraren bila"
     }
   },
   "layout": {
@@ -284,6 +285,12 @@
       },
       "nomencladores": {
         "title": "Katalogoak"
+      },
+      "tesoro": {
+        "title": "Altxorraren bila"
+      },
+      "tesoroFicha": {
+        "title": "Jokoaren fitxa"
       }
     }
   },
@@ -1434,6 +1441,12 @@
       "conflictoServidor": "Zerbitzariak ez du onartu: baliteke elementua erabiltzen egotea edo izena errepikatuta egotea.",
       "demasiadasPaginas": "Kategoria gehiegi daude denak kargatzeko.",
       "desconocido": "Ezin izan da ekintza osatu."
+    },
+    "treasureHunt": {
+      "invalido": "Berrikusi datuak: baten bat ez da baliozkoa.",
+      "sinAcceso": "Superadminak bakarrik kudea dezake altxorraren bila jokoa.",
+      "noEncontrado": "Joko hau (edo bertan bilatzen zenuena) ez dago jada.",
+      "desconocido": "Ezin izan da eragiketa osatu. Saiatu berriro."
     }
   },
   "reports": {
@@ -2299,6 +2312,45 @@
           "plataforma.actividades"
         ],
         "audience": "Superadminak bakarrik."
+      },
+      "tesoro": {
+        "title": "Altxorraren bila",
+        "summary": "Popyplanek antolatzen dituen marketin-jokoak: jarduera apur bat konplexuagoa, pista eta sariarekin.",
+        "details": "Joko bat zirriborro gisa sortzen da eta ez da appean ikusten. Izen-ematea irekitzean agendan argitaratzen da jarduera ireki gisa, jokoa sortu zuenak antolatuta, eta jokoan izena ematen duena jarduera horretan inskribatuta geratzen da. Bertsio honek banakako joko doakoak bakarrik onartzen ditu. Joko bat ezabatzean bere jarduera ere ezabatzen da.",
+        "actions": [
+          "Sortu joko bat",
+          "Ikusi bere egoera, parte-hartzaileak eta probak",
+          "Ezabatu joko bat"
+        ],
+        "tips": [
+          "Prestatu probak eta sariak izen-ematea ireki aurretik.",
+          "Markatu nabarmendu gisa appean sustatu nahi duzun jokoa."
+        ],
+        "related": [
+          "plataforma.actividades",
+          "plataforma.inicio"
+        ],
+        "audience": "Superadminak bakarrik."
+      },
+      "tesoroFicha": {
+        "title": "Jokoaren fitxa",
+        "summary": "Joko oso bat sei fitxatan: datuak, probak, sariak, parte-hartzaileak, baliozkotzeak eta sailkapena.",
+        "details": "Zikloa beti aurrera doa: zirriborroa → izen-ematea irekita → jokoan → amaituta. Hasteko gutxienez proba bat behar da, eta zain dauden eskaerak baztertu egiten dira. Erantzun-probek erantzun zuzena gordetzen dute inoiz erakutsi gabe; kokapen-probek metroetako erradio bat egiaztatzen dute; argazki- eta proba sozialak eskuz berrikusten dira Baliozkotzeak fitxan. Sariak gainjarri ezin diren posizio-tarteen araberakoak dira.",
+        "actions": [
+          "Ireki izen-ematea, hasi eta amaitu",
+          "Gehitu, editatu eta ezabatu probak eta sariak",
+          "Onartu edo baztertu eskaerak",
+          "Baliozkotu argazkiak eta proba sozialak"
+        ],
+        "tips": [
+          "Bidalketa bat baztertzeak ezabatu egiten du: pertsonak berriro saiatu daiteke.",
+          "Amaitutako joko baten data aldatzen baduzu, zirriborrora itzultzen da."
+        ],
+        "related": [
+          "plataforma.tesoro",
+          "plataforma.actividades"
+        ],
+        "audience": "Superadminak bakarrik."
       }
     }
   },
@@ -3161,6 +3213,216 @@
       "empty": "Katalogo hau hutsik dago",
       "count": "{count, plural, one {# elementu} other {# elementu}}",
       "deleteTitle": "«{name}» ezabatu?"
+    },
+    "tesoro": {
+      "heading": "Altxorraren bila",
+      "intro": "Popyplanek antolatzen dituen jokoak. Izen-ematea irekitzean, joko bakoitza agendan argitaratzen da jarduera ireki gisa.",
+      "noAccessDescription": "Superadminak bakarrik kudeatzen du altxorraren bila jokoa.",
+      "newGame": "Joko berria",
+      "createAction": "Sortu jokoa",
+      "loadError": "Ezin izan dira jokoak kargatu",
+      "empty": "Oraindik ez dago jokorik",
+      "emptyHint": "Sortu lehena «Joko berria» botoiarekin: zirriborro gisa sortzen da eta ez da argitaratzen izen-ematea ireki arte.",
+      "tableCaption": "Altxorraren bila jokoak",
+      "nameHeader": "Izena",
+      "statusHeader": "Egoera",
+      "startHeader": "Hasiera",
+      "participantsHeader": "Parte-hartzaileak",
+      "participantsOf": "{count}/{max}",
+      "stepsHeader": "Probak",
+      "featuredHeader": "Nabarmendua",
+      "featuredBadge": "Nabarmendua",
+      "delete": "Ezabatu",
+      "deleteTitle": "Joko hau ezabatu?",
+      "deleteDescription": "«{name}» ezabatuko da bere proba, sari eta parte-hartzaileekin, baita agendako jarduera ere dagoeneko argitaratuta bazegoen. Ezin da desegin.",
+      "status": {
+        "draft": "Zirriborroa",
+        "open": "Izen-ematea irekita",
+        "inProgress": "Jokoan",
+        "finished": "Amaituta",
+        "cancelled": "Bertan behera"
+      },
+      "challenge": {
+        "answer": "Testu-erantzuna",
+        "photo": "Argazkia",
+        "location": "Kokapena",
+        "social": "Proba soziala"
+      },
+      "participantes": {
+        "status": {
+          "pending": "Zain",
+          "accepted": "Onartua",
+          "rejected": "Baztertua"
+        }
+      },
+      "form": {
+        "name": "Izena",
+        "description": "Deskribapena",
+        "city": "Hiria",
+        "start": "Hasiera",
+        "startInPast": "Hasierak etorkizuneko data izan behar du.",
+        "prize": "Saria",
+        "duration": "Iraupena (minutuak)",
+        "maxParticipants": "Gehienezko parte-hartzaileak",
+        "maxParticipantsHint": "Hutsik = mugarik gabe. Argitaratutako jardueraren edukiera ere bada.",
+        "individualOnlyNote": "Apparen bertsio honek banakako jokoa bakarrik onartzen du: pertsona bakoitzak bere kabuz jokatzen du.",
+        "legacyModeNote": "Joko hau taldeka sortu zen; egungo appak banaka jokatzen du. Modua ez da hemendik aldatzen.",
+        "featured": "Joko nabarmendua",
+        "image": "Irudia",
+        "imageHint": "PNG, JPG edo WEBP, gehienez {max} MB. Aukerakoa.",
+        "imageKeepHint": "PNG, JPG edo WEBP, gehienez {max} MB. Bat ere aukeratu gabe, oraingoa gordetzen da.",
+        "imageWrongType": "Formatu hori ez da onartzen: erabili PNG, JPG edo WEBP.",
+        "imageTooBig": "Irudiak {max} MB baino gehiago ditu."
+      }
+    },
+    "tesoroFicha": {
+      "heading": "Jokoaren fitxa",
+      "backToList": "Itzuli jokoetara",
+      "loadError": "Ezin izan da jokoa kargatu",
+      "notFound": "Joko hau ez dago edo ezabatu egin da",
+      "sectionsLegend": "Jokoaren atalak",
+      "sections": {
+        "datos": "Datuak",
+        "pruebas": "Probak",
+        "premios": "Sariak",
+        "participantes": "Parte-hartzaileak",
+        "validaciones": "Baliozkotzeak",
+        "ranking": "Sailkapena"
+      },
+      "datos": {
+        "summaryTitle": "Laburpena",
+        "createdBy": "Sortzailea",
+        "open": "Ireki izen-ematea",
+        "openTitle": "Izen-ematea ireki?",
+        "openDescription": "Jokoa agendan argitaratzen da jarduera ireki gisa, eta jendeak apparen bidez izena eman dezake. Ezin da zirriborrora itzuli.",
+        "start": "Hasi jokoa",
+        "startTitle": "Jokoa hasi?",
+        "startDescription": "Partida hasten da izena eman duten guztientzat: bakoitzak bere lehen pista jasotzen du. Zain dauden eskaerak baztertu egiten dira.",
+        "finish": "Amaitu jokoa",
+        "finishTitle": "Jokoa amaitu?",
+        "finishDescription": "Partida ixten da eta sailkapena finkatuta geratzen da. Agendako jarduera egindako gisa geratzen da.",
+        "noNextAction": "Jokoa amaitu da: ez dago urrats gehiagorik bere zikloan.",
+        "startNeedsSteps": "Gehitu gutxienez proba bat hasi aurretik.",
+        "activityCardTitle": "Agendako jarduera",
+        "noActivity": "Oraindik ez dago jarduerarik: zirriborro bat ez da argitaratzen. Izen-ematea irekitzean sortzen da.",
+        "activityLoadError": "Ezin izan da lotutako jarduera kargatu.",
+        "activityTitle": "Izenburua",
+        "activityStatus": "Egoera",
+        "activityStart": "Hasiera",
+        "activityId": "Identifikatzailea",
+        "editTitle": "Editatu datuak",
+        "saved": "Aldaketak gorde dira."
+      },
+      "pruebas": {
+        "newTitle": "Proba berria",
+        "editTitle": "Editatu proba",
+        "createAction": "Gehitu proba",
+        "loadError": "Ezin izan dira probak kargatu",
+        "empty": "Joko honek ez du probarik",
+        "emptyHint": "Gehitu pistak jokatzen diren ordenan. Gutxienez bat behar da hasteko.",
+        "tableCaption": "Jokoaren probak, ordenan",
+        "order": "Ordena",
+        "type": "Proba mota",
+        "clue": "Pista",
+        "hint": "Pista gehigarria",
+        "hintHelp": "Aukerakoa: pertsonak eskatzen badu bakarrik ikusten du.",
+        "correctAnswer": "Erantzun zuzena",
+        "correctAnswerHelp": "Derrigorrezkoa. Ez zaio inoiz jokalariari erakusten.",
+        "correctAnswerKeep": "Hutsik = gordetako erantzuna mantentzen da (ezin da erakutsi).",
+        "latitude": "Latitudea",
+        "longitude": "Longitudea",
+        "radius": "Erradioa (metroak)",
+        "locationHelp": "Probaren puntu zehatza, gradu hamartarretan (adib. 43.3183 eta -1.9812). Pertsona erradioaren barruan dagoen egiaztatzen da.",
+        "manualReviewHelp": "Bidalketa hauek eskuz berrikusten dira «Baliozkotzeak» fitxan.",
+        "points": "Puntuak",
+        "bonus": "Bonusaren denbora (segundoak)",
+        "bonusHelp": "Denbora hori baino lehen ebazten bada, puntu gehigarriak ematen ditu.",
+        "where": "Kokapena",
+        "whereValue": "{lat}, {lng} · {radius} m",
+        "edit": "Editatu",
+        "delete": "Ezabatu",
+        "deleteTitle": "Proba hau ezabatu?",
+        "deleteDescription": "{order}. proba ezabatuko da; hurrengoak postu bat igoko dira.",
+        "errors": {
+          "orderInvalid": "Ordenak 1etik aurrerako zenbaki osoa izan behar du.",
+          "orderTaken": "Beste proba batek badu ordena hori.",
+          "noClue": "Idatzi pista.",
+          "noAnswer": "Erantzun-probek erantzun zuzena behar dute.",
+          "noCoordinates": "Kokapen-probek latitudea eta longitudea behar dituzte.",
+          "badCoordinates": "Koordenatu baliogabeak: latitudea -90etik 90era doa eta longitudea -180tik 180ra.",
+          "badNumbers": "Puntuek, denborak eta erradioak 0tik aurrerako zenbaki osoak izan behar dute."
+        }
+      },
+      "premios": {
+        "newTitle": "Sari berria",
+        "editTitle": "Editatu saria",
+        "createAction": "Gehitu saria",
+        "loadError": "Ezin izan dira sariak kargatu",
+        "empty": "Joko honek ez du posizioaren araberako saririk",
+        "emptyHint": "Aukerakoa: banatu sariak sailkapeneko tarteen arabera (adib. 1.a, edo 2.etik 5.era).",
+        "tableCaption": "Posizioaren araberako sariak",
+        "rankHeader": "Posizioak",
+        "rankSingle": "{rank}.a",
+        "rankRange": "{from}.etik {to}.era",
+        "rankFrom": "Posizio honetatik",
+        "rankTo": "Posizio honetara",
+        "name": "Sariaren izena",
+        "description": "Deskribapena",
+        "edit": "Editatu",
+        "delete": "Ezabatu",
+        "deleteTitle": "Sari hau ezabatu?",
+        "deleteDescription": "«{name}» saria ezabatuko da.",
+        "errors": {
+          "badRange": "Posizioek 1etik aurrerako zenbaki osoak izan behar dute.",
+          "fromAfterTo": "Hasierako posizioa ezin da amaierakoa baino handiagoa izan.",
+          "overlap": "Posizio-tartea lehendik dagoen sari-tarte batekin gainjartzen da."
+        }
+      },
+      "participantes": {
+        "filterLabel": "Egoera",
+        "filterAll": "Guztiak",
+        "hint": "Apparen bidez izena ematean zuzenean onartzen da; zain dauden eskaerak jokoa hasi aurretik bakarrik onartu edo baztertu daitezke.",
+        "loadError": "Ezin izan dira parte-hartzaileak kargatu",
+        "empty": "Ez dago inor egoera honetan",
+        "tableCaption": "Jokoaren parte-hartzaileak",
+        "nameHeader": "Izena",
+        "usernameHeader": "Erabiltzailea",
+        "statusHeader": "Egoera",
+        "teamHeader": "Taldea",
+        "joinedHeader": "Izena eman zuen",
+        "approve": "Onartu",
+        "reject": "Baztertu",
+        "rejectTitle": "Eskaera hau baztertu?",
+        "rejectDescription": "{name}(e)k ezingo du berriro joko honetan izena eman."
+      },
+      "validaciones": {
+        "loadError": "Ezin izan dira bidalketak kargatu",
+        "empty": "Ez dago zain dagoen bidalketarik",
+        "emptyHint": "Hona iristen dira eskuz berrikusi behar diren argazkiak eta proba sozialak.",
+        "cardTitle": "{order}. proba · {team}",
+        "meta": "{type} · {date} bidalia",
+        "answerLabel": "Bidalitako testua:",
+        "photoAlt": "{team}(e)k bidalitako argazkia",
+        "openPhoto": "Ireki argazkia",
+        "noPhoto": "Argazkirik gabe.",
+        "pointsOverride": "Puntuak (aukerakoa)",
+        "pointsHelp": "Hutsik = probaren oinarrizko puntuak.",
+        "approve": "Onartu",
+        "reject": "Baztertu",
+        "rejectTitle": "Bidalketa hau baztertu?",
+        "rejectDescription": "Bidalketa ezabatu egiten da eta pertsonak berriro saiatu daiteke."
+      },
+      "ranking": {
+        "loadError": "Ezin izan da sailkapena kargatu",
+        "empty": "Oraindik ez dago sailkapenik",
+        "emptyHint": "Jokoa hastean agertzen da.",
+        "tableCaption": "Jokoaren sailkapena",
+        "rankHeader": "Posizioa",
+        "nameHeader": "Parte-hartzailea",
+        "scoreHeader": "Puntuak",
+        "stepsHeader": "Gainditutako probak",
+        "finishedHeader": "Amaitu zuen"
+      }
     }
   },
   "paraguas": {

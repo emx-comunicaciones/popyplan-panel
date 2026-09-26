@@ -28,6 +28,7 @@ describe("plataformaMenuFor", () => {
       "metricas",
       "suscripciones",
       "nomencladores",
+      "busca-del-tesoro",
     ]);
   });
 

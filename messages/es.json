@@ -97,7 +97,8 @@
       "auditoria": "Auditoría",
       "metricas": "Métricas",
       "suscripciones": "Suscripciones",
-      "nomencladores": "Nomencladores"
+      "nomencladores": "Nomencladores",
+      "buscaDelTesoro": "Búsqueda del tesoro"
     }
   },
   "layout": {
@@ -284,6 +285,12 @@
       },
       "nomencladores": {
         "title": "Nomencladores"
+      },
+      "tesoro": {
+        "title": "Búsqueda del tesoro"
+      },
+      "tesoroFicha": {
+        "title": "Ficha del juego"
       }
     }
   },
@@ -1434,6 +1441,12 @@
       "conflictoServidor": "El servidor no lo aceptó: puede que el elemento esté en uso o que el nombre esté repetido.",
       "demasiadasPaginas": "Hay demasiadas categorías para cargarlas todas.",
       "desconocido": "No se pudo completar la acción."
+    },
+    "treasureHunt": {
+      "invalido": "Revisa los datos: alguno no es válido.",
+      "sinAcceso": "Solo superadmin puede gestionar la búsqueda del tesoro.",
+      "noEncontrado": "Este juego (o lo que buscabas dentro de él) ya no existe.",
+      "desconocido": "No se pudo completar la operación. Inténtalo de nuevo."
     }
   },
   "reports": {
@@ -2299,6 +2312,45 @@
           "plataforma.actividades"
         ],
         "audience": "Solo superadmin."
+      },
+      "tesoro": {
+        "title": "Búsqueda del tesoro",
+        "summary": "Juegos de marketing que organiza Popyplan: una actividad un poco más compleja, con pistas y premio.",
+        "details": "Un juego nace en borrador y no se ve en la app. Al abrir inscripciones se publica en la agenda como una actividad abierta, organizada por quien creó el juego, y quien se apunta al juego queda inscrito en esa actividad. Esta versión solo admite juego individual y gratuito. Borrar un juego borra también su actividad.",
+        "actions": [
+          "Crear un juego",
+          "Ver su estado, participantes y pruebas",
+          "Borrar un juego"
+        ],
+        "tips": [
+          "Prepara las pruebas y los premios antes de abrir inscripciones.",
+          "Marca como destacado el juego que quieras promocionar en la app."
+        ],
+        "related": [
+          "plataforma.actividades",
+          "plataforma.inicio"
+        ],
+        "audience": "Solo superadmin."
+      },
+      "tesoroFicha": {
+        "title": "Ficha del juego",
+        "summary": "Todo un juego en seis pestañas: datos, pruebas, premios, participantes, validaciones y ranking.",
+        "details": "El ciclo va siempre hacia delante: borrador → inscripciones abiertas → en juego → terminado. Empezar exige al menos una prueba y rechaza las solicitudes pendientes. Las pruebas de respuesta guardan la respuesta correcta sin mostrarla nunca; las de ubicación validan un radio en metros; las de foto y sociales se revisan a mano en Validaciones. Los premios van por tramos de posición que no se pueden solapar.",
+        "actions": [
+          "Abrir inscripciones, empezar y terminar",
+          "Añadir, editar y borrar pruebas y premios",
+          "Aprobar o rechazar solicitudes",
+          "Validar fotos y pruebas sociales"
+        ],
+        "tips": [
+          "Rechazar un envío lo borra: la persona puede reintentarlo.",
+          "Si cambias la fecha de un juego terminado, vuelve a borrador."
+        ],
+        "related": [
+          "plataforma.tesoro",
+          "plataforma.actividades"
+        ],
+        "audience": "Solo superadmin."
       }
     }
   },
@@ -3161,6 +3213,216 @@
       "empty": "Este nomenclador está vacío",
       "count": "{count, plural, one {# elemento} other {# elementos}}",
       "deleteTitle": "¿Borrar «{name}»?"
+    },
+    "tesoro": {
+      "heading": "Búsqueda del tesoro",
+      "intro": "Juegos que organiza Popyplan. Al abrir inscripciones, cada juego se publica en la agenda como una actividad abierta.",
+      "noAccessDescription": "Solo superadmin gestiona la búsqueda del tesoro.",
+      "newGame": "Nuevo juego",
+      "createAction": "Crear juego",
+      "loadError": "No se pudieron cargar los juegos",
+      "empty": "Todavía no hay juegos",
+      "emptyHint": "Crea el primero con «Nuevo juego»: nace en borrador y no se publica hasta abrir inscripciones.",
+      "tableCaption": "Juegos de la búsqueda del tesoro",
+      "nameHeader": "Nombre",
+      "statusHeader": "Estado",
+      "startHeader": "Inicio",
+      "participantsHeader": "Participantes",
+      "participantsOf": "{count} de {max}",
+      "stepsHeader": "Pruebas",
+      "featuredHeader": "Destacado",
+      "featuredBadge": "Destacado",
+      "delete": "Borrar",
+      "deleteTitle": "¿Borrar este juego?",
+      "deleteDescription": "Se borrará «{name}» con sus pruebas, premios y participantes, y también su actividad de la agenda si ya estaba publicada. No se puede deshacer.",
+      "status": {
+        "draft": "Borrador",
+        "open": "Inscripciones abiertas",
+        "inProgress": "En juego",
+        "finished": "Terminado",
+        "cancelled": "Cancelado"
+      },
+      "challenge": {
+        "answer": "Respuesta de texto",
+        "photo": "Foto",
+        "location": "Ubicación",
+        "social": "Prueba social"
+      },
+      "participantes": {
+        "status": {
+          "pending": "Pendiente",
+          "accepted": "Aceptada",
+          "rejected": "Rechazada"
+        }
+      },
+      "form": {
+        "name": "Nombre",
+        "description": "Descripción",
+        "city": "Ciudad",
+        "start": "Inicio",
+        "startInPast": "El inicio tiene que ser una fecha futura.",
+        "prize": "Premio",
+        "duration": "Duración (minutos)",
+        "maxParticipants": "Máximo de participantes",
+        "maxParticipantsHint": "Vacío = sin límite. Es también el aforo de la actividad publicada.",
+        "individualOnlyNote": "Esta versión de la app solo admite juego individual: cada persona juega por su cuenta.",
+        "legacyModeNote": "Este juego se creó por equipos; la app actual lo juega de forma individual. El modo no se cambia desde aquí.",
+        "featured": "Juego destacado",
+        "image": "Imagen",
+        "imageHint": "PNG, JPG o WEBP, hasta {max} MB. Opcional.",
+        "imageKeepHint": "PNG, JPG o WEBP, hasta {max} MB. Sin elegir ninguna, se conserva la actual.",
+        "imageWrongType": "Formato no admitido: usa PNG, JPG o WEBP.",
+        "imageTooBig": "La imagen pesa más de {max} MB."
+      }
+    },
+    "tesoroFicha": {
+      "heading": "Ficha del juego",
+      "backToList": "Volver a los juegos",
+      "loadError": "No se pudo cargar el juego",
+      "notFound": "Este juego no existe o se ha borrado",
+      "sectionsLegend": "Secciones del juego",
+      "sections": {
+        "datos": "Datos",
+        "pruebas": "Pruebas",
+        "premios": "Premios",
+        "participantes": "Participantes",
+        "validaciones": "Validaciones",
+        "ranking": "Ranking"
+      },
+      "datos": {
+        "summaryTitle": "Resumen",
+        "createdBy": "Creado por",
+        "open": "Abrir inscripciones",
+        "openTitle": "¿Abrir inscripciones?",
+        "openDescription": "El juego se publica en la agenda como una actividad abierta y la gente puede apuntarse desde la app. No se puede volver a borrador.",
+        "start": "Empezar el juego",
+        "startTitle": "¿Empezar el juego?",
+        "startDescription": "Arranca la partida para todas las personas apuntadas: cada una recibe su primera pista. Las solicitudes pendientes se rechazan.",
+        "finish": "Terminar el juego",
+        "finishTitle": "¿Terminar el juego?",
+        "finishDescription": "Se cierra la partida y el ranking queda fijado. La actividad de la agenda pasa a celebrada.",
+        "noNextAction": "El juego ya ha terminado: no quedan pasos en su ciclo.",
+        "startNeedsSteps": "Añade al menos una prueba antes de empezar.",
+        "activityCardTitle": "Actividad en la agenda",
+        "noActivity": "Todavía no hay actividad: un borrador no se publica. Nace al abrir inscripciones.",
+        "activityLoadError": "No se pudo cargar la actividad enlazada.",
+        "activityTitle": "Título",
+        "activityStatus": "Estado",
+        "activityStart": "Inicio",
+        "activityId": "Identificador",
+        "editTitle": "Editar datos",
+        "saved": "Cambios guardados."
+      },
+      "pruebas": {
+        "newTitle": "Nueva prueba",
+        "editTitle": "Editar prueba",
+        "createAction": "Añadir prueba",
+        "loadError": "No se pudieron cargar las pruebas",
+        "empty": "Este juego no tiene pruebas",
+        "emptyHint": "Añade las pistas en el orden en que se juegan. Hace falta al menos una para empezar.",
+        "tableCaption": "Pruebas del juego, en orden",
+        "order": "Orden",
+        "type": "Tipo de prueba",
+        "clue": "Pista",
+        "hint": "Pista extra",
+        "hintHelp": "Opcional: la persona la ve solo si la pide.",
+        "correctAnswer": "Respuesta correcta",
+        "correctAnswerHelp": "Obligatoria. Nunca se enseña a quien juega.",
+        "correctAnswerKeep": "Vacío = se conserva la respuesta guardada (no se puede mostrar).",
+        "latitude": "Latitud",
+        "longitude": "Longitud",
+        "radius": "Radio (metros)",
+        "locationHelp": "El punto exacto de la prueba, en grados decimales (p. ej. 43.3183 y -1.9812). Se valida si la persona está dentro del radio.",
+        "manualReviewHelp": "Estos envíos se revisan a mano en la pestaña «Validaciones».",
+        "points": "Puntos",
+        "bonus": "Tiempo para bonus (segundos)",
+        "bonusHelp": "Si se resuelve antes de este tiempo, suma puntos extra.",
+        "where": "Ubicación",
+        "whereValue": "{lat}, {lng} · {radius} m",
+        "edit": "Editar",
+        "delete": "Borrar",
+        "deleteTitle": "¿Borrar esta prueba?",
+        "deleteDescription": "Se borrará la prueba n.º {order}; las siguientes suben un puesto.",
+        "errors": {
+          "orderInvalid": "El orden tiene que ser un número entero desde 1.",
+          "orderTaken": "Ya hay otra prueba con ese orden.",
+          "noClue": "Escribe la pista.",
+          "noAnswer": "Las pruebas de respuesta necesitan la respuesta correcta.",
+          "noCoordinates": "Las pruebas de ubicación necesitan latitud y longitud.",
+          "badCoordinates": "Coordenadas no válidas: la latitud va de -90 a 90 y la longitud de -180 a 180.",
+          "badNumbers": "Puntos, tiempo y radio tienen que ser números enteros desde 0."
+        }
+      },
+      "premios": {
+        "newTitle": "Nuevo premio",
+        "editTitle": "Editar premio",
+        "createAction": "Añadir premio",
+        "loadError": "No se pudieron cargar los premios",
+        "empty": "Este juego no tiene premios por posición",
+        "emptyHint": "Opcional: reparte premios por tramos del ranking (p. ej. 1.º, o del 2.º al 5.º).",
+        "tableCaption": "Premios por posición",
+        "rankHeader": "Posiciones",
+        "rankSingle": "{rank}.º",
+        "rankRange": "Del {from}.º al {to}.º",
+        "rankFrom": "Desde la posición",
+        "rankTo": "Hasta la posición",
+        "name": "Nombre del premio",
+        "description": "Descripción",
+        "edit": "Editar",
+        "delete": "Borrar",
+        "deleteTitle": "¿Borrar este premio?",
+        "deleteDescription": "Se borrará el premio «{name}».",
+        "errors": {
+          "badRange": "Las posiciones tienen que ser números enteros desde 1.",
+          "fromAfterTo": "La posición inicial no puede ser mayor que la final.",
+          "overlap": "El rango de posiciones se solapa con un tramo de premio existente."
+        }
+      },
+      "participantes": {
+        "filterLabel": "Estado",
+        "filterAll": "Todas",
+        "hint": "Desde la app, unirse entra ya aceptada; las solicitudes pendientes solo se aprueban o rechazan antes de empezar.",
+        "loadError": "No se pudieron cargar los participantes",
+        "empty": "Nadie con este estado",
+        "tableCaption": "Participantes del juego",
+        "nameHeader": "Nombre",
+        "usernameHeader": "Usuario",
+        "statusHeader": "Estado",
+        "teamHeader": "Equipo",
+        "joinedHeader": "Se apuntó",
+        "approve": "Aprobar",
+        "reject": "Rechazar",
+        "rejectTitle": "¿Rechazar esta solicitud?",
+        "rejectDescription": "{name} no podrá volver a apuntarse a este juego."
+      },
+      "validaciones": {
+        "loadError": "No se pudieron cargar los envíos",
+        "empty": "No hay envíos pendientes",
+        "emptyHint": "Aquí llegan las fotos y pruebas sociales que hay que revisar a mano.",
+        "cardTitle": "Prueba n.º {order} · {team}",
+        "meta": "{type} · enviada {date}",
+        "answerLabel": "Texto enviado:",
+        "photoAlt": "Foto enviada por {team}",
+        "openPhoto": "Abrir la foto",
+        "noPhoto": "Sin foto.",
+        "pointsOverride": "Puntos (opcional)",
+        "pointsHelp": "Vacío = los puntos base de la prueba.",
+        "approve": "Aprobar",
+        "reject": "Rechazar",
+        "rejectTitle": "¿Rechazar este envío?",
+        "rejectDescription": "El envío se borra y la persona puede volver a intentarlo."
+      },
+      "ranking": {
+        "loadError": "No se pudo cargar el ranking",
+        "empty": "Todavía no hay ranking",
+        "emptyHint": "Aparece cuando el juego empieza.",
+        "tableCaption": "Ranking del juego",
+        "rankHeader": "Posición",
+        "nameHeader": "Participante",
+        "scoreHeader": "Puntos",
+        "stepsHeader": "Pruebas superadas",
+        "finishedHeader": "Terminó"
+      }
     }
   },
   "paraguas": {

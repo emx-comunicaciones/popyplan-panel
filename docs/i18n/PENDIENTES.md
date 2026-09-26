@@ -190,3 +190,12 @@ español, y no se toca en esta ronda):
   para *reseñas* en euskera; los nombres de los tipos de notificación
   (`notification_type`) y de las categorías de actividad
   (`category_type`), que son etiquetas de un contrato técnico.
+- **Admin de plataforma, bloque 2 (búsqueda del tesoro, 2026-09-26)**:
+  las claves nuevas de `menu.plataforma.buscaDelTesoro`,
+  `pages.plataforma.{tesoro,tesoroFicha}`,
+  `plataforma.{tesoro,tesoroFicha}.*`, `errors.treasureHunt.*` y
+  `help.plataforma.{tesoro,tesoroFicha}.*` se escribieron en `es` y `en`
+  y se tradujeron a `eu`/`ca` de forma asistida. **Pendientes de revisión
+  nativa.** Dudas concretas: el nombre del juego —«Altxorraren bila» en
+  euskera y «Caça del tresor» en catalán—, «Baliozkotzeak» para
+  *validaciones* y «Sailkapena»/«Classificació» para *ranking*.

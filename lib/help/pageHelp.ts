@@ -86,6 +86,8 @@ export const PAGE_HELP: readonly PageHelpEntry[] = [
   { route: "/plataforma/chats/[id]", key: "plataforma.chatFicha" },
   { route: "/plataforma/notificaciones", key: "plataforma.notificaciones" },
   { route: "/plataforma/nomencladores", key: "plataforma.nomencladores" },
+  { route: "/plataforma/busca-del-tesoro", key: "plataforma.tesoro" },
+  { route: "/plataforma/busca-del-tesoro/[id]", key: "plataforma.tesoroFicha" },
   { route: "/plataforma/reportes", key: "plataforma.reportes" },
   { route: "/plataforma/reportes/[reportId]", key: "plataforma.reporteDetalle" },
   { route: "/plataforma/ayuda", key: "plataforma.ayuda" },

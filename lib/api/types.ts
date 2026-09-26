@@ -1335,3 +1335,71 @@ export interface NotificationTemplateRow {
 }
 
 export type NotificationTemplateInput = Omit<NotificationTemplateRow, "id" | "created_at" | "updated_at">;
+
+/*
+ * Búsqueda del tesoro (admin de plataforma, bloque 2, 2026-09-26;
+ * `docs/PANEL.md` §16 del backend). Lecturas: alias directos del esquema
+ * regenerado. Escrituras: tipos a mano, por los desajustes que se anotan
+ * junto a cada uno (verificados contra `treasure_hunt/serializers.py`).
+ */
+export type TreasureGame = components["schemas"]["Game"];
+export type TreasureGameDetail = components["schemas"]["GameDetail"];
+export type TreasureGameStatus = components["schemas"]["GameStatusEnum"];
+export type TreasureStep = components["schemas"]["GameStep"];
+export type TreasureChallengeType = components["schemas"]["ChallengeTypeEnum"];
+export type TreasurePrizeTier = components["schemas"]["PrizeTier"];
+export type TreasurePrizeTierInput = components["schemas"]["PrizeTierRequest"];
+export type TreasureParticipant = components["schemas"]["GameParticipant"];
+export type TreasureParticipantStatus = components["schemas"]["GameParticipantStatusEnum"];
+/** El esquema lo llama `Ranking` (el serializer es `RankingSerializer`); es una fila por equipo. */
+export type TreasureRankingRow = components["schemas"]["Ranking"];
+/** `challenge_type` llega como `string` en el esquema; en la práctica solo `photo`/`social` (el backend filtra). */
+export type TreasureCompletion = components["schemas"]["StepCompletionAdmin"];
+export type TreasureCompletionValidateInput = components["schemas"]["StepValidationRequest"];
+
+/**
+ * Alta/edición de un juego (`GameCreateSerializer`). A mano porque:
+ * - `image` es un `ImageField` que viaja en multipart: el generado lo tipa
+ *   `string`, aquí es un `File` (`hooks/useTreasureHuntMutations.ts
+ *   ::buildGamePayload` monta un `FormData` solo cuando lo hay).
+ * - `is_paid` solo admite `false` (400 «Los juegos de pago llegarán más
+ *   adelante.»): el panel no lo manda nunca, así que no está en el tipo.
+ * - `game_mode`: esta versión de la app es solo individual; el formulario
+ *   manda siempre `"individual"` (el modelo nace `teams` por defecto).
+ */
+export interface TreasureGameWriteInput {
+  name: string;
+  description: string;
+  city: string;
+  prize_description: string;
+  start_time?: string;
+  duration_minutes: number;
+  game_mode: components["schemas"]["GameModeEnum"];
+  max_participants: number | null;
+  is_featured: boolean;
+  image?: File;
+}
+
+/**
+ * Alta/edición de una pista (`GameStepCreateSerializer`). Coincide con el
+ * generado `GameStepCreateRequest` salvo en que `correct_answer` es
+ * **solo de escritura** (no está en `GameStep`, así que el formulario de
+ * edición no puede prellenarlo: vacío = «no la cambies»), y en que
+ * `latitude`/`longitude` son `DecimalField` (cadena de 6 decimales,
+ * `lib/events/coords.ts::formatCoordinateForApi`) al escribir pero números
+ * al leer (`GameStep` los sirve como `FloatField`).
+ */
+export type TreasureStepWriteInput = Partial<components["schemas"]["GameStepCreateRequest"]>;
+
+/**
+ * Respuesta de `POST .../completions/{id}/validate/`: el esquema la declara
+ * `{type: object}` a secas. Al aprobar trae `{is_valid, points_earned,
+ * message, next_step}`; al rechazar, solo `{detail}`. El panel no la usa
+ * (refresca la lista), pero se tipa para no mentir con un `unknown`.
+ */
+export interface TreasureCompletionValidateResponse {
+  is_valid?: boolean;
+  points_earned?: number;
+  message?: string;
+  detail?: string;
+}

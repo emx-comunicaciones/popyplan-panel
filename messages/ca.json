@@ -97,7 +97,8 @@
       "auditoria": "Auditoria",
       "metricas": "Mètriques",
       "suscripciones": "Subscripcions",
-      "nomencladores": "Nomenclàtors"
+      "nomencladores": "Nomenclàtors",
+      "buscaDelTesoro": "Caça del tresor"
     }
   },
   "layout": {
@@ -284,6 +285,12 @@
       },
       "nomencladores": {
         "title": "Nomenclàtors"
+      },
+      "tesoro": {
+        "title": "Caça del tresor"
+      },
+      "tesoroFicha": {
+        "title": "Fitxa del joc"
       }
     }
   },
@@ -1434,6 +1441,12 @@
       "conflictoServidor": "El servidor no ho ha acceptat: potser l'element està en ús o el nom està repetit.",
       "demasiadasPaginas": "Hi ha massa categories per carregar-les totes.",
       "desconocido": "No s'ha pogut completar l'acció."
+    },
+    "treasureHunt": {
+      "invalido": "Revisa les dades: alguna no és vàlida.",
+      "sinAcceso": "Només el superadmin pot gestionar la caça del tresor.",
+      "noEncontrado": "Aquest joc (o el que hi buscaves) ja no existeix.",
+      "desconocido": "No s'ha pogut completar l'operació. Torna-ho a provar."
     }
   },
   "reports": {
@@ -2299,6 +2312,45 @@
           "plataforma.actividades"
         ],
         "audience": "Només superadmin."
+      },
+      "tesoro": {
+        "title": "Caça del tresor",
+        "summary": "Jocs de màrqueting que organitza Popyplan: una activitat una mica més complexa, amb pistes i premi.",
+        "details": "Un joc neix com a esborrany i no es veu a l'app. En obrir les inscripcions es publica a l'agenda com una activitat oberta, organitzada per qui va crear el joc, i qui s'apunta al joc queda inscrit en aquesta activitat. Aquesta versió només admet joc individual i gratuït. Esborrar un joc també n'esborra l'activitat.",
+        "actions": [
+          "Crear un joc",
+          "Veure'n l'estat, els participants i les proves",
+          "Esborrar un joc"
+        ],
+        "tips": [
+          "Prepara les proves i els premis abans d'obrir les inscripcions.",
+          "Marca com a destacat el joc que vulguis promocionar a l'app."
+        ],
+        "related": [
+          "plataforma.actividades",
+          "plataforma.inicio"
+        ],
+        "audience": "Només superadmin."
+      },
+      "tesoroFicha": {
+        "title": "Fitxa del joc",
+        "summary": "Tot un joc en sis pestanyes: dades, proves, premis, participants, validacions i classificació.",
+        "details": "El cicle sempre avança: esborrany → inscripcions obertes → en joc → acabat. Començar exigeix almenys una prova i rebutja les sol·licituds pendents. Les proves de resposta desen la resposta correcta sense mostrar-la mai; les d'ubicació comproven un radi en metres; les de foto i socials es revisen a mà a Validacions. Els premis van per trams de posició que no es poden solapar.",
+        "actions": [
+          "Obrir inscripcions, començar i acabar",
+          "Afegir, editar i esborrar proves i premis",
+          "Aprovar o rebutjar sol·licituds",
+          "Validar fotos i proves socials"
+        ],
+        "tips": [
+          "Rebutjar un enviament l'esborra: la persona ho pot tornar a provar.",
+          "Si canvies la data d'un joc acabat, torna a esborrany."
+        ],
+        "related": [
+          "plataforma.tesoro",
+          "plataforma.actividades"
+        ],
+        "audience": "Només superadmin."
       }
     }
   },
@@ -3161,6 +3213,216 @@
       "empty": "Aquest nomenclàtor és buit",
       "count": "{count, plural, one {# element} other {# elements}}",
       "deleteTitle": "Esborrar «{name}»?"
+    },
+    "tesoro": {
+      "heading": "Caça del tresor",
+      "intro": "Jocs que organitza Popyplan. En obrir les inscripcions, cada joc es publica a l'agenda com una activitat oberta.",
+      "noAccessDescription": "Només el superadmin gestiona la caça del tresor.",
+      "newGame": "Joc nou",
+      "createAction": "Crea el joc",
+      "loadError": "No s'han pogut carregar els jocs",
+      "empty": "Encara no hi ha jocs",
+      "emptyHint": "Crea el primer amb «Joc nou»: neix com a esborrany i no es publica fins que s'obren les inscripcions.",
+      "tableCaption": "Jocs de la caça del tresor",
+      "nameHeader": "Nom",
+      "statusHeader": "Estat",
+      "startHeader": "Inici",
+      "participantsHeader": "Participants",
+      "participantsOf": "{count} de {max}",
+      "stepsHeader": "Proves",
+      "featuredHeader": "Destacat",
+      "featuredBadge": "Destacat",
+      "delete": "Esborra",
+      "deleteTitle": "Vols esborrar aquest joc?",
+      "deleteDescription": "S'esborrarà «{name}» amb les seves proves, premis i participants, i també la seva activitat de l'agenda si ja estava publicada. No es pot desfer.",
+      "status": {
+        "draft": "Esborrany",
+        "open": "Inscripcions obertes",
+        "inProgress": "En joc",
+        "finished": "Acabat",
+        "cancelled": "Cancel·lat"
+      },
+      "challenge": {
+        "answer": "Resposta de text",
+        "photo": "Foto",
+        "location": "Ubicació",
+        "social": "Prova social"
+      },
+      "participantes": {
+        "status": {
+          "pending": "Pendent",
+          "accepted": "Acceptada",
+          "rejected": "Rebutjada"
+        }
+      },
+      "form": {
+        "name": "Nom",
+        "description": "Descripció",
+        "city": "Ciutat",
+        "start": "Inici",
+        "startInPast": "L'inici ha de ser una data futura.",
+        "prize": "Premi",
+        "duration": "Durada (minuts)",
+        "maxParticipants": "Màxim de participants",
+        "maxParticipantsHint": "Buit = sense límit. També és l'aforament de l'activitat publicada.",
+        "individualOnlyNote": "Aquesta versió de l'app només admet joc individual: cada persona juga pel seu compte.",
+        "legacyModeNote": "Aquest joc es va crear per equips; l'app actual el juga de manera individual. El mode no es canvia des d'aquí.",
+        "featured": "Joc destacat",
+        "image": "Imatge",
+        "imageHint": "PNG, JPG o WEBP, fins a {max} MB. Opcional.",
+        "imageKeepHint": "PNG, JPG o WEBP, fins a {max} MB. Si no en tries cap, es conserva l'actual.",
+        "imageWrongType": "Format no admès: fes servir PNG, JPG o WEBP.",
+        "imageTooBig": "La imatge pesa més de {max} MB."
+      }
+    },
+    "tesoroFicha": {
+      "heading": "Fitxa del joc",
+      "backToList": "Torna als jocs",
+      "loadError": "No s'ha pogut carregar el joc",
+      "notFound": "Aquest joc no existeix o s'ha esborrat",
+      "sectionsLegend": "Seccions del joc",
+      "sections": {
+        "datos": "Dades",
+        "pruebas": "Proves",
+        "premios": "Premis",
+        "participantes": "Participants",
+        "validaciones": "Validacions",
+        "ranking": "Classificació"
+      },
+      "datos": {
+        "summaryTitle": "Resum",
+        "createdBy": "Creat per",
+        "open": "Obre les inscripcions",
+        "openTitle": "Vols obrir les inscripcions?",
+        "openDescription": "El joc es publica a l'agenda com una activitat oberta i la gent s'hi pot apuntar des de l'app. No pot tornar a esborrany.",
+        "start": "Comença el joc",
+        "startTitle": "Vols començar el joc?",
+        "startDescription": "La partida comença per a totes les persones apuntades: cadascuna rep la primera pista. Les sol·licituds pendents es rebutgen.",
+        "finish": "Acaba el joc",
+        "finishTitle": "Vols acabar el joc?",
+        "finishDescription": "La partida es tanca i la classificació queda fixada. L'activitat de l'agenda passa a celebrada.",
+        "noNextAction": "El joc ja ha acabat: no queden passos en el seu cicle.",
+        "startNeedsSteps": "Afegeix almenys una prova abans de començar.",
+        "activityCardTitle": "Activitat a l'agenda",
+        "noActivity": "Encara no hi ha activitat: un esborrany no es publica. Neix en obrir les inscripcions.",
+        "activityLoadError": "No s'ha pogut carregar l'activitat enllaçada.",
+        "activityTitle": "Títol",
+        "activityStatus": "Estat",
+        "activityStart": "Inici",
+        "activityId": "Identificador",
+        "editTitle": "Edita les dades",
+        "saved": "Canvis desats."
+      },
+      "pruebas": {
+        "newTitle": "Prova nova",
+        "editTitle": "Edita la prova",
+        "createAction": "Afegeix la prova",
+        "loadError": "No s'han pogut carregar les proves",
+        "empty": "Aquest joc no té proves",
+        "emptyHint": "Afegeix les pistes en l'ordre en què es juguen. Cal almenys una per començar.",
+        "tableCaption": "Proves del joc, en ordre",
+        "order": "Ordre",
+        "type": "Tipus de prova",
+        "clue": "Pista",
+        "hint": "Pista extra",
+        "hintHelp": "Opcional: la persona només la veu si la demana.",
+        "correctAnswer": "Resposta correcta",
+        "correctAnswerHelp": "Obligatòria. Mai no es mostra a qui juga.",
+        "correctAnswerKeep": "Buit = es conserva la resposta desada (no es pot mostrar).",
+        "latitude": "Latitud",
+        "longitude": "Longitud",
+        "radius": "Radi (metres)",
+        "locationHelp": "El punt exacte de la prova, en graus decimals (p. ex. 43.3183 i -1.9812). Es comprova si la persona és dins del radi.",
+        "manualReviewHelp": "Aquests enviaments es revisen a mà a la pestanya «Validacions».",
+        "points": "Punts",
+        "bonus": "Temps per a la bonificació (segons)",
+        "bonusHelp": "Si es resol abans d'aquest temps, suma punts extra.",
+        "where": "Ubicació",
+        "whereValue": "{lat}, {lng} · {radius} m",
+        "edit": "Edita",
+        "delete": "Esborra",
+        "deleteTitle": "Vols esborrar aquesta prova?",
+        "deleteDescription": "S'esborrarà la prova núm. {order}; les següents pugen un lloc.",
+        "errors": {
+          "orderInvalid": "L'ordre ha de ser un nombre enter a partir d'1.",
+          "orderTaken": "Ja hi ha una altra prova amb aquest ordre.",
+          "noClue": "Escriu la pista.",
+          "noAnswer": "Les proves de resposta necessiten la resposta correcta.",
+          "noCoordinates": "Les proves d'ubicació necessiten latitud i longitud.",
+          "badCoordinates": "Coordenades no vàlides: la latitud va de -90 a 90 i la longitud de -180 a 180.",
+          "badNumbers": "Els punts, el temps i el radi han de ser nombres enters a partir de 0."
+        }
+      },
+      "premios": {
+        "newTitle": "Premi nou",
+        "editTitle": "Edita el premi",
+        "createAction": "Afegeix el premi",
+        "loadError": "No s'han pogut carregar els premis",
+        "empty": "Aquest joc no té premis per posició",
+        "emptyHint": "Opcional: reparteix premis per trams de la classificació (p. ex. 1r, o del 2n al 5è).",
+        "tableCaption": "Premis per posició",
+        "rankHeader": "Posicions",
+        "rankSingle": "Núm. {rank}",
+        "rankRange": "Del núm. {from} al {to}",
+        "rankFrom": "Des de la posició",
+        "rankTo": "Fins a la posició",
+        "name": "Nom del premi",
+        "description": "Descripció",
+        "edit": "Edita",
+        "delete": "Esborra",
+        "deleteTitle": "Vols esborrar aquest premi?",
+        "deleteDescription": "S'esborrarà el premi «{name}».",
+        "errors": {
+          "badRange": "Les posicions han de ser nombres enters a partir d'1.",
+          "fromAfterTo": "La posició inicial no pot ser més gran que la final.",
+          "overlap": "L'interval de posicions se solapa amb un tram de premi existent."
+        }
+      },
+      "participantes": {
+        "filterLabel": "Estat",
+        "filterAll": "Totes",
+        "hint": "Des de l'app, apuntar-se entra ja acceptada; les sol·licituds pendents només s'aproven o rebutgen abans de començar.",
+        "loadError": "No s'han pogut carregar els participants",
+        "empty": "Ningú amb aquest estat",
+        "tableCaption": "Participants del joc",
+        "nameHeader": "Nom",
+        "usernameHeader": "Usuari",
+        "statusHeader": "Estat",
+        "teamHeader": "Equip",
+        "joinedHeader": "Es va apuntar",
+        "approve": "Aprova",
+        "reject": "Rebutja",
+        "rejectTitle": "Vols rebutjar aquesta sol·licitud?",
+        "rejectDescription": "{name} no es podrà tornar a apuntar a aquest joc."
+      },
+      "validaciones": {
+        "loadError": "No s'han pogut carregar els enviaments",
+        "empty": "No hi ha enviaments pendents",
+        "emptyHint": "Aquí arriben les fotos i proves socials que cal revisar a mà.",
+        "cardTitle": "Prova núm. {order} · {team}",
+        "meta": "{type} · enviada {date}",
+        "answerLabel": "Text enviat:",
+        "photoAlt": "Foto enviada per {team}",
+        "openPhoto": "Obre la foto",
+        "noPhoto": "Sense foto.",
+        "pointsOverride": "Punts (opcional)",
+        "pointsHelp": "Buit = els punts base de la prova.",
+        "approve": "Aprova",
+        "reject": "Rebutja",
+        "rejectTitle": "Vols rebutjar aquest enviament?",
+        "rejectDescription": "L'enviament s'esborra i la persona ho pot tornar a provar."
+      },
+      "ranking": {
+        "loadError": "No s'ha pogut carregar la classificació",
+        "empty": "Encara no hi ha classificació",
+        "emptyHint": "Apareix quan comença el joc.",
+        "tableCaption": "Classificació del joc",
+        "rankHeader": "Posició",
+        "nameHeader": "Participant",
+        "scoreHeader": "Punts",
+        "stepsHeader": "Proves superades",
+        "finishedHeader": "Va acabar"
+      }
     }
   },
   "paraguas": {
