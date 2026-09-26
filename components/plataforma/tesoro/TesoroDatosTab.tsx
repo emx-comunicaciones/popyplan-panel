@@ -167,6 +167,11 @@ export function TesoroDatosTab({ game }: { game: TreasureGameDetail }) {
           submitLabel={t("common.save")}
           error={update.isError ? errorKindText(update.error, TREASURE_ERROR_KEYS, t, TREASURE_ERROR_FALLBACK) : undefined}
           onSubmit={(input) => update.mutate(input)}
+          // «Cambios guardados.» describe el último guardado: en cuanto se
+          // vuelve a editar deja de ser verdad, así que se retira.
+          onEdit={() => {
+            if (update.isSuccess) update.reset();
+          }}
         />
         {update.isSuccess ? (
           <p role="status" className="mt-2 text-sm text-success">

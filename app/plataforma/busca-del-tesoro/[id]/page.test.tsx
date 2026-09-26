@@ -225,6 +225,11 @@ describe("PlataformaTesoroDetailPage", () => {
       expect(options.body).not.toHaveProperty("start_time");
       expect(options.body).not.toHaveProperty("game_mode");
       expect(screen.getByLabelText("Nombre")).toHaveValue("Nuevo nombre");
+
+      // Volver a tocar el formulario retira el «Cambios guardados.»: ya no
+      // describe lo que hay en pantalla.
+      await userEvent.type(screen.getByLabelText("Nombre"), "!");
+      expect(screen.queryByText("Cambios guardados.")).not.toBeInTheDocument();
     });
 
     it("un juego heredado por equipos lo avisa", async () => {

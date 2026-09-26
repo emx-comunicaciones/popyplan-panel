@@ -46,6 +46,8 @@ export interface TesoroJuegoFormProps {
   error?: ReactNode;
   onSubmit: (input: Partial<TreasureGameWriteInput>) => void;
   onCancel?: () => void;
+  /** Cualquier cambio en un campo (p. ej. para retirar un «Guardado» que ya no describe la pantalla). */
+  onEdit?: () => void;
   /** Prefijo de los `id` de los campos (dos formularios nunca conviven, pero así no dependen de ello). */
   idPrefix?: string;
 }
@@ -57,6 +59,7 @@ export function TesoroJuegoForm({
   error,
   onSubmit,
   onCancel,
+  onEdit,
   idPrefix = "tesoro-juego",
 }: TesoroJuegoFormProps) {
   const t = useTranslations();
@@ -124,7 +127,9 @@ export function TesoroJuegoForm({
   const id = (field: string) => `${idPrefix}-${field}`;
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    // `change` burbujea desde cada campo hasta el `<form>`: un solo punto
+    // de escucha para avisar de cualquier edición.
+    <form onSubmit={handleSubmit} onChange={onEdit} className="flex flex-col gap-3">
       <div>
         <label htmlFor={id("name")} className={LABEL_CLASS}>
           {t("plataforma.tesoro.form.name")}
