@@ -56,9 +56,8 @@ export function NuevaComunidadDialog({ orgId, space, open, onClose, onCreated }:
   // se metía de un toque —lo que además le cerraba el espacio de
   // miembros de esa entidad, en silencio. Se puede cambiar en el propio
   // formulario: es un valor por defecto, no un candado.
-  const [visibility, setVisibility] = useState<CommunityVisibility>(
-    space === "families" ? "private" : "open",
-  );
+  const defaultVisibility: CommunityVisibility = space === "families" ? "private" : "open";
+  const [visibility, setVisibility] = useState<CommunityVisibility>(defaultVisibility);
   const [codeOfConduct, setCodeOfConduct] = useState("");
 
   const canSubmit = name.trim().length > 0;
@@ -68,7 +67,9 @@ export function NuevaComunidadDialog({ orgId, space, open, onClose, onCreated }:
   function resetForm() {
     setName("");
     setDescription("");
-    setVisibility("open");
+    // Mismo valor de partida que al montar: con «open» fijo, el espacio de
+    // familias volvía a «Abierta» tras la primera creación o al cerrar.
+    setVisibility(defaultVisibility);
     setCodeOfConduct("");
     createCommunity.reset();
   }
