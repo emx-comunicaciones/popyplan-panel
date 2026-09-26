@@ -195,6 +195,19 @@ describe("PlataformaNotificacionesPage", () => {
     expect(apiFetchMock).toHaveBeenCalledWith("/api/users/users/?search=p01");
   });
 
+  it("si la búsqueda de cuentas falla, lo dice", async () => {
+    mockBackend();
+    const base = apiFetchMock.getMockImplementation()!;
+    apiFetchMock.mockImplementation(async (path: string, init?: unknown) => {
+      if (path.startsWith("/api/users/users/")) throw new ApiError(500, null);
+      return base(path, init);
+    });
+    superadmin();
+    await renderPage();
+    await userEvent.type(screen.getByLabelText("Buscar cuenta (correo o usuario)"), "p01");
+    expect(await screen.findByText("No se pudo buscar cuentas.")).toHaveAttribute("role", "alert");
+  });
+
   it("plantillas: tabla, alta, edición y borrado", async () => {
     mockBackend();
     superadmin();

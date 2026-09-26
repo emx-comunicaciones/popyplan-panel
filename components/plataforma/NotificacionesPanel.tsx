@@ -204,6 +204,11 @@ function SendTab() {
               onChange={(event) => setSearch(event.target.value)}
               className={FIELD}
             />
+            {results.isError ? (
+              <p role="alert" className="mt-1 text-sm text-error">
+                {t("plataforma.userSearch.error")}
+              </p>
+            ) : null}
             {results.data && results.data.length > 0 ? (
               <ul className="mt-1 flex flex-col gap-1 rounded-md border border-border p-2 text-sm">
                 {results.data.map((user) => (

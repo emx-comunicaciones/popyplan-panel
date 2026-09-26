@@ -3673,6 +3673,9 @@
         "stepsHeader": "Proves superades",
         "finishedHeader": "Va acabar"
       }
+    },
+    "userSearch": {
+      "error": "No s'han pogut cercar comptes."
     }
   },
   "paraguas": {

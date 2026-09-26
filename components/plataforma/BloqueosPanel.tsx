@@ -98,6 +98,11 @@ export function BloqueosPanel({ initialUserId, initialEmail = null }: BloqueosPa
           onChange={(event) => setSearch(event.target.value)}
           className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         />
+        {results.isError ? (
+          <p role="alert" className="mt-1 text-sm text-error">
+            {t("plataforma.userSearch.error")}
+          </p>
+        ) : null}
         {results.data && results.data.length > 0 ? (
           <ul className="mt-1 flex flex-col gap-1 rounded-md border border-border p-2 text-sm">
             {results.data.map((user) => (

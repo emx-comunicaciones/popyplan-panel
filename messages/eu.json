@@ -3673,6 +3673,9 @@
         "stepsHeader": "Gainditutako probak",
         "finishedHeader": "Amaitu zuen"
       }
+    },
+    "userSearch": {
+      "error": "Ezin izan dira kontuak bilatu."
     }
   },
   "paraguas": {

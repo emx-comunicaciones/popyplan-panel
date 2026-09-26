@@ -99,6 +99,17 @@ describe("PlataformaBloqueosPage", () => {
     expect(apiFetchMock).toHaveBeenCalledWith("/api/safety/blocks/admin/?user=13");
   });
 
+  it("si la búsqueda de cuentas falla, lo dice en vez de quedarse sin resultados en silencio", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path.startsWith("/api/users/users/")) throw new ApiError(500, null);
+      throw new Error(`sin mock para ${path}`);
+    });
+    superadmin();
+    await renderPage();
+    await userEvent.type(screen.getByLabelText("Buscar cuenta (correo o usuario)"), "p01");
+    expect(await screen.findByRole("alert")).toHaveTextContent("No se pudo buscar cuentas.");
+  });
+
   it("con ?user= pinta quién bloquea a quién, la fecha y el bloqueo por teléfono sin número", async () => {
     mockBackend();
     superadmin();

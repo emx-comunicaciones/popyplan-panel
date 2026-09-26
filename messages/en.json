@@ -3673,6 +3673,9 @@
         "stepsHeader": "Challenges passed",
         "finishedHeader": "Finished"
       }
+    },
+    "userSearch": {
+      "error": "Accounts could not be searched."
     }
   },
   "paraguas": {

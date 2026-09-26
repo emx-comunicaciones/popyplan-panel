@@ -11,7 +11,7 @@ vi.mock("@/lib/api/client", async () => {
 
 import { ApiError } from "@/lib/api/client";
 
-import { useUserSearch } from "./useUserSearch";
+import { UserSearchError, useUserSearch } from "./useUserSearch";
 
 afterEach(() => {
   apiFetchMock.mockReset();
@@ -47,6 +47,14 @@ describe("useUserSearch", () => {
     const { result } = renderHook(() => useUserSearch("ana"), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toEqual([]);
+  });
+
+  it("cualquier otro error de la API ya no se traga: la búsqueda falla con kind desconocido", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(500, null));
+    const { result } = renderHook(() => useUserSearch("ana"), { wrapper });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error).toBeInstanceOf(UserSearchError);
+    expect((result.current.error as UserSearchError).kind).toBe("desconocido");
   });
 
   it("un fallo que no es de la API se relanza tal cual", async () => {

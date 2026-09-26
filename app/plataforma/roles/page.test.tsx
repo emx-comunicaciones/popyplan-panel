@@ -9,6 +9,7 @@ vi.mock("@/lib/api/client", async () => {
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
+import { ApiError } from "@/lib/api/client";
 import { act, fireEvent, render, screen, waitFor } from "@/test-utils/render";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
@@ -86,6 +87,21 @@ describe("PlataformaRolesPage", () => {
     });
 
     expect(searches()).toEqual(["/api/users/users/?search=ana"]);
+  });
+
+  it("un fallo real de la búsqueda de cuentas se avisa (un 403 seguiría cayendo a lista vacía)", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path.startsWith("/api/users/users/")) throw new ApiError(500, null);
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+    render(await PlataformaRolesPage());
+    fireEvent.change(screen.getByLabelText("Buscar cuenta (email o usuario)"), { target: { value: "ana" } });
+    expect(await screen.findByText("No se pudo buscar cuentas.")).toHaveAttribute("role", "alert");
   });
 
   it("moderator ve «Sin acceso»", async () => {

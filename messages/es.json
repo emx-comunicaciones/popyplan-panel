@@ -3673,6 +3673,9 @@
         "stepsHeader": "Pruebas superadas",
         "finishedHeader": "Terminó"
       }
+    },
+    "userSearch": {
+      "error": "No se pudo buscar cuentas."
     }
   },
   "paraguas": {
