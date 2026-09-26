@@ -160,6 +160,13 @@ export function UsuariosTable() {
         <EmptyState title={t("plataforma.usuarios.emptyTitle")} />
       ) : (
         <>
+          {roles.isError ? (
+            // Sin roles, «—» se leería como «sin rol de plataforma»: se avisa
+            // y la columna dice «No disponible».
+            <p role="alert" className="text-sm text-error">
+              {t("plataforma.usuarios.rolesLoadError")}
+            </p>
+          ) : null}
           <Table<PlatformAccount>
             caption={t("plataforma.usuarios.tableCaption")}
             rows={users.data.results}
@@ -207,6 +214,7 @@ export function UsuariosTable() {
                 key: "role",
                 header: t("plataforma.usuarios.roleHeader"),
                 render: (account) => {
+                  if (roles.isError) return t("plataforma.usuarios.roleUnavailable");
                   const role = roleByUser.get(account.id);
                   return role ? t(PLATFORM_ROLE_LABEL_KEYS[role]) : "—";
                 },

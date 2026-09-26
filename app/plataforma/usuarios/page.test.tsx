@@ -93,6 +93,21 @@ describe("PlataformaUsuariosPage", () => {
     expect(apiFetchMock).toHaveBeenCalledWith("/api/users/users/?ordering=-created_at&page=1");
   });
 
+  it("si los roles de plataforma no cargan, lo avisa y la columna «Rol» no finge «sin rol»", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/safety/platform-roles/") throw new ApiError(500, null);
+      if (path.startsWith("/api/users/users/")) return { count: 2, next: null, previous: null, results: ACCOUNTS };
+      throw new Error(path);
+    });
+    superadmin();
+    render(await PlataformaUsuariosPage());
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("No se pudieron cargar los roles de plataforma");
+    const rows = screen.getAllByRole("row");
+    expect(within(rows[1]).getByText("No disponible")).toBeInTheDocument();
+    expect(within(rows[1]).queryByText("—")).not.toBeInTheDocument();
+  });
+
   it("filtrar por «Desactivadas» manda is_active=false y marca las filas", async () => {
     mockBackend((path) =>
       path.includes("is_active=false")

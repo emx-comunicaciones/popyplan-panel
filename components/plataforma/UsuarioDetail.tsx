@@ -136,7 +136,17 @@ export function UsuarioDetail({ userId, email, isSelf }: UsuarioDetailProps) {
                 </Badge>
               </span>
             </Row>
-            <Row label={t("plataforma.usuarios.roleHeader")}>{role ? t(PLATFORM_ROLE_LABEL_KEYS[role]) : "—"}</Row>
+            <Row label={t("plataforma.usuarios.roleHeader")}>
+              {roles.isError ? (
+                <span role="alert" className="text-error">
+                  {t("plataforma.usuarioFicha.roleLoadError")}
+                </span>
+              ) : role ? (
+                t(PLATFORM_ROLE_LABEL_KEYS[role])
+              ) : (
+                "—"
+              )}
+            </Row>
           </dl>
         )}
       </Card>

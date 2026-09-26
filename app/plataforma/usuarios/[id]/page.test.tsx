@@ -237,6 +237,18 @@ describe("PlataformaUsuarioDetailPage", () => {
     expect(await screen.findByText(/la cuenta no existe o está suspendida/)).toBeInTheDocument();
   });
 
+  it("si el rol de plataforma no carga, lo avisa en vez de pintar «—»", async () => {
+    mockBackend();
+    const base = apiFetchMock.getMockImplementation()!;
+    apiFetchMock.mockImplementation(async (path: string, options?: unknown) => {
+      if (path === "/api/safety/platform-roles/") throw new ApiError(500, null);
+      return base(path, options);
+    });
+    superadmin();
+    await renderPage();
+    expect(await screen.findByText("No se pudo cargar el rol de plataforma.")).toHaveAttribute("role", "alert");
+  });
+
   it("un error al cargar la cuenta se pinta, y un nivel de verificación desconocido sale como número", async () => {
     apiFetchMock.mockImplementation(async (path: string) => {
       if (path === "/api/safety/platform-roles/") return [];
