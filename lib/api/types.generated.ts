@@ -2617,6 +2617,183 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/habits/calendar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/habits/calendar/?month=YYYY-MM` — un día por fecha con algo. */
+        get: operations["habits_calendar_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/habits/checkins/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/habits/checkins/?month=YYYY-MM` — los check-ins de un mes. */
+        get: operations["habits_checkins_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/habits/checkins/{day}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET/PUT/DELETE /api/habits/checkins/{YYYY-MM-DD}/`.
+         *
+         *     El `GET` de un día sin check-in no es un 404: devuelve `exists: false`
+         *     con las casillas `sport`/`popyplan_plan` ya propuestas si ese día hay un
+         *     entreno o una actividad con asistencia, para que apuntarlo lleve diez
+         *     segundos.
+         */
+        get: operations["habits_checkins_retrieve"];
+        /**
+         * @description `GET/PUT/DELETE /api/habits/checkins/{YYYY-MM-DD}/`.
+         *
+         *     El `GET` de un día sin check-in no es un 404: devuelve `exists: false`
+         *     con las casillas `sport`/`popyplan_plan` ya propuestas si ese día hay un
+         *     entreno o una actividad con asistencia, para que apuntarlo lleve diez
+         *     segundos.
+         */
+        put: operations["habits_checkins_update"];
+        post?: never;
+        /**
+         * @description `GET/PUT/DELETE /api/habits/checkins/{YYYY-MM-DD}/`.
+         *
+         *     El `GET` de un día sin check-in no es un 404: devuelve `exists: false`
+         *     con las casillas `sport`/`popyplan_plan` ya propuestas si ese día hay un
+         *     entreno o una actividad con asistencia, para que apuntarlo lleve diez
+         *     segundos.
+         */
+        delete: operations["habits_checkins_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/habits/goals/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `/api/habits/goals/` — objetivos de una semana, propios y
+         *     propuestos. `?week=YYYY-Www` (por defecto, esta semana).
+         */
+        get: operations["habits_goals_list"];
+        put?: never;
+        /**
+         * @description `/api/habits/goals/` — objetivos de una semana, propios y
+         *     propuestos. `?week=YYYY-Www` (por defecto, esta semana).
+         */
+        post: operations["habits_goals_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/habits/goals/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * @description `/api/habits/goals/` — objetivos de una semana, propios y
+         *     propuestos. `?week=YYYY-Www` (por defecto, esta semana).
+         */
+        delete: operations["habits_goals_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description `/api/habits/goals/` — objetivos de una semana, propios y
+         *     propuestos. `?week=YYYY-Www` (por defecto, esta semana).
+         */
+        patch: operations["habits_goals_partial_update"];
+        trace?: never;
+    };
+    "/api/habits/milestones/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/habits/milestones/` — hitos alcanzados (con fecha) y el
+         *     siguiente. Sin rankings: solo los de la propia persona.
+         */
+        get: operations["habits_milestones_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/habits/profile/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET/PATCH /api/habits/profile/` — desde cuándo cuenta la persona. */
+        get: operations["habits_profile_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description `GET/PATCH /api/habits/profile/` — desde cuándo cuenta la persona. */
+        patch: operations["habits_profile_partial_update"];
+        trace?: never;
+    };
+    "/api/habits/summary/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/habits/summary/` — «Mi progreso». */
+        get: operations["habits_summary_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health/": {
         parameters: {
             query?: never;
@@ -3567,6 +3744,105 @@ export interface paths {
          *     la ficha, para no revelar que esa persona tiene red.
          */
         get: operations["panel_entidad_people_support_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/entidad/{org_id}/program/enrollments/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET/POST /api/panel/entidad/{org_id}/program/enrollments/`.
+         *     `?status=` y `?user=` filtran.
+         */
+        get: operations["panel_entidad_program_enrollments_list"];
+        put?: never;
+        /**
+         * @description `GET/POST /api/panel/entidad/{org_id}/program/enrollments/`.
+         *     `?status=` y `?user=` filtran.
+         */
+        post: operations["panel_entidad_program_enrollments_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/entidad/{org_id}/program/enrollments/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET/PATCH /api/panel/entidad/{org_id}/program/enrollments/{id}/`. */
+        get: operations["panel_entidad_program_enrollments_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description `GET/PATCH /api/panel/entidad/{org_id}/program/enrollments/{id}/`. */
+        patch: operations["panel_entidad_program_enrollments_partial_update"];
+        trace?: never;
+    };
+    "/api/panel/entidad/{org_id}/program/enrollments/{id}/close/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description `POST /api/panel/entidad/{org_id}/program/enrollments/{id}/close/`. */
+        post: operations["panel_entidad_program_enrollments_close_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/entidad/{org_id}/program/people/{user_id}/goals/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description `POST /api/panel/entidad/{org_id}/program/people/{user_id}/goals/` —
+         *     el referente asignado propone un objetivo semanal.
+         */
+        post: operations["panel_entidad_program_people_goals_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/panel/entidad/{org_id}/program/people/{user_id}/shared/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/entidad/{org_id}/program/people/{user_id}/shared/` —
+         *     lo que la persona comparte con su referente asignado. Auditado.
+         */
+        get: operations["panel_entidad_program_people_shared_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4587,6 +4863,143 @@ export interface paths {
         head?: never;
         /** @description `PATCH /api/plataforma/billing/tiers/{tier_id}/`. */
         patch: operations["plataforma_billing_tiers_partial_update"];
+        trace?: never;
+    };
+    "/api/program/interruptions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `/api/program/interruptions/` — días en que no cumplió su objetivo.
+         *     Cortan la racha actual; nunca borran nada más. Solo las propias.
+         */
+        get: operations["program_interruptions_list"];
+        put?: never;
+        /**
+         * @description `/api/program/interruptions/` — días en que no cumplió su objetivo.
+         *     Cortan la racha actual; nunca borran nada más. Solo las propias.
+         */
+        post: operations["program_interruptions_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/program/interruptions/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `/api/program/interruptions/` — días en que no cumplió su objetivo.
+         *     Cortan la racha actual; nunca borran nada más. Solo las propias.
+         */
+        get: operations["program_interruptions_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * @description `/api/program/interruptions/` — días en que no cumplió su objetivo.
+         *     Cortan la racha actual; nunca borran nada más. Solo las propias.
+         */
+        delete: operations["program_interruptions_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description `/api/program/interruptions/` — días en que no cumplió su objetivo.
+         *     Cortan la racha actual; nunca borran nada más. Solo las propias.
+         */
+        patch: operations["program_interruptions_partial_update"];
+        trace?: never;
+    };
+    "/api/program/me/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/program/me/` — la señal que usa la app para enseñar el
+         *     módulo. 404 si no hay inscripción pendiente ni aceptada.
+         */
+        get: operations["program_me_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/program/me/accept/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description `POST /api/program/me/accept/` — acepta la inscripción pendiente. */
+        post: operations["program_me_accept_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/program/me/consent/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET/PUT/PATCH /api/program/me/consent/` — qué comparte con su
+         *     referente, con el historial de cambios. Solo la propia persona.
+         */
+        get: operations["program_me_consent_retrieve"];
+        /**
+         * @description `GET/PUT/PATCH /api/program/me/consent/` — qué comparte con su
+         *     referente, con el historial de cambios. Solo la propia persona.
+         */
+        put: operations["program_me_consent_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * @description `GET/PUT/PATCH /api/program/me/consent/` — qué comparte con su
+         *     referente, con el historial de cambios. Solo la propia persona.
+         */
+        patch: operations["program_me_consent_partial_update"];
+        trace?: never;
+    };
+    "/api/program/me/leave/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description `POST /api/program/me/leave/` — sale (o rechaza la pendiente). Su
+         *     historial se queda; la capa de hábitos se cierra.
+         */
+        post: operations["program_me_leave_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/reviews/": {
@@ -7515,6 +7928,21 @@ export interface components {
             people: number | null;
             suppressed: boolean;
         };
+        Calendar: {
+            month: string;
+            days: components["schemas"]["CalendarDay"][];
+        };
+        CalendarDay: {
+            /** Format: date */
+            date: string;
+            checkin: boolean;
+            mood: string | null;
+            main_goal: boolean;
+            sport: boolean;
+            plan: boolean;
+            therapy_meeting: boolean;
+            marks: string[];
+        };
         /**
          * @description * `help` - Ayuda
          *     * `training` - Formación
@@ -7651,6 +8079,40 @@ export interface components {
          * @enum {string}
          */
         ChatTypeEnum: "individual" | "group";
+        /**
+         * @description Lectura y escritura del check-in de un día. `extra` lo rellenan las
+         *     extensiones de la capa (`habits/extensions.py`).
+         */
+        Checkin: {
+            /** Format: date */
+            readonly date: string;
+            readonly exists: boolean;
+            mood: (components["schemas"]["MoodEnum"] | components["schemas"]["NullEnum"]) | null;
+            /** @default false */
+            main_goal: boolean;
+            /** @default false */
+            sport: boolean;
+            /** @default false */
+            went_out: boolean;
+            /** @default false */
+            met_someone: boolean;
+            /** @default false */
+            popyplan_plan: boolean;
+            /** @default false */
+            slept_well: boolean;
+            /** @default false */
+            routine: boolean;
+            /** @default false */
+            therapy_meeting: boolean;
+            /** @default false */
+            feel_good: boolean;
+            /** @default  */
+            note: string;
+            readonly suggested: components["schemas"]["SuggestedFlags"];
+            extra?: {
+                [key: string]: unknown;
+            };
+        };
         /**
          * @description Cuerpo del 409 de `POST {id}/checkin/` (revisión de la rama, I4).
          *
@@ -8047,6 +8509,41 @@ export interface components {
             payment_intent_id: string;
             payment_method: string;
         };
+        Consent: {
+            checkins?: boolean;
+            urges?: boolean;
+            goals?: boolean;
+            participation?: boolean;
+            general_state?: boolean;
+        };
+        ConsentChange: {
+            /** Format: date-time */
+            changed_at: string;
+            values: components["schemas"]["Consent"];
+        };
+        ConsentDetail: {
+            checkins?: boolean;
+            urges?: boolean;
+            goals?: boolean;
+            participation?: boolean;
+            general_state?: boolean;
+            /** Format: date-time */
+            updated_at: string;
+            history: components["schemas"]["ConsentChange"][];
+        };
+        ConsentRequest: {
+            checkins?: boolean;
+            urges?: boolean;
+            goals?: boolean;
+            participation?: boolean;
+            general_state?: boolean;
+        };
+        /**
+         * @description * `program` - Programa de una entidad
+         *     * `wellbeing` - Bienestar
+         * @enum {string}
+         */
+        ContextEnum: "program" | "wellbeing";
         /**
          * @description Salida de un contrato, con la entidad y el tramo resumidos y dos
          *     campos calculados de facturas (`invoices_count`, `pending_amount_cents`:
@@ -8265,6 +8762,40 @@ export interface components {
             subject: number;
             reason: string;
         };
+        EnrollmentCreateRequest: {
+            user_id: number;
+            tracking_type: components["schemas"]["TrackingTypeEnum"];
+            tracking_label?: string;
+            /** @description OrgMembership id with the referent role. */
+            referent?: number | null;
+        };
+        /**
+         * @description Una fila del programa en el panel de la entidad: estado y
+         *     configuración. **Nunca** datos de seguimiento de la persona.
+         */
+        EnrollmentPanel: {
+            readonly id: number;
+            readonly user: components["schemas"]["_UserRef"];
+            /** Estado */
+            readonly status: components["schemas"]["Status74bEnum"];
+            /** Tipo de seguimiento */
+            readonly tracking_type: components["schemas"]["TrackingTypeEnum"];
+            /** Descripción del seguimiento */
+            readonly tracking_label: string;
+            readonly referent: components["schemas"]["_UserRef"] | null;
+            /** Format: date-time */
+            readonly created_at: string;
+            /**
+             * Aceptada el
+             * Format: date-time
+             */
+            readonly accepted_at: string | null;
+            /**
+             * Terminó el
+             * Format: date-time
+             */
+            readonly ended_at: string | null;
+        };
         EntityEventCommunityRef: {
             id: string;
             name: string;
@@ -8286,6 +8817,7 @@ export interface components {
             starts_at: string;
             status: string;
             audience: string;
+            level: string;
             community: components["schemas"]["EntityEventCommunityRef"] | null;
             organizer: components["schemas"]["EntityEventOrganizerRef"] | null;
             capacity: number | null;
@@ -9430,6 +9962,17 @@ export interface components {
          * @enum {string}
          */
         GoalsEnum: "muscle" | "fat_loss" | "strength" | "active" | "endurance";
+        HabitProfile: {
+            /**
+             * Contando desde
+             * Format: date
+             */
+            started_on: string;
+            /** Contexto */
+            readonly context: components["schemas"]["ContextEnum"];
+            /** Activo */
+            readonly is_active: boolean;
+        };
         /**
          * @description Un aviso de ayuda tal y como lo lee quien lo atiende (`pending`) o
          *     la propia persona que lo pidió.
@@ -9559,6 +10102,27 @@ export interface components {
             order?: number;
             is_active?: boolean;
             category: number;
+        };
+        Interruption: {
+            readonly id: number;
+            /**
+             * Fecha
+             * Format: date
+             */
+            date: string;
+            /** Nota privada */
+            note?: string;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        InterruptionRequest: {
+            /**
+             * Fecha
+             * Format: date
+             */
+            date: string;
+            /** Nota privada */
+            note?: string;
         };
         Invoice: {
             readonly id: number;
@@ -9831,6 +10395,26 @@ export interface components {
             by_weekday_hour: components["schemas"]["ByWeekdayHourRow"][];
             series: components["schemas"]["SeriesRow"][];
         };
+        Milestone: {
+            code: string;
+            kind: string;
+            threshold: number;
+            progress: number;
+            reached: boolean;
+            /** Format: date */
+            reached_on: string | null;
+        };
+        Milestones: {
+            milestones: components["schemas"]["Milestone"][];
+            next: components["schemas"]["Milestone"] | null;
+        };
+        /**
+         * @description * `good` - Bien
+         *     * `so_so` - Regular
+         *     * `hard` - Difícil
+         * @enum {string}
+         */
+        MoodEnum: "good" | "so_so" | "hard";
         /**
          * @description * `chest` - Pecho
          *     * `back` - Espalda
@@ -9973,6 +10557,8 @@ export interface components {
          * @enum {string}
          */
         NotificationTypeEnum: "dm_request" | "message" | "plan_invitation" | "plan_update" | "plan_reminder" | "plan_cancelled" | "plan_completed" | "review_received" | "warning" | "report_resolved" | "help_request" | "account_suspended" | "announcement" | "survey" | "support_help_request" | "support_link" | "system";
+        /** @enum {unknown} */
+        NullEnum: null;
         OptimizedPhotoListItem: {
             id: number;
             user: number;
@@ -10145,6 +10731,8 @@ export interface components {
              */
             readonly territory_code: string;
             readonly territory_places_count: number;
+            /** Programa de seguimiento activo */
+            tracking_program_enabled?: boolean;
         };
         /**
          * @description `POST /api/organizations/` — alta de entidad (verificador/superadmin).
@@ -10246,7 +10834,15 @@ export interface components {
             admin_level?: components["schemas"]["AdminLevelEnum"] | components["schemas"]["BlankEnum"];
             /** Municipio de la sede */
             place?: string;
+            /** Programa de seguimiento activo */
+            tracking_program_enabled?: boolean;
         };
+        /**
+         * @description * `own` - Propio
+         *     * `proposed` - Propuesto
+         * @enum {string}
+         */
+        OriginEnum: "own" | "proposed";
         PaginatedAuditLogList: {
             /** @example 123 */
             count?: number;
@@ -10720,6 +11316,13 @@ export interface components {
             category?: string;
             is_active?: boolean;
         };
+        PatchedConsentRequest: {
+            checkins?: boolean;
+            urges?: boolean;
+            goals?: boolean;
+            participation?: boolean;
+            general_state?: boolean;
+        };
         /**
          * @description Entrada de edición (`PATCH`, `partial=True`): solo fechas y notas.
          *     `organization`/`tier`/`status` no se tocan por aquí (`status` cambia
@@ -10758,6 +11361,11 @@ export interface components {
             order?: number;
             /** Activo */
             is_active?: boolean;
+        };
+        PatchedEnrollmentUpdateRequest: {
+            tracking_type?: components["schemas"]["TrackingTypeEnum"];
+            tracking_label?: string;
+            referent?: number | null;
         };
         /** @description Entrada de `POST`/`PATCH` sobre un recurso. */
         PatchedEntityResourceWriteRequest: {
@@ -10968,6 +11576,13 @@ export interface components {
              */
             time_bonus_seconds?: number;
         };
+        PatchedHabitProfileRequest: {
+            /**
+             * Contando desde
+             * Format: date
+             */
+            started_on?: string;
+        };
         PatchedHobbyCategoryRequest: {
             code?: string;
             label?: string;
@@ -10983,6 +11598,15 @@ export interface components {
             order?: number;
             is_active?: boolean;
             category?: number;
+        };
+        PatchedInterruptionRequest: {
+            /**
+             * Fecha
+             * Format: date
+             */
+            date?: string;
+            /** Nota privada */
+            note?: string;
         };
         PatchedLanguageRequest: {
             code?: string;
@@ -11120,6 +11744,8 @@ export interface components {
             admin_level?: components["schemas"]["AdminLevelEnum"] | components["schemas"]["BlankEnum"];
             /** Municipio de la sede */
             place?: string;
+            /** Programa de seguimiento activo */
+            tracking_program_enabled?: boolean;
         };
         /**
          * @description Categoría de actividad, con sus subcategorías activas anidadas.
@@ -11254,6 +11880,11 @@ export interface components {
         };
         PatchedVerificationReviewAppealRequest: {
             appeal_text?: string;
+        };
+        PatchedWeeklyGoalUpdateRequest: {
+            title?: string;
+            done?: boolean;
+            order?: number;
         };
         /** @description Alta y edición. `system: true` (solo al crear) = plantilla de Popyplan. */
         PatchedWorkoutTemplateWriteRequest: {
@@ -11847,6 +12478,26 @@ export interface components {
             ends_on: string;
             budget_cents: number;
         };
+        /** @description `GET /api/program/me/`: lo que la persona ve de su propia inscripción. */
+        ProgramMe: {
+            readonly id: number;
+            /** Estado */
+            readonly status: components["schemas"]["Status74bEnum"];
+            /** Tipo de seguimiento */
+            readonly tracking_type: components["schemas"]["TrackingTypeEnum"];
+            /** Descripción del seguimiento */
+            readonly tracking_label: string;
+            readonly organization: components["schemas"]["_OrgRef"];
+            readonly referent: components["schemas"]["_NameRef"] | null;
+            /** Format: date-time */
+            readonly created_at: string;
+            /**
+             * Aceptada el
+             * Format: date-time
+             */
+            readonly accepted_at: string | null;
+            readonly consent: components["schemas"]["Consent"] | null;
+        };
         /**
          * @description * `draft` - Borrador
          *     * `active` - En curso
@@ -11854,6 +12505,17 @@ export interface components {
          * @enum {string}
          */
         ProgramStatusEnum: "draft" | "active" | "closed";
+        ProposeGoalRequest: {
+            title: string;
+            /** @description YYYY-Www; default: this week. */
+            week?: string;
+        };
+        ProposedGoal: {
+            id: number;
+            /** Format: date */
+            week_start: string;
+            title: string;
+        };
         /**
          * @description Perfil de otra persona: alias, foto, bio, intereses, idiomas,
          *     municipio y nivel de verificación. Nada más (invariantes 1 y 9).
@@ -12306,6 +12968,66 @@ export interface components {
             people: number | null;
             suppressed: boolean;
         };
+        SharedCheckin: {
+            /** Format: date */
+            date: string;
+            mood: string;
+            main_goal: boolean;
+            sport: boolean;
+            went_out: boolean;
+            met_someone: boolean;
+            popyplan_plan: boolean;
+            slept_well: boolean;
+            routine: boolean;
+            therapy_meeting: boolean;
+            feel_good: boolean;
+        };
+        /**
+         * @description Lo que lee el referente asignado. Cada sección es `null` si la
+         *     persona no la comparte.
+         */
+        SharedData: {
+            enrollment_id: number;
+            tracking_type: string;
+            tracking_label: string;
+            /** Format: date-time */
+            accepted_at: string;
+            consent: components["schemas"]["Consent"];
+            window: components["schemas"]["_Window"];
+            checkins: components["schemas"]["SharedCheckin"][] | null;
+            urges: components["schemas"]["SharedUrge"][] | null;
+            goals: components["schemas"]["SharedGoal"][] | null;
+            participation: components["schemas"]["SharedParticipation"] | null;
+            general_state: components["schemas"]["SharedGeneralState"] | null;
+        };
+        SharedGeneralState: {
+            last_mood: string | null;
+            weeks: components["schemas"]["SharedWeek"][];
+        };
+        SharedGoal: {
+            /** Format: date */
+            week_start: string;
+            title: string;
+            done: boolean;
+            proposed: boolean;
+        };
+        SharedParticipation: {
+            window_days: number;
+            attended_activities: number;
+            workouts: number;
+        };
+        SharedUrge: {
+            /** Format: date */
+            date: string;
+            urge: string;
+        };
+        SharedWeek: {
+            /** Format: date */
+            week_start: string;
+            good: number;
+            so_so: number;
+            hard: number;
+        };
         /**
          * @description * `members` - Miembros
          *     * `families` - Familias
@@ -12339,6 +13061,14 @@ export interface components {
          * @enum {string}
          */
         Status5bbEnum: "scheduled" | "cancelled" | "completed";
+        /**
+         * @description * `pending` - Pendiente de aceptar
+         *     * `active` - Activo
+         *     * `left` - La persona salió
+         *     * `closed` - Baja por la entidad
+         * @enum {string}
+         */
+        Status74bEnum: "pending" | "active" | "left" | "closed";
         /**
          * @description * `pending` - Pendiente
          *     * `in_review` - En revisión
@@ -12416,10 +13146,35 @@ export interface components {
             is_valid: boolean;
             points_override?: number;
         };
+        Streak: {
+            current_days: number;
+            best_days: number;
+            days_on_track: number;
+            days_total: number;
+            last_90_on_track: number;
+            last_90_days: number;
+        };
         /** @description Serializer para respuestas de éxito genéricas */
         SuccessResponse: {
             /** @description Mensaje de confirmación */
             detail: string;
+        };
+        SuggestedFlags: {
+            sport: boolean;
+            popyplan_plan: boolean;
+        };
+        Summary: {
+            /** Format: date */
+            started_on: string;
+            days_caring: number;
+            positive_days_this_week: number;
+            healthy_activities: number;
+            plans_done: number;
+            goals_done: number;
+            checkins_count: number;
+            general_state: string | null;
+            streak: components["schemas"]["Streak"];
+            next_milestone: components["schemas"]["Milestone"] | null;
         };
         SupportHelpNotice: {
             /** Format: uuid */
@@ -12840,6 +13595,14 @@ export interface components {
         TokenRefreshRequest: {
             refresh: string;
         };
+        /**
+         * @description * `alcohol` - Alcohol
+         *     * `drugs` - Drogas
+         *     * `gambling` - Juego y apuestas
+         *     * `other` - Otro
+         * @enum {string}
+         */
+        TrackingTypeEnum: "alcohol" | "drugs" | "gambling" | "other";
         TrainingStats: {
             weeks: components["schemas"]["TrainingStatsWeek"][];
             by_discipline: components["schemas"]["TrainingStatsDiscipline"][];
@@ -13317,6 +14080,34 @@ export interface components {
          * @enum {string}
          */
         WarningTypeEnum: "no_show" | "ghosting" | "abuse";
+        WeeklyGoal: {
+            readonly id: number;
+            readonly week: string;
+            /**
+             * Semana
+             * Format: date
+             */
+            readonly week_start: string;
+            /** Título */
+            readonly title: string;
+            /** Conseguido */
+            readonly done: boolean;
+            /**
+             * Conseguido el
+             * Format: date-time
+             */
+            readonly done_at: string | null;
+            /** Origen */
+            readonly origin: components["schemas"]["OriginEnum"];
+            readonly proposed_by_name: string | null;
+            /** Orden */
+            readonly order: number;
+        };
+        WeeklyGoalCreateRequest: {
+            title: string;
+            /** @description YYYY-Www; default: this week. */
+            week?: string;
+        };
         WorkoutDetail: {
             readonly id: number;
             /** Título */
@@ -13478,9 +14269,16 @@ export interface components {
             elevation_gain_m?: number | null;
             entries?: components["schemas"]["WorkoutEntryRequest"][];
         };
+        _NameRef: {
+            public_name: string;
+        };
         /** @description Referencia mínima `{id, name}` de un catálogo (categoría, comunidad…). */
         _Nombrado: {
             id: string;
+            name: string;
+        };
+        _OrgRef: {
+            id: number;
             name: string;
         };
         _OrganizationBrief: {
@@ -13493,6 +14291,16 @@ export interface components {
             id: number;
             name: string;
             annual_price_cents: number;
+        };
+        _UserRef: {
+            id: number;
+            public_name: string;
+        };
+        _Window: {
+            /** Format: date */
+            since: string;
+            /** Format: date */
+            until: string;
         };
     };
     responses: never;
@@ -18728,6 +19536,428 @@ export interface operations {
             };
         };
     };
+    habits_calendar_retrieve: {
+        parameters: {
+            query?: {
+                month?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Calendar"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    habits_checkins_list: {
+        parameters: {
+            query?: {
+                month?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Checkin"][];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    habits_checkins_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                day: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Checkin"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    habits_checkins_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                day: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckinRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CheckinRequest"];
+                "multipart/form-data": components["schemas"]["CheckinRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Checkin"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    habits_checkins_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                day: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    habits_goals_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A search term. */
+                search?: string;
+                week?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeeklyGoal"][];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    habits_goals_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WeeklyGoalCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["WeeklyGoalCreateRequest"];
+                "multipart/form-data": components["schemas"]["WeeklyGoalCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeeklyGoal"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    habits_goals_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    habits_goals_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedWeeklyGoalUpdateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedWeeklyGoalUpdateRequest"];
+                "multipart/form-data": components["schemas"]["PatchedWeeklyGoalUpdateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeeklyGoal"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    habits_milestones_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Milestones"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    habits_profile_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HabitProfile"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    habits_profile_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedHabitProfileRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedHabitProfileRequest"];
+                "multipart/form-data": components["schemas"]["PatchedHabitProfileRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HabitProfile"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    habits_summary_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Summary"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     health_check: {
         parameters: {
             query?: never;
@@ -21164,6 +22394,270 @@ export interface operations {
             };
         };
     };
+    panel_entidad_program_enrollments_list: {
+        parameters: {
+            query?: {
+                status?: string;
+                user?: number;
+            };
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnrollmentPanel"][];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_program_enrollments_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnrollmentCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["EnrollmentCreateRequest"];
+                "multipart/form-data": components["schemas"]["EnrollmentCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnrollmentPanel"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_program_enrollments_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnrollmentPanel"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_program_enrollments_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedEnrollmentUpdateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedEnrollmentUpdateRequest"];
+                "multipart/form-data": components["schemas"]["PatchedEnrollmentUpdateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnrollmentPanel"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_program_enrollments_close_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnrollmentPanel"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_program_people_goals_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+                user_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProposeGoalRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ProposeGoalRequest"];
+                "multipart/form-data": components["schemas"]["ProposeGoalRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposedGoal"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_program_people_shared_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+                user_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedData"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     panel_entidad_programs_list: {
         parameters: {
             query?: never;
@@ -23259,6 +24753,346 @@ export interface operations {
             };
             /** @description No response body */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    program_interruptions_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Interruption"][];
+                };
+            };
+        };
+    };
+    program_interruptions_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InterruptionRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["InterruptionRequest"];
+                "multipart/form-data": components["schemas"]["InterruptionRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Interruption"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    program_interruptions_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Interruption"];
+                };
+            };
+        };
+    };
+    program_interruptions_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    program_interruptions_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedInterruptionRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedInterruptionRequest"];
+                "multipart/form-data": components["schemas"]["PatchedInterruptionRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Interruption"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    program_me_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgramMe"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    program_me_accept_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgramMe"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    program_me_consent_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentDetail"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    program_me_consent_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ConsentRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ConsentRequest"];
+                "multipart/form-data": components["schemas"]["ConsentRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentDetail"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    program_me_consent_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedConsentRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedConsentRequest"];
+                "multipart/form-data": components["schemas"]["PatchedConsentRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentDetail"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    program_me_leave_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
