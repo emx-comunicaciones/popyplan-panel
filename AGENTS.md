@@ -528,6 +528,10 @@ cuando haya backend local sembrado — en CI lo gatea el job `e2e`).
 - `auditorias.md` — auditoría estática 2026-09, segunda ronda 2026-09-18
   (F1-F5, deuda anotada), integración app↔backend↔panel 2026-09-21 y
   auditoría de producto 2026-09-24.
+- `auditoria-producto-2026-09-27.md` — auditoría del diff 24-09→27-09:
+  admin de plataforma, tesoro, entrenamiento, seguimiento. 2 medios
+  (etiqueta de `private_listed`, callejón sin salida del código de
+  invitación) y 11 bajos; sin bloqueantes.
 - `ayuda-por-pantalla.md` — decisiones y ampliación de la ayuda.
 - `i18n.md` — infraestructura i18n, patrón de errores de hooks, cierre
   (selector, idioma de la cuenta, ESLint) y el arreglo del idioma mezclado.
