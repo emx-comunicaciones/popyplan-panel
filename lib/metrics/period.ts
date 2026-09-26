@@ -179,8 +179,12 @@ export function periodIncluding(period: Period, fecha: string): Period {
   // se acerca hasta que el periodo vuelve a caber.
   const anclaje = parseIsoDate(dia);
   if (!anclaje) return period;
+  // Aritmética y formato, los dos en UTC: `anclaje` es medianoche UTC, y
+  // formatearlo con la fecha local (`toIso`) caía un día antes al oeste
+  // de UTC — 1462 días, 400 del backend.
   const topeMs = MAX_DAYS * MS_PER_DAY;
+  const utcIso = (ms: number) => new Date(ms).toISOString().slice(0, 10);
   return dia > period.until
-    ? { since: toIso(new Date(anclaje.getTime() - topeMs)), until: dia }
-    : { since: dia, until: toIso(new Date(anclaje.getTime() + topeMs)) };
+    ? { since: utcIso(anclaje.getTime() - topeMs), until: dia }
+    : { since: dia, until: utcIso(anclaje.getTime() + topeMs) };
 }

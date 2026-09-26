@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { customPeriod, periodIncluding, presetPeriod, validatePeriod } from "./period";
 
@@ -175,6 +175,30 @@ describe("periodIncluding", () => {
     const ampliado = periodIncluding({ since: "2020-01-01", until: "2026-09-24" }, "2027-01-01");
     expect(ampliado.until).toBe("2027-01-01");
     expect(validatePeriod(ampliado.since, ampliado.until)).toBeNull();
+  });
+
+  describe("recorte al tope, en zonas horarias al oeste y al este de UTC", () => {
+    // El recorte se calculaba sobre medianoche UTC pero se formateaba con
+    // la fecha local (`toIso`): al oeste de UTC caía un día antes y el
+    // periodo medía 1462 días, que el backend rechaza.
+    const originalTz = process.env.TZ;
+    afterEach(() => {
+      process.env.TZ = originalTz;
+    });
+
+    it.each(["America/New_York", "Pacific/Honolulu", "Europe/Madrid", "Pacific/Kiritimati"])(
+      "%s: el recorte mide exactamente 1461 días por los dos lados",
+      (tz) => {
+        process.env.TZ = tz;
+        const alFinal = periodIncluding({ since: "2020-01-01", until: "2026-09-24" }, "2027-01-01");
+        expect(alFinal).toEqual({ since: "2023-01-01", until: "2027-01-01" });
+        expect(validatePeriod(alFinal.since, alFinal.until)).toBeNull();
+
+        const alPrincipio = periodIncluding({ since: "2026-01-01", until: "2030-06-01" }, "2023-01-01");
+        expect(alPrincipio).toEqual({ since: "2023-01-01", until: "2027-01-01" });
+        expect(validatePeriod(alPrincipio.since, alPrincipio.until)).toBeNull();
+      },
+    );
   });
 
   it("una fecha ilegible deja el periodo como estaba", () => {
