@@ -44,3 +44,20 @@ export async function isOnCallUser(
   const result = await getServerOrganization(orgId, session.token);
   return result.ok && result.data.on_call_user === session.me.id;
 }
+
+/**
+ * ¿Tiene la entidad el **programa de seguimiento** encendido
+ * (`Organization.tracking_program_enabled`, `docs/PANEL.md` §18.2)? El
+ * campo solo viaja a quien tiene rol en la entidad o en la plataforma
+ * (para el resto la clave no existe): cualquier cosa que no sea `true`
+ * —ficha ilegible incluida— es «no». Lo usan el gate de
+ * `seguimiento/page.tsx` y la ficha de persona; sin petición extra
+ * (`getServerOrganization` memoizada por petición).
+ */
+export async function isTrackingProgramEnabled(
+  orgId: number,
+  session: { token: string },
+): Promise<boolean> {
+  const result = await getServerOrganization(orgId, session.token);
+  return result.ok && result.data.tracking_program_enabled === true;
+}

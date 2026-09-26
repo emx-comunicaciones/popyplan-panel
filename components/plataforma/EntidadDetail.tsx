@@ -68,6 +68,7 @@ import type {
 } from "@/lib/api/types";
 
 import { SedeSelector } from "./SedeSelector";
+import { TrackingProgramCard } from "./TrackingProgramCard";
 import { ADMIN_LEVEL_LABEL_KEYS, TERRITORY_KIND_LABEL_KEYS, TerritorioForm } from "./TerritorioForm";
 
 export interface EntidadDetailProps {
@@ -228,6 +229,8 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
   const sedeHintId = useId();
   const canVerify = role === "verifier" || role === "superadmin";
   const canManageTerritory = role === "superadmin";
+  // Programa de seguimiento: solo `superadmin` (403 a cualquier otro).
+  const canManageTracking = role === "superadmin";
   // `undefined` es «todavía no se ha tocado el selector» (usa `org.place`
   // guardado); `null` es un valor real elegido en el selector («Sin
   // municipio»). Usar `null` para las dos cosas (fix round 1) hacía que
@@ -305,6 +308,19 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
               <dd className="text-text-base">{org.territory_places_count ?? 0}</dd>
             </>
           ) : null}
+          {/* Programa de seguimiento (`docs/PANEL.md` §18.2): el estado lo
+              ve cualquier rol de plataforma; solo `superadmin` lo cambia
+              (tarjeta de abajo). La clave solo viaja a quien tiene rol. */}
+          {org.tracking_program_enabled !== undefined && !canManageTracking ? (
+            <>
+              <dt className="text-text-secondary">{t("plataforma.entidadFicha.trackingLabel")}</dt>
+              <dd className="text-text-base">
+                {org.tracking_program_enabled
+                  ? t("plataforma.entidadFicha.trackingOn")
+                  : t("plataforma.entidadFicha.trackingOff")}
+              </dd>
+            </>
+          ) : null}
         </dl>
         {!org.is_verified && canVerify ? (
           <div className="mt-3">
@@ -358,6 +374,10 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
 
       {canManageTerritory && isAdministration ? (
         <TerritorioForm organization={org} orgId={orgId} />
+      ) : null}
+
+      {canManageTracking ? (
+        <TrackingProgramCard orgId={orgId} enabled={org.tracking_program_enabled === true} />
       ) : null}
     </div>
   );

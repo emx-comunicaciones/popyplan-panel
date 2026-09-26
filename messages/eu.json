@@ -70,7 +70,8 @@
       "reportes": "Salaketak",
       "guardia": "Txanda",
       "informes": "Txostenak",
-      "configuracion": "Konfigurazioa"
+      "configuracion": "Konfigurazioa",
+      "seguimiento": "Jarraipen-programa"
     },
     "paraguas": {
       "navLabel": "Administrazio-arloaren atalak",
@@ -203,6 +204,9 @@
       },
       "configuracion": {
         "title": "Erakundearen konfigurazioa"
+      },
+      "seguimiento": {
+        "title": "Jarraipen-programa"
       }
     },
     "paraguas": {
@@ -994,6 +998,86 @@
       "scopeValueCodeLabel": "Kodea",
       "expandScope": "Eremua zabaldu",
       "scopeSuccess": "{added} udalerri gehitu dira (eremua guztira: {total})."
+    },
+    "seguimiento": {
+      "heading": "Jarraipen-programa",
+      "intro": "Hemen izen-emate bakoitzaren egoera baino ez duzu ikusten. Jarraipen-datuak esleitutako erreferenteak baino ez ditu ikusten, eta pertsonak partekatzea erabakitzen duena bakarrik.",
+      "addHint": "Norbait alta emateko, ireki haren fitxa Pertsonak atalean.",
+      "addHintLink": "Joan Pertsonak atalera",
+      "statusFilterLabel": "Egoera",
+      "statusAll": "Guztiak",
+      "caption": "Jarraipen-programako izen-emateak",
+      "colPerson": "Pertsona",
+      "colStatus": "Egoera",
+      "colType": "Jarraipen mota",
+      "colReferent": "Erreferentea",
+      "colCreated": "Alta",
+      "empty": "Ez dago iragazki honekin bat datorren izen-ematerik.",
+      "loadErrorTitle": "Ezin izan da programa kargatu",
+      "noReferent": "Erreferenterik gabe",
+      "typeWithLabel": "{type}: {label}",
+      "blockTitle": "Jarraipen-programa",
+      "notEnrolled": "Ez dago programan.",
+      "lastEnrollment": "Azken izen-ematea: {status} ({date}).",
+      "statusLabel": "Egoera",
+      "typeLabel": "Jarraipen mota",
+      "referentLabel": "Erreferentea",
+      "createdLabel": "Alta",
+      "acceptedLabel": "Onartu zuen",
+      "pendingHint": "Pertsonak aplikaziotik onartu behar du programa. Ordura arte inork ez du daturik ikusten.",
+      "enrollAction": "Programan alta eman",
+      "editAction": "Mota edo erreferentea aldatu",
+      "closeAction": "Baja eman",
+      "closeConfirmTitle": "Programatik baja eman?",
+      "closeConfirmDescription": "{name} jarraipen-programatik aterako da. Bere historia ez da ezabatzen: pertsonarentzat geratzen da, baina erreferenteak ez du gehiago ikusiko partekatzen zuena.",
+      "enrollDialogTitle": "Programan alta eman",
+      "editDialogTitle": "Mota edo erreferentea aldatu",
+      "enrollDialogHint": "Pertsonak proposamena aplikazioan jasoko du eta onartu egin beharko du. Partekatzen duen guztia itzalita hasten da.",
+      "typeFieldLabel": "Jarraipen mota",
+      "labelFieldLabel": "Jarraipenaren deskribapena",
+      "labelFieldHint": "Derrigorrezkoa «Beste bat» aukerarekin.",
+      "referentFieldLabel": "Erreferentea",
+      "noReferentOption": "Erreferenterik gabe",
+      "enrollSubmit": "Alta eman",
+      "saving": "Gordetzen…",
+      "loading": "Kargatzen…",
+      "sharedHeading": "Partekatutako jarraipena",
+      "sharedNotice": "Pertsonak zurekin partekatzea erabaki duena baino ez duzu ikusten; kontsulta bakoitza erregistratuta geratzen da.",
+      "sharedWindow": "{since}-(e)tik {until}-(e)ra.",
+      "sharedNothing": "Oraindik ez du ezer partekatzen zurekin.",
+      "sharedLoadErrorTitle": "Ezin izan da partekatutako jarraipena kargatu",
+      "checkinsHeading": "Check-inak",
+      "checkinsCaption": "Aldiko check-inak",
+      "colDate": "Eguna",
+      "colMood": "Aldartea",
+      "colFlags": "Markatuta",
+      "noCheckins": "Ez dago check-inik aldi honetan.",
+      "urgeHeadingSubstance": "Kontsumitzeko gogoa",
+      "urgeHeadingGambling": "Apustu egiteko edo jokatzeko gogoa",
+      "urgeHeadingOther": "Gogoa",
+      "colUrge": "Gogoa",
+      "noUrges": "Ez dago erregistrorik aldi honetan.",
+      "goalsHeading": "Asteko helburuak",
+      "goalWeek": "{date}(e)ko astea",
+      "goalDone": "Lortuta",
+      "goalPending": "Egiteko",
+      "goalProposed": "Elkarteak proposatua",
+      "noGoals": "Ez dago helbururik aste hauetan.",
+      "participationHeading": "Parte-hartzea",
+      "participationActivities": "Joan zen jarduerak: {count}",
+      "participationWorkouts": "Entrenamenduak: {count}",
+      "participationWindow": "Azken {days} egunetan.",
+      "generalStateHeading": "Egoera orokorra",
+      "lastMood": "Azken aldartea: {mood}",
+      "noMood": "check-inik ez oraindik",
+      "weeksCaption": "Aldartea astez aste",
+      "colWeek": "Astea",
+      "proposeHeading": "Asteko helburua proposatu",
+      "proposeLabel": "Helburua",
+      "proposeHint": "Aste honetarako proposatzen da; pertsonak aplikazioan ikusiko du.",
+      "proposeSubmit": "Proposatu",
+      "proposing": "Proposatzen…",
+      "proposed": "Helburua proposatuta."
     }
   },
   "people": {
@@ -1456,6 +1540,30 @@
       "enUso": "Erabiltzen ari da eta ezin da ezabatu; desaktibatu horren ordez.",
       "demasiadasPaginas": "Elementu gehiegi daude denak kargatzeko.",
       "desconocido": "Ezin izan da ekintza osatu."
+    },
+    "enrollments": {
+      "sinAcceso": "Ez duzu jarraipen-programarako sarbiderik.",
+      "desconocido": "Ezin izan dira programako izen-emateak kargatu."
+    },
+    "enrollmentMutation": {
+      "invalido": "Berrikusi datuak: batzuk ez dira baliozkoak.",
+      "noEncontrado": "Izen-emate hau ez dago eskuragarri jada.",
+      "conflicto": "Izen-emate honek ez du ekintza hori onartzen.",
+      "desconocido": "Ezin izan da izen-ematea gorde."
+    },
+    "sharedTracking": {
+      "sinAcceso": "Ez duzu pertsona honen jarraipenerako sarbiderik.",
+      "desconocido": "Ezin izan da partekatutako jarraipena kargatu."
+    },
+    "proposeGoal": {
+      "invalido": "Berrikusi helburua: ez da baliozkoa.",
+      "sinAcceso": "Ezin diozu pertsona honi helbururik proposatu jada.",
+      "desconocido": "Ezin izan da helburua proposatu."
+    },
+    "setTrackingProgram": {
+      "invalido": "Erakunde honek ezin du jarraipen-programa izan.",
+      "sinPermiso": "Superadminek bakarrik alda dezake jarraipen-programa.",
+      "desconocido": "Ezin izan da jarraipen-programa aldatu."
     }
   },
   "reports": {
@@ -1536,7 +1644,7 @@
       "personaFicha": {
         "title": "Pertsonaren fitxa",
         "summary": "Pertsona baten zure erakundean izandako parte-hartzearen laburpena: komunitateak, aldiko jarduerak eta hurrengo jarduera. Ez du emailik, telefonorik ez oharrik: harremana beti aplikazioaren bidez da.",
-        "details": "Fitxak zure erakundeako parte-hartzea soilik erakusten du: komunitateak, aldiko jarduerak bere bertaratze-egoerarekin eta hurrengo jarduera. Inoiz ez ditu erakusten emaila, telefonoa, dokumentuak edo testu-libreko oharrak — harremana aplikazioaren txataren bidez da. Laguntza-sarearen atala pertsona horren erreferenteak bakarrik ikusten du; beste edonork, titularra barne, ez du atalik ikusten. Pertsona horri erreferentziarik ez dion erreferenteak 'sarbiderik ez' egoera ikusten du fitxaren ordez.",
+        "details": "Fitxak zure erakundeako parte-hartzea soilik erakusten du: komunitateak, aldiko jarduerak bere bertaratze-egoerarekin eta hurrengo jarduera. Inoiz ez ditu erakusten emaila, telefonoa, dokumentuak edo testu-libreko oharrak — harremana aplikazioaren txataren bidez da. Laguntza-sarearen atala pertsona horren erreferenteak bakarrik ikusten du; beste edonork, titularra barne, ez du atalik ikusten. Pertsona horri erreferentziarik ez dion erreferenteak 'sarbiderik ez' egoera ikusten du fitxaren ordez. Popyplanek jarraipen-programa aktibatu badu, titularrak eta moderatzaileak hemen ikusten eta kudeatzen dute pertsonaren izen-ematea, eta esleitutako erreferenteak pertsonak berarekin partekatzen duena baino ez du ikusten.",
         "actions": [
           "Bere erreferentea esleitu edo aldatu (titularra eta moderatzailea)",
           "Bere laguntza-sarea ikusi (bere erreferenteak bakarrik)",
@@ -1840,6 +1948,23 @@
           "entidad.personas"
         ],
         "audience": "Titularra eta moderatzailea; taldea titularrak bakarrik ikusten du."
+      },
+      "seguimiento": {
+        "title": "Jarraipen-programa",
+        "summary": "Zure erakundeak eskaintzen duen jarraipen-programako izen-emate bakoitzaren egoera. Inoiz ez jarraipen-daturik: pertsonaren erreferenteak bakarrik ikusten du pertsonak partekatzea erabakitzen duena.",
+        "details": "Popyplanek egiaztatutako elkarte bakoitzerako aktibatzen du programa. Pertsona bati bere fitxatik ematen zaio alta (jarraipen mota eta erreferentea); pertsonak aplikazioan onartu behar du, eta partekatzen duen guztia itzalita hasten da. Egoera onartzeko zain egotetik aktibo egotera igarotzen da; pertsona irteten denean edo zuk baja ematen diozunean amaitzen da, eta inola ere ez da bere historia ezabatzen. Titularrak eta moderatzaileak izen-emateak kudeatzen dituzte, baina ez dituzte inoiz banakako datuak ikusten; erreferentearen kontsulta bakoitza erregistratuta geratzen da.",
+        "actions": [
+          "Izen-emate bakoitzaren egoera ikusi",
+          "Egoeraren arabera iragazi",
+          "Pertsona baten fitxa ireki alta emateko, erreferentea aldatzeko edo baja emateko"
+        ],
+        "tips": [
+          "Esleitu erreferente bat alta ematean: hura gabe, inork ezin du ikusi pertsonak partekatzen duena."
+        ],
+        "related": [
+          "entidad.personas"
+        ],
+        "audience": "Titularra eta moderatzailea, Popyplanek erakundean programa aktibatu badu bakarrik."
       }
     },
     "paraguas": {
@@ -2676,7 +2801,18 @@
       "noContractDescription": "Erakunde honek ez du erregistratutako kontraturik.",
       "lastInvoiceLabel": "Azken faktura",
       "noInvoices": "Fakturarik ez",
-      "communitiesLoadError": "Ezin izan dira komunitateak kargatu"
+      "communitiesLoadError": "Ezin izan dira komunitateak kargatu",
+      "trackingLabel": "Jarraipen-programa",
+      "trackingOn": "Aktibatuta",
+      "trackingOff": "Desaktibatuta",
+      "trackingSwitchLabel": "Jarraipen-programa aktibatuta",
+      "trackingHint": "Egiaztatutako elkarte eta GKEentzat bakarrik. Erakundeari aukera ematen dio pertsonak osasun-datuak erabiltzen dituen jarraipen pertsonal batekin laguntzeko.",
+      "trackingEnableConfirmTitle": "Jarraipen-programa aktibatu?",
+      "trackingEnableConfirmDescription": "Erakundeak osasun-datuak erabiltzen dituen programa batean alta eman ahal izango die pertsonei (DBEOko kategoria berezia). Pertsona bakoitzak onartu eta zer partekatu erabaki behar du; erreferenteak bakarrik ikusten du, eta kontsulta bakoitza erregistratuta geratzen da.",
+      "trackingDisableConfirmTitle": "Jarraipen-programa desaktibatu?",
+      "trackingDisableConfirmDescription": "Izen-emateak zain geratzen dira: inork ezingo ditu ikusi ez erabili berriro aktibatu arte. Ez da ezer ezabatzen.",
+      "trackingEnableAction": "Aktibatu",
+      "trackingDisableAction": "Desaktibatu"
     },
     "reportes": {
       "heading": "Salaketak",
@@ -3569,6 +3705,42 @@
       "beginner": "Hasiberria",
       "intermediate": "Ertaina",
       "advanced": "Aurreratua"
+    }
+  },
+  "tracking": {
+    "type": {
+      "alcohol": "Alkohola",
+      "drugs": "Drogak",
+      "gambling": "Jokoa eta apustuak",
+      "other": "Beste bat"
+    },
+    "status": {
+      "pending": "Onartzeko zain",
+      "active": "Aktibo",
+      "left": "Irten zen",
+      "closed": "Itxita"
+    },
+    "mood": {
+      "good": "Ondo",
+      "soSo": "Hala-hola",
+      "hard": "Zaila"
+    },
+    "urge": {
+      "none": "Batere ez",
+      "little": "Gutxi",
+      "quite": "Nahiko",
+      "aLot": "Asko"
+    },
+    "flags": {
+      "mainGoal": "Helburu nagusia beteta",
+      "sport": "Kirola",
+      "wentOut": "Etxetik atera zen",
+      "metSomeone": "Norbaitekin geratu zen",
+      "popyplanPlan": "Popyplan plana",
+      "sleptWell": "Ondo lo egin zuen",
+      "routine": "Bere errutinari eutsi zion",
+      "therapyMeeting": "Terapia edo bilera",
+      "feelGood": "Ondo sentitu zen"
     }
   }
 }

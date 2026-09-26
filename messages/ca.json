@@ -70,7 +70,8 @@
       "reportes": "Informes (moderació)",
       "guardia": "Guàrdia",
       "informes": "Informes",
-      "configuracion": "Configuració"
+      "configuracion": "Configuració",
+      "seguimiento": "Programa de seguiment"
     },
     "paraguas": {
       "navLabel": "Seccions de l'àrea d'administració",
@@ -203,6 +204,9 @@
       },
       "configuracion": {
         "title": "Configuració de l'entitat"
+      },
+      "seguimiento": {
+        "title": "Programa de seguiment"
       }
     },
     "paraguas": {
@@ -994,6 +998,86 @@
       "scopeValueCodeLabel": "Codi",
       "expandScope": "Ampliar àmbit",
       "scopeSuccess": "Afegits {added} municipis (àmbit total: {total})."
+    },
+    "seguimiento": {
+      "heading": "Programa de seguiment",
+      "intro": "Aquí només veus l'estat de cada inscripció. Les dades de seguiment només les veu el referent assignat, i només el que la persona decideix compartir.",
+      "addHint": "Per donar d'alta una persona, obre la seva fitxa a Persones.",
+      "addHintLink": "Anar a Persones",
+      "statusFilterLabel": "Estat",
+      "statusAll": "Tots",
+      "caption": "Inscripcions del programa de seguiment",
+      "colPerson": "Persona",
+      "colStatus": "Estat",
+      "colType": "Tipus de seguiment",
+      "colReferent": "Referent",
+      "colCreated": "Alta",
+      "empty": "No hi ha inscripcions amb aquest filtre.",
+      "loadErrorTitle": "No s'ha pogut carregar el programa",
+      "noReferent": "Sense referent",
+      "typeWithLabel": "{type}: {label}",
+      "blockTitle": "Programa de seguiment",
+      "notEnrolled": "No és al programa.",
+      "lastEnrollment": "Última inscripció: {status} ({date}).",
+      "statusLabel": "Estat",
+      "typeLabel": "Tipus de seguiment",
+      "referentLabel": "Referent",
+      "createdLabel": "Alta",
+      "acceptedLabel": "Va acceptar",
+      "pendingHint": "La persona ha d'acceptar el programa des de l'app. Fins aleshores ningú no veu dades.",
+      "enrollAction": "Donar d'alta al programa",
+      "editAction": "Canviar tipus o referent",
+      "closeAction": "Donar de baixa",
+      "closeConfirmTitle": "Donar de baixa del programa?",
+      "closeConfirmDescription": "{name} sortirà del programa de seguiment. El seu historial no s'esborra: es queda per a la persona, però el seu referent deixa de veure el que compartia.",
+      "enrollDialogTitle": "Donar d'alta al programa",
+      "editDialogTitle": "Canviar tipus o referent",
+      "enrollDialogHint": "La persona rebrà la proposta a l'app i l'haurà d'acceptar. Tot el que comparteixi comença desactivat.",
+      "typeFieldLabel": "Tipus de seguiment",
+      "labelFieldLabel": "Descripció del seguiment",
+      "labelFieldHint": "Obligatòria amb «Altre».",
+      "referentFieldLabel": "Referent",
+      "noReferentOption": "Sense referent",
+      "enrollSubmit": "Donar d'alta",
+      "saving": "Desant…",
+      "loading": "Carregant…",
+      "sharedHeading": "Seguiment compartit",
+      "sharedNotice": "Només veus el que la persona ha decidit compartir amb tu; cada consulta queda registrada.",
+      "sharedWindow": "Del {since} al {until}.",
+      "sharedNothing": "Encara no comparteix res amb tu.",
+      "sharedLoadErrorTitle": "No s'ha pogut carregar el seguiment compartit",
+      "checkinsHeading": "Check-ins",
+      "checkinsCaption": "Check-ins del període",
+      "colDate": "Dia",
+      "colMood": "Estat d'ànim",
+      "colFlags": "Marcat",
+      "noCheckins": "Sense check-ins en aquest període.",
+      "urgeHeadingSubstance": "Ganes de consumir",
+      "urgeHeadingGambling": "Ganes d'apostar o jugar",
+      "urgeHeadingOther": "Ganes",
+      "colUrge": "Ganes",
+      "noUrges": "Sense registres en aquest període.",
+      "goalsHeading": "Objectius setmanals",
+      "goalWeek": "Setmana del {date}",
+      "goalDone": "Aconseguit",
+      "goalPending": "Pendent",
+      "goalProposed": "Proposat per l'associació",
+      "noGoals": "Sense objectius aquestes setmanes.",
+      "participationHeading": "Participació",
+      "participationActivities": "Activitats a què va assistir: {count}",
+      "participationWorkouts": "Entrenaments: {count}",
+      "participationWindow": "En els últims {days} dies.",
+      "generalStateHeading": "Estat general",
+      "lastMood": "Últim estat d'ànim: {mood}",
+      "noMood": "sense check-ins encara",
+      "weeksCaption": "Estat d'ànim per setmana",
+      "colWeek": "Setmana",
+      "proposeHeading": "Proposar objectiu setmanal",
+      "proposeLabel": "Objectiu",
+      "proposeHint": "Es proposa per a aquesta setmana; la persona el veurà a l'app.",
+      "proposeSubmit": "Proposar",
+      "proposing": "Proposant…",
+      "proposed": "Objectiu proposat."
     }
   },
   "people": {
@@ -1456,6 +1540,30 @@
       "enUso": "Està en ús i no es pot esborrar; desactiva'l en lloc seu.",
       "demasiadasPaginas": "Hi ha massa elements per carregar-los tots.",
       "desconocido": "No s'ha pogut completar l'acció."
+    },
+    "enrollments": {
+      "sinAcceso": "Sense accés al programa de seguiment.",
+      "desconocido": "No s'han pogut carregar les inscripcions del programa."
+    },
+    "enrollmentMutation": {
+      "invalido": "Revisa les dades: alguna no és vàlida.",
+      "noEncontrado": "Aquesta inscripció ja no està disponible.",
+      "conflicto": "Aquesta inscripció no admet aquesta acció.",
+      "desconocido": "No s'ha pogut desar la inscripció."
+    },
+    "sharedTracking": {
+      "sinAcceso": "Sense accés al seguiment d'aquesta persona.",
+      "desconocido": "No s'ha pogut carregar el seguiment compartit."
+    },
+    "proposeGoal": {
+      "invalido": "Revisa l'objectiu: no és vàlid.",
+      "sinAcceso": "Ja no pots proposar objectius a aquesta persona.",
+      "desconocido": "No s'ha pogut proposar l'objectiu."
+    },
+    "setTrackingProgram": {
+      "invalido": "Aquesta entitat no pot tenir el programa de seguiment.",
+      "sinPermiso": "Només superadmin pot canviar el programa de seguiment.",
+      "desconocido": "No s'ha pogut canviar el programa de seguiment."
     }
   },
   "reports": {
@@ -1536,7 +1644,7 @@
       "personaFicha": {
         "title": "Fitxa de la persona",
         "summary": "Resum de la participació d'una persona a la teva entitat: comunitats, activitats del període i propera activitat. Sense email, telèfon ni notes: la relació és sempre a través de l'app.",
-        "details": "La fitxa mostra només la participació a la teva entitat: comunitats, activitats del període amb el seu estat d'assistència i la propera activitat. Mai mostra correu, telèfon, documents ni notes de text lliure —la relació és pel xat de l'app. La secció de xarxa de suport només apareix per al referent d'aquella persona; qualsevol altre, inclòs el titular, no veu la secció en absolut. Un referent sense referència cap a aquella persona veu un estat de «sense accés» en lloc de la fitxa.",
+        "details": "La fitxa mostra només la participació a la teva entitat: comunitats, activitats del període amb el seu estat d'assistència i la propera activitat. Mai mostra correu, telèfon, documents ni notes de text lliure —la relació és pel xat de l'app. La secció de xarxa de suport només apareix per al referent d'aquella persona; qualsevol altre, inclòs el titular, no veu la secció en absolut. Un referent sense referència cap a aquella persona veu un estat de «sense accés» en lloc de la fitxa. Si Popyplan ha activat el programa de seguiment, titular i moderador veuen i gestionen aquí la inscripció de la persona, i el referent assignat només veu el que la persona comparteix amb ell.",
         "actions": [
           "Assignar o canviar el seu referent (titular i moderador)",
           "Veure la seva xarxa de suport (només el seu referent)",
@@ -1840,6 +1948,23 @@
           "entidad.personas"
         ],
         "audience": "Titular i moderador; l'equip només el veu el titular."
+      },
+      "seguimiento": {
+        "title": "Programa de seguiment",
+        "summary": "Estat de cada inscripció al programa de seguiment que ofereix la teva entitat. Mai dades de seguiment: només el referent de la persona veu el que ella decideix compartir.",
+        "details": "Popyplan activa el programa per a cada associació verificada. Dones d'alta una persona des de la seva fitxa (tipus de seguiment i referent); la persona l'ha d'acceptar a l'app, i tot el que comparteix comença desactivat. L'estat passa de pendent d'acceptar a actiu; acaba quan la persona surt o quan la dones de baixa, i en cap cas s'esborra el seu historial. Titular i moderador gestionen les inscripcions, però mai no veuen dades individuals; cada consulta del referent queda registrada.",
+        "actions": [
+          "Veure l'estat de cada inscripció",
+          "Filtrar per estat",
+          "Obrir la fitxa d'una persona per donar-la d'alta, canviar-ne el referent o donar-la de baixa"
+        ],
+        "tips": [
+          "Assigna un referent en donar d'alta: sense ell, ningú no pot veure el que la persona comparteix."
+        ],
+        "related": [
+          "entidad.personas"
+        ],
+        "audience": "Titular i moderador, només si Popyplan ha activat el programa a l'entitat."
       }
     },
     "paraguas": {
@@ -2676,7 +2801,18 @@
       "noContractDescription": "Aquesta entitat no té cap contracte registrat.",
       "lastInvoiceLabel": "Última factura",
       "noInvoices": "Sense factures",
-      "communitiesLoadError": "No s'han pogut carregar les comunitats"
+      "communitiesLoadError": "No s'han pogut carregar les comunitats",
+      "trackingLabel": "Programa de seguiment",
+      "trackingOn": "Activat",
+      "trackingOff": "Desactivat",
+      "trackingSwitchLabel": "Programa de seguiment activat",
+      "trackingHint": "Només per a associacions i ONG verificades. Permet a l'entitat acompanyar persones amb un seguiment personal que tracta dades de salut.",
+      "trackingEnableConfirmTitle": "Activar el programa de seguiment?",
+      "trackingEnableConfirmDescription": "L'entitat podrà donar d'alta persones en un programa que tracta dades de salut (categoria especial del RGPD). Cada persona ha d'acceptar i decidir què comparteix; només el seu referent ho veu i cada consulta queda registrada.",
+      "trackingDisableConfirmTitle": "Desactivar el programa de seguiment?",
+      "trackingDisableConfirmDescription": "Les inscripcions queden en suspens: ningú no les podrà veure ni fer servir fins que es torni a activar. No s'esborra res.",
+      "trackingEnableAction": "Activar",
+      "trackingDisableAction": "Desactivar"
     },
     "reportes": {
       "heading": "Informes",
@@ -3569,6 +3705,42 @@
       "beginner": "Principiant",
       "intermediate": "Intermedi",
       "advanced": "Avançat"
+    }
+  },
+  "tracking": {
+    "type": {
+      "alcohol": "Alcohol",
+      "drugs": "Drogues",
+      "gambling": "Joc i apostes",
+      "other": "Altre"
+    },
+    "status": {
+      "pending": "Pendent d'acceptar",
+      "active": "Actiu",
+      "left": "Va sortir",
+      "closed": "Tancat"
+    },
+    "mood": {
+      "good": "Bé",
+      "soSo": "Regular",
+      "hard": "Difícil"
+    },
+    "urge": {
+      "none": "Gens",
+      "little": "Poc",
+      "quite": "Bastant",
+      "aLot": "Molt"
+    },
+    "flags": {
+      "mainGoal": "Objectiu principal complert",
+      "sport": "Esport",
+      "wentOut": "Va sortir de casa",
+      "metSomeone": "Va quedar amb algú",
+      "popyplanPlan": "Pla de Popyplan",
+      "sleptWell": "Va dormir bé",
+      "routine": "Va seguir la seva rutina",
+      "therapyMeeting": "Teràpia o reunió",
+      "feelGood": "Es va sentir bé"
     }
   }
 }

@@ -3,12 +3,27 @@ import { describe, expect, it } from "vitest";
 import { ENTIDAD_MENU_ITEMS, entidadMenuFor } from "./entidadMenu";
 
 describe("entidadMenuFor", () => {
-  it("titular ve las 14 secciones", () => {
-    expect(entidadMenuFor("titular")).toEqual([...ENTIDAD_MENU_ITEMS]);
+  it("titular ve las 14 secciones sin el programa de seguimiento", () => {
+    expect(entidadMenuFor("titular")).toEqual(ENTIDAD_MENU_ITEMS.filter((item) => item !== "seguimiento"));
+    expect(entidadMenuFor("titular")).toHaveLength(14);
   });
 
-  it("moderador ve las 14 secciones", () => {
-    expect(entidadMenuFor("moderador")).toEqual([...ENTIDAD_MENU_ITEMS]);
+  it("moderador ve las 14 secciones sin el programa de seguimiento", () => {
+    expect(entidadMenuFor("moderador")).toEqual(ENTIDAD_MENU_ITEMS.filter((item) => item !== "seguimiento"));
+  });
+
+  it("con el servicio encendido, titular y moderador ven las 15, «seguimiento» tras «programas»", () => {
+    for (const role of ["titular", "moderador"]) {
+      const menu = entidadMenuFor(role, { trackingEnabled: true });
+      expect(menu).toEqual([...ENTIDAD_MENU_ITEMS]);
+      expect(menu.indexOf("seguimiento")).toBe(menu.indexOf("programas") + 1);
+    }
+  });
+
+  it("ningún otro rol ve «seguimiento», ni con el servicio encendido ni siendo la guardia", () => {
+    for (const role of ["dinamizador", "analista", "referente", "voluntario"]) {
+      expect(entidadMenuFor(role, { trackingEnabled: true, isOnCall: true })).not.toContain("seguimiento");
+    }
   });
 
   it("dinamizador no ve Configuración, Reportes ni Comunicaciones (sin permiso)", () => {
@@ -86,8 +101,8 @@ describe("entidadMenuFor", () => {
   });
 
   it("titular y moderador no cambian por ser la guardia (ya la veían)", () => {
-    expect(entidadMenuFor("titular", { isOnCall: true })).toEqual([...ENTIDAD_MENU_ITEMS]);
-    expect(entidadMenuFor("moderador", { isOnCall: true })).toEqual([...ENTIDAD_MENU_ITEMS]);
+    expect(entidadMenuFor("titular", { isOnCall: true })).toEqual(ENTIDAD_MENU_ITEMS.filter((item) => item !== "seguimiento"));
+    expect(entidadMenuFor("moderador", { isOnCall: true })).toEqual(ENTIDAD_MENU_ITEMS.filter((item) => item !== "seguimiento"));
   });
 
   it("un rol desconocido no ve ninguna sección, ni siendo la guardia", () => {

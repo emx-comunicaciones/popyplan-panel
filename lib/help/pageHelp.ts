@@ -59,6 +59,7 @@ export const PAGE_HELP: readonly PageHelpEntry[] = [
   { route: "/entidad/[slug]/familias", key: "entidad.familias" },
   { route: "/entidad/[slug]/programas", key: "entidad.programas" },
   { route: "/entidad/[slug]/programas/[programId]", key: "entidad.programaFicha" },
+  { route: "/entidad/[slug]/seguimiento", key: "entidad.seguimiento" },
   { route: "/entidad/[slug]/reportes", key: "entidad.reportes" },
   { route: "/entidad/[slug]/reportes/[reportId]", key: "entidad.reporteDetalle" },
   { route: "/entidad/[slug]/guardia", key: "entidad.guardia" },

@@ -70,7 +70,8 @@
       "reportes": "Reportes",
       "guardia": "Guardia",
       "informes": "Informes",
-      "configuracion": "Configuración"
+      "configuracion": "Configuración",
+      "seguimiento": "Programa de seguimiento"
     },
     "paraguas": {
       "navLabel": "Secciones del área de administración",
@@ -203,6 +204,9 @@
       },
       "configuracion": {
         "title": "Configuración de la entidad"
+      },
+      "seguimiento": {
+        "title": "Programa de seguimiento"
       }
     },
     "paraguas": {
@@ -994,6 +998,86 @@
       "scopeValueCodeLabel": "Código",
       "expandScope": "Ampliar ámbito",
       "scopeSuccess": "Añadidos {added} municipios (ámbito total: {total})."
+    },
+    "seguimiento": {
+      "heading": "Programa de seguimiento",
+      "intro": "Aquí solo ves el estado de cada inscripción. Los datos de seguimiento solo los ve el referente asignado, y solo lo que la persona decide compartir.",
+      "addHint": "Para dar de alta a una persona, abre su ficha en Personas.",
+      "addHintLink": "Ir a Personas",
+      "statusFilterLabel": "Estado",
+      "statusAll": "Todos",
+      "caption": "Inscripciones del programa de seguimiento",
+      "colPerson": "Persona",
+      "colStatus": "Estado",
+      "colType": "Tipo de seguimiento",
+      "colReferent": "Referente",
+      "colCreated": "Alta",
+      "empty": "No hay inscripciones con este filtro.",
+      "loadErrorTitle": "No se pudo cargar el programa",
+      "noReferent": "Sin referente",
+      "typeWithLabel": "{type}: {label}",
+      "blockTitle": "Programa de seguimiento",
+      "notEnrolled": "No está en el programa.",
+      "lastEnrollment": "Última inscripción: {status} ({date}).",
+      "statusLabel": "Estado",
+      "typeLabel": "Tipo de seguimiento",
+      "referentLabel": "Referente",
+      "createdLabel": "Alta",
+      "acceptedLabel": "Aceptó",
+      "pendingHint": "La persona tiene que aceptar el programa desde la app. Hasta entonces nadie ve datos.",
+      "enrollAction": "Dar de alta en el programa",
+      "editAction": "Cambiar tipo o referente",
+      "closeAction": "Dar de baja",
+      "closeConfirmTitle": "¿Dar de baja del programa?",
+      "closeConfirmDescription": "{name} saldrá del programa de seguimiento. Su historial no se borra: se queda para la persona, pero su referente deja de ver lo que compartía.",
+      "enrollDialogTitle": "Dar de alta en el programa",
+      "editDialogTitle": "Cambiar tipo o referente",
+      "enrollDialogHint": "La persona recibirá la propuesta en la app y tendrá que aceptarla. Todo lo que comparta empieza apagado.",
+      "typeFieldLabel": "Tipo de seguimiento",
+      "labelFieldLabel": "Descripción del seguimiento",
+      "labelFieldHint": "Obligatoria con «Otro».",
+      "referentFieldLabel": "Referente",
+      "noReferentOption": "Sin referente",
+      "enrollSubmit": "Dar de alta",
+      "saving": "Guardando…",
+      "loading": "Cargando…",
+      "sharedHeading": "Seguimiento compartido",
+      "sharedNotice": "Solo ves lo que la persona ha decidido compartir contigo; cada consulta queda registrada.",
+      "sharedWindow": "Del {since} al {until}.",
+      "sharedNothing": "Todavía no comparte nada contigo.",
+      "sharedLoadErrorTitle": "No se pudo cargar el seguimiento compartido",
+      "checkinsHeading": "Check-ins",
+      "checkinsCaption": "Check-ins del periodo",
+      "colDate": "Día",
+      "colMood": "Estado de ánimo",
+      "colFlags": "Marcado",
+      "noCheckins": "Sin check-ins en este periodo.",
+      "urgeHeadingSubstance": "Ganas de consumir",
+      "urgeHeadingGambling": "Ganas de apostar o jugar",
+      "urgeHeadingOther": "Ganas",
+      "colUrge": "Ganas",
+      "noUrges": "Sin registros en este periodo.",
+      "goalsHeading": "Objetivos semanales",
+      "goalWeek": "Semana del {date}",
+      "goalDone": "Conseguido",
+      "goalPending": "Pendiente",
+      "goalProposed": "Propuesto por la asociación",
+      "noGoals": "Sin objetivos en estas semanas.",
+      "participationHeading": "Participación",
+      "participationActivities": "Actividades a las que asistió: {count}",
+      "participationWorkouts": "Entrenos: {count}",
+      "participationWindow": "En los últimos {days} días.",
+      "generalStateHeading": "Estado general",
+      "lastMood": "Último estado de ánimo: {mood}",
+      "noMood": "sin check-ins todavía",
+      "weeksCaption": "Estado de ánimo por semana",
+      "colWeek": "Semana",
+      "proposeHeading": "Proponer objetivo semanal",
+      "proposeLabel": "Objetivo",
+      "proposeHint": "Se propone para esta semana; la persona lo verá en la app.",
+      "proposeSubmit": "Proponer",
+      "proposing": "Proponiendo…",
+      "proposed": "Objetivo propuesto."
     }
   },
   "people": {
@@ -1456,6 +1540,30 @@
       "enUso": "Está en uso y no se puede borrar; desactívalo en su lugar.",
       "demasiadasPaginas": "Hay demasiados elementos para cargarlos todos.",
       "desconocido": "No se pudo completar la acción."
+    },
+    "enrollments": {
+      "sinAcceso": "Sin acceso al programa de seguimiento.",
+      "desconocido": "No se pudieron cargar las inscripciones del programa."
+    },
+    "enrollmentMutation": {
+      "invalido": "Revisa los datos: alguno no es válido.",
+      "noEncontrado": "Esta inscripción ya no está disponible.",
+      "conflicto": "Esta inscripción no admite esa acción.",
+      "desconocido": "No se pudo guardar la inscripción."
+    },
+    "sharedTracking": {
+      "sinAcceso": "Sin acceso al seguimiento de esta persona.",
+      "desconocido": "No se pudo cargar el seguimiento compartido."
+    },
+    "proposeGoal": {
+      "invalido": "Revisa el objetivo: no es válido.",
+      "sinAcceso": "Ya no puedes proponer objetivos a esta persona.",
+      "desconocido": "No se pudo proponer el objetivo."
+    },
+    "setTrackingProgram": {
+      "invalido": "Esta entidad no puede tener el programa de seguimiento.",
+      "sinPermiso": "Solo superadmin puede cambiar el programa de seguimiento.",
+      "desconocido": "No se pudo cambiar el programa de seguimiento."
     }
   },
   "reports": {
@@ -1536,7 +1644,7 @@
       "personaFicha": {
         "title": "Ficha de la persona",
         "summary": "Resumen de la participación de una persona en tu entidad: comunidades, actividades del periodo y próxima actividad. Sin email, teléfono ni notas: la relación es siempre a través de la app.",
-        "details": "La ficha muestra solo la participación de la persona en tu entidad: comunidades, actividades del periodo con su estado de asistencia y la próxima actividad. Nunca muestra email, teléfono, documentos ni notas libres: la relación es a través del chat de la app. La sección de red de apoyo aparece solo para el referente de esa persona; cualquier otro, incluido el titular, no ve la sección en absoluto. Un referente sin referencia hacia esa persona ve un estado de «sin acceso» en lugar de la ficha.",
+        "details": "La ficha muestra solo la participación de la persona en tu entidad: comunidades, actividades del periodo con su estado de asistencia y la próxima actividad. Nunca muestra email, teléfono, documentos ni notas libres: la relación es a través del chat de la app. La sección de red de apoyo aparece solo para el referente de esa persona; cualquier otro, incluido el titular, no ve la sección en absoluto. Un referente sin referencia hacia esa persona ve un estado de «sin acceso» en lugar de la ficha. Si Popyplan ha activado el programa de seguimiento, titular y moderador ven y gestionan aquí la inscripción de la persona, y el referente asignado ve solo lo que la persona comparte con él.",
         "actions": [
           "Asignar o cambiar su referente (titular y moderador)",
           "Ver su red de apoyo (solo su referente)",
@@ -1840,6 +1948,23 @@
           "entidad.personas"
         ],
         "audience": "Titular y moderador; el equipo solo lo ve el titular."
+      },
+      "seguimiento": {
+        "title": "Programa de seguimiento",
+        "summary": "Estado de cada inscripción en el programa de seguimiento que ofrece tu entidad. Nunca datos de seguimiento: solo el referente de la persona ve lo que ella decide compartir.",
+        "details": "Popyplan activa el programa para cada asociación verificada. Das de alta a una persona desde su ficha (tipo de seguimiento y referente); la persona tiene que aceptarlo en la app, y todo lo que comparte empieza apagado. El estado pasa de pendiente de aceptar a activo; termina cuando la persona sale o cuando la das de baja, y en ningún caso se borra su historial. Titular y moderador gestionan las inscripciones, pero nunca ven datos individuales; cada consulta del referente queda registrada.",
+        "actions": [
+          "Ver el estado de cada inscripción",
+          "Filtrar por estado",
+          "Abrir la ficha de una persona para darla de alta, cambiar su referente o darla de baja"
+        ],
+        "tips": [
+          "Asigna un referente al dar de alta: sin él, nadie puede ver lo que la persona comparte."
+        ],
+        "related": [
+          "entidad.personas"
+        ],
+        "audience": "Titular y moderador, solo si Popyplan ha activado el programa en la entidad."
       }
     },
     "paraguas": {
@@ -2676,7 +2801,18 @@
       "noContractDescription": "Esta entidad no tiene ningún contrato registrado.",
       "lastInvoiceLabel": "Última factura",
       "noInvoices": "Sin facturas",
-      "communitiesLoadError": "No se pudieron cargar las comunidades"
+      "communitiesLoadError": "No se pudieron cargar las comunidades",
+      "trackingLabel": "Programa de seguimiento",
+      "trackingOn": "Activado",
+      "trackingOff": "Desactivado",
+      "trackingSwitchLabel": "Programa de seguimiento activado",
+      "trackingHint": "Solo para asociaciones y ONG verificadas. Permite a la entidad acompañar a personas con un seguimiento personal que maneja datos de salud.",
+      "trackingEnableConfirmTitle": "¿Activar el programa de seguimiento?",
+      "trackingEnableConfirmDescription": "La entidad podrá dar de alta a personas en un programa que maneja datos de salud (categoría especial del RGPD). Cada persona tiene que aceptar y decidir qué comparte; solo su referente lo ve y cada consulta queda registrada.",
+      "trackingDisableConfirmTitle": "¿Desactivar el programa de seguimiento?",
+      "trackingDisableConfirmDescription": "Las inscripciones quedan en suspenso: nadie podrá verlas ni usarlas hasta que se vuelva a activar. No se borra nada.",
+      "trackingEnableAction": "Activar",
+      "trackingDisableAction": "Desactivar"
     },
     "reportes": {
       "heading": "Reportes",
@@ -3569,6 +3705,42 @@
       "beginner": "Principiante",
       "intermediate": "Intermedio",
       "advanced": "Avanzado"
+    }
+  },
+  "tracking": {
+    "type": {
+      "alcohol": "Alcohol",
+      "drugs": "Drogas",
+      "gambling": "Juego y apuestas",
+      "other": "Otro"
+    },
+    "status": {
+      "pending": "Pendiente de aceptar",
+      "active": "Activo",
+      "left": "Salió",
+      "closed": "Cerrado"
+    },
+    "mood": {
+      "good": "Bien",
+      "soSo": "Regular",
+      "hard": "Difícil"
+    },
+    "urge": {
+      "none": "Nada",
+      "little": "Poco",
+      "quite": "Bastante",
+      "aLot": "Mucho"
+    },
+    "flags": {
+      "mainGoal": "Objetivo principal cumplido",
+      "sport": "Deporte",
+      "wentOut": "Salió de casa",
+      "metSomeone": "Quedó con alguien",
+      "popyplanPlan": "Plan de Popyplan",
+      "sleptWell": "Durmió bien",
+      "routine": "Siguió su rutina",
+      "therapyMeeting": "Terapia o reunión",
+      "feelGood": "Se sintió bien"
     }
   }
 }

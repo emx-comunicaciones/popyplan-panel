@@ -19,6 +19,9 @@ import { localeForUseLocale } from "@/lib/i18n/locale";
 import { presetPeriod } from "@/lib/metrics/period";
 import { relationshipLabelKey } from "@/lib/support/relationshipLabel";
 
+import { SharedTrackingSection } from "./SharedTrackingSection";
+import { TrackingEnrollmentSection } from "./TrackingEnrollmentSection";
+
 export interface PersonSheetProps {
   orgId: number | string;
   userId: number | string;
@@ -33,6 +36,18 @@ export interface PersonSheetProps {
    * vigente, así que ni siquiera llegaría a un 404/403 de esa ruta.
    */
   isReferent: boolean;
+  /**
+   * Programa de seguimiento (`docs/PANEL.md` §18.3): `titular`/`moderador`
+   * de una entidad con `tracking_program_enabled`. Solo entonces se monta
+   * el bloque de inscripción (estado, alta, cambios, baja).
+   */
+  canManageTracking?: boolean;
+  /**
+   * `organization.tracking_program_enabled`: el bloque «Seguimiento
+   * compartido» solo se pide con el servicio encendido **y** `isReferent`
+   * (§18.6; el backend responde 404 a cualquier otro).
+   */
+  trackingEnabled?: boolean;
 }
 
 const PERSON_SUPPORT_ERROR_KEYS = {
@@ -239,7 +254,14 @@ function AssignReferentForm({
  * estado de asistencia y próxima actividad. **Nunca** email, teléfono,
  * documentos ni notas — no están en `PersonDetail` (invariante 9).
  */
-export function PersonSheet({ orgId, userId, canAssignReferent, isReferent }: PersonSheetProps) {
+export function PersonSheet({
+  orgId,
+  userId,
+  canAssignReferent,
+  isReferent,
+  canManageTracking = false,
+  trackingEnabled = false,
+}: PersonSheetProps) {
   const period = presetPeriod("mes");
   const person = usePerson(orgId, userId, period);
   const t = useTranslations("entidad.personaFicha");
@@ -300,6 +322,10 @@ export function PersonSheet({ orgId, userId, canAssignReferent, isReferent }: Pe
 
       {canAssignReferent ? <AssignReferentForm orgId={orgId} userId={userId} /> : null}
 
+      {canManageTracking ? (
+        <TrackingEnrollmentSection orgId={orgId} userId={userId} personName={data.public_name} />
+      ) : null}
+
       <section aria-labelledby="comunidades-persona-heading">
         <h2 id="comunidades-persona-heading" className="mb-2 text-lg font-semibold text-text-base">
           {t("communitiesHeading")}
@@ -355,6 +381,8 @@ export function PersonSheet({ orgId, userId, canAssignReferent, isReferent }: Pe
       </section>
 
       <SupportNetworkSection orgId={orgId} userId={userId} isReferent={isReferent} />
+
+      <SharedTrackingSection orgId={orgId} userId={userId} enabled={isReferent && trackingEnabled} />
     </div>
   );
 }

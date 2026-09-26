@@ -6,6 +6,7 @@ import { PersonSheet } from "@/components/entidad/PersonSheet";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { entidadMenuFor } from "@/lib/auth/entidadMenu";
+import { isTrackingProgramEnabled } from "@/lib/auth/organization";
 import { getServerSession } from "@/lib/auth/session";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -46,6 +47,14 @@ export default async function EntidadPersonaPage({
 
   const canAssignReferent = membership.role === "titular" || membership.role === "moderador";
   const isReferent = membership.role === "referente";
+  // Programa de seguimiento (`docs/PANEL.md` §18): solo con el servicio
+  // encendido. Titular/moderador gestionan la inscripción; el referente
+  // ve lo compartido si es el asignado (si no, el backend da 404 y el
+  // bloque no se pinta). Nadie más recibe siquiera la prop.
+  const trackingEnabled =
+    canAssignReferent || isReferent
+      ? await isTrackingProgramEnabled(membership.organization_id, session)
+      : false;
 
   return (
     <div className="flex flex-col gap-4">
@@ -55,6 +64,8 @@ export default async function EntidadPersonaPage({
         userId={userId}
         canAssignReferent={canAssignReferent}
         isReferent={isReferent}
+        canManageTracking={canAssignReferent && trackingEnabled}
+        trackingEnabled={trackingEnabled}
       />
     </div>
   );

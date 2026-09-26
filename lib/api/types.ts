@@ -1510,3 +1510,28 @@ export interface TrainingTemplateWrite {
   items: TrainingTemplateItemWrite[];
   system?: true;
 }
+
+/**
+ * Programa de seguimiento (`docs/PANEL.md` §18, datos de salud). Alias
+ * directos del esquema generado salvo donde se indica.
+ *
+ * `EnrollmentRow.referent.id` es el id de la **`OrgMembership`** del
+ * referente, no el de su cuenta (igual que `Reference.referent`): los
+ * selects de referente usan `OrgMembershipFull.id`.
+ */
+export type TrackingType = components["schemas"]["TrackingTypeEnum"];
+export type EnrollmentRow = components["schemas"]["EnrollmentPanel"];
+export type EnrollmentStatus = EnrollmentRow["status"];
+export type EnrollmentCreateInput = components["schemas"]["EnrollmentCreateRequest"];
+export type EnrollmentUpdateInput = components["schemas"]["PatchedEnrollmentUpdateRequest"];
+/**
+ * `GET .../program/people/{user_id}/shared/`. Cada sección es `null` si la
+ * persona no la consintió. `tracking_type`/`mood`/`urge`/`last_mood` los
+ * tipa el esquema como `string` a secas (son `CharField` del serializer de
+ * lectura, `program/serializers.py::SharedDataSerializer`), así que se
+ * etiquetan con reserva al valor crudo en vez de ensanchar a mano.
+ */
+export type SharedTracking = components["schemas"]["SharedData"];
+export type SharedCheckin = components["schemas"]["SharedCheckin"];
+export type ProposeGoalInput = components["schemas"]["ProposeGoalRequest"];
+export type ProposedGoal = components["schemas"]["ProposedGoal"];

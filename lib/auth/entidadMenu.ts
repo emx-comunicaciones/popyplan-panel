@@ -10,6 +10,8 @@
  *   2026-09-21 — ver más abajo).
  * - `analista`: solo Inicio, Programas e Informes (nunca lista nominal).
  * - `referente`: solo Inicio, Personas, Actividades y Programas (sus personas asignadas).
+ * - «Programa de seguimiento» (2026-09-26): solo `titular`/`moderador` y
+ *   solo con `trackingEnabled` (ver `EntidadMenuContext`).
  *
  * Tarea W4a: Comunicaciones, Encuestas, Recursos y Familias todavía no
  * tenían página real — para que no dieran 404, se ocultaban también del
@@ -97,6 +99,7 @@ export const ENTIDAD_MENU_ITEMS = [
   "biblioteca",
   "familias",
   "programas",
+  "seguimiento",
   "reportes",
   "guardia",
   "informes",
@@ -124,6 +127,7 @@ export const ENTIDAD_MENU_LABELS: Record<EntidadMenuItem, string> = {
   biblioteca: "menu.entidad.biblioteca",
   familias: "menu.entidad.familias",
   programas: "menu.entidad.programas",
+  seguimiento: "menu.entidad.seguimiento",
   reportes: "menu.entidad.reportes",
   guardia: "menu.entidad.guardia",
   informes: "menu.entidad.informes",
@@ -149,6 +153,9 @@ const DINAMIZADOR_HIDDEN: readonly EntidadMenuItem[] = [
   // D-I8: `help-requests/pending/` pide `moderar` o ser la guardia; el
   // segundo caso lo cubre `isOnCall`, no el rol.
   "guardia",
+  // Programa de seguimiento: `gestionar_seguimiento` es solo
+  // titular/moderador (y el backend responde 404 a cualquier otro).
+  "seguimiento",
   ...PENDING_SECTIONS,
 ];
 const ANALISTA_VISIBLE: readonly EntidadMenuItem[] = ["inicio", "programas", "informes"];
@@ -168,13 +175,24 @@ const REFERENTE_VISIBLE: readonly EntidadMenuItem[] = [
  */
 export interface EntidadMenuContext {
   isOnCall?: boolean;
+  /**
+   * `organization.tracking_program_enabled` (programa de seguimiento,
+   * `docs/PANEL.md` §18.3): la sección «Programa de seguimiento» solo
+   * existe para titular/moderador de una entidad con el servicio
+   * encendido. Sin el servicio, ni siquiera ellos la ven; y ningún otro
+   * rol la ve nunca — el menú no puede revelar que el programa existe a
+   * quien el backend le responde 404.
+   */
+  trackingEnabled?: boolean;
 }
 
 export function entidadMenuFor(
   role: EntidadPanelRole | string,
   context: EntidadMenuContext = {},
 ): EntidadMenuItem[] {
-  const byRole = menuByRole(role);
+  const byRole = context.trackingEnabled
+    ? menuByRole(role)
+    : menuByRole(role).filter((item) => item !== "seguimiento");
   // `byRole.length === 0` es «este rol no tiene panel» (no está en
   // `ver_panel`): ser la guardia no le abre una sección suelta, porque el
   // layout de entidad ya lo devuelve a la raíz antes de llegar aquí.

@@ -70,7 +70,8 @@
       "reportes": "Reports",
       "guardia": "On-call",
       "informes": "Reports (export)",
-      "configuracion": "Settings"
+      "configuracion": "Settings",
+      "seguimiento": "Tracking programme"
     },
     "paraguas": {
       "navLabel": "Administration area sections",
@@ -203,6 +204,9 @@
       },
       "configuracion": {
         "title": "Entity settings"
+      },
+      "seguimiento": {
+        "title": "Tracking programme"
       }
     },
     "paraguas": {
@@ -994,6 +998,86 @@
       "scopeValueCodeLabel": "Code",
       "expandScope": "Expand scope",
       "scopeSuccess": "Added {added} municipalities (total scope: {total})."
+    },
+    "seguimiento": {
+      "heading": "Tracking programme",
+      "intro": "Here you only see the status of each enrolment. Tracking data is only seen by the assigned referent, and only what the person decides to share.",
+      "addHint": "To enrol someone, open their record in People.",
+      "addHintLink": "Go to People",
+      "statusFilterLabel": "Status",
+      "statusAll": "All",
+      "caption": "Tracking programme enrolments",
+      "colPerson": "Person",
+      "colStatus": "Status",
+      "colType": "Tracking type",
+      "colReferent": "Referent",
+      "colCreated": "Enrolled",
+      "empty": "No enrolments match this filter.",
+      "loadErrorTitle": "The programme could not be loaded",
+      "noReferent": "No referent",
+      "typeWithLabel": "{type}: {label}",
+      "blockTitle": "Tracking programme",
+      "notEnrolled": "Not in the programme.",
+      "lastEnrollment": "Last enrolment: {status} ({date}).",
+      "statusLabel": "Status",
+      "typeLabel": "Tracking type",
+      "referentLabel": "Referent",
+      "createdLabel": "Enrolled",
+      "acceptedLabel": "Accepted",
+      "pendingHint": "The person has to accept the programme in the app. Until then nobody sees any data.",
+      "enrollAction": "Enrol in the programme",
+      "editAction": "Change type or referent",
+      "closeAction": "Remove from programme",
+      "closeConfirmTitle": "Remove from the programme?",
+      "closeConfirmDescription": "{name} will leave the tracking programme. Their history is not deleted: it stays with the person, but their referent will no longer see what they shared.",
+      "enrollDialogTitle": "Enrol in the programme",
+      "editDialogTitle": "Change type or referent",
+      "enrollDialogHint": "The person will receive the proposal in the app and has to accept it. Everything they share starts switched off.",
+      "typeFieldLabel": "Tracking type",
+      "labelFieldLabel": "Tracking description",
+      "labelFieldHint": "Required with «Other».",
+      "referentFieldLabel": "Referent",
+      "noReferentOption": "No referent",
+      "enrollSubmit": "Enrol",
+      "saving": "Saving…",
+      "loading": "Loading…",
+      "sharedHeading": "Shared tracking",
+      "sharedNotice": "You only see what the person has decided to share with you; every view is logged.",
+      "sharedWindow": "From {since} to {until}.",
+      "sharedNothing": "They are not sharing anything with you yet.",
+      "sharedLoadErrorTitle": "Shared tracking could not be loaded",
+      "checkinsHeading": "Check-ins",
+      "checkinsCaption": "Check-ins in the period",
+      "colDate": "Day",
+      "colMood": "Mood",
+      "colFlags": "Ticked",
+      "noCheckins": "No check-ins in this period.",
+      "urgeHeadingSubstance": "Urge to use",
+      "urgeHeadingGambling": "Urge to bet or gamble",
+      "urgeHeadingOther": "Urges",
+      "colUrge": "Urge",
+      "noUrges": "Nothing recorded in this period.",
+      "goalsHeading": "Weekly goals",
+      "goalWeek": "Week of {date}",
+      "goalDone": "Achieved",
+      "goalPending": "Pending",
+      "goalProposed": "Proposed by the organisation",
+      "noGoals": "No goals in these weeks.",
+      "participationHeading": "Participation",
+      "participationActivities": "Activities attended: {count}",
+      "participationWorkouts": "Workouts: {count}",
+      "participationWindow": "In the last {days} days.",
+      "generalStateHeading": "General state",
+      "lastMood": "Latest mood: {mood}",
+      "noMood": "no check-ins yet",
+      "weeksCaption": "Mood by week",
+      "colWeek": "Week",
+      "proposeHeading": "Propose a weekly goal",
+      "proposeLabel": "Goal",
+      "proposeHint": "It is proposed for this week; the person will see it in the app.",
+      "proposeSubmit": "Propose",
+      "proposing": "Proposing…",
+      "proposed": "Goal proposed."
     }
   },
   "people": {
@@ -1456,6 +1540,30 @@
       "enUso": "It is in use and cannot be deleted; deactivate it instead.",
       "demasiadasPaginas": "There are too many items to load them all.",
       "desconocido": "The action could not be completed."
+    },
+    "enrollments": {
+      "sinAcceso": "No access to the tracking programme.",
+      "desconocido": "The programme enrolments could not be loaded."
+    },
+    "enrollmentMutation": {
+      "invalido": "Check the details: some are not valid.",
+      "noEncontrado": "This enrolment is no longer available.",
+      "conflicto": "This enrolment does not allow that action.",
+      "desconocido": "The enrolment could not be saved."
+    },
+    "sharedTracking": {
+      "sinAcceso": "No access to this person's tracking.",
+      "desconocido": "Shared tracking could not be loaded."
+    },
+    "proposeGoal": {
+      "invalido": "Check the goal: it is not valid.",
+      "sinAcceso": "You can no longer propose goals to this person.",
+      "desconocido": "The goal could not be proposed."
+    },
+    "setTrackingProgram": {
+      "invalido": "This organisation cannot have the tracking programme.",
+      "sinPermiso": "Only superadmin can change the tracking programme.",
+      "desconocido": "The tracking programme could not be changed."
     }
   },
   "reports": {
@@ -1536,7 +1644,7 @@
       "personaFicha": {
         "title": "Person profile",
         "summary": "Summary of a person's participation in your entity: communities, activities for the period and next activity. No email, phone or notes: the relationship always goes through the app.",
-        "details": "The profile shows only participation in your entity: communities, activities for the period with their attendance status, and the next activity. It never shows email, phone, documents or free-text notes — the relationship goes through the app chat. The support-network section appears only for that person's referent; anyone else, including the owner, doesn't see the section at all. A referent without a reference to that person sees a 'no access' state instead of the profile.",
+        "details": "The profile shows only participation in your entity: communities, activities for the period with their attendance status, and the next activity. It never shows email, phone, documents or free-text notes — the relationship goes through the app chat. The support-network section appears only for that person's referent; anyone else, including the owner, doesn't see the section at all. A referent without a reference to that person sees a 'no access' state instead of the profile. If Popyplan has enabled the tracking programme, titular and moderator see and manage the person's enrolment here, and the assigned referent sees only what the person shares with them.",
         "actions": [
           "Assign or change their referent (owner and moderator)",
           "See their support network (only their referent)",
@@ -1840,6 +1948,23 @@
           "entidad.personas"
         ],
         "audience": "Owner and moderator; only the owner sees the team."
+      },
+      "seguimiento": {
+        "title": "Tracking programme",
+        "summary": "Status of each enrolment in the tracking programme your organisation offers. Never tracking data: only the person's referent sees what the person decides to share.",
+        "details": "Popyplan enables the programme for each verified association. You enrol a person from their record (tracking type and referent); the person has to accept it in the app, and everything they share starts switched off. Status goes from awaiting acceptance to active; it ends when the person leaves or when you remove them, and in neither case is their history deleted. Titular and moderator manage enrolments but never see individual data; each view by the referent is logged.",
+        "actions": [
+          "See the status of every enrolment",
+          "Filter by status",
+          "Open a person's record to enrol them, change their referent or remove them"
+        ],
+        "tips": [
+          "Assign a referent at enrolment: without one, nobody can see what the person shares."
+        ],
+        "related": [
+          "entidad.personas"
+        ],
+        "audience": "Titular and moderator, only if Popyplan has enabled the programme for the organisation."
       }
     },
     "paraguas": {
@@ -2676,7 +2801,18 @@
       "noContractDescription": "This entity has no registered contract.",
       "lastInvoiceLabel": "Last invoice",
       "noInvoices": "No invoices",
-      "communitiesLoadError": "Couldn't load the communities"
+      "communitiesLoadError": "Couldn't load the communities",
+      "trackingLabel": "Tracking programme",
+      "trackingOn": "Enabled",
+      "trackingOff": "Disabled",
+      "trackingSwitchLabel": "Tracking programme enabled",
+      "trackingHint": "Only for verified associations and NGOs. It lets the organisation support people with personal tracking that handles health data.",
+      "trackingEnableConfirmTitle": "Enable the tracking programme?",
+      "trackingEnableConfirmDescription": "The organisation will be able to enrol people in a programme that handles health data (a special category under the GDPR). Each person has to accept and decide what to share; only their referent sees it and every view is logged.",
+      "trackingDisableConfirmTitle": "Disable the tracking programme?",
+      "trackingDisableConfirmDescription": "Enrolments are put on hold: nobody can see or use them until it is enabled again. Nothing is deleted.",
+      "trackingEnableAction": "Enable",
+      "trackingDisableAction": "Disable"
     },
     "reportes": {
       "heading": "Reports",
@@ -3569,6 +3705,42 @@
       "beginner": "Beginner",
       "intermediate": "Intermediate",
       "advanced": "Advanced"
+    }
+  },
+  "tracking": {
+    "type": {
+      "alcohol": "Alcohol",
+      "drugs": "Drugs",
+      "gambling": "Gambling and betting",
+      "other": "Other"
+    },
+    "status": {
+      "pending": "Awaiting acceptance",
+      "active": "Active",
+      "left": "Left",
+      "closed": "Closed"
+    },
+    "mood": {
+      "good": "Good",
+      "soSo": "So-so",
+      "hard": "Hard"
+    },
+    "urge": {
+      "none": "None",
+      "little": "A little",
+      "quite": "Quite a lot",
+      "aLot": "A lot"
+    },
+    "flags": {
+      "mainGoal": "Main goal met",
+      "sport": "Sport",
+      "wentOut": "Went out",
+      "metSomeone": "Met someone",
+      "popyplanPlan": "Popyplan plan",
+      "sleptWell": "Slept well",
+      "routine": "Followed their routine",
+      "therapyMeeting": "Therapy or meeting",
+      "feelGood": "Felt good"
     }
   }
 }

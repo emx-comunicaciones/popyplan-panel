@@ -428,6 +428,32 @@ export const PROGRAMS = {
 } as const;
 
 /**
+ * `docs/PANEL.md` §18.3 y §18.6 (programa de seguimiento, datos de salud).
+ * Para quien no puede usarlas, **todas responden 404** (nunca 403: el
+ * backend no revela que el programa existe). Alta, cambios y baja:
+ * `titular`/`moderador` (`gestionar_seguimiento`) de una entidad con
+ * `tracking_program_enabled`; nunca traen datos de seguimiento. Lo
+ * compartido y proponer objetivos: solo el referente asignado a una
+ * inscripción aceptada, y cada lectura queda en `AuditLog`.
+ */
+export const TRACKING = {
+  /** `GET`/`POST /api/panel/entidad/{org_id}/program/enrollments/` (`?status=&user=`, array plano). */
+  ENROLLMENTS: (orgId: number | string) => `/api/panel/entidad/${orgId}/program/enrollments/`,
+  /** `GET`/`PATCH .../program/enrollments/{id}/ {tracking_type?, tracking_label?, referent?}`. */
+  ENROLLMENT: (orgId: number | string, enrollmentId: number | string) =>
+    `/api/panel/entidad/${orgId}/program/enrollments/${enrollmentId}/`,
+  /** `POST .../program/enrollments/{id}/close/`: baja por la entidad (`closed`). */
+  ENROLLMENT_CLOSE: (orgId: number | string, enrollmentId: number | string) =>
+    `/api/panel/entidad/${orgId}/program/enrollments/${enrollmentId}/close/`,
+  /** `GET .../program/people/{user_id}/shared/`: lo consentido, solo el referente asignado (auditado). */
+  SHARED: (orgId: number | string, userId: number | string) =>
+    `/api/panel/entidad/${orgId}/program/people/${userId}/shared/`,
+  /** `POST .../program/people/{user_id}/goals/ {title, week?}`: el referente propone un objetivo semanal. */
+  PROPOSE_GOAL: (orgId: number | string, userId: number | string) =>
+    `/api/panel/entidad/${orgId}/program/people/${userId}/goals/`,
+} as const;
+
+/**
  * `docs/SEGURIDAD_Y_MODERACION.md` §7: verificación por niveles, cola de
  * revisión (`verifier`/`superadmin`).
  */

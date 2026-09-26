@@ -57,6 +57,9 @@ export default async function EntidadLayout({
   // está pedida aquí arriba, así que no cuesta ninguna petición más.
   const menu = entidadMenuFor(membership.role, {
     isOnCall: org?.on_call_user === session.me.id,
+    // Programa de seguimiento: solo titular/moderador y solo con el
+    // servicio encendido (`entidadMenuFor` decide el rol).
+    trackingEnabled: org?.tracking_program_enabled === true,
   });
   // Cabecera de entidad con color de marca (tarea W1, Fase 6): el color
   // de la entidad no pinta texto directamente. `readableOn` calcula el

@@ -5,7 +5,7 @@ import { buildOrganization } from "@/test-utils/fixtures/organization";
 const serverFetchMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/api/serverFetch", () => ({ serverFetch: serverFetchMock }));
 
-import { getServerOrganization, isOnCallUser } from "./organization";
+import { getServerOrganization, isOnCallUser, isTrackingProgramEnabled } from "./organization";
 
 afterEach(() => {
   serverFetchMock.mockReset();
@@ -66,5 +66,33 @@ describe("isOnCallUser", () => {
     serverFetchMock.mockResolvedValue({ ok: false, status: 503, body: null });
 
     expect(await isOnCallUser(7, session)).toBe(false);
+  });
+});
+
+describe("isTrackingProgramEnabled", () => {
+  const session = { token: "token-123" };
+
+  it("solo es cierto con `tracking_program_enabled: true`", async () => {
+    serverFetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: buildOrganization({ id: 7, tracking_program_enabled: true }),
+    });
+    expect(await isTrackingProgramEnabled(7, session)).toBe(true);
+
+    serverFetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: buildOrganization({ id: 7, tracking_program_enabled: false }),
+    });
+    expect(await isTrackingProgramEnabled(7, session)).toBe(false);
+  });
+
+  it("es falso si la clave no viene (sin rol) o la ficha no se puede leer", async () => {
+    serverFetchMock.mockResolvedValue({ ok: true, status: 200, data: buildOrganization({ id: 7 }) });
+    expect(await isTrackingProgramEnabled(7, session)).toBe(false);
+
+    serverFetchMock.mockResolvedValue({ ok: false, status: 503, body: null });
+    expect(await isTrackingProgramEnabled(7, session)).toBe(false);
   });
 });
