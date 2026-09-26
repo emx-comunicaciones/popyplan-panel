@@ -29,12 +29,6 @@ export const EVENT_CAPACITY_TOO_LOW_ERROR_KEY = "entidad.actividadForm.errors.ca
 export const EVENT_COMMUNITY_REQUIRED_ERROR_KEY = "entidad.actividadForm.errors.communityRequired";
 
 /**
- * `startsAtIso`/`originalStartsAtIso` son ISO (ya convertidos desde el
- * `datetime-local` del formulario). Al editar, si no cambió respecto al
- * valor original, no hay nada que validar — no se va a reenviar (ver
- * `EventUpdateFields` en `lib/api/types.ts`).
- */
-/**
  * ¿Son `a` y `b` el mismo minuto?
  *
  * Un `<input type="datetime-local">` solo rehidrata hasta el minuto, así
@@ -66,6 +60,10 @@ export function sameMinute(a: string, b: string): boolean {
  * «La actividad tiene que empezar en el futuro»— porque el valor guardado
  * lleva segundos y el input no los rehidrata (auditoría del panel,
  * 2026-09-24).
+ *
+ * `startsAtIso`/`originalStartsAtIso` son ISO, ya convertidos desde el
+ * `datetime-local` del formulario; si no cambió, tampoco se reenvía (ver
+ * `EventUpdateFields` en `lib/api/types.ts`).
  */
 export function validateEventStartsAt(
   startsAtIso: string,
