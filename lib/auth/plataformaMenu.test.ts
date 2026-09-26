@@ -14,14 +14,20 @@ describe("plataformaMenuFor", () => {
       "inicio",
       "entidades",
       "usuarios",
+      "comunidades",
+      "actividades",
       "reportes",
       "bloqueos",
+      "resenas",
+      "chats",
+      "notificaciones",
       "ayuda",
       "verificaciones",
       "roles",
       "auditoria",
       "metricas",
       "suscripciones",
+      "nomencladores",
     ]);
   });
 

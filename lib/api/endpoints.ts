@@ -526,3 +526,124 @@ export const PLACES = {
    */
   LIST: () => "/api/places/",
 } as const;
+
+// ---------------------------------------------------------------------------
+// Admin de plataforma, bloque 3: el resto del admin antiguo (2026-09-26).
+// Todas estas rutas dan el acceso amplio por `is_staff` (`IsAdminUser` o
+// un `user.is_staff` en el propio código), nunca por `PlatformRole`; en
+// el panel solo las usa `superadmin` (`lib/auth/plataformaMenu.ts`).
+// Ninguna escribe en `AuditLog` (ver CLAUDE.md, «Admin de plataforma:
+// el resto del admin antiguo»).
+// ---------------------------------------------------------------------------
+
+/**
+ * Publicaciones de comunidad vistas por la plataforma. El listado de
+ * comunidades es el mismo `COMMUNITIES.LIST`: a `is_staff` el backend le
+ * sirve **todas** (privadas, de entidad, de los dos espacios e
+ * inactivas), salvo las de entidades que esa cuenta haya ocultado a
+ * título personal. Desactivar es `PATCH COMMUNITIES.DETAIL {is_active}`
+ * y borrar `DELETE` (borrado real), los dos `is_staff`.
+ */
+export const COMMUNITY_POSTS = {
+  /**
+   * `GET /api/community-posts/?community=&is_active=&page=`
+   * (`communities/unified_viewset.py::AdminCommunityPostViewSet`,
+   * `IsAdminUser`): activas y ocultas, de la más reciente a la más
+   * antigua, paginadas de 20 en 20. `?search=` no hace nada.
+   */
+  LIST: () => "/api/community-posts/",
+  /**
+   * `PATCH`/`DELETE /api/community-posts/{id}/`: ocultar/mostrar es
+   * `PATCH {is_active}` (no hay `is_hidden`); `DELETE` es borrado real.
+   */
+  DETAIL: (id: string) => `/api/community-posts/${id}/`,
+} as const;
+
+/**
+ * Actividades vistas por la plataforma. **No hay un listado global**:
+ * `GET /api/events/` exige `?community=` (400 sin él) y a `is_staff` le
+ * da todas las de esa comunidad, pasadas y canceladas incluidas
+ * (`EVENTS.LIST`). Detalle y cancelación son `EVENTS.DETAIL`/
+ * `EVENTS.CANCEL`, que `Event.is_organizer` concede a `is_staff`.
+ */
+export const PLATFORM_EVENTS = {
+  /**
+   * `GET /api/events/agenda/?from=&to=&page=` (`EventViewSet.agenda`):
+   * solo `scheduled` desde `from` (por defecto, ahora), con audiencia
+   * `anyone` u `organization` de entidades de las que la cuenta sea
+   * miembro — sin atajo para staff. Paginada de 20 en 20.
+   */
+  AGENDA: () => "/api/events/agenda/",
+} as const;
+
+export const REVIEWS = {
+  /**
+   * `GET /api/reviews/?event=&page=` (`reviews/unified_viewset.py
+   * ::ReviewViewSet`): a `is_staff` le da **todas**, 20 por página. El
+   * esquema la envuelve dos veces; el cuerpo real es la paginación
+   * estándar.
+   */
+  LIST: () => "/api/reviews/",
+  /**
+   * `DELETE /api/reviews/{id}/`: autor o `is_staff`. Responde **200**
+   * `{"message": …}` (no el 204 del esquema); el 403 trae `{"error": …}`.
+   */
+  DETAIL: (id: string) => `/api/reviews/${id}/`,
+} as const;
+
+export const ADMIN_CHATS = {
+  /**
+   * `GET /api/admin/chats/?chat_type=&search=&page=`
+   * (`chats/admin_viewset.py::AdminChatViewSet`, `IsAdminUser`): salas
+   * activas, la última actualizada primero. `?search=` solo mira `name`.
+   * En el listado `last_message` llega **siempre `null`**.
+   */
+  LIST: () => "/api/admin/chats/",
+  /** `GET /api/admin/chats/{id}/` — la sala, con sus participantes. */
+  DETAIL: (id: string) => `/api/admin/chats/${id}/`,
+  /**
+   * `GET`/`POST /api/admin/chats/{id}/messages/`: `GET` es un **array
+   * plano** (del más antiguo al más reciente); `POST {content}` responde
+   * 201 con el mensaje, que sale con la cuenta **real** de quien lo manda
+   * y no se audita. El esquema dice `ChatRoom` en los dos sentidos.
+   */
+  MESSAGES: (id: string) => `/api/admin/chats/${id}/messages/`,
+} as const;
+
+export const NOTIFICATIONS = {
+  /**
+   * `POST /api/notifications/send/` (`NotificationViewSet.send`,
+   * `IsAdminUser`): `{title, message, notification_type, priority?,
+   * target: "user"|"all", user_id?}`. A una persona: 201 `{detail,
+   * recipients}`; a todas: 202 `{detail}` (encolado). Nunca aplica
+   * plantillas.
+   */
+  SEND: () => "/api/notifications/send/",
+  /** `GET`/`POST /api/notification-templates/` (`IsAdminUser`, 20 por página). */
+  TEMPLATES: () => "/api/notification-templates/",
+  /** `PATCH`/`DELETE /api/notification-templates/{id}/`. */
+  TEMPLATE: (id: number | string) => `/api/notification-templates/${id}/`,
+} as const;
+
+/**
+ * Nomencladores vivos del backend. Tres formas de listado: array plano
+ * (`/api/catalogs/*` y subcategorías de comunidad), paginación estándar
+ * (categorías de comunidad) y `{results, count}` sin paginar (categorías
+ * y subcategorías de actividad). Escritura `IsAdminUser` en todos.
+ */
+export const CATALOGS = {
+  HOBBY_CATEGORIES: () => "/api/catalogs/hobby-categories/",
+  HOBBY_CATEGORY: (id: number | string) => `/api/catalogs/hobby-categories/${id}/`,
+  HOBBIES: () => "/api/catalogs/hobbies/",
+  HOBBY: (id: number | string) => `/api/catalogs/hobbies/${id}/`,
+  LANGUAGES: () => "/api/catalogs/languages/",
+  LANGUAGE: (id: number | string) => `/api/catalogs/languages/${id}/`,
+  COMMUNITY_CATEGORIES: () => "/api/community-categories/",
+  COMMUNITY_CATEGORY: (id: string) => `/api/community-categories/${id}/`,
+  COMMUNITY_SUBCATEGORIES: () => "/api/community-subcategories/",
+  COMMUNITY_SUBCATEGORY: (id: string) => `/api/community-subcategories/${id}/`,
+  EVENT_CATEGORIES: () => "/api/event-categories/",
+  EVENT_CATEGORY: (id: number | string) => `/api/event-categories/${id}/`,
+  EVENT_SUBCATEGORIES: () => "/api/event-subcategories/",
+  EVENT_SUBCATEGORY: (id: string) => `/api/event-subcategories/${id}/`,
+} as const;

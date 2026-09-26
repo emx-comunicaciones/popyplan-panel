@@ -84,14 +84,20 @@
       "inicio": "Inici",
       "entidades": "Entitats",
       "usuarios": "Usuaris",
+      "comunidades": "Comunitats",
+      "actividades": "Activitats",
       "reportes": "Informes (moderació)",
       "bloqueos": "Bloquejos",
+      "resenas": "Ressenyes",
+      "chats": "Xats",
+      "notificaciones": "Notificacions",
       "ayuda": "Ajuda",
       "verificaciones": "Verificacions",
       "roles": "Rols",
       "auditoria": "Auditoria",
       "metricas": "Mètriques",
-      "suscripciones": "Subscripcions"
+      "suscripciones": "Subscripcions",
+      "nomencladores": "Nomenclàtors"
     }
   },
   "layout": {
@@ -254,6 +260,30 @@
       },
       "bloqueos": {
         "title": "Bloquejos"
+      },
+      "comunidades": {
+        "title": "Comunitats"
+      },
+      "comunidadFicha": {
+        "title": "Fitxa de la comunitat"
+      },
+      "actividades": {
+        "title": "Activitats"
+      },
+      "resenas": {
+        "title": "Ressenyes"
+      },
+      "chats": {
+        "title": "Xats"
+      },
+      "chatFicha": {
+        "title": "Conversa"
+      },
+      "notificaciones": {
+        "title": "Notificacions"
+      },
+      "nomencladores": {
+        "title": "Nomenclàtors"
       }
     }
   },
@@ -1357,6 +1387,53 @@
       "desconocido": "No s'han pogut carregar els bloquejos.",
       "revokeNoEncontrado": "Aquest bloqueig ja no existeix.",
       "revokeDesconocido": "No s'ha pogut revocar el bloqueig."
+    },
+    "platformEvents": {
+      "invalido": "Revisa els filtres.",
+      "sinAcceso": "No tens accés a aquestes activitats.",
+      "noEncontrado": "Aquesta pàgina o aquesta comunitat ja no existeix.",
+      "desconocido": "No s'han pogut carregar les activitats.",
+      "communitySearch": "No s'han pogut cercar comunitats.",
+      "cancelSinAcceso": "No pots cancel·lar aquesta activitat.",
+      "cancelNoEncontrado": "Aquesta activitat ja no existeix.",
+      "cancelDesconocido": "No s'ha pogut cancel·lar l'activitat.",
+      "detailSinAcceso": "No tens accés a aquesta activitat.",
+      "detailDesconocido": "No s'ha pogut carregar l'activitat."
+    },
+    "adminChats": {
+      "sinAcceso": "Només el personal de plataforma veu els xats.",
+      "noEncontrado": "Aquesta conversa o aquesta pàgina ja no existeix.",
+      "desconocido": "No s'han pogut carregar els xats.",
+      "sendInvalido": "Escriu un missatge.",
+      "sendDesconocido": "No s'ha pogut enviar el missatge."
+    },
+    "platformCommunities": {
+      "invalido": "Revisa les dades.",
+      "sinAcceso": "Només el personal de plataforma pot fer això.",
+      "noEncontrado": "Aquesta comunitat o publicació ja no existeix.",
+      "paginaInexistente": "Aquesta pàgina del llistat ja no existeix.",
+      "desconocido": "No s'ha pogut completar l'acció."
+    },
+    "reviewsAdmin": {
+      "sinAcceso": "Només l'autor o el personal de plataforma poden fer això.",
+      "noEncontrado": "Aquesta ressenya ja no existeix.",
+      "paginaInexistente": "Aquesta pàgina del llistat ja no existeix.",
+      "desconocido": "No s'han pogut carregar o esborrar les ressenyes."
+    },
+    "adminNotifications": {
+      "invalido": "Revisa les dades.",
+      "sinAcceso": "Només el personal de plataforma gestiona les notificacions.",
+      "noEncontrado": "Ja no existeix.",
+      "paginaInexistente": "Aquesta pàgina ja no existeix.",
+      "desconocido": "No s'ha pogut completar l'acció."
+    },
+    "catalogs": {
+      "invalido": "Revisa les dades.",
+      "sinAcceso": "Només el personal de plataforma edita els nomenclàtors.",
+      "noEncontrado": "Aquest element ja no existeix.",
+      "conflictoServidor": "El servidor no ho ha acceptat: potser l'element està en ús o el nom està repetit.",
+      "demasiadasPaginas": "Hi ha massa categories per carregar-les totes.",
+      "desconocido": "No s'ha pogut completar l'acció."
     }
   },
   "reports": {
@@ -2073,6 +2150,155 @@
           "plataforma.auditoria"
         ],
         "audience": "Només superadmin."
+      },
+      "actividades": {
+        "title": "Activitats",
+        "summary": "Consultar activitats de Popyplan i cancel·lar-ne una si cal.",
+        "details": "No hi ha un llistat de totes les activitats. Per defecte veus l'agenda: activitats programades des d'avui, obertes o d'entitats a les quals pertanys. Per veure totes les d'una comunitat, passades i cancel·lades incloses, cerca-la a dalt o entra des de la seva fitxa. Cancel·lar avisa les persones inscrites i en llista d'espera, no es pot desfer i no queda registrat a Auditoria.",
+        "actions": [
+          "Veure l'agenda per dates",
+          "Veure les activitats d'una comunitat",
+          "Veure el detall d'una activitat",
+          "Cancel·lar una activitat programada"
+        ],
+        "tips": [
+          "Cancel·la només amb un motiu clar: la gent ja s'ha organitzat.",
+          "Per a una activitat passada o cancel·lada, cerca-la per la seva comunitat."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.resenas"
+        ],
+        "audience": "Només superadmin."
+      },
+      "chats": {
+        "title": "Xats",
+        "summary": "Converses de l'app, per atendre casos de suport.",
+        "details": "Llista les sales de xat actives, de la darrera actualitzada a la primera, de 20 en 20. La cerca només mira el nom de la sala, que els xats entre dues persones no solen tenir. Obrir una conversa és accés de suport: fes-lo servir només quan hi hagi un motiu, perquè el sistema no registra a Auditoria qui la llegeix.",
+        "actions": [
+          "Cercar i filtrar xats",
+          "Obrir una conversa"
+        ],
+        "tips": [
+          "Obre una conversa només amb un motiu de suport.",
+          "Per localitzar una persona, comença per Usuaris o Informes (moderació)."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.reportes"
+        ],
+        "audience": "Només superadmin."
+      },
+      "chatFicha": {
+        "title": "Conversa",
+        "summary": "Llegir una conversa i respondre com a suport.",
+        "details": "Mostra els participants i els missatges, del més antic al més recent. El que responguis surt amb el teu propi compte i el teu àlies, no com a «Popyplan»; l'altra persona rep un avís només si la conversa està acceptada i no li arriba en directe si té el xat obert. El sistema no registra a Auditoria ni la lectura ni la resposta.",
+        "actions": [
+          "Llegir els missatges",
+          "Respondre com a suport"
+        ],
+        "tips": [
+          "Presenta't com a suport de Popyplan en respondre.",
+          "No demanis ni comparteixis mai telèfons: l'app no els desa."
+        ],
+        "related": [
+          "plataforma.chats",
+          "plataforma.usuarios"
+        ],
+        "audience": "Només superadmin."
+      },
+      "comunidades": {
+        "title": "Comunitats",
+        "summary": "Totes les comunitats de Popyplan, per cercar-les i obrir-ne la fitxa.",
+        "details": "La plataforma veu totes les comunitats: obertes, privades, d'entitat, dels dos espais de famílies i les desactivades. Només hi falten les d'entitats que hagis amagat des del teu compte. El llistat va de la més recent a la més antiga, de 20 en 20, i la cerca mira el nom i la descripció. Si està activa o desactivada només es veu a la fitxa.",
+        "actions": [
+          "Cercar comunitats",
+          "Obrir la fitxa d'una comunitat"
+        ],
+        "tips": [
+          "Per desactivar, esborrar o moderar publicacions, entra a la fitxa."
+        ],
+        "related": [
+          "plataforma.actividades",
+          "plataforma.usuarios"
+        ],
+        "audience": "Només superadmin."
+      },
+      "comunidadFicha": {
+        "title": "Fitxa de la comunitat",
+        "summary": "Dades, membres i publicacions d'una comunitat, amb les accions de moderació.",
+        "details": "Desactivar amaga la comunitat a l'app sense esborrar res i es pot desfer; esborrar l'elimina de debò, amb els seus membres, publicacions i xat. Els membres es gestionen igual que des de l'entitat: aprovar o rebutjar sol·licituds, canviar el rol i expulsar. Una publicació es pot amagar (es desfà amb «Mostra») o esborrar per sempre. Cap d'aquestes accions queda registrada a Auditoria.",
+        "actions": [
+          "Desactivar o reactivar la comunitat",
+          "Gestionar membres i sol·licituds",
+          "Amagar o esborrar publicacions",
+          "Esborrar la comunitat"
+        ],
+        "tips": [
+          "Davant el dubte, desactiva o amaga: esborrar no té marxa enrere.",
+          "Com que no queda a Auditoria, anota a part el motiu d'una retirada important."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.actividades"
+        ],
+        "audience": "Només superadmin."
+      },
+      "resenas": {
+        "title": "Ressenyes",
+        "summary": "Totes les ressenyes que la gent deixa a les activitats, i esborrar-les.",
+        "details": "El llistat porta totes les ressenyes, de 20 en 20, de la més recent a la més antiga. Cada fila diu qui la va escriure, la valoració de l'1 al 5 i el comentari; la ressenya no porta el títol de l'activitat. Esborrar elimina la ressenya de debò, no es pot desfer i no queda a Auditoria.",
+        "actions": [
+          "Revisar les ressenyes",
+          "Esborrar una ressenya"
+        ],
+        "tips": [
+          "Esborra només ressenyes que incompleixin les normes: una mala valoració no és motiu."
+        ],
+        "related": [
+          "plataforma.actividades",
+          "plataforma.usuarios"
+        ],
+        "audience": "Només superadmin."
+      },
+      "notificaciones": {
+        "title": "Notificacions",
+        "summary": "Enviar una notificació a una persona o a totes, i gestionar les plantilles del sistema.",
+        "details": "Un enviament a una persona arriba al moment; un a totes es posa a la cua i arriba a tots els comptes actius, personal inclòs, sense recompte final. El que s'envia des d'aquí mai no fa servir plantilles i no queda a Auditoria. Les plantilles només canvien les notificacions que genera el mateix sistema del seu tipus (si n'hi ha diverses d'actives del mateix tipus, guanya la més antiga); el seu text va en anglès amb marcadors entre claus i es tradueix al servidor.",
+        "actions": [
+          "Enviar una notificació a una persona",
+          "Enviar una notificació a totes",
+          "Crear, editar o esborrar plantilles"
+        ],
+        "tips": [
+          "Abans d'enviar a totes, prova el text enviant-te'l a tu.",
+          "Per deixar de fer servir una plantilla sense perdre-la, desactiva-la."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.auditoria"
+        ],
+        "audience": "Només superadmin."
+      },
+      "nomencladores": {
+        "title": "Nomenclàtors",
+        "summary": "Els catàlegs de l'app: idiomes, aficions i categories de comunitats i activitats.",
+        "details": "Tria un nomenclàtor i edita'n els elements. També es veuen els inactius, que l'app ja no ofereix. Esborrar és definitiu i de vegades arrossega: una categoria de comunitat o d'activitat s'emporta les seves subcategories, i una categoria d'aficions amb aficions no es deixa esborrar. El servidor també rebutja un nom repetit dins la mateixa categoria. La imatge de les categories de comunitat no es puja des d'aquí.",
+        "actions": [
+          "Triar un nomenclàtor",
+          "Afegir o editar elements",
+          "Activar o desactivar un element",
+          "Esborrar un element"
+        ],
+        "tips": [
+          "En cas de dubte, desactiva en lloc d'esborrar.",
+          "L'ordre decideix com es llisten a l'app."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.actividades"
+        ],
+        "audience": "Només superadmin."
       }
     }
   },
@@ -2607,6 +2833,334 @@
       "revokeDescription": "Les dues persones es tornaran a veure a l'app. El motiu queda a Auditoria.",
       "reasonLabel": "Motiu",
       "reasonRequired": "Escriu el motiu de la revocació."
+    },
+    "actividades": {
+      "heading": "Activitats",
+      "intro": "Activitats de Popyplan: l'agenda pública o totes les d'una comunitat concreta.",
+      "noAccessDescription": "Només superadmin revisa les activitats des del tauler.",
+      "communitySearchLabel": "Cercar comunitat",
+      "noCommunityMatches": "Cap comunitat hi coincideix.",
+      "fromLabel": "Des de",
+      "toLabel": "Fins a",
+      "agendaHint": "Agenda: només activitats programades des d'avui (o des de «Des de»), obertes o d'entitats a les quals pertanys. No hi ha un llistat de totes: per veure les passades o cancel·lades, tria una comunitat.",
+      "communityMode": "Totes les activitats de «{name}», passades i cancel·lades incloses.",
+      "communityModeUnnamed": "Totes les activitats de la comunitat triada, passades i cancel·lades incloses.",
+      "backToAgenda": "Tornar a l'agenda",
+      "loadError": "No s'han pogut carregar les activitats",
+      "emptyTitle": "No hi ha activitats amb aquests filtres",
+      "tableCaption": "Activitats",
+      "titleHeader": "Activitat",
+      "startsHeader": "Comença",
+      "endsHeader": "Acaba",
+      "statusHeader": "Estat",
+      "statusScheduled": "Programada",
+      "statusCancelled": "Cancel·lada",
+      "statusCompleted": "Celebrada",
+      "audienceHeader": "Audiència",
+      "audienceAnyone": "Oberta",
+      "audienceCommunity": "Només la comunitat",
+      "audienceOrganization": "Només l'entitat",
+      "ownerHeader": "Qui la publica",
+      "organizerHeader": "Organitza",
+      "communityHeader": "Comunitat",
+      "categoryHeader": "Categoria",
+      "placeHeader": "Municipi",
+      "addressHeader": "Adreça",
+      "seatsHeader": "Places",
+      "seats": "{taken} de {capacity}",
+      "descriptionHeader": "Descripció",
+      "actionsHeader": "Accions",
+      "view": "Veure",
+      "detailTitle": "Activitat",
+      "cancel": "Cancel·lar l'activitat",
+      "keep": "No cancel·lar",
+      "cancelTitle": "Vols cancel·lar aquesta activitat?",
+      "cancelDescription": "Es cancel·la «{title}» i s'avisa totes les persones inscrites i en llista d'espera. No es pot desfer i no queda a Auditoria.",
+      "previous": "Anterior",
+      "next": "Següent",
+      "count": "{count, plural, one {# activitat} other {# activitats}}"
+    },
+    "chats": {
+      "heading": "Xats",
+      "intro": "Converses de l'app, per atendre casos de suport.",
+      "noAccessDescription": "Només superadmin accedeix als xats des del tauler.",
+      "searchLabel": "Cercar pel nom de la sala",
+      "searchHint": "La cerca només mira el nom de la sala; els xats entre dues persones no solen tenir nom.",
+      "typeLabel": "Tipus",
+      "typeAll": "Tots",
+      "typeIndividual": "Entre dues persones",
+      "typeGroup": "De grup",
+      "loadError": "No s'han pogut carregar els xats",
+      "emptyTitle": "No hi ha xats amb aquests filtres",
+      "tableCaption": "Xats",
+      "nameHeader": "Sala",
+      "sourceHeader": "Origen",
+      "participantsHeader": "Participants",
+      "previous": "Anterior",
+      "next": "Següent",
+      "count": "{count, plural, one {# xat} other {# xats}}",
+      "sourceEvent": "Activitat",
+      "sourceCommunity": "Comunitat",
+      "sourceTreasureHunt": "Caça del tresor"
+    },
+    "chatFicha": {
+      "heading": "Conversa",
+      "backToList": "Tornar als xats",
+      "noticeTitle": "Accés de suport: obre-la només amb un motiu de suport.",
+      "noticeIdentity": "El que responguis apareix amb el teu propi compte i el teu àlies, no com a «Popyplan».",
+      "noticeDelivery": "L'altra persona rep un avís només si la conversa està acceptada, i no li arriba en directe si té el xat obert.",
+      "noticeAudit": "El sistema no registra a Auditoria ni que has llegit la conversa ni que has respost.",
+      "participantsTitle": "Participants",
+      "roomLoadError": "No s'ha pogut carregar la conversa",
+      "noParticipants": "Sense participants visibles.",
+      "blockedHint": "No hi apareixen les persones que el teu compte tingui bloquejades o que t'hagin bloquejat.",
+      "messagesTitle": "Missatges",
+      "messagesLoadError": "No s'han pogut carregar els missatges",
+      "noMessages": "Aquesta conversa no té missatges.",
+      "systemSender": "Sistema",
+      "deletedMessage": "Missatge esborrat",
+      "imageMessage": "[imatge]",
+      "replyTitle": "Respondre com a suport",
+      "replyLabel": "Missatge",
+      "send": "Enviar",
+      "sent": "Missatge enviat."
+    },
+    "comunidades": {
+      "heading": "Comunitats",
+      "noAccessDescription": "Només el superadmin gestiona les comunitats des del tauler.",
+      "searchLabel": "Cerca (nom o descripció)",
+      "listHint": "Hi surten totes les comunitats, també les privades, les d'entitat, les de famílies i les desactivades; si has amagat una entitat des del teu compte, les seves comunitats no hi apareixen. L'estat activa/desactivada es veu a la fitxa.",
+      "loadError": "No s'han pogut carregar les comunitats",
+      "emptyTitle": "No hi ha comunitats amb aquesta cerca",
+      "tableCaption": "Comunitats de Popyplan",
+      "nameHeader": "Nom",
+      "ownerHeader": "Propietària",
+      "ownerOrganization": "Entitat",
+      "ownerProfile": "Persona",
+      "visibilityHeader": "Visibilitat",
+      "visibilityOpen": "Oberta",
+      "visibilityOnRequest": "Amb sol·licitud",
+      "visibilityPrivateListed": "Privada però visible",
+      "visibilityPrivate": "Privada",
+      "spaceHeader": "Espai",
+      "spaceMembers": "Membres",
+      "spaceFamilies": "Famílies",
+      "membersHeader": "Membres",
+      "createdHeader": "Creada",
+      "count": "{count, plural, one {# comunitat} other {# comunitats}}",
+      "stateHeader": "Estat",
+      "activeBadge": "Activa",
+      "inactiveBadge": "Desactivada"
+    },
+    "comunidadFicha": {
+      "heading": "Fitxa de la comunitat",
+      "backToList": "Torna a les comunitats",
+      "notFound": "Aquesta comunitat no existeix o ja s'ha esborrat",
+      "loadError": "No s'ha pogut carregar la comunitat",
+      "placeLabel": "Municipi",
+      "categoryLabel": "Categoria",
+      "descriptionLabel": "Descripció",
+      "actionsTitle": "Accions",
+      "deactivate": "Desactiva",
+      "reactivate": "Reactiva",
+      "viewEvents": "Mostra les seves activitats",
+      "delete": "Esborra la comunitat",
+      "membersTitle": "Membres i sol·licituds",
+      "postsTitle": "Publicacions",
+      "deactivateTitle": "Vols desactivar aquesta comunitat?",
+      "reactivateTitle": "Vols reactivar aquesta comunitat?",
+      "deactivateDescription": "Deixa de veure's a l'app per als seus membres i al descobriment. No s'esborra res: es pot reactivar.",
+      "reactivateDescription": "Torna a veure's a l'app amb els membres i les publicacions de sempre.",
+      "deleteTitle": "Vols esborrar aquesta comunitat?",
+      "deleteDescription": "S'esborra «{name}» amb els seus membres, publicacions i xat. No es pot desfer. Si només vols que deixi de veure's, desactiva-la.",
+      "postsFilterLabel": "Mostra",
+      "postsFilterAll": "Totes",
+      "postsFilterVisible": "Visibles",
+      "postsFilterHidden": "Amagades",
+      "postsLoadError": "No s'han pogut carregar les publicacions",
+      "postsEmpty": "No hi ha publicacions amb aquest filtre",
+      "postsTableCaption": "Publicacions de la comunitat",
+      "postAuthorHeader": "Autoria",
+      "postContentHeader": "Contingut",
+      "postDateHeader": "Data",
+      "postStateHeader": "Estat",
+      "postActionsHeader": "Accions",
+      "postsCount": "{count, plural, one {# publicació} other {# publicacions}}",
+      "postVideoOnly": "[Només vídeo]",
+      "postImageOnly": "[Només imatge]",
+      "postEmptyContent": "[Sense text]",
+      "postStats": "{likes} m'agrada · {comments} comentaris",
+      "postVisible": "Visible",
+      "postHidden": "Amagada",
+      "hidePost": "Amaga",
+      "showPost": "Mostra",
+      "deletePost": "Esborra",
+      "deletePostTitle": "Vols esborrar aquesta publicació?",
+      "deletePostDescription": "S'esborra la publicació de {author} amb els seus comentaris. No es pot desfer; per retirar-la sense esborrar-la, amaga-la."
+    },
+    "resenas": {
+      "heading": "Ressenyes",
+      "intro": "Totes les ressenyes d'activitats de Popyplan, de la més recent a la més antiga.",
+      "noAccessDescription": "Només el superadmin gestiona les ressenyes des del tauler.",
+      "loadError": "No s'han pogut carregar les ressenyes",
+      "emptyTitle": "Encara no hi ha ressenyes",
+      "tableCaption": "Ressenyes",
+      "reviewerHeader": "Qui l'escriu",
+      "ratingHeader": "Valoració",
+      "rating": "{rating} de 5",
+      "commentHeader": "Comentari",
+      "typeHeader": "Tipus",
+      "typeEvent": "Activitat",
+      "typeTeam": "Equip",
+      "dateHeader": "Data",
+      "actionsHeader": "Accions",
+      "delete": "Esborra",
+      "count": "{count, plural, one {# ressenya} other {# ressenyes}}",
+      "deleteTitle": "Vols esborrar aquesta ressenya?",
+      "deleteDescription": "S'esborra la ressenya de {name}. No es pot desfer."
+    },
+    "notificaciones": {
+      "noAccessDescription": "Només el superadmin envia notificacions i gestiona les seves plantilles.",
+      "heading": "Notificacions",
+      "intro": "Enviar una notificació a una persona o a totes, i gestionar les plantilles de les notificacions del sistema.",
+      "sectionsLegend": "Seccions de notificacions",
+      "tabSend": "Enviar",
+      "tabTemplates": "Plantilles",
+      "sendTitle": "Enviar una notificació",
+      "sendHint": "Arriba a l'app com qualsevol altra notificació (i per push o correu si la persona ho té activat). Aquests enviaments mai no fan servir plantilles: s'envia el text tal com l'escriguis. No queden a Auditoria.",
+      "targetLabel": "Destinataris",
+      "targetUser": "Una persona",
+      "targetAll": "Totes les persones",
+      "searchLabel": "Cercar compte (correu o usuari)",
+      "recipientSelected": "S'enviarà a {name}.",
+      "recipientNone": "Tria un compte amb el cercador.",
+      "targetAllHint": "S'enviarà a tots els comptes actius de Popyplan, inclòs el personal de plataforma.",
+      "titleLabel": "Títol",
+      "messageLabel": "Missatge",
+      "typeLabel": "Tipus",
+      "priorityLabel": "Prioritat",
+      "sendAction": "Enviar notificació",
+      "sentQueued": "Enviament massiu a la cua: s'anirà lliurant en segon pla.",
+      "sentTo": "{count, plural, one {Enviada a # persona.} other {Enviada a # persones.}}",
+      "confirmAllTitle": "Enviar a totes les persones?",
+      "confirmUserTitle": "Enviar aquesta notificació?",
+      "confirmAllDescription": "La notificació arribarà a tots els comptes actius de Popyplan, inclòs el personal. No es pot desfer ni retirar després.",
+      "confirmUserDescription": "La notificació arribarà a {name}. No es pot retirar després.",
+      "types": {
+        "announcement": "Anunci",
+        "system": "Sistema",
+        "warning": "Advertiment",
+        "message": "Missatge",
+        "dmRequest": "Sol·licitud de missatge directe",
+        "planInvitation": "Invitació a una activitat",
+        "planUpdate": "Canvi en una activitat",
+        "planReminder": "Recordatori d'activitat",
+        "planCancelled": "Activitat cancel·lada",
+        "planCompleted": "Activitat acabada",
+        "reviewReceived": "Ressenya rebuda",
+        "reportResolved": "Denúncia resolta",
+        "helpRequest": "Petició d'ajuda",
+        "accountSuspended": "Compte suspès",
+        "survey": "Enquesta",
+        "supportHelpRequest": "Xarxa de suport: petició d'ajuda",
+        "supportLink": "Xarxa de suport: vincle"
+      },
+      "priorities": {
+        "low": "Baixa",
+        "medium": "Mitjana",
+        "high": "Alta",
+        "urgent": "Urgent"
+      },
+      "newTemplate": "Nova plantilla",
+      "editTemplate": "Editar plantilla",
+      "templateFormHint": "Escriu els textos en anglès, amb els marcadors entre claus ('{name}'): el sistema els tradueix a l'idioma de cada persona amb els catàlegs del servidor i omple els marcadors amb les dades de la notificació. Un text que no sigui en aquests catàlegs s'envia tal qual.",
+      "nameLabel": "Nom",
+      "titleTemplateLabel": "Títol (plantilla)",
+      "messageTemplateLabel": "Missatge (plantilla)",
+      "emailSubjectLabel": "Assumpte del correu (opcional)",
+      "emailBodyLabel": "Cos del correu (opcional)",
+      "activeLabel": "Activa",
+      "templatesHint": "Una plantilla només canvia les notificacions que genera el mateix sistema d'aquest tipus; si n'hi ha diverses d'actives del mateix tipus, es fa servir la més antiga. Mai no afecta el que s'envia des de la pestanya «Enviar».",
+      "templatesLoadError": "No s'han pogut carregar les plantilles",
+      "templatesEmpty": "No hi ha plantilles",
+      "templatesCaption": "Plantilles de notificació",
+      "stateHeader": "Estat",
+      "activeBadge": "Activa",
+      "inactiveBadge": "Inactiva",
+      "actionsHeader": "Accions",
+      "edit": "Editar",
+      "delete": "Esborrar",
+      "templatesCount": "{count, plural, one {# plantilla} other {# plantilles}}",
+      "deleteTitle": "Esborrar aquesta plantilla?",
+      "deleteDescription": "S'esborra «{name}». Les notificacions d'aquest tipus tornaran a fer servir el seu text per defecte (o una altra plantilla activa del mateix tipus). No es pot desfer.",
+      "activeHint": "Una plantilla nova neix inactiva: en activar-la, canvia a l'instant el text de totes les notificacions del sistema d'aquest tipus."
+    },
+    "nomencladores": {
+      "noAccessDescription": "Només el superadmin edita els nomenclàtors.",
+      "heading": "Nomenclàtors",
+      "intro": "Els catàlegs que fan servir l'app i el tauler: idiomes, aficions i categories de comunitats i activitats.",
+      "catalogLabel": "Nomenclàtor",
+      "catalogs": {
+        "languages": "Idiomes",
+        "hobbyCategories": "Categories d'aficions",
+        "hobbies": "Aficions",
+        "communityCategories": "Categories de comunitats",
+        "communitySubcategories": "Subcategories de comunitats",
+        "eventCategories": "Categories d'activitats",
+        "eventSubcategories": "Subcategories d'activitats"
+      },
+      "hints": {
+        "languages": "Idiomes que una persona pot marcar al seu perfil. El codi és l'ISO de dues lletres i no es repeteix.",
+        "hobbyCategories": "Grups d'aficions del perfil. El codi no es repeteix.",
+        "hobbies": "Aficions que una persona pot marcar al seu perfil, cadascuna a la seva categoria. El codi no es repeteix.",
+        "communityCategories": "Categories de comunitat. El nom no es repeteix. La imatge de la categoria no es puja des del tauler: editar-la aquí conserva la que tingui.",
+        "communitySubcategories": "Subcategories de comunitat, cadascuna a la seva categoria. No repeteixis un nom dins la mateixa categoria.",
+        "eventCategories": "Categories d'activitat, amb el seu tipus i una icona (un emoji o un text curt).",
+        "eventSubcategories": "Subcategories d'activitat, cadascuna a la seva categoria. No repeteixis un nom dins la mateixa categoria."
+      },
+      "deleteWarnings": {
+        "languages": "S'esborra l'idioma. Els perfils que el tenien marcat conserven el codi, que deixarà de mostrar-se. Si només vols deixar d'oferir-lo, desactiva'l.",
+        "hobbyCategories": "Una categoria amb aficions no es pot esborrar: esborra abans les seves aficions o, millor, desactiva-la.",
+        "hobbies": "S'esborra l'afició. Els perfils que la tenien marcada conserven el codi, que deixarà de mostrar-se. Si només vols deixar d'oferir-la, desactiva-la.",
+        "communityCategories": "S'esborren també totes les seves subcategories, i les comunitats que la feien servir es queden sense categoria. No es pot desfer; si dubtes, desactiva-la.",
+        "communitySubcategories": "S'esborra la subcategoria i es treu de les comunitats que la tenien. No es pot desfer.",
+        "eventCategories": "S'esborren també totes les seves subcategories, i les activitats que la feien servir es queden sense categoria. No es pot desfer; si dubtes, desactiva-la.",
+        "eventSubcategories": "S'esborra la subcategoria i es treu de les activitats que la tenien. No es pot desfer."
+      },
+      "fields": {
+        "code": "Codi",
+        "label": "Nom",
+        "order": "Ordre",
+        "emoji": "Emoji",
+        "parent": "Categoria",
+        "categoryType": "Tipus",
+        "description": "Descripció",
+        "icon": "Icona"
+      },
+      "categoryTypes": {
+        "sports": "Esport",
+        "cultural": "Cultura",
+        "leisure": "Lleure",
+        "travel": "Viatges",
+        "party": "Festa",
+        "motorcycle": "Motor",
+        "other": "Altres"
+      },
+      "chooseParent": "Tria una categoria",
+      "newItem": "Nou element",
+      "editItem": "Editar element",
+      "activeLabel": "Actiu",
+      "communitiesCountHeader": "Comunitats",
+      "stateHeader": "Estat",
+      "activeBadge": "Actiu",
+      "inactiveBadge": "Inactiu",
+      "actionsHeader": "Accions",
+      "edit": "Editar",
+      "delete": "Esborrar",
+      "loadError": "No s'ha pogut carregar el nomenclàtor",
+      "empty": "Aquest nomenclàtor és buit",
+      "count": "{count, plural, one {# element} other {# elements}}",
+      "deleteTitle": "Esborrar «{name}»?"
     }
   },
   "paraguas": {

@@ -179,3 +179,14 @@ español, y no se toca en esta ronda):
   euskera, «Baliogabetu» para *revocar* un bloqueo y «Erabiltzaileak»
   en el menú frente a «Kontuak» en el título de la página (el castellano
   hace la misma distinción, «Usuarios»/«Cuentas», a propósito).
+- **Admin de plataforma, bloque 3 (el resto del admin antiguo,
+  2026-09-26)**: las claves nuevas de
+  `menu.plataforma.{comunidades,actividades,resenas,chats,notificaciones,nomencladores}`,
+  `pages.plataforma.{comunidades,comunidadFicha,actividades,resenas,chats,chatFicha,notificaciones,nomencladores}`,
+  sus `plataforma.*`, sus `errors.*` y sus `help.plataforma.*` se
+  escribieron en `es`/`en` y se tradujeron a `eu`/`ca` de forma asistida.
+  **Pendientes de revisión nativa.** Dudas concretas: «Nomencladores»
+  (término de backoffice) como «Katalogoak»/«Nomenclàtors», e «Iritziak»
+  para *reseñas* en euskera; los nombres de los tipos de notificación
+  (`notification_type`) y de las categorías de actividad
+  (`category_type`), que son etiquetas de un contrato técnico.

@@ -84,14 +84,20 @@
       "inicio": "Inicio",
       "entidades": "Entidades",
       "usuarios": "Usuarios",
+      "comunidades": "Comunidades",
+      "actividades": "Actividades",
       "reportes": "Reportes",
       "bloqueos": "Bloqueos",
+      "resenas": "Reseñas",
+      "chats": "Chats",
+      "notificaciones": "Notificaciones",
       "ayuda": "Ayuda",
       "verificaciones": "Verificaciones",
       "roles": "Roles",
       "auditoria": "Auditoría",
       "metricas": "Métricas",
-      "suscripciones": "Suscripciones"
+      "suscripciones": "Suscripciones",
+      "nomencladores": "Nomencladores"
     }
   },
   "layout": {
@@ -254,6 +260,30 @@
       },
       "bloqueos": {
         "title": "Bloqueos"
+      },
+      "comunidades": {
+        "title": "Comunidades"
+      },
+      "comunidadFicha": {
+        "title": "Ficha de la comunidad"
+      },
+      "actividades": {
+        "title": "Actividades"
+      },
+      "resenas": {
+        "title": "Reseñas"
+      },
+      "chats": {
+        "title": "Chats"
+      },
+      "chatFicha": {
+        "title": "Conversación"
+      },
+      "notificaciones": {
+        "title": "Notificaciones"
+      },
+      "nomencladores": {
+        "title": "Nomencladores"
       }
     }
   },
@@ -1357,6 +1387,53 @@
       "desconocido": "No se pudieron cargar los bloqueos.",
       "revokeNoEncontrado": "Este bloqueo ya no existe.",
       "revokeDesconocido": "No se pudo revocar el bloqueo."
+    },
+    "platformEvents": {
+      "invalido": "Revisa los filtros.",
+      "sinAcceso": "No tienes acceso a estas actividades.",
+      "noEncontrado": "Esa página o esa comunidad ya no existe.",
+      "desconocido": "No se pudieron cargar las actividades.",
+      "communitySearch": "No se pudieron buscar comunidades.",
+      "cancelSinAcceso": "No puedes cancelar esta actividad.",
+      "cancelNoEncontrado": "Esta actividad ya no existe.",
+      "cancelDesconocido": "No se pudo cancelar la actividad.",
+      "detailSinAcceso": "No tienes acceso a esta actividad.",
+      "detailDesconocido": "No se pudo cargar la actividad."
+    },
+    "adminChats": {
+      "sinAcceso": "Solo el personal de plataforma ve los chats.",
+      "noEncontrado": "Esta conversación o esa página ya no existe.",
+      "desconocido": "No se pudieron cargar los chats.",
+      "sendInvalido": "Escribe un mensaje.",
+      "sendDesconocido": "No se pudo enviar el mensaje."
+    },
+    "platformCommunities": {
+      "invalido": "Revisa los datos.",
+      "sinAcceso": "Solo el personal de plataforma puede hacer esto.",
+      "noEncontrado": "Esta comunidad o publicación ya no existe.",
+      "paginaInexistente": "Esa página del listado ya no existe.",
+      "desconocido": "No se pudo completar la acción."
+    },
+    "reviewsAdmin": {
+      "sinAcceso": "Solo el autor o el personal de plataforma pueden hacer esto.",
+      "noEncontrado": "Esta reseña ya no existe.",
+      "paginaInexistente": "Esa página del listado ya no existe.",
+      "desconocido": "No se pudieron cargar o borrar las reseñas."
+    },
+    "adminNotifications": {
+      "invalido": "Revisa los datos.",
+      "sinAcceso": "Solo el personal de plataforma gestiona las notificaciones.",
+      "noEncontrado": "Ya no existe.",
+      "paginaInexistente": "Esa página ya no existe.",
+      "desconocido": "No se pudo completar la acción."
+    },
+    "catalogs": {
+      "invalido": "Revisa los datos.",
+      "sinAcceso": "Solo el personal de plataforma edita los nomencladores.",
+      "noEncontrado": "Ese elemento ya no existe.",
+      "conflictoServidor": "El servidor no lo aceptó: puede que el elemento esté en uso o que el nombre esté repetido.",
+      "demasiadasPaginas": "Hay demasiadas categorías para cargarlas todas.",
+      "desconocido": "No se pudo completar la acción."
     }
   },
   "reports": {
@@ -2073,6 +2150,155 @@
           "plataforma.auditoria"
         ],
         "audience": "Solo superadmin."
+      },
+      "actividades": {
+        "title": "Actividades",
+        "summary": "Consultar actividades de Popyplan y cancelar una si hace falta.",
+        "details": "No hay un listado de todas las actividades. Por defecto ves la agenda: actividades programadas desde hoy, abiertas o de entidades a las que perteneces. Para ver todas las de una comunidad, pasadas y canceladas incluidas, búscala arriba o entra desde su ficha. Cancelar avisa a las personas inscritas y en lista de espera, no se puede deshacer y no queda registrado en Auditoría.",
+        "actions": [
+          "Ver la agenda por fechas",
+          "Ver las actividades de una comunidad",
+          "Ver el detalle de una actividad",
+          "Cancelar una actividad programada"
+        ],
+        "tips": [
+          "Cancela solo con un motivo claro: la gente ya se ha organizado.",
+          "Para una actividad pasada o cancelada, búscala por su comunidad."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.resenas"
+        ],
+        "audience": "Solo superadmin."
+      },
+      "chats": {
+        "title": "Chats",
+        "summary": "Conversaciones de la app, para atender casos de soporte.",
+        "details": "Lista las salas de chat activas, de la última actualizada a la primera, de 20 en 20. La búsqueda solo mira el nombre de la sala, que los chats entre dos personas no suelen tener. Abrir una conversación es acceso de soporte: úsalo solo cuando haya un motivo, porque el sistema no registra en Auditoría quién la lee.",
+        "actions": [
+          "Buscar y filtrar chats",
+          "Abrir una conversación"
+        ],
+        "tips": [
+          "Abre una conversación solo con un motivo de soporte.",
+          "Para localizar a una persona, empieza por Usuarios o Reportes."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.reportes"
+        ],
+        "audience": "Solo superadmin."
+      },
+      "chatFicha": {
+        "title": "Conversación",
+        "summary": "Leer una conversación y responder como soporte.",
+        "details": "Muestra los participantes y los mensajes, del más antiguo al más reciente. Lo que respondas sale con tu propia cuenta y tu alias, no como «Popyplan»; la otra persona recibe un aviso solo si la conversación está aceptada y no le llega en directo si tiene el chat abierto. El sistema no registra en Auditoría ni la lectura ni la respuesta.",
+        "actions": [
+          "Leer los mensajes",
+          "Responder como soporte"
+        ],
+        "tips": [
+          "Preséntate como soporte de Popyplan al responder.",
+          "Nunca pidas ni compartas teléfonos: la app no los guarda."
+        ],
+        "related": [
+          "plataforma.chats",
+          "plataforma.usuarios"
+        ],
+        "audience": "Solo superadmin."
+      },
+      "comunidades": {
+        "title": "Comunidades",
+        "summary": "Todas las comunidades de Popyplan, para buscarlas y abrir su ficha.",
+        "details": "La plataforma ve todas las comunidades: abiertas, privadas, de entidad, de los dos espacios de familias y las desactivadas. Solo faltan las de entidades que hayas ocultado desde tu propia cuenta. El listado va de la más reciente a la más antigua, de 20 en 20, y la búsqueda mira nombre y descripción. Si está activa o desactivada solo se ve en la ficha.",
+        "actions": [
+          "Buscar comunidades",
+          "Abrir la ficha de una comunidad"
+        ],
+        "tips": [
+          "Para desactivar, borrar o moderar publicaciones, entra en la ficha."
+        ],
+        "related": [
+          "plataforma.actividades",
+          "plataforma.usuarios"
+        ],
+        "audience": "Solo superadmin."
+      },
+      "comunidadFicha": {
+        "title": "Ficha de la comunidad",
+        "summary": "Datos, miembros y publicaciones de una comunidad, con las acciones de moderación.",
+        "details": "Desactivar oculta la comunidad en la app sin borrar nada y se puede deshacer; borrar la elimina de verdad, con sus miembros, publicaciones y chat. Los miembros se gestionan igual que desde la entidad: aprobar o rechazar solicitudes, cambiar el rol y expulsar. Una publicación se puede ocultar (se deshace con «Mostrar») o borrar para siempre. Ninguna de estas acciones queda registrada en Auditoría.",
+        "actions": [
+          "Desactivar o reactivar la comunidad",
+          "Gestionar miembros y solicitudes",
+          "Ocultar o borrar publicaciones",
+          "Borrar la comunidad"
+        ],
+        "tips": [
+          "Ante la duda, desactiva u oculta: borrar no tiene vuelta atrás.",
+          "Como no queda en Auditoría, anota fuera el motivo de una retirada importante."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.actividades"
+        ],
+        "audience": "Solo superadmin."
+      },
+      "resenas": {
+        "title": "Reseñas",
+        "summary": "Todas las reseñas que la gente deja en las actividades, y borrarlas.",
+        "details": "El listado trae todas las reseñas, de 20 en 20, de la más reciente a la más antigua. Cada fila dice quién la escribió, la valoración de 1 a 5 y el comentario; la reseña no trae el título de la actividad. Borrar elimina la reseña de verdad, no se puede deshacer y no queda en Auditoría.",
+        "actions": [
+          "Revisar las reseñas",
+          "Borrar una reseña"
+        ],
+        "tips": [
+          "Borra solo reseñas que incumplan las normas: una mala valoración no es motivo."
+        ],
+        "related": [
+          "plataforma.actividades",
+          "plataforma.usuarios"
+        ],
+        "audience": "Solo superadmin."
+      },
+      "notificaciones": {
+        "title": "Notificaciones",
+        "summary": "Enviar una notificación a una persona o a todas, y gestionar las plantillas del sistema.",
+        "details": "Un envío a una persona llega al momento; uno a todas se encola y llega a todas las cuentas activas, personal incluido, sin recuento final. Lo que se envía desde aquí nunca usa plantillas y no queda en Auditoría. Las plantillas solo cambian las notificaciones que genera el propio sistema de su tipo (si hay varias activas del mismo tipo, gana la más antigua); su texto va en inglés con marcadores entre llaves y se traduce en el servidor.",
+        "actions": [
+          "Enviar una notificación a una persona",
+          "Enviar una notificación a todas",
+          "Crear, editar o borrar plantillas"
+        ],
+        "tips": [
+          "Antes de enviar a todas, prueba el texto enviándotelo a ti.",
+          "Para dejar de usar una plantilla sin perderla, desactívala."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.auditoria"
+        ],
+        "audience": "Solo superadmin."
+      },
+      "nomencladores": {
+        "title": "Nomencladores",
+        "summary": "Los catálogos de la app: idiomas, aficiones y categorías de comunidades y actividades.",
+        "details": "Elige un nomenclador y edita sus elementos. Se ven también los inactivos, que la app ya no ofrece. Borrar es definitivo y a veces arrastra: una categoría de comunidad o de actividad se lleva sus subcategorías, y una categoría de aficiones con aficiones no se deja borrar. Un nombre repetido dentro de la misma categoría también lo rechaza el servidor. La imagen de las categorías de comunidad no se sube desde aquí.",
+        "actions": [
+          "Elegir un nomenclador",
+          "Añadir o editar elementos",
+          "Activar o desactivar un elemento",
+          "Borrar un elemento"
+        ],
+        "tips": [
+          "Ante la duda, desactiva en vez de borrar.",
+          "El orden decide cómo se listan en la app."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.actividades"
+        ],
+        "audience": "Solo superadmin."
       }
     }
   },
@@ -2607,6 +2833,334 @@
       "revokeDescription": "Las dos personas volverán a verse en la app. El motivo queda en Auditoría.",
       "reasonLabel": "Motivo",
       "reasonRequired": "Escribe el motivo de la revocación."
+    },
+    "actividades": {
+      "heading": "Actividades",
+      "intro": "Actividades de Popyplan: la agenda pública o todas las de una comunidad concreta.",
+      "noAccessDescription": "Solo superadmin revisa las actividades desde el panel.",
+      "communitySearchLabel": "Buscar comunidad",
+      "noCommunityMatches": "Ninguna comunidad coincide.",
+      "fromLabel": "Desde",
+      "toLabel": "Hasta",
+      "agendaHint": "Agenda: solo actividades programadas desde hoy (o desde «Desde»), abiertas o de entidades a las que perteneces. No hay un listado de todas: para ver las pasadas o canceladas, elige una comunidad.",
+      "communityMode": "Todas las actividades de «{name}», pasadas y canceladas incluidas.",
+      "communityModeUnnamed": "Todas las actividades de la comunidad elegida, pasadas y canceladas incluidas.",
+      "backToAgenda": "Volver a la agenda",
+      "loadError": "No se pudieron cargar las actividades",
+      "emptyTitle": "No hay actividades con estos filtros",
+      "tableCaption": "Actividades",
+      "titleHeader": "Actividad",
+      "startsHeader": "Empieza",
+      "endsHeader": "Termina",
+      "statusHeader": "Estado",
+      "statusScheduled": "Programada",
+      "statusCancelled": "Cancelada",
+      "statusCompleted": "Celebrada",
+      "audienceHeader": "Audiencia",
+      "audienceAnyone": "Abierta",
+      "audienceCommunity": "Solo la comunidad",
+      "audienceOrganization": "Solo la entidad",
+      "ownerHeader": "Quién la publica",
+      "organizerHeader": "Organiza",
+      "communityHeader": "Comunidad",
+      "categoryHeader": "Categoría",
+      "placeHeader": "Municipio",
+      "addressHeader": "Dirección",
+      "seatsHeader": "Plazas",
+      "seats": "{taken} de {capacity}",
+      "descriptionHeader": "Descripción",
+      "actionsHeader": "Acciones",
+      "view": "Ver",
+      "detailTitle": "Actividad",
+      "cancel": "Cancelar actividad",
+      "keep": "No cancelar",
+      "cancelTitle": "¿Cancelar esta actividad?",
+      "cancelDescription": "Se cancela «{title}» y se avisa a todas las personas inscritas y en lista de espera. No se puede deshacer y no queda en Auditoría.",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "count": "{count, plural, one {# actividad} other {# actividades}}"
+    },
+    "chats": {
+      "heading": "Chats",
+      "intro": "Conversaciones de la app, para atender casos de soporte.",
+      "noAccessDescription": "Solo superadmin accede a los chats desde el panel.",
+      "searchLabel": "Buscar por nombre de la sala",
+      "searchHint": "La búsqueda solo mira el nombre de la sala; los chats entre dos personas no suelen tener nombre.",
+      "typeLabel": "Tipo",
+      "typeAll": "Todos",
+      "typeIndividual": "Entre dos personas",
+      "typeGroup": "De grupo",
+      "loadError": "No se pudieron cargar los chats",
+      "emptyTitle": "No hay chats con estos filtros",
+      "tableCaption": "Chats",
+      "nameHeader": "Sala",
+      "sourceHeader": "Origen",
+      "participantsHeader": "Participantes",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "count": "{count, plural, one {# chat} other {# chats}}",
+      "sourceEvent": "Actividad",
+      "sourceCommunity": "Comunidad",
+      "sourceTreasureHunt": "Búsqueda del tesoro"
+    },
+    "chatFicha": {
+      "heading": "Conversación",
+      "backToList": "Volver a los chats",
+      "noticeTitle": "Acceso de soporte: ábrelo solo con un motivo de soporte.",
+      "noticeIdentity": "Lo que respondas aparece con tu propia cuenta y tu alias, no como «Popyplan».",
+      "noticeDelivery": "La otra persona recibe un aviso solo si la conversación está aceptada, y no le llega en directo si tiene el chat abierto.",
+      "noticeAudit": "El sistema no registra en Auditoría ni que has leído la conversación ni que has respondido.",
+      "participantsTitle": "Participantes",
+      "roomLoadError": "No se pudo cargar la conversación",
+      "noParticipants": "Sin participantes visibles.",
+      "blockedHint": "No aparecen las personas que tu cuenta tenga bloqueadas o que te hayan bloqueado.",
+      "messagesTitle": "Mensajes",
+      "messagesLoadError": "No se pudieron cargar los mensajes",
+      "noMessages": "Esta conversación no tiene mensajes.",
+      "systemSender": "Sistema",
+      "deletedMessage": "Mensaje borrado",
+      "imageMessage": "[imagen]",
+      "replyTitle": "Responder como soporte",
+      "replyLabel": "Mensaje",
+      "send": "Enviar",
+      "sent": "Mensaje enviado."
+    },
+    "comunidades": {
+      "heading": "Comunidades",
+      "noAccessDescription": "Solo superadmin gestiona las comunidades desde el panel.",
+      "searchLabel": "Buscar (nombre o descripción)",
+      "listHint": "Salen todas las comunidades, también las privadas, las de entidad, las de familias y las desactivadas; si ocultaste una entidad desde tu cuenta, sus comunidades no aparecen. El estado activa/desactivada se ve en la ficha.",
+      "loadError": "No se pudieron cargar las comunidades",
+      "emptyTitle": "No hay comunidades con esta búsqueda",
+      "tableCaption": "Comunidades de Popyplan",
+      "nameHeader": "Nombre",
+      "ownerHeader": "Propietaria",
+      "ownerOrganization": "Entidad",
+      "ownerProfile": "Persona",
+      "visibilityHeader": "Visibilidad",
+      "visibilityOpen": "Abierta",
+      "visibilityOnRequest": "Con solicitud",
+      "visibilityPrivateListed": "Privada pero visible",
+      "visibilityPrivate": "Privada",
+      "spaceHeader": "Espacio",
+      "spaceMembers": "Miembros",
+      "spaceFamilies": "Familias",
+      "membersHeader": "Miembros",
+      "createdHeader": "Creada",
+      "count": "{count, plural, one {# comunidad} other {# comunidades}}",
+      "stateHeader": "Estado",
+      "activeBadge": "Activa",
+      "inactiveBadge": "Desactivada"
+    },
+    "comunidadFicha": {
+      "heading": "Ficha de la comunidad",
+      "backToList": "Volver a las comunidades",
+      "notFound": "Esta comunidad no existe o ya se borró",
+      "loadError": "No se pudo cargar la comunidad",
+      "placeLabel": "Municipio",
+      "categoryLabel": "Categoría",
+      "descriptionLabel": "Descripción",
+      "actionsTitle": "Acciones",
+      "deactivate": "Desactivar",
+      "reactivate": "Reactivar",
+      "viewEvents": "Ver sus actividades",
+      "delete": "Borrar comunidad",
+      "membersTitle": "Miembros y solicitudes",
+      "postsTitle": "Publicaciones",
+      "deactivateTitle": "¿Desactivar esta comunidad?",
+      "reactivateTitle": "¿Reactivar esta comunidad?",
+      "deactivateDescription": "Deja de verse en la app para sus miembros y para el descubrimiento. No se borra nada: se puede reactivar.",
+      "reactivateDescription": "Vuelve a verse en la app con sus miembros y publicaciones de siempre.",
+      "deleteTitle": "¿Borrar esta comunidad?",
+      "deleteDescription": "Se borra «{name}» con sus miembros, publicaciones y chat. No se puede deshacer. Si solo quieres que deje de verse, desactívala.",
+      "postsFilterLabel": "Mostrar",
+      "postsFilterAll": "Todas",
+      "postsFilterVisible": "Visibles",
+      "postsFilterHidden": "Ocultas",
+      "postsLoadError": "No se pudieron cargar las publicaciones",
+      "postsEmpty": "No hay publicaciones con este filtro",
+      "postsTableCaption": "Publicaciones de la comunidad",
+      "postAuthorHeader": "Autoría",
+      "postContentHeader": "Contenido",
+      "postDateHeader": "Fecha",
+      "postStateHeader": "Estado",
+      "postActionsHeader": "Acciones",
+      "postsCount": "{count, plural, one {# publicación} other {# publicaciones}}",
+      "postVideoOnly": "[Solo vídeo]",
+      "postImageOnly": "[Solo imagen]",
+      "postEmptyContent": "[Sin texto]",
+      "postStats": "{likes} me gusta · {comments} comentarios",
+      "postVisible": "Visible",
+      "postHidden": "Oculta",
+      "hidePost": "Ocultar",
+      "showPost": "Mostrar",
+      "deletePost": "Borrar",
+      "deletePostTitle": "¿Borrar esta publicación?",
+      "deletePostDescription": "Se borra la publicación de {author} con sus comentarios. No se puede deshacer; para retirarla sin borrarla, ocúltala."
+    },
+    "resenas": {
+      "heading": "Reseñas",
+      "intro": "Todas las reseñas de actividades de Popyplan, de la más reciente a la más antigua.",
+      "noAccessDescription": "Solo superadmin gestiona las reseñas desde el panel.",
+      "loadError": "No se pudieron cargar las reseñas",
+      "emptyTitle": "Todavía no hay reseñas",
+      "tableCaption": "Reseñas",
+      "reviewerHeader": "Quién la escribe",
+      "ratingHeader": "Valoración",
+      "rating": "{rating} de 5",
+      "commentHeader": "Comentario",
+      "typeHeader": "Tipo",
+      "typeEvent": "Actividad",
+      "typeTeam": "Equipo",
+      "dateHeader": "Fecha",
+      "actionsHeader": "Acciones",
+      "delete": "Borrar",
+      "count": "{count, plural, one {# reseña} other {# reseñas}}",
+      "deleteTitle": "¿Borrar esta reseña?",
+      "deleteDescription": "Se borra la reseña de {name}. No se puede deshacer."
+    },
+    "notificaciones": {
+      "noAccessDescription": "Solo superadmin envía notificaciones y gestiona sus plantillas.",
+      "heading": "Notificaciones",
+      "intro": "Enviar una notificación a una persona o a todas, y gestionar las plantillas de las notificaciones del sistema.",
+      "sectionsLegend": "Secciones de notificaciones",
+      "tabSend": "Enviar",
+      "tabTemplates": "Plantillas",
+      "sendTitle": "Enviar una notificación",
+      "sendHint": "Llega a la app como cualquier otra notificación (y por push o correo si la persona lo tiene activado). Estos envíos nunca usan plantillas: se manda el texto tal como lo escribas. No quedan en Auditoría.",
+      "targetLabel": "Destinatarios",
+      "targetUser": "Una persona",
+      "targetAll": "Todas las personas",
+      "searchLabel": "Buscar cuenta (correo o usuario)",
+      "recipientSelected": "Se enviará a {name}.",
+      "recipientNone": "Elige una cuenta con el buscador.",
+      "targetAllHint": "Se enviará a todas las cuentas activas de Popyplan, incluido el personal de plataforma.",
+      "titleLabel": "Título",
+      "messageLabel": "Mensaje",
+      "typeLabel": "Tipo",
+      "priorityLabel": "Prioridad",
+      "sendAction": "Enviar notificación",
+      "sentQueued": "Envío masivo en cola: se irá entregando en segundo plano.",
+      "sentTo": "{count, plural, one {Enviada a # persona.} other {Enviada a # personas.}}",
+      "confirmAllTitle": "¿Enviar a todas las personas?",
+      "confirmUserTitle": "¿Enviar esta notificación?",
+      "confirmAllDescription": "La notificación llegará a todas las cuentas activas de Popyplan, incluido el personal. No se puede deshacer ni retirar después.",
+      "confirmUserDescription": "La notificación llegará a {name}. No se puede retirar después.",
+      "types": {
+        "announcement": "Anuncio",
+        "system": "Sistema",
+        "warning": "Advertencia",
+        "message": "Mensaje",
+        "dmRequest": "Solicitud de mensaje directo",
+        "planInvitation": "Invitación a una actividad",
+        "planUpdate": "Cambio en una actividad",
+        "planReminder": "Recordatorio de actividad",
+        "planCancelled": "Actividad cancelada",
+        "planCompleted": "Actividad terminada",
+        "reviewReceived": "Reseña recibida",
+        "reportResolved": "Reporte resuelto",
+        "helpRequest": "Petición de ayuda",
+        "accountSuspended": "Cuenta suspendida",
+        "survey": "Encuesta",
+        "supportHelpRequest": "Red de apoyo: petición de ayuda",
+        "supportLink": "Red de apoyo: vínculo"
+      },
+      "priorities": {
+        "low": "Baja",
+        "medium": "Media",
+        "high": "Alta",
+        "urgent": "Urgente"
+      },
+      "newTemplate": "Nueva plantilla",
+      "editTemplate": "Editar plantilla",
+      "templateFormHint": "Escribe los textos en inglés, con los marcadores entre llaves ('{name}'): el sistema los traduce al idioma de cada persona con los catálogos del servidor y rellena los marcadores con los datos de la notificación. Un texto que no esté en esos catálogos se envía tal cual.",
+      "nameLabel": "Nombre",
+      "titleTemplateLabel": "Título (plantilla)",
+      "messageTemplateLabel": "Mensaje (plantilla)",
+      "emailSubjectLabel": "Asunto del correo (opcional)",
+      "emailBodyLabel": "Cuerpo del correo (opcional)",
+      "activeLabel": "Activa",
+      "templatesHint": "Una plantilla solo cambia las notificaciones que genera el propio sistema de ese tipo; si hay varias activas del mismo tipo, se usa la más antigua. Nunca afecta a lo que se envía desde la pestaña «Enviar».",
+      "templatesLoadError": "No se pudieron cargar las plantillas",
+      "templatesEmpty": "No hay plantillas",
+      "templatesCaption": "Plantillas de notificación",
+      "stateHeader": "Estado",
+      "activeBadge": "Activa",
+      "inactiveBadge": "Inactiva",
+      "actionsHeader": "Acciones",
+      "edit": "Editar",
+      "delete": "Borrar",
+      "templatesCount": "{count, plural, one {# plantilla} other {# plantillas}}",
+      "deleteTitle": "¿Borrar esta plantilla?",
+      "deleteDescription": "Se borra «{name}». Las notificaciones de ese tipo volverán a usar su texto por defecto (u otra plantilla activa del mismo tipo). No se puede deshacer.",
+      "activeHint": "Una plantilla nueva nace inactiva: al activarla, cambia al momento el texto de todas las notificaciones del sistema de ese tipo."
+    },
+    "nomencladores": {
+      "noAccessDescription": "Solo superadmin edita los nomencladores.",
+      "heading": "Nomencladores",
+      "intro": "Los catálogos que usan la app y el panel: idiomas, aficiones y categorías de comunidades y actividades.",
+      "catalogLabel": "Nomenclador",
+      "catalogs": {
+        "languages": "Idiomas",
+        "hobbyCategories": "Categorías de aficiones",
+        "hobbies": "Aficiones",
+        "communityCategories": "Categorías de comunidades",
+        "communitySubcategories": "Subcategorías de comunidades",
+        "eventCategories": "Categorías de actividades",
+        "eventSubcategories": "Subcategorías de actividades"
+      },
+      "hints": {
+        "languages": "Idiomas que una persona puede marcar en su perfil. El código es el ISO de dos letras y no se repite.",
+        "hobbyCategories": "Grupos de aficiones del perfil. El código no se repite.",
+        "hobbies": "Aficiones que una persona puede marcar en su perfil, cada una en su categoría. El código no se repite.",
+        "communityCategories": "Categorías de comunidad. El nombre no se repite. La imagen de la categoría no se sube desde el panel: editarla aquí conserva la que tenga.",
+        "communitySubcategories": "Subcategorías de comunidad, cada una en su categoría. No repitas un nombre dentro de la misma categoría.",
+        "eventCategories": "Categorías de actividad, con su tipo y un icono (un emoji o un texto corto).",
+        "eventSubcategories": "Subcategorías de actividad, cada una en su categoría. No repitas un nombre dentro de la misma categoría."
+      },
+      "deleteWarnings": {
+        "languages": "Se borra el idioma. Los perfiles que lo tenían marcado conservan el código, que dejará de mostrarse. Si solo quieres dejar de ofrecerlo, desactívalo.",
+        "hobbyCategories": "Una categoría con aficiones no se puede borrar: borra antes sus aficiones o, mejor, desactívala.",
+        "hobbies": "Se borra la afición. Los perfiles que la tenían marcada conservan el código, que dejará de mostrarse. Si solo quieres dejar de ofrecerla, desactívala.",
+        "communityCategories": "Se borran también todas sus subcategorías, y las comunidades que la usaban se quedan sin categoría. No se puede deshacer; si dudas, desactívala.",
+        "communitySubcategories": "Se borra la subcategoría y se quita de las comunidades que la tenían. No se puede deshacer.",
+        "eventCategories": "Se borran también todas sus subcategorías, y las actividades que la usaban se quedan sin categoría. No se puede deshacer; si dudas, desactívala.",
+        "eventSubcategories": "Se borra la subcategoría y se quita de las actividades que la tenían. No se puede deshacer."
+      },
+      "fields": {
+        "code": "Código",
+        "label": "Nombre",
+        "order": "Orden",
+        "emoji": "Emoji",
+        "parent": "Categoría",
+        "categoryType": "Tipo",
+        "description": "Descripción",
+        "icon": "Icono"
+      },
+      "categoryTypes": {
+        "sports": "Deporte",
+        "cultural": "Cultura",
+        "leisure": "Ocio",
+        "travel": "Viajes",
+        "party": "Fiesta",
+        "motorcycle": "Motor",
+        "other": "Otros"
+      },
+      "chooseParent": "Elige una categoría",
+      "newItem": "Nuevo elemento",
+      "editItem": "Editar elemento",
+      "activeLabel": "Activo",
+      "communitiesCountHeader": "Comunidades",
+      "stateHeader": "Estado",
+      "activeBadge": "Activo",
+      "inactiveBadge": "Inactivo",
+      "actionsHeader": "Acciones",
+      "edit": "Editar",
+      "delete": "Borrar",
+      "loadError": "No se pudo cargar el nomenclador",
+      "empty": "Este nomenclador está vacío",
+      "count": "{count, plural, one {# elemento} other {# elementos}}",
+      "deleteTitle": "¿Borrar «{name}»?"
     }
   },
   "paraguas": {

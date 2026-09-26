@@ -42,7 +42,7 @@ describe("PlataformaLayout", () => {
     ).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("pinta las 11 secciones del menú de plataforma", async () => {
+  it("pinta las 17 secciones del menú de plataforma", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",
       me: buildMe({ org_memberships: [] }),
@@ -56,14 +56,20 @@ describe("PlataformaLayout", () => {
       "Inicio",
       "Entidades",
       "Usuarios",
+      "Comunidades",
+      "Actividades",
       "Reportes",
       "Bloqueos",
+      "Reseñas",
+      "Chats",
+      "Notificaciones",
       "Ayuda",
       "Verificaciones",
       "Roles",
       "Auditoría",
       "Métricas",
       "Suscripciones",
+      "Nomencladores",
     ]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
@@ -90,6 +96,12 @@ describe("PlataformaLayout", () => {
       "Suscripciones",
       "Usuarios",
       "Bloqueos",
+      "Comunidades",
+      "Actividades",
+      "Reseñas",
+      "Chats",
+      "Notificaciones",
+      "Nomencladores",
     ]) {
       expect(
         screen.queryByRole("link", { name: label }),
@@ -116,7 +128,17 @@ describe("PlataformaLayout", () => {
     ]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
-    for (const label of ["Entidades", "Verificaciones", "Roles", "Auditoría", "Usuarios", "Bloqueos"]) {
+    for (const label of [
+      "Entidades",
+      "Verificaciones",
+      "Roles",
+      "Auditoría",
+      "Usuarios",
+      "Bloqueos",
+      "Comunidades",
+      "Chats",
+      "Nomencladores",
+    ]) {
       expect(
         screen.queryByRole("link", { name: label }),
       ).not.toBeInTheDocument();

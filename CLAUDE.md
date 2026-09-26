@@ -33,9 +33,10 @@ Tres áreas por rol, cada una bajo su propia ruta:
   de ella (`parent`), sin relación necesaria con su territorio. Ver
   «Administraciones multinivel y territorio (bloque 1)» más abajo.
 - **`/plataforma`** — panel del equipo de Popyplan (`safety.PlatformRole`:
-  `superadmin`, `verifier`, `moderator`, `support`). Menú de 11 secciones
-  (Inicio, Entidades, Usuarios, Reportes, Bloqueos, Ayuda, Verificaciones,
-  Roles, Auditoría, Métricas, Suscripciones), con visibilidad por rol
+  `superadmin`, `verifier`, `moderator`, `support`). Menú de 17 secciones
+  (Inicio, Entidades, Usuarios, Comunidades, Actividades, Reportes,
+  Bloqueos, Reseñas, Chats, Notificaciones, Ayuda, Verificaciones, Roles,
+  Auditoría, Métricas, Suscripciones, Nomencladores), con visibilidad por rol
   (`lib/auth/plataformaMenu.ts`) —
   ver «Área de plataforma» más abajo.
 
@@ -617,7 +618,10 @@ todas las secciones (las 8 de W5, más Suscripciones —antes «Contratos»—
 desde W4 de Fase 6, `support` también la ve, ver «Suscripciones y
 facturación de plataforma» más abajo; y Usuarios/Bloqueos desde el
 bloque 1 del admin de plataforma, **solo** `superadmin`, ver «Admin de
-plataforma: usuarios y bloqueos» más abajo);
+plataforma: usuarios y bloqueos» más abajo; y Comunidades/Actividades/
+Reseñas/Chats/Notificaciones/Nomencladores desde el bloque 3, también
+**solo** `superadmin`, ver «Admin de plataforma: el resto del admin
+antiguo» más abajo);
 `verifier` solo Inicio/Entidades/Verificaciones
 (`organization-list/create/verify` y `verification-review-*` piden
 `verifier`/`superadmin`); `moderator` y `support` ven Inicio/Reportes/
@@ -965,7 +969,8 @@ Hallazgos desmentidos (no había bug contra el contrato vigente):
   «Administraciones multinivel y territorio» (que además cierra dos
   excepciones que arrastraba esta lista, `paraguas/[slug]/informes` y
   `plataforma/entidades/[id]`) y del bloque 1 del admin de plataforma
-  (tres páginas más) son **31 páginas y 10 componentes**:
+  (tres páginas más) y del bloque 3 (ocho páginas más) son **39 páginas
+  y 10 componentes**:
   `app/page` (la raíz: la web pública sin sesión y la pantalla «Tu cuenta
   es de la app» con sesión sin rol), `app/(auth)/login`,
   `app/accesibilidad` (declaración pública, tarea
@@ -988,7 +993,11 @@ Hallazgos desmentidos (no había bug contra el contrato vigente):
   `plataforma/reportes/[reportId]`, `plataforma/metricas`,
   `plataforma/suscripciones`, `plataforma/usuarios` (con «Nueva cuenta»
   abierto), `plataforma/usuarios/[id]` (con «Borrar cuenta» abierto) y
-  `plataforma/bloqueos` (con «Revocar» abierto), más las dos rutas de error (`app/error`,
+  `plataforma/bloqueos` (con «Revocar» abierto), las ocho del bloque 3
+  (`plataforma/comunidades` y `comunidades/[id]`,
+  `plataforma/actividades`, `plataforma/resenas`, `plataforma/chats` y
+  `chats/[id]`, `plataforma/notificaciones`, `plataforma/nomencladores`,
+  cada una con un diálogo abierto), más las dos rutas de error (`app/error`,
   `app/not-found`); y, a nivel de componente,
   `components/entidad/GuardiaPanel`, `components/help/PageHelp`,
   `components/landing/ModeToggle` (el conmutador de la web pública, el
@@ -2228,9 +2237,10 @@ qué se puede hacer en ella y quién la ve.
 - **Registro**: `lib/help/pageHelp.ts::PAGE_HELP`, una entrada
   (`PageHelpEntry {route, key}`) por cada `page.tsx` real de
   `app/entidad/[slug]/**`, `app/paraguas/[slug]/**` y
-  `app/plataforma/**` — **37** pantallas (19 entidad, **4** paraguas —
-  Inicio/Territorio/Red financiada/Informes, bloque 1 de territorio — 14
-  plataforma, tres de ellas del admin de plataforma de 2026-09-26). **Actualizado en la tarea 5 de i18n**: `title`/`summary`/
+  `app/plataforma/**` — **45** pantallas (19 entidad, **4** paraguas —
+  Inicio/Territorio/Red financiada/Informes, bloque 1 de territorio — 22
+  plataforma, tres del bloque 1 y ocho del bloque 3 del admin de
+  plataforma de 2026-09-26). **Actualizado en la tarea 5 de i18n**: `title`/`summary`/
   `actions`/`audience` ya no viven en el registro como texto en español
   — `key` (p. ej. `"entidad.personas"`, mismos segmentos que
   `pages.<area>.<slug>` de la tarea 2) apunta a
@@ -3558,6 +3568,133 @@ revocar un bloqueo real p01→p02.
 listado global de bloqueos; alias público en `BlockAdminSerializer`. i18n
 `eu`/`ca` pendiente de revisión nativa (`docs/i18n/PENDIENTES.md`).
 
+## Admin de plataforma: el resto del admin antiguo (bloque 3, 2026-09-26)
+
+Mismo spec que el bloque 1. Seis secciones nuevas del menú de plataforma,
+**solo `superadmin`**: todas sus rutas dan el acceso amplio por
+`is_staff` (`IsAdminUser` o un `user.is_staff` en el código), **nunca por
+`PlatformRole`** — un `superadmin` sin `is_staff` no vería nada. El menú
+pasa de 11 a **17** secciones (Comunidades y Actividades tras Usuarios;
+Reseñas, Chats y Notificaciones tras Bloqueos; Nomencladores al final).
+Endpoints en `lib/api/endpoints.ts::{COMMUNITY_POSTS,PLATFORM_EVENTS,
+REVIEWS,ADMIN_CHATS,NOTIFICATIONS,CATALOGS}` (más `COMMUNITIES`/`EVENTS`
+de siempre); tipos manuales acotados en `lib/api/types.ts` (bloque
+«Admin de plataforma, bloque 3»), sin regenerar `types.generated.ts`.
+**Nada de lo que se hace en estas seis pantallas queda en `AuditLog`**:
+el backend no audita ninguna de estas rutas (ver pendientes).
+
+- **Comunidades** (`/plataforma/comunidades` → `ComunidadesPlataformaTable`,
+  `/[id]` → `ComunidadPlataformaDetail`, `hooks/usePlatformCommunities.ts`):
+  `GET /api/communities/?search=&page=` — a staff le sirve **todas**
+  (privadas, de entidad, de los dos espacios e inactivas), salvo las de
+  entidades que esa cuenta haya ocultado a título personal
+  (`hidden_org_ids_for`); la pantalla lo dice. La fila no trae
+  `is_active`: solo la ficha. Sin filtro de categoría (`?category=` es un
+  `icontains` sobre el nombre). Ficha (`notFound()` con id no UUID): datos,
+  Desactivar/Reactivar (`PATCH {is_active}`) y Borrar comunidad (`DELETE`,
+  borrado real, también su chat), las dos con `ConfirmDialog`; miembros y
+  solicitudes reutilizando la gestión de la entidad
+  (`ComunidadesPanel.tsx::CommunityMembersSection`, exportada sin cambiar
+  su comportamiento — staff pasa `can_manage`); publicaciones de
+  `GET /api/community-posts/?community=&is_active=&page=` con
+  Todas/Visibles/Ocultas, Ocultar/Mostrar (`PATCH {is_active}`, sin
+  confirmación: es reversible) y Borrar (confirmación); enlace «Ver sus
+  actividades» → `/plataforma/actividades?community=<id>`.
+- **Actividades** (`/plataforma/actividades` →
+  `ActividadesPlataformaTable`, `hooks/usePlatformEvents.ts`): **no hay
+  listado global en el backend**. Dos fuentes: la **agenda**
+  (`GET /api/events/agenda/?from=&to=&page=`, solo `scheduled` desde hoy,
+  audiencia abierta o de entidades de las que la cuenta es miembro, sin
+  atajo para staff — pista visible) y **por comunidad**
+  (`GET /api/events/?community=`, todas las de esa comunidad, pasadas y
+  canceladas incluidas), elegida con un buscador con retardo o por
+  `?community=` desde la ficha de comunidad. «Ver» abre un `Dialog` con
+  `useEvent`; «Cancelar actividad» (`POST .../cancel/`,
+  `Event.is_organizer` lo concede a staff) solo con `status ===
+  'scheduled'`, porque el backend deja cancelar dos veces y vuelve a
+  avisar a la gente.
+- **Reseñas** (`/plataforma/resenas` → `ResenasTable`,
+  `hooks/useReviewsAdmin.ts`): `GET /api/reviews/?page=` (staff ve todas;
+  el esquema la envuelve dos veces) y Borrar (`DELETE` → **200**
+  `{message}`, no el 204 del esquema; el 403 trae `{error}`). La reseña
+  solo trae el id de la actividad, así que no hay columna de título.
+- **Chats** (`/plataforma/chats` → `ChatsTable`, `/[id]` →
+  `ChatConversation`, `hooks/useAdminChats.ts`): `GET /api/admin/chats/
+  ?chat_type=&search=&page=` (`search` solo mira el nombre de la sala; una
+  sala sin nombre se etiqueta con los alias de sus participantes; el
+  origen —actividad/comunidad/búsqueda del tesoro— traducido, con
+  reserva al valor crudo). `last_message` no se pinta: en el listado
+  llega **siempre `null`** (bug del backend, el serializer espera una
+  anotación que esa vista no añade). La conversación (`notFound()` con id
+  no UUID) pinta la sala, los mensajes (`GET .../messages/`, **array
+  plano**; el esquema dice `ChatRoom`) y un formulario para responder
+  (`POST {content}` → 201; su 400 es `{"content": "…"}` con una cadena,
+  que `detailOf` no lee: el hook tiene un respaldo local). **Aviso fijo
+  arriba**: acceso de soporte; lo que respondas sale con **tu propia
+  cuenta y alias**, no como «Popyplan»; no llega en directo a pantallas
+  abiertas (no hay emisión por WebSocket) y el aviso push solo sale si la
+  conversación está aceptada; y **el backend no registra ni la lectura ni
+  la respuesta** en Auditoría. Los participantes que la cuenta de staff
+  tenga bloqueados (en cualquier sentido) no salen, y la pantalla lo dice.
+- **Notificaciones** (`/plataforma/notificaciones` →
+  `NotificacionesPanel`, `hooks/useAdminNotifications.ts`), dos pestañas:
+  **Enviar** (`POST /api/notifications/send/`, a una persona elegida con
+  `useUserSearch` o a todas, siempre con `ConfirmDialog`; «a todas» avisa
+  de que incluye al personal y no se puede retirar; 201 `{recipients}` →
+  «Enviada a N persona(s)», 202 sin `recipients` → «Envío masivo en
+  cola»; estos envíos **nunca** usan plantillas) y **Plantillas**
+  (`/api/notification-templates/` CRUD, paginado). Una plantilla solo
+  cambia las notificaciones que genera el propio sistema de su tipo, gana
+  la **activa más antigua** si hay varias, y su texto es un msgid en
+  inglés con `{marcadores}` que el servidor traduce con sus `.po`.
+  **Decisión**: una plantilla nueva nace **inactiva** (el backend la
+  crearía activa por defecto) — activa, cambia al instante el texto de
+  todas las notificaciones de ese tipo, y eso tiene que ser un paso
+  consciente.
+- **Nomencladores** (`/plataforma/nomencladores` → `NomencladoresPanel`,
+  `hooks/useCatalogs.ts::CATALOG_CONFIG`): un `<select>` con los siete
+  catálogos vivos (idiomas, categorías de aficiones, aficiones,
+  categorías y subcategorías de comunidades, categorías y subcategorías
+  de actividades) y, por catálogo, tabla + alta/edición en `Dialog` +
+  borrado con `ConfirmDialog` que avisa de las cascadas. Tres formas de
+  listado que el hook normaliza: array plano (`/api/catalogs/*` y
+  subcategorías de comunidad), paginación estándar (categorías de
+  comunidad, recorridas con tope) y `{results, count}` sin paginar
+  (categorías y subcategorías de actividad). Ids enteros y UUID mezclados;
+  en subcategorías de actividad `category` es de solo escritura y se lee
+  de `category_id` (cadena de un entero, aunque el esquema diga UUID). La
+  imagen de las categorías de comunidad no se sube desde el panel (el
+  `PATCH` sin `image` conserva la que haya). Staff ve también las filas
+  inactivas. **Un 500 al escribir se traduce a `conflicto_servidor`**:
+  DRF 3.14 no valida los `UniqueConstraint(category, name)` ni convierte
+  `ProtectedError` en 400 — pasa al borrar una categoría de aficiones que
+  aún tiene aficiones o al repetir un nombre de subcategoría.
+
+**Verificado contra el backend sembrado** (Playwright sobre `next start`
+en el puerto 3300): listado de 45 comunidades con privadas y de
+familias, ficha de «Running Kontxa» con miembros y publicaciones,
+ocultar/mostrar una publicación y desactivar/reactivar la comunidad;
+actividades por comunidad (4, pasadas incluidas) y agenda, detalle en
+diálogo; reseñas; chats y respuesta de soporte en una sala de prueba;
+enviar una notificación a la propia cuenta y alta/borrado de una
+plantilla; los siete nomencladores cargando (13, 10, 39, 11, 85, 8 y 54
+filas) y alta/edición/borrado de una subcategoría de actividad. No se
+canceló ninguna actividad ni se borró ninguna reseña o comunidad de la
+demo (avisarían a gente o destruirían datos sembrados); esos caminos
+quedan cubiertos por los tests.
+
+**Pendientes, del backend**: auditar todas estas acciones (desactivar o
+borrar comunidades, ocultar o borrar publicaciones, acciones sobre
+miembros, borrar reseñas, cancelar actividades, envío masivo de
+notificaciones y, sobre todo, **la lectura y la respuesta de soporte en
+chats**, que es un hueco de privacidad); una identidad de remitente
+«Popyplan» para el soporte en chats y emisión por WebSocket de su
+mensaje; arreglar `last_message` del listado de chats de admin; un
+listado global de actividades para staff; impedir cancelar dos veces
+una actividad; y convertir los 500 de unicidad/`ProtectedError` de los
+catálogos en 400/409. i18n `eu`/`ca` pendiente de revisión nativa
+(`docs/i18n/PENDIENTES.md`).
+
 ## Comandos
 
 - `npm run dev` / `npm run build` / `npm run start`
@@ -3689,6 +3826,12 @@ en CI lo gate el job `e2e`).
   2026-09-26): **99,80 %** (3101/3107 líneas, **2337** tests, 214
   ficheros — tres hooks nuevos, `usePlatformUsers.ts`, `usePlatformUser.ts`
   y `useBlocksAdmin.ts`, al 100 % de líneas). El umbral sigue en 99,7.
+  Tras el bloque 3 del admin de plataforma (comunidades, actividades,
+  reseñas, chats, notificaciones y nomencladores, 2026-09-26): **99,82 %**
+  (3505/3511 líneas, **2568** tests, 228 ficheros — seis hooks nuevos,
+  `usePlatformCommunities.ts`, `useReviewsAdmin.ts`, `usePlatformEvents.ts`,
+  `useAdminChats.ts`, `useAdminNotifications.ts` y `useCatalogs.ts`, al
+  100 % de líneas). El umbral sigue en 99,7.
 - Test de consumo portado del móvil
   (`lib/api/consumption.test.ts` + `lib/api/consumption-allowlist.json`):
   todo endpoint de `lib/api/endpoints.ts` se usa y tiene test; la

@@ -289,7 +289,15 @@ function PendingRow({ member, communityId }: { member: CommunityMember; communit
   );
 }
 
-function CommunityDetail({ communityId }: { communityId: string }) {
+/**
+ * Solicitudes pendientes y miembros de una comunidad con sus acciones
+ * (aprobar/rechazar/cambiar rol/expulsar). Exportado para la ficha de
+ * comunidad de plataforma (`components/plataforma/
+ * ComunidadPlataformaDetail.tsx`, admin de plataforma bloque 3): las
+ * acciones pasan `community.can_manage(user)`, que el backend concede
+ * también a `is_staff`.
+ */
+export function CommunityMembersSection({ communityId }: { communityId: string }) {
   const members = useCommunityMembers(communityId);
   const pending = useCommunityPendingRequests(communityId);
   const t = useTranslations("entidad.comunidades");
@@ -504,7 +512,7 @@ export function ComunidadesPanel({ orgId, canManage }: ComunidadesPanelProps) {
               {canManage && selectedCommunity.visibility === "private" ? (
                 <InviteCode key={selectedCommunity.id} communityId={selectedCommunity.id} />
               ) : null}
-              <CommunityDetail communityId={selectedCommunity.id} />
+              <CommunityMembersSection communityId={selectedCommunity.id} />
             </Card>
           ) : (
             <EmptyState title={t("choose")} description={t("chooseDescription")} />

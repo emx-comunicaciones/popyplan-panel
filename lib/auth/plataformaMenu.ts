@@ -49,19 +49,35 @@
  * `moderator` (`HasPlatformRole('moderator', 'superadmin')`), pero elegir
  * la cuenta pasa por el mismo buscador `is_staff`, así que para un
  * moderador la pantalla no tendría puerta de entrada.
+ *
+ * Admin de plataforma, bloque 3 (2026-09-26): **Comunidades**,
+ * **Actividades**, **Reseñas**, **Chats**, **Notificaciones** y
+ * **Nomencladores**, solo `superadmin`. Todas sus rutas
+ * (`/api/communities/`, `/api/community-posts/`, `/api/events/`,
+ * `/api/reviews/`, `/api/admin/chats/`, `/api/notifications/send/`,
+ * `/api/notification-templates/` y los catálogos) conceden el acceso
+ * amplio por `is_staff` —`IsAdminUser` o un `user.is_staff` en el
+ * código—, nunca por `PlatformRole`; y `is_staff` hoy solo lo tiene
+ * `superadmin`.
  */
 export const PLATAFORMA_MENU_ITEMS = [
   "inicio",
   "entidades",
   "usuarios",
+  "comunidades",
+  "actividades",
   "reportes",
   "bloqueos",
+  "resenas",
+  "chats",
+  "notificaciones",
   "ayuda",
   "verificaciones",
   "roles",
   "auditoria",
   "metricas",
   "suscripciones",
+  "nomencladores",
 ] as const;
 
 export type PlataformaMenuItem = (typeof PLATAFORMA_MENU_ITEMS)[number];
@@ -77,14 +93,20 @@ export const PLATAFORMA_MENU_LABELS: Record<PlataformaMenuItem, string> = {
   inicio: "menu.plataforma.inicio",
   entidades: "menu.plataforma.entidades",
   usuarios: "menu.plataforma.usuarios",
+  comunidades: "menu.plataforma.comunidades",
+  actividades: "menu.plataforma.actividades",
   reportes: "menu.plataforma.reportes",
   bloqueos: "menu.plataforma.bloqueos",
+  resenas: "menu.plataforma.resenas",
+  chats: "menu.plataforma.chats",
+  notificaciones: "menu.plataforma.notificaciones",
   ayuda: "menu.plataforma.ayuda",
   verificaciones: "menu.plataforma.verificaciones",
   roles: "menu.plataforma.roles",
   auditoria: "menu.plataforma.auditoria",
   metricas: "menu.plataforma.metricas",
   suscripciones: "menu.plataforma.suscripciones",
+  nomencladores: "menu.plataforma.nomencladores",
 };
 
 /**

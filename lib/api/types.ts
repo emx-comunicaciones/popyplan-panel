@@ -1169,3 +1169,169 @@ export type BlockAdmin = components["schemas"]["BlockAdmin"];
 export interface BlockRevokeRequest {
   reason: string;
 }
+
+// ---------------------------------------------------------------------------
+// Admin de plataforma, bloque 3: el resto del admin antiguo (2026-09-26).
+// Tipos manuales acotados a lo que pinta el panel, verificados contra el
+// código del backend y el backend sembrado (no solo `docs/schema.yaml`).
+// ---------------------------------------------------------------------------
+
+/** Paginación estándar de DRF (`PageNumberPagination`, 20 por página). */
+export interface Paginated<Row> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Row[];
+}
+
+/** `UserProfileSerializer`: identidad pública mínima (nunca contacto). */
+export type PublicUserRef = components["schemas"]["UserProfile"];
+
+/**
+ * Ficha de una comunidad para la plataforma (`CommunitySerializer`,
+ * `GET /api/communities/{id}/`). Tipo manual acotado: `owner` es el
+ * diccionario de `Community.owner_display()` (el generado lo deja como
+ * `{[key: string]: unknown}`) e `is_active` —que el listado no trae— es
+ * lo que decide «Desactivar»/«Reactivar».
+ */
+export interface PlatformCommunityDetail {
+  id: string;
+  name: string;
+  description: string;
+  visibility: string;
+  space: "members" | "families";
+  owner: CommunityOwnerRef;
+  members_count: number;
+  is_active: boolean;
+  creator_name?: string | null;
+  place: components["schemas"]["PlaceRef"] | null;
+  category: { id: string; name: string } | null;
+  created_at: string;
+}
+
+/**
+ * Publicación de comunidad (`CommunityPostSerializer`, vía
+ * `AdminCommunityPostViewSet`). El esquema no declara los filtros
+ * `community`/`is_active` del listado.
+ */
+export interface PlatformCommunityPost {
+  id: string;
+  community: string;
+  author: { id: string; public_name: string } | null;
+  author_name: string;
+  content: string;
+  image: string | null;
+  images: { id: string; image_url?: string | null }[];
+  video_url: string | null;
+  surface: "forum" | "wall";
+  likes_count: number;
+  comments_count: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+/**
+ * Fila de actividad de `GET /api/events/agenda/` y `GET /api/events/
+ * ?community=` (`EventListSerializer`). Acotado a lo que pinta la tabla.
+ */
+export interface PlatformEventRow {
+  id: string;
+  title: string;
+  starts_at: string;
+  ends_at: string | null;
+  audience: "anyone" | "community" | "organization";
+  status: "scheduled" | "cancelled" | "completed";
+  place: components["schemas"]["PlaceRef"] | null;
+  capacity: number | null;
+  seats_taken: number;
+  organizer: PublicUserRef | null;
+  owner: CommunityOwnerRef | null;
+  community: { id: string; name: string } | null;
+}
+
+/**
+ * Reseña (`ReviewSerializer`). El esquema la envuelve dos veces
+ * (`ReviewListResponse` dentro de la paginación); el cuerpo real es la
+ * paginación estándar de estas filas. Solo trae el id de la actividad,
+ * nunca su título.
+ */
+export interface PlatformReview {
+  id: string;
+  reviewer: PublicUserRef;
+  review_type: "event" | "team";
+  event: string | null;
+  team: string | null;
+  rating: number;
+  comment: string;
+  created_at: string;
+}
+
+/**
+ * Sala de chat (`ChatRoomSerializer`, `AdminChatViewSet`). En el listado
+ * `last_message` llega siempre `null` (bug del backend: el serializer
+ * espera una anotación que esta vista no añade), así que el panel no lo
+ * pinta. Los participantes que la cuenta de staff tenga bloqueados (en
+ * cualquier sentido) no salen.
+ */
+export interface PlatformChatRoom {
+  id: string;
+  chat_type: "individual" | "group";
+  name: string | null;
+  participants: PublicUserRef[];
+  group_source: string | null;
+}
+
+/**
+ * Mensaje de chat (`MessageSerializer`). `GET .../messages/` es un array
+ * plano de estos y `POST` responde 201 con uno — el esquema dice
+ * `ChatRoom` en los dos sentidos.
+ */
+export interface PlatformChatMessage {
+  id: string;
+  sender: PublicUserRef | null;
+  message_type: string;
+  content: string;
+  image: string | null;
+  is_deleted: boolean;
+  created_at: string;
+}
+
+export type NotificationTypeName = components["schemas"]["AdminSendNotificationRequest"]["notification_type"];
+export type NotificationPriorityName = NonNullable<components["schemas"]["AdminSendNotificationRequest"]["priority"]>;
+
+/** Cuerpo de `POST /api/notifications/send/` (`AdminSendNotificationSerializer`). */
+export interface AdminSendNotificationRequest {
+  title: string;
+  message: string;
+  notification_type: NotificationTypeName;
+  priority?: NotificationPriorityName;
+  target: "user" | "all";
+  user_id?: number;
+}
+
+/**
+ * Respuesta real de `send`: 201 `{detail, recipients}` a una persona o
+ * 202 `{detail}` a todas (el esquema declara `SuccessResponse` sin
+ * `recipients`).
+ */
+export interface AdminSendNotificationResponse {
+  detail: string;
+  recipients?: number;
+}
+
+/** Plantilla de notificación (`NotificationTemplateSerializer`). */
+export interface NotificationTemplateRow {
+  id: number;
+  name: string;
+  notification_type: NotificationTypeName;
+  title_template: string;
+  message_template: string;
+  email_subject_template: string;
+  email_body_template: string;
+  is_active: boolean;
+  priority: NotificationPriorityName;
+  created_at: string;
+  updated_at: string;
+}
+
+export type NotificationTemplateInput = Omit<NotificationTemplateRow, "id" | "created_at" | "updated_at">;

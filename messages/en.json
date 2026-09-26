@@ -84,14 +84,20 @@
       "inicio": "Home",
       "entidades": "Entities",
       "usuarios": "Users",
+      "comunidades": "Communities",
+      "actividades": "Activities",
       "reportes": "Reports",
       "bloqueos": "Blocks",
+      "resenas": "Reviews",
+      "chats": "Chats",
+      "notificaciones": "Notifications",
       "ayuda": "Help",
       "verificaciones": "Verifications",
       "roles": "Roles",
       "auditoria": "Audit log",
       "metricas": "Metrics",
-      "suscripciones": "Subscriptions"
+      "suscripciones": "Subscriptions",
+      "nomencladores": "Catalogues"
     }
   },
   "layout": {
@@ -254,6 +260,30 @@
       },
       "bloqueos": {
         "title": "Blocks"
+      },
+      "comunidades": {
+        "title": "Communities"
+      },
+      "comunidadFicha": {
+        "title": "Community record"
+      },
+      "actividades": {
+        "title": "Activities"
+      },
+      "resenas": {
+        "title": "Reviews"
+      },
+      "chats": {
+        "title": "Chats"
+      },
+      "chatFicha": {
+        "title": "Conversation"
+      },
+      "notificaciones": {
+        "title": "Notifications"
+      },
+      "nomencladores": {
+        "title": "Catalogues"
       }
     }
   },
@@ -1357,6 +1387,53 @@
       "desconocido": "The blocks could not be loaded.",
       "revokeNoEncontrado": "This block no longer exists.",
       "revokeDesconocido": "The block could not be revoked."
+    },
+    "platformEvents": {
+      "invalido": "Check the filters.",
+      "sinAcceso": "You have no access to these activities.",
+      "noEncontrado": "That page or community no longer exists.",
+      "desconocido": "Activities could not be loaded.",
+      "communitySearch": "Communities could not be searched.",
+      "cancelSinAcceso": "You cannot cancel this activity.",
+      "cancelNoEncontrado": "This activity no longer exists.",
+      "cancelDesconocido": "The activity could not be cancelled.",
+      "detailSinAcceso": "You have no access to this activity.",
+      "detailDesconocido": "The activity could not be loaded."
+    },
+    "adminChats": {
+      "sinAcceso": "Only platform staff can see chats.",
+      "noEncontrado": "This conversation or page no longer exists.",
+      "desconocido": "Chats could not be loaded.",
+      "sendInvalido": "Write a message.",
+      "sendDesconocido": "The message could not be sent."
+    },
+    "platformCommunities": {
+      "invalido": "Check the data.",
+      "sinAcceso": "Only platform staff can do this.",
+      "noEncontrado": "This community or post no longer exists.",
+      "paginaInexistente": "That page of the list no longer exists.",
+      "desconocido": "The action could not be completed."
+    },
+    "reviewsAdmin": {
+      "sinAcceso": "Only the author or platform staff can do this.",
+      "noEncontrado": "This review no longer exists.",
+      "paginaInexistente": "That page of the list no longer exists.",
+      "desconocido": "Reviews could not be loaded or deleted."
+    },
+    "adminNotifications": {
+      "invalido": "Check the data.",
+      "sinAcceso": "Only platform staff manage notifications.",
+      "noEncontrado": "It no longer exists.",
+      "paginaInexistente": "That page no longer exists.",
+      "desconocido": "The action could not be completed."
+    },
+    "catalogs": {
+      "invalido": "Check the data.",
+      "sinAcceso": "Only platform staff edit the catalogues.",
+      "noEncontrado": "That item no longer exists.",
+      "conflictoServidor": "The server did not accept it: the item may be in use or the name may be repeated.",
+      "demasiadasPaginas": "There are too many categories to load them all.",
+      "desconocido": "The action could not be completed."
     }
   },
   "reports": {
@@ -2073,6 +2150,155 @@
           "plataforma.auditoria"
         ],
         "audience": "Superadmin only."
+      },
+      "actividades": {
+        "title": "Activities",
+        "summary": "Look up Popyplan activities and cancel one if needed.",
+        "details": "There is no list of all activities. By default you see the agenda: activities scheduled from today, open or from organisations you belong to. To see every activity of a community, past and cancelled included, search for it above or come from its record. Cancelling notifies people registered and on the waiting list, cannot be undone and is not recorded in Audit.",
+        "actions": [
+          "See the agenda by dates",
+          "See a community's activities",
+          "See an activity's details",
+          "Cancel a scheduled activity"
+        ],
+        "tips": [
+          "Only cancel with a clear reason: people have already made plans.",
+          "For a past or cancelled activity, find it through its community."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.resenas"
+        ],
+        "audience": "Superadmin only."
+      },
+      "chats": {
+        "title": "Chats",
+        "summary": "App conversations, for handling support cases.",
+        "details": "Lists active chat rooms, most recently updated first, 20 at a time. Search only looks at the room name, which one-to-one chats usually lack. Opening a conversation is support access: use it only when there is a reason, because the system does not record in Audit who reads it.",
+        "actions": [
+          "Search and filter chats",
+          "Open a conversation"
+        ],
+        "tips": [
+          "Open a conversation only for a support reason.",
+          "To find a person, start from Users or Reports."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.reportes"
+        ],
+        "audience": "Superadmin only."
+      },
+      "chatFicha": {
+        "title": "Conversation",
+        "summary": "Read a conversation and reply as support.",
+        "details": "Shows the participants and the messages, oldest first. Your replies go out under your own account and alias, not as “Popyplan”; the other person is only notified if the conversation is accepted and it does not arrive live if they have the chat open. The system does not record in Audit either the reading or the reply.",
+        "actions": [
+          "Read the messages",
+          "Reply as support"
+        ],
+        "tips": [
+          "Introduce yourself as Popyplan support when replying.",
+          "Never ask for or share phone numbers: the app does not store them."
+        ],
+        "related": [
+          "plataforma.chats",
+          "plataforma.usuarios"
+        ],
+        "audience": "Superadmin only."
+      },
+      "comunidades": {
+        "title": "Communities",
+        "summary": "Every community on Popyplan, to search them and open their record.",
+        "details": "The platform sees every community: open, private, organisation-owned, both family spaces and deactivated ones. Only those of organisations you hid from your own account are missing. The list goes from newest to oldest, 20 at a time, and the search looks at name and description. Whether it is active only shows on the record.",
+        "actions": [
+          "Search communities",
+          "Open a community record"
+        ],
+        "tips": [
+          "To deactivate, delete or moderate posts, open the record."
+        ],
+        "related": [
+          "plataforma.actividades",
+          "plataforma.usuarios"
+        ],
+        "audience": "Superadmin only."
+      },
+      "comunidadFicha": {
+        "title": "Community record",
+        "summary": "A community's data, members and posts, with the moderation actions.",
+        "details": "Deactivating hides the community in the app without deleting anything and can be undone; deleting really removes it, with its members, posts and chat. Members are managed as from the organisation: approve or reject requests, change roles and remove. A post can be hidden (undo with “Show”) or deleted for good. None of these actions is recorded in Audit.",
+        "actions": [
+          "Deactivate or reactivate the community",
+          "Manage members and requests",
+          "Hide or delete posts",
+          "Delete the community"
+        ],
+        "tips": [
+          "When in doubt, deactivate or hide: deleting cannot be undone.",
+          "As it is not recorded in Audit, note the reason for an important takedown elsewhere."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.actividades"
+        ],
+        "audience": "Superadmin only."
+      },
+      "resenas": {
+        "title": "Reviews",
+        "summary": "Every review people leave on activities, and deleting them.",
+        "details": "The list brings every review, 20 at a time, newest first. Each row shows who wrote it, the 1-5 rating and the comment; the review does not carry the activity title. Deleting really removes the review, cannot be undone and is not recorded in Audit.",
+        "actions": [
+          "Review the reviews",
+          "Delete a review"
+        ],
+        "tips": [
+          "Only delete reviews that break the rules: a bad rating is not a reason."
+        ],
+        "related": [
+          "plataforma.actividades",
+          "plataforma.usuarios"
+        ],
+        "audience": "Superadmin only."
+      },
+      "notificaciones": {
+        "title": "Notifications",
+        "summary": "Send a notification to one person or to everyone, and manage the system templates.",
+        "details": "A send to one person arrives at once; a send to everyone is queued and reaches every active account, staff included, with no final count. What is sent from here never uses templates and is not recorded in Audit. Templates only change the notifications the system itself generates for their type (if several of the same type are active, the oldest wins); their text is in English with placeholders in braces and is translated on the server.",
+        "actions": [
+          "Send a notification to one person",
+          "Send a notification to everyone",
+          "Create, edit or delete templates"
+        ],
+        "tips": [
+          "Before sending to everyone, test the text by sending it to yourself.",
+          "To stop using a template without losing it, deactivate it."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.auditoria"
+        ],
+        "audience": "Superadmin only."
+      },
+      "nomencladores": {
+        "title": "Catalogues",
+        "summary": "The app catalogues: languages, hobbies and community and activity categories.",
+        "details": "Choose a catalogue and edit its items. Inactive ones, which the app no longer offers, are shown too. Deleting is final and sometimes cascades: a community or activity category takes its subcategories with it, and a hobby category with hobbies cannot be deleted. The server also rejects a repeated name within the same category. Community category images are not uploaded from here.",
+        "actions": [
+          "Choose a catalogue",
+          "Add or edit items",
+          "Activate or deactivate an item",
+          "Delete an item"
+        ],
+        "tips": [
+          "When in doubt, deactivate instead of deleting.",
+          "The order decides how they are listed in the app."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.actividades"
+        ],
+        "audience": "Superadmin only."
       }
     }
   },
@@ -2607,6 +2833,334 @@
       "revokeDescription": "Both people will see each other again in the app. The reason is recorded in Audit.",
       "reasonLabel": "Reason",
       "reasonRequired": "Write the reason for revoking it."
+    },
+    "actividades": {
+      "heading": "Activities",
+      "intro": "Popyplan activities: the public agenda or every activity of a given community.",
+      "noAccessDescription": "Only superadmin reviews activities from the panel.",
+      "communitySearchLabel": "Search community",
+      "noCommunityMatches": "No community matches.",
+      "fromLabel": "From",
+      "toLabel": "To",
+      "agendaHint": "Agenda: only activities scheduled from today (or from “From”), open or from organisations you belong to. There is no list of all of them: to see past or cancelled ones, pick a community.",
+      "communityMode": "Every activity of “{name}”, past and cancelled included.",
+      "communityModeUnnamed": "Every activity of the chosen community, past and cancelled included.",
+      "backToAgenda": "Back to the agenda",
+      "loadError": "Activities could not be loaded",
+      "emptyTitle": "No activities match these filters",
+      "tableCaption": "Activities",
+      "titleHeader": "Activity",
+      "startsHeader": "Starts",
+      "endsHeader": "Ends",
+      "statusHeader": "Status",
+      "statusScheduled": "Scheduled",
+      "statusCancelled": "Cancelled",
+      "statusCompleted": "Held",
+      "audienceHeader": "Audience",
+      "audienceAnyone": "Open",
+      "audienceCommunity": "Community only",
+      "audienceOrganization": "Organisation only",
+      "ownerHeader": "Published by",
+      "organizerHeader": "Organiser",
+      "communityHeader": "Community",
+      "categoryHeader": "Category",
+      "placeHeader": "Municipality",
+      "addressHeader": "Address",
+      "seatsHeader": "Seats",
+      "seats": "{taken} of {capacity}",
+      "descriptionHeader": "Description",
+      "actionsHeader": "Actions",
+      "view": "View",
+      "detailTitle": "Activity",
+      "cancel": "Cancel activity",
+      "keep": "Don't cancel",
+      "cancelTitle": "Cancel this activity?",
+      "cancelDescription": "“{title}” is cancelled and everyone registered or on the waiting list is notified. It cannot be undone and is not recorded in Audit.",
+      "previous": "Previous",
+      "next": "Next",
+      "count": "{count, plural, one {# activity} other {# activities}}"
+    },
+    "chats": {
+      "heading": "Chats",
+      "intro": "App conversations, for handling support cases.",
+      "noAccessDescription": "Only superadmin accesses chats from the panel.",
+      "searchLabel": "Search by room name",
+      "searchHint": "Search only looks at the room name; one-to-one chats usually have none.",
+      "typeLabel": "Type",
+      "typeAll": "All",
+      "typeIndividual": "One-to-one",
+      "typeGroup": "Group",
+      "loadError": "Chats could not be loaded",
+      "emptyTitle": "No chats match these filters",
+      "tableCaption": "Chats",
+      "nameHeader": "Room",
+      "sourceHeader": "Source",
+      "participantsHeader": "Participants",
+      "previous": "Previous",
+      "next": "Next",
+      "count": "{count, plural, one {# chat} other {# chats}}",
+      "sourceEvent": "Activity",
+      "sourceCommunity": "Community",
+      "sourceTreasureHunt": "Treasure hunt"
+    },
+    "chatFicha": {
+      "heading": "Conversation",
+      "backToList": "Back to chats",
+      "noticeTitle": "Support access: open it only for a support reason.",
+      "noticeIdentity": "Your replies appear under your own account and alias, not as “Popyplan”.",
+      "noticeDelivery": "The other person is only notified if the conversation is accepted, and it does not arrive live if they have the chat open.",
+      "noticeAudit": "The system does not record in Audit that you read the conversation or replied.",
+      "participantsTitle": "Participants",
+      "roomLoadError": "The conversation could not be loaded",
+      "noParticipants": "No visible participants.",
+      "blockedHint": "People your account has blocked, or who blocked you, are not shown.",
+      "messagesTitle": "Messages",
+      "messagesLoadError": "Messages could not be loaded",
+      "noMessages": "This conversation has no messages.",
+      "systemSender": "System",
+      "deletedMessage": "Deleted message",
+      "imageMessage": "[image]",
+      "replyTitle": "Reply as support",
+      "replyLabel": "Message",
+      "send": "Send",
+      "sent": "Message sent."
+    },
+    "comunidades": {
+      "heading": "Communities",
+      "noAccessDescription": "Only superadmin manages communities from the panel.",
+      "searchLabel": "Search (name or description)",
+      "listHint": "All communities are listed, including private, organisation-owned, family-space and deactivated ones; communities of organisations you hid from your own account do not appear. Whether a community is active is shown on its record.",
+      "loadError": "Communities could not be loaded",
+      "emptyTitle": "No communities match this search",
+      "tableCaption": "Popyplan communities",
+      "nameHeader": "Name",
+      "ownerHeader": "Owner",
+      "ownerOrganization": "Organisation",
+      "ownerProfile": "Person",
+      "visibilityHeader": "Visibility",
+      "visibilityOpen": "Open",
+      "visibilityOnRequest": "On request",
+      "visibilityPrivateListed": "Private but listed",
+      "visibilityPrivate": "Private",
+      "spaceHeader": "Space",
+      "spaceMembers": "Members",
+      "spaceFamilies": "Families",
+      "membersHeader": "Members",
+      "createdHeader": "Created",
+      "count": "{count, plural, one {# community} other {# communities}}",
+      "stateHeader": "Status",
+      "activeBadge": "Active",
+      "inactiveBadge": "Deactivated"
+    },
+    "comunidadFicha": {
+      "heading": "Community record",
+      "backToList": "Back to communities",
+      "notFound": "This community does not exist or was deleted",
+      "loadError": "The community could not be loaded",
+      "placeLabel": "Municipality",
+      "categoryLabel": "Category",
+      "descriptionLabel": "Description",
+      "actionsTitle": "Actions",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "viewEvents": "See its activities",
+      "delete": "Delete community",
+      "membersTitle": "Members and requests",
+      "postsTitle": "Posts",
+      "deactivateTitle": "Deactivate this community?",
+      "reactivateTitle": "Reactivate this community?",
+      "deactivateDescription": "It stops showing in the app for its members and in discovery. Nothing is deleted: it can be reactivated.",
+      "reactivateDescription": "It shows in the app again with its usual members and posts.",
+      "deleteTitle": "Delete this community?",
+      "deleteDescription": "“{name}” is deleted with its members, posts and chat. This cannot be undone. If you only want to hide it, deactivate it.",
+      "postsFilterLabel": "Show",
+      "postsFilterAll": "All",
+      "postsFilterVisible": "Visible",
+      "postsFilterHidden": "Hidden",
+      "postsLoadError": "Posts could not be loaded",
+      "postsEmpty": "No posts match this filter",
+      "postsTableCaption": "Community posts",
+      "postAuthorHeader": "Author",
+      "postContentHeader": "Content",
+      "postDateHeader": "Date",
+      "postStateHeader": "Status",
+      "postActionsHeader": "Actions",
+      "postsCount": "{count, plural, one {# post} other {# posts}}",
+      "postVideoOnly": "[Video only]",
+      "postImageOnly": "[Image only]",
+      "postEmptyContent": "[No text]",
+      "postStats": "{likes} likes · {comments} comments",
+      "postVisible": "Visible",
+      "postHidden": "Hidden",
+      "hidePost": "Hide",
+      "showPost": "Show",
+      "deletePost": "Delete",
+      "deletePostTitle": "Delete this post?",
+      "deletePostDescription": "The post by {author} is deleted with its comments. This cannot be undone; to take it down without deleting it, hide it."
+    },
+    "resenas": {
+      "heading": "Reviews",
+      "intro": "Every activity review on Popyplan, newest first.",
+      "noAccessDescription": "Only superadmin manages reviews from the panel.",
+      "loadError": "Reviews could not be loaded",
+      "emptyTitle": "There are no reviews yet",
+      "tableCaption": "Reviews",
+      "reviewerHeader": "Written by",
+      "ratingHeader": "Rating",
+      "rating": "{rating} out of 5",
+      "commentHeader": "Comment",
+      "typeHeader": "Type",
+      "typeEvent": "Activity",
+      "typeTeam": "Team",
+      "dateHeader": "Date",
+      "actionsHeader": "Actions",
+      "delete": "Delete",
+      "count": "{count, plural, one {# review} other {# reviews}}",
+      "deleteTitle": "Delete this review?",
+      "deleteDescription": "The review by {name} is deleted. This cannot be undone."
+    },
+    "notificaciones": {
+      "noAccessDescription": "Only superadmin sends notifications and manages their templates.",
+      "heading": "Notifications",
+      "intro": "Send a notification to one person or to everyone, and manage the templates of system notifications.",
+      "sectionsLegend": "Notification sections",
+      "tabSend": "Send",
+      "tabTemplates": "Templates",
+      "sendTitle": "Send a notification",
+      "sendHint": "It reaches the app like any other notification (and by push or email if the person has it enabled). These sends never use templates: the text goes out as you write it. They are not recorded in Audit.",
+      "targetLabel": "Recipients",
+      "targetUser": "One person",
+      "targetAll": "Everyone",
+      "searchLabel": "Search account (email or username)",
+      "recipientSelected": "It will be sent to {name}.",
+      "recipientNone": "Choose an account with the search box.",
+      "targetAllHint": "It will be sent to every active Popyplan account, platform staff included.",
+      "titleLabel": "Title",
+      "messageLabel": "Message",
+      "typeLabel": "Type",
+      "priorityLabel": "Priority",
+      "sendAction": "Send notification",
+      "sentQueued": "Bulk send queued: it will be delivered in the background.",
+      "sentTo": "{count, plural, one {Sent to # person.} other {Sent to # people.}}",
+      "confirmAllTitle": "Send to everyone?",
+      "confirmUserTitle": "Send this notification?",
+      "confirmAllDescription": "The notification will reach every active Popyplan account, staff included. It cannot be undone or withdrawn afterwards.",
+      "confirmUserDescription": "The notification will reach {name}. It cannot be withdrawn afterwards.",
+      "types": {
+        "announcement": "Announcement",
+        "system": "System",
+        "warning": "Warning",
+        "message": "Message",
+        "dmRequest": "Direct message request",
+        "planInvitation": "Activity invitation",
+        "planUpdate": "Activity change",
+        "planReminder": "Activity reminder",
+        "planCancelled": "Activity cancelled",
+        "planCompleted": "Activity finished",
+        "reviewReceived": "Review received",
+        "reportResolved": "Report resolved",
+        "helpRequest": "Help request",
+        "accountSuspended": "Account suspended",
+        "survey": "Survey",
+        "supportHelpRequest": "Support network: help request",
+        "supportLink": "Support network: link"
+      },
+      "priorities": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "urgent": "Urgent"
+      },
+      "newTemplate": "New template",
+      "editTemplate": "Edit template",
+      "templateFormHint": "Write the texts in English, with placeholders in braces ('{name}'): the system translates them into each person's language with the server catalogues and fills the placeholders with the notification data. Text that is not in those catalogues is sent as is.",
+      "nameLabel": "Name",
+      "titleTemplateLabel": "Title (template)",
+      "messageTemplateLabel": "Message (template)",
+      "emailSubjectLabel": "Email subject (optional)",
+      "emailBodyLabel": "Email body (optional)",
+      "activeLabel": "Active",
+      "templatesHint": "A template only changes the notifications the system itself generates for that type; if several of the same type are active, the oldest is used. It never affects what is sent from the “Send” tab.",
+      "templatesLoadError": "The templates could not be loaded",
+      "templatesEmpty": "There are no templates",
+      "templatesCaption": "Notification templates",
+      "stateHeader": "Status",
+      "activeBadge": "Active",
+      "inactiveBadge": "Inactive",
+      "actionsHeader": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "templatesCount": "{count, plural, one {# template} other {# templates}}",
+      "deleteTitle": "Delete this template?",
+      "deleteDescription": "“{name}” will be deleted. Notifications of that type will go back to their default text (or another active template of the same type). This cannot be undone.",
+      "activeHint": "A new template starts inactive: once active, it immediately changes the text of every system notification of that type."
+    },
+    "nomencladores": {
+      "noAccessDescription": "Only superadmin edits the catalogues.",
+      "heading": "Catalogues",
+      "intro": "The catalogues used by the app and the panel: languages, hobbies and community and activity categories.",
+      "catalogLabel": "Catalogue",
+      "catalogs": {
+        "languages": "Languages",
+        "hobbyCategories": "Hobby categories",
+        "hobbies": "Hobbies",
+        "communityCategories": "Community categories",
+        "communitySubcategories": "Community subcategories",
+        "eventCategories": "Activity categories",
+        "eventSubcategories": "Activity subcategories"
+      },
+      "hints": {
+        "languages": "Languages a person can mark on their profile. The code is the two-letter ISO code and is unique.",
+        "hobbyCategories": "Groups of profile hobbies. The code is unique.",
+        "hobbies": "Hobbies a person can mark on their profile, each in its category. The code is unique.",
+        "communityCategories": "Community categories. The name is unique. The category image is not uploaded from the panel: editing here keeps the current one.",
+        "communitySubcategories": "Community subcategories, each in its category. Do not repeat a name within the same category.",
+        "eventCategories": "Activity categories, with their type and an icon (an emoji or short text).",
+        "eventSubcategories": "Activity subcategories, each in its category. Do not repeat a name within the same category."
+      },
+      "deleteWarnings": {
+        "languages": "The language is deleted. Profiles that had it keep the code, which will no longer be shown. If you only want to stop offering it, deactivate it.",
+        "hobbyCategories": "A category with hobbies cannot be deleted: delete its hobbies first or, better, deactivate it.",
+        "hobbies": "The hobby is deleted. Profiles that had it keep the code, which will no longer be shown. If you only want to stop offering it, deactivate it.",
+        "communityCategories": "All its subcategories are deleted too, and communities using it are left without a category. This cannot be undone; if in doubt, deactivate it.",
+        "communitySubcategories": "The subcategory is deleted and removed from the communities that had it. This cannot be undone.",
+        "eventCategories": "All its subcategories are deleted too, and activities using it are left without a category. This cannot be undone; if in doubt, deactivate it.",
+        "eventSubcategories": "The subcategory is deleted and removed from the activities that had it. This cannot be undone."
+      },
+      "fields": {
+        "code": "Code",
+        "label": "Name",
+        "order": "Order",
+        "emoji": "Emoji",
+        "parent": "Category",
+        "categoryType": "Type",
+        "description": "Description",
+        "icon": "Icon"
+      },
+      "categoryTypes": {
+        "sports": "Sports",
+        "cultural": "Culture",
+        "leisure": "Leisure",
+        "travel": "Travel",
+        "party": "Party",
+        "motorcycle": "Motor",
+        "other": "Other"
+      },
+      "chooseParent": "Choose a category",
+      "newItem": "New item",
+      "editItem": "Edit item",
+      "activeLabel": "Active",
+      "communitiesCountHeader": "Communities",
+      "stateHeader": "Status",
+      "activeBadge": "Active",
+      "inactiveBadge": "Inactive",
+      "actionsHeader": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "loadError": "The catalogue could not be loaded",
+      "empty": "This catalogue is empty",
+      "count": "{count, plural, one {# item} other {# items}}",
+      "deleteTitle": "Delete “{name}”?"
     }
   },
   "paraguas": {

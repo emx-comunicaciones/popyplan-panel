@@ -84,14 +84,20 @@
       "inicio": "Hasiera",
       "entidades": "Erakundeak",
       "usuarios": "Erabiltzaileak",
+      "comunidades": "Komunitateak",
+      "actividades": "Jarduerak",
       "reportes": "Salaketak",
       "bloqueos": "Blokeoak",
+      "resenas": "Iritziak",
+      "chats": "Txatak",
+      "notificaciones": "Jakinarazpenak",
       "ayuda": "Laguntza",
       "verificaciones": "Egiaztapenak",
       "roles": "Rolak",
       "auditoria": "Auditoria",
       "metricas": "Metrikak",
-      "suscripciones": "Harpidetzak"
+      "suscripciones": "Harpidetzak",
+      "nomencladores": "Katalogoak"
     }
   },
   "layout": {
@@ -254,6 +260,30 @@
       },
       "bloqueos": {
         "title": "Blokeoak"
+      },
+      "comunidades": {
+        "title": "Komunitateak"
+      },
+      "comunidadFicha": {
+        "title": "Komunitatearen fitxa"
+      },
+      "actividades": {
+        "title": "Jarduerak"
+      },
+      "resenas": {
+        "title": "Iritziak"
+      },
+      "chats": {
+        "title": "Txatak"
+      },
+      "chatFicha": {
+        "title": "Elkarrizketa"
+      },
+      "notificaciones": {
+        "title": "Jakinarazpenak"
+      },
+      "nomencladores": {
+        "title": "Katalogoak"
       }
     }
   },
@@ -1357,6 +1387,53 @@
       "desconocido": "Ezin izan dira blokeoak kargatu.",
       "revokeNoEncontrado": "Blokeo hau jada ez dago.",
       "revokeDesconocido": "Ezin izan da blokeoa baliogabetu."
+    },
+    "platformEvents": {
+      "invalido": "Berrikusi iragazkiak.",
+      "sinAcceso": "Ez duzu jarduera hauetarako sarbiderik.",
+      "noEncontrado": "Orri edo komunitate hori jada ez dago.",
+      "desconocido": "Ezin izan dira jarduerak kargatu.",
+      "communitySearch": "Ezin izan dira komunitateak bilatu.",
+      "cancelSinAcceso": "Ezin duzu jarduera hau bertan behera utzi.",
+      "cancelNoEncontrado": "Jarduera hau jada ez dago.",
+      "cancelDesconocido": "Ezin izan da jarduera bertan behera utzi.",
+      "detailSinAcceso": "Ez duzu jarduera honetarako sarbiderik.",
+      "detailDesconocido": "Ezin izan da jarduera kargatu."
+    },
+    "adminChats": {
+      "sinAcceso": "Plataformako langileek bakarrik ikusten dituzte txatak.",
+      "noEncontrado": "Elkarrizketa edo orri hori jada ez dago.",
+      "desconocido": "Ezin izan dira txatak kargatu.",
+      "sendInvalido": "Idatzi mezu bat.",
+      "sendDesconocido": "Ezin izan da mezua bidali."
+    },
+    "platformCommunities": {
+      "invalido": "Berrikusi datuak.",
+      "sinAcceso": "Plataformako langileek bakarrik egin dezakete hau.",
+      "noEncontrado": "Komunitate edo argitalpen hau ez dago jada.",
+      "paginaInexistente": "Zerrendaren orri hori ez dago jada.",
+      "desconocido": "Ezin izan da ekintza osatu."
+    },
+    "reviewsAdmin": {
+      "sinAcceso": "Egileak edo plataformako langileek bakarrik egin dezakete hau.",
+      "noEncontrado": "Iritzi hau ez dago jada.",
+      "paginaInexistente": "Zerrendaren orri hori ez dago jada.",
+      "desconocido": "Ezin izan dira iritziak kargatu edo ezabatu."
+    },
+    "adminNotifications": {
+      "invalido": "Berrikusi datuak.",
+      "sinAcceso": "Plataformako langileek bakarrik kudeatzen dituzte jakinarazpenak.",
+      "noEncontrado": "Jada ez dago.",
+      "paginaInexistente": "Orri hori jada ez dago.",
+      "desconocido": "Ezin izan da ekintza osatu."
+    },
+    "catalogs": {
+      "invalido": "Berrikusi datuak.",
+      "sinAcceso": "Plataformako langileek bakarrik editatzen dituzte katalogoak.",
+      "noEncontrado": "Elementu hori jada ez dago.",
+      "conflictoServidor": "Zerbitzariak ez du onartu: baliteke elementua erabiltzen egotea edo izena errepikatuta egotea.",
+      "demasiadasPaginas": "Kategoria gehiegi daude denak kargatzeko.",
+      "desconocido": "Ezin izan da ekintza osatu."
     }
   },
   "reports": {
@@ -2073,6 +2150,155 @@
           "plataforma.auditoria"
         ],
         "audience": "Superadminak bakarrik."
+      },
+      "actividades": {
+        "title": "Jarduerak",
+        "summary": "Popyplaneko jarduerak kontsultatu eta, behar izanez gero, bat bertan behera utzi.",
+        "details": "Ez dago jarduera guztien zerrendarik. Lehenespenez agenda ikusten duzu: gaurtik programatutako jarduerak, irekiak edo zu kide zaren erakundeenak. Komunitate bateko guztiak ikusteko, iraganekoak eta bertan behera utzitakoak barne, bilatu goian edo sartu haren fitxatik. Bertan behera uzteak izena emandakoei eta itxaron-zerrendakoei abisua ematen die, ezin da desegin eta ez da Auditorian erregistratzen.",
+        "actions": [
+          "Ikusi agenda dataren arabera",
+          "Ikusi komunitate baten jarduerak",
+          "Ikusi jarduera baten xehetasunak",
+          "Utzi bertan behera programatutako jarduera bat"
+        ],
+        "tips": [
+          "Utzi bertan behera arrazoi argi batekin bakarrik: jendea antolatuta dago.",
+          "Iraganeko edo bertan behera utzitako jarduera bat bere komunitatetik bilatu."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.resenas"
+        ],
+        "audience": "Superadminak bakarrik."
+      },
+      "chats": {
+        "title": "Txatak",
+        "summary": "Aplikazioko elkarrizketak, laguntza-kasuak artatzeko.",
+        "details": "Txat-gela aktiboak zerrendatzen ditu, azken eguneratutik hasita, 20naka. Bilaketak gelaren izena bakarrik begiratzen du, eta bi pertsonaren arteko txatek ez dute izenik izan ohi. Elkarrizketa bat irekitzea laguntza-sarbidea da: erabili arrazoi bat dagoenean bakarrik, sistemak ez baitu Auditorian erregistratzen nork irakurtzen duen.",
+        "actions": [
+          "Bilatu eta iragazi txatak",
+          "Ireki elkarrizketa bat"
+        ],
+        "tips": [
+          "Ireki elkarrizketa bat laguntza-arrazoi batekin bakarrik.",
+          "Pertsona bat aurkitzeko, hasi Erabiltzaileak edo Salaketak ataletik."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.reportes"
+        ],
+        "audience": "Superadminak bakarrik."
+      },
+      "chatFicha": {
+        "title": "Elkarrizketa",
+        "summary": "Elkarrizketa bat irakurri eta laguntza gisa erantzun.",
+        "details": "Parte-hartzaileak eta mezuak erakusten ditu, zaharrenetik hasita. Erantzuten duzuna zure kontuarekin eta ezizenarekin bidaltzen da, ez «Popyplan» gisa; beste pertsonak abisua jasotzen du elkarrizketa onartuta badago bakarrik, eta ez zaio zuzenean iristen txata irekita badu. Sistemak ez du Auditorian erregistratzen ez irakurketa ez erantzuna.",
+        "actions": [
+          "Irakurri mezuak",
+          "Erantzun laguntza gisa"
+        ],
+        "tips": [
+          "Aurkeztu zaitez Popyplaneko laguntza gisa erantzutean.",
+          "Ez eskatu edo partekatu inoiz telefonorik: aplikazioak ez ditu gordetzen."
+        ],
+        "related": [
+          "plataforma.chats",
+          "plataforma.usuarios"
+        ],
+        "audience": "Superadminak bakarrik."
+      },
+      "comunidades": {
+        "title": "Komunitateak",
+        "summary": "Popyplaneko komunitate guztiak, bilatzeko eta haien fitxa irekitzeko.",
+        "details": "Plataformak komunitate guztiak ikusten ditu: irekiak, pribatuak, erakundeenak, familien bi espazioetakoak eta desaktibatuak. Zure kontutik ezkutatu dituzun erakundeenak bakarrik falta dira. Zerrenda berrienetik zaharrenera doa, 20naka, eta bilaketak izena eta deskribapena begiratzen ditu. Aktibo dagoen ala ez fitxan bakarrik ikusten da.",
+        "actions": [
+          "Bilatu komunitateak",
+          "Ireki komunitate baten fitxa"
+        ],
+        "tips": [
+          "Desaktibatzeko, ezabatzeko edo argitalpenak moderatzeko, sartu fitxan."
+        ],
+        "related": [
+          "plataforma.actividades",
+          "plataforma.usuarios"
+        ],
+        "audience": "Superadmina bakarrik."
+      },
+      "comunidadFicha": {
+        "title": "Komunitatearen fitxa",
+        "summary": "Komunitate baten datuak, kideak eta argitalpenak, moderazio-ekintzekin.",
+        "details": "Desaktibatzeak komunitatea aplikazioan ezkutatzen du ezer ezabatu gabe, eta desegin daiteke; ezabatzeak benetan kentzen du, bere kide, argitalpen eta txatarekin. Kideak erakundetik bezala kudeatzen dira: eskaerak onartu edo baztertu, rola aldatu eta kanporatu. Argitalpen bat ezkuta daiteke («Erakutsi»-rekin desegiten da) edo betiko ezaba. Ekintza horietako bat ere ez da Auditorian erregistratzen.",
+        "actions": [
+          "Desaktibatu edo berraktibatu komunitatea",
+          "Kudeatu kideak eta eskaerak",
+          "Ezkutatu edo ezabatu argitalpenak",
+          "Ezabatu komunitatea"
+        ],
+        "tips": [
+          "Zalantzarik baduzu, desaktibatu edo ezkutatu: ezabatzeak ez du atzera bueltarik.",
+          "Auditorian geratzen ez denez, idatzi beste nonbait kentze garrantzitsu baten arrazoia."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.actividades"
+        ],
+        "audience": "Superadmina bakarrik."
+      },
+      "resenas": {
+        "title": "Iritziak",
+        "summary": "Jendeak jardueretan uzten dituen iritzi guztiak, eta haiek ezabatzea.",
+        "details": "Zerrendak iritzi guztiak dakartza, 20naka, berrienetik zaharrenera. Errenkada bakoitzak nork idatzi zuen, 1etik 5erako balorazioa eta iruzkina esaten ditu; iritziak ez du jardueraren izenbururik. Ezabatzeak iritzia benetan kentzen du, ezin da desegin eta ez da Auditorian geratzen.",
+        "actions": [
+          "Berrikusi iritziak",
+          "Ezabatu iritzi bat"
+        ],
+        "tips": [
+          "Ezabatu arauak betetzen ez dituzten iritziak bakarrik: balorazio txarra ez da arrazoia."
+        ],
+        "related": [
+          "plataforma.actividades",
+          "plataforma.usuarios"
+        ],
+        "audience": "Superadmina bakarrik."
+      },
+      "notificaciones": {
+        "title": "Jakinarazpenak",
+        "summary": "Jakinarazpen bat pertsona bati edo guztiei bidali, eta sistemaren txantiloiak kudeatu.",
+        "details": "Pertsona bati egindako bidalketa berehala iristen da; guztiei egindakoa ilaran jartzen da eta kontu aktibo guztietara iristen da, langileak barne, azken zenbaketarik gabe. Hemendik bidaltzen dena ez da inoiz txantiloiekin egiten eta ez da Ikuskaritzan geratzen. Txantiloiek beren motako sistemak berak sortzen dituen jakinarazpenak bakarrik aldatzen dituzte (mota bereko hainbat aktibo badaude, zaharrenak irabazten du); haien testua ingelesez doa, markatzaileak giltza artean, eta zerbitzarian itzultzen da.",
+        "actions": [
+          "Jakinarazpen bat pertsona bati bidali",
+          "Jakinarazpen bat guztiei bidali",
+          "Txantiloiak sortu, editatu edo ezabatu"
+        ],
+        "tips": [
+          "Guztiei bidali aurretik, probatu testua zeure buruari bidalita.",
+          "Txantiloi bat galdu gabe erabiltzeari uzteko, desaktibatu."
+        ],
+        "related": [
+          "plataforma.usuarios",
+          "plataforma.auditoria"
+        ],
+        "audience": "Superadminak bakarrik."
+      },
+      "nomencladores": {
+        "title": "Katalogoak",
+        "summary": "Aplikazioaren katalogoak: hizkuntzak, zaletasunak eta komunitate eta jardueren kategoriak.",
+        "details": "Aukeratu katalogo bat eta editatu bere elementuak. Inaktiboak ere ikusten dira, aplikazioak jada eskaintzen ez dituenak. Ezabatzea behin betikoa da eta batzuetan ondorioak ditu: komunitate edo jarduera kategoria batek bere azpikategoriak eramaten ditu, eta zaletasunak dituen zaletasun kategoria bat ezin da ezabatu. Kategoria berean errepikatutako izena ere zerbitzariak baztertzen du. Komunitate kategorien irudia ez da hemendik igotzen.",
+        "actions": [
+          "Katalogo bat aukeratu",
+          "Elementuak gehitu edo editatu",
+          "Elementu bat aktibatu edo desaktibatu",
+          "Elementu bat ezabatu"
+        ],
+        "tips": [
+          "Zalantzan, desaktibatu ezabatu beharrean.",
+          "Ordenak erabakitzen du aplikazioan nola zerrendatzen diren."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.actividades"
+        ],
+        "audience": "Superadminak bakarrik."
       }
     }
   },
@@ -2607,6 +2833,334 @@
       "revokeDescription": "Bi pertsonek elkar ikusiko dute berriro aplikazioan. Arrazoia Auditorian geratzen da.",
       "reasonLabel": "Arrazoia",
       "reasonRequired": "Idatzi baliogabetzearen arrazoia."
+    },
+    "actividades": {
+      "heading": "Jarduerak",
+      "intro": "Popyplaneko jarduerak: agenda publikoa edo komunitate jakin bateko guztiak.",
+      "noAccessDescription": "Superadminak bakarrik berrikusten ditu jarduerak paneletik.",
+      "communitySearchLabel": "Bilatu komunitatea",
+      "noCommunityMatches": "Ez dago bat datorren komunitaterik.",
+      "fromLabel": "Noiztik",
+      "toLabel": "Noiz arte",
+      "agendaHint": "Agenda: gaurtik (edo «Noiztik» egunetik) programatutako jarduerak bakarrik, irekiak edo zu kide zaren erakundeenak. Ez dago guztien zerrendarik: iraganekoak edo bertan behera utzitakoak ikusteko, aukeratu komunitate bat.",
+      "communityMode": "«{name}» komunitatearen jarduera guztiak, iraganekoak eta bertan behera utzitakoak barne.",
+      "communityModeUnnamed": "Aukeratutako komunitatearen jarduera guztiak, iraganekoak eta bertan behera utzitakoak barne.",
+      "backToAgenda": "Itzuli agendara",
+      "loadError": "Ezin izan dira jarduerak kargatu",
+      "emptyTitle": "Ez dago jarduerarik iragazki hauekin",
+      "tableCaption": "Jarduerak",
+      "titleHeader": "Jarduera",
+      "startsHeader": "Hasiera",
+      "endsHeader": "Amaiera",
+      "statusHeader": "Egoera",
+      "statusScheduled": "Programatua",
+      "statusCancelled": "Bertan behera",
+      "statusCompleted": "Egina",
+      "audienceHeader": "Publikoa",
+      "audienceAnyone": "Irekia",
+      "audienceCommunity": "Komunitatearentzat bakarrik",
+      "audienceOrganization": "Erakundearentzat bakarrik",
+      "ownerHeader": "Nork argitaratua",
+      "organizerHeader": "Antolatzailea",
+      "communityHeader": "Komunitatea",
+      "categoryHeader": "Kategoria",
+      "placeHeader": "Udalerria",
+      "addressHeader": "Helbidea",
+      "seatsHeader": "Plazak",
+      "seats": "{taken} / {capacity}",
+      "descriptionHeader": "Deskribapena",
+      "actionsHeader": "Ekintzak",
+      "view": "Ikusi",
+      "detailTitle": "Jarduera",
+      "cancel": "Utzi bertan behera jarduera",
+      "keep": "Ez utzi bertan behera",
+      "cancelTitle": "Jarduera hau bertan behera utzi?",
+      "cancelDescription": "«{title}» bertan behera geratzen da eta izena emanda eta itxaron-zerrendan dauden guztiei abisua ematen zaie. Ezin da desegin eta ez da Auditorian geratzen.",
+      "previous": "Aurrekoa",
+      "next": "Hurrengoa",
+      "count": "{count, plural, one {# jarduera} other {# jarduera}}"
+    },
+    "chats": {
+      "heading": "Txatak",
+      "intro": "Aplikazioko elkarrizketak, laguntza-kasuak artatzeko.",
+      "noAccessDescription": "Superadminak bakarrik sartzen da txatetara paneletik.",
+      "searchLabel": "Bilatu gelaren izenaren arabera",
+      "searchHint": "Bilaketak gelaren izena bakarrik begiratzen du; bi pertsonaren arteko txatek ez dute izenik izan ohi.",
+      "typeLabel": "Mota",
+      "typeAll": "Guztiak",
+      "typeIndividual": "Bi pertsonaren artekoa",
+      "typeGroup": "Taldekoa",
+      "loadError": "Ezin izan dira txatak kargatu",
+      "emptyTitle": "Ez dago txatik iragazki hauekin",
+      "tableCaption": "Txatak",
+      "nameHeader": "Gela",
+      "sourceHeader": "Jatorria",
+      "participantsHeader": "Parte-hartzaileak",
+      "previous": "Aurrekoa",
+      "next": "Hurrengoa",
+      "count": "{count, plural, one {# txat} other {# txat}}",
+      "sourceEvent": "Jarduera",
+      "sourceCommunity": "Komunitatea",
+      "sourceTreasureHunt": "Altxorraren bilaketa"
+    },
+    "chatFicha": {
+      "heading": "Elkarrizketa",
+      "backToList": "Itzuli txatetara",
+      "noticeTitle": "Laguntza-sarbidea: ireki laguntza-arrazoi bat dagoenean bakarrik.",
+      "noticeIdentity": "Erantzuten duzuna zure kontuarekin eta zure ezizenarekin agertzen da, ez «Popyplan» gisa.",
+      "noticeDelivery": "Beste pertsonak abisua jasotzen du elkarrizketa onartuta badago bakarrik, eta ez zaio zuzenean iristen txata irekita badu.",
+      "noticeAudit": "Sistemak ez du Auditorian erregistratzen elkarrizketa irakurri duzunik ez erantzun duzunik.",
+      "participantsTitle": "Parte-hartzaileak",
+      "roomLoadError": "Ezin izan da elkarrizketa kargatu",
+      "noParticipants": "Ez dago parte-hartzaile ikusgarririk.",
+      "blockedHint": "Ez dira agertzen zure kontuak blokeatutako pertsonak edo zu blokeatu zaituztenak.",
+      "messagesTitle": "Mezuak",
+      "messagesLoadError": "Ezin izan dira mezuak kargatu",
+      "noMessages": "Elkarrizketa honek ez du mezurik.",
+      "systemSender": "Sistema",
+      "deletedMessage": "Mezu ezabatua",
+      "imageMessage": "[irudia]",
+      "replyTitle": "Erantzun laguntza gisa",
+      "replyLabel": "Mezua",
+      "send": "Bidali",
+      "sent": "Mezua bidali da."
+    },
+    "comunidades": {
+      "heading": "Komunitateak",
+      "noAccessDescription": "Superadminak bakarrik kudeatzen ditu komunitateak paneletik.",
+      "searchLabel": "Bilatu (izena edo deskribapena)",
+      "listHint": "Komunitate guztiak agertzen dira, baita pribatuak, erakundeenak, familienak eta desaktibatuak ere; zure kontutik ezkutatu dituzun erakundeen komunitateak ez dira agertzen. Aktibo dagoen ala ez fitxan ikusten da.",
+      "loadError": "Ezin izan dira komunitateak kargatu",
+      "emptyTitle": "Ez dago bilaketa honekin bat datorren komunitaterik",
+      "tableCaption": "Popyplaneko komunitateak",
+      "nameHeader": "Izena",
+      "ownerHeader": "Jabea",
+      "ownerOrganization": "Erakundea",
+      "ownerProfile": "Pertsona",
+      "visibilityHeader": "Ikusgarritasuna",
+      "visibilityOpen": "Irekia",
+      "visibilityOnRequest": "Eskaeraz",
+      "visibilityPrivateListed": "Pribatua baina ikusgai",
+      "visibilityPrivate": "Pribatua",
+      "spaceHeader": "Espazioa",
+      "spaceMembers": "Kideak",
+      "spaceFamilies": "Familiak",
+      "membersHeader": "Kideak",
+      "createdHeader": "Sortua",
+      "count": "{count, plural, one {# komunitate} other {# komunitate}}",
+      "stateHeader": "Egoera",
+      "activeBadge": "Aktiboa",
+      "inactiveBadge": "Desaktibatua"
+    },
+    "comunidadFicha": {
+      "heading": "Komunitatearen fitxa",
+      "backToList": "Itzuli komunitateetara",
+      "notFound": "Komunitate hau ez dago edo ezabatu egin da",
+      "loadError": "Ezin izan da komunitatea kargatu",
+      "placeLabel": "Udalerria",
+      "categoryLabel": "Kategoria",
+      "descriptionLabel": "Deskribapena",
+      "actionsTitle": "Ekintzak",
+      "deactivate": "Desaktibatu",
+      "reactivate": "Berraktibatu",
+      "viewEvents": "Ikusi bere jarduerak",
+      "delete": "Ezabatu komunitatea",
+      "membersTitle": "Kideak eta eskaerak",
+      "postsTitle": "Argitalpenak",
+      "deactivateTitle": "Komunitate hau desaktibatu?",
+      "reactivateTitle": "Komunitate hau berraktibatu?",
+      "deactivateDescription": "Aplikazioan ez da ikusiko ez kideentzat ez aurkikuntzan. Ez da ezer ezabatzen: berraktiba daiteke.",
+      "reactivateDescription": "Aplikazioan berriro ikusiko da, betiko kide eta argitalpenekin.",
+      "deleteTitle": "Komunitate hau ezabatu?",
+      "deleteDescription": "«{name}» ezabatuko da, bere kide, argitalpen eta txatarekin. Ezin da desegin. Ikusten ez uztea besterik ez baduzu nahi, desaktibatu.",
+      "postsFilterLabel": "Erakutsi",
+      "postsFilterAll": "Guztiak",
+      "postsFilterVisible": "Ikusgai",
+      "postsFilterHidden": "Ezkutatuak",
+      "postsLoadError": "Ezin izan dira argitalpenak kargatu",
+      "postsEmpty": "Ez dago iragazki honekin bat datorren argitalpenik",
+      "postsTableCaption": "Komunitatearen argitalpenak",
+      "postAuthorHeader": "Egilea",
+      "postContentHeader": "Edukia",
+      "postDateHeader": "Data",
+      "postStateHeader": "Egoera",
+      "postActionsHeader": "Ekintzak",
+      "postsCount": "{count, plural, one {# argitalpen} other {# argitalpen}}",
+      "postVideoOnly": "[Bideoa soilik]",
+      "postImageOnly": "[Irudia soilik]",
+      "postEmptyContent": "[Testurik gabe]",
+      "postStats": "{likes} gustuko · {comments} iruzkin",
+      "postVisible": "Ikusgai",
+      "postHidden": "Ezkutatua",
+      "hidePost": "Ezkutatu",
+      "showPost": "Erakutsi",
+      "deletePost": "Ezabatu",
+      "deletePostTitle": "Argitalpen hau ezabatu?",
+      "deletePostDescription": "{author}(r)en argitalpena ezabatuko da, bere iruzkinekin. Ezin da desegin; ezabatu gabe kentzeko, ezkutatu."
+    },
+    "resenas": {
+      "heading": "Iritziak",
+      "intro": "Popyplaneko jardueren iritzi guztiak, berrienetik zaharrenera.",
+      "noAccessDescription": "Superadminak bakarrik kudeatzen ditu iritziak paneletik.",
+      "loadError": "Ezin izan dira iritziak kargatu",
+      "emptyTitle": "Oraindik ez dago iritzirik",
+      "tableCaption": "Iritziak",
+      "reviewerHeader": "Nork idatzi du",
+      "ratingHeader": "Balorazioa",
+      "rating": "{rating} / 5",
+      "commentHeader": "Iruzkina",
+      "typeHeader": "Mota",
+      "typeEvent": "Jarduera",
+      "typeTeam": "Taldea",
+      "dateHeader": "Data",
+      "actionsHeader": "Ekintzak",
+      "delete": "Ezabatu",
+      "count": "{count, plural, one {# iritzi} other {# iritzi}}",
+      "deleteTitle": "Iritzi hau ezabatu?",
+      "deleteDescription": "{name}(r)en iritzia ezabatuko da. Ezin da desegin."
+    },
+    "notificaciones": {
+      "noAccessDescription": "Superadminak bakarrik bidaltzen ditu jakinarazpenak eta kudeatzen haien txantiloiak.",
+      "heading": "Jakinarazpenak",
+      "intro": "Jakinarazpen bat pertsona bati edo guztiei bidali, eta sistemaren jakinarazpenen txantiloiak kudeatu.",
+      "sectionsLegend": "Jakinarazpenen atalak",
+      "tabSend": "Bidali",
+      "tabTemplates": "Txantiloiak",
+      "sendTitle": "Jakinarazpen bat bidali",
+      "sendHint": "Beste edozein jakinarazpen bezala iristen da aplikaziora (eta push edo posta bidez, pertsonak aktibatuta badu). Bidalketa hauek ez dute inoiz txantiloirik erabiltzen: testua idatzi bezala bidaltzen da. Ez dira Ikuskaritzan geratzen.",
+      "targetLabel": "Hartzaileak",
+      "targetUser": "Pertsona bat",
+      "targetAll": "Pertsona guztiak",
+      "searchLabel": "Kontua bilatu (posta edo erabiltzailea)",
+      "recipientSelected": "{name}(r)i bidaliko zaio.",
+      "recipientNone": "Aukeratu kontu bat bilatzailearekin.",
+      "targetAllHint": "Popyplaneko kontu aktibo guztiei bidaliko zaie, plataformako langileak barne.",
+      "titleLabel": "Izenburua",
+      "messageLabel": "Mezua",
+      "typeLabel": "Mota",
+      "priorityLabel": "Lehentasuna",
+      "sendAction": "Jakinarazpena bidali",
+      "sentQueued": "Bidalketa masiboa ilaran: atzeko planoan entregatuko da.",
+      "sentTo": "{count, plural, one {# pertsonari bidalia.} other {# pertsonari bidalia.}}",
+      "confirmAllTitle": "Pertsona guztiei bidali?",
+      "confirmUserTitle": "Jakinarazpen hau bidali?",
+      "confirmAllDescription": "Jakinarazpena Popyplaneko kontu aktibo guztietara iritsiko da, langileak barne. Ezin da desegin ezta gero kendu ere.",
+      "confirmUserDescription": "Jakinarazpena {name}(r)i iritsiko zaio. Ezin da gero kendu.",
+      "types": {
+        "announcement": "Iragarpena",
+        "system": "Sistema",
+        "warning": "Abisua",
+        "message": "Mezua",
+        "dmRequest": "Mezu zuzenaren eskaera",
+        "planInvitation": "Jarduera baterako gonbidapena",
+        "planUpdate": "Jarduera baten aldaketa",
+        "planReminder": "Jardueraren oroigarria",
+        "planCancelled": "Jarduera bertan behera",
+        "planCompleted": "Jarduera amaitua",
+        "reviewReceived": "Iritzia jasoa",
+        "reportResolved": "Salaketa ebatzia",
+        "helpRequest": "Laguntza eskaera",
+        "accountSuspended": "Kontua etena",
+        "survey": "Inkesta",
+        "supportHelpRequest": "Laguntza sarea: laguntza eskaera",
+        "supportLink": "Laguntza sarea: lotura"
+      },
+      "priorities": {
+        "low": "Baxua",
+        "medium": "Ertaina",
+        "high": "Altua",
+        "urgent": "Presazkoa"
+      },
+      "newTemplate": "Txantiloi berria",
+      "editTemplate": "Txantiloia editatu",
+      "templateFormHint": "Idatzi testuak ingelesez, markatzaileak giltza artean ('{name}'): sistemak pertsona bakoitzaren hizkuntzara itzultzen ditu zerbitzariaren katalogoekin eta markatzaileak jakinarazpenaren datuekin betetzen ditu. Katalogo horietan ez dagoen testua dagoen bezala bidaltzen da.",
+      "nameLabel": "Izena",
+      "titleTemplateLabel": "Izenburua (txantiloia)",
+      "messageTemplateLabel": "Mezua (txantiloia)",
+      "emailSubjectLabel": "Postaren gaia (aukerakoa)",
+      "emailBodyLabel": "Postaren gorputza (aukerakoa)",
+      "activeLabel": "Aktibo",
+      "templatesHint": "Txantiloi batek mota horretako sistemak berak sortzen dituen jakinarazpenak bakarrik aldatzen ditu; mota bereko hainbat aktibo badaude, zaharrena erabiltzen da. Ez du inoiz «Bidali» fitxatik bidaltzen dena ukitzen.",
+      "templatesLoadError": "Ezin izan dira txantiloiak kargatu",
+      "templatesEmpty": "Ez dago txantiloirik",
+      "templatesCaption": "Jakinarazpen txantiloiak",
+      "stateHeader": "Egoera",
+      "activeBadge": "Aktibo",
+      "inactiveBadge": "Inaktibo",
+      "actionsHeader": "Ekintzak",
+      "edit": "Editatu",
+      "delete": "Ezabatu",
+      "templatesCount": "{count, plural, one {# txantiloi} other {# txantiloi}}",
+      "deleteTitle": "Txantiloi hau ezabatu?",
+      "deleteDescription": "«{name}» ezabatuko da. Mota horretako jakinarazpenek beren testu lehenetsia erabiliko dute berriro (edo mota bereko beste txantiloi aktibo bat). Ezin da desegin.",
+      "activeHint": "Txantiloi berria aktibatu gabe sortzen da: aktibatzean, mota horretako sistemaren jakinarazpen guztien testua aldatzen du berehala."
+    },
+    "nomencladores": {
+      "noAccessDescription": "Superadminak bakarrik editatzen ditu katalogoak.",
+      "heading": "Katalogoak",
+      "intro": "Aplikazioak eta panelak erabiltzen dituzten katalogoak: hizkuntzak, zaletasunak eta komunitate eta jardueren kategoriak.",
+      "catalogLabel": "Katalogoa",
+      "catalogs": {
+        "languages": "Hizkuntzak",
+        "hobbyCategories": "Zaletasunen kategoriak",
+        "hobbies": "Zaletasunak",
+        "communityCategories": "Komunitateen kategoriak",
+        "communitySubcategories": "Komunitateen azpikategoriak",
+        "eventCategories": "Jardueren kategoriak",
+        "eventSubcategories": "Jardueren azpikategoriak"
+      },
+      "hints": {
+        "languages": "Pertsona batek bere profilean markatu ditzakeen hizkuntzak. Kodea bi hizkiko ISO kodea da eta ez da errepikatzen.",
+        "hobbyCategories": "Profileko zaletasunen taldeak. Kodea ez da errepikatzen.",
+        "hobbies": "Pertsona batek bere profilean markatu ditzakeen zaletasunak, bakoitza bere kategorian. Kodea ez da errepikatzen.",
+        "communityCategories": "Komunitate kategoriak. Izena ez da errepikatzen. Kategoriaren irudia ez da paneletik igotzen: hemen editatzeak daukana gordetzen du.",
+        "communitySubcategories": "Komunitate azpikategoriak, bakoitza bere kategorian. Ez errepikatu izenik kategoria berean.",
+        "eventCategories": "Jarduera kategoriak, bere motarekin eta ikono batekin (emoji bat edo testu labur bat).",
+        "eventSubcategories": "Jarduera azpikategoriak, bakoitza bere kategorian. Ez errepikatu izenik kategoria berean."
+      },
+      "deleteWarnings": {
+        "languages": "Hizkuntza ezabatzen da. Markatuta zuten profilek kodea gordetzen dute, baina ez da gehiago erakutsiko. Eskaintzeari utzi nahi badiozu bakarrik, desaktibatu.",
+        "hobbyCategories": "Zaletasunak dituen kategoria bat ezin da ezabatu: ezabatu lehenik bere zaletasunak edo, hobeto, desaktibatu.",
+        "hobbies": "Zaletasuna ezabatzen da. Markatuta zuten profilek kodea gordetzen dute, baina ez da gehiago erakutsiko. Eskaintzeari utzi nahi badiozu bakarrik, desaktibatu.",
+        "communityCategories": "Bere azpikategoria guztiak ere ezabatzen dira, eta erabiltzen zuten komunitateak kategoriarik gabe geratzen dira. Ezin da desegin; zalantzarik baduzu, desaktibatu.",
+        "communitySubcategories": "Azpikategoria ezabatu eta zuten komunitateetatik kentzen da. Ezin da desegin.",
+        "eventCategories": "Bere azpikategoria guztiak ere ezabatzen dira, eta erabiltzen zuten jarduerak kategoriarik gabe geratzen dira. Ezin da desegin; zalantzarik baduzu, desaktibatu.",
+        "eventSubcategories": "Azpikategoria ezabatu eta zuten jardueretatik kentzen da. Ezin da desegin."
+      },
+      "fields": {
+        "code": "Kodea",
+        "label": "Izena",
+        "order": "Ordena",
+        "emoji": "Emojia",
+        "parent": "Kategoria",
+        "categoryType": "Mota",
+        "description": "Deskribapena",
+        "icon": "Ikonoa"
+      },
+      "categoryTypes": {
+        "sports": "Kirola",
+        "cultural": "Kultura",
+        "leisure": "Aisia",
+        "travel": "Bidaiak",
+        "party": "Festa",
+        "motorcycle": "Motorra",
+        "other": "Besteak"
+      },
+      "chooseParent": "Aukeratu kategoria bat",
+      "newItem": "Elementu berria",
+      "editItem": "Elementua editatu",
+      "activeLabel": "Aktibo",
+      "communitiesCountHeader": "Komunitateak",
+      "stateHeader": "Egoera",
+      "activeBadge": "Aktibo",
+      "inactiveBadge": "Inaktibo",
+      "actionsHeader": "Ekintzak",
+      "edit": "Editatu",
+      "delete": "Ezabatu",
+      "loadError": "Ezin izan da katalogoa kargatu",
+      "empty": "Katalogo hau hutsik dago",
+      "count": "{count, plural, one {# elementu} other {# elementu}}",
+      "deleteTitle": "«{name}» ezabatu?"
     }
   },
   "paraguas": {
