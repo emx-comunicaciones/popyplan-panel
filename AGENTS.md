@@ -433,7 +433,10 @@ entidades normales, `/elegir-entidad`.
   app components` no debe encontrar nada. La regla está tabulada contra
   blanco: sobre fondo de marca se invierte (anillos de foco blancos,
   botones con fondo blanco propio). Pares auditados por
-  `lib/a11y/tokens.test.ts`; cabecera de entidad con
+  `lib/a11y/tokens.test.ts` (también sobre el fondo de página
+  `--color-border-light`, donde van las etiquetas de filtros: por eso
+  `--color-text-form` y `--color-success` son un 5-7 % más oscuros que en
+  la app; axe con contraste en `e2e/personas/`); cabecera de entidad con
   `lib/a11y/contrast.ts::readableOn`. Colores del mapa como literales hex
   a propósito (Leaflet los escribe como atributos SVG), atados a
   `globals.css` por `lib/metrics/mapScale.test.ts`.
@@ -483,6 +486,8 @@ entidades normales, `/elegir-entidad`.
 - `npm run gen:types` — regenera `lib/api/types.generated.ts` desde
   `../popyplan/docs/schema.yaml`; se commitea.
 - `npm run e2e` (Playwright contra el backend real)
+- `npm run e2e:personas` (Playwright con los personajes de `seed_personas`
+  contra el entorno de pruebas :8002, panel en el 3300; ver `e2e/CLAUDE.md`)
 
 Verificación antes de cerrar cualquier tarea:
 `npm run typecheck && npm run lint && npm run test:coverage && npm run build`
