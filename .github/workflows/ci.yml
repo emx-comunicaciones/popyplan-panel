@@ -58,7 +58,8 @@ jobs:
   e2e:
     name: Playwright e2e (backend real)
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # 20 min para la suite de siempre + el build y la suite con personajes.
+    timeout-minutes: 40
     # No se usa `continue-on-error: true` a nivel de job (a diferencia del
     # patrón de `popyplan-mobile/.github/workflows/e2e-live.yml`): si el
     # secreto existe y el backend arranca, un fallo real de los tests SÍ
@@ -182,6 +183,40 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: http://localhost:8001
         run: npm run e2e
+
+      # Sistema de pruebas (2026-09-27): segunda suite con los personajes de
+      # `seed_personas` (`playwright.personas.config.ts`), sobre el mismo
+      # backend. El comando existe en el backend desde su PR #3: mientras el
+      # `main` del backend no lo tenga, los dos pasos se saltan con un aviso.
+      - name: Sembrar los personajes (seed_personas)
+        id: personas
+        if: steps.check_token.outputs.skip != 'true'
+        working-directory: popyplan
+        env:
+          DJANGO_SETTINGS_MODULE: pop.settings_e2e
+        run: |
+          if ! python manage.py help seed_personas >/dev/null 2>&1; then
+            echo "::warning::El backend de main aún no tiene seed_personas: se salta la suite con personajes."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          python manage.py seed_personas --output "$GITHUB_WORKSPACE/personas.json" \
+            --api-url http://localhost:8001
+
+      - name: Ejecutar e2e con personajes
+        if: steps.check_token.outputs.skip != 'true' && steps.personas.outputs.skip != 'true'
+        working-directory: popyplan-panel
+        env:
+          PERSONAS_JSON: ${{ github.workspace }}/personas.json
+        run: npm run e2e:personas
+
+      - name: Subir el reporte de Playwright (personajes) si falla
+        if: failure() && steps.check_token.outputs.skip != 'true' && steps.personas.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-personas
+          path: popyplan-panel/playwright-report-personas/
+          retention-days: 7
 
       - name: Volcar el log del backend si el job falla
         if: failure() && steps.check_token.outputs.skip != 'true'
