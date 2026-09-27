@@ -1421,7 +1421,7 @@ export interface paths {
         };
         /**
          * Código de invitación de una comunidad privada
-         * @description Solo para gestores y solo en comunidades `private`.
+         * @description Solo para gestores y solo en comunidades que se entran con código (`private`, `private_listed`).
          */
         get: operations["communities_invite_code_retrieve"];
         put?: never;
@@ -6748,7 +6748,7 @@ export interface paths {
          */
         get: operations["user_images_list"];
         put?: never;
-        /** @description ViewSet para gestionar fotos de perfil del usuario (estilo Tinder) */
+        /** @description ViewSet para gestionar las fotos de perfil del usuario */
         post: operations["user_images_create"];
         delete?: never;
         options?: never;
@@ -8633,7 +8633,7 @@ export interface components {
             last_name?: string;
             phone?: string;
             /** Format: date */
-            birth_date?: string | null;
+            birth_date: string;
             /** @default true */
             push_notifications: boolean;
             /** @default true */
@@ -9140,15 +9140,9 @@ export interface components {
             /** Estado */
             readonly status: components["schemas"]["Status5bbEnum"];
             readonly image: string | null;
-            /**
-             * Latitud
-             * Format: decimal
-             */
+            /** Format: decimal */
             readonly latitude: string | null;
-            /**
-             * Longitud
-             * Format: decimal
-             */
+            /** Format: decimal */
             readonly longitude: string | null;
             readonly place: components["schemas"]["PlaceRef"];
             /**
@@ -9234,15 +9228,9 @@ export interface components {
             /** Estado */
             readonly status: components["schemas"]["Status5bbEnum"];
             readonly image: string | null;
-            /**
-             * Latitud
-             * Format: decimal
-             */
+            /** Format: decimal */
             readonly latitude: string | null;
-            /**
-             * Longitud
-             * Format: decimal
-             */
+            /** Format: decimal */
             readonly longitude: string | null;
             readonly place: components["schemas"]["PlaceRef"];
             /**
