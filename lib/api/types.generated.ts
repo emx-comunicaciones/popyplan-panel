@@ -8144,7 +8144,12 @@ export interface components {
             members: number | null;
             suppressed: boolean;
         };
-        /** @description Campos de actividad compartidos entre CommunitySerializer y CommunityListSerializer. */
+        /**
+         * @description Detalle de comunidad. El punto (`latitude`/`longitude`) sale exacto
+         *     solo para quien la gestiona; el resto, miembros incluidos, recibe el
+         *     aproximado (≈1 km): es una zona de referencia, a menudo la casa de quien
+         *     creó una comunidad de perfil. Se sigue pudiendo escribir exacto.
+         */
         Community: {
             /** Format: uuid */
             readonly id: string;
@@ -8260,7 +8265,10 @@ export interface components {
          * @enum {string}
          */
         CommunityImageRoleEnum: "cover_vertical" | "cover_horizontal" | "gallery";
-        /** @description Campos de actividad compartidos entre CommunitySerializer y CommunityListSerializer. */
+        /**
+         * @description Tarjeta de listado y descubrimiento: siempre con el punto aproximado
+         *     (quien gestiona la comunidad tiene el exacto en el detalle).
+         */
         CommunityList: {
             /** Format: uuid */
             readonly id: string;
@@ -8410,7 +8418,12 @@ export interface components {
             id: string;
             name: string;
         };
-        /** @description Campos de actividad compartidos entre CommunitySerializer y CommunityListSerializer. */
+        /**
+         * @description Detalle de comunidad. El punto (`latitude`/`longitude`) sale exacto
+         *     solo para quien la gestiona; el resto, miembros incluidos, recibe el
+         *     aproximado (≈1 km): es una zona de referencia, a menudo la casa de quien
+         *     creó una comunidad de perfil. Se sigue pudiendo escribir exacto.
+         */
         CommunityRequest: {
             name: string;
             description?: string;
@@ -11254,7 +11267,12 @@ export interface components {
             image?: string | null;
             is_active?: boolean;
         };
-        /** @description Campos de actividad compartidos entre CommunitySerializer y CommunityListSerializer. */
+        /**
+         * @description Detalle de comunidad. El punto (`latitude`/`longitude`) sale exacto
+         *     solo para quien la gestiona; el resto, miembros incluidos, recibe el
+         *     aproximado (≈1 km): es una zona de referencia, a menudo la casa de quien
+         *     creó una comunidad de perfil. Se sigue pudiendo escribir exacto.
+         */
         PatchedCommunityRequest: {
             name?: string;
             description?: string;
