@@ -38,12 +38,17 @@
   --color-background: #ffffff;
   --color-text-base: #0b0a0a;
   --color-text-secondary: #030607;
-  --color-text-form: #45788e;
+  /* #45788e de la app, oscurecido un 5 % en el panel: sobre el fondo de
+     página (`--color-border-light`) daba 4,4:1 y axe lo marcaba en todas
+     las etiquetas de filtros (sistema de pruebas, 2026-09-27). */
+  --color-text-form: #417286;
   --color-text-disabled: #bdbdbd;
   --color-text-inverse: #ffffff;
   --color-white: #ffffff;
   --color-error: #be3846;
-  --color-success: #47785d;
+  /* #47785d de la app, oscurecido un 7 %: en `Badge` (`bg-success/10`
+     sobre el fondo de página) daba 4,08:1. */
+  --color-success: #426f56;
   --color-interest: #1fb3ae;
   --color-border: #e4e4e4;
   --color-border-light: #edf5fb;

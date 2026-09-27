@@ -62,6 +62,10 @@ describe("contraste de los tokens de color (app/globals.css)", () => {
       4.5,
     ],
     ["text-base / border-light (fondo de página)", "color-text-base", "color-border-light", 4.5],
+    // Etiquetas de filtros y leyendas van directamente sobre el fondo de
+    // página, no sobre blanco: axe (e2e de personajes) lo encontró a 4,4:1.
+    ["text-form / border-light (etiquetas sobre el fondo de página)", "color-text-form",
+      "color-border-light", 4.5],
     [
       "text-inverse / primary-700 (botón primario, cabecera de entidad)",
       "color-text-inverse",
@@ -120,6 +124,23 @@ describe("contraste de los tokens de color (app/globals.css)", () => {
   it.each(pairs)("%s ≥ %s:1", (_label, fg, bg, threshold) => {
     const ratio = contrastRatio(token(fg), token(bg));
     expect(ratio).toBeGreaterThanOrEqual(threshold);
+  });
+
+  it("la insignia de éxito (`Badge`: bg-success/10) se lee sobre el fondo de página", () => {
+    // `bg-success/10` es el propio color al 10 % sobre lo que haya debajo:
+    // en las tablas del panel, el fondo de página (`--color-border-light`).
+    const mezcla = (fg: string, bg: string, alfa: number) =>
+      "#" +
+      [1, 3, 5]
+        .map((i) => {
+          const c = Math.round(
+            parseInt(fg.slice(i, i + 2), 16) * alfa + parseInt(bg.slice(i, i + 2), 16) * (1 - alfa),
+          );
+          return c.toString(16).padStart(2, "0");
+        })
+        .join("");
+    const fondo = mezcla(token("color-success"), token("color-border-light"), 0.1);
+    expect(contrastRatio(token("color-success"), fondo)).toBeGreaterThanOrEqual(4.5);
   });
 
   it("el token --color-text-form-secondary (sin uso) ya no existe", () => {
