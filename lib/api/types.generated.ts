@@ -8637,9 +8637,9 @@ export interface components {
          *     bio, intereses, municipio) se edita después en `users.Profile`.
          */
         CustomRegisterRequest: {
-            username?: string;
+            username: string;
             /** Format: email */
-            email?: string;
+            email: string;
             password1: string;
             password2: string;
             first_name?: string;
@@ -8853,6 +8853,7 @@ export interface components {
             /**
              * Correo
              * Format: email
+             * @default
              */
             readonly email: string;
             /** Nombre para mostrar */
@@ -8868,7 +8869,10 @@ export interface components {
              * @description Debe tener rol referente en esta misma entidad (se valida en el servicio).
              */
             readonly referent: number | null;
-            /** Estado */
+            /**
+             * Estado
+             * @default pending
+             */
             readonly status: components["schemas"]["EntityInvitationStatusEnum"];
             /**
              * Enviada el
@@ -10846,7 +10850,7 @@ export interface components {
         OriginEnum: "own" | "proposed";
         PaginatedAuditLogList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -10857,11 +10861,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["AuditLog"][];
+            results: components["schemas"]["AuditLog"][];
         };
         PaginatedBlockAdminList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -10872,11 +10876,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["BlockAdmin"][];
+            results: components["schemas"]["BlockAdmin"][];
         };
         PaginatedBlockList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -10887,11 +10891,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["Block"][];
+            results: components["schemas"]["Block"][];
         };
         PaginatedChatListResponseList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -10902,11 +10906,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["ChatListResponse"][];
+            results: components["schemas"]["ChatListResponse"][];
         };
         PaginatedChatRoomList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -10917,11 +10921,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["ChatRoom"][];
+            results: components["schemas"]["ChatRoom"][];
         };
         PaginatedCommunityCategoryList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -10932,11 +10936,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["CommunityCategory"][];
+            results: components["schemas"]["CommunityCategory"][];
         };
         PaginatedCommunityImageList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -10947,11 +10951,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["CommunityImage"][];
+            results: components["schemas"]["CommunityImage"][];
         };
         PaginatedCommunityListList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -10962,11 +10966,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["CommunityList"][];
+            results: components["schemas"]["CommunityList"][];
         };
         PaginatedCommunityPostList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -10977,11 +10981,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["CommunityPost"][];
+            results: components["schemas"]["CommunityPost"][];
         };
         PaginatedDisciplineList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -10992,11 +10996,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["Discipline"][];
+            results: components["schemas"]["Discipline"][];
         };
         PaginatedEventListList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11007,11 +11011,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["EventList"][];
+            results: components["schemas"]["EventList"][];
         };
         PaginatedExerciseList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11022,11 +11026,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["Exercise"][];
+            results: components["schemas"]["Exercise"][];
         };
         PaginatedHelpRequestList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11037,11 +11041,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["HelpRequest"][];
+            results: components["schemas"]["HelpRequest"][];
         };
         PaginatedHiddenOrganizationList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11052,11 +11056,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["HiddenOrganization"][];
+            results: components["schemas"]["HiddenOrganization"][];
         };
         PaginatedNotificationListResponseList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11067,11 +11071,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["NotificationListResponse"][];
+            results: components["schemas"]["NotificationListResponse"][];
         };
         PaginatedNotificationTemplateList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11082,11 +11086,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["NotificationTemplate"][];
+            results: components["schemas"]["NotificationTemplate"][];
         };
         PaginatedOrganizationList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11097,11 +11101,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["Organization"][];
+            results: components["schemas"]["Organization"][];
         };
         PaginatedPlaceList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11112,11 +11116,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["Place"][];
+            results: components["schemas"]["Place"][];
         };
         PaginatedPlanCategoryList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11127,11 +11131,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["PlanCategory"][];
+            results: components["schemas"]["PlanCategory"][];
         };
         PaginatedPlanSubCategoryList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11142,11 +11146,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["PlanSubCategory"][];
+            results: components["schemas"]["PlanSubCategory"][];
         };
         PaginatedReportList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11157,11 +11161,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["Report"][];
+            results: components["schemas"]["Report"][];
         };
         PaginatedReviewListResponseList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11172,11 +11176,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["ReviewListResponse"][];
+            results: components["schemas"]["ReviewListResponse"][];
         };
         PaginatedVerificationReferenceList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11187,11 +11191,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["VerificationReference"][];
+            results: components["schemas"]["VerificationReference"][];
         };
         PaginatedVerificationReviewList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11202,11 +11206,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["VerificationReview"][];
+            results: components["schemas"]["VerificationReview"][];
         };
         PaginatedWallPostList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11217,11 +11221,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["WallPost"][];
+            results: components["schemas"]["WallPost"][];
         };
         PaginatedWorkoutListList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11232,11 +11236,11 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["WorkoutList"][];
+            results: components["schemas"]["WorkoutList"][];
         };
         PaginatedWorkoutTemplateList: {
             /** @example 123 */
-            count?: number;
+            count: number;
             /**
              * Format: uri
              * @example http://api.example.org/accounts/?page=4
@@ -11247,7 +11251,7 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results?: components["schemas"]["WorkoutTemplate"][];
+            results: components["schemas"]["WorkoutTemplate"][];
         };
         /** @description Serializer para salas de chat - Solo campos seguros */
         PatchedChatRoomRequest: {
@@ -14672,11 +14676,11 @@ export interface operations {
     admin_chats_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -14725,7 +14729,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -14747,7 +14751,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -14775,7 +14779,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -14796,7 +14800,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -14824,7 +14828,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -14846,7 +14850,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -15376,9 +15380,9 @@ export interface operations {
     catalogs_hobbies_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -15427,7 +15431,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Hobby. */
+                /** @description Un valor de entero único que identifique este Hobby. */
                 id: number;
             };
             cookie?: never;
@@ -15449,7 +15453,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Hobby. */
+                /** @description Un valor de entero único que identifique este Hobby. */
                 id: number;
             };
             cookie?: never;
@@ -15477,7 +15481,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Hobby. */
+                /** @description Un valor de entero único que identifique este Hobby. */
                 id: number;
             };
             cookie?: never;
@@ -15498,7 +15502,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Hobby. */
+                /** @description Un valor de entero único que identifique este Hobby. */
                 id: number;
             };
             cookie?: never;
@@ -15524,9 +15528,9 @@ export interface operations {
     catalogs_hobby_categories_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -15575,7 +15579,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Categoría de hobby. */
+                /** @description Un valor de entero único que identifique este Categoría de hobby. */
                 id: number;
             };
             cookie?: never;
@@ -15597,7 +15601,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Categoría de hobby. */
+                /** @description Un valor de entero único que identifique este Categoría de hobby. */
                 id: number;
             };
             cookie?: never;
@@ -15625,7 +15629,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Categoría de hobby. */
+                /** @description Un valor de entero único que identifique este Categoría de hobby. */
                 id: number;
             };
             cookie?: never;
@@ -15646,7 +15650,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Categoría de hobby. */
+                /** @description Un valor de entero único que identifique este Categoría de hobby. */
                 id: number;
             };
             cookie?: never;
@@ -15672,9 +15676,9 @@ export interface operations {
     catalogs_languages_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -15723,7 +15727,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Idioma. */
+                /** @description Un valor de entero único que identifique este Idioma. */
                 id: number;
             };
             cookie?: never;
@@ -15745,7 +15749,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Idioma. */
+                /** @description Un valor de entero único que identifique este Idioma. */
                 id: number;
             };
             cookie?: never;
@@ -15773,7 +15777,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Idioma. */
+                /** @description Un valor de entero único que identifique este Idioma. */
                 id: number;
             };
             cookie?: never;
@@ -15794,7 +15798,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Idioma. */
+                /** @description Un valor de entero único que identifique este Idioma. */
                 id: number;
             };
             cookie?: never;
@@ -15822,7 +15826,7 @@ export interface operations {
             query?: {
                 /** @description Filtrar por tipo: true=grupal, false=individual */
                 is_group?: boolean;
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
                 /** @description Número de página para paginación (ej: 1) */
                 page?: number;
@@ -15996,7 +16000,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -16048,7 +16052,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -16085,7 +16089,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -16137,7 +16141,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -16167,7 +16171,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -16227,7 +16231,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -16255,7 +16259,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -16283,7 +16287,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -16335,7 +16339,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -16365,7 +16369,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -16393,7 +16397,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -16415,7 +16419,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -16443,7 +16447,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
                 message_id: string;
             };
@@ -16466,7 +16470,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
                 message_id: string;
             };
@@ -16488,7 +16492,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
                 message_id: string;
             };
@@ -16517,7 +16521,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
                 message_id: string;
             };
@@ -16578,7 +16582,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
                 message_id: string;
             };
@@ -16607,7 +16611,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -16643,7 +16647,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -16664,7 +16668,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sala de Chat. */
+                /** @description Un Cadena UUID que identifique este Sala de Chat. */
                 id: string;
             };
             cookie?: never;
@@ -17031,11 +17035,11 @@ export interface operations {
     chat_direct_requests_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -17128,15 +17132,15 @@ export interface operations {
             query?: {
                 /** @description Nombre (parcial) de la categoría. */
                 category?: string;
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
                 /** @description Id de la entidad dueña. Para su titular/moderador devuelve todas sus comunidades (privadas y ambos espacios). */
                 owner_org?: number;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
                 /** @description Código INE del municipio de la comunidad. */
                 place?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -17185,7 +17189,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17207,7 +17211,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17235,7 +17239,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17256,7 +17260,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17285,7 +17289,7 @@ export interface operations {
             header?: never;
             path: {
                 comment_id: string;
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17307,7 +17311,7 @@ export interface operations {
             header?: never;
             path: {
                 comment_id: string;
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17336,7 +17340,7 @@ export interface operations {
             header?: never;
             path: {
                 comment_id: string;
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17362,16 +17366,16 @@ export interface operations {
     communities_images_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17393,7 +17397,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 image_id: string;
             };
@@ -17415,7 +17419,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17446,7 +17450,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17468,7 +17472,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17496,7 +17500,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17524,7 +17528,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17546,7 +17550,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 member_id: string;
             };
@@ -17575,7 +17579,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 member_id: string;
             };
@@ -17604,7 +17608,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 member_id: string;
             };
@@ -17633,7 +17637,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 member_id: string;
             };
@@ -17662,7 +17666,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17687,7 +17691,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17709,7 +17713,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 post_id: string;
             };
@@ -17731,7 +17735,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 post_id: string;
             };
@@ -17754,7 +17758,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 post_id: string;
             };
@@ -17783,7 +17787,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 post_id: string;
             };
@@ -17806,7 +17810,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 post_id: string;
             };
@@ -17835,7 +17839,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 post_id: string;
             };
@@ -17858,7 +17862,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 post_id: string;
             };
@@ -17887,7 +17891,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17915,7 +17919,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17937,7 +17941,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -17959,7 +17963,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 thread_id: string;
             };
@@ -17982,7 +17986,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 thread_id: string;
             };
@@ -18004,7 +18008,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 thread_id: string;
             };
@@ -18033,7 +18037,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 thread_id: string;
             };
@@ -18062,7 +18066,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 thread_id: string;
             };
@@ -18085,7 +18089,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 post_id: string;
                 thread_id: string;
@@ -18108,7 +18112,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 post_id: string;
                 thread_id: string;
@@ -18138,7 +18142,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 post_id: string;
                 thread_id: string;
@@ -18168,7 +18172,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Comunidad. */
+                /** @description Un Cadena UUID que identifique este Comunidad. */
                 id: string;
                 thread_id: string;
             };
@@ -18269,13 +18273,13 @@ export interface operations {
                 lat?: number;
                 /** @description Longitud; por defecto la del perfil. */
                 lng?: number;
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
                 /** @description Radio en km (por defecto 25, máximo 200: por encima se recorta). */
                 radius_km?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -18297,11 +18301,11 @@ export interface operations {
     communities_wall_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -18323,11 +18327,11 @@ export interface operations {
     community_categories_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -18376,7 +18380,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Categoría de Comunidad. */
+                /** @description Un Cadena UUID que identifique este Categoría de Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -18398,7 +18402,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Categoría de Comunidad. */
+                /** @description Un Cadena UUID que identifique este Categoría de Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -18426,7 +18430,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Categoría de Comunidad. */
+                /** @description Un Cadena UUID que identifique este Categoría de Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -18447,7 +18451,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Categoría de Comunidad. */
+                /** @description Un Cadena UUID que identifique este Categoría de Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -18473,11 +18477,11 @@ export interface operations {
     community_posts_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -18526,7 +18530,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Post de Comunidad. */
+                /** @description Un Cadena UUID que identifique este Post de Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -18548,7 +18552,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Post de Comunidad. */
+                /** @description Un Cadena UUID que identifique este Post de Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -18576,7 +18580,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Post de Comunidad. */
+                /** @description Un Cadena UUID que identifique este Post de Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -18597,7 +18601,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Post de Comunidad. */
+                /** @description Un Cadena UUID que identifique este Post de Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -18623,9 +18627,9 @@ export interface operations {
     community_subcategories_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -18674,7 +18678,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sub-categoría de Comunidad. */
+                /** @description Un Cadena UUID que identifique este Sub-categoría de Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -18696,7 +18700,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sub-categoría de Comunidad. */
+                /** @description Un Cadena UUID que identifique este Sub-categoría de Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -18724,7 +18728,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sub-categoría de Comunidad. */
+                /** @description Un Cadena UUID que identifique este Sub-categoría de Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -18745,7 +18749,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sub-categoría de Comunidad. */
+                /** @description Un Cadena UUID que identifique este Sub-categoría de Comunidad. */
                 id: string;
             };
             cookie?: never;
@@ -18771,11 +18775,11 @@ export interface operations {
     event_categories_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -18824,7 +18828,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Categoría de Plan. */
+                /** @description Un valor de entero único que identifique este Categoría de Plan. */
                 id: number;
             };
             cookie?: never;
@@ -18846,7 +18850,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Categoría de Plan. */
+                /** @description Un valor de entero único que identifique este Categoría de Plan. */
                 id: number;
             };
             cookie?: never;
@@ -18874,7 +18878,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Categoría de Plan. */
+                /** @description Un valor de entero único que identifique este Categoría de Plan. */
                 id: number;
             };
             cookie?: never;
@@ -18895,7 +18899,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Categoría de Plan. */
+                /** @description Un valor de entero único que identifique este Categoría de Plan. */
                 id: number;
             };
             cookie?: never;
@@ -18921,11 +18925,11 @@ export interface operations {
     event_subcategories_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -18974,7 +18978,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sub-categoría de Plan. */
+                /** @description Un Cadena UUID que identifique este Sub-categoría de Plan. */
                 id: string;
             };
             cookie?: never;
@@ -18996,7 +19000,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sub-categoría de Plan. */
+                /** @description Un Cadena UUID que identifique este Sub-categoría de Plan. */
                 id: string;
             };
             cookie?: never;
@@ -19024,7 +19028,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sub-categoría de Plan. */
+                /** @description Un Cadena UUID que identifique este Sub-categoría de Plan. */
                 id: string;
             };
             cookie?: never;
@@ -19045,7 +19049,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Sub-categoría de Plan. */
+                /** @description Un Cadena UUID que identifique este Sub-categoría de Plan. */
                 id: string;
             };
             cookie?: never;
@@ -19073,11 +19077,11 @@ export interface operations {
             query?: {
                 /** @description Obligatorio. */
                 community?: string;
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -19126,7 +19130,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Actividad. */
+                /** @description Un Cadena UUID que identifique este Actividad. */
                 id: string;
             };
             cookie?: never;
@@ -19148,7 +19152,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Actividad. */
+                /** @description Un Cadena UUID que identifique este Actividad. */
                 id: string;
             };
             cookie?: never;
@@ -19176,7 +19180,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Actividad. */
+                /** @description Un Cadena UUID que identifique este Actividad. */
                 id: string;
             };
             cookie?: never;
@@ -19197,7 +19201,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Actividad. */
+                /** @description Un Cadena UUID que identifique este Actividad. */
                 id: string;
             };
             cookie?: never;
@@ -19225,7 +19229,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Actividad. */
+                /** @description Un Cadena UUID que identifique este Actividad. */
                 id: string;
             };
             cookie?: never;
@@ -19265,14 +19269,14 @@ export interface operations {
     events_attendees_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
             path: {
-                /** @description A UUID string identifying this Actividad. */
+                /** @description Un Cadena UUID que identifique este Actividad. */
                 id: string;
             };
             cookie?: never;
@@ -19294,7 +19298,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Actividad. */
+                /** @description Un Cadena UUID que identifique este Actividad. */
                 id: string;
             };
             cookie?: never;
@@ -19316,7 +19320,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Actividad. */
+                /** @description Un Cadena UUID que identifique este Actividad. */
                 id: string;
             };
             cookie?: never;
@@ -19366,7 +19370,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Actividad. */
+                /** @description Un Cadena UUID que identifique este Actividad. */
                 id: string;
             };
             cookie?: never;
@@ -19388,7 +19392,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Actividad. */
+                /** @description Un Cadena UUID que identifique este Actividad. */
                 id: string;
             };
             cookie?: never;
@@ -19417,7 +19421,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Actividad. */
+                /** @description Un Cadena UUID que identifique este Actividad. */
                 id: string;
             };
             cookie?: never;
@@ -19445,7 +19449,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Actividad. */
+                /** @description Un Cadena UUID que identifique este Actividad. */
                 id: string;
             };
             cookie?: never;
@@ -19473,7 +19477,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Actividad. */
+                /** @description Un Cadena UUID que identifique este Actividad. */
                 id: string;
             };
             cookie?: never;
@@ -19711,9 +19715,9 @@ export interface operations {
     habits_goals_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
                 week?: string;
             };
@@ -20136,11 +20140,11 @@ export interface operations {
     notification_templates_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -20189,7 +20193,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Plantilla de Notificación. */
+                /** @description Un valor de entero único que identifique este Plantilla de Notificación. */
                 id: number;
             };
             cookie?: never;
@@ -20211,7 +20215,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Plantilla de Notificación. */
+                /** @description Un valor de entero único que identifique este Plantilla de Notificación. */
                 id: number;
             };
             cookie?: never;
@@ -20239,7 +20243,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Plantilla de Notificación. */
+                /** @description Un valor de entero único que identifique este Plantilla de Notificación. */
                 id: number;
             };
             cookie?: never;
@@ -20260,7 +20264,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Plantilla de Notificación. */
+                /** @description Un valor de entero único que identifique este Plantilla de Notificación. */
                 id: number;
             };
             cookie?: never;
@@ -20307,9 +20311,9 @@ export interface operations {
                  *     * `system` - Sistema
                  */
                 notification_type?: "account_suspended" | "announcement" | "dm_request" | "help_request" | "message" | "plan_cancelled" | "plan_completed" | "plan_invitation" | "plan_reminder" | "plan_update" | "report_resolved" | "review_received" | "support_help_request" | "support_link" | "survey" | "system" | "warning";
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
                 /**
                  * @description * `low` - Baja
@@ -20318,7 +20322,7 @@ export interface operations {
                  *     * `urgent` - Urgente
                  */
                 priority?: "high" | "low" | "medium" | "urgent";
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -20407,7 +20411,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Notificación. */
+                /** @description Un Cadena UUID que identifique este Notificación. */
                 id: string;
             };
             cookie?: never;
@@ -20445,7 +20449,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Notificación. */
+                /** @description Un Cadena UUID que identifique este Notificación. */
                 id: string;
             };
             cookie?: never;
@@ -20497,7 +20501,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Notificación. */
+                /** @description Un Cadena UUID que identifique este Notificación. */
                 id: string;
             };
             cookie?: never;
@@ -20543,7 +20547,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Notificación. */
+                /** @description Un Cadena UUID que identifique este Notificación. */
                 id: string;
             };
             cookie?: never;
@@ -20595,7 +20599,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Notificación. */
+                /** @description Un Cadena UUID que identifique este Notificación. */
                 id: string;
             };
             cookie?: never;
@@ -20633,7 +20637,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Notificación. */
+                /** @description Un Cadena UUID que identifique este Notificación. */
                 id: string;
                 setting_id: string;
             };
@@ -20672,7 +20676,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Notificación. */
+                /** @description Un Cadena UUID que identifique este Notificación. */
                 id: string;
                 setting_id: string;
             };
@@ -21034,11 +21038,11 @@ export interface operations {
     organizations_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -21464,7 +21468,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this entidad. */
+                /** @description Un valor de entero único que identifique este entidad. */
                 id: number;
             };
             cookie?: never;
@@ -21486,7 +21490,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this entidad. */
+                /** @description Un valor de entero único que identifique este entidad. */
                 id: number;
             };
             cookie?: never;
@@ -21528,7 +21532,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this entidad. */
+                /** @description Un valor de entero único que identifique este entidad. */
                 id: number;
             };
             cookie?: never;
@@ -21554,14 +21558,14 @@ export interface operations {
     organizations_members_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this entidad. */
+                /** @description Un valor de entero único que identifique este entidad. */
                 id: number;
             };
             cookie?: never;
@@ -21617,14 +21621,14 @@ export interface operations {
     organizations_members_create: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this entidad. */
+                /** @description Un valor de entero único que identifique este entidad. */
                 id: number;
             };
             cookie?: never;
@@ -21686,14 +21690,14 @@ export interface operations {
     organizations_members_destroy: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this entidad. */
+                /** @description Un valor de entero único que identifique este entidad. */
                 id: number;
             };
             cookie?: never;
@@ -21749,14 +21753,14 @@ export interface operations {
     organizations_references_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this entidad. */
+                /** @description Un valor de entero único que identifique este entidad. */
                 id: number;
             };
             cookie?: never;
@@ -21812,14 +21816,14 @@ export interface operations {
     organizations_references_create: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this entidad. */
+                /** @description Un valor de entero único que identifique este entidad. */
                 id: number;
             };
             cookie?: never;
@@ -21881,14 +21885,14 @@ export interface operations {
     organizations_references_destroy: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this entidad. */
+                /** @description Un valor de entero único que identifique este entidad. */
                 id: number;
             };
             cookie?: never;
@@ -21946,7 +21950,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this entidad. */
+                /** @description Un valor de entero único que identifique este entidad. */
                 id: number;
             };
             cookie?: never;
@@ -21981,7 +21985,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this entidad. */
+                /** @description Un valor de entero único que identifique este entidad. */
                 id: number;
             };
             cookie?: never;
@@ -23980,7 +23984,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Imagen de Perfil. */
+                /** @description Un valor de entero único que identifique este Imagen de Perfil. */
                 id: number;
             };
             cookie?: never;
@@ -24023,7 +24027,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Usuario. */
+                /** @description Un valor de entero único que identifique este Usuario. */
                 id: number;
             };
             cookie?: never;
@@ -24208,7 +24212,7 @@ export interface operations {
                 comarca_code?: string;
                 /** @description Uno o varios códigos INE separados por comas. */
                 ine_code?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
                 /** @description Código de provincia (dos dígitos). Vista previa del atajo `provincia`. */
                 prov_code?: string;
@@ -24247,7 +24251,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique value identifying this municipio. */
+                /** @description Un valor único que identifique este municipio. */
                 ine_code: string;
             };
             cookie?: never;
@@ -24776,9 +24780,9 @@ export interface operations {
     program_interruptions_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -25118,7 +25122,7 @@ export interface operations {
             query?: {
                 /** @description Id de la actividad cuyas reseñas se piden. */
                 event?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
             };
             header?: never;
@@ -25167,7 +25171,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Reseña. */
+                /** @description Un Cadena UUID que identifique este Reseña. */
                 id: string;
             };
             cookie?: never;
@@ -25189,7 +25193,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Reseña. */
+                /** @description Un Cadena UUID que identifique este Reseña. */
                 id: string;
             };
             cookie?: never;
@@ -25217,7 +25221,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Reseña. */
+                /** @description Un Cadena UUID que identifique este Reseña. */
                 id: string;
             };
             cookie?: never;
@@ -25238,7 +25242,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Reseña. */
+                /** @description Un Cadena UUID que identifique este Reseña. */
                 id: string;
             };
             cookie?: never;
@@ -25312,11 +25316,11 @@ export interface operations {
                 action?: string;
                 /** @description Id de quien hizo la acción. */
                 actor?: number;
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
                 /** @description Fecha ISO de inicio (inclusive). */
                 since?: string;
@@ -25353,11 +25357,11 @@ export interface operations {
     safety_blocks_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -25486,11 +25490,11 @@ export interface operations {
     safety_blocks_admin_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -25560,7 +25564,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this acceso de emergencia. */
+                /** @description Un Cadena UUID que identifique este acceso de emergencia. */
                 id: string;
             };
             cookie?: never;
@@ -25594,16 +25598,16 @@ export interface operations {
     safety_emergency_access_reference_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
             path: {
-                /** @description A UUID string identifying this acceso de emergencia. */
+                /** @description Un Cadena UUID que identifique este acceso de emergencia. */
                 id: string;
             };
             cookie?: never;
@@ -25670,7 +25674,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this aviso de ayuda. */
+                /** @description Un Cadena UUID que identifique este aviso de ayuda. */
                 id: string;
             };
             cookie?: never;
@@ -25704,11 +25708,11 @@ export interface operations {
     safety_help_requests_pending_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -25744,11 +25748,11 @@ export interface operations {
     safety_hidden_organizations_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -25952,7 +25956,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this reporte. */
+                /** @description Un Cadena UUID que identifique este reporte. */
                 id: string;
             };
             cookie?: never;
@@ -25988,7 +25992,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this reporte. */
+                /** @description Un Cadena UUID que identifique este reporte. */
                 id: string;
             };
             cookie?: never;
@@ -26024,7 +26028,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this reporte. */
+                /** @description Un Cadena UUID que identifique este reporte. */
                 id: string;
             };
             cookie?: never;
@@ -26073,7 +26077,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this reporte. */
+                /** @description Un Cadena UUID que identifique este reporte. */
                 id: string;
             };
             cookie?: never;
@@ -26120,11 +26124,11 @@ export interface operations {
     safety_reports_mine_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -26146,11 +26150,11 @@ export interface operations {
     safety_reports_queue_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -26682,11 +26686,11 @@ export interface operations {
     training_disciplines_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -26735,7 +26739,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Disciplina. */
+                /** @description Un valor de entero único que identifique este Disciplina. */
                 id: number;
             };
             cookie?: never;
@@ -26757,7 +26761,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Disciplina. */
+                /** @description Un valor de entero único que identifique este Disciplina. */
                 id: number;
             };
             cookie?: never;
@@ -26785,7 +26789,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Disciplina. */
+                /** @description Un valor de entero único que identifique este Disciplina. */
                 id: number;
             };
             cookie?: never;
@@ -26806,7 +26810,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Disciplina. */
+                /** @description Un valor de entero único que identifique este Disciplina. */
                 id: number;
             };
             cookie?: never;
@@ -26834,11 +26838,11 @@ export interface operations {
             query?: {
                 /** @description Id o código de la disciplina. */
                 discipline?: string;
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -26893,7 +26897,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Ejercicio. */
+                /** @description Un valor de entero único que identifique este Ejercicio. */
                 id: number;
             };
             cookie?: never;
@@ -26918,7 +26922,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Ejercicio. */
+                /** @description Un valor de entero único que identifique este Ejercicio. */
                 id: number;
             };
             cookie?: never;
@@ -26949,7 +26953,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Ejercicio. */
+                /** @description Un valor de entero único que identifique este Ejercicio. */
                 id: number;
             };
             cookie?: never;
@@ -26973,7 +26977,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Ejercicio. */
+                /** @description Un valor de entero único que identifique este Ejercicio. */
                 id: number;
             };
             cookie?: never;
@@ -27085,13 +27089,13 @@ export interface operations {
             query?: {
                 /** @description Id o código de la disciplina. */
                 discipline?: string;
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
                 /** @description `system` (plantillas de Popyplan) o `mine` (mis rutinas). Sin el parámetro, las dos. */
                 scope?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -27150,7 +27154,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Plantilla de entrenamiento. */
+                /** @description Un valor de entero único que identifique este Plantilla de entrenamiento. */
                 id: number;
             };
             cookie?: never;
@@ -27177,7 +27181,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Plantilla de entrenamiento. */
+                /** @description Un valor de entero único que identifique este Plantilla de entrenamiento. */
                 id: number;
             };
             cookie?: never;
@@ -27210,7 +27214,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Plantilla de entrenamiento. */
+                /** @description Un valor de entero único que identifique este Plantilla de entrenamiento. */
                 id: number;
             };
             cookie?: never;
@@ -27236,7 +27240,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Plantilla de entrenamiento. */
+                /** @description Un valor de entero único que identifique este Plantilla de entrenamiento. */
                 id: number;
             };
             cookie?: never;
@@ -27264,11 +27268,11 @@ export interface operations {
             query?: {
                 /** @description Id o código de la disciplina. */
                 discipline?: string;
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
                 /** @description Desde esta fecha (incluida). */
                 since?: string;
@@ -27335,7 +27339,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Entrenamiento. */
+                /** @description Un valor de entero único que identifique este Entrenamiento. */
                 id: number;
             };
             cookie?: never;
@@ -27364,7 +27368,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Entrenamiento. */
+                /** @description Un valor de entero único que identifique este Entrenamiento. */
                 id: number;
             };
             cookie?: never;
@@ -27399,7 +27403,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Entrenamiento. */
+                /** @description Un valor de entero único que identifique este Entrenamiento. */
                 id: number;
             };
             cookie?: never;
@@ -27427,7 +27431,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Entrenamiento. */
+                /** @description Un valor de entero único que identifique este Entrenamiento. */
                 id: number;
             };
             cookie?: never;
@@ -27462,7 +27466,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Entrenamiento. */
+                /** @description Un valor de entero único que identifique este Entrenamiento. */
                 id: number;
             };
             cookie?: never;
@@ -27499,7 +27503,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Entrenamiento. */
+                /** @description Un valor de entero único que identifique este Entrenamiento. */
                 id: number;
             };
             cookie?: never;
@@ -27527,7 +27531,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Entrenamiento. */
+                /** @description Un valor de entero único que identifique este Entrenamiento. */
                 id: number;
             };
             cookie?: never;
@@ -27557,9 +27561,9 @@ export interface operations {
                 city?: string;
                 /** @description Filtrar solo eventos destacados: true/false */
                 featured?: boolean;
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
                 /** @description Filtrar por estado: draft, open, in_progress, finished, cancelled */
                 status?: string;
@@ -27610,7 +27614,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -27632,7 +27636,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -27660,7 +27664,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -27681,7 +27685,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -27709,7 +27713,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -27729,14 +27733,14 @@ export interface operations {
     treasure_hunt_list_pending_completions: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -27759,7 +27763,7 @@ export interface operations {
             header?: never;
             path: {
                 completion_id: string;
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -27787,7 +27791,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -27815,7 +27819,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -27843,7 +27847,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -27871,7 +27875,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -27893,7 +27897,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -27919,16 +27923,16 @@ export interface operations {
     treasure_hunt_list_participants: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
                 /** @description Filtrar por estado: pending, accepted, rejected */
                 status?: string;
             };
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -27950,7 +27954,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
                 participant_id: string;
             };
@@ -27979,7 +27983,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
                 participant_id: string;
             };
@@ -28008,7 +28012,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -28028,14 +28032,14 @@ export interface operations {
     treasure_hunt_list_prize_tiers: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -28057,7 +28061,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -28085,7 +28089,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
                 tier_id: string;
             };
@@ -28107,7 +28111,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
                 tier_id: string;
             };
@@ -28134,14 +28138,14 @@ export interface operations {
     treasure_hunt_ranking: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -28163,7 +28167,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -28191,7 +28195,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -28219,7 +28223,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
                 step_id: string;
             };
@@ -28241,7 +28245,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
                 step_id: string;
             };
@@ -28268,14 +28272,14 @@ export interface operations {
     treasure_hunt_list_steps: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -28297,7 +28301,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -28325,14 +28329,14 @@ export interface operations {
             query?: {
                 /** @description Si es "true", devuelve sólo equipos públicos con plazas disponibles. */
                 joinable?: string;
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -28354,7 +28358,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
                 team_id: string;
             };
@@ -28380,7 +28384,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
                 team_id: string;
             };
@@ -28409,7 +28413,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
                 team_id: string;
             };
@@ -28438,7 +28442,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
                 team_id: string;
             };
@@ -28467,7 +28471,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -28495,7 +28499,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -28523,7 +28527,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A UUID string identifying this Juego. */
+                /** @description Un Cadena UUID que identifique este Juego. */
                 id: string;
             };
             cookie?: never;
@@ -28549,9 +28553,9 @@ export interface operations {
     treasure_hunt_featured: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -28573,11 +28577,11 @@ export interface operations {
     user_images_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -28593,7 +28597,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @example 123 */
-                        count?: number;
+                        count: number;
                         /**
                          * Format: uri
                          * @example http://api.example.org/accounts/?page=4
@@ -28604,7 +28608,7 @@ export interface operations {
                          * @example http://api.example.org/accounts/?page=2
                          */
                         previous?: string | null;
-                        results?: {
+                        results: {
                             /** @example 1 */
                             id?: number;
                             /**
@@ -28661,7 +28665,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Imagen de Perfil. */
+                /** @description Un valor de entero único que identifique este Imagen de Perfil. */
                 id: number;
             };
             cookie?: never;
@@ -28683,7 +28687,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Imagen de Perfil. */
+                /** @description Un valor de entero único que identifique este Imagen de Perfil. */
                 id: number;
             };
             cookie?: never;
@@ -28747,7 +28751,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Imagen de Perfil. */
+                /** @description Un valor de entero único que identifique este Imagen de Perfil. */
                 id: number;
             };
             cookie?: never;
@@ -28768,7 +28772,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Imagen de Perfil. */
+                /** @description Un valor de entero único que identifique este Imagen de Perfil. */
                 id: number;
             };
             cookie?: never;
@@ -28832,7 +28836,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A unique integer value identifying this Imagen de Perfil. */
+                /** @description Un valor de entero único que identifique este Imagen de Perfil. */
                 id: number;
             };
             cookie?: never;
@@ -30777,11 +30781,11 @@ export interface operations {
     users_verification_reviews_mine_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
@@ -30803,11 +30807,11 @@ export interface operations {
     users_verification_reviews_queue_list: {
         parameters: {
             query?: {
-                /** @description Which field to use when ordering the results. */
+                /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description A page number within the paginated result set. */
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
                 page?: number;
-                /** @description A search term. */
+                /** @description Un término de búsqueda. */
                 search?: string;
             };
             header?: never;
