@@ -17,6 +17,9 @@ const PANEL_BASE_URL = process.env.PANEL_BASE_URL ?? `http://localhost:${PANEL_P
 
 export default defineConfig({
   testDir: "./e2e",
+  // Los e2e con personajes (`seed_personas`, :8002) tienen su propia
+  // config: `playwright.personas.config.ts` (`npm run e2e:personas`).
+  testIgnore: ["personas/**"],
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,

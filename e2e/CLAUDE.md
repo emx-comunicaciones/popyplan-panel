@@ -32,3 +32,31 @@ contra el backend real» y «CI»).
   `seed_catalogs`, `seed_panel_demo`; sube `playwright-report/` y
   `test-results/` si falla. Sin `continue-on-error`: un fallo real tumba
   el workflow.
+
+## `e2e/personas/` — personajes de prueba (sistema de pruebas, 2026-09-27)
+
+- Otra suite, con su config: `playwright.personas.config.ts`
+  (`npm run e2e:personas`). Usa los personajes de `seed_personas` del
+  backend (`test_data/personas.json`, o `PERSONAS_JSON`) contra el entorno
+  de pruebas (`scripts/test-env.sh` del backend, :8002) y levanta el panel
+  con `next build` + `next start` en el **3300**: solo desde un worktree
+  (nunca el build en el checkout del 3100) o con `PANEL_BASE_URL`.
+- Sesiones: el proyecto `sesiones` inicia sesión por la pantalla con cada
+  personaje y guarda su `storageState` en `e2e/personas/.auth/`
+  (gitignored). **El refresh rota y va a la lista negra en cada uso**, así
+  que `fixtures.ts::como(clave)` reutiliza un contexto vivo por personaje
+  y por worker, espera a que no quede nada en vuelo antes de cerrar una
+  pestaña y vuelve a guardar la cookie rotada tras cada test (si no, al
+  primer fallo el worker nuevo carga un refresh gastado y todo acaba en
+  `/login`). Navegar con una petición de refresco en vuelo cierra la
+  sesión (deuda de sesión del CLAUDE.md raíz): los specs navegan con
+  `ir()` (goto + `networkidle`).
+- Toda comprobación de una pantalla con sesión afirma primero que sigue en
+  esa ruta: sin sesión, `/login` también pasa axe y no tiene claves sin
+  traducir (falso verde).
+- Specs: `areas` (cada personaje en su área), `multiusuario` (ayuntamiento
+  y moderadora a la vez; comunidad nueva → «Comunidades activas» del
+  territorio; reporte resuelto → sale de la cola de la titular),
+  `accesibilidad` (`@axe-core/playwright`, WCAG 2.1 AA **con**
+  `color-contrast`) e `idiomas` (es/eu/ca por cookie `pp_lang`: ninguna
+  clave sin traducir ni `MISSING_MESSAGE`).
