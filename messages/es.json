@@ -907,7 +907,10 @@
       "resolve": "Resolver",
       "escalateTitle": "Escalar a plataforma",
       "escalateNoteLabel": "Nota para plataforma",
-      "escalate": "Escalar"
+      "escalate": "Escalar",
+      "confirmIrreversibleTitle": "¿Resolver sin vuelta atrás?",
+      "confirmIrreversibleDescription": "La resolución «{resolution}» no se puede deshacer.",
+      "confirmIrreversible": "Sí, resolver"
     },
     "guardia": {
       "heading": "Guardia",

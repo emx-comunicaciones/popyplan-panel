@@ -234,3 +234,9 @@ español, y no se toca en esta ronda):
   `errors.catalogs.lecturaFallida` y
   `plataforma.tesoro.form.{durationInvalid,maxParticipantsInvalid}`.
   **Pendientes de revisión nativa.**
+
+## Sistema de pruebas (2026-09-27)
+
+- `entidad.reporteDetalle.confirmIrreversible*` (confirmar una resolución
+  irreversible de un reporte): eu/ca de borrador, pendientes de revisión
+  nativa.

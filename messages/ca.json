@@ -907,7 +907,10 @@
       "resolve": "Resoldre",
       "escalateTitle": "Escalar a plataforma",
       "escalateNoteLabel": "Nota per a plataforma",
-      "escalate": "Escalar"
+      "escalate": "Escalar",
+      "confirmIrreversibleTitle": "Resoldre definitivament?",
+      "confirmIrreversibleDescription": "La resolució «{resolution}» no es pot desfer.",
+      "confirmIrreversible": "Sí, resol"
     },
     "guardia": {
       "heading": "Guàrdia",

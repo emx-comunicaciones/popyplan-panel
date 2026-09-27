@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useReport, type ReportErrorKind } from "@/hooks/useReport";
@@ -59,6 +60,14 @@ export interface ReporteDetailProps {
   readOnly?: boolean;
 }
 
+/** Resoluciones que no tienen vuelta atrás (`safety.services.moderation`):
+ *  retiran el contenido o suspenden la cuenta. Piden `ConfirmDialog`, como
+ *  toda acción irreversible del panel. */
+const IRREVERSIBLES: ReadonlySet<ReportResolution> = new Set<ReportResolution>([
+  "content_removed",
+  "user_suspended",
+]);
+
 const RESOLUTION_LABEL_KEYS: Record<ReportResolution, string> = {
   dismissed: "reports.resolution.dismissed",
   warned: "reports.resolution.warned",
@@ -83,6 +92,7 @@ export function ReporteDetail({ reportId, readOnly = false }: ReporteDetailProps
   const [resolution, setResolution] = useState<ReportResolution>("dismissed");
   const [note, setNote] = useState("");
   const [escalateNote, setEscalateNote] = useState("");
+  const [confirmando, setConfirmando] = useState(false);
 
   if (report.isError) {
     if (report.error.kind === "sin_acceso") {
@@ -203,11 +213,49 @@ export function ReporteDetail({ reportId, readOnly = false }: ReporteDetailProps
             <Button
               type="button"
               disabled={resolve.isPending}
-              onClick={() => resolve.mutate({ reportId, resolution, note: note || undefined })}
+              onClick={() => {
+                if (IRREVERSIBLES.has(resolution)) {
+                  resolve.reset();
+                  setConfirmando(true);
+                  return;
+                }
+                resolve.mutate({ reportId, resolution, note: note || undefined });
+              }}
             >
               {t("entidad.reporteDetalle.resolve")}
             </Button>
-            {resolve.isError ? (
+            <ConfirmDialog
+              open={confirmando}
+              title={t("entidad.reporteDetalle.confirmIrreversibleTitle")}
+              description={
+                <div className="flex flex-col gap-2">
+                  <p>
+                    {t("entidad.reporteDetalle.confirmIrreversibleDescription", {
+                      resolution: t(RESOLUTION_LABEL_KEYS[resolution]),
+                    })}
+                  </p>
+                  {resolve.isError ? (
+                    <p role="alert" className="text-error">
+                      {errorKindText(resolve.error, RESOLVE_REPORT_ERROR_KEYS, t, "errors.reportAction.desconocidoResolver")}
+                    </p>
+                  ) : null}
+                </div>
+              }
+              confirmLabel={t("entidad.reporteDetalle.confirmIrreversible")}
+              pending={resolve.isPending}
+              onConfirm={() =>
+                resolve.mutate(
+                  { reportId, resolution, note: note || undefined },
+                  { onSuccess: () => setConfirmando(false) },
+                )
+              }
+              onCancel={() => {
+                if (resolve.isPending) return;
+                resolve.reset();
+                setConfirmando(false);
+              }}
+            />
+            {resolve.isError && !confirmando ? (
               <p role="alert" className="text-sm text-error">
                 {errorKindText(resolve.error, RESOLVE_REPORT_ERROR_KEYS, t, "errors.reportAction.desconocidoResolver")}
               </p>

@@ -907,7 +907,10 @@
       "resolve": "Resolve",
       "escalateTitle": "Escalate to platform",
       "escalateNoteLabel": "Note for platform",
-      "escalate": "Escalate"
+      "escalate": "Escalate",
+      "confirmIrreversibleTitle": "Resolve for good?",
+      "confirmIrreversibleDescription": "The resolution «{resolution}» cannot be undone.",
+      "confirmIrreversible": "Yes, resolve"
     },
     "guardia": {
       "heading": "On-call",

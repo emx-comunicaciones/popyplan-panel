@@ -907,7 +907,10 @@
       "resolve": "Ebatzi",
       "escalateTitle": "Plataformara eskalatu",
       "escalateNoteLabel": "Plataformarako oharra",
-      "escalate": "Eskalatu"
+      "escalate": "Eskalatu",
+      "confirmIrreversibleTitle": "Behin betiko ebatzi?",
+      "confirmIrreversibleDescription": "«{resolution}» ebazpena ezin da desegin.",
+      "confirmIrreversible": "Bai, ebatzi"
     },
     "guardia": {
       "heading": "Txanda",

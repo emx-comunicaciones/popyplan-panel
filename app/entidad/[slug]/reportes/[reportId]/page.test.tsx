@@ -1,6 +1,7 @@
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { within } from "@testing-library/react";
 import { render, screen } from "@/test-utils/render";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
@@ -136,6 +137,52 @@ describe("EntidadReporteDetailPage", () => {
       resolution: "warned",
       note: "Primer aviso",
     });
+  });
+
+  it.each([
+    ["content_removed", "Retirar contenido"],
+    ["user_suspended", "Suspender cuenta"],
+  ])("resolver con %s (irreversible) pide confirmación antes de llamar a la mutación", async (resolution) => {
+    const resolveMutate = vi.fn();
+    useReportMock.mockReturnValue({ data: buildReportDetail({ assigned_to: 9 }), isError: false, error: null });
+    useAssignReportMock.mockReturnValue(idleMutation());
+    useResolveReportMock.mockReturnValue({
+      mutate: resolveMutate, isPending: false, isError: false, reset: vi.fn(),
+    });
+    useEscalateReportMock.mockReturnValue(idleMutation());
+    const user = userEvent.setup();
+
+    await renderPage();
+    await user.selectOptions(screen.getByLabelText("Resolución"), resolution);
+    await user.click(screen.getByRole("button", { name: "Resolver" }));
+
+    expect(resolveMutate).not.toHaveBeenCalled();
+    const dialogo = screen.getByRole("alertdialog");
+    expect(dialogo).toHaveTextContent("no se puede deshacer");
+    await user.click(within(dialogo).getByRole("button", { name: "Sí, resolver" }));
+    expect(resolveMutate).toHaveBeenCalledWith(
+      { reportId: "r1", resolution, note: undefined },
+      expect.objectContaining({ onSuccess: expect.any(Function) }),
+    );
+  });
+
+  it("cancelar la confirmación no resuelve nada", async () => {
+    const resolveMutate = vi.fn();
+    useReportMock.mockReturnValue({ data: buildReportDetail({ assigned_to: 9 }), isError: false, error: null });
+    useAssignReportMock.mockReturnValue(idleMutation());
+    useResolveReportMock.mockReturnValue({
+      mutate: resolveMutate, isPending: false, isError: false, reset: vi.fn(),
+    });
+    useEscalateReportMock.mockReturnValue(idleMutation());
+    const user = userEvent.setup();
+
+    await renderPage();
+    await user.selectOptions(screen.getByLabelText("Resolución"), "content_removed");
+    await user.click(screen.getByRole("button", { name: "Resolver" }));
+    await user.click(within(screen.getByRole("alertdialog")).getByRole("button", { name: "Cancelar" }));
+
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    expect(resolveMutate).not.toHaveBeenCalled();
   });
 
   it("escalar llama a la mutación con la nota", async () => {
