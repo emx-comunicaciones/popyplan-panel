@@ -1372,6 +1372,7 @@
       "sinPermisoConceder": "Superadminek bakarrik ematen ditu plataformaren rolak.",
       "sinPermisoRevocar": "Superadminek bakarrik baliogabetzen ditu plataformaren rolak.",
       "noEncontrado": "Pertsona horrek ez du indarreko plataforma-rolik.",
+      "conflicto": "Plataforma ezin da superadminik gabe geratu.",
       "desconocido": "Ezin izan dira plataformaren rolak kargatu.",
       "desconocidoConceder": "Ezin izan da rola eman.",
       "desconocidoRevocar": "Ezin izan da rola baliogabetu."
@@ -2557,6 +2558,7 @@
     "export": {
       "title": "Txostena esportatu",
       "noNamesNotice": "Txostenek ez dute pertsonen izenik.",
+      "periodPending": "Zuzendu aldiaren datak esportatzeko.",
       "groupByLabel": "Txostenaren banaketa",
       "groupByRegular": "Ohiko banaketa",
       "groupByYear": "Urteka (urte anitzeko memoria)",
@@ -2881,7 +2883,8 @@
       "emptyTitle": "Ez dago emandako rolik",
       "revokeAction": "Baliogabetu",
       "revokeConfirmTitle": "Plataforma-rola baliogabetu",
-      "revokeConfirmDescription": "Pertsona honek plataformaren panelerako sarbidea galduko du."
+      "revokeConfirmDescription": "Pertsona honek plataformaren panelerako sarbidea galduko du.",
+      "revokeSelfWarning": "Zure rola da: atal honetarako sarbidea galduko duzu."
     },
     "auditoria": {
       "heading": "Auditoria",

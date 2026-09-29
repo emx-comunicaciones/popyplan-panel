@@ -16,6 +16,12 @@ export interface PeriodSelectorProps {
   value: Period;
   preset: PeriodPreset;
   onChange: (period: Period, preset: PeriodPreset) => void;
+  /**
+   * `true` mientras las fechas escritas no son un periodo válido y, por
+   * tanto, no son las que se están aplicando (quien exporta lo usa para no
+   * descargar un periodo distinto del que se ve).
+   */
+  onPendingChange?: (pending: boolean) => void;
 }
 
 type FixedPreset = Exclude<PeriodPreset, "personalizado">;
@@ -39,8 +45,16 @@ const ERROR_MESSAGE_KEYS: Record<PeriodValidationError, string> = {
   periodo_demasiado_largo: "metrics.period.errors.tooLong",
 };
 
-/** Selector de periodo: mes/trimestre/año (presets) o rango personalizado. */
-export function PeriodSelector({ value, preset, onChange }: PeriodSelectorProps) {
+/**
+ * Selector de periodo: mes/trimestre/año (presets) o rango personalizado.
+ *
+ * Las fechas se aplican **al cambiarlas**, en cuanto forman un periodo
+ * válido (informe de pruebas 2026-09-25): antes solo se aplicaban al
+ * pulsar «Personalizado», y exportar sin pulsarlo descargaba el periodo
+ * anterior con las fechas nuevas en pantalla. Mientras no son válidas, el
+ * aviso sale al momento y `onPendingChange(true)` lo dice hacia fuera.
+ */
+export function PeriodSelector({ value, preset, onChange, onPendingChange }: PeriodSelectorProps) {
   const t = useTranslations();
   const [customSince, setCustomSince] = useState(value.since);
   const [customUntil, setCustomUntil] = useState(value.until);
@@ -59,24 +73,38 @@ export function PeriodSelector({ value, preset, onChange }: PeriodSelectorProps)
     setCustomSince(value.since);
     setCustomUntil(value.until);
     setError(null);
+    onPendingChange?.(false);
+    // `onPendingChange` fuera a propósito: una función nueva del padre en
+    // cada render no es un periodo nuevo.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value.since, value.until]);
 
   function selectPreset(next: FixedPreset) {
     setError(null);
+    onPendingChange?.(false);
     const period = presetPeriod(next);
     setCustomSince(period.since);
     setCustomUntil(period.until);
     onChange(period, next);
   }
 
-  function applyCustom() {
-    const result = customPeriod(customSince, customUntil);
+  /**
+   * Aplica `since`/`until` si son un periodo válido. Con `force` (el botón
+   * «Personalizado») avisa aunque coincidan con el aplicado, para que el
+   * preset pase a «personalizado».
+   */
+  function apply(since: string, until: string, force: boolean) {
+    const result = customPeriod(since, until);
     if (result.error) {
       setError(result.error);
+      onPendingChange?.(true);
       return;
     }
     setError(null);
-    onChange(result.period, "personalizado");
+    onPendingChange?.(false);
+    if (force || since !== value.since || until !== value.until) {
+      onChange(result.period, "personalizado");
+    }
   }
 
   return (
@@ -102,7 +130,10 @@ export function PeriodSelector({ value, preset, onChange }: PeriodSelectorProps)
             id={sinceId}
             type="date"
             value={customSince}
-            onChange={(event) => setCustomSince(event.target.value)}
+            onChange={(event) => {
+              setCustomSince(event.target.value);
+              apply(event.target.value, customUntil, false);
+            }}
             className="rounded-md border border-border px-2 py-1 text-sm text-text-base focus-visible:outline-primary-700"
           />
         </div>
@@ -114,7 +145,10 @@ export function PeriodSelector({ value, preset, onChange }: PeriodSelectorProps)
             id={untilId}
             type="date"
             value={customUntil}
-            onChange={(event) => setCustomUntil(event.target.value)}
+            onChange={(event) => {
+              setCustomUntil(event.target.value);
+              apply(customSince, event.target.value, false);
+            }}
             className="rounded-md border border-border px-2 py-1 text-sm text-text-base focus-visible:outline-primary-700"
           />
         </div>
@@ -122,7 +156,7 @@ export function PeriodSelector({ value, preset, onChange }: PeriodSelectorProps)
           type="button"
           variant={preset === "personalizado" ? "primary" : "secondary"}
           aria-pressed={preset === "personalizado"}
-          onClick={applyCustom}
+          onClick={() => apply(customSince, customUntil, true)}
         >
           {t("metrics.period.custom")}
         </Button>

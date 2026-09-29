@@ -10,7 +10,9 @@ const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
 import { ApiError } from "@/lib/api/client";
-import { act, fireEvent, render, screen, waitFor } from "@/test-utils/render";
+import userEvent from "@testing-library/user-event";
+
+import { act, fireEvent, render, screen, waitFor, within } from "@/test-utils/render";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
@@ -102,6 +104,38 @@ describe("PlataformaRolesPage", () => {
     render(await PlataformaRolesPage());
     fireEvent.change(screen.getByLabelText("Buscar cuenta (email o usuario)"), { target: { value: "ana" } });
     expect(await screen.findByText("No se pudo buscar cuentas.")).toHaveAttribute("role", "alert");
+  });
+
+  it("revocarse el propio rol avisa, y si es el último superadmin el 409 sale dentro del diálogo", async () => {
+    // Informe de pruebas 2026-09-25: el único superadmin podía revocarse.
+    const detail = "La plataforma no puede quedarse sin superadmin. Concede antes el rol a otra persona.";
+    apiFetchMock.mockImplementation(async (path: string, init?: { method?: string }) => {
+      if (init?.method === "DELETE") throw new ApiError(409, { detail });
+      return [
+        { user: 42, username: "yo", role: "superadmin", granted_by: 42, created_at: "2026-09-01T00:00:00Z" },
+        { user: 7, username: "ana", role: "moderator", granted_by: 42, created_at: "2026-09-01T00:00:00Z" },
+      ];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ id: 42, org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+    render(await PlataformaRolesPage());
+
+    const fila = (await screen.findByText(/yo \(#42\)/)).closest("li") as HTMLElement;
+    await userEvent.click(within(fila).getByRole("button", { name: "Revocar" }));
+    const dialog = screen.getByRole("alertdialog");
+    expect(dialog).toHaveTextContent("Es tu propio rol: perderás el acceso a esta sección.");
+    await userEvent.click(within(dialog).getByRole("button", { name: "Revocar" }));
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent(detail);
+
+    await userEvent.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    const otra = screen.getByText(/ana \(#7\)/).closest("li") as HTMLElement;
+    await userEvent.click(within(otra).getByRole("button", { name: "Revocar" }));
+    const segundo = screen.getByRole("alertdialog");
+    expect(segundo).not.toHaveTextContent("Es tu propio rol");
+    expect(within(segundo).queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("moderator ve «Sin acceso»", async () => {

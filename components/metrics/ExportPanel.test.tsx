@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 
 import { axe } from "@/test-utils/axe";
-import { render, screen } from "@/test-utils/render";
+import { fireEvent, render, screen } from "@/test-utils/render";
 
 const useExportMock = vi.hoisted(() => vi.fn());
 vi.mock("@/hooks/useExport", async () => {
@@ -49,6 +49,44 @@ describe("ExportPanel", () => {
     await user.click(screen.getByRole("button", { name: "Exportar CSV" }));
 
     expect(mutate).toHaveBeenCalledWith(expect.objectContaining({ groupBy: "year" }));
+  });
+
+  it("exporta las fechas escritas aunque no se pulse «Personalizado»", async () => {
+    // Informe de pruebas 2026-09-25: bajaba el periodo anterior con las
+    // fechas nuevas en pantalla.
+    const mutate = vi.fn();
+    useExportMock.mockReturnValue({ mutate, isPending: false, error: null });
+    const user = userEvent.setup();
+
+    render(<ExportPanel scope="entidad" orgId={7} />);
+    await user.click(screen.getByRole("button", { name: "Año" }));
+    fireEvent.change(screen.getByLabelText("Desde"), { target: { value: "2026-09-18" } });
+    fireEvent.change(screen.getByLabelText("Hasta"), { target: { value: "2026-09-18" } });
+    await user.click(screen.getByRole("button", { name: "Exportar CSV" }));
+
+    expect(mutate).toHaveBeenCalledWith(
+      expect.objectContaining({ period: { since: "2026-09-18", until: "2026-09-18" }, format: "csv" }),
+    );
+  });
+
+  it("con las fechas al revés avisa y no deja exportar", async () => {
+    const mutate = vi.fn();
+    useExportMock.mockReturnValue({ mutate, isPending: false, error: null });
+
+    render(<ExportPanel scope="entidad" orgId={7} />);
+    fireEvent.change(screen.getByLabelText("Desde"), { target: { value: "2026-09-20" } });
+    fireEvent.change(screen.getByLabelText("Hasta"), { target: { value: "2026-09-10" } });
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "La fecha de inicio debe ser anterior o igual a la de fin.",
+    );
+    expect(screen.getByRole("button", { name: "Exportar CSV" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Exportar PDF" })).toBeDisabled();
+    expect(screen.getByText("Corrige las fechas del periodo para exportar.")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Hasta"), { target: { value: "2026-09-25" } });
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Exportar CSV" })).toBeEnabled();
   });
 
   it("con periodo controlado, exporta el que le pasa el dashboard, no el suyo", async () => {

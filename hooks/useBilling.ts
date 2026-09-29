@@ -359,5 +359,13 @@ export function usePayInvoice(): UseMutationResult<Invoice, BillingError, PayInv
       }
     },
     onSuccess: (_data, variables) => invalidateAfterContractChange(queryClient, variables.contractId),
+    // 409: alguien la pagó antes (otra pestaña, otra persona). Se refresca
+    // la lista para que deje de verse pendiente; el backend conserva la
+    // fecha del primer pago (informe de pruebas 2026-09-25).
+    onError: (error, variables) => {
+      if (error.kind === "conflicto") {
+        void invalidateAfterContractChange(queryClient, variables.contractId);
+      }
+    },
   });
 }

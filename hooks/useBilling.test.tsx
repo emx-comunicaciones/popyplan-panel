@@ -400,4 +400,25 @@ describe("usePayInvoice", () => {
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect((result.current.error as BillingError).kind).toBe("sin_acceso");
   });
+
+  it("409 (ya pagada) trae el detail y deja la lista de facturas para refrescar", async () => {
+    // Informe de pruebas 2026-09-25: otra pestaña la pagaba encima.
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(["billing-invoices", 3], []);
+    const ownWrapper = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+    apiFetchMock.mockRejectedValueOnce(
+      new ApiError(409, { detail: "Esta factura ya está marcada como pagada." }),
+    );
+
+    const { result } = renderHook(() => usePayInvoice(), { wrapper: ownWrapper });
+    result.current.mutate({ invoiceId: 5, contractId: 3, paidOn: "2026-02-01" });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    const error = result.current.error as BillingError;
+    expect(error.kind).toBe("conflicto");
+    expect(error.detail).toBe("Esta factura ya está marcada como pagada.");
+    expect(queryClient.getQueryState(["billing-invoices", 3])?.isInvalidated).toBe(true);
+  });
 });

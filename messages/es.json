@@ -1372,6 +1372,7 @@
       "sinPermisoConceder": "Solo superadmin concede roles de plataforma.",
       "sinPermisoRevocar": "Solo superadmin revoca roles de plataforma.",
       "noEncontrado": "Esa persona no tiene un rol de plataforma vigente.",
+      "conflicto": "La plataforma no puede quedarse sin superadmin.",
       "desconocido": "No se pudieron cargar los roles de plataforma.",
       "desconocidoConceder": "No se pudo conceder el rol.",
       "desconocidoRevocar": "No se pudo revocar el rol."
@@ -2557,6 +2558,7 @@
     "export": {
       "title": "Exportar informe",
       "noNamesNotice": "Los informes no contienen nombres de personas.",
+      "periodPending": "Corrige las fechas del periodo para exportar.",
       "groupByLabel": "Desglose del informe",
       "groupByRegular": "Desglose habitual",
       "groupByYear": "Por año (memoria plurianual)",
@@ -2881,7 +2883,8 @@
       "emptyTitle": "Sin roles concedidos",
       "revokeAction": "Revocar",
       "revokeConfirmTitle": "Revocar rol de plataforma",
-      "revokeConfirmDescription": "Esta persona perderá el acceso al panel de plataforma."
+      "revokeConfirmDescription": "Esta persona perderá el acceso al panel de plataforma.",
+      "revokeSelfWarning": "Es tu propio rol: perderás el acceso a esta sección."
     },
     "auditoria": {
       "heading": "Auditoría",

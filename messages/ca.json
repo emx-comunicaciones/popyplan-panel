@@ -1372,6 +1372,7 @@
       "sinPermisoConceder": "Només superadmin concedeix rols de plataforma.",
       "sinPermisoRevocar": "Només superadmin revoca rols de plataforma.",
       "noEncontrado": "Aquesta persona no té cap rol de plataforma vigent.",
+      "conflicto": "La plataforma no es pot quedar sense superadmin.",
       "desconocido": "No s'han pogut carregar els rols de plataforma.",
       "desconocidoConceder": "No s'ha pogut concedir el rol.",
       "desconocidoRevocar": "No s'ha pogut revocar el rol."
@@ -2557,6 +2558,7 @@
     "export": {
       "title": "Exportar informe",
       "noNamesNotice": "Els informes no contenen noms de persones.",
+      "periodPending": "Corregeix les dates del període per exportar.",
       "groupByLabel": "Desglossament de l'informe",
       "groupByRegular": "Desglossament habitual",
       "groupByYear": "Per any (memòria plurianual)",
@@ -2881,7 +2883,8 @@
       "emptyTitle": "Sense rols concedits",
       "revokeAction": "Revocar",
       "revokeConfirmTitle": "Revocar rol de plataforma",
-      "revokeConfirmDescription": "Aquesta persona perdrà l'accés al tauler de plataforma."
+      "revokeConfirmDescription": "Aquesta persona perdrà l'accés al tauler de plataforma.",
+      "revokeSelfWarning": "És el teu propi rol: perdràs l'accés a aquesta secció."
     },
     "auditoria": {
       "heading": "Auditoria",
