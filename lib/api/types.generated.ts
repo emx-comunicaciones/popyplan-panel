@@ -5368,7 +5368,10 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** @description Revoca el rol vigente de una persona (`pk` es su id de usuario). */
+        /**
+         * @description Revoca el rol vigente de una persona (`pk` es su id de usuario).
+         *     409 si es el último superadmin.
+         */
         delete: operations["safety_platform_roles_destroy"];
         options?: never;
         head?: never;
@@ -7733,13 +7736,20 @@ export interface components {
         AdminSendNotificationRequest: {
             title: string;
             message: string;
-            notification_type: components["schemas"]["NotificationTypeEnum"];
+            notification_type: components["schemas"]["AdminSendNotificationTypeEnum"];
             /** @default medium */
             priority: components["schemas"]["PriorityEnum"];
             data?: unknown;
             target: components["schemas"]["TargetEnum"];
             user_id?: number;
         };
+        /**
+         * @description * `warning` - Advertencia
+         *     * `announcement` - Comunicación oficial
+         *     * `system` - Sistema
+         * @enum {string}
+         */
+        AdminSendNotificationTypeEnum: "warning" | "announcement" | "system";
         /** @description Salida: una comunicación oficial ya enviada. */
         Announcement: {
             readonly id: number;
@@ -24636,6 +24646,13 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     plataforma_billing_summary_retrieve: {
@@ -25887,6 +25904,13 @@ export interface operations {
             };
             /** @description No response body */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
