@@ -60,6 +60,36 @@ describe("SedeSelector", () => {
    * del `<select>` (solo se lee en la ficha, para una organización
    * antigua sin sede) y el control lleva `aria-required`.
    */
+  /**
+   * Visto en producción (2026-09-29): sin sede elegida, el navegador
+   * enseñaba el primer resultado como si estuviera elegido, pero el
+   * formulario seguía con `place === null` y «Crear entidad» no se
+   * encendía (con un solo resultado ni siquiera había cómo «cambiarlo»).
+   */
+  it("sin sede elegida, el selector lo dice en vez de enseñar el primer resultado", async () => {
+    const onChange = vi.fn();
+    useSearchPlacesMock.mockReturnValue({ data: [buildPlaceRow()], isError: false, error: null });
+    mockEmptyCurrentPlace();
+
+    render(<SedeSelector id="sede" value={null} onChange={onChange} />);
+    const selector = screen.getByLabelText("Municipio de la sede") as HTMLSelectElement;
+
+    expect(selector.selectedOptions[0]).toHaveTextContent("Elige el municipio");
+    expect(screen.getByRole("option", { name: "Elige el municipio" })).toBeDisabled();
+    // Con un único resultado, elegirlo sí llega al formulario.
+    await userEvent.selectOptions(selector, "20069");
+    expect(onChange).toHaveBeenCalledWith("20069");
+  });
+
+  it("con una sede ya elegida, no enseña «Elige el municipio»", () => {
+    useSearchPlacesMock.mockReturnValue({ data: [buildPlaceRow()], isError: false, error: null });
+    mockEmptyCurrentPlace();
+
+    render(<SedeSelector id="sede" value="20069" onChange={vi.fn()} />);
+
+    expect(screen.queryByRole("option", { name: "Elige el municipio" })).not.toBeInTheDocument();
+  });
+
   it("no ofrece «Sin municipio»: la sede es obligatoria en alta y en edición (I5)", () => {
     useSearchPlacesMock.mockReturnValue({ data: [buildPlaceRow()], isError: false, error: null });
     mockEmptyCurrentPlace();

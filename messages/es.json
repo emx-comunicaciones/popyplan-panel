@@ -2917,6 +2917,7 @@
     "sede": {
       "label": "Municipio de la sede",
       "searchLabel": "Buscar un municipio",
+      "placeholder": "Elige el municipio",
       "header": "Sede",
       "missing": "Sede sin municipio",
       "current": "Municipio actual (INE {ineCode})",

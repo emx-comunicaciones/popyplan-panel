@@ -2917,6 +2917,7 @@
     "sede": {
       "label": "Registered municipality",
       "searchLabel": "Search for a municipality",
+      "placeholder": "Choose the municipality",
       "header": "Registered seat",
       "missing": "No registered municipality",
       "current": "Current municipality (INE {ineCode})",
