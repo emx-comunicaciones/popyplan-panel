@@ -2917,6 +2917,7 @@
     "sede": {
       "label": "Municipi de la seu",
       "searchLabel": "Cercar un municipi",
+      "placeholder": "Tria el municipi",
       "header": "Seu",
       "missing": "Seu sense municipi",
       "current": "Municipi actual (INE {ineCode})",

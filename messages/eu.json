@@ -2917,6 +2917,7 @@
     "sede": {
       "label": "Egoitzaren udalerria",
       "searchLabel": "Udalerri bat bilatu",
+      "placeholder": "Aukeratu udalerria",
       "header": "Egoitza",
       "missing": "Egoitza udalerririk gabe",
       "current": "Egungo udalerria (INE {ineCode})",

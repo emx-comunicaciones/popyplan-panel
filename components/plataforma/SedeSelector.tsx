@@ -93,8 +93,16 @@ export function SedeSelector({ id, value, onChange, hintId }: SedeSelectorProps)
       >
         {/* El valor ya guardado sigue seleccionable aunque la búsqueda
             actual no lo devuelva: si no, abrir el formulario y no buscar
-            nada borraría la sede al guardar. Nunca una opción vacía: la
-            sede es obligatoria (I5). */}
+            nada borraría la sede al guardar. Nunca una opción vacía
+            elegible: la sede es obligatoria (I5). */}
+        {/* Sin sede, un aviso que no se puede elegir: sin él, el navegador
+            enseñaba el primer resultado como si estuviera elegido y el
+            formulario seguía sin sede (visto en producción, 2026-09-29). */}
+        {!value ? (
+          <option value="" disabled>
+            {t("placeholder")}
+          </option>
+        ) : null}
         {showsFallbackOption && value ? (
           <option value={value}>
             {currentLabel.kind === "loading"
