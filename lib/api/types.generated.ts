@@ -3851,6 +3851,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/panel/entidad/{org_id}/program/referents/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /api/panel/entidad/{org_id}/program/referents/` — los referentes
+         *     de la entidad para elegir uno al dar de alta o cambiar una inscripción.
+         *     Lo pide `gestionar_seguimiento` (titular y moderador): el equipo
+         *     completo (`organizations/{id}/members/`) es solo del titular, y con él
+         *     el moderador no podía elegir referente. Solo id de membresía y nombre
+         *     público.
+         */
+        get: operations["panel_entidad_program_referents_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/panel/entidad/{org_id}/programs/": {
         parameters: {
             query?: never;
@@ -12660,6 +12684,11 @@ export interface components {
             user: number;
             /** @description Persona con rol referente en esta entidad. */
             referent_user: number;
+        };
+        /** @description Una opción de referente: id de la `OrgMembership` y nombre público. */
+        ReferentChoice: {
+            id: number;
+            readonly public_name: string;
         };
         /**
          * @description El referente de quien pide ayuda, con lo justo para pintarlo.
@@ -22687,6 +22716,34 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SharedData"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    panel_entidad_program_referents_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReferentChoice"][];
                 };
             };
             /** @description No response body */

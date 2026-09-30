@@ -439,6 +439,8 @@ export const PROGRAMS = {
 export const TRACKING = {
   /** `GET`/`POST /api/panel/entidad/{org_id}/program/enrollments/` (`?status=&user=`, array plano). */
   ENROLLMENTS: (orgId: number | string) => `/api/panel/entidad/${orgId}/program/enrollments/`,
+  /** `GET .../program/referents/`: referentes elegibles (id de membresía y nombre), para titular y moderador. */
+  REFERENTS: (orgId: number | string) => `/api/panel/entidad/${orgId}/program/referents/`,
   /** `GET`/`PATCH .../program/enrollments/{id}/ {tracking_type?, tracking_label?, referent?}`. */
   ENROLLMENT: (orgId: number | string, enrollmentId: number | string) =>
     `/api/panel/entidad/${orgId}/program/enrollments/${enrollmentId}/`,

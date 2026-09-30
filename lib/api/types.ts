@@ -1528,6 +1528,8 @@ export interface TrainingTemplateWrite {
 export type TrackingType = components["schemas"]["TrackingTypeEnum"];
 export type EnrollmentRow = components["schemas"]["EnrollmentPanel"];
 export type EnrollmentStatus = EnrollmentRow["status"];
+/** Opción de referente para el alta (`GET .../program/referents/`, `docs/PANEL.md` §18.3): `id` es el de la `OrgMembership`. */
+export type ReferentChoice = components["schemas"]["ReferentChoice"];
 export type EnrollmentCreateInput = components["schemas"]["EnrollmentCreateRequest"];
 export type EnrollmentUpdateInput = components["schemas"]["PatchedEnrollmentUpdateRequest"];
 /**
