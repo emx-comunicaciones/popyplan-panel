@@ -73,4 +73,23 @@ describe("POST /api/session/refresh con el token de acceso en cookie", () => {
     expect(res.cookies.get(SESSION_COOKIE_NAME)?.value).toBe("r2");
     expect(res.cookies.get(ACCESS_COOKIE_NAME)?.value).toBe(nuevo);
   });
+
+  it("si pedir el perfil con el token vivo falla por red, rota como siempre", async () => {
+    const nuevo = jwt(24 * 3600);
+    let intentosConElViejo = 0;
+    fetchMock.mockImplementation(async (url: string, init?: { headers?: Record<string, string> }) => {
+      if (url === REFRESH_URL) return response({ access: nuevo, refresh: "r2" }, 200);
+      const auth = init?.headers?.Authorization ?? "";
+      if (!auth.includes(nuevo)) {
+        intentosConElViejo += 1;
+        throw new TypeError("fetch failed");
+      }
+      return response(buildMe(), 200);
+    });
+
+    const res = await POST(req({ [SESSION_COOKIE_NAME]: "r1", [ACCESS_COOKIE_NAME]: jwt(3600) }));
+
+    expect(intentosConElViejo).toBe(2);
+    expect(res.cookies.get(SESSION_COOKIE_NAME)?.value).toBe("r2");
+  });
 });

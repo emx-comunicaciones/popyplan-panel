@@ -54,6 +54,8 @@ describe("token de acceso en cookie", () => {
     expect(accessTokenSecondsLeft(jwtCon(s - 5), ahora)).toBe(0);
     expect(accessTokenSecondsLeft("no-es-un-jwt", ahora)).toBe(0);
     expect(accessTokenSecondsLeft(undefined, ahora)).toBe(0);
+    // Sin `nowMs`, mide contra el reloj.
+    expect(accessTokenSecondsLeft(jwtCon(Math.floor(Date.now() / 1000) + 600))).toBeGreaterThan(590);
     expect(accessTokenSecondsLeft(`a.${Buffer.from("{").toString("base64url")}.c`, ahora)).toBe(0);
     expect(accessTokenSecondsLeft(`a.${Buffer.from('{"exp":"x"}').toString("base64url")}.c`, ahora)).toBe(0);
   });
