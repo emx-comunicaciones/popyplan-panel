@@ -417,6 +417,7 @@
       "noEventsToday": "Sin actividades hoy",
       "todayErrorTitle": "No se pudieron cargar las actividades de hoy",
       "eventRegistered": "{count, plural, one {# inscrito} other {# inscritos}}",
+      "eventRegisteredSuppressed": "{count} inscritos",
       "eventCapacity": "{count, plural, one {# plaza} other {# plazas}}",
       "pendingAlertsHeading": "Avisos pendientes",
       "pendingHelpRequests": "Solicitudes de ayuda pendientes",

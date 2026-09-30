@@ -417,6 +417,7 @@
       "noEventsToday": "Ez dago gaurko jarduerarik",
       "todayErrorTitle": "Ezin izan dira gaurko jarduerak kargatu",
       "eventRegistered": "{count, plural, one {# izena emanda} other {# izena emanda}}",
+      "eventRegisteredSuppressed": "{count} izena emanda",
       "eventCapacity": "{count, plural, one {# plaza} other {# plaza}}",
       "pendingAlertsHeading": "Zain dauden abisuak",
       "pendingHelpRequests": "Zain dauden laguntza-eskaerak",

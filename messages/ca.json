@@ -417,6 +417,7 @@
       "noEventsToday": "Sense activitats avui",
       "todayErrorTitle": "No s'han pogut carregar les activitats d'avui",
       "eventRegistered": "{count, plural, one {# inscrit} other {# inscrits}}",
+      "eventRegisteredSuppressed": "{count} inscrits",
       "eventCapacity": "{count, plural, one {# plaça} other {# places}}",
       "pendingAlertsHeading": "Avisos pendents",
       "pendingHelpRequests": "Sol·licituds d'ajuda pendents",

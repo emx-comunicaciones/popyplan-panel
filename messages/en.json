@@ -417,6 +417,7 @@
       "noEventsToday": "No activities today",
       "todayErrorTitle": "Couldn't load today's activities",
       "eventRegistered": "{count, plural, one {# registered} other {# registered}}",
+      "eventRegisteredSuppressed": "{count} registered",
       "eventCapacity": "{count, plural, one {# slot} other {# slots}}",
       "pendingAlertsHeading": "Pending alerts",
       "pendingHelpRequests": "Pending help requests",
