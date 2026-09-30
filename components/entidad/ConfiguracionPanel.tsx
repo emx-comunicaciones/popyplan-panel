@@ -25,6 +25,7 @@ import { useOrgScope, type OrgScopeErrorKind } from "@/hooks/useOrgScope";
 import { useUpdateOrganization } from "@/hooks/useUpdateOrganization";
 import type { OrgMembershipFull, OrgMembershipRole, Reference } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { ORG_ROLE_LABEL_KEYS, enumLabel } from "@/lib/i18n/enumLabels";
 import {
   LOGO_ALLOWED_EXTENSIONS,
   LOGO_MAX_MB,
@@ -359,7 +360,7 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
           >
             {ROLE_OPTIONS.map((value) => (
               <option key={value} value={value}>
-                {value}
+                {enumLabel(ORG_ROLE_LABEL_KEYS, value, t)}
               </option>
             ))}
           </select>
@@ -404,7 +405,7 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
               {members.data.map((member) => (
                 <tr key={member.id} className="border-b border-border-light">
                   <td className="px-3 py-1.5 text-text-base">{member.public_name}</td>
-                  <td className="px-3 py-1.5 text-text-base">{member.role}</td>
+                  <td className="px-3 py-1.5 text-text-base">{enumLabel(ORG_ROLE_LABEL_KEYS, member.role, t)}</td>
                   <td className="px-3 py-1.5 text-text-base">
                     <Button
                       type="button"

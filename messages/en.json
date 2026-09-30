@@ -23,6 +23,29 @@
       "empty": "Nothing matches the search."
     }
   },
+  "enums": {
+    "orgRole": {
+      "titular": "Owner",
+      "moderador": "Moderator",
+      "dinamizador": "Facilitator",
+      "analista": "Analyst",
+      "referente": "Referent"
+    },
+    "communityRole": {
+      "owner": "Owner",
+      "moderator": "Moderator",
+      "member": "Member"
+    },
+    "reportTarget": {
+      "user": "Person",
+      "community": "Community",
+      "event": "Activity",
+      "post": "Post",
+      "comment": "Comment",
+      "message": "Message",
+      "organization": "Organisation"
+    }
+  },
   "account": {
     "title": "Account",
     "open": "Account for {email}"

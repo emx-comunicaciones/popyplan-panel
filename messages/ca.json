@@ -23,6 +23,29 @@
       "empty": "Res no coincideix amb la cerca."
     }
   },
+  "enums": {
+    "orgRole": {
+      "titular": "Titular",
+      "moderador": "Moderador/a",
+      "dinamizador": "Dinamitzador/a",
+      "analista": "Analista",
+      "referente": "Referent"
+    },
+    "communityRole": {
+      "owner": "Propietari/ària",
+      "moderator": "Moderador/a",
+      "member": "Membre"
+    },
+    "reportTarget": {
+      "user": "Persona",
+      "community": "Comunitat",
+      "event": "Activitat",
+      "post": "Publicació",
+      "comment": "Comentari",
+      "message": "Missatge",
+      "organization": "Entitat"
+    }
+  },
   "account": {
     "title": "Compte",
     "open": "Compte de {email}"

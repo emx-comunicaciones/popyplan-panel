@@ -28,6 +28,7 @@ import { Table } from "@/components/ui/Table";
 import { useReportsQueue, type ReportsQueueErrorKind, type ReportsQueueFilters } from "@/hooks/useReportsQueue";
 import type { ReportRow } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { REPORT_TARGET_LABEL_KEYS, enumLabel } from "@/lib/i18n/enumLabels";
 import { localeFor, activeLanguage } from "@/lib/i18n/locale";
 import { reasonLabelKey, statusLabelKey } from "@/lib/reports/labels";
 
@@ -108,7 +109,7 @@ export function ReportesQueuePlataforma() {
                   </Badge>
                 ),
               },
-              { key: "target", header: t("plataforma.reportes.colTarget"), render: (report) => report.target_type },
+              { key: "target", header: t("plataforma.reportes.colTarget"), render: (report) => enumLabel(REPORT_TARGET_LABEL_KEYS, report.target_type, t) },
               {
                 key: "organization",
                 header: t("plataforma.reportes.colOrganization"),

@@ -23,6 +23,29 @@
       "empty": "Ez dago bilaketarekin bat datorrenik."
     }
   },
+  "enums": {
+    "orgRole": {
+      "titular": "Titularra",
+      "moderador": "Moderatzailea",
+      "dinamizador": "Dinamizatzailea",
+      "analista": "Analista",
+      "referente": "Erreferentea"
+    },
+    "communityRole": {
+      "owner": "Jabea",
+      "moderator": "Moderatzailea",
+      "member": "Kidea"
+    },
+    "reportTarget": {
+      "user": "Pertsona",
+      "community": "Komunitatea",
+      "event": "Jarduera",
+      "post": "Argitalpena",
+      "comment": "Iruzkina",
+      "message": "Mezua",
+      "organization": "Erakundea"
+    }
+  },
   "account": {
     "title": "Kontua",
     "open": "{email} kontua"

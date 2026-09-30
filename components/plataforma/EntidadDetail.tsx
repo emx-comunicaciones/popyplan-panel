@@ -58,6 +58,7 @@ import {
   type UpdateOrganizationErrorKind,
 } from "@/hooks/useUpdateOrganization";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { ORG_ROLE_LABEL_KEYS, ORG_TYPE_LABEL_KEYS, enumLabel } from "@/lib/i18n/enumLabels";
 import { localeForUseLocale } from "@/lib/i18n/locale";
 import { formatCount, formatPct } from "@/lib/metrics/format";
 import { presetPeriod } from "@/lib/metrics/period";
@@ -273,7 +274,7 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
           <dt className="text-text-secondary">{t("plataforma.entidades.slugLabel")}</dt>
           <dd className="text-text-base">{org.slug}</dd>
           <dt className="text-text-secondary">{t("plataforma.entidades.typeHeader")}</dt>
-          <dd className="text-text-base">{org.org_type}</dd>
+          <dd className="text-text-base">{enumLabel(ORG_TYPE_LABEL_KEYS, org.org_type, t)}</dd>
           <dt className="text-text-secondary">{t("plataforma.entidades.verifiedLabel")}</dt>
           <dd className="text-text-base">
             <Badge tone={org.is_verified ? "success" : "neutral"}>
@@ -612,7 +613,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
               >
                 {ROLE_OPTIONS.map((value) => (
                   <option key={value} value={value}>
-                    {value}
+                    {enumLabel(ORG_ROLE_LABEL_KEYS, value, t)}
                   </option>
                 ))}
               </select>
@@ -644,7 +645,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
             {members.data.map((member) => (
               <li key={member.user} className="flex items-center justify-between gap-2">
                 <span>
-                  {member.public_name} — {member.role}
+                  {member.public_name} — {enumLabel(ORG_ROLE_LABEL_KEYS, member.role, t)}
                 </span>
                 {canManage ? (
                   <Button
