@@ -12,6 +12,7 @@ export const ORG_ROLE_LABEL_KEYS: Record<string, string> = {
   dinamizador: "enums.orgRole.dinamizador",
   analista: "enums.orgRole.analista",
   referente: "enums.orgRole.referente",
+  voluntario: "enums.orgRole.voluntario",
 };
 
 export const COMMUNITY_ROLE_LABEL_KEYS: Record<string, string> = {
