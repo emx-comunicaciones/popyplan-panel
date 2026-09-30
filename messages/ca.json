@@ -453,6 +453,7 @@
       "communityAll": "Totes",
       "communitiesError": "No s'han pogut carregar les comunitats.",
       "referentLabel": "Referent",
+      "referentAll": "Tots",
       "activeSinceLabel": "Participació des de",
       "joinedSinceLabel": "D'alta des de",
       "includeInvited": "Incloure convidades",
@@ -481,6 +482,7 @@
       "revokeConfirm": "Vols revocar la invitació a «{name}»? Aquesta acció no es pot desfer."
     },
     "personaFicha": {
+      "backToList": "Tornar a Persones",
       "heading": "Fitxa de la persona",
       "sinAccesoDescription": "No tens accés a la fitxa d'aquesta persona.",
       "loadErrorTitle": "No s'ha pogut carregar la fitxa d'aquesta persona",

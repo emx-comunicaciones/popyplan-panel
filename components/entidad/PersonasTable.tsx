@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { AddPersonDialog } from "@/components/people/AddPersonDialog";
@@ -15,6 +16,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useInvitations } from "@/hooks/useInvitations";
 import { usePeople } from "@/hooks/usePeople";
 import { useEntityCommunities } from "@/hooks/useEntityCommunities";
+import { useOrgMembers } from "@/hooks/useOrgMembers";
 import { useResendInvitation } from "@/hooks/useResendInvitation";
 import { useRevokeInvitation } from "@/hooks/useRevokeInvitation";
 import type { InvitedPersonRow } from "@/lib/api/types";
@@ -22,6 +24,7 @@ import { errorKindText } from "@/lib/i18n/errorKindText";
 import { localeForUseLocale } from "@/lib/i18n/locale";
 import { isInvitedPersonRow } from "@/lib/people/invitedRow";
 import { presetPeriod } from "@/lib/metrics/period";
+import { buildPersonasQuery, parsePersonasQuery } from "@/lib/people/personasQuery";
 
 export interface PersonasTableProps {
   orgId: number | string;
@@ -37,14 +40,6 @@ interface PersonasFilters {
   activeSince: string;
   joinedSince: string;
 }
-
-const EMPTY_FILTERS: PersonasFilters = {
-  search: "",
-  community: "",
-  referent: "",
-  activeSince: "",
-  joinedSince: "",
-};
 
 function formatDate(iso: string | null, locale: string): string {
   if (!iso) return "—";
@@ -100,7 +95,12 @@ function PendingInvitationsHint({ orgId }: { orgId: number | string }) {
  * comunidad (select de `useEntityCommunities` — el backend solo acepta el
  * UUID, un texto libre daba 400 a toda la tabla)/referente/participación
  * (`active_since`)/alta (`joined_since`)
- * más búsqueda, y paginación estándar de DRF. Cada fila enlaza a la ficha
+ * más búsqueda, y paginación estándar de DRF. «Referente» es un select de
+ * los referentes del equipo por nombre (`useOrgMembers`); «Comunidad» solo
+ * ofrece las del espacio de miembros (las de Familias tienen su propia
+ * pantalla y Personas nunca las cuenta). Los filtros y la página viven en
+ * la URL (`lib/people/personasQuery.ts`): al volver de una ficha la tabla
+ * reaparece como se dejó. Cada fila enlaza a la ficha
  * operativa (`personas/[userId]`). Tarea W3b: botones «Añadir persona» e
  * «Importar Excel/CSV» (solo `canManage`) y checkbox «Incluir invitadas»
  * (`include_invited=true`, §3b.7) que mezcla filas `InvitedPersonRow`
@@ -108,36 +108,52 @@ function PendingInvitationsHint({ orgId }: { orgId: number | string }) {
  * «Revocar» (solo `canManage`).
  */
 export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
-  const [filters, setFilters] = useState<PersonasFilters>(EMPTY_FILTERS);
-  const [page, setPage] = useState(1);
-  const [includeInvited, setIncludeInvited] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  // Solo se lee al montar: a partir de ahí manda el estado local y la URL
+  // se limita a reflejarlo.
+  const [initial] = useState(() => parsePersonasQuery(searchParams));
+  const [filters, setFilters] = useState<PersonasFilters>({
+    search: initial.search,
+    community: initial.community,
+    referent: initial.referent,
+    activeSince: initial.activeSince,
+    joinedSince: initial.joinedSince,
+  });
+  const [page, setPage] = useState(initial.page);
+  const [includeInvited, setIncludeInvited] = useState(initial.includeInvited);
   const [addOpen, setAddOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [revoking, setRevoking] = useState<InvitedPersonRow | null>(null);
   const [resentTo, setResentTo] = useState<string | null>(null);
   const period = presetPeriod("mes");
   const communities = useEntityCommunities(orgId);
+  // El referente ve solo a sus personas: para él el filtro no tiene sentido
+  // y el equipo (solo titular) ni se pide.
+  const members = useOrgMembers(orgId, { enabled: canManage });
+  const referentes = (members.data ?? []).filter((member) => member.role === "referente");
+  const communityOptions = (communities.data ?? []).filter((community) => community.space !== "families");
   const t = useTranslations("entidad.personas");
   const tAll = useTranslations();
   const locale = useLocale();
 
   /**
-   * Los campos que se teclean (búsqueda, referente y las dos fechas) se
+   * Los campos que se teclean (búsqueda y las dos fechas) se
    * aplican con retardo (`useDebouncedValue`, 300 ms): el `<input>` es
    * inmediato, pero la query solo cambia cuando se para de escribir —
    * si no, «ana» disparaba tres peticiones y las respuestas podían
-   * llegar desordenadas. «Comunidad» es un `<select>` (un único evento
-   * por elección), así que se aplica tal cual.
+   * llegar desordenadas. «Comunidad» y «Referente» son `<select>` (un único
+   * evento por elección), así que se aplican tal cual.
    */
   const search = useDebouncedValue(filters.search);
-  const referent = useDebouncedValue(filters.referent);
   const activeSince = useDebouncedValue(filters.activeSince);
   const joinedSince = useDebouncedValue(filters.joinedSince);
 
   const people = usePeople(orgId, period, {
     search: search || undefined,
     community: filters.community || undefined,
-    referent: referent ? Number(referent) : undefined,
+    referent: filters.referent ? Number(filters.referent) : undefined,
     activeSince: activeSince || undefined,
     joinedSince: joinedSince || undefined,
     includeInvited,
@@ -167,9 +183,36 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
    * del buscador ya pedía la página 1 del listado viejo. «Comunidad»,
    * que no lleva retardo, la devuelve a 1 en su propio `onChange`.
    */
+  const firstRun = useRef(true);
   useEffect(() => {
+    // Al montar, la página viene de la URL: no se pisa con la 1.
+    if (firstRun.current) {
+      firstRun.current = false;
+      return;
+    }
     setPage(1);
-  }, [search, referent, activeSince, joinedSince]);
+  }, [search, activeSince, joinedSince]);
+
+  /**
+   * Refleja en la URL lo que se está aplicando (búsqueda y fechas ya con
+   * su retardo), con `replace` para no llenar el historial de una entrada
+   * por filtro. Si la URL ya dice lo mismo no se toca.
+   */
+  const appliedQuery = buildPersonasQuery({
+    search,
+    community: filters.community,
+    referent: filters.referent,
+    activeSince,
+    joinedSince,
+    includeInvited,
+    page,
+  });
+  useEffect(() => {
+    if (appliedQuery === buildPersonasQuery(parsePersonasQuery(searchParams))) return;
+    router.replace(appliedQuery ? `${pathname}?${appliedQuery}` : pathname, { scroll: false });
+    // `searchParams` no entra: cambia como consecuencia de este `replace`.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appliedQuery]);
 
   function updateFilter<K extends keyof PersonasFilters>(key: K, value: string) {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -216,7 +259,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
             className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
             <option value="">{t("communityAll")}</option>
-            {(communities.data ?? []).map((community) => (
+            {communityOptions.map((community) => (
               <option key={community.id} value={community.id}>
                 {community.name}
               </option>
@@ -228,18 +271,35 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
             </p>
           ) : null}
         </div>
-        <div>
-          <label htmlFor="personas-referent" className="mb-1 block text-sm font-medium text-text-form">
-            {t("referentLabel")}
-          </label>
-          <input
-            id="personas-referent"
-            type="number"
-            value={filters.referent}
-            onChange={(event) => updateFilter("referent", event.target.value)}
-            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-          />
-        </div>
+        {canManage ? (
+          <div>
+            <label htmlFor="personas-referent" className="mb-1 block text-sm font-medium text-text-form">
+              {t("referentLabel")}
+            </label>
+            <select
+              id="personas-referent"
+              value={filters.referent}
+              onChange={(event) => {
+                updateFilter("referent", event.target.value);
+                setPage(1);
+              }}
+              aria-describedby={members.isError ? "personas-referent-error" : undefined}
+              className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
+            >
+              <option value="">{t("referentAll")}</option>
+              {referentes.map((member) => (
+                <option key={member.user} value={member.user}>
+                  {member.public_name}
+                </option>
+              ))}
+            </select>
+            {members.isError ? (
+              <p id="personas-referent-error" role="alert" className="mt-1 text-xs text-error">
+                {tAll("people.referentsLoadError")}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
         <div>
           <label htmlFor="personas-active-since" className="mb-1 block text-sm font-medium text-text-form">
             {t("activeSinceLabel")}
@@ -379,7 +439,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
                     <tr key={row.user_id} className="border-b border-border-light">
                       <td className="px-3 py-1.5 text-text-base">
                         <Link
-                          href={`/entidad/${slug}/personas/${row.user_id}`}
+                          href={`/entidad/${slug}/personas/${row.user_id}${appliedQuery ? `?volver=${encodeURIComponent(appliedQuery)}` : ""}`}
                           className="font-medium text-primary-700 underline"
                         >
                           {row.public_name}

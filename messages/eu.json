@@ -453,6 +453,7 @@
       "communityAll": "Guztiak",
       "communitiesError": "Ezin izan dira komunitateak kargatu.",
       "referentLabel": "Erreferentea",
+      "referentAll": "Guztiak",
       "activeSinceLabel": "Parte-hartzen honezkero",
       "joinedSinceLabel": "Alta honezkero",
       "includeInvited": "Gonbidatuak sartu",
@@ -481,6 +482,7 @@
       "revokeConfirm": "«{name}»(r)i egindako gonbidapena baliogabetu? Ekintza hau ezin da desegin."
     },
     "personaFicha": {
+      "backToList": "Itzuli Pertsonetara",
       "heading": "Pertsonaren fitxa",
       "sinAccesoDescription": "Ez duzu pertsona honen fitxarako sarbiderik.",
       "loadErrorTitle": "Ezin izan da pertsona honen fitxa kargatu",

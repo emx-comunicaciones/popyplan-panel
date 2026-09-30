@@ -453,6 +453,7 @@
       "communityAll": "All",
       "communitiesError": "Couldn't load the communities.",
       "referentLabel": "Referent",
+      "referentAll": "All",
       "activeSinceLabel": "Participating since",
       "joinedSinceLabel": "Joined since",
       "includeInvited": "Include invited",
@@ -481,6 +482,7 @@
       "revokeConfirm": "Revoke the invitation to «{name}»? This action can't be undone."
     },
     "personaFicha": {
+      "backToList": "Back to People",
       "heading": "Person profile",
       "sinAccesoDescription": "You don't have access to this person's profile.",
       "loadErrorTitle": "Couldn't load this person's profile",

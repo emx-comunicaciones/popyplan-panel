@@ -453,6 +453,7 @@
       "communityAll": "Todas",
       "communitiesError": "No se pudieron cargar las comunidades.",
       "referentLabel": "Referente",
+      "referentAll": "Todos",
       "activeSinceLabel": "Participación desde",
       "joinedSinceLabel": "De alta desde",
       "includeInvited": "Incluir invitadas",
@@ -481,6 +482,7 @@
       "revokeConfirm": "¿Revocar la invitación a «{name}»? Esta acción no se puede deshacer."
     },
     "personaFicha": {
+      "backToList": "Volver a Personas",
       "heading": "Ficha de la persona",
       "sinAccesoDescription": "No tienes acceso a la ficha de esta persona.",
       "loadErrorTitle": "No se pudo cargar la ficha de esta persona",

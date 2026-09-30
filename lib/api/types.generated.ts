@@ -22318,7 +22318,7 @@ export interface operations {
                 joined_since?: string;
                 /** @description Id de usuario del referente. */
                 referent?: number;
-                /** @description Busca en el alias público y en el usuario. */
+                /** @description Busca en el nombre público (y en el de las invitadas con `include_invited`); nunca en el correo. */
                 search?: string;
                 /** @description Fecha ISO de inicio del periodo de los contadores (por defecto, hace 30 días). */
                 since?: string;
