@@ -17,6 +17,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { useCreateOrganization, type OrganizationsErrorKind } from "@/hooks/useOrganizations";
 import type { OrgTypeEnum } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { isValidSlug, slugify } from "@/lib/organizations/slug";
 
 import { SedeSelector } from "./SedeSelector";
 
@@ -43,6 +44,9 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
 
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
+  // El slug se saca del nombre mientras nadie lo toque a mano (informe del
+  // propietario, 2026-09-30: el botón quedaba gris sin decir que faltaba).
+  const [slugEdited, setSlugEdited] = useState(false);
   const [orgType, setOrgType] = useState<OrgTypeEnum>("asociacion");
   const [cif, setCif] = useState("");
   const [parent, setParent] = useState<PickerOption | null>(null);
@@ -54,8 +58,15 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
   // `OrganizationCreateInput.place` no es opcional, así que el botón se
   // queda deshabilitado hasta que se elige un municipio, igual que con
   // el resto de campos obligatorios de este formulario.
-  const canSubmit =
-    name.trim().length > 0 && slug.trim().length > 0 && cif.trim().length > 0 && place !== null;
+  const slugValue = slugEdited ? slug : slugify(name);
+  const slugOk = isValidSlug(slugValue);
+  const missing = [
+    name.trim().length === 0 ? t("plataforma.entidades.missing.name") : null,
+    !slugOk ? t("plataforma.entidades.missing.slug") : null,
+    place === null ? t("plataforma.entidades.missing.place") : null,
+    cif.trim().length === 0 ? t("plataforma.entidades.missing.cif") : null,
+  ].filter((item): item is string => item !== null);
+  const canSubmit = missing.length === 0 && place !== null;
 
   function handleClose() {
     create.reset();
@@ -72,7 +83,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
     create.mutate(
       {
         name: name.trim(),
-        slug: slug.trim(),
+        slug: slugValue,
         org_type: orgType,
         cif: cif.trim(),
         parent: parent ? parent.id : null,
@@ -84,6 +95,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
           setCreated(org.name);
           setName("");
           setSlug("");
+          setSlugEdited(false);
           setCif("");
           setParent(null);
           setDescription("");
@@ -115,10 +127,20 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
           <input
             id="nueva-entidad-slug"
             type="text"
-            value={slug}
-            onChange={(event) => setSlug(event.target.value)}
+            value={slugValue}
+            onChange={(event) => {
+              setSlugEdited(true);
+              setSlug(event.target.value);
+            }}
+            aria-describedby="nueva-entidad-slug-hint"
+            aria-invalid={slugValue.length > 0 && !slugOk}
             className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
+          <p id="nueva-entidad-slug-hint" className="mt-1 text-xs text-text-secondary">
+            {slugValue.length > 0 && !slugOk
+              ? t("plataforma.entidades.slugInvalid")
+              : t("plataforma.entidades.slugHint")}
+          </p>
         </div>
         <div>
           <label htmlFor="nueva-entidad-tipo" className="mb-1 block text-sm font-medium text-text-form">
@@ -179,6 +201,11 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
           />
         </div>
 
+        {missing.length > 0 ? (
+          <p className="text-xs text-text-secondary">
+            {t("plataforma.entidades.missing.intro", { fields: missing.join(", ") })}
+          </p>
+        ) : null}
         <div className="flex gap-2">
           <Button type="submit" disabled={!canSubmit || create.isPending}>
             {t("plataforma.entidades.createAction")}

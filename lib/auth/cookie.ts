@@ -48,3 +48,48 @@ export function sessionCookieOptions(
     maxAge,
   };
 }
+
+/**
+ * Token de acceso en una cookie `httpOnly` (2026-09-30). El middleware y
+ * `/api/session/refresh` lo reutilizan mientras le quede vida, en vez de
+ * rotar el refresh en cada petición: con `ROTATE_REFRESH_TOKENS` +
+ * `BLACKLIST_AFTER_ROTATION`, los prefetch del menú salían a la vez con el
+ * mismo refresh, uno lo rotaba y el resto recibía 401 (en Vercel, además,
+ * cada instancia del middleware tiene su propia memoria). Resultado: al
+ * pulsar el menú el panel echaba al login. Mismas opciones que la cookie de
+ * sesión; caduca con el propio token.
+ */
+export const ACCESS_COOKIE_NAME = "pp_access";
+
+/** Margen: un token al que le quede menos que esto se renueva ya. */
+export const ACCESS_TOKEN_MIN_SECONDS_LEFT = 120;
+
+function decodeBase64Url(segment: string): string {
+  const base64 = segment.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+  return atob(padded);
+}
+
+/** Segundos de vida que le quedan a un JWT (`exp`), o 0 si no se puede leer. */
+export function accessTokenSecondsLeft(token: string | undefined, nowMs: number = Date.now()): number {
+  if (!token) return 0;
+  const parts = token.split(".");
+  if (parts.length !== 3) return 0;
+  try {
+    const payload = JSON.parse(decodeBase64Url(parts[1])) as { exp?: unknown };
+    if (typeof payload.exp !== "number") return 0;
+    return Math.max(0, Math.floor(payload.exp - nowMs / 1000));
+  } catch {
+    return 0;
+  }
+}
+
+/** El token de la cookie, si todavía vale para una petición (con margen). */
+export function usableAccessToken(token: string | undefined, nowMs: number = Date.now()): string | null {
+  return token && accessTokenSecondsLeft(token, nowMs) > ACCESS_TOKEN_MIN_SECONDS_LEFT ? token : null;
+}
+
+/** Opciones de la cookie del token de acceso: caduca a la vez que él. */
+export function accessCookieOptions(token: string, nowMs: number = Date.now()): SessionCookieOptions {
+  return sessionCookieOptions(Math.max(0, accessTokenSecondsLeft(token, nowMs) - ACCESS_TOKEN_MIN_SECONDS_LEFT));
+}

@@ -2820,7 +2820,16 @@
       "parentIdLabel": "Entitat paraigua (opcional)",
       "descriptionLabel": "Descripció",
       "createAction": "Crear entitat",
-      "created": "Entitat «{name}» creada, sense verificar."
+      "created": "Entitat «{name}» creada, sense verificar.",
+      "slugHint": "Es treu del nom i va a l'adreça web. El pots canviar.",
+      "slugInvalid": "Només lletres minúscules sense accents, números i guionets.",
+      "missing": {
+        "intro": "Per crear l'entitat falta: {fields}.",
+        "name": "el nom",
+        "slug": "un identificador vàlid",
+        "place": "el municipi de la seu",
+        "cif": "el CIF"
+      }
     },
     "entidadFicha": {
       "heading": "Fitxa de l'entitat",

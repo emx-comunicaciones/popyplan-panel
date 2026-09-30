@@ -103,7 +103,7 @@ describe("PlataformaEntidadesPage", () => {
 
     await user.click(screen.getByRole("button", { name: "Nueva entidad" }));
     await user.type(screen.getByLabelText("Nombre"), "Asociación Bidasoa");
-    await user.type(screen.getByLabelText("Slug"), "asociacion-bidasoa");
+    // El slug sale solo del nombre («asociacion-bidasoa»).
     await user.type(screen.getByLabelText("CIF"), "G12345678");
     await user.type(screen.getByLabelText("Buscar un municipio"), "irun");
     await waitFor(() =>
@@ -121,7 +121,7 @@ describe("PlataformaEntidadesPage", () => {
     // limpió al tener éxito el primer alta, así que hay que volver a
     // elegirla.
     await user.type(screen.getByLabelText("Nombre"), "Asociación Bidasoa");
-    await user.type(screen.getByLabelText("Slug"), "asociacion-bidasoa");
+    // El slug sale solo del nombre («asociacion-bidasoa»).
     await user.type(screen.getByLabelText("CIF"), "G12345678");
     await user.type(screen.getByLabelText("Buscar un municipio"), "irun");
     await waitFor(() =>
@@ -150,11 +150,33 @@ describe("PlataformaEntidadesPage", () => {
 
     await user.click(screen.getByRole("button", { name: "Nueva entidad" }));
     await user.type(screen.getByLabelText("Nombre"), "Ayuntamiento de Irun");
+    await user.clear(screen.getByLabelText("Slug"));
     await user.type(screen.getByLabelText("Slug"), "ayto-irun");
     await user.type(screen.getByLabelText("CIF"), "P2000000A");
 
     expect(screen.getByRole("button", { name: "Crear entidad" })).toBeDisabled();
     expect(screen.getByText("La sede es obligatoria para dar de alta una entidad.")).toBeInTheDocument();
+  });
+
+  it("el slug sale del nombre, el CIF es libre y se dice qué falta", async () => {
+    apiFetchMock.mockResolvedValue({ count: 0, next: null, previous: null, results: [] });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+    const user = userEvent.setup();
+    render(await PlataformaEntidadesPage());
+
+    await user.click(screen.getByRole("button", { name: "Nueva entidad" }));
+    await user.type(screen.getByLabelText("Nombre"), "Asociación de Adicciones de Errenteria");
+    expect(screen.getByLabelText("Slug")).toHaveValue("asociacion-de-adicciones-de-errenteria");
+    expect(screen.getByText(/Para crear la entidad falta: el municipio de la sede, el CIF\./)).toBeInTheDocument();
+
+    // Decisión del propietario (2026-09-30): cualquier CIF vale, sin comprobar el control.
+    await user.type(screen.getByLabelText("CIF"), "B76676689");
+    expect(screen.queryByText(/no es válido/)).not.toBeInTheDocument();
+    expect(screen.getByText(/Para crear la entidad falta: el municipio de la sede\./)).toBeInTheDocument();
   });
 
   it("avisa de las entidades sin sede", async () => {

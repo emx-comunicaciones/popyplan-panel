@@ -2820,7 +2820,16 @@
       "parentIdLabel": "Umbrella entity (optional)",
       "descriptionLabel": "Description",
       "createAction": "Create entity",
-      "created": "Entity “{name}” created, not verified."
+      "created": "Entity “{name}” created, not verified.",
+      "slugHint": "Taken from the name and used in the web address. You can change it.",
+      "slugInvalid": "Only lowercase letters without accents, numbers and hyphens.",
+      "missing": {
+        "intro": "To create the entity you still need: {fields}.",
+        "name": "the name",
+        "slug": "a valid identifier",
+        "place": "the headquarters town",
+        "cif": "the CIF"
+      }
     },
     "entidadFicha": {
       "heading": "Entity profile",

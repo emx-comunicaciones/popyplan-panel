@@ -2820,7 +2820,16 @@
       "parentIdLabel": "Erakunde aterkia (aukerakoa)",
       "descriptionLabel": "Deskribapena",
       "createAction": "Erakundea sortu",
-      "created": "«{name}» erakundea sortuta, egiaztatu gabe."
+      "created": "«{name}» erakundea sortuta, egiaztatu gabe.",
+      "slugHint": "Izenetik ateratzen da eta web helbidean doa. Alda dezakezu.",
+      "slugInvalid": "Letra xehe azentu gabeak, zenbakiak eta marratxoak bakarrik.",
+      "missing": {
+        "intro": "Erakundea sortzeko falta da: {fields}.",
+        "name": "izena",
+        "slug": "identifikatzaile baliozko bat",
+        "place": "egoitzaren udalerria",
+        "cif": "IFKa"
+      }
     },
     "entidadFicha": {
       "heading": "Erakundearen fitxa",

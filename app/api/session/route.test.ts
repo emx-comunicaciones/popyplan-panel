@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
-import { SESSION_COOKIE_NAME } from "@/lib/auth/cookie";
+import { ACCESS_COOKIE_NAME, SESSION_COOKIE_NAME } from "@/lib/auth/cookie";
 import { LANG_COOKIE_NAME } from "@/lib/i18n/cookie";
 
 import { clearRecentRotations } from "@/lib/auth/rotationCache";
@@ -70,6 +70,22 @@ describe("POST /api/session", () => {
     expect(cookie?.value).toBe("refresh-456");
     expect(cookie?.httpOnly).toBe(true);
     expect(cookie?.sameSite).toBe("strict");
+  });
+
+  it("login correcto guarda también el token de acceso en su cookie httpOnly, hasta que caduca", async () => {
+    const b64 = (v: object) => Buffer.from(JSON.stringify(v)).toString("base64url");
+    const access = `${b64({})}.${b64({ exp: Math.floor(Date.now() / 1000) + 24 * 3600 })}.x`;
+    fetchMock
+      .mockResolvedValueOnce(response({ key: access, refresh: "refresh-456", user: { pk: 1 } }, 200))
+      .mockResolvedValueOnce(response(buildMe(), 200))
+      .mockResolvedValueOnce(response(buildPlatformRole(null), 200));
+
+    const res = await POST(loginRequest({ username_or_email: "t@alfaville.test", password: "correcta-1234" }));
+
+    const cookie = res.cookies.get(ACCESS_COOKIE_NAME);
+    expect(cookie?.value).toBe(access);
+    expect(cookie?.httpOnly).toBe(true);
+    expect(cookie?.maxAge).toBeGreaterThan(23 * 3600);
   });
 
   it("body incompleto responde 400 sin llamar al backend", async () => {
@@ -243,6 +259,7 @@ describe("DELETE /api/session", () => {
     expect(res.status).toBe(200);
     expect(cookie?.value).toBe("");
     expect(cookie?.maxAge).toBe(0);
+    expect(res.cookies.get(ACCESS_COOKIE_NAME)?.maxAge).toBe(0);
   });
 
   it("el logout también reenvía la IP real del cliente (misma clave de rate limit que el login)", async () => {
