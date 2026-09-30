@@ -14,7 +14,9 @@
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 
+import { AccountPicker } from "@/components/plataforma/AccountPicker";
 import { Button } from "@/components/ui/Button";
+import type { PickerOption } from "@/components/ui/SearchPicker";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Table } from "@/components/ui/Table";
@@ -136,6 +138,8 @@ export function AuditoriaPanel() {
     setPage(1);
   }, [actor, action, targetType, targetId, since, until]);
 
+  const [actorOption, setActorOption] = useState<PickerOption | null>(null);
+
   function updateFilter<K extends keyof AuditFormFilters>(key: K, value: string) {
     setFilters((prev) => ({ ...prev, [key]: value }));
   }
@@ -143,18 +147,15 @@ export function AuditoriaPanel() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-end gap-3">
-        <div>
-          <label htmlFor="audit-actor" className="mb-1 block text-sm font-medium text-text-form">
-            {t("plataforma.auditoria.actorLabel")}
-          </label>
-          <input
-            id="audit-actor"
-            type="number"
-            value={filters.actor}
-            onChange={(event) => updateFilter("actor", event.target.value)}
-            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-          />
-        </div>
+        <AccountPicker
+          id="audit-actor"
+          label={t("plataforma.auditoria.actorLabel")}
+          value={actorOption}
+          onChange={(option) => {
+            setActorOption(option);
+            updateFilter("actor", option ? String(option.id) : "");
+          }}
+        />
         <div>
           <label htmlFor="audit-action" className="mb-1 block text-sm font-medium text-text-form">
             {t("plataforma.auditoria.actionLabel")}

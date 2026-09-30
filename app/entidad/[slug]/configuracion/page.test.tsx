@@ -19,6 +19,7 @@ const useOrgReferencesMock = vi.hoisted(() => vi.fn());
 const useCreateOrgReferenceMock = vi.hoisted(() => vi.fn());
 const useRemoveOrgReferenceMock = vi.hoisted(() => vi.fn());
 const useOrgScopeMock = vi.hoisted(() => vi.fn());
+const usePeopleMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("@/hooks/useOrganization", () => ({ useOrganization: useOrganizationMock }));
@@ -34,6 +35,7 @@ vi.mock("@/hooks/useOrgReferences", () => ({
   useRemoveOrgReference: useRemoveOrgReferenceMock,
 }));
 vi.mock("@/hooks/useOrgScope", () => ({ useOrgScope: useOrgScopeMock }));
+vi.mock("@/hooks/usePeople", () => ({ usePeople: usePeopleMock }));
 
 import EntidadConfiguracionPage, { generateMetadata } from "./page";
 
@@ -46,6 +48,23 @@ const REFERENCE = {
   public_name: "Bea",
   photo: "",
 } as Reference;
+
+/** Tarjeta «Referencias»: «Persona» también sale en el formulario del equipo. */
+function referenciasCard(): HTMLElement {
+  return screen.getByRole("heading", { name: "Referencias" }).closest("div") as HTMLElement;
+}
+
+function equipoCard(): HTMLElement {
+  return screen.getByRole("heading", { name: "Equipo" }).closest("div") as HTMLElement;
+}
+
+function withReferenteRosa() {
+  useOrgMembersMock.mockReturnValue({
+    data: [buildOrgMembershipFull(), buildOrgMembershipFull({ id: 2, user: 9, role: "referente", public_name: "Rosa" })],
+    isError: false,
+    error: null,
+  });
+}
 
 function idleMutation() {
   return {
@@ -69,6 +88,7 @@ afterEach(() => {
   useCreateOrgReferenceMock.mockReset();
   useRemoveOrgReferenceMock.mockReset();
   useOrgScopeMock.mockReset();
+  usePeopleMock.mockReset();
 });
 
 function setDefaultMocks() {
@@ -81,6 +101,11 @@ function setDefaultMocks() {
   useCreateOrgReferenceMock.mockReturnValue(idleMutation());
   useRemoveOrgReferenceMock.mockReturnValue(idleMutation());
   useOrgScopeMock.mockReturnValue(idleMutation());
+  usePeopleMock.mockReturnValue({
+    data: { count: 1, next: null, previous: null, results: [{ user_id: 55, public_name: "Lucía" }] },
+    isFetching: false,
+    isError: false,
+  });
 }
 
 async function renderPage(role = "titular", slug = "alfaville") {
@@ -259,7 +284,7 @@ describe("EntidadConfiguracionPage", () => {
 
     await renderPage();
 
-    await user.type(screen.getByLabelText("Id de usuario"), "55");
+    await user.click(within(equipoCard()).getByRole("button", { name: "Lucía" }));
     await user.selectOptions(screen.getByLabelText("Rol"), "analista");
     await user.click(screen.getByRole("button", { name: "Añadir" }));
 
@@ -373,54 +398,57 @@ describe("EntidadConfiguracionPage", () => {
 
     await renderPage();
 
-    await user.type(screen.getByLabelText("Id de usuario"), "55");
+    await user.click(within(equipoCard()).getByRole("button", { name: "Lucía" }));
     await user.click(screen.getByRole("button", { name: "Añadir" }));
 
-    // El backend responde 400: la mutación no llama a `onSuccess` y el
-    // valor escrito sigue ahí para corregirlo.
-    expect(screen.getByLabelText("Id de usuario")).toHaveValue(55);
+    // El backend responde 400: la mutación no llama a `onSuccess` y la
+    // persona elegida sigue ahí para corregirlo.
+    expect(within(equipoCard()).getByRole("group", { name: "Persona" })).toHaveTextContent("Lucía");
 
     const options = addMutate.mock.calls.at(-1)?.[1] as { onSuccess: () => void };
     await act(async () => options.onSuccess());
 
-    expect(screen.getByLabelText("Id de usuario")).toHaveValue(null);
+    expect(within(equipoCard()).queryByRole("group", { name: "Persona" })).not.toBeInTheDocument();
+    expect(within(equipoCard()).getByRole("button", { name: "Lucía" })).toBeInTheDocument();
   });
 
   it("asignar referencia: los campos solo se limpian cuando el alta sale bien", async () => {
     setDefaultMocks();
     const createMutate = vi.fn();
     useCreateOrgReferenceMock.mockReturnValue({ ...idleMutation(), mutate: createMutate });
+    withReferenteRosa();
     const user = userEvent.setup();
 
     await renderPage();
 
-    await user.type(screen.getByLabelText("Persona (id)"), "42");
-    await user.type(screen.getByLabelText("Referente (id)"), "9");
+    await user.click(within(referenciasCard()).getByRole("button", { name: "Lucía" }));
+    await user.selectOptions(screen.getByLabelText("Referente"), "9");
     await user.click(screen.getByRole("button", { name: "Asignar" }));
 
-    expect(screen.getByLabelText("Persona (id)")).toHaveValue(42);
-    expect(screen.getByLabelText("Referente (id)")).toHaveValue(9);
+    expect(within(referenciasCard()).getByRole("group", { name: "Persona" })).toHaveTextContent("Lucía");
+    expect(screen.getByLabelText("Referente")).toHaveValue("9");
 
     const options = createMutate.mock.calls.at(-1)?.[1] as { onSuccess: () => void };
     await act(async () => options.onSuccess());
 
-    expect(screen.getByLabelText("Persona (id)")).toHaveValue(null);
-    expect(screen.getByLabelText("Referente (id)")).toHaveValue(null);
+    expect(within(referenciasCard()).queryByRole("group", { name: "Persona" })).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Referente")).toHaveValue("");
   });
 
   it("asignar referencia llama a la mutación con user y referent_user", async () => {
     setDefaultMocks();
     const createMutate = vi.fn();
     useCreateOrgReferenceMock.mockReturnValue({ ...idleMutation(), mutate: createMutate });
+    withReferenteRosa();
     const user = userEvent.setup();
 
     await renderPage();
 
-    await user.type(screen.getByLabelText("Persona (id)"), "42");
-    await user.type(screen.getByLabelText("Referente (id)"), "9");
+    await user.click(within(referenciasCard()).getByRole("button", { name: "Lucía" }));
+    await user.selectOptions(screen.getByLabelText("Referente"), "9");
     await user.click(screen.getByRole("button", { name: "Asignar" }));
 
-    expect(createMutate).toHaveBeenCalledWith({ user: 42, referent_user: 9 }, expect.anything());
+    expect(createMutate).toHaveBeenCalledWith({ user: 55, referent_user: 9 }, expect.anything());
   });
 
   it("lista referencias existentes y quitar llama a la mutación", async () => {
@@ -569,9 +597,12 @@ describe("EntidadConfiguracionPage", () => {
 
     await renderPage("moderador");
 
-    expect(screen.queryByLabelText("Id de usuario")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Añadir" })).not.toBeInTheDocument();
     expect(useOrgMembersMock).not.toHaveBeenCalled();
-    expect(screen.getByLabelText("Persona (id)")).toBeInTheDocument();
+    expect(screen.getAllByLabelText("Persona").length).toBeGreaterThan(0);
+    // Sin poder leer el equipo no hay a quién elegir de referente: se dice.
+    expect(screen.queryByLabelText("Referente")).not.toBeInTheDocument();
+    expect(screen.getByText(/Solo el titular puede ver el equipo/)).toBeInTheDocument();
     expect(screen.getByLabelText("Códigos INE, separados por coma")).toBeInTheDocument();
   });
 

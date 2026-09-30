@@ -32,6 +32,8 @@ import {
   type LogoFileErrorKind,
 } from "@/lib/organizations/validateLogo";
 
+import { PersonPicker } from "@/components/entidad/PersonPicker";
+import type { PickerOption } from "@/components/ui/SearchPicker";
 import { SedeSelector } from "@/components/plataforma/SedeSelector";
 
 const ADD_ORG_MEMBER_ERROR_KEYS: Record<OrgMembersErrorKind, string> = {
@@ -323,33 +325,28 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
   const members = useOrgMembers(orgId);
   const addMember = useAddOrgMember(orgId);
   const removeMember = useRemoveOrgMember(orgId);
-  const [userId, setUserId] = useState("");
+  const [person, setPerson] = useState<PickerOption | null>(null);
   const [role, setRole] = useState<OrgMembershipRole>("dinamizador");
   const [removing, setRemoving] = useState<OrgMembershipFull | null>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!userId) return;
-    // El campo se limpia solo si el alta sale bien: con un 400 («esa
-    // persona ya tiene un rol») el id escrito sigue ahí para corregirlo.
-    addMember.mutate({ user: Number(userId), role }, { onSuccess: () => setUserId("") });
+    if (!person) return;
+    // La persona elegida se limpia solo si el alta sale bien: con un 400
+    // («esa persona ya tiene un rol») sigue ahí para corregirlo.
+    addMember.mutate({ user: person.id, role }, { onSuccess: () => setPerson(null) });
   }
 
   return (
     <Card title={t("entidad.configuracion.teamTitle")}>
       <form onSubmit={handleSubmit} className="mb-4 flex flex-wrap items-end gap-3">
-        <div>
-          <label htmlFor="equipo-user-id" className="mb-1 block text-sm font-medium text-text-form">
-            {t("entidad.configuracion.userIdLabel")}
-          </label>
-          <input
-            id="equipo-user-id"
-            type="number"
-            value={userId}
-            onChange={(event) => setUserId(event.target.value)}
-            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-          />
-        </div>
+        <PersonPicker
+          orgId={orgId}
+          id="equipo-user-id"
+          label={t("entidad.configuracion.userIdLabel")}
+          value={person}
+          onChange={setPerson}
+        />
         <div>
           <label htmlFor="equipo-role" className="mb-1 block text-sm font-medium text-text-form">
             {t("entidad.configuracion.roleLabel")}
@@ -367,7 +364,7 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
             ))}
           </select>
         </div>
-        <Button type="submit" disabled={addMember.isPending}>
+        <Button type="submit" disabled={addMember.isPending || !person}>
           {t("entidad.configuracion.addButton")}
         </Button>
       </form>
@@ -513,24 +510,68 @@ function ReferentName({
   );
 }
 
+/**
+ * Referente de una referencia: alguien del equipo con rol `referente`.
+ * Solo el titular puede leer el equipo (`Referencias` no lo monta si no).
+ */
+function ReferentSelect({
+  orgId,
+  value,
+  onChange,
+}: {
+  orgId: number | string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const t = useTranslations();
+  const team = useOrgMembers(orgId);
+  return (
+    <div>
+      <label htmlFor="referencia-referent-id" className="mb-1 block text-sm font-medium text-text-form">
+        {t("entidad.configuracion.referentIdLabel")}
+      </label>
+      <select
+        id="referencia-referent-id"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
+      >
+        <option value="">{t("entidad.configuracion.chooseReferent")}</option>
+        {team.data
+          ?.filter((member) => member.role === "referente")
+          .map((member) => (
+            <option key={member.user} value={String(member.user)}>
+              {member.public_name}
+            </option>
+          ))}
+      </select>
+      {team.isError ? (
+        <p role="alert" className="mt-1 text-xs text-error">
+          {t("entidad.configuracion.referentsUnavailableHint")}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam: boolean }) {
   const t = useTranslations();
   const references = useOrgReferences(orgId);
   const createReference = useCreateOrgReference(orgId);
   const removeReference = useRemoveOrgReference(orgId);
-  const [userId, setUserId] = useState("");
+  const [person, setPerson] = useState<PickerOption | null>(null);
   const [referentUserId, setReferentUserId] = useState("");
   const [removing, setRemoving] = useState<Reference | null>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!userId || !referentUserId) return;
+    if (!person || !referentUserId) return;
     // Igual que en Equipo: los campos solo se vacían con el alta hecha.
     createReference.mutate(
-      { user: Number(userId), referent_user: Number(referentUserId) },
+      { user: person.id, referent_user: Number(referentUserId) },
       {
         onSuccess: () => {
-          setUserId("");
+          setPerson(null);
           setReferentUserId("");
         },
       },
@@ -540,31 +581,19 @@ function Referencias({ orgId, canSeeTeam }: { orgId: number | string; canSeeTeam
   return (
     <Card title={t("entidad.configuracion.referencesTitle")}>
       <form onSubmit={handleSubmit} className="mb-4 flex flex-wrap items-end gap-3">
-        <div>
-          <label htmlFor="referencia-user-id" className="mb-1 block text-sm font-medium text-text-form">
-            {t("entidad.configuracion.personIdLabel")}
-          </label>
-          <input
-            id="referencia-user-id"
-            type="number"
-            value={userId}
-            onChange={(event) => setUserId(event.target.value)}
-            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-          />
-        </div>
-        <div>
-          <label htmlFor="referencia-referent-id" className="mb-1 block text-sm font-medium text-text-form">
-            {t("entidad.configuracion.referentIdLabel")}
-          </label>
-          <input
-            id="referencia-referent-id"
-            type="number"
-            value={referentUserId}
-            onChange={(event) => setReferentUserId(event.target.value)}
-            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-          />
-        </div>
-        <Button type="submit" disabled={createReference.isPending}>
+        <PersonPicker
+          orgId={orgId}
+          id="referencia-user-id"
+          label={t("entidad.configuracion.personIdLabel")}
+          value={person}
+          onChange={setPerson}
+        />
+        {canSeeTeam ? (
+          <ReferentSelect orgId={orgId} value={referentUserId} onChange={setReferentUserId} />
+        ) : (
+          <p className="text-xs text-text-secondary">{t("entidad.configuracion.referentsUnavailableHint")}</p>
+        )}
+        <Button type="submit" disabled={createReference.isPending || !person || !referentUserId}>
           {t("entidad.configuracion.assignButton")}
         </Button>
       </form>
