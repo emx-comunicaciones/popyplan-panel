@@ -2137,7 +2137,9 @@ export interface paths {
          *     comunidad sin pasar por los endpoints nested.
          *
          *     - Sólo `is_staff`.
-         *     - Soporta filtros `?community=<uuid>` y `?is_active=true/false`.
+         *     - Soporta filtros `?community=<uuid>`, `?audience=open|community|activity`
+         *       y `?is_active=true/false`. Lista también lo abierto y lo de actividades
+         *       (`community` nulo), con `audience`, `where` y `event`.
          *     - PATCH/DELETE permite alternar visibilidad o borrar.
          */
         get: operations["community_posts_list"];
@@ -2147,7 +2149,9 @@ export interface paths {
          *     comunidad sin pasar por los endpoints nested.
          *
          *     - Sólo `is_staff`.
-         *     - Soporta filtros `?community=<uuid>` y `?is_active=true/false`.
+         *     - Soporta filtros `?community=<uuid>`, `?audience=open|community|activity`
+         *       y `?is_active=true/false`. Lista también lo abierto y lo de actividades
+         *       (`community` nulo), con `audience`, `where` y `event`.
          *     - PATCH/DELETE permite alternar visibilidad o borrar.
          */
         post: operations["community_posts_create"];
@@ -2169,7 +2173,9 @@ export interface paths {
          *     comunidad sin pasar por los endpoints nested.
          *
          *     - Sólo `is_staff`.
-         *     - Soporta filtros `?community=<uuid>` y `?is_active=true/false`.
+         *     - Soporta filtros `?community=<uuid>`, `?audience=open|community|activity`
+         *       y `?is_active=true/false`. Lista también lo abierto y lo de actividades
+         *       (`community` nulo), con `audience`, `where` y `event`.
          *     - PATCH/DELETE permite alternar visibilidad o borrar.
          */
         get: operations["community_posts_retrieve"];
@@ -2178,7 +2184,9 @@ export interface paths {
          *     comunidad sin pasar por los endpoints nested.
          *
          *     - Sólo `is_staff`.
-         *     - Soporta filtros `?community=<uuid>` y `?is_active=true/false`.
+         *     - Soporta filtros `?community=<uuid>`, `?audience=open|community|activity`
+         *       y `?is_active=true/false`. Lista también lo abierto y lo de actividades
+         *       (`community` nulo), con `audience`, `where` y `event`.
          *     - PATCH/DELETE permite alternar visibilidad o borrar.
          */
         put: operations["community_posts_update"];
@@ -2188,7 +2196,9 @@ export interface paths {
          *     comunidad sin pasar por los endpoints nested.
          *
          *     - Sólo `is_staff`.
-         *     - Soporta filtros `?community=<uuid>` y `?is_active=true/false`.
+         *     - Soporta filtros `?community=<uuid>`, `?audience=open|community|activity`
+         *       y `?is_active=true/false`. Lista también lo abierto y lo de actividades
+         *       (`community` nulo), con `audience`, `where` y `event`.
          *     - PATCH/DELETE permite alternar visibilidad o borrar.
          */
         delete: operations["community_posts_destroy"];
@@ -2199,7 +2209,9 @@ export interface paths {
          *     comunidad sin pasar por los endpoints nested.
          *
          *     - Sólo `is_staff`.
-         *     - Soporta filtros `?community=<uuid>` y `?is_active=true/false`.
+         *     - Soporta filtros `?community=<uuid>`, `?audience=open|community|activity`
+         *       y `?is_active=true/false`. Lista también lo abierto y lo de actividades
+         *       (`community` nulo), con `audience`, `where` y `event`.
          *     - PATCH/DELETE permite alternar visibilidad o borrar.
          */
         patch: operations["community_posts_partial_update"];
@@ -2515,6 +2527,26 @@ export interface paths {
          *     nunca sale en ningún otro listado o detalle.
          */
         get: operations["events_my_checkin_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/events/{id}/posts/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Publicaciones de la actividad
+         * @description Las publicaciones `activity` de esta actividad, más recientes primero. 404 si no participo (organizar o tener una asistencia `registered`, `attended` o `no_show`). Una actividad cancelada se lee igual.
+         */
+        get: operations["events_posts_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4889,6 +4921,198 @@ export interface paths {
         patch: operations["plataforma_billing_tiers_partial_update"];
         trace?: never;
     };
+    "/api/posts/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publicar eligiendo dónde
+         * @description Una publicación va a **un solo sitio** y nunca cambia: `open` (la ve cualquiera, por cercanía), `community` (una comunidad de la que eres miembro activo) o `activity` (una actividad en la que participas). 403 sin permiso en el destino; 400 si la forma no vale (actividad cancelada o de un juego incluidas).
+         */
+        post: operations["posts_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/posts/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Detalle de una publicación
+         * @description 404 si no la puedo ver (bloqueo incluido).
+         */
+        get: operations["posts_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * Borrar una publicación (borrado lógico)
+         * @description Pueden la persona autora; en `community`, owner o moderator de esa comunidad; en `activity`, el organizador; e `is_staff`.
+         */
+        delete: operations["posts_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/posts/{id}/comments/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Comentarios de una publicación
+         * @description Comentarios raíz con sus respuestas anidadas (un nivel).
+         */
+        get: operations["posts_comments_list"];
+        put?: never;
+        /**
+         * Comentar una publicación
+         * @description Para responder usa `parent_id` (o `parent`). En una comunidad hay que ser miembro activo, como hoy.
+         */
+        post: operations["posts_comments_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/posts/{id}/comments/{cid}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Borrar un comentario
+         * @description Pueden quien lo escribió y las mismas personas que pueden borrar la publicación.
+         */
+        delete: operations["posts_comments_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * Editar un comentario (solo quien lo escribió)
+         * @description Publicaciones de los tres sitios (abierto, comunidad, actividad).
+         */
+        patch: operations["posts_comments_partial_update"];
+        trace?: never;
+    };
+    "/api/posts/{id}/comments/{cid}/like/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Alternar like en un comentario
+         * @description Publicaciones de los tres sitios (abierto, comunidad, actividad).
+         */
+        post: operations["posts_comments_like_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/posts/{id}/like/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Alternar like en una publicación
+         * @description Mismos permisos que ver la publicación.
+         */
+        post: operations["posts_like_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/posts/feed/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mi muro
+         * @description Paginado y más reciente primero. Junta lo abierto (recortado por radio solo si llega `radius_km`), el muro de mis comunidades activas y las publicaciones de mis actividades. Excluye bloqueos y entidades ocultas. Cada fila lleva `distance_km` si hay punto (solo lo abierto).
+         */
+        get: operations["posts_feed_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/posts/mine/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mis publicaciones, en cualquier sitio
+         * @description Publicaciones de los tres sitios (abierto, comunidad, actividad).
+         */
+        get: operations["posts_mine_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/posts/open/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Solo lo abierto (pestaña «Cerca»)
+         * @description Lo abierto, más cercano primero si hay punto; lo que no tiene punto sale igual, sin distancia y al final. Sin `radius_km` no se recorta nada.
+         */
+        get: operations["posts_open_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/program/interruptions/": {
         parameters: {
             query?: never;
@@ -6081,7 +6305,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Publica la tarjeta del entreno en el muro de una comunidad donde quien llama es miembro activo. Responde con el post (forma de `CommunityPost`, con `workout_card`). 409 si ya está publicado. */
+        /** @description Publica la tarjeta del entreno donde se elija: `audience` `open`, `community` (con `community_id`, miembro activo) o `activity` (con `event_id`, participando). Sin `audience`: `community` si llega `community_id`, `activity` si solo llega `event_id`. Responde con el post (forma de `PostSerializer`, con `workout_card`). 409 si ya está publicado. */
         post: operations["training_workouts_publish_create"];
         /** @description Despublica: el post sale del muro. 404 si no estaba publicado. */
         delete: operations["training_workouts_publish_destroy"];
@@ -7746,6 +7970,57 @@ export interface components {
             code?: string;
         };
         /**
+         * @description `CommunityPostSerializer` para el panel de plataforma: además dice en
+         *     qué sitio está la publicación (`audience`), de dónde viene (`where`) y su
+         *     actividad (`event`). Solo lectura: el panel no cambia el sitio.
+         */
+        AdminCommunityPost: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            readonly community: string | null;
+            /** Format: uuid */
+            readonly author_id: string;
+            readonly author_name: string;
+            readonly author: {
+                [key: string]: unknown;
+            };
+            content: string;
+            /** Format: uri */
+            image?: string | null;
+            readonly images: components["schemas"]["CommunityPostImage"][];
+            readonly video_url: string | null;
+            readonly hashtags: string[];
+            readonly surface: components["schemas"]["SurfaceEnum"];
+            readonly workout_card: unknown;
+            readonly likes_count: number;
+            readonly comments_count: number;
+            readonly is_liked: boolean;
+            is_active?: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+            /** Audiencia */
+            readonly audience: components["schemas"]["Audience549Enum"];
+            readonly where: {
+                [key: string]: unknown;
+            } | null;
+            /** Format: uuid */
+            readonly event: string | null;
+        };
+        /**
+         * @description `CommunityPostSerializer` para el panel de plataforma: además dice en
+         *     qué sitio está la publicación (`audience`), de dónde viene (`where`) y su
+         *     actividad (`event`). Solo lectura: el panel no cambia el sitio.
+         */
+        AdminCommunityPostRequest: {
+            content: string;
+            /** Format: binary */
+            image?: string | null;
+            is_active?: boolean;
+        };
+        /**
          * @description * `ayuntamiento` - Ayuntamiento
          *     * `mancomunidad` - Mancomunidad
          *     * `diputacion` - Diputación
@@ -7853,6 +8128,13 @@ export interface components {
          * @enum {string}
          */
         AttendeeStatusEnum: "registered" | "waitlisted" | "cancelled" | "attended" | "no_show";
+        /**
+         * @description * `open` - Abierto a todo el mundo
+         *     * `community` - Comunidad
+         *     * `activity` - Actividad
+         * @enum {string}
+         */
+        Audience549Enum: "open" | "community" | "activity";
         /**
          * @description * `members` - Miembros
          *     * `families` - Familias
@@ -8173,6 +8455,19 @@ export interface components {
          * @enum {string}
          */
         CodeEnum: "fuera_de_ventana" | "inscripcion_anulada";
+        CommentInputRequest: {
+            content: string;
+            /**
+             * Format: uuid
+             * @description Comentario al que responde.
+             */
+            parent_id?: string;
+            /**
+             * Format: uuid
+             * @description Sinónimo de `parent_id`.
+             */
+            parent?: string;
+        };
         CommunitiesMetrics: {
             active: number;
             members: number | null;
@@ -8396,28 +8691,23 @@ export interface components {
          * @enum {string}
          */
         CommunityMemberStatusEnum: "pending" | "active" | "rejected" | "left";
-        CommunityPost: {
+        CommunityPostComment: {
             /** Format: uuid */
             readonly id: string;
             /** Format: uuid */
-            readonly community: string;
+            readonly post: string;
             /** Format: uuid */
-            readonly author_id: string;
-            readonly author_name: string;
+            parent?: string | null;
+            content: string;
             readonly author: {
                 [key: string]: unknown;
             };
-            content: string;
-            /** Format: uri */
-            image?: string | null;
-            readonly images: components["schemas"]["CommunityPostImage"][];
-            readonly video_url: string | null;
-            readonly hashtags: string[];
-            readonly surface: components["schemas"]["SurfaceEnum"];
-            readonly workout_card: unknown;
             readonly likes_count: number;
-            readonly comments_count: number;
             readonly is_liked: boolean;
+            readonly replies: {
+                [key: string]: unknown;
+            }[];
+            readonly replies_count: number;
             is_active?: boolean;
             /** Format: date-time */
             readonly created_at: string;
@@ -8439,12 +8729,6 @@ export interface components {
             image?: string | null;
             /** Format: int64 */
             order?: number;
-        };
-        CommunityPostRequest: {
-            content: string;
-            /** Format: binary */
-            image?: string | null;
-            is_active?: boolean;
         };
         /** @description La comunidad del aviso/reporte, con lo justo para pintar la lista. */
         CommunityRef: {
@@ -10274,6 +10558,10 @@ export interface components {
          * @enum {string}
          */
         LevelCaaEnum: "beginner" | "intermediate" | "advanced";
+        LikeResponse: {
+            is_liked: boolean;
+            likes_count: number;
+        };
         /** @description Serializer para respuesta de login exitoso */
         LoginResponse: {
             /** @description Token de acceso (JWT) */
@@ -10881,6 +11169,21 @@ export interface components {
          * @enum {string}
          */
         OriginEnum: "own" | "proposed";
+        PaginatedAdminCommunityPostList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["AdminCommunityPost"][];
+        };
         PaginatedAuditLogList: {
             /** @example 123 */
             count: number;
@@ -11001,7 +11304,7 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["CommunityList"][];
         };
-        PaginatedCommunityPostList: {
+        PaginatedCommunityPostCommentList: {
             /** @example 123 */
             count: number;
             /**
@@ -11014,7 +11317,7 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results: components["schemas"]["CommunityPost"][];
+            results: components["schemas"]["CommunityPostComment"][];
         };
         PaginatedDisciplineList: {
             /** @example 123 */
@@ -11181,6 +11484,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["PlanSubCategory"][];
         };
+        PaginatedPostList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Post"][];
+        };
         PaginatedReportList: {
             /** @example 123 */
             count: number;
@@ -11286,20 +11604,28 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["WorkoutTemplate"][];
         };
+        /**
+         * @description `CommunityPostSerializer` para el panel de plataforma: además dice en
+         *     qué sitio está la publicación (`audience`), de dónde viene (`where`) y su
+         *     actividad (`event`). Solo lectura: el panel no cambia el sitio.
+         */
+        PatchedAdminCommunityPostRequest: {
+            content?: string;
+            /** Format: binary */
+            image?: string | null;
+            is_active?: boolean;
+        };
         /** @description Serializer para salas de chat - Solo campos seguros */
         PatchedChatRoomRequest: {
             chat_type?: components["schemas"]["ChatTypeEnum"];
             name?: string;
         };
+        PatchedCommentEditRequest: {
+            content?: string;
+        };
         PatchedCommunityCategoryRequest: {
             name?: string;
             emoji?: string;
-            /** Format: binary */
-            image?: string | null;
-            is_active?: boolean;
-        };
-        PatchedCommunityPostRequest: {
-            content?: string;
             /** Format: binary */
             image?: string | null;
             is_active?: boolean;
@@ -12299,6 +12625,60 @@ export interface components {
         PlatformRoleMe: {
             role: string | null;
         };
+        Post: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Audiencia */
+            readonly audience: components["schemas"]["Audience549Enum"];
+            readonly surface: components["schemas"]["SurfaceEnum"];
+            readonly content: string;
+            readonly images: string[];
+            /** Format: uri */
+            readonly video_url: string | null;
+            readonly workout_card: unknown;
+            readonly author: components["schemas"]["UserProfile"];
+            readonly where: {
+                [key: string]: unknown;
+            } | null;
+            readonly likes_count: number;
+            readonly comments_count: number;
+            readonly liked_by_me: boolean;
+            readonly can_delete: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: double */
+            readonly distance_km: number | null;
+        };
+        /**
+         * @description Cuerpo de `POST /api/posts/` (multipart). Solo documenta el esquema y
+         *     valida la forma; el resto de reglas las aplica el servicio.
+         */
+        PostCreateRequest: {
+            audience: components["schemas"]["Audience549Enum"];
+            /**
+             * Format: uuid
+             * @description Solo con `audience=community`.
+             */
+            community?: string;
+            /**
+             * Format: uuid
+             * @description Solo con `audience=activity`.
+             */
+            event?: string;
+            content?: string;
+            /**
+             * @description Solo en una comunidad (por defecto `forum`). Abierto y actividad son siempre `wall`.
+             *
+             *     * `forum` - Forum
+             *     * `wall` - Wall
+             */
+            surface?: components["schemas"]["SurfaceEnum"];
+            images?: string[];
+            /** Format: binary */
+            video?: string;
+            latitude?: string;
+            longitude?: string;
+        };
         /**
          * @description * `es` - Español
          *     * `eu` - Euskara
@@ -12581,9 +12961,26 @@ export interface components {
             readonly verification_level: string;
             readonly adult_verified: string;
         };
+        /**
+         * @description * `open` - open
+         *     * `community` - community
+         *     * `activity` - activity
+         * @enum {string}
+         */
+        PublishAudienceEnum: "open" | "community" | "activity";
+        /**
+         * @description Cuerpo de `POST /api/training/workouts/{id}/publish/`.
+         *
+         *     `audience` (`open|community|activity`) por defecto es `community` si
+         *     llega `community_id` (la app de antes), `activity` si solo llega
+         *     `event_id`; sin ninguno de los dos, 400.
+         */
         PublishRequest: {
+            audience?: components["schemas"]["PublishAudienceEnum"];
             /** Format: uuid */
-            community_id: string;
+            community_id?: string;
+            /** Format: uuid */
+            event_id?: string;
             /** @default false */
             show_weights: boolean;
             /** @default  */
@@ -12592,9 +12989,14 @@ export interface components {
         PublishedRef: {
             /** Format: uuid */
             post_id: string;
+            /** @description Dónde se publicó, como en `PostSerializer`: `null` si es abierto; `{type:"community", id, name}` o `{type:"activity", id, title, starts_at}`. */
+            where: {
+                [key: string]: unknown;
+            } | null;
+            /** @description Deprecado: lo de antes de elegir sitio. Solo si es de una comunidad (igual que `where`); `null` en los demás sitios. */
             community: {
                 [key: string]: string;
-            };
+            } | null;
         };
         Ranking: {
             /** Format: uuid */
@@ -12905,6 +13307,10 @@ export interface components {
             title?: string;
             name?: string;
             sender?: number;
+            /** @description Solo en `post` y `comment`: de dónde viene. `null` si es abierto; `{type:"community", id, name}` o `{type:"activity", id, title, starts_at}`. */
+            where?: {
+                [key: string]: unknown;
+            } | null;
         };
         /**
          * @description La persona señalada por un reporte `target_type='user'`.
@@ -18533,7 +18939,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedCommunityPostList"];
+                    "application/json": components["schemas"]["PaginatedAdminCommunityPostList"];
                 };
             };
         };
@@ -18547,9 +18953,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CommunityPostRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["CommunityPostRequest"];
-                "multipart/form-data": components["schemas"]["CommunityPostRequest"];
+                "application/json": components["schemas"]["AdminCommunityPostRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AdminCommunityPostRequest"];
+                "multipart/form-data": components["schemas"]["AdminCommunityPostRequest"];
             };
         };
         responses: {
@@ -18558,7 +18964,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CommunityPost"];
+                    "application/json": components["schemas"]["AdminCommunityPost"];
                 };
             };
         };
@@ -18580,7 +18986,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CommunityPost"];
+                    "application/json": components["schemas"]["AdminCommunityPost"];
                 };
             };
         };
@@ -18597,9 +19003,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CommunityPostRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["CommunityPostRequest"];
-                "multipart/form-data": components["schemas"]["CommunityPostRequest"];
+                "application/json": components["schemas"]["AdminCommunityPostRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AdminCommunityPostRequest"];
+                "multipart/form-data": components["schemas"]["AdminCommunityPostRequest"];
             };
         };
         responses: {
@@ -18608,7 +19014,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CommunityPost"];
+                    "application/json": components["schemas"]["AdminCommunityPost"];
                 };
             };
         };
@@ -18646,9 +19052,9 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["PatchedCommunityPostRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["PatchedCommunityPostRequest"];
-                "multipart/form-data": components["schemas"]["PatchedCommunityPostRequest"];
+                "application/json": components["schemas"]["PatchedAdminCommunityPostRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedAdminCommunityPostRequest"];
+                "multipart/form-data": components["schemas"]["PatchedAdminCommunityPostRequest"];
             };
         };
         responses: {
@@ -18657,7 +19063,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CommunityPost"];
+                    "application/json": components["schemas"]["AdminCommunityPost"];
                 };
             };
         };
@@ -19451,6 +19857,30 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    events_posts_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un Cadena UUID que identifique este Actividad. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
             };
         };
     };
@@ -24878,6 +25308,305 @@ export interface operations {
             };
         };
     };
+    posts_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["PostCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Post"];
+                };
+            };
+        };
+    };
+    posts_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Post"];
+                };
+            };
+        };
+    };
+    posts_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    posts_comments_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCommunityPostCommentList"];
+                };
+            };
+        };
+    };
+    posts_comments_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["CommentInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CommentInputRequest"];
+                "application/json": components["schemas"]["CommentInputRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunityPostComment"];
+                };
+            };
+        };
+    };
+    posts_comments_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cid: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    posts_comments_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cid: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": components["schemas"]["PatchedCommentEditRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCommentEditRequest"];
+                "application/json": components["schemas"]["PatchedCommentEditRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunityPostComment"];
+                };
+            };
+        };
+    };
+    posts_comments_like_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cid: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LikeResponse"];
+                };
+            };
+        };
+    };
+    posts_like_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LikeResponse"];
+                };
+            };
+        };
+    };
+    posts_feed_list: {
+        parameters: {
+            query?: {
+                /** @description Punto desde el que medir. Sin él se usa el del perfil; sin ninguno, sin distancias. */
+                lat?: number;
+                lng?: number;
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Solo si se pide se recorta por cercanía (lo abierto; máx. 200). El punto mide, no esconde. */
+                radius_km?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedPostList"];
+                };
+            };
+        };
+    };
+    posts_mine_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedPostList"];
+                };
+            };
+        };
+    };
+    posts_open_list: {
+        parameters: {
+            query?: {
+                /** @description Punto desde el que medir. Sin él se usa el del perfil; sin ninguno, sin distancias. */
+                lat?: number;
+                lng?: number;
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Solo si se pide se recorta por cercanía (lo abierto; máx. 200). El punto mide, no esconde. */
+                radius_km?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedPostList"];
+                };
+            };
+        };
+    };
     program_interruptions_list: {
         parameters: {
             query?: {
@@ -27586,7 +28315,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: {
+        requestBody?: {
             content: {
                 "application/json": components["schemas"]["PublishRequest"];
                 "application/x-www-form-urlencoded": components["schemas"]["PublishRequest"];
