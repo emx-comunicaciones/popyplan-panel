@@ -34,8 +34,9 @@
  *    `/login?returnTo=<destino>` **solo en navegaciones de documento**
  *    (`sec-fetch-dest: document`, o sin la cabecera — navegadores
  *    antiguos, curl, Playwright viejo); un prefetch/RSC
- *    (`sec-fetch-dest` distinto de `document`) pasa sin sesión y lo
- *    resolverá la navegación de documento siguiente. **Este middleware no
+ *    (`sec-fetch-dest` distinto de `document`) recibe un 401 vacío para
+ *    que el router de Next repita la navegación como documento (error 46
+ *    del informe: la carrera de justo después de entrar). **Este middleware no
  *    borra nunca la cookie** (hallazgo F3): el single-flight del punto 2
  *    cierra la carrera de rotación *dentro de este proceso*, pero no
  *    entre runtimes (el middleware corre en Edge y
@@ -200,12 +201,22 @@ export async function middleware(request: NextRequest) {
       // se entiende. Mismo trato que si no respondiera.
       return new NextResponse(null, { status: 503 });
     }
-    if (isPublicRoot(request) || !isDocumentNavigation(request)) {
-      // Prefetch/RSC: la petición pasa sin sesión y el layout que llame a
-      // `getServerSession()` redirigirá; la navegación de documento
-      // siguiente repetirá este refresco. La raíz pasa siempre: es la
-      // landing pública (spec §3.2).
+    if (isPublicRoot(request)) {
+      // La raíz pasa siempre: es la landing pública (spec §3.2).
       return passThroughWithoutAccess(request);
+    }
+    if (!isDocumentNavigation(request)) {
+      // Prefetch/RSC (informe del panel, error 46). Antes pasaba sin
+      // sesión y el layout redirigía a `/login`; pero un rechazo aquí es
+      // casi siempre la carrera de justo después de entrar: el clic en el
+      // menú sale con la cookie que la restauración de arranque
+      // (`/api/session/refresh`) acaba de rotar, y el backend ya la tiene
+      // en lista negra aunque la sesión esté sana. Un 401 sin cuerpo de
+      // flight hace que el router de Next repita la navegación como
+      // documento completo (MPA), que ya lleva la cookie rotada; si la
+      // sesión caducó de verdad, esa navegación de documento sí acaba en
+      // `/login?returnTo=…`. Un prefetch simplemente falla en silencio.
+      return new NextResponse(null, { status: 401, headers: { "Cache-Control": "no-store" } });
     }
     // Navegación de documento a una ruta protegida: al login con el
     // destino, pero **sin** borrar la cookie (hallazgo F3, ver el

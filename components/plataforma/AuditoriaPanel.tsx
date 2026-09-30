@@ -14,7 +14,9 @@
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 
+import { AccountPicker } from "@/components/plataforma/AccountPicker";
 import { Button } from "@/components/ui/Button";
+import type { PickerOption } from "@/components/ui/SearchPicker";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Table } from "@/components/ui/Table";
@@ -36,6 +38,19 @@ function metadataText(entry: AuditLogEntry): string {
   return entries.map(([key, value]) => `${key}=${JSON.stringify(value)}`).join(", ");
 }
 
+/**
+ * Las filas del programa de seguimiento (datos de salud) llegan sin actor
+ * (`actor.id === 0`) ni objetivo (`target_id === ""`): la plataforma ve que
+ * hubo la acción, no de quién ni sobre qué (`docs/PANEL.md` §18).
+ */
+function actorText(entry: AuditLogEntry, hidden: string): string {
+  return entry.actor.id === 0 ? hidden : `${entry.actor.public_name} (#${entry.actor.id})`;
+}
+
+function targetText(entry: AuditLogEntry, hidden: string): string {
+  return entry.target_id === "" && entry.target_type === "" ? hidden : `${entry.target_type} #${entry.target_id}`;
+}
+
 const AUDIT_LOG_ERROR_KEYS: Record<AuditLogErrorKind, string> = {
   sin_acceso: "plataforma.auditoria.noAccessDescription",
   desconocido: "errors.auditLog.desconocido",
@@ -52,12 +67,12 @@ const AUDIT_LOG_ERROR_KEYS: Record<AuditLogErrorKind, string> = {
  * `AuditoriaPanel`) en vez de vivir aquí como constante en español —
  * esta función es `.ts` plano y no puede llamar a `t()`.
  */
-function downloadCsv(rows: AuditLogEntry[], header: string[]): void {
+function downloadCsv(rows: AuditLogEntry[], header: string[], hidden: string): void {
   const blob = csvBlob([
     header,
     ...rows.map((row) => [
       row.id,
-      `${row.actor.public_name} (#${row.actor.id})`,
+      actorText(row, hidden),
       row.action,
       row.target_type,
       row.target_id,
@@ -136,6 +151,8 @@ export function AuditoriaPanel() {
     setPage(1);
   }, [actor, action, targetType, targetId, since, until]);
 
+  const [actorOption, setActorOption] = useState<PickerOption | null>(null);
+
   function updateFilter<K extends keyof AuditFormFilters>(key: K, value: string) {
     setFilters((prev) => ({ ...prev, [key]: value }));
   }
@@ -143,18 +160,15 @@ export function AuditoriaPanel() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-end gap-3">
-        <div>
-          <label htmlFor="audit-actor" className="mb-1 block text-sm font-medium text-text-form">
-            {t("plataforma.auditoria.actorLabel")}
-          </label>
-          <input
-            id="audit-actor"
-            type="number"
-            value={filters.actor}
-            onChange={(event) => updateFilter("actor", event.target.value)}
-            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-          />
-        </div>
+        <AccountPicker
+          id="audit-actor"
+          label={t("plataforma.auditoria.actorLabel")}
+          value={actorOption}
+          onChange={(option) => {
+            setActorOption(option);
+            updateFilter("actor", option ? String(option.id) : "");
+          }}
+        />
         <div>
           <label htmlFor="audit-action" className="mb-1 block text-sm font-medium text-text-form">
             {t("plataforma.auditoria.actionLabel")}
@@ -250,7 +264,7 @@ export function AuditoriaPanel() {
                   t("plataforma.auditoria.csvTargetId"),
                   t("plataforma.auditoria.csvMetadata"),
                   t("plataforma.auditoria.csvCreatedAt"),
-                ])
+                ], t("plataforma.auditoria.hidden"))
               }
             >
               {t("plataforma.auditoria.exportCsv")}
@@ -265,13 +279,13 @@ export function AuditoriaPanel() {
               {
                 key: "actor",
                 header: t("plataforma.auditoria.colActor"),
-                render: (entry) => `${entry.actor.public_name} (#${entry.actor.id})`,
+                render: (entry) => actorText(entry, t("plataforma.auditoria.hidden")),
               },
               { key: "action", header: t("plataforma.auditoria.colAction"), render: (entry) => entry.action },
               {
                 key: "target",
                 header: t("plataforma.auditoria.colTarget"),
-                render: (entry) => `${entry.target_type} #${entry.target_id}`,
+                render: (entry) => targetText(entry, t("plataforma.auditoria.hidden")),
               },
               { key: "metadata", header: t("plataforma.auditoria.colMetadata"), render: metadataText },
               {

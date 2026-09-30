@@ -32,9 +32,11 @@ export class OrgMembersError extends Error {
 
 export function useOrgMembers(
   orgId: number | string,
+  options: { enabled?: boolean } = {},
 ): UseQueryResult<OrgMembershipFull[], OrgMembersError> {
   return useQuery<OrgMembershipFull[], OrgMembersError>({
     queryKey: ["panel-org-members", orgId],
+    enabled: options.enabled ?? true,
     queryFn: async () => {
       try {
         return await apiFetch<OrgMembershipFull[]>(ORGANIZATIONS.MEMBERS(orgId));

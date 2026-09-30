@@ -18,6 +18,7 @@ import {
   EnrollmentsError,
   useCloseEnrollment,
   useCreateEnrollment,
+  useEnrollmentReferents,
   useEnrollments,
   useUpdateEnrollment,
 } from "./useProgramEnrollments";
@@ -207,5 +208,33 @@ describe("useUpdateEnrollment / useCloseEnrollment", () => {
     result.current.mutate(1);
     await waitFor(() => expect(result.current.error?.kind).toBe("desconocido"));
     expect(result.current.error?.message).toBe("No se pudo dar de baja del programa.");
+  });
+});
+
+describe("useEnrollmentReferents", () => {
+  it("pide TRACKING.REFERENTS y devuelve id de membresía y nombre", async () => {
+    apiFetchMock.mockResolvedValueOnce([{ id: 190, public_name: "Referente" }]);
+    const { wrapper } = setup();
+
+    const { result } = renderHook(() => useEnrollmentReferents(96), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(apiFetchMock).toHaveBeenCalledWith("/api/panel/entidad/96/program/referents/");
+    expect(result.current.data).toEqual([{ id: 190, public_name: "Referente" }]);
+  });
+
+  it("un 404 es «sin acceso» y cualquier otro fallo es «desconocido»", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(404, { detail: "No encontrado." }));
+    const { wrapper } = setup();
+    const { result } = renderHook(() => useEnrollmentReferents(96), { wrapper });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error).toBeInstanceOf(EnrollmentsError);
+    expect(result.current.error?.kind).toBe("sin_acceso");
+
+    apiFetchMock.mockRejectedValueOnce(new ApiError(500, null));
+    const otro = setup();
+    const second = renderHook(() => useEnrollmentReferents(97), { wrapper: otro.wrapper });
+    await waitFor(() => expect(second.result.current.isError).toBe(true));
+    expect(second.result.current.error?.kind).toBe("desconocido");
   });
 });

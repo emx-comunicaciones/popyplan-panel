@@ -247,8 +247,9 @@ entidades normales, `/elegir-entidad`.
 - **Asistencia/check-in**: marcar exige actividad empezada; check-in en
   ventana `-2h..+12h` (409 con el mensaje literal); `already: true` es
   aviso, no error. El QR admite token o `popyplan://checkin/<token>`.
-- **Actividades**: la tabla arranca en «Este mes» (hasta hoy); lo futuro
-  se ve con rango personalizado y, al crear, el periodo se amplía hasta
+- **Actividades**: la tabla arranca en «Este mes y próximos» (preset
+  `proximos`: del día 1 del mes hasta hoy+30 días; informe, error 10); lo
+  más lejano se ve con rango personalizado y, al crear, el periodo se amplía hasta
   la fecha nueva (`periodIncluding`). El municipio lo deriva el backend
   de las coordenadas: el panel nunca manda código INE. Mensajes de
   validación copiados literalmente del `.po` del backend.

@@ -15,6 +15,7 @@ describe("plataformaMenuFor", () => {
       "entidades",
       "usuarios",
       "comunidades",
+      "publicaciones",
       "actividades",
       "reportes",
       "bloqueos",

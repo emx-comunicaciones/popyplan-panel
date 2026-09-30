@@ -76,7 +76,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-async function renderPage(role = "titular", slug = "alfaville", userId = "42") {
+async function renderPage(role = "titular", slug = "alfaville", userId = "42", volver?: string) {
   getServerSessionMock.mockResolvedValue({
     token: "t",
     me: buildMe({
@@ -85,11 +85,34 @@ async function renderPage(role = "titular", slug = "alfaville", userId = "42") {
     platformRole: { role: null },
   });
 
-  const element = await EntidadPersonaPage({ params: Promise.resolve({ slug, userId }) });
+  const element = await EntidadPersonaPage({
+    params: Promise.resolve({ slug, userId }),
+    searchParams: Promise.resolve(volver === undefined ? {} : { volver }),
+  });
   return render(element);
 }
 
 describe("EntidadPersonaPage", () => {
+  it("«Volver a Personas» recupera los filtros de la lista y descarta lo ajeno (error 30)", async () => {
+    usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
+    useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
+    usePersonSupportMock.mockReturnValue({ data: PERSON_SUPPORT_ROWS, isError: false, error: null });
+    isTrackingProgramEnabledMock.mockResolvedValue(false);
+    await renderPage("titular", "alfaville", "42", "q=ana&pagina=2&javascript=x");
+    expect(screen.getByRole("link", { name: "Volver a Personas" })).toHaveAttribute(
+      "href", "/entidad/alfaville/personas?q=ana&pagina=2");
+  });
+
+  it("sin filtros, «Volver a Personas» va a la lista a secas", async () => {
+    usePersonMock.mockReturnValue({ data: PERSON_DETAIL, isError: false, error: null });
+    useAssignReferentMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isSuccess: false, isError: false });
+    usePersonSupportMock.mockReturnValue({ data: PERSON_SUPPORT_ROWS, isError: false, error: null });
+    isTrackingProgramEnabledMock.mockResolvedValue(false);
+    await renderPage("titular");
+    expect(screen.getByRole("link", { name: "Volver a Personas" })).toHaveAttribute(
+      "href", "/entidad/alfaville/personas");
+  });
+
   it("expone el título de la página vía generateMetadata", async () => {
     expect((await generateMetadata()).title).toBe("Ficha de la persona");
   });
@@ -129,7 +152,7 @@ describe("EntidadPersonaPage", () => {
     expect(screen.getByText(/Nivel de verificación: Teléfono verificado/)).toBeInTheDocument();
     expect(screen.getByText(/Referente: Bea/)).toBeInTheDocument();
     expect(screen.getByText("Comunidad Uno")).toBeInTheDocument();
-    expect(screen.getByText("member")).toBeInTheDocument();
+    expect(screen.getByText("Miembro")).toBeInTheDocument();
     expect(screen.getByText(/E1/)).toBeInTheDocument();
     expect(screen.getByText("Asistió")).toBeInTheDocument();
     expect(screen.getByText(/Próximo taller/)).toBeInTheDocument();

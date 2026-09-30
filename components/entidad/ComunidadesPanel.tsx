@@ -22,6 +22,7 @@ import { useCommunityMembers, useCommunityPendingRequests } from "@/hooks/useCom
 import { useEntityCommunities } from "@/hooks/useEntityCommunities";
 import type { CommunityMember, EntityCommunityRow } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { COMMUNITY_ROLE_LABEL_KEYS, enumLabel } from "@/lib/i18n/enumLabels";
 
 export interface ComunidadesPanelProps {
   orgId: number | string;
@@ -98,7 +99,7 @@ function MemberRow({
   return (
     <tr className="border-b border-border-light">
       <td className="px-3 py-1.5 text-text-base">{member.full_name}</td>
-      <td className="px-3 py-1.5 text-text-base">{member.role}</td>
+      <td className="px-3 py-1.5 text-text-base">{enumLabel(COMMUNITY_ROLE_LABEL_KEYS, member.role, tAll)}</td>
       <td className="px-3 py-1.5 text-text-base">
         <div className="flex flex-wrap gap-2">
           {member.role !== "owner" ? (

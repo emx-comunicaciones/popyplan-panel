@@ -6,7 +6,7 @@ import { GuardiaPanel } from "@/components/entidad/GuardiaPanel";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { isEntidadPanelRole } from "@/lib/auth/area";
 import { entidadMenuFor } from "@/lib/auth/entidadMenu";
-import { isOnCallUser } from "@/lib/auth/organization";
+import { canAcknowledgeHelp, isOnCallUser } from "@/lib/auth/organization";
 import { getServerSession } from "@/lib/auth/session";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -39,6 +39,8 @@ export default async function EntidadGuardiaPage({
   // cosas, igual que `HelpRequestViewSet.pending`.
   const isOnCall = await isOnCallUser(membership.organization_id, session);
 
+  const canAcknowledge = await canAcknowledgeHelp(membership.organization_id, membership.role, session);
+
   const menu = entidadMenuFor(membership.role, { isOnCall });
 
   if (!menu.includes("guardia")) {
@@ -61,6 +63,9 @@ export default async function EntidadGuardiaPage({
         // backend concede solo al titular; el resto veía un formulario
         // que siempre terminaba en 403.
         canManage={membership.role === "titular"}
+        // Error 29: con guardia nombrada solo ella acusa recibo; el
+        // titular ve el aviso pero el backend le respondía 403.
+        canAcknowledge={canAcknowledge}
       />
     </div>
   );

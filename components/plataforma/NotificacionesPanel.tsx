@@ -38,6 +38,7 @@ import type {
   NotificationTemplateInput,
   NotificationTemplateRow,
   NotificationTypeName,
+  SendableNotificationTypeName,
 } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 
@@ -67,6 +68,18 @@ export const NOTIFICATION_TYPES: readonly NotificationTypeName[] = [
   "survey",
   "support_help_request",
   "support_link",
+];
+
+/**
+ * Lo que se puede mandar a mano desde «Enviar» (revisión 2026-09-28, N3):
+ * con los 17 tipos, plataforma podía mandar «Cuenta suspendida» o simular
+ * una petición de ayuda, y la app los abre en su pantalla. El backend
+ * rechaza el resto con 400; las plantillas siguen con todos los tipos.
+ */
+export const SENDABLE_NOTIFICATION_TYPES: readonly SendableNotificationTypeName[] = [
+  "announcement",
+  "system",
+  "warning",
 ];
 
 export const NOTIFICATION_TYPE_LABEL_KEYS: Record<NotificationTypeName, string> = {
@@ -123,7 +136,7 @@ function SendTab() {
   const [recipient, setRecipient] = useState<Recipient | null>(null);
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
-  const [type, setType] = useState<NotificationTypeName>("announcement");
+  const [type, setType] = useState<SendableNotificationTypeName>("announcement");
   const [priority, setPriority] = useState<NotificationPriorityName>("medium");
   const [confirming, setConfirming] = useState(false);
   const [result, setResult] = useState<AdminSendNotificationResponse | null>(null);
@@ -270,10 +283,10 @@ function SendTab() {
             <select
               id="notificaciones-type"
               value={type}
-              onChange={(event) => setType(event.target.value as NotificationTypeName)}
+              onChange={(event) => setType(event.target.value as SendableNotificationTypeName)}
               className={FIELD}
             >
-              {NOTIFICATION_TYPES.map((value) => (
+              {SENDABLE_NOTIFICATION_TYPES.map((value) => (
                 <option key={value} value={value}>
                   {t(NOTIFICATION_TYPE_LABEL_KEYS[value])}
                 </option>

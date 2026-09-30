@@ -16,8 +16,9 @@ import {
   useResolveReport,
   type ReportActionErrorKind,
 } from "@/hooks/useReportActions";
-import type { ReportResolution } from "@/lib/api/types";
+import type { ReportDetail, ReportResolution } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { REPORT_TARGET_LABEL_KEYS, enumLabel } from "@/lib/i18n/enumLabels";
 import { reasonLabelKey, statusLabelKey } from "@/lib/reports/labels";
 
 const REPORT_ERROR_KEYS: Record<ReportErrorKind, string> = {
@@ -58,6 +59,13 @@ export interface ReporteDetailProps {
    * esa página), así que su comportamiento no cambia.
    */
   readOnly?: boolean;
+  /**
+   * Quien mira es moderación de plataforma (`moderator`/`superadmin`):
+   * solo ella puede resolver con «Suspender la cuenta»
+   * (`safety/services/moderation.py::_suspender_usuario`); a una entidad
+   * el backend le responde siempre 403 (informe del panel, error 34).
+   */
+  canSuspend?: boolean;
 }
 
 /** Resoluciones que no tienen vuelta atrás (`safety.services.moderation`):
@@ -75,6 +83,43 @@ const RESOLUTION_LABEL_KEYS: Record<ReportResolution, string> = {
   user_suspended: "reports.resolution.userSuspended",
 };
 
+/** Objetivos con contenido que se pueda retirar
+ *  (`moderation.py::_retirar_contenido`; para el resto es un 400). */
+const TARGETS_WITH_CONTENT: ReadonlySet<string> = new Set(["post", "comment", "message", "event"]);
+/** Objetivos con una persona detrás a la que suspender (`reported_user`). */
+const TARGETS_WITH_PERSON: ReadonlySet<string> = new Set(["user", "post", "comment", "message", "event"]);
+
+/**
+ * Las resoluciones que este reporte admite de verdad para quien mira: las
+ * mismas que aceptaría el backend, en vez de ofrecer opciones que siempre
+ * dan error (error 34).
+ */
+export function availableResolutions(targetType: string, canSuspend: boolean): ReportResolution[] {
+  return (Object.keys(RESOLUTION_LABEL_KEYS) as ReportResolution[]).filter((value) => {
+    if (value === "content_removed") return TARGETS_WITH_CONTENT.has(targetType);
+    if (value === "user_suspended") return canSuspend && TARGETS_WITH_PERSON.has(targetType);
+    return true;
+  });
+}
+
+/**
+ * De dónde viene la publicación (o el comentario) reportada: abierta, de
+ * una actividad o de una comunidad (CONTRATO «Publicar donde quieras»).
+ * Usa `target.where` si el backend lo sirve; si no, `community_display`:
+ * sin comunidad solo se sabe que está fuera de una (abierta o de
+ * actividad), y eso es lo que se dice, sin inventar cuál.
+ */
+function postOrigin(data: ReportDetail, t: (key: string, values?: Record<string, string>) => string): string {
+  const where = data.target.where;
+  if (where === null) return t("entidad.reporteDetalle.whereOpen");
+  if (where?.type === "activity") return t("entidad.reporteDetalle.whereActivity", { title: where.title });
+  if (where?.type === "community") return t("entidad.reporteDetalle.whereCommunity", { name: where.name });
+  if (data.community_display) {
+    return t("entidad.reporteDetalle.whereCommunity", { name: data.community_display.name });
+  }
+  return t("entidad.reporteDetalle.whereOutside");
+}
+
 /**
  * Detalle de un reporte (tarea W4a, `docs/SEGURIDAD_Y_MODERACION.md` §4):
  * asignarme, resolver con una resolución y una nota, o escalar a
@@ -82,7 +127,7 @@ const RESOLUTION_LABEL_KEYS: Record<ReportResolution, string> = {
  * entidad (`titular`/`moderador`) — `support` (plataforma) nunca llega a
  * esta página del panel de entidad.
  */
-export function ReporteDetail({ reportId, readOnly = false }: ReporteDetailProps) {
+export function ReporteDetail({ reportId, readOnly = false, canSuspend = false }: ReporteDetailProps) {
   const t = useTranslations();
   const report = useReport(reportId);
   const assign = useAssignReport();
@@ -128,8 +173,14 @@ export function ReporteDetail({ reportId, readOnly = false }: ReporteDetailProps
           <dd className="text-text-base">{reasonKey ? t(reasonKey) : data.reason}</dd>
           <dt className="text-text-secondary">{t("entidad.reporteDetalle.target")}</dt>
           <dd className="text-text-base">
-            {data.target.type} — {data.target.name ?? data.target.title ?? data.target.id}
+            {enumLabel(REPORT_TARGET_LABEL_KEYS, data.target.type, t)} — {data.target.name ?? data.target.title ?? data.target.id}
           </dd>
+          {data.target.type === "post" || data.target.type === "comment" ? (
+            <>
+              <dt className="text-text-secondary">{t("entidad.reporteDetalle.where")}</dt>
+              <dd className="text-text-base">{postOrigin(data, t)}</dd>
+            </>
+          ) : null}
           <dt className="text-text-secondary">{t("entidad.reporteDetalle.description")}</dt>
           <dd className="text-text-base">{data.description || "—"}</dd>
           <dt className="text-text-secondary">{t("entidad.reporteDetalle.status")}</dt>
@@ -191,7 +242,7 @@ export function ReporteDetail({ reportId, readOnly = false }: ReporteDetailProps
                 onChange={(event) => setResolution(event.target.value as ReportResolution)}
                 className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
               >
-                {(Object.keys(RESOLUTION_LABEL_KEYS) as ReportResolution[]).map((value) => (
+                {availableResolutions(data.target.type, canSuspend).map((value) => (
                   <option key={value} value={value}>
                     {t(RESOLUTION_LABEL_KEYS[value])}
                   </option>

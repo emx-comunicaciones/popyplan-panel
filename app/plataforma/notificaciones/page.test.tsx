@@ -140,6 +140,26 @@ describe("PlataformaNotificacionesPage", () => {
     expect(screen.getByLabelText("Título")).toHaveValue("");
   });
 
+  it("«Enviar» solo ofrece tipos de comunicación; las plantillas, todos", async () => {
+    // Revisión 2026-09-28, N3: se podía mandar «Cuenta suspendida» a todo el mundo.
+    mockBackend();
+    superadmin();
+    await renderPage();
+    const opciones = within(screen.getByLabelText("Tipo")).getAllByRole("option");
+    expect(opciones.map((o) => (o as HTMLOptionElement).value)).toEqual([
+      "announcement",
+      "system",
+      "warning",
+    ]);
+    expect(screen.queryByRole("option", { name: "Cuenta suspendida" })).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Plantillas" }));
+    await screen.findByText("Aviso de reporte");
+    await userEvent.click(screen.getByRole("button", { name: "Nueva plantilla" }));
+    const tipos = within(within(screen.getByRole("dialog")).getByLabelText("Tipo")).getAllByRole("option");
+    expect(tipos).toHaveLength(17);
+  });
+
   it("a todas: avisa de que incluye al personal y, encolado, lo dice", async () => {
     mockBackend({ send: () => ({ detail: "Bulk send queued." }) });
     superadmin();

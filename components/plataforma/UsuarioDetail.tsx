@@ -40,6 +40,7 @@ import {
 } from "@/hooks/usePlatformUser";
 import { usePlatformAccount, type PlatformUsersErrorKind } from "@/hooks/usePlatformUsers";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { ORG_ROLE_LABEL_KEYS, enumLabel } from "@/lib/i18n/enumLabels";
 
 import { PLATFORM_USER_MUTATION_ERROR_KEYS } from "./NuevaCuentaDialog";
 import { PLATFORM_ROLE_LABEL_KEYS, accountDisplayName, formatAccountDate } from "./UsuariosTable";
@@ -95,6 +96,7 @@ export function UsuarioDetail({ userId, email, isSelf }: UsuarioDetailProps) {
   const data = account.data?.account ?? null;
   const isActive = account.data?.isActive ?? null;
 
+  /** Rol de entidad con su nombre, no el código interno (informe del panel, error 60). */
   function levelText(level: number): string {
     const key = VERIFICATION_LEVEL_KEYS[level];
     return key ? t(key) : String(level);
@@ -188,7 +190,7 @@ export function UsuarioDetail({ userId, email, isSelf }: UsuarioDetailProps) {
                     {membership.organization_name}
                   </Link>
                   {" · "}
-                  {membership.role}
+                  {enumLabel(ORG_ROLE_LABEL_KEYS, membership.role, t)}
                 </li>
               ))}
             </ul>

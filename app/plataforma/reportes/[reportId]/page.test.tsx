@@ -9,6 +9,7 @@ vi.mock("@/lib/api/client", async () => {
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 
+import { within } from "@testing-library/react";
 import { render, screen, waitFor } from "@/test-utils/render";
 import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
@@ -59,6 +60,35 @@ describe("PlataformaReporteDetailPage", () => {
     render(element);
 
     await waitFor(() => expect(screen.getByRole("button", { name: "Asignarme" })).toBeInTheDocument());
+  });
+
+  it.each([
+    ["moderator", true],
+    ["superadmin", true],
+    ["verifier", false],
+  ])("%s: «Suspender cuenta» %s en un reporte contra una persona (error 34)", async (role, offered) => {
+    apiFetchMock.mockResolvedValueOnce(buildReportDetail({ assigned_to: 9 }));
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole(role as never),
+    });
+
+    const element = await PlataformaReporteDetailPage({
+      params: Promise.resolve({ reportId: "11111111-1111-1111-1111-111111111111" }),
+    });
+    if (!offered) {
+      // `verifier` no tiene Reportes en su menú.
+      render(element);
+      expect(screen.getByText("Sin acceso")).toBeInTheDocument();
+      return;
+    }
+    render(element);
+    await waitFor(() => expect(screen.getByLabelText("Resolución")).toBeInTheDocument());
+    const values = within(screen.getByLabelText("Resolución"))
+      .getAllByRole("option")
+      .map((o) => (o as HTMLOptionElement).value);
+    expect(values).toContain("user_suspended");
   });
 
   it("support solo lee: sin botones de acción", async () => {

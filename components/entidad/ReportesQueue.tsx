@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useReportsQueue, type ReportsQueueErrorKind, type ReportsQueueFilters } from "@/hooks/useReportsQueue";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { REPORT_TARGET_LABEL_KEYS, enumLabel } from "@/lib/i18n/enumLabels";
 import { localeFor, activeLanguage } from "@/lib/i18n/locale";
 import { reasonLabelKey, statusLabelKey } from "@/lib/reports/labels";
 
@@ -115,7 +116,7 @@ export function ReportesQueue({ orgId, slug }: ReportesQueueProps) {
                         {reasonText(report.reason)}
                       </Badge>
                     </td>
-                    <td className="px-3 py-1.5 text-text-base">{report.target_type}</td>
+                    <td className="px-3 py-1.5 text-text-base">{enumLabel(REPORT_TARGET_LABEL_KEYS, report.target_type, t)}</td>
                     <td className="px-3 py-1.5 text-text-base">{statusText(report.status)}</td>
                     <td className="px-3 py-1.5 text-text-base">{formatDate(report.created_at)}</td>
                     <td className="px-3 py-1.5 text-text-base">

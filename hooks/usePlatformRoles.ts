@@ -28,11 +28,15 @@ export type PlatformRolesErrorKind =
   | "invalido"
   | "sin_permiso"
   | "no_encontrado"
+  | "conflicto"
   | "desconocido";
 
 export class PlatformRolesError extends Error {
   readonly kind: PlatformRolesErrorKind;
-  /** Texto verbatim del backend, solo cuando `detailOf` encuentra algo (400 de conceder). */
+  /**
+   * Texto verbatim del backend, solo cuando `detailOf` encuentra algo (400
+   * de conceder, 409 de conceder o revocar).
+   */
   readonly detail?: string;
 
   constructor(kind: PlatformRolesErrorKind, message: string, detail?: string) {
@@ -44,6 +48,19 @@ export class PlatformRolesError extends Error {
 }
 
 const QUERY_KEY = ["panel-platform-roles"];
+
+/**
+ * 409: quitarle el rol (o cambiárselo) al último superadmin dejaría la
+ * plataforma sin nadie que gestione roles (informe de pruebas 2026-09-25).
+ */
+function lastSuperadminError(error: ApiError): PlatformRolesError {
+  const detail = detailOf(error);
+  return new PlatformRolesError(
+    "conflicto",
+    detail ?? "La plataforma no puede quedarse sin superadmin.",
+    detail,
+  );
+}
 
 export function usePlatformRoles(): UseQueryResult<PlatformRole[], PlatformRolesError> {
   return useQuery<PlatformRole[], PlatformRolesError>({
@@ -80,6 +97,9 @@ export function useGrantPlatformRole(): UseMutationResult<
         if (error instanceof ApiError && error.status === 403) {
           throw new PlatformRolesError("sin_permiso", "Solo superadmin concede roles de plataforma.");
         }
+        if (error instanceof ApiError && error.status === 409) {
+          throw lastSuperadminError(error);
+        }
         throw new PlatformRolesError("desconocido", "No se pudo conceder el rol.");
       }
     },
@@ -100,6 +120,9 @@ export function useRevokePlatformRole(): UseMutationResult<void, PlatformRolesEr
         }
         if (error instanceof ApiError && error.status === 404) {
           throw new PlatformRolesError("no_encontrado", "Esa persona no tiene un rol de plataforma vigente.");
+        }
+        if (error instanceof ApiError && error.status === 409) {
+          throw lastSuperadminError(error);
         }
         throw new PlatformRolesError("desconocido", "No se pudo revocar el rol.");
       }

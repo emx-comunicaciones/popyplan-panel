@@ -50,6 +50,7 @@ const STEP_ERROR_KEYS: Record<StepErrorKind, string> = {
   sin_respuesta: "plataforma.tesoroFicha.pruebas.errors.noAnswer",
   sin_coordenadas: "plataforma.tesoroFicha.pruebas.errors.noCoordinates",
   coordenadas_invalidas: "plataforma.tesoroFicha.pruebas.errors.badCoordinates",
+  radio_invalido: "plataforma.tesoroFicha.pruebas.errors.badRadius",
 };
 
 interface StepFormProps {
@@ -76,7 +77,7 @@ function StepForm({ gameId, steps, editing, onDone }: StepFormProps) {
 
   const hasStoredAnswer = editing?.challenge_type === "answer";
   const problem = validateStep(
-    { order: Number(order), clue, challengeType, correctAnswer, latitude, longitude },
+    { order: Number(order), clue, challengeType, correctAnswer, latitude, longitude, radius },
     steps,
     editing?.id,
     hasStoredAnswer,
@@ -227,7 +228,7 @@ function StepForm({ gameId, steps, editing, onDone }: StepFormProps) {
               <input
                 id="tesoro-prueba-radius"
                 type="number"
-                min={0}
+                min={1}
                 value={radius}
                 onChange={(e) => setRadius(e.target.value)}
                 className={FIELD_CLASS}

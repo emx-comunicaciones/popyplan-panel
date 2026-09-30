@@ -46,6 +46,26 @@ export async function isOnCallUser(
 }
 
 /**
+ * ¿Puede quien mira pulsar «He contactado»? Es más estricto que ver el aviso:
+ * `safety/services/help.py::_es_destinatario` lo concede a la persona de
+ * guardia y, **solo si la entidad no tiene guardia**, a titular/moderador
+ * (`_ROLES_QUE_ATIENDEN`). Con guardia nombrada, un titular ve el aviso
+ * (`pending` le deja) pero el `acknowledge` le da 403: informe del panel,
+ * error 29. Con la ficha ilegible no se sabe si hay guardia y se cae a la
+ * regla por rol (lo que hacía el panel antes).
+ */
+export async function canAcknowledgeHelp(
+  orgId: number,
+  role: string,
+  session: { token: string; me: { id: number } },
+): Promise<boolean> {
+  const result = await getServerOrganization(orgId, session.token);
+  const onCall = result.ok ? result.data.on_call_user : null;
+  if (onCall != null) return onCall === session.me.id;
+  return role === "titular" || role === "moderador";
+}
+
+/**
  * ¿Tiene la entidad el **programa de seguimiento** encendido
  * (`Organization.tracking_program_enabled`, `docs/PANEL.md` §18.2)? El
  * campo solo viaja a quien tiene rol en la entidad o en la plataforma

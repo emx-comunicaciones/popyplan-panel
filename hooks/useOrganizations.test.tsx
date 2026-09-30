@@ -13,6 +13,7 @@ import { ApiError } from "@/lib/api/client";
 
 import {
   OrganizationsError,
+  useAllOrganizations,
   useCreateOrganization,
   useOrganizations,
   useSetOrganizationParent,
@@ -190,5 +191,30 @@ describe("useCreateOrganization/useSetOrganizationParent (400 por campo)", () =>
 
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error?.message).toBe("Esa entidad no es de tipo administración.");
+  });
+});
+
+describe("useAllOrganizations", () => {
+  it("sigue las páginas hasta que no hay siguiente y junta los resultados", async () => {
+    apiFetchMock
+      .mockResolvedValueOnce({ count: 3, next: "x?page=2", previous: null, results: [ORG] })
+      .mockResolvedValueOnce({ count: 3, next: "x?page=3", previous: "x", results: [{ ...ORG, id: 2 }] })
+      .mockResolvedValueOnce({ count: 3, next: null, previous: "x", results: [{ ...ORG, id: 3 }] });
+    const { result } = renderHook(() => useAllOrganizations(), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(apiFetchMock.mock.calls.map((call) => call[0])).toEqual([
+      "/api/organizations/?",
+      "/api/organizations/?page=2",
+      "/api/organizations/?page=3",
+    ]);
+    expect(result.current.data?.results.map((org) => org.id)).toEqual([1, 2, 3]);
+    expect(result.current.data?.count).toBe(3);
+  });
+
+  it("si una página falla, el error es el del listado", async () => {
+    apiFetchMock.mockRejectedValueOnce(new Error("boom"));
+    const { result } = renderHook(() => useAllOrganizations(), { wrapper });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error).toBeInstanceOf(OrganizationsError);
   });
 });

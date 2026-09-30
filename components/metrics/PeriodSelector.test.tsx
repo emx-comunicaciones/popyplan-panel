@@ -3,7 +3,7 @@ import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { presetPeriod, type Period, type PeriodPreset } from "@/lib/metrics/period";
-import { render, screen } from "@/test-utils/render";
+import { fireEvent, render, screen } from "@/test-utils/render";
 
 import { PeriodSelector, type PeriodSelectorProps } from "./PeriodSelector";
 
@@ -147,6 +147,45 @@ describe("PeriodSelector", () => {
     expect(onChange).toHaveBeenCalledWith({ since: "2021-01-01", until: "2025-01-01" }, "personalizado");
   });
 
+  it("aplica las fechas al cambiarlas, sin esperar a «Personalizado»", () => {
+    const onChange = vi.fn();
+    const onPendingChange = vi.fn();
+    render(
+      <PeriodSelector
+        value={{ since: "2026-01-01", until: "2026-01-31" }}
+        preset="mes"
+        onChange={onChange}
+        onPendingChange={onPendingChange}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText("Desde"), { target: { value: "2026-01-10" } });
+
+    expect(onChange).toHaveBeenCalledWith({ since: "2026-01-10", until: "2026-01-31" }, "personalizado");
+    expect(onPendingChange).toHaveBeenLastCalledWith(false);
+  });
+
+  it("con las fechas al revés avisa al momento y no las aplica", () => {
+    const onChange = vi.fn();
+    const onPendingChange = vi.fn();
+    render(
+      <PeriodSelector
+        value={{ since: "2026-01-01", until: "2026-01-31" }}
+        preset="mes"
+        onChange={onChange}
+        onPendingChange={onPendingChange}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText("Desde"), { target: { value: "2026-02-15" } });
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "La fecha de inicio debe ser anterior o igual a la de fin.",
+    );
+    expect(onChange).not.toHaveBeenCalled();
+    expect(onPendingChange).toHaveBeenLastCalledWith(true);
+  });
+
   it("al pulsar un preset avisa con el periodo y el preset elegidos", async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
@@ -155,5 +194,23 @@ describe("PeriodSelector", () => {
     await user.click(screen.getByRole("button", { name: "Año" }));
 
     expect(onChange).toHaveBeenCalledWith(presetPeriod("anio"), "anio");
+  });
+});
+
+describe("PeriodSelector — presets ofrecidos", () => {
+  const value = { since: "2026-01-01", until: "2026-01-31" };
+
+  it("por defecto no ofrece «Este mes y próximos» (solo lo pide Actividades)", () => {
+    render(<PeriodSelector value={value} preset="mes" onChange={() => {}} />);
+    expect(screen.queryByRole("button", { name: "Este mes y próximos" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Este mes" })).toBeInTheDocument();
+  });
+
+  it("con `presets` ofrece justo esos, y «proximos» aplica su periodo", async () => {
+    const onChange = vi.fn();
+    render(<PeriodSelector value={value} preset="mes" onChange={onChange} presets={["proximos", "mes"]} />);
+    expect(screen.queryByRole("button", { name: "Trimestre" })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Este mes y próximos" }));
+    expect(onChange).toHaveBeenCalledWith(presetPeriod("proximos"), "proximos");
   });
 });

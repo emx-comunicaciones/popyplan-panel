@@ -94,6 +94,7 @@ export function ExportPanel({
   const [ownPreset, setOwnPreset] = useState<PeriodPreset>("mes");
   const [ownPeriod, setOwnPeriod] = useState<Period>(() => presetPeriod("mes"));
   const [exportGroupBy, setExportGroupBy] = useState<ExportGroupByChoice>("habitual");
+  const [periodPending, setPeriodPending] = useState(false);
   const [chosenScope, setChosenScope] = useState<MetricsScope>(scope);
   const selectId = useId();
   const scopeSelectId = useId();
@@ -120,7 +121,12 @@ export function ExportPanel({
   return (
     <Card title={t("title")}>
       <p className="mb-4 text-sm text-text-secondary">{t("noNamesNotice")}</p>
-      <PeriodSelector value={effectivePeriod} preset={effectivePreset} onChange={handlePeriodChange} />
+      <PeriodSelector
+        value={effectivePeriod}
+        preset={effectivePreset}
+        onChange={handlePeriodChange}
+        onPendingChange={setPeriodPending}
+      />
       {showScopeSelect ? (
         <div className="mt-4">
           <label htmlFor={scopeSelectId} className="mb-1 block text-sm font-medium text-text-form">
@@ -157,6 +163,7 @@ export function ExportPanel({
       <div className="mt-4">
         <ExportButtons
           params={{ scope: effectiveScope, orgId, period: effectivePeriod, groupBy: effectiveGroupBy }}
+          periodPending={periodPending}
         />
       </div>
     </Card>

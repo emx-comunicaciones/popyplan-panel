@@ -56,3 +56,31 @@ export function buildPlatformReview(overrides: Partial<PlatformReview> = {}): Pl
     ...overrides,
   };
 }
+
+/** Publicación abierta vista por la plataforma: sin comunidad ni `where`. */
+export function buildPlatformOpenPost(overrides: Partial<PlatformCommunityPost> = {}): PlatformCommunityPost {
+  return buildPlatformCommunityPost({
+    id: "open-1",
+    community: null,
+    audience: "open",
+    where: null,
+    event: null,
+    author_name: "Nerea",
+    content: "¿Alguien se apunta a caminar el sábado?",
+    ...overrides,
+  });
+}
+
+/** Publicación de una actividad vista por la plataforma. */
+export function buildPlatformActivityPost(overrides: Partial<PlatformCommunityPost> = {}): PlatformCommunityPost {
+  return buildPlatformCommunityPost({
+    id: "act-1",
+    community: null,
+    audience: "activity",
+    where: { type: "activity", id: 41, title: "Ruta por el Gorbea", starts_at: "2026-10-04T08:00:00Z" },
+    event: 41,
+    author_name: "Unai",
+    content: "Llevad agua.",
+    ...overrides,
+  });
+}
