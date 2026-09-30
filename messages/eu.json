@@ -1,5 +1,6 @@
 {
   "common": {
+    "phoneInvalid": "Sartu telefono baliozko bat: zifrak soilik, hasieran + aukerakoa duela (adibidez +34 943 123 456 edo 024).",
     "cancel": "Utzi",
     "accept": "Onartu",
     "close": "Itxi",
@@ -692,6 +693,7 @@
       "titleLabel": "Izenburua",
       "opensAtLabel": "Irekitzen da",
       "closesAtLabel": "Ixten da",
+      "closesBeforeOpens": "Itxiera-data irekiera-data baino geroagokoa izan behar da.",
       "questionsLegend": "Galderak",
       "questionKindLabel": "Mota",
       "questionTextLabel": "Galdera",
@@ -944,7 +946,8 @@
       "supportResponsesEmpty": "Bere laguntza-saretik oraindik inor ez da arduratu.",
       "noCommunity": "Komunitaterik ez",
       "acknowledged": "Artatuta",
-      "acknowledgeAction": "Harremanetan jarri naiz"
+      "acknowledgeAction": "Harremanetan jarri naiz",
+      "acknowledgeByOnCall": "Guardiako pertsonak artatzen du."
     },
     "informes": {
       "noAccessDescription": "Zure rolak ez du sarbiderik Txostenetan.",

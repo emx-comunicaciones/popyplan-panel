@@ -1,5 +1,6 @@
 {
   "common": {
+    "phoneInvalid": "Introdueix un telèfon vàlid: només xifres, amb un + opcional al principi (per exemple +34 943 123 456 o 024).",
     "cancel": "Cancel·la",
     "accept": "Accepta",
     "close": "Tanca",
@@ -692,6 +693,7 @@
       "titleLabel": "Títol",
       "opensAtLabel": "Obre el",
       "closesAtLabel": "Tanca el",
+      "closesBeforeOpens": "La data de tancament ha de ser posterior a la d'obertura.",
       "questionsLegend": "Preguntes",
       "questionKindLabel": "Tipus",
       "questionTextLabel": "Pregunta",
@@ -944,7 +946,8 @@
       "supportResponsesEmpty": "Ningú de la seva xarxa de suport se n'ha encarregat encara.",
       "noCommunity": "Sense comunitat",
       "acknowledged": "Atès",
-      "acknowledgeAction": "He contactat"
+      "acknowledgeAction": "He contactat",
+      "acknowledgeByOnCall": "L'atén la persona de guàrdia."
     },
     "informes": {
       "noAccessDescription": "El teu rol no té accés a Informes.",

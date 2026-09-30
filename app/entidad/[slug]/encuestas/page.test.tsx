@@ -83,6 +83,30 @@ describe("EntidadEncuestasPage", () => {
     );
   });
 
+  it("no deja crear una encuesta que cierra antes de abrirse (error 33)", async () => {
+    const mutate = vi.fn();
+    useSurveysMock.mockReturnValue({ data: [], isError: false, error: null });
+    useCreateSurveyMock.mockReturnValue({ mutate, isPending: false, isError: false, error: null });
+
+    const user = userEvent.setup();
+    await renderPage("titular");
+
+    await user.type(screen.getByLabelText("Título"), "Al revés");
+    await user.type(screen.getByLabelText("Pregunta"), "¿Qué tal?");
+    await user.type(screen.getByLabelText("Abre el"), "2030-05-10T10:00");
+    await user.type(screen.getByLabelText("Cierra el"), "2030-05-09T10:00");
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "La fecha de cierre tiene que ser posterior a la de apertura.",
+    );
+    expect(screen.getByRole("button", { name: "Crear encuesta" })).toBeDisabled();
+
+    await user.clear(screen.getByLabelText("Cierra el"));
+    await user.type(screen.getByLabelText("Cierra el"), "2030-05-11T10:00");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Crear encuesta" })).toBeEnabled();
+  });
+
   it("añadir y quitar preguntas cambia la lista de preguntas del formulario", async () => {
     useSurveysMock.mockReturnValue({ data: [], isError: false, error: null });
     useCreateSurveyMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false, error: null });

@@ -1,5 +1,6 @@
 {
   "common": {
+    "phoneInvalid": "Introduce un teléfono válido: solo cifras, con un + opcional al principio (por ejemplo +34 943 123 456 o 024).",
     "cancel": "Cancelar",
     "accept": "Aceptar",
     "close": "Cerrar",
@@ -692,6 +693,7 @@
       "titleLabel": "Título",
       "opensAtLabel": "Abre el",
       "closesAtLabel": "Cierra el",
+      "closesBeforeOpens": "La fecha de cierre tiene que ser posterior a la de apertura.",
       "questionsLegend": "Preguntas",
       "questionKindLabel": "Tipo",
       "questionTextLabel": "Pregunta",
@@ -944,7 +946,8 @@
       "supportResponsesEmpty": "Nadie de su red de apoyo se ha encargado todavía.",
       "noCommunity": "Sin comunidad",
       "acknowledged": "Atendido",
-      "acknowledgeAction": "He contactado"
+      "acknowledgeAction": "He contactado",
+      "acknowledgeByOnCall": "Lo atiende la persona de guardia."
     },
     "informes": {
       "noAccessDescription": "Tu rol no tiene acceso a Informes.",

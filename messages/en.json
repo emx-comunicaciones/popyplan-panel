@@ -1,5 +1,6 @@
 {
   "common": {
+    "phoneInvalid": "Enter a valid phone number: digits only, with an optional + at the start (for example +34 943 123 456 or 024).",
     "cancel": "Cancel",
     "accept": "Accept",
     "close": "Close",
@@ -692,6 +693,7 @@
       "titleLabel": "Title",
       "opensAtLabel": "Opens on",
       "closesAtLabel": "Closes on",
+      "closesBeforeOpens": "The closing date must be after the opening date.",
       "questionsLegend": "Questions",
       "questionKindLabel": "Type",
       "questionTextLabel": "Question",
@@ -944,7 +946,8 @@
       "supportResponsesEmpty": "Nobody from their support network is taking care of it yet.",
       "noCommunity": "No community",
       "acknowledged": "Attended to",
-      "acknowledgeAction": "I've contacted them"
+      "acknowledgeAction": "I've contacted them",
+      "acknowledgeByOnCall": "The person on call handles this."
     },
     "informes": {
       "noAccessDescription": "Your role doesn't have access to Reports.",

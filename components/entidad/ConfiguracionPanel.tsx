@@ -25,6 +25,7 @@ import { useOrgScope, type OrgScopeErrorKind } from "@/hooks/useOrgScope";
 import { useUpdateOrganization } from "@/hooks/useUpdateOrganization";
 import type { OrgMembershipFull, OrgMembershipRole, Reference } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { isValidPhone } from "@/lib/organizations/phone";
 import {
   LOGO_ALLOWED_EXTENSIONS,
   LOGO_MAX_MB,
@@ -143,6 +144,9 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
     place: organization.data.place ?? null,
   };
 
+  // Error 40: el backend rechaza lo que no parece un teléfono; se avisa antes.
+  const contactPhoneInvalid = !isValidPhone(data.contact_phone);
+
   function handleLogoChange(fileList: FileList | null) {
     const file = fileList?.[0] ?? null;
     const error = file ? validateLogoFile(file) : null;
@@ -152,6 +156,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (contactPhoneInvalid) return;
     updateOrganization.mutate(logo ? { ...data, logo } : data, {
       onSuccess: () => {
         setLogo(null);
@@ -197,8 +202,15 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
               type="tel"
               value={data.contact_phone}
               onChange={(event) => setForm({ ...data, contact_phone: event.target.value })}
+              aria-invalid={contactPhoneInvalid || undefined}
+              aria-describedby={contactPhoneInvalid ? "config-phone-error" : undefined}
               className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             />
+            {contactPhoneInvalid ? (
+              <p id="config-phone-error" role="alert" className="mt-1 text-xs text-error">
+                {t("common.phoneInvalid")}
+              </p>
+            ) : null}
           </div>
           <div>
             <label htmlFor="config-website" className="mb-1 block text-sm font-medium text-text-form">
@@ -297,7 +309,7 @@ function DatosEntidad({ orgId }: { orgId: number | string }) {
           ) : null}
         </div>
         <div>
-          <Button type="submit" disabled={updateOrganization.isPending || data.place === null}>
+          <Button type="submit" disabled={updateOrganization.isPending || data.place === null || contactPhoneInvalid}>
             {t("common.save")}
           </Button>
         </div>

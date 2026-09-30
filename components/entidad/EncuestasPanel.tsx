@@ -86,8 +86,17 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
     setQuestions((prev) => prev.filter((_, i) => i !== index).map((q, i) => ({ ...q, order: i })));
   }
 
+  // Error 33: una encuesta no puede cerrar antes (ni al mismo instante) de
+  // abrirse; sin fecha de apertura abre ahora. El backend lo rechaza igual.
+  const closesAtIso = toIso(closesAt);
+  const closesBeforeOpens =
+    closesAtIso !== undefined && new Date(closesAtIso) <= new Date(toIso(opensAt) ?? Date.now());
+
   const canSubmit =
-    title.trim().length > 0 && questions.length > 0 && questions.every((q) => q.text.trim().length > 0);
+    title.trim().length > 0 &&
+    questions.length > 0 &&
+    questions.every((q) => q.text.trim().length > 0) &&
+    !closesBeforeOpens;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -149,10 +158,17 @@ function CreateSurveyForm({ orgId }: { orgId: number | string }) {
               type="datetime-local"
               value={closesAt}
               onChange={(event) => setClosesAt(event.target.value)}
+              aria-invalid={closesBeforeOpens || undefined}
+              aria-describedby={closesBeforeOpens ? "survey-closes-at-error" : undefined}
               className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
             />
           </div>
         </div>
+        {closesBeforeOpens ? (
+          <p id="survey-closes-at-error" role="alert" className="text-sm text-error">
+            {t("entidad.encuestas.closesBeforeOpens")}
+          </p>
+        ) : null}
 
         <fieldset className="flex flex-col gap-3">
           <legend className="mb-1 text-sm font-medium text-text-form">

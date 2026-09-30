@@ -154,6 +154,33 @@ describe("EntidadConfiguracionPage", () => {
     );
   });
 
+  it("un teléfono de contacto que no lo es se avisa y no se guarda (error 40)", async () => {
+    setDefaultMocks();
+    const updateMutate = vi.fn();
+    useUpdateOrganizationMock.mockReturnValue({
+      mutate: updateMutate,
+      isPending: false,
+      isError: false,
+      isSuccess: false,
+    });
+    const user = userEvent.setup();
+
+    await renderPage();
+    const phone = screen.getByLabelText("Teléfono de contacto");
+    await user.clear(phone);
+    await user.type(phone, "hola");
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Introduce un teléfono válido");
+    expect(screen.getByRole("button", { name: "Guardar" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+    expect(updateMutate).not.toHaveBeenCalled();
+
+    await user.clear(phone);
+    await user.type(phone, "+34 943 123 456");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Guardar" })).toBeEnabled();
+  });
+
   it("elegir un logo válido lo manda junto al resto de la ficha al guardar", async () => {
     setDefaultMocks();
     const updateMutate = vi.fn();
