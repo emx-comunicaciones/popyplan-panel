@@ -60,6 +60,32 @@ describe("PlataformaAuditoriaPage", () => {
     expect(screen.getByRole("button", { name: "Exportar CSV de esta página" })).toBeInTheDocument();
   });
 
+  it("una fila del programa de seguimiento llega sin actor ni objetivo y se pinta como oculta", async () => {
+    apiFetchMock.mockResolvedValueOnce({
+      count: 1,
+      next: null,
+      previous: null,
+      results: [
+        { ...ENTRY, action: "program.shared_read", actor: { id: 0, public_name: "" }, target_type: "", target_id: "", metadata: {} },
+      ],
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const user = userEvent.setup();
+    render(await PlataformaAuditoriaPage());
+
+    await waitFor(() => expect(screen.getByText("program.shared_read")).toBeInTheDocument());
+    expect(screen.getAllByText("Oculto (privado)")).toHaveLength(2);
+    expect(screen.queryByText(/#0/)).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Exportar CSV de esta página" }));
+    const [blob] = triggerDownloadMock.mock.calls[0];
+    expect(await (blob as Blob).text()).toContain("Oculto (privado)");
+  });
+
   it("la exportación CSV neutraliza las celdas que parecen una fórmula", async () => {
     apiFetchMock.mockResolvedValueOnce({
       count: 1,
