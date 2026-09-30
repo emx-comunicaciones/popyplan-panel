@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { PersonSheet } from "@/components/entidad/PersonSheet";
@@ -8,6 +9,7 @@ import { isEntidadPanelRole } from "@/lib/auth/area";
 import { entidadMenuFor } from "@/lib/auth/entidadMenu";
 import { isTrackingProgramEnabled } from "@/lib/auth/organization";
 import { getServerSession } from "@/lib/auth/session";
+import { sanitizePersonasQuery } from "@/lib/people/personasQuery";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("pages.entidad.personaFicha");
@@ -21,10 +23,14 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default async function EntidadPersonaPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string; userId: string }>;
+  searchParams?: Promise<{ volver?: string | string[] }>;
 }) {
   const { slug, userId } = await params;
+  const volverRaw = (await searchParams)?.volver;
+  const volver = sanitizePersonasQuery(Array.isArray(volverRaw) ? volverRaw[0] : volverRaw);
   const session = await getServerSession();
   if (!session) {
     redirect("/login");
@@ -58,6 +64,14 @@ export default async function EntidadPersonaPage({
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Los filtros de la tabla viajan en `?volver=`, ya limpios: se
+          vuelve a la lista tal como se dejó. */}
+      <Link
+        href={`/entidad/${slug}/personas${volver ? `?${volver}` : ""}`}
+        className="text-sm text-primary-700 underline underline-offset-2"
+      >
+        {t("entidad.personaFicha.backToList")}
+      </Link>
       <h1 className="text-xl font-semibold text-text-base">{t("entidad.personaFicha.heading")}</h1>
       <PersonSheet
         orgId={membership.organization_id}
