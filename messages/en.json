@@ -11,7 +11,9 @@
     "items": "{count, plural, one {# item} other {# items}}",
     "confirm": "Confirm",
     "noPhoneNotice": "Popyplan does not store phone numbers: contact the person through the app chat or through their referent.",
-    "actions": "Actions"
+    "actions": "Actions",
+    "menuOpen": "Open menu",
+    "menuClose": "Close menu"
   },
   "account": {
     "title": "Account",

@@ -11,7 +11,9 @@
     "items": "{count, plural, one {# elementu} other {# elementu}}",
     "confirm": "Berretsi",
     "noPhoneNotice": "Popyplanek ez du telefonorik gordetzen: jarri harremanetan pertsonarekin appeko txatetik edo bere erreferentearen bidez.",
-    "actions": "Ekintzak"
+    "actions": "Ekintzak",
+    "menuOpen": "Ireki menua",
+    "menuClose": "Itxi menua"
   },
   "account": {
     "title": "Kontua",
