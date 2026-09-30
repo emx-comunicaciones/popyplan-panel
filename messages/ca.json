@@ -120,6 +120,7 @@
       "entidades": "Entitats",
       "usuarios": "Usuaris",
       "comunidades": "Comunitats",
+      "publicaciones": "Publicacions",
       "actividades": "Activitats",
       "reportes": "Informes (moderació)",
       "bloqueos": "Bloquejos",
@@ -305,6 +306,9 @@
       },
       "comunidadFicha": {
         "title": "Fitxa de la comunitat"
+      },
+      "publicaciones": {
+        "title": "Publicacions"
       },
       "actividades": {
         "title": "Activitats"
@@ -936,6 +940,11 @@
       "unassigned": "Sense assignar",
       "organization": "Entitat",
       "organizationGlobal": "Global",
+      "where": "D'on ve",
+      "whereOpen": "Obert (sense comunitat ni activitat)",
+      "whereActivity": "Activitat: {title}",
+      "whereCommunity": "Comunitat: {name}",
+      "whereOutside": "Fora d'una comunitat (obert o d'una activitat)",
       "escalated": "Escalat",
       "escalatedBadge": "Escalat a plataforma",
       "assignToMe": "Assignar-me",
@@ -2439,6 +2448,25 @@
         ],
         "audience": "Només superadmin."
       },
+      "publicaciones": {
+        "title": "Publicacions",
+        "summary": "Totes les publicacions de Popyplan, s'hagin publicat on s'hagin publicat: obert, en una comunitat o en una activitat.",
+        "details": "El llistat porta totes les publicacions, de 20 en 20, de la més recent a la més antiga, amb les ocultes incloses. Filtra per on es va publicar (Obert, Comunitat o Activitat) i per visible o oculta. Cada fila diu qui l'ha escrit, el contingut, d'on ve i la data. Una publicació oberta mai no anomena una comunitat ni una entitat. Una publicació mai no canvia de lloc. Ocultar es desfà amb «Mostra»; esborrar elimina la publicació amb els seus comentaris i no es pot desfer. Cap d'aquestes accions queda a Auditoria.",
+        "actions": [
+          "Filtrar per on es va publicar",
+          "Ocultar o mostrar una publicació",
+          "Esborrar una publicació"
+        ],
+        "tips": [
+          "En cas de dubte, amaga: esborrar no es pot desfer.",
+          "Per actuar sobre una comunitat sencera, obre'n la fitxa."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.reportes"
+        ],
+        "audience": "Només superadmin."
+      },
       "resenas": {
         "title": "Ressenyes",
         "summary": "Totes les ressenyes que la gent deixa a les activitats, i esborrar-les.",
@@ -3256,6 +3284,18 @@
       "deletePost": "Esborra",
       "deletePostTitle": "Vols esborrar aquesta publicació?",
       "deletePostDescription": "S'esborra la publicació de {author} amb els seus comentaris. No es pot desfer; per retirar-la sense esborrar-la, amaga-la."
+    },
+    "publicaciones": {
+      "heading": "Publicacions",
+      "intro": "Totes les publicacions de Popyplan, obertes o d'una comunitat o una activitat, de la més recent a la més antiga.",
+      "noAccessDescription": "Només el superadmin gestiona les publicacions des del tauler.",
+      "tableCaption": "Publicacions",
+      "whereHeader": "On",
+      "audienceFilterLabel": "Publicada a",
+      "audienceAll": "Totes",
+      "audienceOpen": "Obert",
+      "audienceCommunity": "Comunitat",
+      "audienceActivity": "Activitat"
     },
     "resenas": {
       "heading": "Ressenyes",

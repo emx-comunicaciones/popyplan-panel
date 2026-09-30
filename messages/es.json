@@ -120,6 +120,7 @@
       "entidades": "Entidades",
       "usuarios": "Usuarios",
       "comunidades": "Comunidades",
+      "publicaciones": "Publicaciones",
       "actividades": "Actividades",
       "reportes": "Reportes",
       "bloqueos": "Bloqueos",
@@ -305,6 +306,9 @@
       },
       "comunidadFicha": {
         "title": "Ficha de la comunidad"
+      },
+      "publicaciones": {
+        "title": "Publicaciones"
       },
       "actividades": {
         "title": "Actividades"
@@ -936,6 +940,11 @@
       "unassigned": "Sin asignar",
       "organization": "Entidad",
       "organizationGlobal": "Global",
+      "where": "De dónde viene",
+      "whereOpen": "Abierto (sin comunidad ni actividad)",
+      "whereActivity": "Actividad: {title}",
+      "whereCommunity": "Comunidad: {name}",
+      "whereOutside": "Fuera de una comunidad (abierto o de una actividad)",
       "escalated": "Escalado",
       "escalatedBadge": "Escalado a plataforma",
       "assignToMe": "Asignarme",
@@ -2439,6 +2448,25 @@
         ],
         "audience": "Solo superadmin."
       },
+      "publicaciones": {
+        "title": "Publicaciones",
+        "summary": "Todas las publicaciones de Popyplan, se hayan publicado donde se hayan publicado: abierto, en una comunidad o en una actividad.",
+        "details": "El listado trae todas las publicaciones, de 20 en 20, de la más reciente a la más antigua, con las ocultas incluidas. Filtra por dónde se publicó (Abierto, Comunidad o Actividad) y por visible u oculta. Cada fila dice quién la escribió, el contenido, de dónde viene y la fecha. Una publicación abierta nunca nombra una comunidad ni una entidad. Una publicación nunca cambia de sitio. Ocultar se deshace con «Mostrar»; borrar elimina la publicación con sus comentarios y no se puede deshacer. Ninguna de estas acciones queda en Auditoría.",
+        "actions": [
+          "Filtrar por dónde se publicó",
+          "Ocultar o mostrar una publicación",
+          "Borrar una publicación"
+        ],
+        "tips": [
+          "Ante la duda, oculta: borrar no se puede deshacer.",
+          "Para actuar sobre una comunidad entera, abre su ficha."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.reportes"
+        ],
+        "audience": "Solo superadmin."
+      },
       "resenas": {
         "title": "Reseñas",
         "summary": "Todas las reseñas que la gente deja en las actividades, y borrarlas.",
@@ -3256,6 +3284,18 @@
       "deletePost": "Borrar",
       "deletePostTitle": "¿Borrar esta publicación?",
       "deletePostDescription": "Se borra la publicación de {author} con sus comentarios. No se puede deshacer; para retirarla sin borrarla, ocúltala."
+    },
+    "publicaciones": {
+      "heading": "Publicaciones",
+      "intro": "Todas las publicaciones de Popyplan, abiertas o de una comunidad o una actividad, de la más reciente a la más antigua.",
+      "noAccessDescription": "Solo superadmin gestiona las publicaciones desde el panel.",
+      "tableCaption": "Publicaciones",
+      "whereHeader": "Dónde",
+      "audienceFilterLabel": "Publicada en",
+      "audienceAll": "Todas",
+      "audienceOpen": "Abierto",
+      "audienceCommunity": "Comunidad",
+      "audienceActivity": "Actividad"
     },
     "resenas": {
       "heading": "Reseñas",
