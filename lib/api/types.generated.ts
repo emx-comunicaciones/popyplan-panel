@@ -8831,7 +8831,9 @@ export interface components {
          * @description Fila de `GET /api/panel/entidad/{id}/events/`.
          *
          *     `organizer` viaja `null` para quien no tiene `ver_lista_nominal` en la
-         *     entidad (invariante «el analista nunca ve nombres»).
+         *     entidad (invariante «el analista nunca ve nombres»). Para esa misma
+         *     persona, `registered`/`attended`/`no_show` son `null` por debajo del
+         *     umbral de agregación y `suppressed` dice si alguno lo está (S-07).
          */
         EntityEventRow: {
             id: string;
@@ -8844,9 +8846,10 @@ export interface components {
             community: components["schemas"]["EntityEventCommunityRef"] | null;
             organizer: components["schemas"]["EntityEventOrganizerRef"] | null;
             capacity: number | null;
-            registered: number;
-            attended: number;
-            no_show: number;
+            registered: number | null;
+            attended: number | null;
+            no_show: number | null;
+            suppressed: boolean;
         };
         /**
          * @description `GET /api/organizations/{id}/invitations/` y respuesta del `POST`.
@@ -8863,7 +8866,6 @@ export interface components {
             /**
              * Correo
              * Format: email
-             * @default
              */
             readonly email: string;
             /** Nombre para mostrar */
@@ -8879,10 +8881,7 @@ export interface components {
              * @description Debe tener rol referente en esta misma entidad (se valida en el servicio).
              */
             readonly referent: number | null;
-            /**
-             * Estado
-             * @default pending
-             */
+            /** Estado */
             readonly status: components["schemas"]["EntityInvitationStatusEnum"];
             /**
              * Enviada el
@@ -21626,6 +21625,13 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     organizations_members_create: {
@@ -21695,6 +21701,13 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     organizations_members_destroy: {
@@ -21753,6 +21766,13 @@ export interface operations {
             };
             /** @description No response body */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -25881,6 +25901,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PlatformRole"];
                 };
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
