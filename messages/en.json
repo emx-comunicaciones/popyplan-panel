@@ -3610,6 +3610,7 @@
           "noClue": "Write the clue.",
           "noAnswer": "Answer challenges need the correct answer.",
           "noCoordinates": "Location challenges need latitude and longitude.",
+          "badRadius": "The validation radius must be at least 1 meter.",
           "badCoordinates": "Invalid coordinates: latitude goes from -90 to 90 and longitude from -180 to 180.",
           "badNumbers": "Points, time and radius have to be whole numbers from 0."
         }

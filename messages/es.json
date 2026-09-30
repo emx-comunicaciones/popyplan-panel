@@ -3610,6 +3610,7 @@
           "noClue": "Escribe la pista.",
           "noAnswer": "Las pruebas de respuesta necesitan la respuesta correcta.",
           "noCoordinates": "Las pruebas de ubicación necesitan latitud y longitud.",
+          "badRadius": "El radio de validación debe ser de al menos 1 metro.",
           "badCoordinates": "Coordenadas no válidas: la latitud va de -90 a 90 y la longitud de -180 a 180.",
           "badNumbers": "Puntos, tiempo y radio tienen que ser números enteros desde 0."
         }

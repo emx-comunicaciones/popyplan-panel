@@ -68,6 +68,15 @@ describe("validateStep", () => {
     expect(validateStep({ ...location, latitude: "abc", longitude: "1" }, steps)).toBe("coordenadas_invalidas");
     expect(validateStep({ ...location, latitude: "43,3183", longitude: "-1.9812" }, steps)).toBeNull();
   });
+
+  it("ubicación no admite radio 0 (informe, error 59) y otros tipos no lo miran", () => {
+    const location = { ...base, challengeType: "location" as const, latitude: "43.3", longitude: "-1.9" };
+    expect(validateStep({ ...location, radius: "0" }, steps)).toBe("radio_invalido");
+    expect(validateStep({ ...location, radius: "" }, steps)).toBe("radio_invalido");
+    expect(validateStep({ ...location, radius: "2.5" }, steps)).toBe("radio_invalido");
+    expect(validateStep({ ...location, radius: "1" }, steps)).toBeNull();
+    expect(validateStep({ ...base, radius: "0" }, steps)).toBeNull();
+  });
 });
 
 describe("parseCoordinate", () => {

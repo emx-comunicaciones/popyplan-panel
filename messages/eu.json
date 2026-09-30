@@ -3610,6 +3610,7 @@
           "noClue": "Idatzi pista.",
           "noAnswer": "Erantzun-probek erantzun zuzena behar dute.",
           "noCoordinates": "Kokapen-probek latitudea eta longitudea behar dituzte.",
+          "badRadius": "Baliozkotze-erradioak gutxienez metro 1ekoa izan behar du.",
           "badCoordinates": "Koordenatu baliogabeak: latitudea -90etik 90era doa eta longitudea -180tik 180ra.",
           "badNumbers": "Puntuek, denborak eta erradioak 0tik aurrerako zenbaki osoak izan behar dute."
         }

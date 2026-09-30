@@ -52,7 +52,7 @@ export function nextStepOrder(steps: readonly Pick<TreasureStep, "order">[]): nu
   return steps.reduce((max, step) => Math.max(max, step.order), 0) + 1;
 }
 
-export type StepErrorKind = "orden_invalido" | "orden_repetido" | "sin_pista" | "sin_respuesta" | "sin_coordenadas" | "coordenadas_invalidas";
+export type StepErrorKind = "orden_invalido" | "orden_repetido" | "sin_pista" | "sin_respuesta" | "sin_coordenadas" | "coordenadas_invalidas" | "radio_invalido";
 
 export interface StepDraft {
   order: number;
@@ -62,6 +62,8 @@ export interface StepDraft {
   correctAnswer: string;
   latitude: string;
   longitude: string;
+  /** Radio de validación tecleado (metros); solo cuenta en las pruebas de ubicación. */
+  radius?: string;
 }
 
 /**
@@ -91,6 +93,11 @@ export function validateStep(
     const lng = Number(draft.longitude.replace(",", "."));
     if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
       return "coordenadas_invalidas";
+    }
+    // Con radio 0 nadie está «dentro» del punto: la prueba no se podría superar
+    // (el backend también lo rechaza).
+    if (draft.radius !== undefined && !(Number.isInteger(Number(draft.radius)) && Number(draft.radius) >= 1)) {
+      return "radio_invalido";
     }
   }
   return null;

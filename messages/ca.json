@@ -3610,6 +3610,7 @@
           "noClue": "Escriu la pista.",
           "noAnswer": "Les proves de resposta necessiten la resposta correcta.",
           "noCoordinates": "Les proves d'ubicació necessiten latitud i longitud.",
+          "badRadius": "El radi de validació ha de ser d'almenys 1 metre.",
           "badCoordinates": "Coordenades no vàlides: la latitud va de -90 a 90 i la longitud de -180 a 180.",
           "badNumbers": "Els punts, el temps i el radi han de ser nombres enters a partir de 0."
         }
