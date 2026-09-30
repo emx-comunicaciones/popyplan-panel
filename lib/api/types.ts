@@ -420,8 +420,13 @@ export interface PaginatedReferenceList {
 export type ReportRow = components["schemas"]["Report"];
 
 /** `GET /api/safety/reports/{id}/` (§4): añade `target` sobre `Report`. */
-export type ReportDetail = components["schemas"]["ReportDetail"];
-export type ReportTarget = components["schemas"]["ReportTarget"];
+/**
+ * `where` todavía no sale en el `target` de un reporte (el contrato no lo
+ * añade): cuando el backend lo sirva lo usa el detalle; mientras, se
+ * deduce de `community_display` (ver `ReporteDetail`).
+ */
+export type ReportTarget = components["schemas"]["ReportTarget"] & { where?: PostWhere };
+export type ReportDetail = Omit<components["schemas"]["ReportDetail"], "target"> & { target: ReportTarget };
 export type ReportResolution = components["schemas"]["ReportResolveResolutionEnum"];
 /** Cuerpo de `POST /api/safety/reports/{id}/resolve/`. */
 export type ReportResolveRequest = components["schemas"]["ReportResolveRequest"];
