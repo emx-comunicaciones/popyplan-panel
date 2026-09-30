@@ -2907,6 +2907,7 @@
       "colTarget": "Helburua",
       "colMetadata": "Xehetasuna",
       "colDate": "Data",
+      "hidden": "Ezkutuan (pribatua)",
       "previous": "Aurrekoa",
       "next": "Hurrengoa",
       "exportNotice": "Esportazio hau bezeroaren tresna bat da (orrialdean dagoeneko ikusgai dauden datuak, CSV gisa) eta ez da bere kabuz auditatzen. Zerrenda osoaren esportazio auditatua backend-eko bide bereizi bat da, ataza honen esparrutik kanpo.",

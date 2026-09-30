@@ -2907,6 +2907,7 @@
       "colTarget": "Target",
       "colMetadata": "Detail",
       "colDate": "Date",
+      "hidden": "Hidden (private)",
       "previous": "Previous",
       "next": "Next",
       "exportNotice": "This export is a client-side utility (the data already visible on the page, as CSV) and isn't itself audited. An audited export of the whole listing is a separate backend route, outside this task's scope.",

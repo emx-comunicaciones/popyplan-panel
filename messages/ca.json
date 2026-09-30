@@ -2907,6 +2907,7 @@
       "colTarget": "Objectiu",
       "colMetadata": "Detall",
       "colDate": "Data",
+      "hidden": "Ocult (privat)",
       "previous": "Anterior",
       "next": "Següent",
       "exportNotice": "Aquesta exportació és una utilitat del client (les dades ja visibles a la pàgina, en CSV) i no queda auditada per si mateixa. Una exportació auditada de tot el llistat és una ruta de backend a part, fora de l'abast d'aquesta tasca.",

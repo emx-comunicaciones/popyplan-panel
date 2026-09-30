@@ -2907,6 +2907,7 @@
       "colTarget": "Objetivo",
       "colMetadata": "Detalle",
       "colDate": "Fecha",
+      "hidden": "Oculto (privado)",
       "previous": "Anterior",
       "next": "Siguiente",
       "exportNotice": "Esta exportación es una utilidad del cliente (los datos ya visibles en la página, en CSV) y no queda auditada por sí misma. Una exportación auditada de todo el listado es una ruta de backend aparte, fuera del alcance de esta tarea.",
