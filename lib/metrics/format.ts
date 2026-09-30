@@ -80,3 +80,17 @@ export function formatPct(value: number | null, suppressed = false): string {
   if (value === null) return suppressed ? "<5" : "—";
   return `${percentFormatter().format(value * 100)} %`;
 }
+
+/**
+ * Mediana de minutos de respuesta de la guardia:
+ * `formatMinutes(10) → '10 min'`, `formatMinutes(95) → '1 h 35 min'`,
+ * `formatMinutes(null, true) → '<5'`, sin atendidos `'—'`.
+ */
+export function formatMinutes(value: number | null, suppressed = false): string {
+  if (value === null) return suppressed ? "<5" : "—";
+  const total = Math.round(value);
+  if (total < 60) return `${total} min`;
+  const horas = Math.floor(total / 60);
+  const minutos = total % 60;
+  return minutos === 0 ? `${horas} h` : `${horas} h ${minutos} min`;
+}

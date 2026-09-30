@@ -15,6 +15,7 @@ import { ComparativaTable } from "./ComparativaTable";
 import { MetricsTable } from "./MetricsTable";
 import { PeriodSelector } from "./PeriodSelector";
 import { SeriesChart } from "./SeriesChart";
+import { HelpStats } from "./HelpStats";
 import { StatCard } from "./StatCard";
 
 export interface ParaguasMetricsDashboardProps {
@@ -134,6 +135,8 @@ export function ParaguasMetricsDashboard({ orgId, orgName }: ParaguasMetricsDash
               value={formatCount(base.data.attendance.no_show, base.data.attendance.suppressed)}
             />
           </div>
+
+          <HelpStats help={base.data.help} />
 
           <section aria-labelledby="por-municipio-heading">
             <h2 id="por-municipio-heading" className="mb-2 text-lg font-semibold text-text-base">

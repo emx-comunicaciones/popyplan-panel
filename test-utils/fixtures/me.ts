@@ -13,6 +13,7 @@ export function buildOrgMembership(
     admin_level: "",
     logo: null,
     role: "titular",
+    is_on_call: false,
     ...overrides,
   };
 }

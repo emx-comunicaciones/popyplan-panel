@@ -5520,6 +5520,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/safety/help-requests/{id}/contact/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description «Escribirle»: chat directo ya aceptado entre quien atiende el
+         *     aviso y quien pidió ayuda → `{chat_room_id}`.
+         */
+        post: operations["safety_help_requests_contact_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/safety/help-requests/{id}/notify-referent/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description «Avisar a su referente» → `{referent: {id, public_name}}`; 400 si
+         *     la persona no tiene referente con el rol vigente.
+         */
+        post: operations["safety_help_requests_notify_referent_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/safety/help-requests/pending/": {
         parameters: {
             query?: never;
@@ -8539,6 +8579,7 @@ export interface components {
             /** Format: uuid */
             readonly chat_room_id: string | null;
             readonly can_request_help: boolean;
+            readonly pending_requests_count: number | null;
             readonly recent_posts_count: number;
             readonly active_members_count: number;
             readonly upcoming_events_count: number;
@@ -10296,6 +10337,36 @@ export interface components {
             readonly is_active: boolean;
         };
         /**
+         * @description `POST /api/safety/help-requests/{id}/contact/`: la sala del chat
+         *     directo (ya aceptado) entre quien atiende el aviso y quien lo pidió.
+         */
+        HelpContact: {
+            chat_room_id: string;
+        };
+        /**
+         * @description Servicios de la guardia (`metrics_for`, sección `help`). Todas las
+         *     cifras a `null` con `suppressed: true` por debajo del umbral.
+         */
+        HelpMetrics: {
+            requests: number | null;
+            people: number | null;
+            attended: number | null;
+            pending: number | null;
+            contacted: number | null;
+            referent_notified: number | null;
+            network_responded: number | null;
+            /** Format: double */
+            median_response_minutes: number | null;
+            suppressed: boolean;
+        };
+        /**
+         * @description `POST /api/safety/help-requests/{id}/notify-referent/`: a quién se
+         *     avisó.
+         */
+        HelpReferentNotified: {
+            referent: components["schemas"]["ReferentDisplay"];
+        };
+        /**
          * @description Un aviso de ayuda tal y como lo lee quien lo atiende (`pending`) o
          *     la propia persona que lo pidió.
          *
@@ -10717,6 +10788,7 @@ export interface components {
             events: components["schemas"]["EventsMetrics"];
             attendance: components["schemas"]["AttendanceMetrics"];
             communities: components["schemas"]["CommunitiesMetrics"];
+            help: components["schemas"]["HelpMetrics"];
             by_place: components["schemas"]["ByPlaceRow"][];
             by_weekday_hour: components["schemas"]["ByWeekdayHourRow"][];
             series: components["schemas"]["SeriesRow"][];
@@ -10874,6 +10946,7 @@ export interface components {
          *     * `warning` - Advertencia
          *     * `report_resolved` - Reporte revisado
          *     * `help_request` - Aviso de ayuda
+         *     * `help_referent` - Aviso de ayuda para el referente
          *     * `account_suspended` - Cuenta suspendida
          *     * `announcement` - Comunicación oficial
          *     * `survey` - Encuesta
@@ -10882,7 +10955,7 @@ export interface components {
          *     * `system` - Sistema
          * @enum {string}
          */
-        NotificationTypeEnum: "dm_request" | "message" | "plan_invitation" | "plan_update" | "plan_reminder" | "plan_cancelled" | "plan_completed" | "review_received" | "warning" | "report_resolved" | "help_request" | "account_suspended" | "announcement" | "survey" | "support_help_request" | "support_link" | "system";
+        NotificationTypeEnum: "dm_request" | "message" | "plan_invitation" | "plan_update" | "plan_reminder" | "plan_cancelled" | "plan_completed" | "review_received" | "warning" | "report_resolved" | "help_request" | "help_referent" | "account_suspended" | "announcement" | "survey" | "support_help_request" | "support_link" | "system";
         /** @enum {unknown} */
         NullEnum: null;
         OptimizedPhotoListItem: {
@@ -10946,6 +11019,7 @@ export interface components {
             readonly admin_level: string;
             readonly logo: string | null;
             readonly role: string;
+            readonly is_on_call: boolean;
         };
         /**
          * @description `GET`/`POST`/`DELETE /api/organizations/{id}/members/`.
@@ -20771,6 +20845,7 @@ export interface operations {
                  *     * `warning` - Advertencia
                  *     * `report_resolved` - Reporte revisado
                  *     * `help_request` - Aviso de ayuda
+                 *     * `help_referent` - Aviso de ayuda para el referente
                  *     * `account_suspended` - Cuenta suspendida
                  *     * `announcement` - Comunicación oficial
                  *     * `survey` - Encuesta
@@ -20778,7 +20853,7 @@ export interface operations {
                  *     * `support_link` - Red de apoyo
                  *     * `system` - Sistema
                  */
-                notification_type?: "account_suspended" | "announcement" | "dm_request" | "help_request" | "message" | "plan_cancelled" | "plan_completed" | "plan_invitation" | "plan_reminder" | "plan_update" | "report_resolved" | "review_received" | "support_help_request" | "support_link" | "survey" | "system" | "warning";
+                notification_type?: "account_suspended" | "announcement" | "dm_request" | "help_referent" | "help_request" | "message" | "plan_cancelled" | "plan_completed" | "plan_invitation" | "plan_reminder" | "plan_update" | "report_resolved" | "review_received" | "support_help_request" | "support_link" | "survey" | "system" | "warning";
                 /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
                 /** @description Un número de página dentro del conjunto de resultados paginado. */
@@ -26518,6 +26593,85 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HelpRequest"];
                 };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    safety_help_requests_contact_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un Cadena UUID que identifique este aviso de ayuda. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HelpContact"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    safety_help_requests_notify_referent_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un Cadena UUID que identifique este aviso de ayuda. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HelpReferentNotified"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description No response body */
             403: {

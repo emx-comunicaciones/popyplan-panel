@@ -29,6 +29,7 @@ import { errorKindText } from "@/lib/i18n/errorKindText";
 import { formatCount, formatPct } from "@/lib/metrics/format";
 import { presetPeriod } from "@/lib/metrics/period";
 
+import { HelpStats } from "./HelpStats";
 import { StatCard } from "./StatCard";
 
 const METRICS_ERROR_KEYS: Record<MetricsErrorKind, string> = {
@@ -142,6 +143,7 @@ export function ParaguasHomeDashboard({ orgId, slug, orgName }: ParaguasHomeDash
             />
           </div>
         )}
+        {red.data ? <HelpStats help={red.data.help} /> : null}
         <Link
           href={`/paraguas/${slug}/red-financiada`}
           className="text-sm text-primary-700 underline"

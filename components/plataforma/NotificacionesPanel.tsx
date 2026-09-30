@@ -96,6 +96,7 @@ export const NOTIFICATION_TYPE_LABEL_KEYS: Record<NotificationTypeName, string> 
   review_received: "plataforma.notificaciones.types.reviewReceived",
   report_resolved: "plataforma.notificaciones.types.reportResolved",
   help_request: "plataforma.notificaciones.types.helpRequest",
+  help_referent: "plataforma.notificaciones.types.helpReferent",
   account_suspended: "plataforma.notificaciones.types.accountSuspended",
   survey: "plataforma.notificaciones.types.survey",
   support_help_request: "plataforma.notificaciones.types.supportHelpRequest",

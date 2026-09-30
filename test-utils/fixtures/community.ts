@@ -99,6 +99,7 @@ export function buildCommunityDetail(overrides: Partial<CommunityDetail> = {}): 
     upcoming_events_count: 2,
     created_at: "2026-01-15T09:00:00Z",
     updated_at: "2026-01-15T09:00:00Z",
+    pending_requests_count: null,
     ...overrides,
   };
 }
