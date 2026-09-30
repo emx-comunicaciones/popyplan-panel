@@ -16,6 +16,7 @@ import { useCancelEvent, type EventMutationErrorKind } from "@/hooks/useEventMut
 import type { EntityEventRow } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 import { localeForUseLocale } from "@/lib/i18n/locale";
+import { formatCount } from "@/lib/metrics/format";
 import {
   periodIncluding,
   presetPeriod,
@@ -219,9 +220,9 @@ export function ActividadesTable({ orgId, slug, canOpenAttendance, canManage }: 
                   <td className="px-3 py-1.5 text-text-base">
                     {event.organizer ? event.organizer.public_name : "—"}
                   </td>
-                  <td className="px-3 py-1.5 text-text-base">{event.registered}</td>
-                  <td className="px-3 py-1.5 text-text-base">{event.attended}</td>
-                  <td className="px-3 py-1.5 text-text-base">{event.no_show}</td>
+                  <td className="px-3 py-1.5 text-text-base">{formatCount(event.registered, event.suppressed)}</td>
+                  <td className="px-3 py-1.5 text-text-base">{formatCount(event.attended, event.suppressed)}</td>
+                  <td className="px-3 py-1.5 text-text-base">{formatCount(event.no_show, event.suppressed)}</td>
                   {canManage ? (
                     <td className="px-3 py-1.5 text-text-base">
                       <div className="flex gap-2">

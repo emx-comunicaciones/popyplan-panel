@@ -9,6 +9,11 @@ import { errorKindText } from "@/lib/i18n/errorKindText";
 
 export interface ExportButtonsProps {
   params: Omit<ExportParams, "format">;
+  /**
+   * Las fechas en pantalla no son un periodo válido: exportar bajaría el
+   * periodo anterior, que no es el que se ve.
+   */
+  periodPending?: boolean;
 }
 
 // `sesion_caducada` no tenía entrada propia en el mapa original (el
@@ -23,7 +28,7 @@ const EXPORT_ERROR_KEYS: Record<ExportErrorKind, string> = {
 };
 
 /** Botones «Exportar CSV»/«Exportar PDF»: llaman a `useExport().mutate` con el `format` pulsado. */
-export function ExportButtons({ params }: ExportButtonsProps) {
+export function ExportButtons({ params, periodPending = false }: ExportButtonsProps) {
   const t = useTranslations();
   const { mutate, isPending, error } = useExport();
   const [lastFormat, setLastFormat] = useState<ExportFormat | null>(null);
@@ -36,18 +41,19 @@ export function ExportButtons({ params }: ExportButtonsProps) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap gap-3">
-        <Button type="button" onClick={() => handleExport("csv")} disabled={isPending}>
+        <Button type="button" onClick={() => handleExport("csv")} disabled={isPending || periodPending}>
           {isPending && lastFormat === "csv" ? t("metrics.export.exporting") : t("metrics.export.csv")}
         </Button>
         <Button
           type="button"
           variant="secondary"
           onClick={() => handleExport("pdf")}
-          disabled={isPending}
+          disabled={isPending || periodPending}
         >
           {isPending && lastFormat === "pdf" ? t("metrics.export.exporting") : t("metrics.export.pdf")}
         </Button>
       </div>
+      {periodPending ? <p className="text-sm text-text-secondary">{t("metrics.export.periodPending")}</p> : null}
       {error ? (
         <p role="alert" className="text-sm text-error">
           {errorKindText(error, EXPORT_ERROR_KEYS, t, "errors.export.desconocido")}

@@ -40,6 +40,7 @@ const ROLES_ERROR_KEYS: Record<PlatformRolesErrorKind, string> = {
   invalido: "errors.platformRoles.invalido",
   sin_permiso: "errors.platformRoles.sinPermiso",
   no_encontrado: "errors.platformRoles.noEncontrado",
+  conflicto: "errors.platformRoles.conflicto",
   desconocido: "errors.platformRoles.desconocido",
 };
 
@@ -164,11 +165,17 @@ function GrantRoleForm() {
   );
 }
 
-export function RolesPanel() {
+export interface RolesPanelProps {
+  /** Id de la cuenta que mira: revocarse a una misma lleva aviso propio. */
+  currentUserId?: number;
+}
+
+export function RolesPanel({ currentUserId }: RolesPanelProps = {}) {
   const t = useTranslations();
   const roles = usePlatformRoles();
   const revoke = useRevokePlatformRole();
   const [toRevoke, setToRevoke] = useState<number | null>(null);
+  const revokingSelf = toRevoke !== null && toRevoke === currentUserId;
 
   return (
     <div className="flex flex-col gap-4">
@@ -191,27 +198,44 @@ export function RolesPanel() {
                 <span>
                   {entry.username} (#{entry.user}) — {t(ROLE_LABEL_KEYS[entry.role])}
                 </span>
-                <Button type="button" variant="danger" onClick={() => setToRevoke(entry.user)}>
+                <Button
+                  type="button"
+                  variant="danger"
+                  onClick={() => {
+                    revoke.reset();
+                    setToRevoke(entry.user);
+                  }}
+                >
                   {t("plataforma.roles.revokeAction")}
                 </Button>
               </li>
             ))}
           </ul>
         )}
-        {revoke.isError ? (
-          <p role="alert" className="mt-2 text-sm text-error">
-            {errorKindText(revoke.error, REVOKE_ERROR_KEYS, t, "errors.platformRoles.desconocidoRevocar")}
-          </p>
-        ) : null}
       </Card>
 
       <ConfirmDialog
         open={toRevoke !== null}
         title={t("plataforma.roles.revokeConfirmTitle")}
-        description={t("plataforma.roles.revokeConfirmDescription")}
+        description={
+          <>
+            {revokingSelf ? (
+              <strong className="block">{t("plataforma.roles.revokeSelfWarning")}</strong>
+            ) : null}
+            {t("plataforma.roles.revokeConfirmDescription")}
+            {revoke.isError ? (
+              <p role="alert" className="mt-2 text-sm text-error">
+                {errorKindText(revoke.error, REVOKE_ERROR_KEYS, t, "errors.platformRoles.desconocidoRevocar")}
+              </p>
+            ) : null}
+          </>
+        }
         confirmLabel={t("plataforma.roles.revokeAction")}
         pending={revoke.isPending}
-        onCancel={() => setToRevoke(null)}
+        onCancel={() => {
+          revoke.reset();
+          setToRevoke(null);
+        }}
         onConfirm={() => {
           if (toRevoke === null) return;
           revoke.mutate(toRevoke, { onSuccess: () => setToRevoke(null) });

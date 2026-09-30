@@ -30,6 +30,7 @@ const TODAY_EVENT = {
   registered: 5,
   attended: 0,
   no_show: 0,
+  suppressed: false,
 };
 
 function homeState(overrides: Record<string, unknown> = {}) {
@@ -104,6 +105,22 @@ describe("EntidadInicioPage", () => {
       "href",
       "/entidad/alfaville/reportes",
     );
+  });
+
+  it("analista: los inscritos de hoy por debajo del umbral salen «<5 inscritos» (S-07)", async () => {
+    useEntityHomeMock.mockReturnValue(
+      homeState({
+        today: {
+          data: [{ ...TODAY_EVENT, registered: null, attended: null, no_show: null, suppressed: true }],
+          isError: false,
+          error: null,
+        },
+      }),
+    );
+
+    await renderPage("alfaville", "analista");
+
+    expect(screen.getByText(/<5 inscritos \/ 20 plazas/)).toBeInTheDocument();
   });
 
   it("pinta las tarjetas de métricas del mes con la regla <5", async () => {

@@ -60,6 +60,7 @@ const EVENT_ROW = {
   registered: 1,
   attended: 0,
   no_show: 0,
+  suppressed: false,
 };
 
 const EVENT_DETAIL = {
@@ -118,6 +119,31 @@ describe("ActividadesTable — gestión de actividades", () => {
     expect(screen.getByRole("button", { name: "Nueva actividad" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Editar" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Cancelar actividad" })).toBeInTheDocument();
+  });
+
+  it("sin lista nominal, los contadores por debajo del umbral salen «<5», nunca vacíos (S-07)", () => {
+    setDefaults();
+    useEntityEventsMock.mockReturnValue({
+      data: [{ ...EVENT_ROW, registered: null, attended: null, no_show: null, suppressed: true }],
+      isError: false,
+      error: null,
+    });
+
+    render(<ActividadesTable orgId={7} slug="alfaville" canOpenAttendance={false} canManage={false} />);
+
+    const fila = screen.getByText("Salida al monte").closest("tr");
+    expect(fila).not.toBeNull();
+    expect(within(fila as HTMLElement).getAllByText("<5")).toHaveLength(3);
+  });
+
+  it("con lista nominal, los contadores salen tal cual, también los ceros", () => {
+    setDefaults();
+    render(<ActividadesTable orgId={7} slug="alfaville" canOpenAttendance canManage={false} />);
+
+    const fila = screen.getByText("Salida al monte").closest("tr");
+    const celdas = within(fila as HTMLElement).getAllByRole("cell").map((c) => c.textContent);
+    expect(celdas).toEqual(expect.arrayContaining(["1", "0", "0"]));
+    expect(within(fila as HTMLElement).queryByText("<5")).not.toBeInTheDocument();
   });
 
   it("una actividad ya cancelada no ofrece «Cancelar actividad»", () => {

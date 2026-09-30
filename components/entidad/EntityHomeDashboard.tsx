@@ -88,7 +88,9 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
                       </p>
                     </div>
                     <Badge tone="info">
-                      {t("eventRegistered", { count: event.registered })}
+                      {event.registered === null
+                        ? t("eventRegisteredSuppressed", { count: formatCount(null, event.suppressed) })
+                        : t("eventRegistered", { count: event.registered })}
                       {event.capacity !== null ? ` / ${t("eventCapacity", { count: event.capacity })}` : ""}
                     </Badge>
                   </div>

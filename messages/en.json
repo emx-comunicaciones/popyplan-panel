@@ -417,6 +417,7 @@
       "noEventsToday": "No activities today",
       "todayErrorTitle": "Couldn't load today's activities",
       "eventRegistered": "{count, plural, one {# registered} other {# registered}}",
+      "eventRegisteredSuppressed": "{count} registered",
       "eventCapacity": "{count, plural, one {# slot} other {# slots}}",
       "pendingAlertsHeading": "Pending alerts",
       "pendingHelpRequests": "Pending help requests",
@@ -1372,6 +1373,7 @@
       "sinPermisoConceder": "Only superadmin grants platform roles.",
       "sinPermisoRevocar": "Only superadmin revokes platform roles.",
       "noEncontrado": "That person doesn't have a current platform role.",
+      "conflicto": "The platform cannot be left without a superadmin.",
       "desconocido": "Couldn't load the platform roles.",
       "desconocidoConceder": "Couldn't grant the role.",
       "desconocidoRevocar": "Couldn't revoke the role."
@@ -2557,6 +2559,7 @@
     "export": {
       "title": "Export report",
       "noNamesNotice": "Reports don't contain people's names.",
+      "periodPending": "Fix the period dates to export.",
       "groupByLabel": "Report breakdown",
       "groupByRegular": "Regular breakdown",
       "groupByYear": "By year (multi-year record)",
@@ -2881,7 +2884,8 @@
       "emptyTitle": "No roles granted",
       "revokeAction": "Revoke",
       "revokeConfirmTitle": "Revoke platform role",
-      "revokeConfirmDescription": "This person will lose access to the platform panel."
+      "revokeConfirmDescription": "This person will lose access to the platform panel.",
+      "revokeSelfWarning": "This is your own role: you will lose access to this section."
     },
     "auditoria": {
       "heading": "Audit log",

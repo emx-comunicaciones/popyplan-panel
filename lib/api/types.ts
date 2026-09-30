@@ -1307,14 +1307,20 @@ export interface PlatformChatMessage {
   created_at: string;
 }
 
-export type NotificationTypeName = components["schemas"]["AdminSendNotificationRequest"]["notification_type"];
+/** Todos los tipos de notificación (plantillas, listados). */
+export type NotificationTypeName = components["schemas"]["NotificationTypeEnum"];
+/**
+ * Los que plataforma puede mandar a mano (`ADMIN_SENDABLE_TYPES` del
+ * backend): anuncio, sistema y advertencia. El resto los emite el sistema.
+ */
+export type SendableNotificationTypeName = components["schemas"]["AdminSendNotificationTypeEnum"];
 export type NotificationPriorityName = NonNullable<components["schemas"]["AdminSendNotificationRequest"]["priority"]>;
 
 /** Cuerpo de `POST /api/notifications/send/` (`AdminSendNotificationSerializer`). */
 export interface AdminSendNotificationRequest {
   title: string;
   message: string;
-  notification_type: NotificationTypeName;
+  notification_type: SendableNotificationTypeName;
   priority?: NotificationPriorityName;
   target: "user" | "all";
   user_id?: number;
