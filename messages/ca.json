@@ -690,6 +690,7 @@
       "titleLabel": "Títol",
       "opensAtLabel": "Obre el",
       "closesAtLabel": "Tanca el",
+      "closesBeforeOpens": "La data de tancament ha de ser posterior a la d'obertura.",
       "questionsLegend": "Preguntes",
       "questionKindLabel": "Tipus",
       "questionTextLabel": "Pregunta",

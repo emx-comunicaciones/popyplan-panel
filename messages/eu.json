@@ -690,6 +690,7 @@
       "titleLabel": "Izenburua",
       "opensAtLabel": "Irekitzen da",
       "closesAtLabel": "Ixten da",
+      "closesBeforeOpens": "Itxiera-data irekiera-data baino geroagokoa izan behar da.",
       "questionsLegend": "Galderak",
       "questionKindLabel": "Mota",
       "questionTextLabel": "Galdera",

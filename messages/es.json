@@ -690,6 +690,7 @@
       "titleLabel": "Título",
       "opensAtLabel": "Abre el",
       "closesAtLabel": "Cierra el",
+      "closesBeforeOpens": "La fecha de cierre tiene que ser posterior a la de apertura.",
       "questionsLegend": "Preguntas",
       "questionKindLabel": "Tipo",
       "questionTextLabel": "Pregunta",

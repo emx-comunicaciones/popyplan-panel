@@ -690,6 +690,7 @@
       "titleLabel": "Title",
       "opensAtLabel": "Opens on",
       "closesAtLabel": "Closes on",
+      "closesBeforeOpens": "The closing date must be after the opening date.",
       "questionsLegend": "Questions",
       "questionKindLabel": "Type",
       "questionTextLabel": "Question",
