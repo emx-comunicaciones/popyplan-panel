@@ -1,5 +1,6 @@
 {
   "common": {
+    "phoneInvalid": "Sartu telefono baliozko bat: zifrak soilik, hasieran + aukerakoa duela (adibidez +34 943 123 456 edo 024).",
     "cancel": "Utzi",
     "accept": "Onartu",
     "close": "Itxi",
@@ -11,7 +12,40 @@
     "items": "{count, plural, one {# elementu} other {# elementu}}",
     "confirm": "Berretsi",
     "noPhoneNotice": "Popyplanek ez du telefonorik gordetzen: jarri harremanetan pertsonarekin appeko txatetik edo bere erreferentearen bidez.",
-    "actions": "Ekintzak"
+    "actions": "Ekintzak",
+    "menuOpen": "Ireki menua",
+    "menuClose": "Itxi menua",
+    "picker": {
+      "change": "Aldatu",
+      "placeholder": "Idatzi bilatzeko…",
+      "minChars": "Idatzi gutxienez {count} karaktere bilatzeko.",
+      "error": "Ezin izan da bilatu. Saiatu berriro.",
+      "loading": "Bilatzen…",
+      "empty": "Ez dago bilaketarekin bat datorrenik."
+    }
+  },
+  "enums": {
+    "orgRole": {
+      "titular": "Titularra",
+      "moderador": "Moderatzailea",
+      "dinamizador": "Dinamizatzailea",
+      "analista": "Analista",
+      "referente": "Erreferentea"
+    },
+    "communityRole": {
+      "owner": "Jabea",
+      "moderator": "Moderatzailea",
+      "member": "Kidea"
+    },
+    "reportTarget": {
+      "user": "Pertsona",
+      "community": "Komunitatea",
+      "event": "Jarduera",
+      "post": "Argitalpena",
+      "comment": "Iruzkina",
+      "message": "Mezua",
+      "organization": "Erakundea"
+    }
   },
   "account": {
     "title": "Kontua",
@@ -453,6 +487,7 @@
       "communityAll": "Guztiak",
       "communitiesError": "Ezin izan dira komunitateak kargatu.",
       "referentLabel": "Erreferentea",
+      "referentAll": "Guztiak",
       "activeSinceLabel": "Parte-hartzen honezkero",
       "joinedSinceLabel": "Alta honezkero",
       "includeInvited": "Gonbidatuak sartu",
@@ -481,6 +516,7 @@
       "revokeConfirm": "«{name}»(r)i egindako gonbidapena baliogabetu? Ekintza hau ezin da desegin."
     },
     "personaFicha": {
+      "backToList": "Itzuli Pertsonetara",
       "heading": "Pertsonaren fitxa",
       "sinAccesoDescription": "Ez duzu pertsona honen fitxarako sarbiderik.",
       "loadErrorTitle": "Ezin izan da pertsona honen fitxa kargatu",
@@ -690,6 +726,7 @@
       "titleLabel": "Izenburua",
       "opensAtLabel": "Irekitzen da",
       "closesAtLabel": "Ixten da",
+      "closesBeforeOpens": "Itxiera-data irekiera-data baino geroagokoa izan behar da.",
       "questionsLegend": "Galderak",
       "questionKindLabel": "Mota",
       "questionTextLabel": "Galdera",
@@ -942,7 +979,8 @@
       "supportResponsesEmpty": "Bere laguntza-saretik oraindik inor ez da arduratu.",
       "noCommunity": "Komunitaterik ez",
       "acknowledged": "Artatuta",
-      "acknowledgeAction": "Harremanetan jarri naiz"
+      "acknowledgeAction": "Harremanetan jarri naiz",
+      "acknowledgeByOnCall": "Guardiako pertsonak artatzen du."
     },
     "informes": {
       "noAccessDescription": "Zure rolak ez du sarbiderik Txostenetan.",
@@ -969,9 +1007,11 @@
       "dataLoadErrorDescription": "Ezin izan da erakundearen fitxa kargatu.",
       "loading": "Kargatzen…",
       "teamTitle": "Taldea",
-      "userIdLabel": "Erabiltzailearen id-a",
+      "userIdLabel": "Pertsona",
       "roleLabel": "Rola",
       "addButton": "Gehitu",
+      "chooseReferent": "Aukeratu erreferente bat",
+      "referentsUnavailableHint": "Titularrak bakarrik ikus dezake taldea, eta handik ateratzen dira erreferenteak.",
       "teamLoadError": "Ezin izan da taldea kargatu",
       "teamEmpty": "Ez dago talderik oraindik",
       "teamTableCaption": "Erakundearen taldea",
@@ -982,8 +1022,8 @@
       "removeFromTeamDescription": "«{name}» erakundearen taldetik kendu? Panelerako rola galduko du.",
       "selfRemovalWarning": "Zeure burua taldetik kentzera zoaz eta panelerako sarbidea galduko duzu.",
       "referencesTitle": "Erreferentziak",
-      "personIdLabel": "Pertsona (id)",
-      "referentIdLabel": "Erreferentea (id)",
+      "personIdLabel": "Pertsona",
+      "referentIdLabel": "Erreferentea",
       "assignButton": "Esleitu",
       "referencesLoadError": "Ezin izan dira erreferenteak kargatu",
       "referencesLoadErrorDescription": "Ezin izan dira erakundearen erreferenteak kargatu.",
@@ -2500,6 +2540,7 @@
     "period": {
       "legend": "Aldia",
       "thisMonth": "Hilabete hau",
+      "upcoming": "Hilabete hau eta hurrengoak",
       "quarter": "Hiruhilekoa",
       "year": "Urtea",
       "multiYear": "Urte anitzekoa",
@@ -2748,7 +2789,7 @@
       "orgTypeAdministracion": "Administrazioa",
       "slugLabel": "Slug",
       "cifLabel": "IFK",
-      "parentIdLabel": "Erakunde aterkia (id-a, aukerakoa)",
+      "parentIdLabel": "Erakunde aterkia (aukerakoa)",
       "descriptionLabel": "Deskribapena",
       "createAction": "Erakundea sortu",
       "created": "«{name}» erakundea sortuta, egiaztatu gabe."
@@ -2769,7 +2810,7 @@
       "umbrellaCardTitle": "Erakunde aterkia",
       "currentParent": "Uneko aterkia: {parent}",
       "noParent": "esleitu gabe",
-      "newParentLabel": "Aterki berria (id-a, hutsik kentzeko)",
+      "newParentLabel": "Aterki berria (utzi hutsik kentzeko)",
       "saved": "Gordeta.",
       "childrenCardTitle": "Erakunde umeak",
       "childrenLoadError": "Ezin izan dira erakunde umeak kargatu",
@@ -2788,8 +2829,8 @@
       "teamEmpty": "Oraindik ez dago talderik",
       "removeAction": "Kendu",
       "referencesCardTitle": "Erreferentziak",
-      "personIdLabel": "Pertsona (id-a)",
-      "referentIdLabel": "Erreferentea (id-a)",
+      "personIdLabel": "Pertsona",
+      "referentIdLabel": "Erreferentea",
       "assignAction": "Esleitu",
       "referencesEmpty": "Oraindik ez dago erreferentziarik",
       "referenceRow": "{name} — erreferentea #{referentId}",
@@ -2821,7 +2862,9 @@
       "trackingDisableConfirmTitle": "Jarraipen-programa desaktibatu?",
       "trackingDisableConfirmDescription": "Izen-emateak zain geratzen dira: inork ezingo ditu ikusi ez erabili berriro aktibatu arte. Ez da ezer ezabatzen.",
       "trackingEnableAction": "Aktibatu",
-      "trackingDisableAction": "Desaktibatu"
+      "trackingDisableAction": "Desaktibatu",
+      "firstTitularNotice": "Erakunde honek ez du oraindik titularrik. Superadmin gisa lehena eman diezaiokezu (Titularra rolarekin bakarrik); ondoren titularrak kudeatuko du bere taldea.",
+      "firstTitularAssigned": "Titularra esleituta. Hemendik aurrera titularrak kudeatzen du erakundearen taldea."
     },
     "reportes": {
       "heading": "Salaketak",
@@ -2875,7 +2918,7 @@
       "roleSupport": "Laguntza",
       "grantTitle": "Rola eman",
       "searchLabel": "Kontua bilatu (emaila edo erabiltzaile-izena)",
-      "userIdLabel": "Erabiltzailearen id-a",
+      "userIdLabel": "Pertsona",
       "roleLabel": "Rola",
       "grantAction": "Eman",
       "grantSuccess": "Rola emanda.",
@@ -2885,12 +2928,15 @@
       "revokeAction": "Baliogabetu",
       "revokeConfirmTitle": "Plataforma-rola baliogabetu",
       "revokeConfirmDescription": "Pertsona honek plataformaren panelerako sarbidea galduko du.",
-      "revokeSelfWarning": "Zure rola da: atal honetarako sarbidea galduko duzu."
+      "revokeSelfWarning": "Zure rola da: atal honetarako sarbidea galduko duzu.",
+      "replaceConfirmTitle": "Plataformako rola ordezkatu",
+      "replaceConfirmDescription": "#{user} kontuak badu jada «{current}» rola. Kontu batek plataformako rol bakarra izan dezake: «{next}» emanez gero, «{current}» galduko du.",
+      "replaceConfirmAction": "Rola ordezkatu"
     },
     "auditoria": {
       "heading": "Auditoria",
       "noAccessDescription": "Superadminek bakarrik ikusten du plataformaren auditoria.",
-      "actorLabel": "Egilea (id-a)",
+      "actorLabel": "Egilea",
       "actionLabel": "Ekintza",
       "targetTypeLabel": "Helburu mota",
       "targetIdLabel": "Helburuaren id-a",
@@ -2907,6 +2953,7 @@
       "colTarget": "Helburua",
       "colMetadata": "Xehetasuna",
       "colDate": "Data",
+      "hidden": "Ezkutuan (pribatua)",
       "previous": "Aurrekoa",
       "next": "Hurrengoa",
       "exportNotice": "Esportazio hau bezeroaren tresna bat da (orrialdean dagoeneko ikusgai dauden datuak, CSV gisa) eta ez da bere kabuz auditatzen. Zerrenda osoaren esportazio auditatua backend-eko bide bereizi bat da, ataza honen esparrutik kanpo.",
@@ -3610,6 +3657,7 @@
           "noClue": "Idatzi pista.",
           "noAnswer": "Erantzun-probek erantzun zuzena behar dute.",
           "noCoordinates": "Kokapen-probek latitudea eta longitudea behar dituzte.",
+          "badRadius": "Baliozkotze-erradioak gutxienez metro 1ekoa izan behar du.",
           "badCoordinates": "Koordenatu baliogabeak: latitudea -90etik 90era doa eta longitudea -180tik 180ra.",
           "badNumbers": "Puntuek, denborak eta erradioak 0tik aurrerako zenbaki osoak izan behar dute."
         }

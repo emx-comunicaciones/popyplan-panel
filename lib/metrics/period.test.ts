@@ -9,6 +9,10 @@ describe("presetPeriod", () => {
     expect(presetPeriod("mes", TODAY)).toEqual({ since: "2026-03-01", until: "2026-03-15" });
   });
 
+  it("proximos: desde el día 1 del mes hasta 30 días después de hoy", () => {
+    expect(presetPeriod("proximos", TODAY)).toEqual({ since: "2026-03-01", until: "2026-04-14" });
+  });
+
   it("trimestre: últimos 3 meses hasta hoy", () => {
     expect(presetPeriod("trimestre", TODAY)).toEqual({ since: "2025-12-15", until: "2026-03-15" });
   });

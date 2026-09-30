@@ -15,6 +15,7 @@ import { usePerson } from "@/hooks/usePerson";
 import { usePersonSupport } from "@/hooks/usePersonSupport";
 import { isAllowedImageSrc } from "@/lib/config/imagePatterns";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { COMMUNITY_ROLE_LABEL_KEYS, enumLabel } from "@/lib/i18n/enumLabels";
 import { localeForUseLocale } from "@/lib/i18n/locale";
 import { presetPeriod } from "@/lib/metrics/period";
 import { relationshipLabelKey } from "@/lib/support/relationshipLabel";
@@ -336,7 +337,7 @@ export function PersonSheet({
           <ul className="flex flex-col gap-1">
             {data.communities.map((community) => (
               <li key={community.id} className="text-sm text-text-base">
-                {community.name} <Badge>{community.role}</Badge>
+                {community.name} <Badge>{enumLabel(COMMUNITY_ROLE_LABEL_KEYS, community.role, tAll)}</Badge>
               </li>
             ))}
           </ul>

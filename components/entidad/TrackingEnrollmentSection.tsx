@@ -9,10 +9,10 @@ import { Card } from "@/components/ui/Card";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Dialog } from "@/components/ui/Dialog";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { useOrgMembers } from "@/hooks/useOrgMembers";
 import {
   useCloseEnrollment,
   useCreateEnrollment,
+  useEnrollmentReferents,
   useEnrollments,
   useUpdateEnrollment,
 } from "@/hooks/useProgramEnrollments";
@@ -194,10 +194,10 @@ export function TrackingEnrollmentSection({ orgId, userId, personName }: Trackin
  * Alta (`editing === null`) o cambio de tipo/referente de una inscripción
  * abierta. El referente es una **`OrgMembership`** con rol `referente`: se
  * manda `m.id`, no `m.user` (`EnrollmentRow.referent.id` es también el id
- * de la membresía). La lista sale de `useOrgMembers`, igual que «Asignar
- * referente»; es solo-titular en el backend, así que a un moderador le
- * llega vacía con aviso — puede dar de alta sin referente, y al editar se
- * conserva siempre el referente actual como opción.
+ * de la membresía). La lista sale de `program/referents/`, que también
+ * puede pedir el moderador (el equipo completo es solo del titular); si
+ * aun así falla se avisa, se puede dar de alta sin referente y al editar
+ * se conserva siempre el referente actual como opción.
  */
 function EnrollmentDialog({
   orgId,
@@ -213,7 +213,7 @@ function EnrollmentDialog({
   const t = useTranslations("entidad.seguimiento");
   const tPeople = useTranslations("people");
   const tAll = useTranslations();
-  const members = useOrgMembers(orgId);
+  const members = useEnrollmentReferents(orgId);
   const createEnrollment = useCreateEnrollment(orgId);
   const updateEnrollment = useUpdateEnrollment(orgId);
   const mutation = editing ? updateEnrollment : createEnrollment;
@@ -225,7 +225,7 @@ function EnrollmentDialog({
   const [trackingLabel, setTrackingLabel] = useState(initialLabel);
   const [referent, setReferent] = useState(initialReferent);
 
-  const referentes = (members.data ?? []).filter((member) => member.role === "referente");
+  const referentes = members.data ?? [];
   const currentMissing =
     editing?.referent && !referentes.some((member) => String(member.id) === initialReferent);
   const needsLabel = trackingType === "other";

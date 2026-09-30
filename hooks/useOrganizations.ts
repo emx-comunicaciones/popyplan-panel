@@ -94,6 +94,38 @@ export function useOrganizations(
   });
 }
 
+/** Tope de páginas de `useAllOrganizations`: 50 × 20 = 1000 entidades. */
+const MAX_ORGANIZATION_PAGES = 50;
+
+/**
+ * Todas las entidades, no solo la primera página (el listado pagina de 20 en
+ * 20): los selectores de Suscripciones (filtro y alta de contrato) solo
+ * ofrecían las primeras 20 (informe del panel, error 16). Sigue `next`
+ * página a página; devuelve la misma forma que `useOrganizations`, con
+ * `results` completo. Los nombres salen en el orden del backend.
+ */
+export function useAllOrganizations(): UseQueryResult<OrganizationsPage, OrganizationsError> {
+  return useQuery<OrganizationsPage, OrganizationsError>({
+    queryKey: [QUERY_KEY, "all"],
+    queryFn: async () => {
+      try {
+        const results: Organization[] = [];
+        let count = 0;
+        for (let page = 1; page <= MAX_ORGANIZATION_PAGES; page += 1) {
+          const query = buildQuery({ page });
+          const data = await apiFetch<PaginatedOrganizationList>(`${ORGANIZATIONS.LIST()}?${query}`);
+          results.push(...(data.results ?? []));
+          count = data.count ?? results.length;
+          if (!data.next) break;
+        }
+        return { count, next: null, previous: null, results };
+      } catch {
+        throw new OrganizationsError("No se pudo cargar el listado de entidades.");
+      }
+    },
+  });
+}
+
 function invalidateOrganizations(queryClient: ReturnType<typeof useQueryClient>): void {
   queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
 }

@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { act, fireEvent, render, screen, waitFor, within } from "@/test-utils/render";
 import { axe } from "@/test-utils/axe";
-import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
+import { NextRedirectSignal, routerMock, setSearchParams } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
 import { buildEntityCommunityRow } from "@/test-utils/fixtures/community";
 import { buildOrgMembershipFull } from "@/test-utils/fixtures/orgMembershipFull";
@@ -85,6 +85,7 @@ function mockDefaults() {
     reset: vi.fn(),
   });
   useEntityCommunitiesMock.mockReturnValue({ data: [], isError: false, error: null });
+  useOrgMembersMock.mockReturnValue({ data: [], isError: false, error: null });
 }
 
 async function renderPage(role = "titular", slug = "alfaville") {
@@ -162,6 +163,11 @@ describe("EntidadPersonasPage", () => {
       isError: false,
       error: null,
     });
+    useOrgMembersMock.mockReturnValue({
+      data: [buildOrgMembershipFull({ user: 7, role: "referente", public_name: "Bea" })],
+      isError: false,
+      error: null,
+    });
     const user = userEvent.setup();
 
     await renderPage();
@@ -169,7 +175,7 @@ describe("EntidadPersonasPage", () => {
 
     await user.type(screen.getByLabelText("Buscar"), "an");
     await user.selectOptions(screen.getByLabelText("Comunidad"), "comm-1");
-    await user.type(screen.getByLabelText("Referente"), "7");
+    await user.selectOptions(screen.getByLabelText("Referente"), "7");
 
     // Los campos de texto se aplican con retardo (`useDebouncedValue`,
     // 300 ms): el `waitFor` espera a que la query los reciba.
@@ -302,6 +308,92 @@ describe("EntidadPersonasPage", () => {
 
     await user.selectOptions(select, "");
     expect(usePeopleMock.mock.calls.at(-1)?.[2].community).toBeUndefined();
+  });
+
+  it("«Referente» es un selector de referentes por nombre, con «Todos»", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useOrgMembersMock.mockReturnValue({
+      data: [
+        buildOrgMembershipFull({ user: 7, role: "referente", public_name: "Bea" }),
+        buildOrgMembershipFull({ user: 8, role: "dinamizador", public_name: "Dani" }),
+      ],
+      isError: false,
+      error: null,
+    });
+    const user = userEvent.setup();
+    await renderPage();
+
+    const select = screen.getByLabelText("Referente");
+    expect(select.tagName).toBe("SELECT");
+    expect(within(select).getAllByRole("option").map((o) => o.textContent)).toEqual(["Todos", "Bea"]);
+    await user.selectOptions(select, "7");
+    await waitFor(() => expect(usePeopleMock.mock.calls.at(-1)?.[2]).toMatchObject({ referent: 7 }));
+  });
+
+  it("el referente no ve el filtro «Referente» (ya solo ve a sus personas)", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    await renderPage("referente");
+    expect(screen.queryByLabelText("Referente")).not.toBeInTheDocument();
+  });
+
+  it("si fallan los referentes, el filtro lo avisa", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useOrgMembersMock.mockReturnValue({ data: undefined, isError: true, error: new Error("x") });
+    await renderPage();
+    expect(screen.getByText("No se pudieron cargar los referentes.")).toBeInTheDocument();
+  });
+
+  it("el filtro «Comunidad» no ofrece las de Familias (error 52)", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [
+        buildEntityCommunityRow({ id: "c-m", name: "Paseos", space: "members" }),
+        buildEntityCommunityRow({ id: "c-f", name: "Familias", space: "families" }),
+      ],
+      isError: false,
+      error: null,
+    });
+    await renderPage();
+    const opciones = within(screen.getByLabelText("Comunidad")).getAllByRole("option");
+    expect(opciones.map((o) => o.textContent)).toEqual(["Todas", "Paseos"]);
+  });
+
+  it("los filtros se leen de la URL al abrir y se escriben en ella al cambiarlos (error 30)", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "comm-1", name: "Paseos" })],
+      isError: false,
+      error: null,
+    });
+    useInvitationsMock.mockReturnValue({ data: [], isError: false, error: null });
+    setSearchParams("q=ana&comunidad=comm-1&invitadas=1&pagina=3");
+    const user = userEvent.setup();
+    await renderPage();
+
+    expect(screen.getByLabelText("Buscar")).toHaveValue("ana");
+    expect(screen.getByLabelText("Comunidad")).toHaveValue("comm-1");
+    expect(screen.getByLabelText("Incluir invitadas")).toBeChecked();
+    expect(usePeopleMock.mock.calls.at(-1)?.[2]).toMatchObject({
+      search: "ana", community: "comm-1", includeInvited: true, page: 3,
+    });
+    // La URL ya dice lo mismo: montar no la reescribe.
+    expect(routerMock.replace).not.toHaveBeenCalled();
+
+    // Cada fila lleva los filtros a la ficha para poder volver.
+    expect(screen.getByRole("link", { name: "Ana" })).toHaveAttribute(
+      "href",
+      "/entidad/alfaville/personas/42?volver=" + encodeURIComponent("q=ana&comunidad=comm-1&invitadas=1&pagina=3"),
+    );
+
+    await user.selectOptions(screen.getByLabelText("Comunidad"), "");
+    await waitFor(() =>
+      expect(routerMock.replace).toHaveBeenLastCalledWith("/?q=ana&invitadas=1", { scroll: false }),
+    );
   });
 
   it("paginación: sin `previous`, «Anterior» está deshabilitado; con `next`, «Siguiente» no", async () => {
@@ -655,6 +747,7 @@ describe("EntidadPersonasPage", () => {
     });
     useInvitationsMock.mockReturnValue({ data: [], isError: false, error: null });
     useEntityCommunitiesMock.mockReturnValue({ data: [], isError: false, error: null });
+    useOrgMembersMock.mockReturnValue({ data: [], isError: false, error: null });
 
     const user = userEvent.setup();
     await renderPage("titular");
@@ -687,6 +780,7 @@ describe("EntidadPersonasPage", () => {
     });
     useInvitationsMock.mockReturnValue({ data: [], isError: false, error: null });
     useEntityCommunitiesMock.mockReturnValue({ data: [], isError: false, error: null });
+    useOrgMembersMock.mockReturnValue({ data: [], isError: false, error: null });
 
     const user = userEvent.setup();
     await renderPage("titular");

@@ -104,6 +104,40 @@ describe("EntidadGuardiaPage", () => {
     expect(acknowledgeMutate).toHaveBeenCalledWith("hr-1");
   });
 
+  it("con otra persona de guardia, el titular ve el aviso pero no «He contactado» (error 29)", async () => {
+    // `acknowledge` solo lo concede a la guardia nombrada: al titular le
+    // daba 403. Se cambia el botón por un aviso.
+    usePendingHelpRequestsMock.mockReturnValue({
+      data: [buildHelpRequest({ id: "hr-1", acknowledged_at: null })],
+      isError: false,
+      error: null,
+    });
+    useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
+    useOrganizationMock.mockReturnValue({ data: buildOrganization(), isError: false, error: null });
+    useUpdateOrganizationMock.mockReturnValue(idleMutation());
+
+    await renderPage("titular", "alfaville", 99);
+
+    expect(screen.getByText("Marta L.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "He contactado" })).not.toBeInTheDocument();
+    expect(screen.getByText("Lo atiende la persona de guardia.")).toBeInTheDocument();
+  });
+
+  it("la persona de guardia sí ve «He contactado» aunque sea titular", async () => {
+    usePendingHelpRequestsMock.mockReturnValue({
+      data: [buildHelpRequest({ id: "hr-1", acknowledged_at: null })],
+      isError: false,
+      error: null,
+    });
+    useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
+    useOrganizationMock.mockReturnValue({ data: buildOrganization(), isError: false, error: null });
+    useUpdateOrganizationMock.mockReturnValue(idleMutation());
+
+    await renderPage("titular", "alfaville", 42);
+
+    expect(screen.getByRole("button", { name: "He contactado" })).toBeInTheDocument();
+  });
+
   it("un aviso ya atendido muestra el badge, no el botón", async () => {
     const request = buildHelpRequest({ id: "hr-1", acknowledged_at: "2026-09-01T18:40:00Z" });
     usePendingHelpRequestsMock.mockReturnValue({ data: [request], isError: false, error: null });
@@ -144,6 +178,33 @@ describe("EntidadGuardiaPage", () => {
     // `PATCH` (D-I8): sin guardia elegida, `on_call_user` es `null`
     // (el campo es `null=True`/`SET_NULL`, no `blank`).
     expect(updateMutate).toHaveBeenCalledWith({ help_phone: "+34611111111", on_call_user: null });
+  });
+
+  it("un teléfono de ayuda que no lo es se avisa y no se guarda (error 40)", async () => {
+    usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
+    useOrganizationMock.mockReturnValue({
+      data: buildOrganization({ help_phone: "+34600000009" }),
+      isError: false,
+      error: null,
+    });
+    const updateMutate = vi.fn();
+    useUpdateOrganizationMock.mockReturnValue({
+      mutate: updateMutate,
+      isPending: false,
+      isError: false,
+      isSuccess: false,
+    });
+    const user = userEvent.setup();
+
+    await renderPage();
+    const input = screen.getByLabelText("Teléfono de ayuda");
+    await user.clear(input);
+    await user.type(input, "no es un teléfono");
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Introduce un teléfono válido");
+    expect(screen.getByRole("button", { name: "Guardar" })).toBeDisabled();
+    expect(updateMutate).not.toHaveBeenCalled();
   });
 
   it("la persona de guardia se elige por nombre, nunca por id (D-I8)", async () => {

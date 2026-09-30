@@ -1,5 +1,6 @@
 {
   "common": {
+    "phoneInvalid": "Introdueix un telèfon vàlid: només xifres, amb un + opcional al principi (per exemple +34 943 123 456 o 024).",
     "cancel": "Cancel·la",
     "accept": "Accepta",
     "close": "Tanca",
@@ -11,7 +12,40 @@
     "items": "{count, plural, one {# element} other {# elements}}",
     "confirm": "Confirma",
     "noPhoneNotice": "Popyplan no guarda telèfons: contacta amb la persona pel xat de l'app o a través del seu referent.",
-    "actions": "Accions"
+    "actions": "Accions",
+    "menuOpen": "Obrir el menú",
+    "menuClose": "Tancar el menú",
+    "picker": {
+      "change": "Canviar",
+      "placeholder": "Escriu per cercar…",
+      "minChars": "Escriu almenys {count} caràcters per cercar.",
+      "error": "No s'ha pogut cercar. Torna-ho a provar.",
+      "loading": "Cercant…",
+      "empty": "Res no coincideix amb la cerca."
+    }
+  },
+  "enums": {
+    "orgRole": {
+      "titular": "Titular",
+      "moderador": "Moderador/a",
+      "dinamizador": "Dinamitzador/a",
+      "analista": "Analista",
+      "referente": "Referent"
+    },
+    "communityRole": {
+      "owner": "Propietari/ària",
+      "moderator": "Moderador/a",
+      "member": "Membre"
+    },
+    "reportTarget": {
+      "user": "Persona",
+      "community": "Comunitat",
+      "event": "Activitat",
+      "post": "Publicació",
+      "comment": "Comentari",
+      "message": "Missatge",
+      "organization": "Entitat"
+    }
   },
   "account": {
     "title": "Compte",
@@ -453,6 +487,7 @@
       "communityAll": "Totes",
       "communitiesError": "No s'han pogut carregar les comunitats.",
       "referentLabel": "Referent",
+      "referentAll": "Tots",
       "activeSinceLabel": "Participació des de",
       "joinedSinceLabel": "D'alta des de",
       "includeInvited": "Incloure convidades",
@@ -481,6 +516,7 @@
       "revokeConfirm": "Vols revocar la invitació a «{name}»? Aquesta acció no es pot desfer."
     },
     "personaFicha": {
+      "backToList": "Tornar a Persones",
       "heading": "Fitxa de la persona",
       "sinAccesoDescription": "No tens accés a la fitxa d'aquesta persona.",
       "loadErrorTitle": "No s'ha pogut carregar la fitxa d'aquesta persona",
@@ -690,6 +726,7 @@
       "titleLabel": "Títol",
       "opensAtLabel": "Obre el",
       "closesAtLabel": "Tanca el",
+      "closesBeforeOpens": "La data de tancament ha de ser posterior a la d'obertura.",
       "questionsLegend": "Preguntes",
       "questionKindLabel": "Tipus",
       "questionTextLabel": "Pregunta",
@@ -942,7 +979,8 @@
       "supportResponsesEmpty": "Ningú de la seva xarxa de suport se n'ha encarregat encara.",
       "noCommunity": "Sense comunitat",
       "acknowledged": "Atès",
-      "acknowledgeAction": "He contactat"
+      "acknowledgeAction": "He contactat",
+      "acknowledgeByOnCall": "L'atén la persona de guàrdia."
     },
     "informes": {
       "noAccessDescription": "El teu rol no té accés a Informes.",
@@ -969,9 +1007,11 @@
       "dataLoadErrorDescription": "No s'ha pogut carregar la fitxa de l'entitat.",
       "loading": "Carregant…",
       "teamTitle": "Equip",
-      "userIdLabel": "Id d'usuari",
+      "userIdLabel": "Persona",
       "roleLabel": "Rol",
       "addButton": "Afegir",
+      "chooseReferent": "Tria un referent",
+      "referentsUnavailableHint": "Només el titular pot veure l'equip, i d'allà surten els referents.",
       "teamLoadError": "No s'ha pogut carregar l'equip",
       "teamEmpty": "Encara no hi ha equip",
       "teamTableCaption": "Equip de l'entitat",
@@ -982,8 +1022,8 @@
       "removeFromTeamDescription": "Vols treure «{name}» de l'equip de l'entitat? Deixarà de tenir rol al tauler.",
       "selfRemovalWarning": "Estàs a punt de treure't a tu mateix de l'equip i perdràs l'accés al tauler.",
       "referencesTitle": "Referències",
-      "personIdLabel": "Persona (id)",
-      "referentIdLabel": "Referent (id)",
+      "personIdLabel": "Persona",
+      "referentIdLabel": "Referent",
       "assignButton": "Assignar",
       "referencesLoadError": "No s'han pogut carregar els referents",
       "referencesLoadErrorDescription": "No s'han pogut carregar els referents de l'entitat.",
@@ -2500,6 +2540,7 @@
     "period": {
       "legend": "Període",
       "thisMonth": "Aquest mes",
+      "upcoming": "Aquest mes i propers",
       "quarter": "Trimestre",
       "year": "Any",
       "multiYear": "Plurianual",
@@ -2748,7 +2789,7 @@
       "orgTypeAdministracion": "Administració",
       "slugLabel": "Slug",
       "cifLabel": "CIF",
-      "parentIdLabel": "Entitat paraigua (id, opcional)",
+      "parentIdLabel": "Entitat paraigua (opcional)",
       "descriptionLabel": "Descripció",
       "createAction": "Crear entitat",
       "created": "Entitat «{name}» creada, sense verificar."
@@ -2769,7 +2810,7 @@
       "umbrellaCardTitle": "Entitat paraigua",
       "currentParent": "Paraigua actual: {parent}",
       "noParent": "sense assignar",
-      "newParentLabel": "Nou paraigua (id, buit per treure'l)",
+      "newParentLabel": "Nou paraigua (deixa-ho buit per treure'l)",
       "saved": "Desat.",
       "childrenCardTitle": "Entitats filles",
       "childrenLoadError": "No s'han pogut carregar les filles",
@@ -2788,8 +2829,8 @@
       "teamEmpty": "Encara no hi ha equip",
       "removeAction": "Treure",
       "referencesCardTitle": "Referències",
-      "personIdLabel": "Persona (id)",
-      "referentIdLabel": "Referent (id)",
+      "personIdLabel": "Persona",
+      "referentIdLabel": "Referent",
       "assignAction": "Assignar",
       "referencesEmpty": "Encara no hi ha referències",
       "referenceRow": "{name} — referent #{referentId}",
@@ -2821,7 +2862,9 @@
       "trackingDisableConfirmTitle": "Desactivar el programa de seguiment?",
       "trackingDisableConfirmDescription": "Les inscripcions queden en suspens: ningú no les podrà veure ni fer servir fins que es torni a activar. No s'esborra res.",
       "trackingEnableAction": "Activar",
-      "trackingDisableAction": "Desactivar"
+      "trackingDisableAction": "Desactivar",
+      "firstTitularNotice": "Aquesta entitat encara no té titular. Com a superadmin li pots donar el primer (només amb el rol Titular); després serà el titular qui gestioni el seu equip.",
+      "firstTitularAssigned": "Titular assignat. A partir d'ara és el titular qui gestiona l'equip de l'entitat."
     },
     "reportes": {
       "heading": "Informes",
@@ -2875,7 +2918,7 @@
       "roleSupport": "Suport",
       "grantTitle": "Concedir rol",
       "searchLabel": "Cercar compte (correu o usuari)",
-      "userIdLabel": "Id d'usuari",
+      "userIdLabel": "Persona",
       "roleLabel": "Rol",
       "grantAction": "Concedir",
       "grantSuccess": "Rol concedit.",
@@ -2885,12 +2928,15 @@
       "revokeAction": "Revocar",
       "revokeConfirmTitle": "Revocar rol de plataforma",
       "revokeConfirmDescription": "Aquesta persona perdrà l'accés al tauler de plataforma.",
-      "revokeSelfWarning": "És el teu propi rol: perdràs l'accés a aquesta secció."
+      "revokeSelfWarning": "És el teu propi rol: perdràs l'accés a aquesta secció.",
+      "replaceConfirmTitle": "Substituir el rol de plataforma",
+      "replaceConfirmDescription": "El compte #{user} ja té el rol «{current}». Un compte només pot tenir un rol de plataforma: en concedir «{next}» perdrà «{current}».",
+      "replaceConfirmAction": "Substituir rol"
     },
     "auditoria": {
       "heading": "Auditoria",
       "noAccessDescription": "Només superadmin veu l'auditoria de la plataforma.",
-      "actorLabel": "Actor (id)",
+      "actorLabel": "Actor",
       "actionLabel": "Acció",
       "targetTypeLabel": "Tipus d'objectiu",
       "targetIdLabel": "Id d'objectiu",
@@ -2907,6 +2953,7 @@
       "colTarget": "Objectiu",
       "colMetadata": "Detall",
       "colDate": "Data",
+      "hidden": "Ocult (privat)",
       "previous": "Anterior",
       "next": "Següent",
       "exportNotice": "Aquesta exportació és una utilitat del client (les dades ja visibles a la pàgina, en CSV) i no queda auditada per si mateixa. Una exportació auditada de tot el llistat és una ruta de backend a part, fora de l'abast d'aquesta tasca.",
@@ -3610,6 +3657,7 @@
           "noClue": "Escriu la pista.",
           "noAnswer": "Les proves de resposta necessiten la resposta correcta.",
           "noCoordinates": "Les proves d'ubicació necessiten latitud i longitud.",
+          "badRadius": "El radi de validació ha de ser d'almenys 1 metre.",
           "badCoordinates": "Coordenades no vàlides: la latitud va de -90 a 90 i la longitud de -180 a 180.",
           "badNumbers": "Els punts, el temps i el radi han de ser nombres enters a partir de 0."
         }

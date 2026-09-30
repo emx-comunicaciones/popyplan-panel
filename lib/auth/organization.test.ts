@@ -5,7 +5,7 @@ import { buildOrganization } from "@/test-utils/fixtures/organization";
 const serverFetchMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/api/serverFetch", () => ({ serverFetch: serverFetchMock }));
 
-import { getServerOrganization, isOnCallUser, isTrackingProgramEnabled } from "./organization";
+import { canAcknowledgeHelp, getServerOrganization, isOnCallUser, isTrackingProgramEnabled } from "./organization";
 
 afterEach(() => {
   serverFetchMock.mockReset();
@@ -66,6 +66,32 @@ describe("isOnCallUser", () => {
     serverFetchMock.mockResolvedValue({ ok: false, status: 503, body: null });
 
     expect(await isOnCallUser(7, session)).toBe(false);
+  });
+});
+
+describe("canAcknowledgeHelp", () => {
+  const session = { token: "token-123", me: { id: 11 } };
+  const org = (on_call_user: number | null) =>
+    serverFetchMock.mockResolvedValue({ ok: true, status: 200, data: buildOrganization({ id: 7, on_call_user }) });
+
+  it("con guardia nombrada, solo ella (error 29)", async () => {
+    org(11);
+    expect(await canAcknowledgeHelp(7, "analista", session)).toBe(true);
+    org(12);
+    expect(await canAcknowledgeHelp(7, "titular", session)).toBe(false);
+    expect(await canAcknowledgeHelp(7, "moderador", session)).toBe(false);
+  });
+
+  it("sin guardia, titular y moderador; el resto no", async () => {
+    org(null);
+    expect(await canAcknowledgeHelp(7, "titular", session)).toBe(true);
+    expect(await canAcknowledgeHelp(7, "moderador", session)).toBe(true);
+    expect(await canAcknowledgeHelp(7, "analista", session)).toBe(false);
+  });
+
+  it("con la ficha ilegible cae a la regla por rol", async () => {
+    serverFetchMock.mockResolvedValue({ ok: false, status: 503, body: null });
+    expect(await canAcknowledgeHelp(7, "titular", session)).toBe(true);
   });
 });
 

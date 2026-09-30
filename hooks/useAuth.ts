@@ -11,6 +11,7 @@
 import { useSyncExternalStore } from "react";
 
 import { ApiError } from "@/lib/api/client";
+import { broadcastLogout } from "@/lib/auth/logoutBroadcast";
 import { setAccessToken, subscribeAccessToken, getAccessToken } from "@/lib/auth/tokenStore";
 import { LANG_COOKIE_NAME } from "@/lib/i18n/cookie";
 import { isSupportedLanguage } from "@/lib/i18n/languages";
@@ -143,5 +144,7 @@ export async function logout(): Promise<void> {
     // (abort por timeout o red caída) — el refresh expirará solo.
   } finally {
     clearTimeout(timeout);
+    // Las demás pestañas abiertas también salen (error 38 del informe).
+    broadcastLogout();
   }
 }

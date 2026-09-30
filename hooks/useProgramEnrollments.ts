@@ -29,6 +29,7 @@ import type {
   EnrollmentRow,
   EnrollmentStatus,
   EnrollmentUpdateInput,
+  ReferentChoice,
 } from "@/lib/api/types";
 
 export type EnrollmentsErrorKind = "sin_acceso" | "desconocido";
@@ -72,6 +73,29 @@ export function useEnrollments(
           throw new EnrollmentsError("sin_acceso", "Sin acceso al programa de seguimiento.");
         }
         throw new EnrollmentsError("desconocido", "No se pudieron cargar las inscripciones del programa.");
+      }
+    },
+  });
+}
+
+/**
+ * Referentes elegibles al dar de alta o cambiar una inscripción. Sale de
+ * `program/referents/`, no de `organizations/{id}/members/` (solo titular):
+ * así el moderador también puede elegir referente.
+ */
+export function useEnrollmentReferents(
+  orgId: number | string,
+): UseQueryResult<ReferentChoice[], EnrollmentsError> {
+  return useQuery<ReferentChoice[], EnrollmentsError>({
+    queryKey: ["panel-program-referents", String(orgId)],
+    queryFn: async () => {
+      try {
+        return await apiFetch<ReferentChoice[]>(TRACKING.REFERENTS(orgId));
+      } catch (error) {
+        if (error instanceof ApiError && (error.status === 403 || error.status === 404)) {
+          throw new EnrollmentsError("sin_acceso", "Sin acceso al programa de seguimiento.");
+        }
+        throw new EnrollmentsError("desconocido", "No se pudo cargar la lista de referentes.");
       }
     },
   });

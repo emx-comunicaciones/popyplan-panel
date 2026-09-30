@@ -10,7 +10,9 @@
 import { useId, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 
+import { OrganizationPicker } from "@/components/plataforma/OrganizationPicker";
 import { Button } from "@/components/ui/Button";
+import type { PickerOption } from "@/components/ui/SearchPicker";
 import { Dialog } from "@/components/ui/Dialog";
 import { useCreateOrganization, type OrganizationsErrorKind } from "@/hooks/useOrganizations";
 import type { OrgTypeEnum } from "@/lib/api/types";
@@ -43,7 +45,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
   const [slug, setSlug] = useState("");
   const [orgType, setOrgType] = useState<OrgTypeEnum>("asociacion");
   const [cif, setCif] = useState("");
-  const [parent, setParent] = useState("");
+  const [parent, setParent] = useState<PickerOption | null>(null);
   const [description, setDescription] = useState("");
   const [place, setPlace] = useState<string | null>(null);
   const [created, setCreated] = useState<string | null>(null);
@@ -73,7 +75,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
         slug: slug.trim(),
         org_type: orgType,
         cif: cif.trim(),
-        parent: parent ? Number(parent) : null,
+        parent: parent ? parent.id : null,
         description: description.trim() || undefined,
         place,
       },
@@ -83,7 +85,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
           setName("");
           setSlug("");
           setCif("");
-          setParent("");
+          setParent(null);
           setDescription("");
           setPlace(null);
         },
@@ -158,18 +160,12 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
             className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
         </div>
-        <div>
-          <label htmlFor="nueva-entidad-parent" className="mb-1 block text-sm font-medium text-text-form">
-            {t("plataforma.entidades.parentIdLabel")}
-          </label>
-          <input
-            id="nueva-entidad-parent"
-            type="number"
-            value={parent}
-            onChange={(event) => setParent(event.target.value)}
-            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-          />
-        </div>
+        <OrganizationPicker
+          id="nueva-entidad-parent"
+          label={t("plataforma.entidades.parentIdLabel")}
+          value={parent}
+          onChange={setParent}
+        />
         <div>
           <label htmlFor="nueva-entidad-description" className="mb-1 block text-sm font-medium text-text-form">
             {t("plataforma.entidades.descriptionLabel")}

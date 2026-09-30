@@ -1,5 +1,6 @@
 {
   "common": {
+    "phoneInvalid": "Enter a valid phone number: digits only, with an optional + at the start (for example +34 943 123 456 or 024).",
     "cancel": "Cancel",
     "accept": "Accept",
     "close": "Close",
@@ -11,7 +12,40 @@
     "items": "{count, plural, one {# item} other {# items}}",
     "confirm": "Confirm",
     "noPhoneNotice": "Popyplan does not store phone numbers: contact the person through the app chat or through their referent.",
-    "actions": "Actions"
+    "actions": "Actions",
+    "menuOpen": "Open menu",
+    "menuClose": "Close menu",
+    "picker": {
+      "change": "Change",
+      "placeholder": "Type to search…",
+      "minChars": "Type at least {count} characters to search.",
+      "error": "Search failed. Try again.",
+      "loading": "Searching…",
+      "empty": "Nothing matches the search."
+    }
+  },
+  "enums": {
+    "orgRole": {
+      "titular": "Owner",
+      "moderador": "Moderator",
+      "dinamizador": "Facilitator",
+      "analista": "Analyst",
+      "referente": "Referent"
+    },
+    "communityRole": {
+      "owner": "Owner",
+      "moderator": "Moderator",
+      "member": "Member"
+    },
+    "reportTarget": {
+      "user": "Person",
+      "community": "Community",
+      "event": "Activity",
+      "post": "Post",
+      "comment": "Comment",
+      "message": "Message",
+      "organization": "Organisation"
+    }
   },
   "account": {
     "title": "Account",
@@ -453,6 +487,7 @@
       "communityAll": "All",
       "communitiesError": "Couldn't load the communities.",
       "referentLabel": "Referent",
+      "referentAll": "All",
       "activeSinceLabel": "Participating since",
       "joinedSinceLabel": "Joined since",
       "includeInvited": "Include invited",
@@ -481,6 +516,7 @@
       "revokeConfirm": "Revoke the invitation to «{name}»? This action can't be undone."
     },
     "personaFicha": {
+      "backToList": "Back to People",
       "heading": "Person profile",
       "sinAccesoDescription": "You don't have access to this person's profile.",
       "loadErrorTitle": "Couldn't load this person's profile",
@@ -690,6 +726,7 @@
       "titleLabel": "Title",
       "opensAtLabel": "Opens on",
       "closesAtLabel": "Closes on",
+      "closesBeforeOpens": "The closing date must be after the opening date.",
       "questionsLegend": "Questions",
       "questionKindLabel": "Type",
       "questionTextLabel": "Question",
@@ -942,7 +979,8 @@
       "supportResponsesEmpty": "Nobody from their support network is taking care of it yet.",
       "noCommunity": "No community",
       "acknowledged": "Attended to",
-      "acknowledgeAction": "I've contacted them"
+      "acknowledgeAction": "I've contacted them",
+      "acknowledgeByOnCall": "The person on call handles this."
     },
     "informes": {
       "noAccessDescription": "Your role doesn't have access to Reports.",
@@ -969,9 +1007,11 @@
       "dataLoadErrorDescription": "Couldn't load the entity record.",
       "loading": "Loading…",
       "teamTitle": "Team",
-      "userIdLabel": "User id",
+      "userIdLabel": "Person",
       "roleLabel": "Role",
       "addButton": "Add",
+      "chooseReferent": "Choose a referent",
+      "referentsUnavailableHint": "Only the owner can see the team, which is where referents come from.",
       "teamLoadError": "Couldn't load the team",
       "teamEmpty": "No team yet",
       "teamTableCaption": "Entity team",
@@ -982,8 +1022,8 @@
       "removeFromTeamDescription": "Remove “{name}” from the entity's team? They'll lose their role in the panel.",
       "selfRemovalWarning": "You're about to remove yourself from the team and you'll lose access to the panel.",
       "referencesTitle": "References",
-      "personIdLabel": "Person (id)",
-      "referentIdLabel": "Referent (id)",
+      "personIdLabel": "Person",
+      "referentIdLabel": "Referent",
       "assignButton": "Assign",
       "referencesLoadError": "Couldn't load the referents",
       "referencesLoadErrorDescription": "Couldn't load the entity's referents.",
@@ -2500,6 +2540,7 @@
     "period": {
       "legend": "Period",
       "thisMonth": "This month",
+      "upcoming": "This month and upcoming",
       "quarter": "Quarter",
       "year": "Year",
       "multiYear": "Multi-year",
@@ -2748,7 +2789,7 @@
       "orgTypeAdministracion": "Administration",
       "slugLabel": "Slug",
       "cifLabel": "Tax ID",
-      "parentIdLabel": "Umbrella entity (id, optional)",
+      "parentIdLabel": "Umbrella entity (optional)",
       "descriptionLabel": "Description",
       "createAction": "Create entity",
       "created": "Entity “{name}” created, not verified."
@@ -2769,7 +2810,7 @@
       "umbrellaCardTitle": "Umbrella entity",
       "currentParent": "Current umbrella: {parent}",
       "noParent": "not assigned",
-      "newParentLabel": "New umbrella (id, empty to remove)",
+      "newParentLabel": "New umbrella (leave empty to remove)",
       "saved": "Saved.",
       "childrenCardTitle": "Child entities",
       "childrenLoadError": "Couldn't load the children",
@@ -2788,8 +2829,8 @@
       "teamEmpty": "No team yet",
       "removeAction": "Remove",
       "referencesCardTitle": "References",
-      "personIdLabel": "Person (id)",
-      "referentIdLabel": "Referent (id)",
+      "personIdLabel": "Person",
+      "referentIdLabel": "Referent",
       "assignAction": "Assign",
       "referencesEmpty": "No references yet",
       "referenceRow": "{name} — referent #{referentId}",
@@ -2821,7 +2862,9 @@
       "trackingDisableConfirmTitle": "Disable the tracking programme?",
       "trackingDisableConfirmDescription": "Enrolments are put on hold: nobody can see or use them until it is enabled again. Nothing is deleted.",
       "trackingEnableAction": "Enable",
-      "trackingDisableAction": "Disable"
+      "trackingDisableAction": "Disable",
+      "firstTitularNotice": "This entity has no titleholder yet. As a superadmin you can assign the first one (Titleholder role only); after that the titleholder manages the team.",
+      "firstTitularAssigned": "Titleholder assigned. From now on the titleholder manages the entity's team."
     },
     "reportes": {
       "heading": "Reports",
@@ -2875,7 +2918,7 @@
       "roleSupport": "Support",
       "grantTitle": "Grant role",
       "searchLabel": "Search account (email or username)",
-      "userIdLabel": "User id",
+      "userIdLabel": "Person",
       "roleLabel": "Role",
       "grantAction": "Grant",
       "grantSuccess": "Role granted.",
@@ -2885,12 +2928,15 @@
       "revokeAction": "Revoke",
       "revokeConfirmTitle": "Revoke platform role",
       "revokeConfirmDescription": "This person will lose access to the platform panel.",
-      "revokeSelfWarning": "This is your own role: you will lose access to this section."
+      "revokeSelfWarning": "This is your own role: you will lose access to this section.",
+      "replaceConfirmTitle": "Replace the platform role",
+      "replaceConfirmDescription": "Account #{user} already has the role “{current}”. An account can only have one platform role: granting “{next}” will remove “{current}”.",
+      "replaceConfirmAction": "Replace role"
     },
     "auditoria": {
       "heading": "Audit log",
       "noAccessDescription": "Only superadmin sees the platform audit log.",
-      "actorLabel": "Actor (id)",
+      "actorLabel": "Actor",
       "actionLabel": "Action",
       "targetTypeLabel": "Target type",
       "targetIdLabel": "Target id",
@@ -2907,6 +2953,7 @@
       "colTarget": "Target",
       "colMetadata": "Detail",
       "colDate": "Date",
+      "hidden": "Hidden (private)",
       "previous": "Previous",
       "next": "Next",
       "exportNotice": "This export is a client-side utility (the data already visible on the page, as CSV) and isn't itself audited. An audited export of the whole listing is a separate backend route, outside this task's scope.",
@@ -3610,6 +3657,7 @@
           "noClue": "Write the clue.",
           "noAnswer": "Answer challenges need the correct answer.",
           "noCoordinates": "Location challenges need latitude and longitude.",
+          "badRadius": "The validation radius must be at least 1 meter.",
           "badCoordinates": "Invalid coordinates: latitude goes from -90 to 90 and longitude from -180 to 180.",
           "badNumbers": "Points, time and radius have to be whole numbers from 0."
         }

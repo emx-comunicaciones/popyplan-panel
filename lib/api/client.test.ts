@@ -270,6 +270,70 @@ describe("apiFetch", () => {
   });
 });
 
+describe("apiFetch: escrituras idénticas en vuelo (informe, error 13)", () => {
+  it("un doble envío del mismo POST manda una sola petición", async () => {
+    setAccessToken("token-vivo");
+    fetchMock.mockResolvedValue(response({ id: 1 }, 201));
+
+    const [a, b] = await Promise.all([
+      apiFetch("/api/x/", { method: "POST", body: { name: "A" } }),
+      apiFetch("/api/x/", { method: "POST", body: { name: "A" } }),
+    ]);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(a).toEqual({ id: 1 });
+    expect(b).toEqual({ id: 1 });
+  });
+
+  it("cuerpos distintos o una vez resuelta la primera sí se envían", async () => {
+    setAccessToken("token-vivo");
+    fetchMock.mockResolvedValue(response({ id: 1 }, 201));
+
+    await Promise.all([
+      apiFetch("/api/x/", { method: "POST", body: { name: "A" } }),
+      apiFetch("/api/x/", { method: "POST", body: { name: "B" } }),
+    ]);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    await apiFetch("/api/x/", { method: "POST", body: { name: "A" } });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it("agrupa también FormData idénticos y no agrupa lecturas", async () => {
+    setAccessToken("token-vivo");
+    fetchMock.mockResolvedValue(response({ id: 1 }, 201));
+    const form = () => {
+      const f = new FormData();
+      f.append("title", "t");
+      f.append("file", new File(["x"], "a.pdf", { lastModified: 1 }));
+      return f;
+    };
+    await Promise.all([
+      apiFetch("/api/r/", { method: "POST", body: form() }),
+      apiFetch("/api/r/", { method: "POST", body: form() }),
+    ]);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    fetchMock.mockClear();
+    await Promise.all([apiFetch("/api/r/"), apiFetch("/api/r/")]);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("un fallo se comparte y libera la clave para reintentar", async () => {
+    setAccessToken("token-vivo");
+    fetchMock.mockResolvedValueOnce(response({ detail: "no" }, 400));
+    const results = await Promise.allSettled([
+      apiFetch("/api/x/", { method: "POST", body: {} }),
+      apiFetch("/api/x/", { method: "POST", body: {} }),
+    ]);
+    expect(results.map((r) => r.status)).toEqual(["rejected", "rejected"]);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    fetchMock.mockResolvedValueOnce(response({ id: 2 }, 201));
+    await expect(apiFetch("/api/x/", { method: "POST", body: {} })).resolves.toEqual({ id: 2 });
+  });
+});
+
 describe("fetchWithAuth", () => {
   it("devuelve el Response sin parsear en un 200 (descarga de fichero)", async () => {
     setAccessToken("token-vivo");

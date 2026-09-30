@@ -21,6 +21,7 @@ import { useUpdateOrganization, type UpdateOrganizationErrorKind } from "@/hooks
 import type { HelpRequestRow } from "@/lib/api/types";
 import { NO_PHONE_NOTICE_KEY } from "@/lib/help/noPhoneNotice";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { isValidPhone } from "@/lib/organizations/phone";
 import { localeFor, activeLanguage } from "@/lib/i18n/locale";
 
 export interface GuardiaPanelProps {
@@ -47,6 +48,12 @@ export interface GuardiaPanelProps {
    * backend rechazaría.
    */
   canManage: boolean;
+  /**
+   * Quien mira puede acusar recibo (error 29): la persona de guardia o, si
+   * no hay guardia, titular/moderador (`safety/services/help.py
+   * ::_es_destinatario`). Si no, el botón se sustituye por un aviso.
+   */
+  canAcknowledge: boolean;
 }
 
 const ACKNOWLEDGE_ERROR_KEYS: Record<AcknowledgeHelpRequestErrorKind, string> = {
@@ -101,11 +108,13 @@ function HelpRequestCard({
   orgId,
   slug,
   canOpenPersonSheet,
+  canAcknowledge,
 }: {
   request: HelpRequestRow;
   orgId: number | string;
   slug: string;
   canOpenPersonSheet: boolean;
+  canAcknowledge: boolean;
 }) {
   const t = useTranslations();
   const acknowledge = useAcknowledgeHelpRequest(orgId);
@@ -152,6 +161,8 @@ function HelpRequestCard({
           </div>
           {request.acknowledged_at ? (
             <Badge tone="success">{t("entidad.guardia.acknowledged")}</Badge>
+          ) : !canAcknowledge ? (
+            <p className="max-w-56 text-sm text-text-secondary">{t("entidad.guardia.acknowledgeByOnCall")}</p>
           ) : (
             <Button
               type="button"
@@ -278,8 +289,12 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
   const currentOnCall =
     onCall ?? (savedOnCall != null && !staleOnCall ? String(savedOnCall) : "");
 
+  // Error 40: el backend rechaza lo que no parece un teléfono; se avisa antes.
+  const helpPhoneInvalid = !isValidPhone(currentHelpPhone);
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (helpPhoneInvalid) return;
     // Cadena vacía (no `null`) es el valor que limpia el teléfono: el
     // modelo real es `CharField(blank=True, default='')`
     // (`entities/models.py`, migración 0003) y `docs/schema.yaml` lo tipa
@@ -304,8 +319,15 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
             type="tel"
             value={currentHelpPhone}
             onChange={(event) => setHelpPhone(event.target.value)}
+            aria-invalid={helpPhoneInvalid || undefined}
+            aria-describedby={helpPhoneInvalid ? "guardia-help-phone-error" : undefined}
             className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
+          {helpPhoneInvalid ? (
+            <p id="guardia-help-phone-error" role="alert" className="mt-1 text-xs text-error">
+              {t("common.phoneInvalid")}
+            </p>
+          ) : null}
         </div>
         {members.data ? (
           <div>
@@ -327,7 +349,7 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
             </select>
           </div>
         ) : null}
-        <Button type="submit" disabled={updateOrganization.isPending}>
+        <Button type="submit" disabled={updateOrganization.isPending || helpPhoneInvalid}>
           {t("common.save")}
         </Button>
       </form>
@@ -376,7 +398,7 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
  * (`canOpenPersonSheet`); si no, un badge «No pertenece a la entidad» o
  * el nombre como texto (ver `HelpRequestCard`).
  */
-export function GuardiaPanel({ orgId, slug, canOpenPersonSheet, canManage }: GuardiaPanelProps) {
+export function GuardiaPanel({ orgId, slug, canOpenPersonSheet, canManage, canAcknowledge }: GuardiaPanelProps) {
   const t = useTranslations();
   const requests = usePendingHelpRequests(orgId);
 
@@ -413,6 +435,7 @@ export function GuardiaPanel({ orgId, slug, canOpenPersonSheet, canManage }: Gua
                 orgId={orgId}
                 slug={slug}
                 canOpenPersonSheet={canOpenPersonSheet}
+                canAcknowledge={canAcknowledge}
               />
             ))}
           </ul>

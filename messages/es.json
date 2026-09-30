@@ -1,5 +1,6 @@
 {
   "common": {
+    "phoneInvalid": "Introduce un teléfono válido: solo cifras, con un + opcional al principio (por ejemplo +34 943 123 456 o 024).",
     "cancel": "Cancelar",
     "accept": "Aceptar",
     "close": "Cerrar",
@@ -11,7 +12,40 @@
     "items": "{count, plural, one {# elemento} other {# elementos}}",
     "confirm": "Confirmar",
     "noPhoneNotice": "Popyplan no guarda teléfonos: contacta con la persona por el chat de la app o a través de su referente.",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "menuOpen": "Abrir menú",
+    "menuClose": "Cerrar menú",
+    "picker": {
+      "change": "Cambiar",
+      "placeholder": "Escribe para buscar…",
+      "minChars": "Escribe al menos {count} caracteres para buscar.",
+      "error": "No se pudo buscar. Inténtalo de nuevo.",
+      "loading": "Buscando…",
+      "empty": "Nada coincide con la búsqueda."
+    }
+  },
+  "enums": {
+    "orgRole": {
+      "titular": "Titular",
+      "moderador": "Moderador/a",
+      "dinamizador": "Dinamizador/a",
+      "analista": "Analista",
+      "referente": "Referente"
+    },
+    "communityRole": {
+      "owner": "Propietario/a",
+      "moderator": "Moderador/a",
+      "member": "Miembro"
+    },
+    "reportTarget": {
+      "user": "Persona",
+      "community": "Comunidad",
+      "event": "Actividad",
+      "post": "Publicación",
+      "comment": "Comentario",
+      "message": "Mensaje",
+      "organization": "Entidad"
+    }
   },
   "account": {
     "title": "Cuenta",
@@ -453,6 +487,7 @@
       "communityAll": "Todas",
       "communitiesError": "No se pudieron cargar las comunidades.",
       "referentLabel": "Referente",
+      "referentAll": "Todos",
       "activeSinceLabel": "Participación desde",
       "joinedSinceLabel": "De alta desde",
       "includeInvited": "Incluir invitadas",
@@ -481,6 +516,7 @@
       "revokeConfirm": "¿Revocar la invitación a «{name}»? Esta acción no se puede deshacer."
     },
     "personaFicha": {
+      "backToList": "Volver a Personas",
       "heading": "Ficha de la persona",
       "sinAccesoDescription": "No tienes acceso a la ficha de esta persona.",
       "loadErrorTitle": "No se pudo cargar la ficha de esta persona",
@@ -690,6 +726,7 @@
       "titleLabel": "Título",
       "opensAtLabel": "Abre el",
       "closesAtLabel": "Cierra el",
+      "closesBeforeOpens": "La fecha de cierre tiene que ser posterior a la de apertura.",
       "questionsLegend": "Preguntas",
       "questionKindLabel": "Tipo",
       "questionTextLabel": "Pregunta",
@@ -942,7 +979,8 @@
       "supportResponsesEmpty": "Nadie de su red de apoyo se ha encargado todavía.",
       "noCommunity": "Sin comunidad",
       "acknowledged": "Atendido",
-      "acknowledgeAction": "He contactado"
+      "acknowledgeAction": "He contactado",
+      "acknowledgeByOnCall": "Lo atiende la persona de guardia."
     },
     "informes": {
       "noAccessDescription": "Tu rol no tiene acceso a Informes.",
@@ -969,9 +1007,11 @@
       "dataLoadErrorDescription": "No se pudo cargar la ficha de la entidad.",
       "loading": "Cargando…",
       "teamTitle": "Equipo",
-      "userIdLabel": "Id de usuario",
+      "userIdLabel": "Persona",
       "roleLabel": "Rol",
       "addButton": "Añadir",
+      "chooseReferent": "Elige un referente",
+      "referentsUnavailableHint": "Solo el titular puede ver el equipo, y de ahí salen los referentes.",
       "teamLoadError": "No se pudo cargar el equipo",
       "teamEmpty": "Sin equipo todavía",
       "teamTableCaption": "Equipo de la entidad",
@@ -982,8 +1022,8 @@
       "removeFromTeamDescription": "¿Quitar a «{name}» del equipo de la entidad? Dejará de tener rol en el panel.",
       "selfRemovalWarning": "Vas a quitarte a ti mismo del equipo y perderás el acceso al panel.",
       "referencesTitle": "Referencias",
-      "personIdLabel": "Persona (id)",
-      "referentIdLabel": "Referente (id)",
+      "personIdLabel": "Persona",
+      "referentIdLabel": "Referente",
       "assignButton": "Asignar",
       "referencesLoadError": "No se pudieron cargar los referentes",
       "referencesLoadErrorDescription": "No se pudieron cargar los referentes de la entidad.",
@@ -2500,6 +2540,7 @@
     "period": {
       "legend": "Periodo",
       "thisMonth": "Este mes",
+      "upcoming": "Este mes y próximos",
       "quarter": "Trimestre",
       "year": "Año",
       "multiYear": "Plurianual",
@@ -2748,7 +2789,7 @@
       "orgTypeAdministracion": "Administración",
       "slugLabel": "Slug",
       "cifLabel": "CIF",
-      "parentIdLabel": "Entidad paraguas (id, opcional)",
+      "parentIdLabel": "Entidad paraguas (opcional)",
       "descriptionLabel": "Descripción",
       "createAction": "Crear entidad",
       "created": "Entidad «{name}» creada, sin verificar."
@@ -2769,7 +2810,7 @@
       "umbrellaCardTitle": "Entidad paraguas",
       "currentParent": "Paraguas actual: {parent}",
       "noParent": "sin asignar",
-      "newParentLabel": "Nuevo paraguas (id, vacío para quitar)",
+      "newParentLabel": "Nuevo paraguas (déjalo vacío para quitarlo)",
       "saved": "Guardado.",
       "childrenCardTitle": "Entidades hijas",
       "childrenLoadError": "No se pudieron cargar las hijas",
@@ -2788,8 +2829,8 @@
       "teamEmpty": "Sin equipo todavía",
       "removeAction": "Quitar",
       "referencesCardTitle": "Referencias",
-      "personIdLabel": "Persona (id)",
-      "referentIdLabel": "Referente (id)",
+      "personIdLabel": "Persona",
+      "referentIdLabel": "Referente",
       "assignAction": "Asignar",
       "referencesEmpty": "Sin referencias todavía",
       "referenceRow": "{name} — referente #{referentId}",
@@ -2821,7 +2862,9 @@
       "trackingDisableConfirmTitle": "¿Desactivar el programa de seguimiento?",
       "trackingDisableConfirmDescription": "Las inscripciones quedan en suspenso: nadie podrá verlas ni usarlas hasta que se vuelva a activar. No se borra nada.",
       "trackingEnableAction": "Activar",
-      "trackingDisableAction": "Desactivar"
+      "trackingDisableAction": "Desactivar",
+      "firstTitularNotice": "Esta entidad todavía no tiene titular. Como superadmin puedes darle el primero (solo con el rol Titular); después será el titular quien gestione su equipo.",
+      "firstTitularAssigned": "Titular asignado. A partir de ahora es el titular quien gestiona el equipo de la entidad."
     },
     "reportes": {
       "heading": "Reportes",
@@ -2875,7 +2918,7 @@
       "roleSupport": "Soporte",
       "grantTitle": "Conceder rol",
       "searchLabel": "Buscar cuenta (email o usuario)",
-      "userIdLabel": "Id de usuario",
+      "userIdLabel": "Persona",
       "roleLabel": "Rol",
       "grantAction": "Conceder",
       "grantSuccess": "Rol concedido.",
@@ -2885,12 +2928,15 @@
       "revokeAction": "Revocar",
       "revokeConfirmTitle": "Revocar rol de plataforma",
       "revokeConfirmDescription": "Esta persona perderá el acceso al panel de plataforma.",
-      "revokeSelfWarning": "Es tu propio rol: perderás el acceso a esta sección."
+      "revokeSelfWarning": "Es tu propio rol: perderás el acceso a esta sección.",
+      "replaceConfirmTitle": "Sustituir el rol de plataforma",
+      "replaceConfirmDescription": "La cuenta #{user} ya tiene el rol «{current}». Una cuenta solo puede tener un rol de plataforma: al conceder «{next}» perderá «{current}».",
+      "replaceConfirmAction": "Sustituir rol"
     },
     "auditoria": {
       "heading": "Auditoría",
       "noAccessDescription": "Solo superadmin ve la auditoría de la plataforma.",
-      "actorLabel": "Actor (id)",
+      "actorLabel": "Actor",
       "actionLabel": "Acción",
       "targetTypeLabel": "Tipo de objetivo",
       "targetIdLabel": "Id de objetivo",
@@ -2907,6 +2953,7 @@
       "colTarget": "Objetivo",
       "colMetadata": "Detalle",
       "colDate": "Fecha",
+      "hidden": "Oculto (privado)",
       "previous": "Anterior",
       "next": "Siguiente",
       "exportNotice": "Esta exportación es una utilidad del cliente (los datos ya visibles en la página, en CSV) y no queda auditada por sí misma. Una exportación auditada de todo el listado es una ruta de backend aparte, fuera del alcance de esta tarea.",
@@ -3610,6 +3657,7 @@
           "noClue": "Escribe la pista.",
           "noAnswer": "Las pruebas de respuesta necesitan la respuesta correcta.",
           "noCoordinates": "Las pruebas de ubicación necesitan latitud y longitud.",
+          "badRadius": "El radio de validación debe ser de al menos 1 metro.",
           "badCoordinates": "Coordenadas no válidas: la latitud va de -90 a 90 y la longitud de -180 a 180.",
           "badNumbers": "Puntos, tiempo y radio tienen que ser números enteros desde 0."
         }

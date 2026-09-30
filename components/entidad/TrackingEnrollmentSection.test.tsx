@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen, within } from "@/test-utils/render";
 import { axe } from "@/test-utils/axe";
-import { buildOrgMembershipFull } from "@/test-utils/fixtures/orgMembershipFull";
 import { buildEnrollment } from "@/test-utils/fixtures/tracking";
 
 const useEnrollmentsMock = vi.hoisted(() => vi.fn());
@@ -12,24 +11,23 @@ const updateMutate = vi.hoisted(() => vi.fn());
 const closeMutate = vi.hoisted(() => vi.fn());
 const closeState = vi.hoisted(() => ({ isError: false, isPending: false, error: null as unknown }));
 const createState = vi.hoisted(() => ({ isError: false, error: null as unknown }));
-const useOrgMembersMock = vi.hoisted(() => vi.fn());
+const useReferentsMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/hooks/useProgramEnrollments", () => ({
   useEnrollments: useEnrollmentsMock,
+  useEnrollmentReferents: useReferentsMock,
   useCreateEnrollment: () => ({ mutate: createMutate, reset: vi.fn(), isPending: false, ...createState }),
   useUpdateEnrollment: () => ({ mutate: updateMutate, reset: vi.fn(), isPending: false, isError: false }),
   useCloseEnrollment: () => ({ mutate: closeMutate, reset: vi.fn(), ...closeState }),
 }));
-vi.mock("@/hooks/useOrgMembers", () => ({ useOrgMembers: useOrgMembersMock }));
 
 import { TrackingEnrollmentSection } from "./TrackingEnrollmentSection";
 
 beforeEach(() => {
-  useOrgMembersMock.mockReturnValue({
+  useReferentsMock.mockReturnValue({
     data: [
-      buildOrgMembershipFull({ id: 190, user: 11, role: "referente", public_name: "Referente" }),
-      buildOrgMembershipFull({ id: 191, user: 12, role: "referente", public_name: "Iker" }),
-      buildOrgMembershipFull({ id: 186, user: 7, role: "titular", public_name: "Titular" }),
+      { id: 190, public_name: "Referente" },
+      { id: 191, public_name: "Iker" },
     ],
     isError: false,
   });
@@ -40,7 +38,7 @@ afterEach(() => {
   createMutate.mockReset();
   updateMutate.mockReset();
   closeMutate.mockReset();
-  useOrgMembersMock.mockReset();
+  useReferentsMock.mockReset();
   closeState.isError = false;
   closeState.error = null;
   createState.isError = false;
@@ -99,7 +97,7 @@ describe("TrackingEnrollmentSection", () => {
     const dialog = screen.getByRole("dialog");
     await userEvent.selectOptions(within(dialog).getByLabelText("Tipo de seguimiento"), "gambling");
     await userEvent.selectOptions(within(dialog).getByLabelText("Referente"), "Iker");
-    // Solo los referentes: el titular no se ofrece.
+    // Solo lo que devuelve la lista de referentes elegibles.
     expect(within(dialog).queryByRole("option", { name: "Titular" })).not.toBeInTheDocument();
     await userEvent.click(within(dialog).getByRole("button", { name: "Dar de alta" }));
 
@@ -139,9 +137,9 @@ describe("TrackingEnrollmentSection", () => {
     );
   });
 
-  it("si la lista de referentes falla (moderador), lo avisa y se puede seguir sin referente", async () => {
+  it("si la lista de referentes falla, lo avisa y se puede seguir sin referente", async () => {
     useEnrollmentsMock.mockReturnValue({ data: [], isError: false, error: null });
-    useOrgMembersMock.mockReturnValue({ data: undefined, isError: true });
+    useReferentsMock.mockReturnValue({ data: undefined, isError: true });
     renderSection();
 
     await userEvent.click(screen.getByRole("button", { name: "Dar de alta en el programa" }));

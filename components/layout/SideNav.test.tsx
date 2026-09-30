@@ -80,3 +80,23 @@ describe("SideNav", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe("SideNav plegable en pantallas pequeñas (error 39)", () => {
+  it("el botón abre y cierra el cajón y elegir una sección lo cierra", async () => {
+    const { default: userEvent } = await import("@testing-library/user-event");
+    setPathname("/entidad/bidasoa");
+    render(<SideNav ariaLabel="Menú de la entidad" items={ITEMS} />);
+    const user = userEvent.setup();
+
+    const toggle = screen.getByRole("button", { name: "Abrir menú" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("navigation").className).toContain("hidden");
+
+    await user.click(toggle);
+    expect(screen.getByRole("button", { name: "Cerrar menú" })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("navigation").className).toContain("fixed");
+
+    await user.click(screen.getByRole("button", { name: "Cerrar menú" }));
+    expect(screen.getByRole("navigation").className).toContain("hidden");
+  });
+});

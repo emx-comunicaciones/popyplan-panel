@@ -233,7 +233,7 @@ describe("middleware", () => {
     expect(res.cookies.get(SESSION_COOKIE_NAME)).toBeUndefined();
   });
 
-  it("401 en prefetch/RSC (sec-fetch-dest distinto de document) NO toca la cookie ni reenvía la cabecera interna", async () => {
+  it("401 en prefetch/RSC responde 401 (el router repite como documento; error 46) sin tocar la cookie ni reenviar la cabecera interna", async () => {
     fetchMock.mockResolvedValueOnce(response({ detail: "token_not_valid" }, 401));
 
     const res = await middleware(
@@ -243,10 +243,21 @@ describe("middleware", () => {
       }),
     );
 
+    expect(res.status).toBe(401);
+    expect(res.headers.get("location")).toBeNull();
     expect(res.cookies.get(SESSION_COOKIE_NAME)).toBeUndefined();
-    expect(forwardedHeaderNames(res)).not.toHaveLength(0);
-    expect(forwardedHeaderNames(res)).not.toContain(ACCESS_TOKEN_HEADER);
     expect(res.headers.get(`x-middleware-request-${ACCESS_TOKEN_HEADER}`)).toBeNull();
+  });
+
+  it("401 en prefetch/RSC de la raíz pública sigue pasando sin sesión", async () => {
+    fetchMock.mockResolvedValueOnce(response({ detail: "token_not_valid" }, 401));
+
+    const res = await middleware(
+      requestWithCookie("refresh-caducado", { "sec-fetch-dest": "empty" }, "http://panel.test/"),
+    );
+
+    expect(res.status).toBe(200);
+    expect(forwardedHeaderNames(res)).not.toContain(ACCESS_TOKEN_HEADER);
   });
 
   it("dos peticiones concurrentes con la misma cookie disparan UNA sola llamada al backend", async () => {

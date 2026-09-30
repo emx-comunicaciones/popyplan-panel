@@ -139,12 +139,14 @@ describe("EntidadReporteDetailPage", () => {
     });
   });
 
-  it.each([
-    ["content_removed", "Retirar contenido"],
-    ["user_suspended", "Suspender cuenta"],
-  ])("resolver con %s (irreversible) pide confirmación antes de llamar a la mutación", async (resolution) => {
+  it("resolver con content_removed (irreversible) pide confirmación antes de llamar a la mutación", async () => {
+    const resolution = "content_removed";
     const resolveMutate = vi.fn();
-    useReportMock.mockReturnValue({ data: buildReportDetail({ assigned_to: 9 }), isError: false, error: null });
+    useReportMock.mockReturnValue({
+      data: buildReportDetail({ assigned_to: 9, target: { type: "post", id: "4" } }),
+      isError: false,
+      error: null,
+    });
     useAssignReportMock.mockReturnValue(idleMutation());
     useResolveReportMock.mockReturnValue({
       mutate: resolveMutate, isPending: false, isError: false, reset: vi.fn(),
@@ -166,9 +168,38 @@ describe("EntidadReporteDetailPage", () => {
     );
   });
 
+  it.each([
+    ["user", ["dismissed", "warned"]],
+    ["organization", ["dismissed", "warned"]],
+    ["community", ["dismissed", "warned"]],
+    ["post", ["dismissed", "warned", "content_removed"]],
+    ["event", ["dismissed", "warned", "content_removed"]],
+  ])(
+    "una entidad solo ve las resoluciones que admite un reporte de %s, nunca suspender (error 34)",
+    async (type, values) => {
+      useReportMock.mockReturnValue({
+        data: buildReportDetail({ assigned_to: 9, target: { type, id: "4" } }),
+        isError: false,
+        error: null,
+      });
+      useAssignReportMock.mockReturnValue(idleMutation());
+      useResolveReportMock.mockReturnValue(idleMutation());
+      useEscalateReportMock.mockReturnValue(idleMutation());
+
+      await renderPage();
+
+      const options = within(screen.getByLabelText("Resolución")).getAllByRole("option");
+      expect(options.map((o) => (o as HTMLOptionElement).value)).toEqual(values);
+    },
+  );
+
   it("cancelar la confirmación no resuelve nada", async () => {
     const resolveMutate = vi.fn();
-    useReportMock.mockReturnValue({ data: buildReportDetail({ assigned_to: 9 }), isError: false, error: null });
+    useReportMock.mockReturnValue({
+      data: buildReportDetail({ assigned_to: 9, target: { type: "post", id: "4" } }),
+      isError: false,
+      error: null,
+    });
     useAssignReportMock.mockReturnValue(idleMutation());
     useResolveReportMock.mockReturnValue({
       mutate: resolveMutate, isPending: false, isError: false, reset: vi.fn(),
