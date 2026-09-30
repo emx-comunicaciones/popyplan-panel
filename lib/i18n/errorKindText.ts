@@ -20,6 +20,37 @@ export interface KindError<Kind extends string> {
   detail?: string;
 }
 
+/**
+ * Mensajes de validación de DRF/Django que hablan de la implementación
+ * (claves primarias, tipos, restricciones de base de datos) y no le dicen
+ * nada a quien rellena el formulario (informe del panel, error 41). Se
+ * descartan a favor del texto por `kind`, que sí está redactado para
+ * personas. Los mensajes de negocio del backend ya vienen escritos para
+ * personas y no coinciden con estos patrones.
+ */
+const TECHNICAL_DETAIL = new RegExp(
+  [
+    "invalid pk",
+    "clave primaria",
+    "does not exist",
+    "incorrect type",
+    "tipo incorrecto",
+    "invalid hyperlink",
+    "valid integer",
+    "número entero válido",
+    "may not be null",
+    "integrityerror",
+    "duplicate entry",
+    "traceback",
+    "objectdoesnotexist",
+  ].join("|"),
+  "i",
+);
+
+export function isTechnicalDetail(detail: string): boolean {
+  return TECHNICAL_DETAIL.test(detail);
+}
+
 export function errorKindText<Kind extends string>(
   error: KindError<Kind> | null | undefined,
   keys: Record<Kind, string>,
@@ -27,7 +58,7 @@ export function errorKindText<Kind extends string>(
   fallbackKey: string,
 ): string {
   if (!error) return t(fallbackKey);
-  if (error.detail) return error.detail;
+  if (error.detail && !isTechnicalDetail(error.detail)) return error.detail;
   const key = error.kind ? keys[error.kind] : undefined;
   return t(key ?? fallbackKey);
 }

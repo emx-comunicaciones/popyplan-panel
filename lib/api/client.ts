@@ -225,15 +225,56 @@ async function requestWithAuth(path: string, options: ApiFetchOptions): Promise<
   return response;
 }
 
-export async function apiFetch<T = unknown>(
-  path: string,
-  options: ApiFetchOptions = {},
-): Promise<T> {
+async function apiFetchOnce<T>(path: string, options: ApiFetchOptions): Promise<T> {
   const response = await requestWithAuth(path, options);
 
   if (response.status === 204) return undefined as T;
   const text = await response.text();
   return (text ? JSON.parse(text) : undefined) as T;
+}
+
+/**
+ * Peticiones de escritura en vuelo, indexadas por método + ruta + cuerpo
+ * (informe del panel, error 13). Un doble clic (o Intro + clic) en un
+ * botón de guardar lanza dos mutaciones antes de que el botón llegue a
+ * desactivarse: la segunda creaba un registro repetido o recibía un
+ * falso error (p. ej. «ya existe»). Mientras una escritura idéntica sigue
+ * en vuelo, la segunda llamada reutiliza su promesa en vez de enviar otra
+ * petición. Las lecturas (GET/HEAD) no se agrupan: TanStack Query ya lo
+ * hace por su cuenta.
+ */
+const inFlightWrites = new Map<string, Promise<unknown>>();
+
+function writeKey(path: string, options: ApiFetchOptions): string {
+  const method = (options.method ?? "GET").toUpperCase();
+  if (method === "GET" || method === "HEAD") return "";
+  const { body } = options;
+  let bodyKey: string;
+  if (isFormData(body)) {
+    bodyKey = JSON.stringify(
+      Array.from(body.entries()).map(([name, value]) =>
+        typeof value === "string" ? [name, value] : [name, value.name, value.size, value.lastModified],
+      ),
+    );
+  } else {
+    bodyKey = body === undefined ? "" : JSON.stringify(body);
+  }
+  return `${method} ${path} ${bodyKey}`;
+}
+
+export function apiFetch<T = unknown>(
+  path: string,
+  options: ApiFetchOptions = {},
+): Promise<T> {
+  const key = writeKey(path, options);
+  if (!key) return apiFetchOnce<T>(path, options);
+  const running = inFlightWrites.get(key);
+  if (running) return running as Promise<T>;
+  const promise = apiFetchOnce<T>(path, options).finally(() => {
+    inFlightWrites.delete(key);
+  });
+  inFlightWrites.set(key, promise);
+  return promise;
 }
 
 /**

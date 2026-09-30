@@ -243,6 +243,9 @@ describe("PlataformaEntidadDetailPage", () => {
         throw new ApiError(400, { user: ["Esta persona ya está en el equipo."] });
       }
       if (path.includes("/members/")) return members;
+      if (path.startsWith("/api/users/users/")) {
+        return { count: 1, next: null, previous: null, results: [{ id: 42, username: "ane", email: "ane@x.test" }] };
+      }
       return [];
     });
     getServerSessionMock.mockResolvedValue({
@@ -256,14 +259,22 @@ describe("PlataformaEntidadDetailPage", () => {
     render(element);
 
     await user.click(screen.getByRole("button", { name: "Equipo" }));
-    await user.type(screen.getByLabelText("Id de usuario"), "42");
+    // La cuenta se elige por nombre, no se teclea su id.
+    await user.type(screen.getAllByLabelText("Persona")[0], "ane");
+    await user.click(await screen.findByRole("button", { name: "ane (ane@x.test)" }));
     await user.click(screen.getByRole("button", { name: "Añadir" }));
 
-    // La llamada falla: el id sigue en el campo para poder corregirlo.
+    // La llamada falla: la cuenta elegida sigue ahí para poder corregirla.
     await waitFor(() =>
       expect(screen.getByText("Esta persona ya está en el equipo.")).toBeInTheDocument(),
     );
-    expect(screen.getByLabelText("Id de usuario")).toHaveValue(42);
+    expect(screen.getByRole("group", { name: "Persona" })).toHaveTextContent("ane (ane@x.test)");
+    // Sin titular todavía (equipo vacío), el superadmin solo puede dar el
+    // primero (error 14): el alta va como titular.
+    expect(apiFetchMock).toHaveBeenCalledWith(
+      expect.stringContaining("/members/"),
+      expect.objectContaining({ method: "POST", body: { user: 42, role: "titular" } }),
+    );
   });
 
   it("Equipo: una entidad sin titular deja al superadmin asignar el primero (solo rol Titular) y lo explica", async () => {
@@ -282,6 +293,9 @@ describe("PlataformaEntidadDetailPage", () => {
         if (asignado) throw new ApiError(403, { detail: "Solo el titular gestiona el equipo." });
         return [buildOrgMembershipFull({ user: 5, role: "voluntario" })];
       }
+      if (path.startsWith("/api/users/users/")) {
+        return { count: 1, next: null, previous: null, results: [{ id: 42, username: "ane", email: "ane@x.test" }] };
+      }
       return [];
     });
     getServerSessionMock.mockResolvedValue({
@@ -296,9 +310,10 @@ describe("PlataformaEntidadDetailPage", () => {
 
     expect(await screen.findByText(/todavía no tiene titular/)).toBeInTheDocument();
     const rol = screen.getByLabelText("Rol");
-    expect(within(rol).getAllByRole("option").map((o) => o.textContent)).toEqual(["titular"]);
+    expect(within(rol).getAllByRole("option").map((o) => o.textContent)).toEqual(["Titular"]);
 
-    await user.type(screen.getByLabelText("Id de usuario"), "42");
+    await user.type(screen.getAllByLabelText("Persona")[0], "ane");
+    await user.click(await screen.findByRole("button", { name: "ane (ane@x.test)" }));
     await user.click(screen.getByRole("button", { name: "Añadir" }));
     expect(apiFetchMock).toHaveBeenCalledWith("/api/organizations/9/members/", {
       method: "POST",

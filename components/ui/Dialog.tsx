@@ -70,10 +70,10 @@ export function Dialog({
   const panelPlacement =
     placement === "side"
       ? "h-full overflow-y-auto rounded-none"
-      : "max-h-[70vh] overflow-y-auto rounded-lg";
+      : "max-h-[90vh] overflow-y-auto rounded-lg sm:max-h-[70vh]";
 
   return (
-    <div className={`fixed inset-0 z-50 flex ${overlayPlacement} bg-black/40 p-4`}>
+    <div className={`fixed inset-0 z-50 flex ${overlayPlacement} bg-black/40 p-2 sm:p-4`}>
       <div
         ref={containerRef}
         role="dialog"

@@ -45,4 +45,17 @@ describe("errorKindText", () => {
       "t(errors.example.desconocido)",
     );
   });
+
+  it("un `detail` técnico de DRF (clave primaria, tipo…) no se enseña: se traduce por `kind` (error 41)", () => {
+    for (const detail of [
+      'Invalid pk "9999" - object does not exist.',
+      "Clave primaria «9999» inválida - objeto no existe.",
+      "Incorrect type. Expected pk value, received str.",
+      "A valid integer is required.",
+    ]) {
+      expect(errorKindText({ kind: "invalido", detail }, KEYS, fakeT, "errors.example.desconocido")).toBe(
+        "t(errors.example.invalido)",
+      );
+    }
+  });
 });

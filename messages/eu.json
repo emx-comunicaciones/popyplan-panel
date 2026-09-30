@@ -12,7 +12,40 @@
     "items": "{count, plural, one {# elementu} other {# elementu}}",
     "confirm": "Berretsi",
     "noPhoneNotice": "Popyplanek ez du telefonorik gordetzen: jarri harremanetan pertsonarekin appeko txatetik edo bere erreferentearen bidez.",
-    "actions": "Ekintzak"
+    "actions": "Ekintzak",
+    "menuOpen": "Ireki menua",
+    "menuClose": "Itxi menua",
+    "picker": {
+      "change": "Aldatu",
+      "placeholder": "Idatzi bilatzeko…",
+      "minChars": "Idatzi gutxienez {count} karaktere bilatzeko.",
+      "error": "Ezin izan da bilatu. Saiatu berriro.",
+      "loading": "Bilatzen…",
+      "empty": "Ez dago bilaketarekin bat datorrenik."
+    }
+  },
+  "enums": {
+    "orgRole": {
+      "titular": "Titularra",
+      "moderador": "Moderatzailea",
+      "dinamizador": "Dinamizatzailea",
+      "analista": "Analista",
+      "referente": "Erreferentea"
+    },
+    "communityRole": {
+      "owner": "Jabea",
+      "moderator": "Moderatzailea",
+      "member": "Kidea"
+    },
+    "reportTarget": {
+      "user": "Pertsona",
+      "community": "Komunitatea",
+      "event": "Jarduera",
+      "post": "Argitalpena",
+      "comment": "Iruzkina",
+      "message": "Mezua",
+      "organization": "Erakundea"
+    }
   },
   "account": {
     "title": "Kontua",
@@ -974,9 +1007,11 @@
       "dataLoadErrorDescription": "Ezin izan da erakundearen fitxa kargatu.",
       "loading": "Kargatzen…",
       "teamTitle": "Taldea",
-      "userIdLabel": "Erabiltzailearen id-a",
+      "userIdLabel": "Pertsona",
       "roleLabel": "Rola",
       "addButton": "Gehitu",
+      "chooseReferent": "Aukeratu erreferente bat",
+      "referentsUnavailableHint": "Titularrak bakarrik ikus dezake taldea, eta handik ateratzen dira erreferenteak.",
       "teamLoadError": "Ezin izan da taldea kargatu",
       "teamEmpty": "Ez dago talderik oraindik",
       "teamTableCaption": "Erakundearen taldea",
@@ -987,8 +1022,8 @@
       "removeFromTeamDescription": "«{name}» erakundearen taldetik kendu? Panelerako rola galduko du.",
       "selfRemovalWarning": "Zeure burua taldetik kentzera zoaz eta panelerako sarbidea galduko duzu.",
       "referencesTitle": "Erreferentziak",
-      "personIdLabel": "Pertsona (id)",
-      "referentIdLabel": "Erreferentea (id)",
+      "personIdLabel": "Pertsona",
+      "referentIdLabel": "Erreferentea",
       "assignButton": "Esleitu",
       "referencesLoadError": "Ezin izan dira erreferenteak kargatu",
       "referencesLoadErrorDescription": "Ezin izan dira erakundearen erreferenteak kargatu.",
@@ -2754,7 +2789,7 @@
       "orgTypeAdministracion": "Administrazioa",
       "slugLabel": "Slug",
       "cifLabel": "IFK",
-      "parentIdLabel": "Erakunde aterkia (id-a, aukerakoa)",
+      "parentIdLabel": "Erakunde aterkia (aukerakoa)",
       "descriptionLabel": "Deskribapena",
       "createAction": "Erakundea sortu",
       "created": "«{name}» erakundea sortuta, egiaztatu gabe."
@@ -2775,7 +2810,7 @@
       "umbrellaCardTitle": "Erakunde aterkia",
       "currentParent": "Uneko aterkia: {parent}",
       "noParent": "esleitu gabe",
-      "newParentLabel": "Aterki berria (id-a, hutsik kentzeko)",
+      "newParentLabel": "Aterki berria (utzi hutsik kentzeko)",
       "saved": "Gordeta.",
       "childrenCardTitle": "Erakunde umeak",
       "childrenLoadError": "Ezin izan dira erakunde umeak kargatu",
@@ -2794,8 +2829,8 @@
       "teamEmpty": "Oraindik ez dago talderik",
       "removeAction": "Kendu",
       "referencesCardTitle": "Erreferentziak",
-      "personIdLabel": "Pertsona (id-a)",
-      "referentIdLabel": "Erreferentea (id-a)",
+      "personIdLabel": "Pertsona",
+      "referentIdLabel": "Erreferentea",
       "assignAction": "Esleitu",
       "referencesEmpty": "Oraindik ez dago erreferentziarik",
       "referenceRow": "{name} — erreferentea #{referentId}",
@@ -2883,7 +2918,7 @@
       "roleSupport": "Laguntza",
       "grantTitle": "Rola eman",
       "searchLabel": "Kontua bilatu (emaila edo erabiltzaile-izena)",
-      "userIdLabel": "Erabiltzailearen id-a",
+      "userIdLabel": "Pertsona",
       "roleLabel": "Rola",
       "grantAction": "Eman",
       "grantSuccess": "Rola emanda.",
@@ -2901,7 +2936,7 @@
     "auditoria": {
       "heading": "Auditoria",
       "noAccessDescription": "Superadminek bakarrik ikusten du plataformaren auditoria.",
-      "actorLabel": "Egilea (id-a)",
+      "actorLabel": "Egilea",
       "actionLabel": "Ekintza",
       "targetTypeLabel": "Helburu mota",
       "targetIdLabel": "Helburuaren id-a",
@@ -3700,14 +3735,6 @@
     },
     "userSearch": {
       "error": "Ezin izan dira kontuak bilatu."
-    },
-    "orgRoles": {
-      "titular": "Titularra",
-      "moderador": "Moderatzailea",
-      "dinamizador": "Dinamizatzailea",
-      "analista": "Analista",
-      "referente": "Erreferentea",
-      "voluntario": "Boluntarioa"
     }
   },
   "paraguas": {

@@ -19,6 +19,9 @@ import { useId, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/Badge";
+import { AccountPicker } from "@/components/plataforma/AccountPicker";
+import { OrganizationPicker } from "@/components/plataforma/OrganizationPicker";
+import type { PickerOption } from "@/components/ui/SearchPicker";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -55,6 +58,7 @@ import {
   type UpdateOrganizationErrorKind,
 } from "@/hooks/useUpdateOrganization";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { ORG_ROLE_LABEL_KEYS, ORG_TYPE_LABEL_KEYS, enumLabel } from "@/lib/i18n/enumLabels";
 import { localeForUseLocale } from "@/lib/i18n/locale";
 import { formatCount, formatPct } from "@/lib/metrics/format";
 import { presetPeriod } from "@/lib/metrics/period";
@@ -270,7 +274,7 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
           <dt className="text-text-secondary">{t("plataforma.entidades.slugLabel")}</dt>
           <dd className="text-text-base">{org.slug}</dd>
           <dt className="text-text-secondary">{t("plataforma.entidades.typeHeader")}</dt>
-          <dd className="text-text-base">{org.org_type}</dd>
+          <dd className="text-text-base">{enumLabel(ORG_TYPE_LABEL_KEYS, org.org_type, t)}</dd>
           <dt className="text-text-secondary">{t("plataforma.entidades.verifiedLabel")}</dt>
           <dd className="text-text-base">
             <Badge tone={org.is_verified ? "success" : "neutral"}>
@@ -383,41 +387,53 @@ function DatosTab({ orgId, role }: { orgId: number | string; role: string | null
   );
 }
 
+/** «Paraguas actual: <nombre>» (nunca su id interno). */
+function CurrentParent({ parentId }: { parentId: number | null }) {
+  const t = useTranslations();
+  return parentId === null ? (
+    <p className="text-sm text-text-base">
+      {t("plataforma.entidadFicha.currentParent", { parent: t("plataforma.entidadFicha.noParent") })}
+    </p>
+  ) : (
+    <NamedParent parentId={parentId} />
+  );
+}
+
+function NamedParent({ parentId }: { parentId: number }) {
+  const t = useTranslations();
+  const parent = useOrganization(parentId);
+  return (
+    <p className="text-sm text-text-base">
+      {t("plataforma.entidadFicha.currentParent", { parent: parent.data?.name ?? "…" })}
+    </p>
+  );
+}
+
 function ParaguasTab({ orgId, role }: { orgId: number | string; role: string | null }) {
   const t = useTranslations();
   const organization = useOrganization(orgId);
   const children = useOrganizations({ parent: orgId });
   const setParent = useSetOrganizationParent();
-  const [newParent, setNewParent] = useState("");
+  const [newParent, setNewParent] = useState<PickerOption | null>(null);
   const canSetParent = role === "superadmin";
 
   return (
     <div className="flex flex-col gap-4">
       <Card title={t("plataforma.entidadFicha.umbrellaCardTitle")}>
-        <p className="text-sm text-text-base">
-          {t("plataforma.entidadFicha.currentParent", {
-            parent: organization.data?.parent ?? t("plataforma.entidadFicha.noParent"),
-          })}
-        </p>
+        <CurrentParent parentId={organization.data?.parent ?? null} />
         {canSetParent ? (
           <div className="mt-3 flex flex-wrap items-end gap-3">
-            <div>
-              <label htmlFor="paraguas-new-parent" className="mb-1 block text-sm font-medium text-text-form">
-                {t("plataforma.entidadFicha.newParentLabel")}
-              </label>
-              <input
-                id="paraguas-new-parent"
-                type="number"
-                value={newParent}
-                onChange={(event) => setNewParent(event.target.value)}
-                className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-              />
-            </div>
+            <OrganizationPicker
+              id="paraguas-new-parent"
+              label={t("plataforma.entidadFicha.newParentLabel")}
+              value={newParent}
+              onChange={setNewParent}
+            />
             <Button
               type="button"
               disabled={setParent.isPending}
               onClick={() =>
-                setParent.mutate({ orgId, parent: newParent ? Number(newParent) : null })
+                setParent.mutate({ orgId, parent: newParent ? newParent.id : null })
               }
             >
               {t("common.save")}
@@ -552,7 +568,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
   const references = useOrgReferences(orgId);
   const createReference = useCreateOrgReference(orgId);
   const removeReference = useRemoveOrgReference(orgId);
-  const [userId, setUserId] = useState("");
+  const [account, setAccount] = useState<PickerOption | null>(null);
   const [role, setRole] = useState<OrgMembershipRole>("dinamizador");
   // Una entidad sin titular no la gestiona nadie: un superadmin puede darle
   // el primero, y el backend solo admite entonces el rol titular (informe del
@@ -561,7 +577,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
     platformRole === "superadmin" && !!members.data && !members.data.some((member) => member.role === "titular");
   const roleOptions: OrgMembershipRole[] = isFirstTitular ? ["titular"] : ROLE_OPTIONS;
   const roleToSend: OrgMembershipRole = roleOptions.includes(role) ? role : roleOptions[0];
-  const [refUser, setRefUser] = useState("");
+  const [refUser, setRefUser] = useState<PickerOption | null>(null);
   const [refReferent, setRefReferent] = useState("");
   const [removingMember, setRemovingMember] = useState<OrgMembershipFull | null>(null);
   const [removingReference, setRemovingReference] = useState<Reference | null>(null);
@@ -584,25 +600,19 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
           <form
             onSubmit={(event) => {
               event.preventDefault();
-              if (!userId) return;
-              // El campo se vacía solo si el alta sale bien: si falla, el id
-              // sigue ahí para corregirlo sin volver a teclearlo.
-              addMember.mutate({ user: Number(userId), role: roleToSend }, { onSuccess: () => setUserId("") });
+              if (!account) return;
+              // La cuenta elegida se quita solo si el alta sale bien: si
+              // falla, sigue ahí para corregirlo sin volver a buscarla.
+              addMember.mutate({ user: account.id, role: roleToSend }, { onSuccess: () => setAccount(null) });
             }}
             className="mb-4 flex flex-wrap items-end gap-3"
           >
-            <div>
-              <label htmlFor="plataforma-equipo-user" className="mb-1 block text-sm font-medium text-text-form">
-                {t("plataforma.roles.userIdLabel")}
-              </label>
-              <input
-                id="plataforma-equipo-user"
-                type="number"
-                value={userId}
-                onChange={(event) => setUserId(event.target.value)}
-                className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-              />
-            </div>
+            <AccountPicker
+              id="plataforma-equipo-user"
+              label={t("plataforma.roles.userIdLabel")}
+              value={account}
+              onChange={setAccount}
+            />
             <div>
               <label htmlFor="plataforma-equipo-role" className="mb-1 block text-sm font-medium text-text-form">
                 {t("plataforma.roles.roleLabel")}
@@ -615,12 +625,12 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
               >
                 {roleOptions.map((value) => (
                   <option key={value} value={value}>
-                    {value}
+                    {enumLabel(ORG_ROLE_LABEL_KEYS, value, t)}
                   </option>
                 ))}
               </select>
             </div>
-            <Button type="submit" disabled={addMember.isPending}>
+            <Button type="submit" disabled={addMember.isPending || !account}>
               {t("plataforma.entidadFicha.addAction")}
             </Button>
           </form>
@@ -654,7 +664,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
             {members.data.map((member) => (
               <li key={member.user} className="flex items-center justify-between gap-2">
                 <span>
-                  {member.public_name} — {member.role}
+                  {member.public_name} — {enumLabel(ORG_ROLE_LABEL_KEYS, member.role, t)}
                 </span>
                 {canManage ? (
                   <Button
@@ -681,10 +691,10 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
               event.preventDefault();
               if (!refUser || !refReferent) return;
               createReference.mutate(
-                { user: Number(refUser), referent_user: Number(refReferent) },
+                { user: refUser.id, referent_user: Number(refReferent) },
                 {
                   onSuccess: () => {
-                    setRefUser("");
+                    setRefUser(null);
                     setRefReferent("");
                   },
                 },
@@ -692,31 +702,33 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
             }}
             className="mb-4 flex flex-wrap items-end gap-3"
           >
-            <div>
-              <label htmlFor="plataforma-ref-user" className="mb-1 block text-sm font-medium text-text-form">
-                {t("plataforma.entidadFicha.personIdLabel")}
-              </label>
-              <input
-                id="plataforma-ref-user"
-                type="number"
-                value={refUser}
-                onChange={(event) => setRefUser(event.target.value)}
-                className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-              />
-            </div>
+            <AccountPicker
+              id="plataforma-ref-user"
+              label={t("plataforma.entidadFicha.personIdLabel")}
+              value={refUser}
+              onChange={setRefUser}
+            />
             <div>
               <label htmlFor="plataforma-ref-referent" className="mb-1 block text-sm font-medium text-text-form">
                 {t("plataforma.entidadFicha.referentIdLabel")}
               </label>
-              <input
+              <select
                 id="plataforma-ref-referent"
-                type="number"
                 value={refReferent}
                 onChange={(event) => setRefReferent(event.target.value)}
                 className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-              />
+              >
+                <option value="">{t("entidad.configuracion.chooseReferent")}</option>
+                {members.data
+                  ?.filter((member) => member.role === "referente")
+                  .map((member) => (
+                    <option key={member.user} value={String(member.user)}>
+                      {member.public_name}
+                    </option>
+                  ))}
+              </select>
             </div>
-            <Button type="submit" disabled={createReference.isPending}>
+            <Button type="submit" disabled={createReference.isPending || !refUser || !refReferent}>
               {t("plataforma.entidadFicha.assignAction")}
             </Button>
           </form>

@@ -18,6 +18,7 @@ import {
 } from "@/hooks/useReportActions";
 import type { ReportResolution } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { REPORT_TARGET_LABEL_KEYS, enumLabel } from "@/lib/i18n/enumLabels";
 import { reasonLabelKey, statusLabelKey } from "@/lib/reports/labels";
 
 const REPORT_ERROR_KEYS: Record<ReportErrorKind, string> = {
@@ -154,7 +155,7 @@ export function ReporteDetail({ reportId, readOnly = false, canSuspend = false }
           <dd className="text-text-base">{reasonKey ? t(reasonKey) : data.reason}</dd>
           <dt className="text-text-secondary">{t("entidad.reporteDetalle.target")}</dt>
           <dd className="text-text-base">
-            {data.target.type} — {data.target.name ?? data.target.title ?? data.target.id}
+            {enumLabel(REPORT_TARGET_LABEL_KEYS, data.target.type, t)} — {data.target.name ?? data.target.title ?? data.target.id}
           </dd>
           <dt className="text-text-secondary">{t("entidad.reporteDetalle.description")}</dt>
           <dd className="text-text-base">{data.description || "—"}</dd>

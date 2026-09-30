@@ -152,7 +152,7 @@ describe("EntidadPersonaPage", () => {
     expect(screen.getByText(/Nivel de verificación: Teléfono verificado/)).toBeInTheDocument();
     expect(screen.getByText(/Referente: Bea/)).toBeInTheDocument();
     expect(screen.getByText("Comunidad Uno")).toBeInTheDocument();
-    expect(screen.getByText("member")).toBeInTheDocument();
+    expect(screen.getByText("Miembro")).toBeInTheDocument();
     expect(screen.getByText(/E1/)).toBeInTheDocument();
     expect(screen.getByText("Asistió")).toBeInTheDocument();
     expect(screen.getByText(/Próximo taller/)).toBeInTheDocument();

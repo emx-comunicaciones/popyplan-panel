@@ -130,7 +130,7 @@ export default async function ParaguasLayout({
         <main
           id="main-content"
           tabIndex={-1}
-          className="flex-1 p-4 focus:outline-none"
+          className="min-w-0 flex-1 p-3 focus:outline-none sm:p-4"
         >
           {children}
         </main>

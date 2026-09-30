@@ -12,7 +12,40 @@
     "items": "{count, plural, one {# element} other {# elements}}",
     "confirm": "Confirma",
     "noPhoneNotice": "Popyplan no guarda telèfons: contacta amb la persona pel xat de l'app o a través del seu referent.",
-    "actions": "Accions"
+    "actions": "Accions",
+    "menuOpen": "Obrir el menú",
+    "menuClose": "Tancar el menú",
+    "picker": {
+      "change": "Canviar",
+      "placeholder": "Escriu per cercar…",
+      "minChars": "Escriu almenys {count} caràcters per cercar.",
+      "error": "No s'ha pogut cercar. Torna-ho a provar.",
+      "loading": "Cercant…",
+      "empty": "Res no coincideix amb la cerca."
+    }
+  },
+  "enums": {
+    "orgRole": {
+      "titular": "Titular",
+      "moderador": "Moderador/a",
+      "dinamizador": "Dinamitzador/a",
+      "analista": "Analista",
+      "referente": "Referent"
+    },
+    "communityRole": {
+      "owner": "Propietari/ària",
+      "moderator": "Moderador/a",
+      "member": "Membre"
+    },
+    "reportTarget": {
+      "user": "Persona",
+      "community": "Comunitat",
+      "event": "Activitat",
+      "post": "Publicació",
+      "comment": "Comentari",
+      "message": "Missatge",
+      "organization": "Entitat"
+    }
   },
   "account": {
     "title": "Compte",
@@ -974,9 +1007,11 @@
       "dataLoadErrorDescription": "No s'ha pogut carregar la fitxa de l'entitat.",
       "loading": "Carregant…",
       "teamTitle": "Equip",
-      "userIdLabel": "Id d'usuari",
+      "userIdLabel": "Persona",
       "roleLabel": "Rol",
       "addButton": "Afegir",
+      "chooseReferent": "Tria un referent",
+      "referentsUnavailableHint": "Només el titular pot veure l'equip, i d'allà surten els referents.",
       "teamLoadError": "No s'ha pogut carregar l'equip",
       "teamEmpty": "Encara no hi ha equip",
       "teamTableCaption": "Equip de l'entitat",
@@ -987,8 +1022,8 @@
       "removeFromTeamDescription": "Vols treure «{name}» de l'equip de l'entitat? Deixarà de tenir rol al tauler.",
       "selfRemovalWarning": "Estàs a punt de treure't a tu mateix de l'equip i perdràs l'accés al tauler.",
       "referencesTitle": "Referències",
-      "personIdLabel": "Persona (id)",
-      "referentIdLabel": "Referent (id)",
+      "personIdLabel": "Persona",
+      "referentIdLabel": "Referent",
       "assignButton": "Assignar",
       "referencesLoadError": "No s'han pogut carregar els referents",
       "referencesLoadErrorDescription": "No s'han pogut carregar els referents de l'entitat.",
@@ -2754,7 +2789,7 @@
       "orgTypeAdministracion": "Administració",
       "slugLabel": "Slug",
       "cifLabel": "CIF",
-      "parentIdLabel": "Entitat paraigua (id, opcional)",
+      "parentIdLabel": "Entitat paraigua (opcional)",
       "descriptionLabel": "Descripció",
       "createAction": "Crear entitat",
       "created": "Entitat «{name}» creada, sense verificar."
@@ -2775,7 +2810,7 @@
       "umbrellaCardTitle": "Entitat paraigua",
       "currentParent": "Paraigua actual: {parent}",
       "noParent": "sense assignar",
-      "newParentLabel": "Nou paraigua (id, buit per treure'l)",
+      "newParentLabel": "Nou paraigua (deixa-ho buit per treure'l)",
       "saved": "Desat.",
       "childrenCardTitle": "Entitats filles",
       "childrenLoadError": "No s'han pogut carregar les filles",
@@ -2794,8 +2829,8 @@
       "teamEmpty": "Encara no hi ha equip",
       "removeAction": "Treure",
       "referencesCardTitle": "Referències",
-      "personIdLabel": "Persona (id)",
-      "referentIdLabel": "Referent (id)",
+      "personIdLabel": "Persona",
+      "referentIdLabel": "Referent",
       "assignAction": "Assignar",
       "referencesEmpty": "Encara no hi ha referències",
       "referenceRow": "{name} — referent #{referentId}",
@@ -2883,7 +2918,7 @@
       "roleSupport": "Suport",
       "grantTitle": "Concedir rol",
       "searchLabel": "Cercar compte (correu o usuari)",
-      "userIdLabel": "Id d'usuari",
+      "userIdLabel": "Persona",
       "roleLabel": "Rol",
       "grantAction": "Concedir",
       "grantSuccess": "Rol concedit.",
@@ -2901,7 +2936,7 @@
     "auditoria": {
       "heading": "Auditoria",
       "noAccessDescription": "Només superadmin veu l'auditoria de la plataforma.",
-      "actorLabel": "Actor (id)",
+      "actorLabel": "Actor",
       "actionLabel": "Acció",
       "targetTypeLabel": "Tipus d'objectiu",
       "targetIdLabel": "Id d'objectiu",
@@ -3700,14 +3735,6 @@
     },
     "userSearch": {
       "error": "No s'han pogut cercar comptes."
-    },
-    "orgRoles": {
-      "titular": "Titular",
-      "moderador": "Moderador",
-      "dinamizador": "Dinamitzador",
-      "analista": "Analista",
-      "referente": "Referent",
-      "voluntario": "Voluntari"
     }
   },
   "paraguas": {

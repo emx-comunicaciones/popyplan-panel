@@ -12,7 +12,40 @@
     "items": "{count, plural, one {# item} other {# items}}",
     "confirm": "Confirm",
     "noPhoneNotice": "Popyplan does not store phone numbers: contact the person through the app chat or through their referent.",
-    "actions": "Actions"
+    "actions": "Actions",
+    "menuOpen": "Open menu",
+    "menuClose": "Close menu",
+    "picker": {
+      "change": "Change",
+      "placeholder": "Type to search…",
+      "minChars": "Type at least {count} characters to search.",
+      "error": "Search failed. Try again.",
+      "loading": "Searching…",
+      "empty": "Nothing matches the search."
+    }
+  },
+  "enums": {
+    "orgRole": {
+      "titular": "Owner",
+      "moderador": "Moderator",
+      "dinamizador": "Facilitator",
+      "analista": "Analyst",
+      "referente": "Referent"
+    },
+    "communityRole": {
+      "owner": "Owner",
+      "moderator": "Moderator",
+      "member": "Member"
+    },
+    "reportTarget": {
+      "user": "Person",
+      "community": "Community",
+      "event": "Activity",
+      "post": "Post",
+      "comment": "Comment",
+      "message": "Message",
+      "organization": "Organisation"
+    }
   },
   "account": {
     "title": "Account",
@@ -974,9 +1007,11 @@
       "dataLoadErrorDescription": "Couldn't load the entity record.",
       "loading": "Loading…",
       "teamTitle": "Team",
-      "userIdLabel": "User id",
+      "userIdLabel": "Person",
       "roleLabel": "Role",
       "addButton": "Add",
+      "chooseReferent": "Choose a referent",
+      "referentsUnavailableHint": "Only the owner can see the team, which is where referents come from.",
       "teamLoadError": "Couldn't load the team",
       "teamEmpty": "No team yet",
       "teamTableCaption": "Entity team",
@@ -987,8 +1022,8 @@
       "removeFromTeamDescription": "Remove “{name}” from the entity's team? They'll lose their role in the panel.",
       "selfRemovalWarning": "You're about to remove yourself from the team and you'll lose access to the panel.",
       "referencesTitle": "References",
-      "personIdLabel": "Person (id)",
-      "referentIdLabel": "Referent (id)",
+      "personIdLabel": "Person",
+      "referentIdLabel": "Referent",
       "assignButton": "Assign",
       "referencesLoadError": "Couldn't load the referents",
       "referencesLoadErrorDescription": "Couldn't load the entity's referents.",
@@ -2754,7 +2789,7 @@
       "orgTypeAdministracion": "Administration",
       "slugLabel": "Slug",
       "cifLabel": "Tax ID",
-      "parentIdLabel": "Umbrella entity (id, optional)",
+      "parentIdLabel": "Umbrella entity (optional)",
       "descriptionLabel": "Description",
       "createAction": "Create entity",
       "created": "Entity “{name}” created, not verified."
@@ -2775,7 +2810,7 @@
       "umbrellaCardTitle": "Umbrella entity",
       "currentParent": "Current umbrella: {parent}",
       "noParent": "not assigned",
-      "newParentLabel": "New umbrella (id, empty to remove)",
+      "newParentLabel": "New umbrella (leave empty to remove)",
       "saved": "Saved.",
       "childrenCardTitle": "Child entities",
       "childrenLoadError": "Couldn't load the children",
@@ -2794,8 +2829,8 @@
       "teamEmpty": "No team yet",
       "removeAction": "Remove",
       "referencesCardTitle": "References",
-      "personIdLabel": "Person (id)",
-      "referentIdLabel": "Referent (id)",
+      "personIdLabel": "Person",
+      "referentIdLabel": "Referent",
       "assignAction": "Assign",
       "referencesEmpty": "No references yet",
       "referenceRow": "{name} — referent #{referentId}",
@@ -2883,7 +2918,7 @@
       "roleSupport": "Support",
       "grantTitle": "Grant role",
       "searchLabel": "Search account (email or username)",
-      "userIdLabel": "User id",
+      "userIdLabel": "Person",
       "roleLabel": "Role",
       "grantAction": "Grant",
       "grantSuccess": "Role granted.",
@@ -2901,7 +2936,7 @@
     "auditoria": {
       "heading": "Audit log",
       "noAccessDescription": "Only superadmin sees the platform audit log.",
-      "actorLabel": "Actor (id)",
+      "actorLabel": "Actor",
       "actionLabel": "Action",
       "targetTypeLabel": "Target type",
       "targetIdLabel": "Target id",
@@ -3700,14 +3735,6 @@
     },
     "userSearch": {
       "error": "Accounts could not be searched."
-    },
-    "orgRoles": {
-      "titular": "Titleholder",
-      "moderador": "Moderator",
-      "dinamizador": "Facilitator",
-      "analista": "Analyst",
-      "referente": "Referent",
-      "voluntario": "Volunteer"
     }
   },
   "paraguas": {

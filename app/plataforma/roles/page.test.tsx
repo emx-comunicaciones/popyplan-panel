@@ -25,6 +25,25 @@ afterEach(() => {
   apiFetchMock.mockReset();
 });
 
+/** Resultados de `GET /api/users/users/?search=` para los tests de conceder. */
+function cuentasBuscadas(path: string) {
+  const cuentas = [
+    { id: 7, username: "ana", email: "ana@example.com" },
+    { id: 9, username: "luis", email: "luis@example.com" },
+  ];
+  const buscado = new URLSearchParams(path.split("?")[1] ?? "").get("search") ?? "";
+  const results = cuentas.filter((c) => c.username.includes(buscado));
+  return { count: results.length, next: null, previous: null, results };
+}
+
+/** Elige una cuenta en el buscador de «Conceder rol» (`AccountPicker`). */
+async function elegirCuenta(username: string) {
+  const cambiar = screen.queryByRole("button", { name: "Cambiar" });
+  if (cambiar) await userEvent.click(cambiar);
+  await userEvent.type(screen.getByLabelText("Buscar cuenta (email o usuario)"), username);
+  await userEvent.click(await screen.findByRole("button", { name: `${username} (${username}@example.com)` }));
+}
+
 describe("PlataformaRolesPage", () => {
   it("expone el título de la página vía generateMetadata", async () => {
     expect((await generateMetadata()).title).toBe("Roles de plataforma");
@@ -142,7 +161,7 @@ describe("PlataformaRolesPage", () => {
     // Informe del panel, error 54: el rol vigente se sustituía sin avisar.
     apiFetchMock.mockImplementation(async (path: string, init?: { method?: string }) => {
       if (init?.method === "POST") return { user: 7, username: "ana", role: "verifier" };
-      if (path.startsWith("/api/users/users/")) return { count: 0, next: null, previous: null, results: [] };
+      if (path.startsWith("/api/users/users/")) return cuentasBuscadas(path);
       return [{ user: 7, username: "ana", role: "moderator", granted_by: 2, created_at: "2026-09-01T00:00:00Z" }];
     });
     getServerSessionMock.mockResolvedValue({
@@ -153,7 +172,7 @@ describe("PlataformaRolesPage", () => {
     render(await PlataformaRolesPage());
     await screen.findByText(/ana \(#7\)/);
 
-    await userEvent.type(screen.getByLabelText("Id de usuario"), "7");
+    await elegirCuenta("ana");
     await userEvent.selectOptions(screen.getByLabelText("Rol"), "verifier");
     await userEvent.click(screen.getByRole("button", { name: "Conceder" }));
 
@@ -182,7 +201,7 @@ describe("PlataformaRolesPage", () => {
   it("conceder un rol a quien no tiene ninguno, o el mismo que ya tiene, no pide confirmación", async () => {
     apiFetchMock.mockImplementation(async (path: string, init?: { method?: string }) => {
       if (init?.method === "POST") return { user: 9, username: "luis", role: "support" };
-      if (path.startsWith("/api/users/users/")) return { count: 0, next: null, previous: null, results: [] };
+      if (path.startsWith("/api/users/users/")) return cuentasBuscadas(path);
       return [{ user: 7, username: "ana", role: "moderator", granted_by: 2, created_at: "2026-09-01T00:00:00Z" }];
     });
     getServerSessionMock.mockResolvedValue({
@@ -193,7 +212,7 @@ describe("PlataformaRolesPage", () => {
     render(await PlataformaRolesPage());
     await screen.findByText(/ana \(#7\)/);
 
-    await userEvent.type(screen.getByLabelText("Id de usuario"), "9");
+    await elegirCuenta("luis");
     await userEvent.click(screen.getByRole("button", { name: "Conceder" }));
     expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
     await waitFor(() =>
@@ -204,8 +223,7 @@ describe("PlataformaRolesPage", () => {
     );
 
     apiFetchMock.mockClear();
-    await userEvent.clear(screen.getByLabelText("Id de usuario"));
-    await userEvent.type(screen.getByLabelText("Id de usuario"), "7");
+    await elegirCuenta("ana");
     await userEvent.click(screen.getByRole("button", { name: "Conceder" }));
     expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
   });

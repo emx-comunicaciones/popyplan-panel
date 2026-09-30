@@ -12,7 +12,40 @@
     "items": "{count, plural, one {# elemento} other {# elementos}}",
     "confirm": "Confirmar",
     "noPhoneNotice": "Popyplan no guarda teléfonos: contacta con la persona por el chat de la app o a través de su referente.",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "menuOpen": "Abrir menú",
+    "menuClose": "Cerrar menú",
+    "picker": {
+      "change": "Cambiar",
+      "placeholder": "Escribe para buscar…",
+      "minChars": "Escribe al menos {count} caracteres para buscar.",
+      "error": "No se pudo buscar. Inténtalo de nuevo.",
+      "loading": "Buscando…",
+      "empty": "Nada coincide con la búsqueda."
+    }
+  },
+  "enums": {
+    "orgRole": {
+      "titular": "Titular",
+      "moderador": "Moderador/a",
+      "dinamizador": "Dinamizador/a",
+      "analista": "Analista",
+      "referente": "Referente"
+    },
+    "communityRole": {
+      "owner": "Propietario/a",
+      "moderator": "Moderador/a",
+      "member": "Miembro"
+    },
+    "reportTarget": {
+      "user": "Persona",
+      "community": "Comunidad",
+      "event": "Actividad",
+      "post": "Publicación",
+      "comment": "Comentario",
+      "message": "Mensaje",
+      "organization": "Entidad"
+    }
   },
   "account": {
     "title": "Cuenta",
@@ -974,9 +1007,11 @@
       "dataLoadErrorDescription": "No se pudo cargar la ficha de la entidad.",
       "loading": "Cargando…",
       "teamTitle": "Equipo",
-      "userIdLabel": "Id de usuario",
+      "userIdLabel": "Persona",
       "roleLabel": "Rol",
       "addButton": "Añadir",
+      "chooseReferent": "Elige un referente",
+      "referentsUnavailableHint": "Solo el titular puede ver el equipo, y de ahí salen los referentes.",
       "teamLoadError": "No se pudo cargar el equipo",
       "teamEmpty": "Sin equipo todavía",
       "teamTableCaption": "Equipo de la entidad",
@@ -987,8 +1022,8 @@
       "removeFromTeamDescription": "¿Quitar a «{name}» del equipo de la entidad? Dejará de tener rol en el panel.",
       "selfRemovalWarning": "Vas a quitarte a ti mismo del equipo y perderás el acceso al panel.",
       "referencesTitle": "Referencias",
-      "personIdLabel": "Persona (id)",
-      "referentIdLabel": "Referente (id)",
+      "personIdLabel": "Persona",
+      "referentIdLabel": "Referente",
       "assignButton": "Asignar",
       "referencesLoadError": "No se pudieron cargar los referentes",
       "referencesLoadErrorDescription": "No se pudieron cargar los referentes de la entidad.",
@@ -2754,7 +2789,7 @@
       "orgTypeAdministracion": "Administración",
       "slugLabel": "Slug",
       "cifLabel": "CIF",
-      "parentIdLabel": "Entidad paraguas (id, opcional)",
+      "parentIdLabel": "Entidad paraguas (opcional)",
       "descriptionLabel": "Descripción",
       "createAction": "Crear entidad",
       "created": "Entidad «{name}» creada, sin verificar."
@@ -2775,7 +2810,7 @@
       "umbrellaCardTitle": "Entidad paraguas",
       "currentParent": "Paraguas actual: {parent}",
       "noParent": "sin asignar",
-      "newParentLabel": "Nuevo paraguas (id, vacío para quitar)",
+      "newParentLabel": "Nuevo paraguas (déjalo vacío para quitarlo)",
       "saved": "Guardado.",
       "childrenCardTitle": "Entidades hijas",
       "childrenLoadError": "No se pudieron cargar las hijas",
@@ -2794,8 +2829,8 @@
       "teamEmpty": "Sin equipo todavía",
       "removeAction": "Quitar",
       "referencesCardTitle": "Referencias",
-      "personIdLabel": "Persona (id)",
-      "referentIdLabel": "Referente (id)",
+      "personIdLabel": "Persona",
+      "referentIdLabel": "Referente",
       "assignAction": "Asignar",
       "referencesEmpty": "Sin referencias todavía",
       "referenceRow": "{name} — referente #{referentId}",
@@ -2883,7 +2918,7 @@
       "roleSupport": "Soporte",
       "grantTitle": "Conceder rol",
       "searchLabel": "Buscar cuenta (email o usuario)",
-      "userIdLabel": "Id de usuario",
+      "userIdLabel": "Persona",
       "roleLabel": "Rol",
       "grantAction": "Conceder",
       "grantSuccess": "Rol concedido.",
@@ -2901,7 +2936,7 @@
     "auditoria": {
       "heading": "Auditoría",
       "noAccessDescription": "Solo superadmin ve la auditoría de la plataforma.",
-      "actorLabel": "Actor (id)",
+      "actorLabel": "Actor",
       "actionLabel": "Acción",
       "targetTypeLabel": "Tipo de objetivo",
       "targetIdLabel": "Id de objetivo",
@@ -3700,14 +3735,6 @@
     },
     "userSearch": {
       "error": "No se pudo buscar cuentas."
-    },
-    "orgRoles": {
-      "titular": "Titular",
-      "moderador": "Moderador",
-      "dinamizador": "Dinamizador",
-      "analista": "Analista",
-      "referente": "Referente",
-      "voluntario": "Voluntario"
     }
   },
   "paraguas": {

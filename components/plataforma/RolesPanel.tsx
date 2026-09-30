@@ -3,8 +3,8 @@
 /**
  * Roles de plataforma (tarea W5, `docs/SEGURIDAD_Y_MODERACION.md` §1):
  * listado (solo `superadmin`), conceder (buscador de cuentas por email/
- * username vía `GET /api/users/users/?search=` cuando esté disponible —
- * ver `hooks/useUserSearch.ts` —, con un id manual como alternativa) y
+ * username vía `GET /api/users/users/?search=` — ver
+ * `components/plataforma/AccountPicker.tsx`; el id ya no se teclea) y
  * revocar (con confirmación, es una acción de alto impacto: quita acceso
  * a la plataforma). Una cuenta tiene un solo rol de plataforma: conceder
  * otro distinto sustituye al que tenía, así que antes se pide confirmación
@@ -13,19 +13,19 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
+import { AccountPicker } from "@/components/plataforma/AccountPicker";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import type { PickerOption } from "@/components/ui/SearchPicker";
 import {
   useGrantPlatformRole,
   usePlatformRoles,
   useRevokePlatformRole,
   type PlatformRolesErrorKind,
 } from "@/hooks/usePlatformRoles";
-import { useUserSearch } from "@/hooks/useUserSearch";
 import type { PlatformRoleName } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 
@@ -63,25 +63,16 @@ function GrantRoleForm() {
   const grant = useGrantPlatformRole();
   const currentRoles = usePlatformRoles();
   const [replacing, setReplacing] = useState<{ user: number; current: PlatformRoleName } | null>(null);
-  const [search, setSearch] = useState("");
-  const [userId, setUserId] = useState("");
+  const [account, setAccount] = useState<PickerOption | null>(null);
   const [role, setRole] = useState<PlatformRoleName>("moderator");
-  /**
-   * El `<input>` es inmediato, pero la búsqueda de cuentas se lanza con
-   * retardo (`useDebouncedValue`, 300 ms): `useUserSearch` ya se
-   * contiene hasta los dos caracteres, y aun así teclear «ana» pedía
-   * «an» y «ana».
-   */
-  const debouncedSearch = useDebouncedValue(search);
-  const results = useUserSearch(debouncedSearch);
 
   function doGrant() {
+    if (!account) return;
     grant.mutate(
-      { user: Number(userId), role },
+      { user: account.id, role },
       {
         onSuccess: () => {
-          setUserId("");
-          setSearch("");
+          setAccount(null);
           setReplacing(null);
         },
         onError: () => setReplacing(null),
@@ -91,67 +82,31 @@ function GrantRoleForm() {
 
   return (
     <Card title={t("plataforma.roles.grantTitle")}>
-      <div className="mb-3">
-        <label htmlFor="roles-search" className="mb-1 block text-sm font-medium text-text-form">
-          {t("plataforma.roles.searchLabel")}
-        </label>
-        <input
+      <div className="mb-3 max-w-md">
+        <AccountPicker
           id="roles-search"
-          type="search"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
+          label={t("plataforma.roles.searchLabel")}
+          value={account}
+          onChange={setAccount}
         />
-        {results.isError ? (
-          <p role="alert" className="mt-1 text-sm text-error">
-            {t("plataforma.userSearch.error")}
-          </p>
-        ) : null}
-        {results.data && results.data.length > 0 ? (
-          <ul className="mt-1 flex flex-col gap-1 rounded-md border border-border p-2 text-sm">
-            {results.data.map((user) => (
-              <li key={user.id}>
-                <button
-                  type="button"
-                  className="text-left text-primary-700 underline"
-                  onClick={() => setUserId(String(user.id))}
-                >
-                  #{user.id} — {user.username} ({user.email})
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : null}
       </div>
 
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          if (!userId) return;
+          if (!account) return;
           // Un solo rol por cuenta: si ya tiene otro distinto, se avisa de
           // cuál se pierde antes de sustituirlo.
-          const current = currentRoles.data?.find((entry) => entry.user === Number(userId))?.role;
+          const current = currentRoles.data?.find((entry) => entry.user === account.id)?.role;
           if (current && current !== role) {
             grant.reset();
-            setReplacing({ user: Number(userId), current });
+            setReplacing({ user: account.id, current });
             return;
           }
           doGrant();
         }}
         className="flex flex-wrap items-end gap-3"
       >
-        <div>
-          <label htmlFor="roles-user-id" className="mb-1 block text-sm font-medium text-text-form">
-            {t("plataforma.roles.userIdLabel")}
-          </label>
-          <input
-            id="roles-user-id"
-            type="number"
-            value={userId}
-            onChange={(event) => setUserId(event.target.value)}
-            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-          />
-        </div>
         <div>
           <label htmlFor="roles-role" className="mb-1 block text-sm font-medium text-text-form">
             {t("plataforma.roles.roleLabel")}
@@ -169,7 +124,7 @@ function GrantRoleForm() {
             ))}
           </select>
         </div>
-        <Button type="submit" disabled={!userId || grant.isPending}>
+        <Button type="submit" disabled={!account || grant.isPending}>
           {t("plataforma.roles.grantAction")}
         </Button>
       </form>
