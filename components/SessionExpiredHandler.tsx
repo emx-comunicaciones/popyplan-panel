@@ -11,7 +11,10 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 import { logout } from "@/hooks/useAuth";
+import { onLogoutElsewhere } from "@/lib/auth/logoutBroadcast";
 import { subscribeSessionExpired } from "@/lib/auth/sessionEvents";
+import { setAccessToken } from "@/lib/auth/tokenStore";
+import { hardNavigate } from "@/lib/navigation/hardNavigate";
 
 export function SessionExpiredHandler(): null {
   const router = useRouter();
@@ -23,6 +26,15 @@ export function SessionExpiredHandler(): null {
       });
     });
   }, [router]);
+
+  // Otra pestaña cerró sesión: la cookie ya está borrada, así que solo
+  // hay que olvidar el token en memoria y salir (error 38 del informe).
+  useEffect(() => {
+    return onLogoutElsewhere(() => {
+      setAccessToken(null);
+      hardNavigate("/login");
+    });
+  }, []);
 
   return null;
 }

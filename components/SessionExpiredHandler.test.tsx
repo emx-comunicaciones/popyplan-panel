@@ -38,3 +38,33 @@ describe("SessionExpiredHandler", () => {
     expect(container).toBeEmptyDOMElement();
   });
 });
+
+describe("SessionExpiredHandler: cierre de sesión en otra pestaña (error 38)", () => {
+  it("al recibir el aviso de otra pestaña olvida el token y va a /login", async () => {
+    const assign = vi.fn();
+    vi.stubGlobal("location", { ...window.location, assign });
+    setAccessToken("token-vivo");
+    render(<SessionExpiredHandler />);
+
+    const other = new BroadcastChannel("pp-session");
+    other.postMessage({ type: "logout", from: "otra-pestana" });
+    other.close();
+
+    await waitFor(() => expect(assign).toHaveBeenCalledWith("/login"));
+    expect(getAccessToken()).toBeNull();
+  });
+
+  it("logout() avisa a las demás pestañas", async () => {
+    vi.stubGlobal("fetch", fetchMock);
+    fetchMock.mockResolvedValue({ ok: true, status: 200, json: async () => ({}) } as Response);
+    const received = vi.fn();
+    const other = new BroadcastChannel("pp-session");
+    other.onmessage = (event) => received(event.data);
+
+    const { logout } = await import("@/hooks/useAuth");
+    await logout();
+
+    await waitFor(() => expect(received).toHaveBeenCalledWith(expect.objectContaining({ type: "logout" })));
+    other.close();
+  });
+});
