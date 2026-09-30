@@ -2823,13 +2823,12 @@
       "created": "Entitat «{name}» creada, sense verificar.",
       "slugHint": "Es treu del nom i va a l'adreça web. El pots canviar.",
       "slugInvalid": "Només lletres minúscules sense accents, números i guionets.",
-      "cifInvalid": "Aquest CIF, NIF o NIE no és vàlid: revisa la lletra o el dígit de control.",
       "missing": {
         "intro": "Per crear l'entitat falta: {fields}.",
         "name": "el nom",
         "slug": "un identificador vàlid",
         "place": "el municipi de la seu",
-        "cif": "un CIF vàlid"
+        "cif": "el CIF"
       }
     },
     "entidadFicha": {
