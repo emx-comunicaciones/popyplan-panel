@@ -7,18 +7,16 @@
  * al editar, `organization`/`tier` se muestran de solo lectura. Mismo
  * patrón `editing: Contract | "new"` que `ProgramaForm.tsx`.
  *
- * **Límite conocido**: el selector de entidad usa `useOrganizations()`
- * sin filtro, solo la primera página (`ORGANIZATIONS.LIST` es paginada,
- * `docs/SEGURIDAD_Y_MODERACION.md` §8) — suficiente para el volumen de
- * entidades de esta fase; paginar el propio selector queda para quien
- * amplíe esta pantalla si hiciera falta.
+ * El selector de entidad usa `useAllOrganizations()`: el listado pagina de
+ * 20 en 20 y con `useOrganizations()` solo salían las primeras (informe del
+ * panel, error 16).
  */
 import { useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
 import { useCreateContract, useTiers, useUpdateContract, type BillingErrorKind } from "@/hooks/useBilling";
-import { useOrganizations } from "@/hooks/useOrganizations";
+import { useAllOrganizations } from "@/hooks/useOrganizations";
 import type { Contract } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 
@@ -52,7 +50,7 @@ const UPDATE_CONTRACT_ERROR_KEYS: Record<BillingErrorKind, string> = {
 
 export function ContratoForm({ editing, onDone }: ContratoFormProps) {
   const t = useTranslations();
-  const organizations = useOrganizations();
+  const organizations = useAllOrganizations();
   const tiers = useTiers();
   const createContract = useCreateContract();
   const updateContract = useUpdateContract();

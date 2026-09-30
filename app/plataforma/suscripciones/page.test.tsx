@@ -84,6 +84,44 @@ describe("PlataformaSuscripcionesPage", () => {
     expect(screen.getAllByText("Ayuntamiento de Irun").length).toBeGreaterThan(0);
   });
 
+  it("los selectores de entidad ofrecen todas las entidades, no solo la primera página", async () => {
+    // Informe del panel, error 16: el listado pagina de 20 en 20.
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/?") {
+        return {
+          count: 2,
+          next: "http://api/api/organizations/?page=2",
+          previous: null,
+          results: [buildOrganization({ id: 7, name: "Ayuntamiento de Irun" })],
+        };
+      }
+      if (path === "/api/organizations/?page=2") {
+        return {
+          count: 2,
+          next: null,
+          previous: "http://api/api/organizations/",
+          results: [buildOrganization({ id: 8, name: "Asociación de la página dos" })],
+        };
+      }
+      if (path === "/api/plataforma/billing/contracts/") return [CONTRACT];
+      if (path === "/api/plataforma/billing/tiers/") return [buildPricingTier()];
+      throw new Error(`sin mock para ${path}`);
+    });
+    await renderPage("superadmin");
+
+    const filtro = screen.getByLabelText("Entidad");
+    await waitFor(() =>
+      expect(within(filtro).getByRole("option", { name: "Asociación de la página dos" })).toBeInTheDocument(),
+    );
+    expect(within(filtro).getByRole("option", { name: "Ayuntamiento de Irun" })).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Nuevo contrato" }));
+    const dialog = await screen.findByRole("dialog");
+    expect(
+      within(dialog).getByRole("option", { name: "Asociación de la página dos" }),
+    ).toBeInTheDocument();
+  });
+
   it("support ve la misma lista sin ningún botón de escritura (oculto, no deshabilitado)", async () => {
     mockApiFetch();
     await renderPage("support");

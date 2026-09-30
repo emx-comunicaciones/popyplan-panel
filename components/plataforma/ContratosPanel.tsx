@@ -45,7 +45,7 @@ import {
   type BillingErrorKind,
   type ContractsFilters,
 } from "@/hooks/useBilling";
-import { useOrganizations } from "@/hooks/useOrganizations";
+import { useAllOrganizations } from "@/hooks/useOrganizations";
 import type { Contract, ContractStatus, Invoice, InvoiceStatus, PricingTier } from "@/lib/api/types";
 import { tierRangeFromFields, validateTierRange } from "@/lib/billing/tierRange";
 import { errorKindText } from "@/lib/i18n/errorKindText";
@@ -163,7 +163,7 @@ interface ContratosTabProps {
 function ContratosTab({ canManage, onViewInvoices }: ContratosTabProps) {
   const t = useTranslations();
   const locale = useLocale();
-  const organizations = useOrganizations();
+  const organizations = useAllOrganizations();
   const [filters, setFilters] = useState<ContractsFilters>({});
   const contracts = useContracts(filters);
   const activate = useActivateContract();

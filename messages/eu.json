@@ -2822,7 +2822,9 @@
       "trackingDisableConfirmTitle": "Jarraipen-programa desaktibatu?",
       "trackingDisableConfirmDescription": "Izen-emateak zain geratzen dira: inork ezingo ditu ikusi ez erabili berriro aktibatu arte. Ez da ezer ezabatzen.",
       "trackingEnableAction": "Aktibatu",
-      "trackingDisableAction": "Desaktibatu"
+      "trackingDisableAction": "Desaktibatu",
+      "firstTitularNotice": "Erakunde honek ez du oraindik titularrik. Superadmin gisa lehena eman diezaiokezu (Titularra rolarekin bakarrik); ondoren titularrak kudeatuko du bere taldea.",
+      "firstTitularAssigned": "Titularra esleituta. Hemendik aurrera titularrak kudeatzen du erakundearen taldea."
     },
     "reportes": {
       "heading": "Salaketak",
@@ -2886,7 +2888,10 @@
       "revokeAction": "Baliogabetu",
       "revokeConfirmTitle": "Plataforma-rola baliogabetu",
       "revokeConfirmDescription": "Pertsona honek plataformaren panelerako sarbidea galduko du.",
-      "revokeSelfWarning": "Zure rola da: atal honetarako sarbidea galduko duzu."
+      "revokeSelfWarning": "Zure rola da: atal honetarako sarbidea galduko duzu.",
+      "replaceConfirmTitle": "Plataformako rola ordezkatu",
+      "replaceConfirmDescription": "#{user} kontuak badu jada «{current}» rola. Kontu batek plataformako rol bakarra izan dezake: «{next}» emanez gero, «{current}» galduko du.",
+      "replaceConfirmAction": "Rola ordezkatu"
     },
     "auditoria": {
       "heading": "Auditoria",
@@ -3688,6 +3693,14 @@
     },
     "userSearch": {
       "error": "Ezin izan dira kontuak bilatu."
+    },
+    "orgRoles": {
+      "titular": "Titularra",
+      "moderador": "Moderatzailea",
+      "dinamizador": "Dinamizatzailea",
+      "analista": "Analista",
+      "referente": "Erreferentea",
+      "voluntario": "Boluntarioa"
     }
   },
   "paraguas": {

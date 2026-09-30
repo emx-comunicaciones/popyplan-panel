@@ -554,6 +554,13 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
   const removeReference = useRemoveOrgReference(orgId);
   const [userId, setUserId] = useState("");
   const [role, setRole] = useState<OrgMembershipRole>("dinamizador");
+  // Una entidad sin titular no la gestiona nadie: un superadmin puede darle
+  // el primero, y el backend solo admite entonces el rol titular (informe del
+  // panel, error 14). Los demás roles de plataforma no llegan a verla.
+  const isFirstTitular =
+    platformRole === "superadmin" && !!members.data && !members.data.some((member) => member.role === "titular");
+  const roleOptions: OrgMembershipRole[] = isFirstTitular ? ["titular"] : ROLE_OPTIONS;
+  const roleToSend: OrgMembershipRole = roleOptions.includes(role) ? role : roleOptions[0];
   const [refUser, setRefUser] = useState("");
   const [refReferent, setRefReferent] = useState("");
   const [removingMember, setRemovingMember] = useState<OrgMembershipFull | null>(null);
@@ -568,6 +575,11 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
       </p>
 
       <Card title={t("plataforma.entidadFicha.teamCardTitle")}>
+        {isFirstTitular ? (
+          <p role="status" className="mb-3 text-sm text-text-base">
+            {t("plataforma.entidadFicha.firstTitularNotice")}
+          </p>
+        ) : null}
         {canManage ? (
           <form
             onSubmit={(event) => {
@@ -575,7 +587,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
               if (!userId) return;
               // El campo se vacía solo si el alta sale bien: si falla, el id
               // sigue ahí para corregirlo sin volver a teclearlo.
-              addMember.mutate({ user: Number(userId), role }, { onSuccess: () => setUserId("") });
+              addMember.mutate({ user: Number(userId), role: roleToSend }, { onSuccess: () => setUserId("") });
             }}
             className="mb-4 flex flex-wrap items-end gap-3"
           >
@@ -597,11 +609,11 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
               </label>
               <select
                 id="plataforma-equipo-role"
-                value={role}
+                value={roleToSend}
                 onChange={(event) => setRole(event.target.value as OrgMembershipRole)}
                 className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
               >
-                {ROLE_OPTIONS.map((value) => (
+                {roleOptions.map((value) => (
                   <option key={value} value={value}>
                     {value}
                   </option>
@@ -621,7 +633,14 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
           </p>
         ) : null}
 
-        {members.isError ? (
+        {members.isError && addMember.isSuccess ? (
+          // Recién asignado el primer titular, el superadmin deja de poder
+          // ver el equipo (lo gestiona ya el titular): se dice, en vez de un
+          // «sin acceso» que parece un fallo.
+          <p role="status" className="text-sm text-success">
+            {t("plataforma.entidadFicha.firstTitularAssigned")}
+          </p>
+        ) : members.isError ? (
           <EmptyState
             title={t("common.noAccess")}
             description={errorKindText(members.error, ORG_MEMBERS_QUERY_ERROR_KEYS, t, "errors.orgMembers.desconocido")}

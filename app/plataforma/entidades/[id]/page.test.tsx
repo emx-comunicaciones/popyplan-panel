@@ -16,6 +16,7 @@ import { axe } from "@/test-utils/axe";
 import { NextNotFoundSignal, NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildOrganization } from "@/test-utils/fixtures/organization";
+import { buildOrgMembershipFull } from "@/test-utils/fixtures/orgMembershipFull";
 import { buildPlaceRow } from "@/test-utils/fixtures/places";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
 import { buildContract, buildInvoice } from "@/test-utils/fixtures/billing";
@@ -263,6 +264,67 @@ describe("PlataformaEntidadDetailPage", () => {
       expect(screen.getByText("Esta persona ya está en el equipo.")).toBeInTheDocument(),
     );
     expect(screen.getByLabelText("Id de usuario")).toHaveValue(42);
+  });
+
+  it("Equipo: una entidad sin titular deja al superadmin asignar el primero (solo rol Titular) y lo explica", async () => {
+    // Informe del panel, error 14: sin titular nadie gestionaba el equipo.
+    let asignado = false;
+    apiFetchMock.mockImplementation(async (path: string, options?: { method?: string; body?: unknown }) => {
+      if (path === "/api/organizations/9/") {
+        return buildOrganization({ id: 9, name: "Entidad Nueva" });
+      }
+      if (path.includes("/members/") && options?.method === "POST") {
+        asignado = true;
+        return buildOrgMembershipFull({ user: 42, role: "titular" });
+      }
+      if (path.includes("/members/")) {
+        // Con titular ya puesto, el backend cierra el listado a la plataforma.
+        if (asignado) throw new ApiError(403, { detail: "Solo el titular gestiona el equipo." });
+        return [buildOrgMembershipFull({ user: 5, role: "voluntario" })];
+      }
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const user = userEvent.setup();
+    render(await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) }));
+    await user.click(screen.getByRole("button", { name: "Equipo" }));
+
+    expect(await screen.findByText(/todavía no tiene titular/)).toBeInTheDocument();
+    const rol = screen.getByLabelText("Rol");
+    expect(within(rol).getAllByRole("option").map((o) => o.textContent)).toEqual(["titular"]);
+
+    await user.type(screen.getByLabelText("Id de usuario"), "42");
+    await user.click(screen.getByRole("button", { name: "Añadir" }));
+    expect(apiFetchMock).toHaveBeenCalledWith("/api/organizations/9/members/", {
+      method: "POST",
+      body: { user: 42, role: "titular" },
+    });
+    expect(await screen.findByText(/Titular asignado/)).toBeInTheDocument();
+  });
+
+  it("Equipo: con titular el superadmin ve todos los roles y no el aviso del primer titular", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") return buildOrganization({ id: 9, name: "Entidad Con Titular" });
+      if (path.includes("/members/")) return [buildOrgMembershipFull({ user: 5, role: "titular" })];
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const user = userEvent.setup();
+    render(await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) }));
+    await user.click(screen.getByRole("button", { name: "Equipo" }));
+    await waitFor(() => expect(screen.getAllByRole("listitem").length).toBeGreaterThan(0));
+    expect(screen.queryByText(/todavía no tiene titular/)).not.toBeInTheDocument();
+    expect(within(screen.getByLabelText("Rol")).getAllByRole("option").length).toBe(6);
   });
 
   it("Equipo: «Quitar» pide confirmación y el error se lee dentro del diálogo", async () => {
