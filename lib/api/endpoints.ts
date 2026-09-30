@@ -574,7 +574,10 @@ export const PLACES = {
  */
 export const COMMUNITY_POSTS = {
   /**
-   * `GET /api/community-posts/?community=&is_active=&page=`
+   * `GET /api/community-posts/?community=&audience=&is_active=&page=`
+   * (`audience`: `open|community|activity`; sin `community` lista
+   * también las abiertas y las de actividad, CONTRATO «Publicar donde
+   * quieras»)
    * (`communities/unified_viewset.py::AdminCommunityPostViewSet`,
    * `IsAdminUser`): activas y ocultas, de la más reciente a la más
    * antigua, paginadas de 20 en 20. `?search=` no hace nada.

@@ -1220,14 +1220,33 @@ export interface PlatformCommunityDetail {
   created_at: string;
 }
 
+/** Sitio de una publicación (CONTRATO «Publicar donde quieras»). */
+export type PostAudience = "open" | "community" | "activity";
+
 /**
- * Publicación de comunidad (`CommunityPostSerializer`, vía
+ * De dónde viene una publicación: `null` en abierto (nunca nombra una
+ * comunidad ni una entidad), la comunidad o la actividad en los otros dos.
+ */
+export type PostWhere =
+  | { type: "community"; id: string; name: string }
+  | { type: "activity"; id: number | string; title: string; starts_at: string | null }
+  | null;
+
+/**
+ * Publicación de comunidad, abierta o de actividad (`CommunityPostSerializer`, vía
  * `AdminCommunityPostViewSet`). El esquema no declara los filtros
  * `community`/`is_active` del listado.
  */
 export interface PlatformCommunityPost {
   id: string;
-  community: string;
+  /** `null` si la publicación es abierta o de una actividad. */
+  community: string | null;
+  /** Sitio elegido al publicar; no cambia nunca. Sin él (backend antiguo), `community`. */
+  audience?: PostAudience;
+  /** De dónde viene (`null` en abierto). Mismo contrato que `PostSerializer.where`. */
+  where?: PostWhere;
+  /** Id de la actividad (`audience: "activity"`). */
+  event?: number | string | null;
   author: { id: string; public_name: string } | null;
   author_name: string;
   content: string;

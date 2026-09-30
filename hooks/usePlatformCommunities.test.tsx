@@ -178,6 +178,17 @@ describe("usePlatformCommunityPosts", () => {
     expect(apiFetchMock).toHaveBeenCalledWith(`/api/community-posts/?community=${COMMUNITY_ID}&page=1`);
   });
 
+  it("sin comunidad es el listado global, con audience e is_active", async () => {
+    freshClient();
+    apiFetchMock.mockResolvedValueOnce(page([]));
+    const { result } = renderHook(
+      () => usePlatformCommunityPosts(undefined, { audience: "open", isActive: true, page: 2 }),
+      { wrapper },
+    );
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(apiFetchMock).toHaveBeenCalledWith("/api/community-posts/?page=2&audience=open&is_active=true");
+  });
+
   it("404 → pagina_inexistente", async () => {
     freshClient();
     apiFetchMock.mockRejectedValueOnce(new ApiError(404, null));
@@ -190,7 +201,7 @@ describe("usePlatformCommunityPosts", () => {
 describe("useSetCommunityPostActive y useDeleteCommunityPost", () => {
   it("oculta una publicación e invalida las publicaciones", async () => {
     const client = freshClient();
-    client.setQueryData(["panel-platform-community-posts", COMMUNITY_ID, null, 1], page([]));
+    client.setQueryData(["panel-platform-community-posts", COMMUNITY_ID, null, null, 1], page([]));
     apiFetchMock.mockResolvedValueOnce(buildPlatformCommunityPost({ is_active: false }));
     const { result } = renderHook(() => useSetCommunityPostActive(), { wrapper });
     result.current.mutate({ postId: "p1", isActive: false });
@@ -199,7 +210,7 @@ describe("useSetCommunityPostActive y useDeleteCommunityPost", () => {
       method: "PATCH",
       body: { is_active: false },
     });
-    expect(client.getQueryState(["panel-platform-community-posts", COMMUNITY_ID, null, 1])?.isInvalidated).toBe(true);
+    expect(client.getQueryState(["panel-platform-community-posts", COMMUNITY_ID, null, null, 1])?.isInvalidated).toBe(true);
   });
 
   it("ocultar con error → kind", async () => {
@@ -213,13 +224,13 @@ describe("useSetCommunityPostActive y useDeleteCommunityPost", () => {
 
   it("borra una publicación", async () => {
     const client = freshClient();
-    client.setQueryData(["panel-platform-community-posts", COMMUNITY_ID, null, 1], page([]));
+    client.setQueryData(["panel-platform-community-posts", COMMUNITY_ID, null, null, 1], page([]));
     apiFetchMock.mockResolvedValueOnce(undefined);
     const { result } = renderHook(() => useDeleteCommunityPost(), { wrapper });
     result.current.mutate("p1");
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(apiFetchMock).toHaveBeenCalledWith("/api/community-posts/p1/", { method: "DELETE" });
-    expect(client.getQueryState(["panel-platform-community-posts", COMMUNITY_ID, null, 1])?.isInvalidated).toBe(true);
+    expect(client.getQueryState(["panel-platform-community-posts", COMMUNITY_ID, null, null, 1])?.isInvalidated).toBe(true);
   });
 
   it("borrar con error → kind", async () => {
