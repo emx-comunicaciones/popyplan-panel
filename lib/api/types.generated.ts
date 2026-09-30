@@ -24361,6 +24361,13 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     plataforma_billing_contracts_retrieve: {

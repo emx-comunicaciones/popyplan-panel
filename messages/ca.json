@@ -2821,7 +2821,9 @@
       "trackingDisableConfirmTitle": "Desactivar el programa de seguiment?",
       "trackingDisableConfirmDescription": "Les inscripcions queden en suspens: ningú no les podrà veure ni fer servir fins que es torni a activar. No s'esborra res.",
       "trackingEnableAction": "Activar",
-      "trackingDisableAction": "Desactivar"
+      "trackingDisableAction": "Desactivar",
+      "firstTitularNotice": "Aquesta entitat encara no té titular. Com a superadmin li pots donar el primer (només amb el rol Titular); després serà el titular qui gestioni el seu equip.",
+      "firstTitularAssigned": "Titular assignat. A partir d'ara és el titular qui gestiona l'equip de l'entitat."
     },
     "reportes": {
       "heading": "Informes",
@@ -2885,7 +2887,10 @@
       "revokeAction": "Revocar",
       "revokeConfirmTitle": "Revocar rol de plataforma",
       "revokeConfirmDescription": "Aquesta persona perdrà l'accés al tauler de plataforma.",
-      "revokeSelfWarning": "És el teu propi rol: perdràs l'accés a aquesta secció."
+      "revokeSelfWarning": "És el teu propi rol: perdràs l'accés a aquesta secció.",
+      "replaceConfirmTitle": "Substituir el rol de plataforma",
+      "replaceConfirmDescription": "El compte #{user} ja té el rol «{current}». Un compte només pot tenir un rol de plataforma: en concedir «{next}» perdrà «{current}».",
+      "replaceConfirmAction": "Substituir rol"
     },
     "auditoria": {
       "heading": "Auditoria",
@@ -3687,6 +3692,14 @@
     },
     "userSearch": {
       "error": "No s'han pogut cercar comptes."
+    },
+    "orgRoles": {
+      "titular": "Titular",
+      "moderador": "Moderador",
+      "dinamizador": "Dinamitzador",
+      "analista": "Analista",
+      "referente": "Referent",
+      "voluntario": "Voluntari"
     }
   },
   "paraguas": {

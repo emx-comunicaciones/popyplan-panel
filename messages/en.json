@@ -2821,7 +2821,9 @@
       "trackingDisableConfirmTitle": "Disable the tracking programme?",
       "trackingDisableConfirmDescription": "Enrolments are put on hold: nobody can see or use them until it is enabled again. Nothing is deleted.",
       "trackingEnableAction": "Enable",
-      "trackingDisableAction": "Disable"
+      "trackingDisableAction": "Disable",
+      "firstTitularNotice": "This entity has no titleholder yet. As a superadmin you can assign the first one (Titleholder role only); after that the titleholder manages the team.",
+      "firstTitularAssigned": "Titleholder assigned. From now on the titleholder manages the entity's team."
     },
     "reportes": {
       "heading": "Reports",
@@ -2885,7 +2887,10 @@
       "revokeAction": "Revoke",
       "revokeConfirmTitle": "Revoke platform role",
       "revokeConfirmDescription": "This person will lose access to the platform panel.",
-      "revokeSelfWarning": "This is your own role: you will lose access to this section."
+      "revokeSelfWarning": "This is your own role: you will lose access to this section.",
+      "replaceConfirmTitle": "Replace the platform role",
+      "replaceConfirmDescription": "Account #{user} already has the role “{current}”. An account can only have one platform role: granting “{next}” will remove “{current}”.",
+      "replaceConfirmAction": "Replace role"
     },
     "auditoria": {
       "heading": "Audit log",
@@ -3687,6 +3692,14 @@
     },
     "userSearch": {
       "error": "Accounts could not be searched."
+    },
+    "orgRoles": {
+      "titular": "Titleholder",
+      "moderador": "Moderator",
+      "dinamizador": "Facilitator",
+      "analista": "Analyst",
+      "referente": "Referent",
+      "voluntario": "Volunteer"
     }
   },
   "paraguas": {

@@ -120,6 +120,17 @@ describe("PlataformaUsuarioDetailPage", () => {
     expect(screen.queryByText(/Teléfono:/)).not.toBeInTheDocument();
   });
 
+  it("el rol en cada entidad sale con su nombre, no con el código interno", async () => {
+    // Informe del panel, error 60: la ficha decía «titular» en minúscula, tal como viaja.
+    mockBackend();
+    superadmin();
+    await renderPage();
+
+    const fila = (await screen.findByRole("link", { name: "Asociación Bidasoa" })).closest("li") as HTMLElement;
+    expect(fila).toHaveTextContent("Asociación Bidasoa · Titular");
+    expect(fila).not.toHaveTextContent("titular");
+  });
+
   it("desactiva con confirmación y manda is_active=false", async () => {
     mockBackend();
     superadmin();

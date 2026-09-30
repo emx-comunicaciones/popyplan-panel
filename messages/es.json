@@ -2821,7 +2821,9 @@
       "trackingDisableConfirmTitle": "¿Desactivar el programa de seguimiento?",
       "trackingDisableConfirmDescription": "Las inscripciones quedan en suspenso: nadie podrá verlas ni usarlas hasta que se vuelva a activar. No se borra nada.",
       "trackingEnableAction": "Activar",
-      "trackingDisableAction": "Desactivar"
+      "trackingDisableAction": "Desactivar",
+      "firstTitularNotice": "Esta entidad todavía no tiene titular. Como superadmin puedes darle el primero (solo con el rol Titular); después será el titular quien gestione su equipo.",
+      "firstTitularAssigned": "Titular asignado. A partir de ahora es el titular quien gestiona el equipo de la entidad."
     },
     "reportes": {
       "heading": "Reportes",
@@ -2885,7 +2887,10 @@
       "revokeAction": "Revocar",
       "revokeConfirmTitle": "Revocar rol de plataforma",
       "revokeConfirmDescription": "Esta persona perderá el acceso al panel de plataforma.",
-      "revokeSelfWarning": "Es tu propio rol: perderás el acceso a esta sección."
+      "revokeSelfWarning": "Es tu propio rol: perderás el acceso a esta sección.",
+      "replaceConfirmTitle": "Sustituir el rol de plataforma",
+      "replaceConfirmDescription": "La cuenta #{user} ya tiene el rol «{current}». Una cuenta solo puede tener un rol de plataforma: al conceder «{next}» perderá «{current}».",
+      "replaceConfirmAction": "Sustituir rol"
     },
     "auditoria": {
       "heading": "Auditoría",
@@ -3687,6 +3692,14 @@
     },
     "userSearch": {
       "error": "No se pudo buscar cuentas."
+    },
+    "orgRoles": {
+      "titular": "Titular",
+      "moderador": "Moderador",
+      "dinamizador": "Dinamizador",
+      "analista": "Analista",
+      "referente": "Referente",
+      "voluntario": "Voluntario"
     }
   },
   "paraguas": {

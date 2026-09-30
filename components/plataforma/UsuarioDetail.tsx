@@ -80,6 +80,8 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
   );
 }
 
+const ORG_ROLE_CODES = ["titular", "moderador", "dinamizador", "analista", "referente", "voluntario"];
+
 export function UsuarioDetail({ userId, email, isSelf }: UsuarioDetailProps) {
   const t = useTranslations();
   const router = useRouter();
@@ -94,6 +96,11 @@ export function UsuarioDetail({ userId, email, isSelf }: UsuarioDetailProps) {
   const role = roles.data?.find((entry) => String(entry.user) === String(userId))?.role;
   const data = account.data?.account ?? null;
   const isActive = account.data?.isActive ?? null;
+
+  /** Rol de entidad con su nombre, no el código interno (informe del panel, error 60). */
+  function orgRoleLabel(orgRole: string): string {
+    return ORG_ROLE_CODES.includes(orgRole) ? t(`plataforma.orgRoles.${orgRole}`) : orgRole;
+  }
 
   function levelText(level: number): string {
     const key = VERIFICATION_LEVEL_KEYS[level];
@@ -188,7 +195,7 @@ export function UsuarioDetail({ userId, email, isSelf }: UsuarioDetailProps) {
                     {membership.organization_name}
                   </Link>
                   {" · "}
-                  {membership.role}
+                  {orgRoleLabel(membership.role)}
                 </li>
               ))}
             </ul>
