@@ -2823,13 +2823,12 @@
       "created": "«{name}» erakundea sortuta, egiaztatu gabe.",
       "slugHint": "Izenetik ateratzen da eta web helbidean doa. Alda dezakezu.",
       "slugInvalid": "Letra xehe azentu gabeak, zenbakiak eta marratxoak bakarrik.",
-      "cifInvalid": "IFK, NAN edo AIZ hori ez da baliozkoa: begiratu kontrol-letra edo -digitua.",
       "missing": {
         "intro": "Erakundea sortzeko falta da: {fields}.",
         "name": "izena",
         "slug": "identifikatzaile baliozko bat",
         "place": "egoitzaren udalerria",
-        "cif": "IFK baliozko bat"
+        "cif": "IFKa"
       }
     },
     "entidadFicha": {

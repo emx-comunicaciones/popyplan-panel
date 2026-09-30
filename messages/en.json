@@ -2823,13 +2823,12 @@
       "created": "Entity “{name}” created, not verified.",
       "slugHint": "Taken from the name and used in the web address. You can change it.",
       "slugInvalid": "Only lowercase letters without accents, numbers and hyphens.",
-      "cifInvalid": "That CIF, NIF or NIE is not valid: check the control letter or digit.",
       "missing": {
         "intro": "To create the entity you still need: {fields}.",
         "name": "the name",
         "slug": "a valid identifier",
         "place": "the headquarters town",
-        "cif": "a valid CIF"
+        "cif": "the CIF"
       }
     },
     "entidadFicha": {

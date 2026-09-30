@@ -104,7 +104,7 @@ describe("PlataformaEntidadesPage", () => {
     await user.click(screen.getByRole("button", { name: "Nueva entidad" }));
     await user.type(screen.getByLabelText("Nombre"), "Asociación Bidasoa");
     // El slug sale solo del nombre («asociacion-bidasoa»).
-    await user.type(screen.getByLabelText("CIF"), "G12345674");
+    await user.type(screen.getByLabelText("CIF"), "G12345678");
     await user.type(screen.getByLabelText("Buscar un municipio"), "irun");
     await waitFor(() =>
       expect(screen.getByRole("option", { name: "Irun (Gipuzkoa) · 20069" })).toBeInTheDocument(),
@@ -122,7 +122,7 @@ describe("PlataformaEntidadesPage", () => {
     // elegirla.
     await user.type(screen.getByLabelText("Nombre"), "Asociación Bidasoa");
     // El slug sale solo del nombre («asociacion-bidasoa»).
-    await user.type(screen.getByLabelText("CIF"), "G12345674");
+    await user.type(screen.getByLabelText("CIF"), "G12345678");
     await user.type(screen.getByLabelText("Buscar un municipio"), "irun");
     await waitFor(() =>
       expect(screen.getByRole("option", { name: "Irun (Gipuzkoa) · 20069" })).toBeInTheDocument(),
@@ -158,7 +158,7 @@ describe("PlataformaEntidadesPage", () => {
     expect(screen.getByText("La sede es obligatoria para dar de alta una entidad.")).toBeInTheDocument();
   });
 
-  it("el slug sale del nombre, el CIF se valida al escribir y se dice qué falta", async () => {
+  it("el slug sale del nombre, el CIF es libre y se dice qué falta", async () => {
     apiFetchMock.mockResolvedValue({ count: 0, next: null, previous: null, results: [] });
     getServerSessionMock.mockResolvedValue({
       token: "t",
@@ -171,16 +171,11 @@ describe("PlataformaEntidadesPage", () => {
     await user.click(screen.getByRole("button", { name: "Nueva entidad" }));
     await user.type(screen.getByLabelText("Nombre"), "Asociación de Adicciones de Errenteria");
     expect(screen.getByLabelText("Slug")).toHaveValue("asociacion-de-adicciones-de-errenteria");
+    expect(screen.getByText(/Para crear la entidad falta: el municipio de la sede, el CIF\./)).toBeInTheDocument();
 
-    // Informe del propietario (2026-09-30): dígito de control equivocado.
+    // Decisión del propietario (2026-09-30): cualquier CIF vale, sin comprobar el control.
     await user.type(screen.getByLabelText("CIF"), "B76676689");
-    expect(screen.getByText(/no es válido: revisa la letra o el dígito de control/)).toBeInTheDocument();
-    expect(screen.getByText(/Para crear la entidad falta: .*el municipio de la sede, un CIF válido/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Crear entidad" })).toBeDisabled();
-
-    await user.clear(screen.getByLabelText("CIF"));
-    await user.type(screen.getByLabelText("CIF"), "B76676683");
-    expect(screen.queryByText(/no es válido: revisa la letra/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/no es válido/)).not.toBeInTheDocument();
     expect(screen.getByText(/Para crear la entidad falta: el municipio de la sede\./)).toBeInTheDocument();
   });
 

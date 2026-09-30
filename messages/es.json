@@ -2823,13 +2823,12 @@
       "created": "Entidad «{name}» creada, sin verificar.",
       "slugHint": "Se saca del nombre y va en la dirección web. Puedes cambiarlo.",
       "slugInvalid": "Solo letras minúsculas sin tildes, números y guiones.",
-      "cifInvalid": "Ese CIF, NIF o NIE no es válido: revisa la letra o el dígito de control.",
       "missing": {
         "intro": "Para crear la entidad falta: {fields}.",
         "name": "el nombre",
         "slug": "un identificador válido",
         "place": "el municipio de la sede",
-        "cif": "un CIF válido"
+        "cif": "el CIF"
       }
     },
     "entidadFicha": {

@@ -17,7 +17,6 @@ import { Dialog } from "@/components/ui/Dialog";
 import { useCreateOrganization, type OrganizationsErrorKind } from "@/hooks/useOrganizations";
 import type { OrgTypeEnum } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
-import { isValidFiscalId, normalizeFiscalId } from "@/lib/organizations/fiscalId";
 import { isValidSlug, slugify } from "@/lib/organizations/slug";
 
 import { SedeSelector } from "./SedeSelector";
@@ -61,12 +60,11 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
   // el resto de campos obligatorios de este formulario.
   const slugValue = slugEdited ? slug : slugify(name);
   const slugOk = isValidSlug(slugValue);
-  const cifOk = isValidFiscalId(cif);
   const missing = [
     name.trim().length === 0 ? t("plataforma.entidades.missing.name") : null,
     !slugOk ? t("plataforma.entidades.missing.slug") : null,
     place === null ? t("plataforma.entidades.missing.place") : null,
-    !cifOk ? t("plataforma.entidades.missing.cif") : null,
+    cif.trim().length === 0 ? t("plataforma.entidades.missing.cif") : null,
   ].filter((item): item is string => item !== null);
   const canSubmit = missing.length === 0 && place !== null;
 
@@ -87,7 +85,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
         name: name.trim(),
         slug: slugValue,
         org_type: orgType,
-        cif: normalizeFiscalId(cif),
+        cif: cif.trim(),
         parent: parent ? parent.id : null,
         description: description.trim() || undefined,
         place,
@@ -181,15 +179,8 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
             type="text"
             value={cif}
             onChange={(event) => setCif(event.target.value)}
-            aria-describedby={cif.trim().length > 0 && !cifOk ? "nueva-entidad-cif-error" : undefined}
-            aria-invalid={cif.trim().length > 0 && !cifOk}
             className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
-          {cif.trim().length > 0 && !cifOk ? (
-            <p id="nueva-entidad-cif-error" className="mt-1 text-xs text-error">
-              {t("plataforma.entidades.cifInvalid")}
-            </p>
-          ) : null}
         </div>
         <OrganizationPicker
           id="nueva-entidad-parent"

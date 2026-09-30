@@ -55,7 +55,13 @@ import { AUTH, SAFETY, USERS } from "@/lib/api/endpoints";
 import { serverFetch } from "@/lib/api/serverFetch";
 import type { MeForArea, PlatformRoleMe } from "@/lib/api/types";
 import { forwardedForHeaders } from "@/lib/auth/clientIp";
-import { SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/cookie";
+import {
+  ACCESS_COOKIE_NAME,
+  SESSION_COOKIE_NAME,
+  accessCookieOptions,
+  sessionCookieOptions,
+  usableAccessToken,
+} from "@/lib/auth/cookie";
 import { recallRotation, rememberRotation, type RotatedResult } from "@/lib/auth/rotationCache";
 import { singleFlight } from "@/lib/auth/singleFlight";
 import { parseRefreshedTokens } from "@/lib/auth/tokenRefresh";
@@ -111,14 +117,16 @@ async function rotate(refresh: string, request: NextRequest): Promise<RefreshRes
   return result;
 }
 
-function withRotatedCookie(response: NextResponse, refresh: string): NextResponse {
+function withRotatedCookie(response: NextResponse, refresh: string, access?: string): NextResponse {
   response.cookies.set(SESSION_COOKIE_NAME, refresh, sessionCookieOptions());
+  if (access) response.cookies.set(ACCESS_COOKIE_NAME, access, accessCookieOptions(access));
   return response;
 }
 
 function cleared(body: unknown, status: number) {
   const response = NextResponse.json(body, { status });
   response.cookies.set(SESSION_COOKIE_NAME, "", { ...sessionCookieOptions(), maxAge: 0 });
+  response.cookies.set(ACCESS_COOKIE_NAME, "", { ...sessionCookieOptions(), maxAge: 0 });
   return response;
 }
 
@@ -127,6 +135,26 @@ export async function POST(request: NextRequest) {
 
   if (!refresh) {
     return NextResponse.json({ detail: "Sin sesión." }, { status: 401 });
+  }
+
+  // Con el token de acceso aún vivo no se rota: se devuelve el perfil con
+  // él. Así la restauración de arranque no compite con el middleware ni
+  // con otras pestañas por el mismo refresh.
+  const access = usableAccessToken(request.cookies.get(ACCESS_COOKIE_NAME)?.value);
+  if (access) {
+    const [meResult, roleResult] = await Promise.all([
+      serverFetch<MeForArea>(USERS.ME, access).catch(() => null),
+      serverFetch<PlatformRoleMe>(SAFETY.PLATFORM_ROLE_ME, access).catch(() => null),
+    ]);
+    if (meResult?.ok && roleResult?.ok) {
+      return NextResponse.json({
+        accessToken: access,
+        user: meResult.data,
+        platformRole: roleResult.data,
+      });
+    }
+    // Si el backend no lo acepta (p. ej. cuenta suspendida), se sigue por la
+    // rotación de siempre, que decide si la sesión vale.
   }
 
   let result = await singleFlight(inFlightByRefresh, refresh, () => rotate(refresh, request));
@@ -164,5 +192,6 @@ export async function POST(request: NextRequest) {
       platformRole: result.platformRole,
     }),
     result.refresh,
+    result.access,
   );
 }

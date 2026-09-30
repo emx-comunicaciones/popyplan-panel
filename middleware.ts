@@ -81,7 +81,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { apiBaseUrl } from "@/lib/api/baseUrl";
 import { AUTH } from "@/lib/api/endpoints";
 import { forwardedForHeaders } from "@/lib/auth/clientIp";
-import { ACCESS_TOKEN_HEADER, SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/cookie";
+import {
+  ACCESS_COOKIE_NAME,
+  ACCESS_TOKEN_HEADER,
+  SESSION_COOKIE_NAME,
+  accessCookieOptions,
+  sessionCookieOptions,
+  usableAccessToken,
+} from "@/lib/auth/cookie";
 import { singleFlight } from "@/lib/auth/singleFlight";
 import { parseRefreshedTokens } from "@/lib/auth/tokenRefresh";
 import { requestLanguageHeader } from "@/lib/i18n/requestLanguage";
@@ -182,6 +189,16 @@ export async function middleware(request: NextRequest) {
     return redirectToLogin(request);
   }
 
+  // Token de acceso todavía vivo: se usa tal cual, sin rotar el refresh.
+  // Es lo normal (dura 24 h); rotar en cada petición hacía que los prefetch
+  // del menú se pisaran unos a otros y echaran al login.
+  const access = usableAccessToken(request.cookies.get(ACCESS_COOKIE_NAME)?.value);
+  if (access) {
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set(ACCESS_TOKEN_HEADER, access);
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
+
   let outcome: RefreshOutcome;
   try {
     outcome = await singleFlight(inFlightByRefresh, refresh, () =>
@@ -229,6 +246,7 @@ export async function middleware(request: NextRequest) {
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });
   response.cookies.set(SESSION_COOKIE_NAME, outcome.refresh, sessionCookieOptions());
+  response.cookies.set(ACCESS_COOKIE_NAME, outcome.access, accessCookieOptions(outcome.access));
   return response;
 }
 
