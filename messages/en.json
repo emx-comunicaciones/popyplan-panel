@@ -120,6 +120,7 @@
       "entidades": "Entities",
       "usuarios": "Users",
       "comunidades": "Communities",
+      "publicaciones": "Posts",
       "actividades": "Activities",
       "reportes": "Reports",
       "bloqueos": "Blocks",
@@ -305,6 +306,9 @@
       },
       "comunidadFicha": {
         "title": "Community record"
+      },
+      "publicaciones": {
+        "title": "Posts"
       },
       "actividades": {
         "title": "Activities"
@@ -936,6 +940,11 @@
       "unassigned": "Unassigned",
       "organization": "Entity",
       "organizationGlobal": "Global",
+      "where": "Where from",
+      "whereOpen": "Open (no community or activity)",
+      "whereActivity": "Activity: {title}",
+      "whereCommunity": "Community: {name}",
+      "whereOutside": "Outside a community (open or from an activity)",
       "escalated": "Escalated",
       "escalatedBadge": "Escalated to platform",
       "assignToMe": "Assign to me",
@@ -2439,6 +2448,25 @@
         ],
         "audience": "Superadmin only."
       },
+      "publicaciones": {
+        "title": "Posts",
+        "summary": "Every post on Popyplan, wherever it was published: open, in a community or in an activity.",
+        "details": "The list brings every post, 20 at a time, newest first, hidden ones included. Filter by where it was published (Open, Community or Activity) and by visible or hidden. Each row shows the author, the content, where it comes from and the date. An open post never names a community or an organisation. A post never changes place. Hiding can be undone with “Show”; deleting removes the post with its comments and cannot be undone. None of these actions is recorded in Audit.",
+        "actions": [
+          "Filter by where it was published",
+          "Hide or show a post",
+          "Delete a post"
+        ],
+        "tips": [
+          "When in doubt, hide: deleting cannot be undone.",
+          "To act on a whole community, open its record."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.reportes"
+        ],
+        "audience": "Superadmin only."
+      },
       "resenas": {
         "title": "Reviews",
         "summary": "Every review people leave on activities, and deleting them.",
@@ -3256,6 +3284,18 @@
       "deletePost": "Delete",
       "deletePostTitle": "Delete this post?",
       "deletePostDescription": "The post by {author} is deleted with its comments. This cannot be undone; to take it down without deleting it, hide it."
+    },
+    "publicaciones": {
+      "heading": "Posts",
+      "intro": "Every post on Popyplan, open or from a community or an activity, newest first.",
+      "noAccessDescription": "Only superadmin manages posts from the panel.",
+      "tableCaption": "Posts",
+      "whereHeader": "Where",
+      "audienceFilterLabel": "Published in",
+      "audienceAll": "All",
+      "audienceOpen": "Open",
+      "audienceCommunity": "Community",
+      "audienceActivity": "Activity"
     },
     "resenas": {
       "heading": "Reviews",

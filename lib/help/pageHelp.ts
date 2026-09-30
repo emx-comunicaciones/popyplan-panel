@@ -81,6 +81,7 @@ export const PAGE_HELP: readonly PageHelpEntry[] = [
   { route: "/plataforma/bloqueos", key: "plataforma.bloqueos" },
   { route: "/plataforma/comunidades", key: "plataforma.comunidades" },
   { route: "/plataforma/comunidades/[id]", key: "plataforma.comunidadFicha" },
+  { route: "/plataforma/publicaciones", key: "plataforma.publicaciones" },
   { route: "/plataforma/actividades", key: "plataforma.actividades" },
   { route: "/plataforma/resenas", key: "plataforma.resenas" },
   { route: "/plataforma/chats", key: "plataforma.chats" },

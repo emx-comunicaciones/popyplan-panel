@@ -16,7 +16,7 @@ import {
   useResolveReport,
   type ReportActionErrorKind,
 } from "@/hooks/useReportActions";
-import type { ReportResolution } from "@/lib/api/types";
+import type { ReportDetail, ReportResolution } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 import { REPORT_TARGET_LABEL_KEYS, enumLabel } from "@/lib/i18n/enumLabels";
 import { reasonLabelKey, statusLabelKey } from "@/lib/reports/labels";
@@ -103,6 +103,24 @@ export function availableResolutions(targetType: string, canSuspend: boolean): R
 }
 
 /**
+ * De dónde viene la publicación (o el comentario) reportada: abierta, de
+ * una actividad o de una comunidad (CONTRATO «Publicar donde quieras»).
+ * Usa `target.where` si el backend lo sirve; si no, `community_display`:
+ * sin comunidad solo se sabe que está fuera de una (abierta o de
+ * actividad), y eso es lo que se dice, sin inventar cuál.
+ */
+function postOrigin(data: ReportDetail, t: (key: string, values?: Record<string, string>) => string): string {
+  const where = data.target.where;
+  if (where === null) return t("entidad.reporteDetalle.whereOpen");
+  if (where?.type === "activity") return t("entidad.reporteDetalle.whereActivity", { title: where.title });
+  if (where?.type === "community") return t("entidad.reporteDetalle.whereCommunity", { name: where.name });
+  if (data.community_display) {
+    return t("entidad.reporteDetalle.whereCommunity", { name: data.community_display.name });
+  }
+  return t("entidad.reporteDetalle.whereOutside");
+}
+
+/**
  * Detalle de un reporte (tarea W4a, `docs/SEGURIDAD_Y_MODERACION.md` §4):
  * asignarme, resolver con una resolución y una nota, o escalar a
  * plataforma con una nota. Las tres acciones exigen moderación de la
@@ -157,6 +175,12 @@ export function ReporteDetail({ reportId, readOnly = false, canSuspend = false }
           <dd className="text-text-base">
             {enumLabel(REPORT_TARGET_LABEL_KEYS, data.target.type, t)} — {data.target.name ?? data.target.title ?? data.target.id}
           </dd>
+          {data.target.type === "post" || data.target.type === "comment" ? (
+            <>
+              <dt className="text-text-secondary">{t("entidad.reporteDetalle.where")}</dt>
+              <dd className="text-text-base">{postOrigin(data, t)}</dd>
+            </>
+          ) : null}
           <dt className="text-text-secondary">{t("entidad.reporteDetalle.description")}</dt>
           <dd className="text-text-base">{data.description || "—"}</dd>
           <dt className="text-text-secondary">{t("entidad.reporteDetalle.status")}</dt>

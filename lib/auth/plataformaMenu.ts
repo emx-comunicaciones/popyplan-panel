@@ -60,6 +60,11 @@
  * código—, nunca por `PlatformRole`; y `is_staff` hoy solo lo tiene
  * `superadmin`.
  *
+ * **Publicaciones** (CONTRATO «Publicar donde quieras», 2026-09-30):
+ * listado global de `/api/community-posts/` (abiertas, de comunidad y de
+ * actividad), solo `superadmin`, con el mismo permiso (`IsAdminUser`) y
+ * los mismos roles que las publicaciones de la ficha de comunidad.
+ *
  * Admin de plataforma, bloque 2 (2026-09-26): **Búsqueda del tesoro**
  * (`/plataforma/busca-del-tesoro`), solo `superadmin`: el backend exige
  * `is_staff` o `PlatformRole` superadmin
@@ -71,6 +76,7 @@ export const PLATAFORMA_MENU_ITEMS = [
   "entidades",
   "usuarios",
   "comunidades",
+  "publicaciones",
   "actividades",
   "reportes",
   "bloqueos",
@@ -101,6 +107,7 @@ export const PLATAFORMA_MENU_LABELS: Record<PlataformaMenuItem, string> = {
   entidades: "menu.plataforma.entidades",
   usuarios: "menu.plataforma.usuarios",
   comunidades: "menu.plataforma.comunidades",
+  publicaciones: "menu.plataforma.publicaciones",
   actividades: "menu.plataforma.actividades",
   reportes: "menu.plataforma.reportes",
   bloqueos: "menu.plataforma.bloqueos",

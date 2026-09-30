@@ -120,6 +120,7 @@
       "entidades": "Erakundeak",
       "usuarios": "Erabiltzaileak",
       "comunidades": "Komunitateak",
+      "publicaciones": "Argitalpenak",
       "actividades": "Jarduerak",
       "reportes": "Salaketak",
       "bloqueos": "Blokeoak",
@@ -305,6 +306,9 @@
       },
       "comunidadFicha": {
         "title": "Komunitatearen fitxa"
+      },
+      "publicaciones": {
+        "title": "Argitalpenak"
       },
       "actividades": {
         "title": "Jarduerak"
@@ -936,6 +940,11 @@
       "unassigned": "Esleitu gabe",
       "organization": "Erakundea",
       "organizationGlobal": "Orokorra",
+      "where": "Nondik datorren",
+      "whereOpen": "Irekia (komunitaterik edo jarduerarik gabe)",
+      "whereActivity": "Jarduera: {title}",
+      "whereCommunity": "Komunitatea: {name}",
+      "whereOutside": "Komunitate batetik kanpo (irekia edo jarduera batekoa)",
       "escalated": "Eskalatuta",
       "escalatedBadge": "Plataformara eskalatuta",
       "assignToMe": "Niri esleitu",
@@ -2439,6 +2448,25 @@
         ],
         "audience": "Superadmina bakarrik."
       },
+      "publicaciones": {
+        "title": "Argitalpenak",
+        "summary": "Popyplaneko argitalpen guztiak, non argitaratu diren kontuan hartu gabe: irekian, komunitate batean edo jarduera batean.",
+        "details": "Zerrendak argitalpen guztiak ekartzen ditu, 20na, berriena lehenengo, ezkutatuak barne. Iragazi non argitaratu zen (Irekia, Komunitatea edo Jarduera) eta ikusgai edo ezkutuan dagoen arabera. Lerro bakoitzak egilea, edukia, nondik datorren eta data erakusten ditu. Argitalpen irekiak ez du inoiz komunitaterik edo erakunderik aipatzen. Argitalpen batek ez du inoiz lekuz aldatzen. Ezkutatzea «Erakutsi» botoiarekin desegiten da; ezabatzeak argitalpena bere iruzkinekin kentzen du eta ezin da desegin. Ekintza horietako bat ere ez da Auditoretzan geratzen.",
+        "actions": [
+          "Iragazi non argitaratu zen",
+          "Argitalpen bat ezkutatu edo erakutsi",
+          "Argitalpen bat ezabatu"
+        ],
+        "tips": [
+          "Zalantzan, ezkutatu: ezabatzea ezin da desegin.",
+          "Komunitate oso batean jarduteko, ireki haren fitxa."
+        ],
+        "related": [
+          "plataforma.comunidades",
+          "plataforma.reportes"
+        ],
+        "audience": "Superadmin bakarrik."
+      },
       "resenas": {
         "title": "Iritziak",
         "summary": "Jendeak jardueretan uzten dituen iritzi guztiak, eta haiek ezabatzea.",
@@ -3256,6 +3284,18 @@
       "deletePost": "Ezabatu",
       "deletePostTitle": "Argitalpen hau ezabatu?",
       "deletePostDescription": "{author}(r)en argitalpena ezabatuko da, bere iruzkinekin. Ezin da desegin; ezabatu gabe kentzeko, ezkutatu."
+    },
+    "publicaciones": {
+      "heading": "Argitalpenak",
+      "intro": "Popyplaneko argitalpen guztiak, irekiak edo komunitate edo jarduera batekoak, berriena lehenengo.",
+      "noAccessDescription": "Superadminak bakarrik kudeatzen ditu argitalpenak paneletik.",
+      "tableCaption": "Argitalpenak",
+      "whereHeader": "Non",
+      "audienceFilterLabel": "Hemen argitaratua",
+      "audienceAll": "Guztiak",
+      "audienceOpen": "Irekia",
+      "audienceCommunity": "Komunitatea",
+      "audienceActivity": "Jarduera"
     },
     "resenas": {
       "heading": "Iritziak",

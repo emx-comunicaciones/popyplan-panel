@@ -29,6 +29,7 @@ import type {
   Paginated,
   PlatformCommunityDetail,
   PlatformCommunityPost,
+  PostAudience,
 } from "@/lib/api/types";
 
 export type PlatformCommunitiesErrorKind =
@@ -159,18 +160,27 @@ export function useDeletePlatformCommunity(
 export interface PlatformCommunityPostsFilters {
   /** `true`/`false` filtra por `is_active`; `undefined`, todas. */
   isActive?: boolean;
+  /** Sitio (`?audience=`); solo tiene sentido en el listado global. */
+  audience?: PostAudience;
   page?: number;
 }
 
+/**
+ * `communityId` a `undefined` es el listado global (sección
+ * «Publicaciones»): incluye las abiertas y las de actividad.
+ */
 export function usePlatformCommunityPosts(
-  communityId: string,
+  communityId: string | undefined,
   filters: PlatformCommunityPostsFilters,
 ): UseQueryResult<Paginated<PlatformCommunityPost>, PlatformCommunitiesError> {
   const page = filters.page ?? 1;
   return useQuery<Paginated<PlatformCommunityPost>, PlatformCommunitiesError>({
-    queryKey: [PLATFORM_COMMUNITY_POSTS_KEY, communityId, filters.isActive ?? null, page],
+    queryKey: [PLATFORM_COMMUNITY_POSTS_KEY, communityId ?? null, filters.audience ?? null, filters.isActive ?? null, page],
     queryFn: async () => {
-      const params = new URLSearchParams({ community: communityId, page: String(page) });
+      const params = new URLSearchParams();
+      if (communityId !== undefined) params.set("community", communityId);
+      params.set("page", String(page));
+      if (filters.audience !== undefined) params.set("audience", filters.audience);
       if (filters.isActive !== undefined) params.set("is_active", String(filters.isActive));
       try {
         return await apiFetch<Paginated<PlatformCommunityPost>>(`${COMMUNITY_POSTS.LIST()}?${params.toString()}`);
