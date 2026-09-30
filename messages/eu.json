@@ -942,7 +942,8 @@
       "supportResponsesEmpty": "Bere laguntza-saretik oraindik inor ez da arduratu.",
       "noCommunity": "Komunitaterik ez",
       "acknowledged": "Artatuta",
-      "acknowledgeAction": "Harremanetan jarri naiz"
+      "acknowledgeAction": "Harremanetan jarri naiz",
+      "acknowledgeByOnCall": "Guardiako pertsonak artatzen du."
     },
     "informes": {
       "noAccessDescription": "Zure rolak ez du sarbiderik Txostenetan.",

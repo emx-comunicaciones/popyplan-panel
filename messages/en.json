@@ -942,7 +942,8 @@
       "supportResponsesEmpty": "Nobody from their support network is taking care of it yet.",
       "noCommunity": "No community",
       "acknowledged": "Attended to",
-      "acknowledgeAction": "I've contacted them"
+      "acknowledgeAction": "I've contacted them",
+      "acknowledgeByOnCall": "The person on call handles this."
     },
     "informes": {
       "noAccessDescription": "Your role doesn't have access to Reports.",

@@ -942,7 +942,8 @@
       "supportResponsesEmpty": "Ningú de la seva xarxa de suport se n'ha encarregat encara.",
       "noCommunity": "Sense comunitat",
       "acknowledged": "Atès",
-      "acknowledgeAction": "He contactat"
+      "acknowledgeAction": "He contactat",
+      "acknowledgeByOnCall": "L'atén la persona de guàrdia."
     },
     "informes": {
       "noAccessDescription": "El teu rol no té accés a Informes.",

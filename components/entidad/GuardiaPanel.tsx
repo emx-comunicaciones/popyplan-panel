@@ -47,6 +47,12 @@ export interface GuardiaPanelProps {
    * backend rechazaría.
    */
   canManage: boolean;
+  /**
+   * Quien mira puede acusar recibo (error 29): la persona de guardia o, si
+   * no hay guardia, titular/moderador (`safety/services/help.py
+   * ::_es_destinatario`). Si no, el botón se sustituye por un aviso.
+   */
+  canAcknowledge: boolean;
 }
 
 const ACKNOWLEDGE_ERROR_KEYS: Record<AcknowledgeHelpRequestErrorKind, string> = {
@@ -101,11 +107,13 @@ function HelpRequestCard({
   orgId,
   slug,
   canOpenPersonSheet,
+  canAcknowledge,
 }: {
   request: HelpRequestRow;
   orgId: number | string;
   slug: string;
   canOpenPersonSheet: boolean;
+  canAcknowledge: boolean;
 }) {
   const t = useTranslations();
   const acknowledge = useAcknowledgeHelpRequest(orgId);
@@ -152,6 +160,8 @@ function HelpRequestCard({
           </div>
           {request.acknowledged_at ? (
             <Badge tone="success">{t("entidad.guardia.acknowledged")}</Badge>
+          ) : !canAcknowledge ? (
+            <p className="max-w-56 text-sm text-text-secondary">{t("entidad.guardia.acknowledgeByOnCall")}</p>
           ) : (
             <Button
               type="button"
@@ -376,7 +386,7 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
  * (`canOpenPersonSheet`); si no, un badge «No pertenece a la entidad» o
  * el nombre como texto (ver `HelpRequestCard`).
  */
-export function GuardiaPanel({ orgId, slug, canOpenPersonSheet, canManage }: GuardiaPanelProps) {
+export function GuardiaPanel({ orgId, slug, canOpenPersonSheet, canManage, canAcknowledge }: GuardiaPanelProps) {
   const t = useTranslations();
   const requests = usePendingHelpRequests(orgId);
 
@@ -413,6 +423,7 @@ export function GuardiaPanel({ orgId, slug, canOpenPersonSheet, canManage }: Gua
                 orgId={orgId}
                 slug={slug}
                 canOpenPersonSheet={canOpenPersonSheet}
+                canAcknowledge={canAcknowledge}
               />
             ))}
           </ul>

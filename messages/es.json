@@ -942,7 +942,8 @@
       "supportResponsesEmpty": "Nadie de su red de apoyo se ha encargado todavía.",
       "noCommunity": "Sin comunidad",
       "acknowledged": "Atendido",
-      "acknowledgeAction": "He contactado"
+      "acknowledgeAction": "He contactado",
+      "acknowledgeByOnCall": "Lo atiende la persona de guardia."
     },
     "informes": {
       "noAccessDescription": "Tu rol no tiene acceso a Informes.",
