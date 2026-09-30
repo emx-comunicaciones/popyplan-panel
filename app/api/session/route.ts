@@ -24,7 +24,12 @@ import { AUTH, SAFETY, USERS } from "@/lib/api/endpoints";
 import { serverFetch } from "@/lib/api/serverFetch";
 import type { MeForArea, PlatformRoleMe } from "@/lib/api/types";
 import { forwardedForHeaders } from "@/lib/auth/clientIp";
-import { SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/cookie";
+import {
+  ACCESS_COOKIE_NAME,
+  SESSION_COOKIE_NAME,
+  accessCookieOptions,
+  sessionCookieOptions,
+} from "@/lib/auth/cookie";
 import { LANG_COOKIE_NAME, langCookieOptions } from "@/lib/i18n/cookie";
 import { isSupportedLanguage } from "@/lib/i18n/languages";
 import { clearRecentRotations } from "@/lib/auth/rotationCache";
@@ -106,6 +111,7 @@ export async function POST(request: NextRequest) {
     platformRole: roleResult.data,
   });
   response.cookies.set(SESSION_COOKIE_NAME, refresh, sessionCookieOptions());
+  response.cookies.set(ACCESS_COOKIE_NAME, accessToken, accessCookieOptions(accessToken));
   // El idioma de la cuenta se fija **aquí**, en la misma respuesta que abre
   // la sesión (decisión 2 del diseño de i18n: «la cuenta manda al entrar»).
   // Antes lo hacía el cliente después de entrar (`applyAccountLanguage` +
@@ -147,5 +153,6 @@ export async function DELETE(request: NextRequest) {
 
   const response = NextResponse.json({});
   response.cookies.set(SESSION_COOKIE_NAME, "", { ...sessionCookieOptions(), maxAge: 0 });
+  response.cookies.set(ACCESS_COOKIE_NAME, "", { ...sessionCookieOptions(), maxAge: 0 });
   return response;
 }
