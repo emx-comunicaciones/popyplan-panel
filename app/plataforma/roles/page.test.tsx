@@ -138,6 +138,78 @@ describe("PlataformaRolesPage", () => {
     expect(within(segundo).queryByRole("alert")).not.toBeInTheDocument();
   });
 
+  it("conceder un rol a quien ya tiene otro avisa de cuál pierde y no llama hasta confirmar", async () => {
+    // Informe del panel, error 54: el rol vigente se sustituía sin avisar.
+    apiFetchMock.mockImplementation(async (path: string, init?: { method?: string }) => {
+      if (init?.method === "POST") return { user: 7, username: "ana", role: "verifier" };
+      if (path.startsWith("/api/users/users/")) return { count: 0, next: null, previous: null, results: [] };
+      return [{ user: 7, username: "ana", role: "moderator", granted_by: 2, created_at: "2026-09-01T00:00:00Z" }];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ id: 42, org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+    render(await PlataformaRolesPage());
+    await screen.findByText(/ana \(#7\)/);
+
+    await userEvent.type(screen.getByLabelText("Id de usuario"), "7");
+    await userEvent.selectOptions(screen.getByLabelText("Rol"), "verifier");
+    await userEvent.click(screen.getByRole("button", { name: "Conceder" }));
+
+    const dialog = screen.getByRole("alertdialog");
+    expect(dialog).toHaveTextContent("La cuenta #7 ya tiene el rol «Moderador»");
+    expect(dialog).toHaveTextContent("al conceder «Verificador» perderá «Moderador»");
+    expect(apiFetchMock).not.toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ method: "POST" }));
+
+    // Cancelar no toca nada.
+    await userEvent.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    expect(apiFetchMock).not.toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ method: "POST" }));
+
+    // Confirmar sí concede.
+    await userEvent.click(screen.getByRole("button", { name: "Conceder" }));
+    await userEvent.click(within(screen.getByRole("alertdialog")).getByRole("button", { name: "Sustituir rol" }));
+    await waitFor(() =>
+      expect(apiFetchMock).toHaveBeenCalledWith("/api/safety/platform-roles/", {
+        method: "POST",
+        body: { user: 7, role: "verifier" },
+      }),
+    );
+    await waitFor(() => expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument());
+  });
+
+  it("conceder un rol a quien no tiene ninguno, o el mismo que ya tiene, no pide confirmación", async () => {
+    apiFetchMock.mockImplementation(async (path: string, init?: { method?: string }) => {
+      if (init?.method === "POST") return { user: 9, username: "luis", role: "support" };
+      if (path.startsWith("/api/users/users/")) return { count: 0, next: null, previous: null, results: [] };
+      return [{ user: 7, username: "ana", role: "moderator", granted_by: 2, created_at: "2026-09-01T00:00:00Z" }];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ id: 42, org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+    render(await PlataformaRolesPage());
+    await screen.findByText(/ana \(#7\)/);
+
+    await userEvent.type(screen.getByLabelText("Id de usuario"), "9");
+    await userEvent.click(screen.getByRole("button", { name: "Conceder" }));
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(apiFetchMock).toHaveBeenCalledWith("/api/safety/platform-roles/", {
+        method: "POST",
+        body: { user: 9, role: "moderator" },
+      }),
+    );
+
+    apiFetchMock.mockClear();
+    await userEvent.clear(screen.getByLabelText("Id de usuario"));
+    await userEvent.type(screen.getByLabelText("Id de usuario"), "7");
+    await userEvent.click(screen.getByRole("button", { name: "Conceder" }));
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+  });
+
   it("moderator ve «Sin acceso»", async () => {
     getServerSessionMock.mockResolvedValue({
       token: "t",

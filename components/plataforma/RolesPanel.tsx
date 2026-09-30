@@ -6,7 +6,9 @@
  * username vía `GET /api/users/users/?search=` cuando esté disponible —
  * ver `hooks/useUserSearch.ts` —, con un id manual como alternativa) y
  * revocar (con confirmación, es una acción de alto impacto: quita acceso
- * a la plataforma).
+ * a la plataforma). Una cuenta tiene un solo rol de plataforma: conceder
+ * otro distinto sustituye al que tenía, así que antes se pide confirmación
+ * diciendo qué rol se pierde (informe del panel, error 54).
  */
 import { useState } from "react";
 import { useTranslations } from "next-intl";
@@ -59,6 +61,8 @@ const REVOKE_ERROR_KEYS: Record<PlatformRolesErrorKind, string> = {
 function GrantRoleForm() {
   const t = useTranslations();
   const grant = useGrantPlatformRole();
+  const currentRoles = usePlatformRoles();
+  const [replacing, setReplacing] = useState<{ user: number; current: PlatformRoleName } | null>(null);
   const [search, setSearch] = useState("");
   const [userId, setUserId] = useState("");
   const [role, setRole] = useState<PlatformRoleName>("moderator");
@@ -70,6 +74,20 @@ function GrantRoleForm() {
    */
   const debouncedSearch = useDebouncedValue(search);
   const results = useUserSearch(debouncedSearch);
+
+  function doGrant() {
+    grant.mutate(
+      { user: Number(userId), role },
+      {
+        onSuccess: () => {
+          setUserId("");
+          setSearch("");
+          setReplacing(null);
+        },
+        onError: () => setReplacing(null),
+      },
+    );
+  }
 
   return (
     <Card title={t("plataforma.roles.grantTitle")}>
@@ -110,15 +128,15 @@ function GrantRoleForm() {
         onSubmit={(event) => {
           event.preventDefault();
           if (!userId) return;
-          grant.mutate(
-            { user: Number(userId), role },
-            {
-              onSuccess: () => {
-                setUserId("");
-                setSearch("");
-              },
-            },
-          );
+          // Un solo rol por cuenta: si ya tiene otro distinto, se avisa de
+          // cuál se pierde antes de sustituirlo.
+          const current = currentRoles.data?.find((entry) => entry.user === Number(userId))?.role;
+          if (current && current !== role) {
+            grant.reset();
+            setReplacing({ user: Number(userId), current });
+            return;
+          }
+          doGrant();
         }}
         className="flex flex-wrap items-end gap-3"
       >
@@ -161,6 +179,25 @@ function GrantRoleForm() {
         </p>
       ) : null}
       {grant.isSuccess ? <p className="mt-2 text-sm text-success">{t("plataforma.roles.grantSuccess")}</p> : null}
+      <ConfirmDialog
+        open={replacing !== null}
+        title={t("plataforma.roles.replaceConfirmTitle")}
+        description={
+          replacing ? (
+            <>
+              {t("plataforma.roles.replaceConfirmDescription", {
+                user: replacing.user,
+                current: t(ROLE_LABEL_KEYS[replacing.current]),
+                next: t(ROLE_LABEL_KEYS[role]),
+              })}
+            </>
+          ) : null
+        }
+        confirmLabel={t("plataforma.roles.replaceConfirmAction")}
+        pending={grant.isPending}
+        onCancel={() => setReplacing(null)}
+        onConfirm={doGrant}
+      />
     </Card>
   );
 }
