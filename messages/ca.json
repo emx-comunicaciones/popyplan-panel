@@ -1,5 +1,6 @@
 {
   "common": {
+    "phoneInvalid": "Introdueix un telèfon vàlid: només xifres, amb un + opcional al principi (per exemple +34 943 123 456 o 024).",
     "cancel": "Cancel·la",
     "accept": "Accepta",
     "close": "Tanca",

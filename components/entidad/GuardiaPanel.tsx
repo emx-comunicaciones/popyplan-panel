@@ -21,6 +21,7 @@ import { useUpdateOrganization, type UpdateOrganizationErrorKind } from "@/hooks
 import type { HelpRequestRow } from "@/lib/api/types";
 import { NO_PHONE_NOTICE_KEY } from "@/lib/help/noPhoneNotice";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { isValidPhone } from "@/lib/organizations/phone";
 import { localeFor, activeLanguage } from "@/lib/i18n/locale";
 
 export interface GuardiaPanelProps {
@@ -288,8 +289,12 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
   const currentOnCall =
     onCall ?? (savedOnCall != null && !staleOnCall ? String(savedOnCall) : "");
 
+  // Error 40: el backend rechaza lo que no parece un teléfono; se avisa antes.
+  const helpPhoneInvalid = !isValidPhone(currentHelpPhone);
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (helpPhoneInvalid) return;
     // Cadena vacía (no `null`) es el valor que limpia el teléfono: el
     // modelo real es `CharField(blank=True, default='')`
     // (`entities/models.py`, migración 0003) y `docs/schema.yaml` lo tipa
@@ -314,8 +319,15 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
             type="tel"
             value={currentHelpPhone}
             onChange={(event) => setHelpPhone(event.target.value)}
+            aria-invalid={helpPhoneInvalid || undefined}
+            aria-describedby={helpPhoneInvalid ? "guardia-help-phone-error" : undefined}
             className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
+          {helpPhoneInvalid ? (
+            <p id="guardia-help-phone-error" role="alert" className="mt-1 text-xs text-error">
+              {t("common.phoneInvalid")}
+            </p>
+          ) : null}
         </div>
         {members.data ? (
           <div>
@@ -337,7 +349,7 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
             </select>
           </div>
         ) : null}
-        <Button type="submit" disabled={updateOrganization.isPending}>
+        <Button type="submit" disabled={updateOrganization.isPending || helpPhoneInvalid}>
           {t("common.save")}
         </Button>
       </form>

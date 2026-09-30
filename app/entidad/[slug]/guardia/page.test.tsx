@@ -180,6 +180,33 @@ describe("EntidadGuardiaPage", () => {
     expect(updateMutate).toHaveBeenCalledWith({ help_phone: "+34611111111", on_call_user: null });
   });
 
+  it("un teléfono de ayuda que no lo es se avisa y no se guarda (error 40)", async () => {
+    usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());
+    useOrganizationMock.mockReturnValue({
+      data: buildOrganization({ help_phone: "+34600000009" }),
+      isError: false,
+      error: null,
+    });
+    const updateMutate = vi.fn();
+    useUpdateOrganizationMock.mockReturnValue({
+      mutate: updateMutate,
+      isPending: false,
+      isError: false,
+      isSuccess: false,
+    });
+    const user = userEvent.setup();
+
+    await renderPage();
+    const input = screen.getByLabelText("Teléfono de ayuda");
+    await user.clear(input);
+    await user.type(input, "no es un teléfono");
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Introduce un teléfono válido");
+    expect(screen.getByRole("button", { name: "Guardar" })).toBeDisabled();
+    expect(updateMutate).not.toHaveBeenCalled();
+  });
+
   it("la persona de guardia se elige por nombre, nunca por id (D-I8)", async () => {
     usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
     useAcknowledgeHelpRequestMock.mockReturnValue(idleMutation());

@@ -1,5 +1,6 @@
 {
   "common": {
+    "phoneInvalid": "Introduce un teléfono válido: solo cifras, con un + opcional al principio (por ejemplo +34 943 123 456 o 024).",
     "cancel": "Cancelar",
     "accept": "Aceptar",
     "close": "Cerrar",

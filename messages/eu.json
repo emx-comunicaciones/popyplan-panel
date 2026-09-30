@@ -1,5 +1,6 @@
 {
   "common": {
+    "phoneInvalid": "Sartu telefono baliozko bat: zifrak soilik, hasieran + aukerakoa duela (adibidez +34 943 123 456 edo 024).",
     "cancel": "Utzi",
     "accept": "Onartu",
     "close": "Itxi",
