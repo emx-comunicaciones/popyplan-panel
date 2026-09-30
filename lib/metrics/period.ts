@@ -27,7 +27,7 @@
  * `MAX_DAYS` de este módulo replica el nuevo tope del backend.
  */
 
-export type PeriodPreset = "mes" | "trimestre" | "anio" | "plurianual" | "personalizado";
+export type PeriodPreset = "proximos" | "mes" | "trimestre" | "anio" | "plurianual" | "personalizado";
 
 export interface Period {
   since: string;
@@ -37,6 +37,8 @@ export interface Period {
 export type PeriodValidationError = "fecha_invalida" | "rango_invertido" | "periodo_demasiado_largo";
 
 const MAX_DAYS = 1461;
+/** Cuántos días por delante de hoy llega el preset «proximos». */
+const UPCOMING_DAYS = 30;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -73,6 +75,15 @@ export function presetPeriod(
 ): Period {
   const until = toIso(today);
   switch (preset) {
+    case "proximos": {
+      // Del día 1 del mes en curso hasta 30 días después de hoy: lo que ya
+      // ha pasado este mes **y lo que viene**. Solo lo ofrece la tabla de
+      // Actividades (informe del panel, error 10: con «Este mes», que llega
+      // hasta hoy, las actividades de los próximos días no salían).
+      const start = new Date(today.getFullYear(), today.getMonth(), 1);
+      const end = new Date(today.getFullYear(), today.getMonth(), today.getDate() + UPCOMING_DAYS);
+      return { since: toIso(start), until: toIso(end) };
+    }
     case "mes": {
       const start = new Date(today.getFullYear(), today.getMonth(), 1);
       return { since: toIso(start), until };

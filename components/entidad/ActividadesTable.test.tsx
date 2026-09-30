@@ -284,6 +284,33 @@ describe("ActividadesTable — gestión de actividades", () => {
     expect(cancelMutate).toHaveBeenCalledWith("e1", expect.anything());
   });
 
+  it("arranca en «Este mes y próximos»: el periodo llega por delante de hoy (informe, error 10)", () => {
+    setDefaults();
+    render(<ActividadesTable orgId={7} slug="alfaville" canOpenAttendance canManage />);
+
+    const [, periodo] = useEntityEventsMock.mock.calls[0];
+    const hoy = new Date();
+    const dentroDeUnaSemana = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 7);
+    const iso = (d: Date) =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    expect(periodo.until >= iso(dentroDeUnaSemana)).toBe(true);
+    expect(screen.getByRole("button", { name: "Este mes y próximos" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("mientras se cancela, el botón de confirmar está deshabilitado y no lanza otra petición", async () => {
+    setDefaults();
+    const cancelMutate = vi.fn();
+    useCancelEventMock.mockReturnValue(mutationDefaults({ mutate: cancelMutate, isPending: true }));
+    const user = userEvent.setup();
+
+    render(<ActividadesTable orgId={7} slug="alfaville" canOpenAttendance canManage />);
+    await user.click(screen.getByRole("button", { name: "Cancelar actividad" }));
+    const confirmar = within(screen.getByRole("alertdialog")).getByRole("button", { name: "Cancelar actividad" });
+    expect(confirmar).toBeDisabled();
+    await user.dblClick(confirmar);
+    expect(cancelMutate).not.toHaveBeenCalled();
+  });
+
   it("el error de cancelar se pinta dentro del ConfirmDialog", async () => {
     setDefaults();
     useCancelEventMock.mockReturnValue(

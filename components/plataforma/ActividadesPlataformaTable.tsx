@@ -354,7 +354,7 @@ export function ActividadesPlataformaTable({ initialCommunityId }: ActividadesPl
           setCancelling(null);
         }}
         onConfirm={() => {
-          if (cancelling) cancel.mutate(cancelling.id, { onSuccess: () => setCancelling(null) });
+          if (cancelling && !cancel.isPending) cancel.mutate(cancelling.id, { onSuccess: () => setCancelling(null) });
         }}
       />
     </div>

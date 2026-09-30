@@ -22,18 +22,25 @@ export interface PeriodSelectorProps {
    * descargar un periodo distinto del que se ve).
    */
   onPendingChange?: (pending: boolean) => void;
+  /**
+   * Botones de periodo fijo que se ofrecen, en este orden. Por defecto los
+   * cuatro de siempre; «proximos» (hasta 30 días por delante de hoy) solo
+   * lo pide la tabla de Actividades.
+   */
+  presets?: readonly FixedPreset[];
 }
 
 type FixedPreset = Exclude<PeriodPreset, "personalizado">;
 
 const PRESET_LABEL_KEYS: Record<FixedPreset, string> = {
+  proximos: "metrics.period.upcoming",
   mes: "metrics.period.thisMonth",
   trimestre: "metrics.period.quarter",
   anio: "metrics.period.year",
   plurianual: "metrics.period.multiYear",
 };
 
-const FIXED_PRESETS = Object.keys(PRESET_LABEL_KEYS) as FixedPreset[];
+const DEFAULT_PRESETS: readonly FixedPreset[] = ["mes", "trimestre", "anio", "plurianual"];
 
 // La regla es sobre la **diferencia** entre las dos fechas, igual que en
 // el backend (`panel/viewsets.py::_periodo`, `(until - since).days >
@@ -54,7 +61,13 @@ const ERROR_MESSAGE_KEYS: Record<PeriodValidationError, string> = {
  * anterior con las fechas nuevas en pantalla. Mientras no son válidas, el
  * aviso sale al momento y `onPendingChange(true)` lo dice hacia fuera.
  */
-export function PeriodSelector({ value, preset, onChange, onPendingChange }: PeriodSelectorProps) {
+export function PeriodSelector({
+  value,
+  preset,
+  onChange,
+  onPendingChange,
+  presets = DEFAULT_PRESETS,
+}: PeriodSelectorProps) {
   const t = useTranslations();
   const [customSince, setCustomSince] = useState(value.since);
   const [customUntil, setCustomUntil] = useState(value.until);
@@ -110,7 +123,7 @@ export function PeriodSelector({ value, preset, onChange, onPendingChange }: Per
   return (
     <fieldset className="flex flex-wrap items-end gap-3">
       <legend className="mb-1 w-full text-sm font-medium text-text-form">{t("metrics.period.legend")}</legend>
-      {FIXED_PRESETS.map((key) => (
+      {presets.map((key) => (
         <Button
           key={key}
           type="button"

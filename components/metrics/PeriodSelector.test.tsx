@@ -196,3 +196,21 @@ describe("PeriodSelector", () => {
     expect(onChange).toHaveBeenCalledWith(presetPeriod("anio"), "anio");
   });
 });
+
+describe("PeriodSelector — presets ofrecidos", () => {
+  const value = { since: "2026-01-01", until: "2026-01-31" };
+
+  it("por defecto no ofrece «Este mes y próximos» (solo lo pide Actividades)", () => {
+    render(<PeriodSelector value={value} preset="mes" onChange={() => {}} />);
+    expect(screen.queryByRole("button", { name: "Este mes y próximos" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Este mes" })).toBeInTheDocument();
+  });
+
+  it("con `presets` ofrece justo esos, y «proximos» aplica su periodo", async () => {
+    const onChange = vi.fn();
+    render(<PeriodSelector value={value} preset="mes" onChange={onChange} presets={["proximos", "mes"]} />);
+    expect(screen.queryByRole("button", { name: "Trimestre" })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Este mes y próximos" }));
+    expect(onChange).toHaveBeenCalledWith(presetPeriod("proximos"), "proximos");
+  });
+});

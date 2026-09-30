@@ -79,11 +79,15 @@ function formatDateTime(iso: string, locale: string): string {
  * actividad, de modo que el check-in solo era alcanzable para
  * actividades de este mes ya empezadas. Ahora monta el mismo
  * `components/metrics/PeriodSelector.tsx` que los dashboards de
- * métricas: arranca en «Este mes» y el rango personalizado admite un
+ * métricas: arranca en «Este mes y próximos» y el rango personalizado admite un
  * `until` **futuro** (ni `customPeriod` ni `panel/viewsets.py::_periodo`
  * ponen tope por arriba, solo la diferencia de 1461 días), que es cómo
  * se llega a lo que viene.
  */
+// «Este mes y próximos» primero y por defecto: la lista tiene que enseñar lo
+// que viene (informe del panel, error 10), no solo lo que ya ha pasado.
+const ACTIVIDADES_PRESETS = ["proximos", "mes", "trimestre", "anio", "plurianual"] as const;
+
 const CANCEL_EVENT_ERROR_KEYS: Record<EventMutationErrorKind, string> = {
   invalido: "errors.eventMutation.invalido",
   sin_permiso: "errors.eventMutation.sinPermiso",
@@ -93,11 +97,11 @@ const CANCEL_EVENT_ERROR_KEYS: Record<EventMutationErrorKind, string> = {
 
 export function ActividadesTable({ orgId, slug, canOpenAttendance, canManage }: ActividadesTableProps) {
   const [status, setStatus] = useState<EntityEventStatus | "">("");
-  const [preset, setPreset] = useState<PeriodPreset>("mes");
+  const [preset, setPreset] = useState<PeriodPreset>("proximos");
   // El periodo inicial se calcula una vez (no en cada render): `useQuery`
   // lo lleva en su clave de caché y un objeto nuevo por render la
   // invalidaría sin motivo.
-  const [period, setPeriod] = useState<Period>(() => presetPeriod("mes"));
+  const [period, setPeriod] = useState<Period>(() => presetPeriod("proximos"));
   const t = useTranslations("entidad.actividades");
   const tAll = useTranslations();
   const locale = useLocale();
@@ -140,6 +144,7 @@ export function ActividadesTable({ orgId, slug, canOpenAttendance, canManage }: 
         </div>
       ) : null}
       <PeriodSelector
+        presets={ACTIVIDADES_PRESETS}
         value={period}
         preset={preset}
         onChange={(nextPeriod, nextPreset) => {
@@ -308,7 +313,9 @@ export function ActividadesTable({ orgId, slug, canOpenAttendance, canManage }: 
             confirmLabel={t("cancelActivity")}
             pending={cancelEvent.isPending}
             onConfirm={() => {
-              if (!cancelling) return;
+              // Un segundo clic antes de que el botón se deshabilite no
+              // manda otra petición (informe del panel, error 28).
+              if (!cancelling || cancelEvent.isPending) return;
               cancelEvent.mutate(cancelling.id, { onSuccess: () => setCancelling(null) });
             }}
             onCancel={() => {

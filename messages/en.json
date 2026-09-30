@@ -2500,6 +2500,7 @@
     "period": {
       "legend": "Period",
       "thisMonth": "This month",
+      "upcoming": "This month and upcoming",
       "quarter": "Quarter",
       "year": "Year",
       "multiYear": "Multi-year",
