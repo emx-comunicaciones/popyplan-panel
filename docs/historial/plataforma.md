@@ -44,8 +44,8 @@ Ayuda/Métricas (`safety/services/reports.py::queue` y
   entidad» → `NuevaEntidadDialog`, `hooks/useOrganizations.ts`): listado
   paginado con filtros `verified`/`search` (`parent` no tiene selector en
   la lista, solo se usa para «hijas» en la ficha); alta
-  (`POST /api/organizations/`, `verifier`/`superadmin`, nace sin
-  verificar). **Ficha** (`entidades/[id]/page.tsx` → `EntidadDetail`,
+  (`POST /api/organizations/`, `verifier`/`superadmin`, nace ya
+  verificada desde el 01-10). **Ficha** (`entidades/[id]/page.tsx` → `EntidadDetail`,
   seis secciones con un simple selector de botones, mismo patrón que el
   `group_by` de `PlataformaMetricsDashboard` — sin ARIA tabs, el panel no
   tenía ese patrón todavía): Datos (lectura + «Verificar»,

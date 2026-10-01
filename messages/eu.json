@@ -2188,14 +2188,14 @@
       "entidades": {
         "title": "Erakundeak",
         "summary": "Alta emandako erakunde guztiak, egiaztatuta egon zein ez, bilaketa eta iragazkiekin. Alta ematea eta egiaztatzea egiaztatzailearen eta superadminaren zereginak dira.",
-        "details": "Erakunde guztien direktorioa, egiaztatuta egon zein ez. Zerrenda orrikatuta dago eta egiaztapen-egoera eta testu-libreko bilaketaren arabera iragazten da; bilaketa gelditzen zaren laister ondoren aplikatzen da. Erakunde berri bat alta egitea egiaztatzailearen/superadminaren ekintza da, eta erakunde berria egiaztatu gabe jaio da, bere fitxatik egiaztatu ezean. Ireki fitxa bat bere aterkia, eremua, taldea, metrikak eta kontratua kudeatzeko.",
+        "details": "Erakunde guztien direktorioa, egiaztatuta egon zein ez. Zerrenda orrikatuta dago eta egiaztapen-egoera eta testu-libreko bilaketaren arabera iragazten da; bilaketa gelditzen zaren laister ondoren aplikatzen da. Erakunde berri bat alta egitea egiaztatzailearen/superadminaren ekintza da, eta hemen alta emandako erakundea egiaztatuta jaiotzen da (fitxako «Egiaztatu» botoia oraindik egiaztatu gabe daudenentzat da). Ireki fitxa bat bere aterkia, eremua, taldea, metrikak eta kontratua kudeatzeko.",
         "actions": [
           "Egiaztapenaren arabera bilatu eta iragazi",
           "Erakunde berri bat alta eman (egiaztatzailea eta superadmin)",
           "Bere fitxa ireki"
         ],
         "tips": [
-          "Erakunde berriak egiaztatu gabe geratzen dira egiaztatzaile edo superadmin batek egiaztatzen dituen arte.",
+          "Hemen alta ematen dituzun erakundeak egiaztatuta jaiotzen dira: hasieratik sor ditzakete komunitateak eta jarduerak.",
           "Bilaketa-kaxak idazten duzun bitartean pausa labur baten ondoren aplikatzen du."
         ],
         "related": [
@@ -3187,7 +3187,7 @@
       "parentIdLabel": "Erakunde aterkia (aukerakoa)",
       "descriptionLabel": "Deskribapena",
       "createAction": "Erakundea sortu",
-      "created": "«{name}» erakundea sortuta, egiaztatu gabe.",
+      "created": "«{name}» erakundea sortuta eta egiaztatuta.",
       "slugHint": "Izenetik ateratzen da eta web helbidean doa. Alda dezakezu.",
       "slugInvalid": "Letra azentu gabeak, zenbakiak, marratxoak eta azpimarrak bakarrik.",
       "slugTooLong": "Luzeegia: gehienez {max} karaktere.",

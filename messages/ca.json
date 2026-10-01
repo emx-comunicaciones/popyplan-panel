@@ -2188,14 +2188,14 @@
       "entidades": {
         "title": "Entitats",
         "summary": "Totes les entitats donades d'alta, verificades o no, amb cerca i filtres. Donar d'alta i verificar són tasques de verificador i superadmin.",
-        "details": "El directori complet d'entitats, verificades o no. La llista és paginada i es filtra per estat de verificació i cerca de text lliure; la cerca s'aplica poc després de parar de teclejar. Donar d'alta una entitat nova és una acció de verificador/superadmin, i una entitat nova neix sense verificar fins que algú la verifica des de la seva fitxa. Obre una fitxa per gestionar-ne el paraigua, l'àmbit, l'equip, les mètriques i el contracte.",
+        "details": "El directori complet d'entitats, verificades o no. La llista és paginada i es filtra per estat de verificació i cerca de text lliure; la cerca s'aplica poc després de parar de teclejar. Donar d'alta una entitat nova és una acció de verificador/superadmin, i una entitat donada d'alta aquí neix ja verificada (el botó «Verificar» de la fitxa queda per a les que encara no ho estiguin). Obre una fitxa per gestionar-ne el paraigua, l'àmbit, l'equip, les mètriques i el contracte.",
         "actions": [
           "Cercar i filtrar per verificació",
           "Donar d'alta una entitat nova (verificador i superadmin)",
           "Obrir la seva fitxa"
         ],
         "tips": [
-          "Les entitats noves es queden sense verificar fins que un verificador o superadmin les verifica.",
+          "Les entitats que dones d'alta aquí neixen verificades: poden crear comunitats i activitats des del primer moment.",
           "El quadre de cerca s'aplica al cap d'una breu pausa mentre tecleges."
         ],
         "related": [
@@ -3187,7 +3187,7 @@
       "parentIdLabel": "Entitat paraigua (opcional)",
       "descriptionLabel": "Descripció",
       "createAction": "Crear entitat",
-      "created": "Entitat «{name}» creada, sense verificar.",
+      "created": "Entitat «{name}» creada i verificada.",
       "slugHint": "Es treu del nom i va a l'adreça web. El pots canviar.",
       "slugInvalid": "Només lletres sense accents, números, guionets i guions baixos.",
       "slugTooLong": "Massa llarg: com a màxim {max} caràcters.",

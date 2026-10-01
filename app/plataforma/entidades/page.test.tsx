@@ -113,7 +113,7 @@ describe("PlataformaEntidadesPage", () => {
     await user.click(screen.getByRole("button", { name: "Crear entidad" }));
 
     await waitFor(() =>
-      expect(screen.getByText("Entidad «Asociación Bidasoa» creada, sin verificar.")).toBeInTheDocument(),
+      expect(screen.getByText("Entidad «Asociación Bidasoa» creada y verificada.")).toBeInTheDocument(),
     );
 
     // Segundo intento, que falla: el aviso de la primera alta no puede
@@ -132,7 +132,7 @@ describe("PlataformaEntidadesPage", () => {
 
     await waitFor(() => expect(screen.getByRole("alert")).toBeInTheDocument());
     expect(
-      screen.queryByText("Entidad «Asociación Bidasoa» creada, sin verificar."),
+      screen.queryByText("Entidad «Asociación Bidasoa» creada y verificada."),
     ).not.toBeInTheDocument();
   });
 
