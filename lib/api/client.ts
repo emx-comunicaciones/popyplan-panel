@@ -245,6 +245,22 @@ async function apiFetchOnce<T>(path: string, options: ApiFetchOptions): Promise<
  */
 const inFlightWrites = new Map<string, Promise<unknown>>();
 
+/**
+ * Identidad de cada fichero enviado: nombre, tamaño y fecha no distinguen
+ * dos ficheros distintos que coinciden en los tres. El doble clic reenvía el
+ * mismo objeto `File`, así que basta con su identidad.
+ */
+const fileIds = new WeakMap<Blob, number>();
+let nextFileId = 0;
+function fileId(file: Blob): number {
+  let id = fileIds.get(file);
+  if (id === undefined) {
+    id = ++nextFileId;
+    fileIds.set(file, id);
+  }
+  return id;
+}
+
 function writeKey(path: string, options: ApiFetchOptions): string {
   const method = (options.method ?? "GET").toUpperCase();
   if (method === "GET" || method === "HEAD") return "";
@@ -253,13 +269,15 @@ function writeKey(path: string, options: ApiFetchOptions): string {
   if (isFormData(body)) {
     bodyKey = JSON.stringify(
       Array.from(body.entries()).map(([name, value]) =>
-        typeof value === "string" ? [name, value] : [name, value.name, value.size, value.lastModified],
+        typeof value === "string" ? [name, value] : [name, fileId(value)],
       ),
     );
   } else {
     bodyKey = body === undefined ? "" : JSON.stringify(body);
   }
-  return `${method} ${path} ${bodyKey}`;
+  // El token separa cuentas: tras cerrar sesión y entrar con otra, una
+  // escritura idéntica en vuelo no puede heredar la promesa de la anterior.
+  return `${getAccessToken() ?? ""} ${method} ${path} ${bodyKey}`;
 }
 
 export function apiFetch<T = unknown>(

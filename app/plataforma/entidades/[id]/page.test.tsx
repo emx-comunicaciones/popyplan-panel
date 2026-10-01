@@ -231,6 +231,8 @@ describe("PlataformaEntidadDetailPage", () => {
     expect(screen.queryByRole("button", { name: "Asignar" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Quitar" })).not.toBeInTheDocument();
     expect(screen.getByText(/Tu rol de plataforma no gestiona el equipo/)).toBeInTheDocument();
+    // La ayuda de roles también es para quien solo mira los roles.
+    expect(screen.getByText("¿Qué puede hacer cada rol?")).toBeInTheDocument();
   });
 
   it("Equipo: superadmin añade a alguien y el formulario se limpia solo si la llamada sale bien", async () => {

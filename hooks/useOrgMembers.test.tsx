@@ -12,7 +12,7 @@ vi.mock("@/lib/api/client", async () => {
 import { ApiError } from "@/lib/api/client";
 import { buildOrgMembershipFull } from "@/test-utils/fixtures/orgMembershipFull";
 
-import { OrgMembersError, useAddOrgMember, useOrgMembers, useRemoveOrgMember } from "./useOrgMembers";
+import { OrgMembersError, useAddOrgMember, useOrgMembers, useOrgReferents, useRemoveOrgMember } from "./useOrgMembers";
 
 afterEach(() => {
   apiFetchMock.mockReset();
@@ -52,6 +52,36 @@ describe("useOrgMembers", () => {
     await waitFor(() => expect(result.current.isError).toBe(true));
 
     expect(result.current.error?.message).toBe("No se pudo cargar el equipo de la entidad.");
+  });
+});
+
+describe("useOrgReferents", () => {
+  it("pide solo los referentes (ORGANIZATIONS.MEMBERS_REFERENTS), que leen titular y moderador", async () => {
+    const referent = { id: 3, user: 9, public_name: "Iker R.", role: "referente" as const };
+    apiFetchMock.mockResolvedValueOnce([referent]);
+
+    const { result } = renderHook(() => useOrgReferents(7), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(apiFetchMock).toHaveBeenCalledWith("/api/organizations/7/members/?role=referente");
+    expect(result.current.data).toEqual([referent]);
+  });
+
+  it("403 dice quién puede verlos y otro fallo da el genérico", async () => {
+    apiFetchMock.mockRejectedValueOnce(new ApiError(403, null));
+    const forbidden = renderHook(() => useOrgReferents(7), { wrapper });
+    await waitFor(() => expect(forbidden.result.current.isError).toBe(true));
+    expect(forbidden.result.current.error?.kind).toBe("sin_acceso");
+
+    apiFetchMock.mockRejectedValueOnce(new Error("red caída"));
+    const broken = renderHook(() => useOrgReferents(7), { wrapper });
+    await waitFor(() => expect(broken.result.current.isError).toBe(true));
+    expect(broken.result.current.error?.message).toBe("No se pudieron cargar los referentes.");
+  });
+
+  it("no pide nada si no está habilitado", () => {
+    renderHook(() => useOrgReferents(7, { enabled: false }), { wrapper });
+    expect(apiFetchMock).not.toHaveBeenCalled();
   });
 });
 

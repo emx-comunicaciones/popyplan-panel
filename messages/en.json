@@ -1188,7 +1188,7 @@
       "analista": "Numbers only: sees the panel home, programmes and reports, and can export them. Never sees people's names or publishes activities.",
       "referente": "Supports the people the entity assigns to them. In the panel they only see those people: their record, their activities and their support network. If they are in the follow-up programme, they see what each person chooses to share and can suggest goals. Can also publish activities.",
       "voluntario": "Helps out with activities from the app: can publish them under the entity's seal. Has no panel access.",
-      "onCall": "Regardless of role, anyone on the team can be the on-call person (chosen in Settings): they receive \"I'm having a hard day\" requests and see the On-call section."
+      "onCall": "Regardless of role, anyone on the team can be the on-call person (chosen in Settings) and receives the \"I'm having a hard day\" requests. They see the On-call section unless their role is Volunteer, because volunteers have no panel access."
     }
   },
   "people": {
@@ -3063,6 +3063,7 @@
       "heading": "Subscriptions",
       "noAccessDescription": "Only superadmin and support see platform contracts and billing.",
       "chooseOrganization": "Choose an entity…",
+      "organizationsLoadError": "The entities could not be loaded. Reload the page or contact Popyplan.",
       "tierLabel": "Tier",
       "chooseTier": "Choose a tier…",
       "startsOnLabel": "Start",
@@ -3186,7 +3187,8 @@
       "createAction": "Create entity",
       "created": "Entity “{name}” created, not verified.",
       "slugHint": "Taken from the name and used in the web address. You can change it.",
-      "slugInvalid": "Only lowercase letters without accents, numbers and hyphens.",
+      "slugInvalid": "Only letters without accents, numbers, hyphens and underscores.",
+      "slugTooLong": "Too long: at most {max} characters.",
       "missing": {
         "intro": "To create the entity you still need: {fields}.",
         "name": "the name",
@@ -5659,6 +5661,12 @@
           "state": "State funds",
           "none": "None reported"
         }
+      },
+      "pagination": {
+        "label": "Pages",
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {page} of {pages}"
       }
     }
   }

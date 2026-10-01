@@ -376,13 +376,28 @@ export const useDeleteDocument = () =>
  * El fichero nunca se enlaza por su URL: la petición lleva la sesión.
  */
 export async function openCrmDocument(documentId: number, versionId: number, inline = false): Promise<void> {
-  const response = await fetchWithAuth(`${CRM.DOCUMENT_DOWNLOAD(documentId, versionId)}${inline ? "?inline=1" : ""}`);
-  const blob = await response.blob();
-  if (inline) {
-    window.open(URL.createObjectURL(blob), "_blank", "noopener");
-    return;
+  // La pestaña de la vista previa se abre dentro del gesto del clic, antes
+  // del fetch: abierta después, el navegador la bloquea (y `window.open`
+  // devuelve `null` sin lanzar). Con `noopener` también devolvería `null`
+  // siempre, así que se corta el `opener` a mano, ya, para que la pestaña
+  // no conserve la página del panel mientras llegan la respuesta y el blob.
+  const tab = inline ? window.open("", "_blank") : null;
+  if (inline && !tab) throw new Error("popup_blocked");
+  if (tab) tab.opener = null;
+  try {
+    const response = await fetchWithAuth(
+      `${CRM.DOCUMENT_DOWNLOAD(documentId, versionId)}${inline ? "?inline=1" : ""}`,
+    );
+    const blob = await response.blob();
+    if (tab) {
+      tab.location.href = URL.createObjectURL(blob);
+      return;
+    }
+    triggerDownload(blob, filenameFromContentDisposition(response.headers.get("Content-Disposition"), "documento"));
+  } catch (error) {
+    tab?.close();
+    throw error;
   }
-  triggerDownload(blob, filenameFromContentDisposition(response.headers.get("Content-Disposition"), "documento"));
 }
 
 // ─── Vistas de conjunto ─────────────────────────────────────────────────────

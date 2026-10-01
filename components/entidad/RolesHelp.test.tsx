@@ -15,7 +15,7 @@ describe("RolesHelp", () => {
     }
     expect(screen.getByText(/Acompaña a las personas que la entidad le asigna/)).toBeTruthy();
     expect(screen.getByText(/No entra en el panel/)).toBeTruthy();
-    expect(screen.getByText(/persona de guardia/)).toBeTruthy();
+    expect(screen.getByText(/persona de guardia.*salvo que su rol sea Voluntario\/a/)).toBeTruthy();
     expect(await axe(container)).toHaveNoViolations();
   });
 });

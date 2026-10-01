@@ -179,6 +179,12 @@ export const ORGANIZATIONS = {
    */
   MEMBERS: (id: number | string) => `/api/organizations/${id}/members/`,
   /**
+   * `GET /api/organizations/{id}/members/?role=referente`: solo los
+   * referentes, `{id, user, public_name, role}` sin contacto; lo piden
+   * titular y moderador (los selects de referente).
+   */
+  MEMBERS_REFERENTS: (id: number | string) => `/api/organizations/${id}/members/?role=referente`,
+  /**
    * `POST /api/organizations/{id}/scope/ {places}|{province}|{comarca}`
    * (§8): amplía el ámbito INE de la entidad.
    */

@@ -1188,7 +1188,7 @@
       "analista": "Zifrak bakarrik: panelaren hasiera, programak eta txostenak ikusten ditu, eta esporta ditzake. Ez ditu inoiz pertsonen izenak ikusten ez jarduerak argitaratzen.",
       "referente": "Erakundeak esleitzen dizkion pertsonak laguntzen ditu. Panelean pertsona horiek bakarrik ikusten ditu: haien fitxa, jarduerak eta laguntza-sarea. Jarraipen-programan badaude, bakoitzak partekatzea erabakitzen duena ikusten du eta helburuak proposa diezazkieke. Jarduerak ere argitara ditzake.",
       "voluntario": "Aplikaziotik jardueretan laguntzen du: erakundearen zigiluarekin argitara ditzake. Ez da panelean sartzen.",
-      "onCall": "Rolaz aparte, taldeko edozein pertsona izan daiteke guardiako pertsona (Konfigurazioan aukeratzen da): «gaur gaizki nago» abisuak jasotzen ditu eta Txanda atala ikusten du."
+      "onCall": "Rolaz aparte, taldeko edozein pertsona izan daiteke guardiako pertsona (Konfigurazioan aukeratzen da) eta «gaur gaizki nago» abisuak jasotzen ditu. Txanda atala ikusten du, bere rola Boluntarioa ez bada, boluntarioek ez baitute panelean sartzerik."
     }
   },
   "people": {
@@ -3063,6 +3063,7 @@
       "heading": "Harpidetzak",
       "noAccessDescription": "Superadminek eta laguntzak bakarrik ikusten dute plataformaren kontratazioa eta fakturazioa.",
       "chooseOrganization": "Aukeratu erakunde bat…",
+      "organizationsLoadError": "Ezin izan dira erakundeak kargatu. Berrabiarazi orria edo jarri harremanetan Popyplanekin.",
       "tierLabel": "Tartea",
       "chooseTier": "Aukeratu tarte bat…",
       "startsOnLabel": "Hasiera",
@@ -3186,7 +3187,8 @@
       "createAction": "Erakundea sortu",
       "created": "«{name}» erakundea sortuta, egiaztatu gabe.",
       "slugHint": "Izenetik ateratzen da eta web helbidean doa. Alda dezakezu.",
-      "slugInvalid": "Letra xehe azentu gabeak, zenbakiak eta marratxoak bakarrik.",
+      "slugInvalid": "Letra azentu gabeak, zenbakiak, marratxoak eta azpimarrak bakarrik.",
+      "slugTooLong": "Luzeegia: gehienez {max} karaktere.",
       "missing": {
         "intro": "Erakundea sortzeko falta da: {fields}.",
         "name": "izena",
@@ -5659,6 +5661,12 @@
           "state": "Estatuko funtsak",
           "none": "Ez da inork jakinarazi"
         }
+      },
+      "pagination": {
+        "label": "Orriak",
+        "previous": "Aurrekoa",
+        "next": "Hurrengoa",
+        "page": "{page}. orria, {pages} orritatik"
       }
     }
   }

@@ -200,6 +200,7 @@ entidades normales, `/elegir-entidad`.
   refresh rechazado: navegación de documento → `/login?returnTo=` (salvo
   `/`, que pasa sin sesión: es la landing); prefetch/RSC → pasa sin
   sesión. Error de red → 503, nunca logout. 200 ilegible → 503.
+- `POST /api/session/refresh` con el acceso aún vivo devuelve el perfil sin rotar; si ese perfil falla de forma transitoria (red, 5xx, cuerpo ilegible) responde 503 **sin rotar** (rotar metería en lista negra un refresh sano). Solo un 4xx lo manda a la rotación.
 - `returnTo` validado por allowlist (`lib/auth/returnTo.ts`).
 - **Frontera de confianza `X-Forwarded-For`** (`lib/auth/clientIp.ts`): se
   reenvía la IP real en las cuatro llamadas de auth porque el límite de
@@ -237,8 +238,10 @@ entidades normales, `/elegir-entidad`.
   (`lib/people/invitedRow.ts`). `useInvitations` solo da el recuento, no
   duplica el listado. Un 404 de página vuelve a la página 1.
 - **Equipo** (`GET .../members/`) es **solo titular** en el backend:
-  `moderador` no ve la pestaña, los selects de referente le salen vacíos
-  y en Guardia ve los ajustes en solo lectura. `Reference.referent` es el
+  `moderador` no ve la pestaña y en Guardia ve los ajustes en solo
+  lectura. Los selects de referente usan `useOrgReferents`
+  (`?role=referente`, `{id, user, public_name, role}`), que titular y
+  moderador sí leen. `Reference.referent` es el
   id de la **`OrgMembership`**, no de la cuenta: compara con `m.id`.
 - **Guardia**: `on_call_user` admite cualquier membresía; se guarda junto
   al teléfono en un solo `PATCH` (solo titular); vaciarla manda `null`,

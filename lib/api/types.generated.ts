@@ -2753,7 +2753,9 @@ export interface paths {
         };
         /**
          * @description CSV (UTF-8 con BOM y `;`, Excel en español) de lo que quien pide
-         *     puede ver, con los mismos filtros que los listados. Audita cada
+         *     puede ver, con los mismos filtros que los listados y el periodo
+         *     (`period`, `since`, `until`): por fecha de alta en cuentas, contactos y
+         *     oportunidades, y por la fecha de la actividad en actividades. Audita cada
          *     exportación (`crm.export`).
          */
         get: operations["crm_export_retrieve"];
@@ -3510,7 +3512,7 @@ export interface paths {
          * Publicaciones de la actividad
          * @description Las publicaciones `activity` de esta actividad, más recientes primero. 404 si no participo (organizar o tener una asistencia `registered`, `attended` o `no_show`). Una actividad cancelada se lee igual.
          */
-        get: operations["events_posts_retrieve"];
+        get: operations["events_posts_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -12680,6 +12682,11 @@ export interface components {
              */
             readonly acknowledged_at: string | null;
             /**
+             * Referente avisado el
+             * Format: date-time
+             */
+            readonly referent_notified_at: string | null;
+            /**
              * Fecha
              * Format: date-time
              */
@@ -13654,21 +13661,6 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["CommunityList"][];
-        };
-        PaginatedCommunityPostCommentList: {
-            /** @example 123 */
-            count: number;
-            /**
-             * Format: uri
-             * @example http://api.example.org/accounts/?page=4
-             */
-            next?: string | null;
-            /**
-             * Format: uri
-             * @example http://api.example.org/accounts/?page=2
-             */
-            previous?: string | null;
-            results: components["schemas"]["CommunityPostComment"][];
         };
         PaginatedCrmAccountListList: {
             /** @example 123 */
@@ -23180,7 +23172,11 @@ export interface operations {
     };
     crm_export_retrieve: {
         parameters: {
-            query?: never;
+            query?: {
+                period?: string;
+                since?: string;
+                until?: string;
+            };
             header?: never;
             path: {
                 resource: string;
@@ -24803,9 +24799,16 @@ export interface operations {
             };
         };
     };
-    events_posts_retrieve: {
+    events_posts_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
             header?: never;
             path: {
                 /** @description Un Cadena UUID que identifique este Actividad. */
@@ -24820,9 +24823,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["PaginatedPostList"];
                 };
             };
         };
@@ -26972,6 +26973,8 @@ export interface operations {
             query?: {
                 /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
+                /** @description `referente`: solo las membresías con ese rol, como `{id, user, public_name, role}` y sin contacto; lo piden titular y moderador. Sin él, el equipo completo (solo titular). */
+                role?: "referente";
                 /** @description Un término de búsqueda. */
                 search?: string;
             };
@@ -26991,21 +26994,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["OrgMembership"][];
                 };
-            };
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OrgMembership"];
-                };
-            };
-            /** @description No response body */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description No response body */
             400: {
@@ -27028,23 +27016,11 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description No response body */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     organizations_members_create: {
         parameters: {
-            query?: {
-                /** @description Qué campo usar para ordenar los resultados. */
-                ordering?: string;
-                /** @description Un término de búsqueda. */
-                search?: string;
-            };
+            query?: never;
             header?: never;
             path: {
                 /** @description Un valor de entero único que identifique este entidad. */
@@ -27060,14 +27036,6 @@ export interface operations {
             };
         };
         responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OrgMembership"][];
-                };
-            };
             201: {
                 headers: {
                     [name: string]: unknown;
@@ -27075,13 +27043,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["OrgMembership"];
                 };
-            };
-            /** @description No response body */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description No response body */
             400: {
@@ -27104,23 +27065,11 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description No response body */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     organizations_members_destroy: {
         parameters: {
-            query?: {
-                /** @description Qué campo usar para ordenar los resultados. */
-                ordering?: string;
-                /** @description Un término de búsqueda. */
-                search?: string;
-            };
+            query?: never;
             header?: never;
             path: {
                 /** @description Un valor de entero único que identifique este entidad. */
@@ -27130,22 +27079,6 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OrgMembership"][];
-                };
-            };
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OrgMembership"];
-                };
-            };
             /** @description No response body */
             204: {
                 headers: {
@@ -30321,8 +30254,6 @@ export interface operations {
             query?: {
                 /** @description Qué campo usar para ordenar los resultados. */
                 ordering?: string;
-                /** @description Un número de página dentro del conjunto de resultados paginado. */
-                page?: number;
                 /** @description Un término de búsqueda. */
                 search?: string;
             };
@@ -30339,7 +30270,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedCommunityPostCommentList"];
+                    "application/json": components["schemas"]["CommunityPostComment"][];
                 };
             };
         };

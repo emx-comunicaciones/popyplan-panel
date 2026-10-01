@@ -38,7 +38,10 @@ import { crmOpportunityHref } from "@/lib/crm/nav";
 
 import { StageBadge } from "../../common";
 import { ContactDialog } from "./AccountDialogs";
-import { EmailLink, FormDialog, MutationError, PhoneLink, QueryBoundary, contactFullName } from "../shared";
+import { EmailLink, FormDialog, MutationError, PageNav, PhoneLink, QueryBoundary, contactFullName, pageCount, useBackOnMissingPage } from "../shared";
+
+const LIST_PAGE_SIZE = 50;
+const DONE_PAGE_SIZE = 20;
 
 // ─── Contactos ──────────────────────────────────────────────────────────────
 
@@ -121,33 +124,38 @@ export function ContactsSection({ accountId }: { accountId: number }) {
 
 export function OpportunitiesSection({ accountId }: { accountId: number }) {
   const t = useTranslations("crm.accountDetail.opportunities");
-  const query = useCrmOpportunities({ account: accountId, page_size: 50 });
+  const [page, setPage] = useState(1);
+  const query = useCrmOpportunities({ account: accountId, page, page_size: LIST_PAGE_SIZE });
+  useBackOnMissingPage(query, page, setPage);
   return (
     <QueryBoundary query={query}>
       {(data) =>
-        data.results.length === 0 ? (
+        data.results.length === 0 && page === 1 ? (
           <EmptyState title={t("empty")} />
         ) : (
-          <Table<CrmOpportunity>
-            caption={t("caption")}
-            rows={data.results}
-            getRowKey={(row) => String(row.id)}
-            columns={[
-              {
-                key: "name",
-                header: t("name"),
-                render: (row) => (
-                  <Link href={crmOpportunityHref(row.id)} className="font-medium text-primary-700 underline">
-                    {row.name}
-                  </Link>
-                ),
-              },
-              { key: "product", header: t("product"), render: (row) => row.product_name || "—" },
-              { key: "stage", header: t("stage"), render: (row) => <StageBadge stage={row.stage_detail} /> },
-              { key: "amount", header: t("amount"), render: (row) => formatMoney(row.estimated_amount) },
-              { key: "close", header: t("expectedClose"), render: (row) => formatDate(row.expected_close_date) },
-            ]}
-          />
+          <>
+            <Table<CrmOpportunity>
+              caption={t("caption")}
+              rows={data.results}
+              getRowKey={(row) => String(row.id)}
+              columns={[
+                {
+                  key: "name",
+                  header: t("name"),
+                  render: (row) => (
+                    <Link href={crmOpportunityHref(row.id)} className="font-medium text-primary-700 underline">
+                      {row.name}
+                    </Link>
+                  ),
+                },
+                { key: "product", header: t("product"), render: (row) => row.product_name || "—" },
+                { key: "stage", header: t("stage"), render: (row) => <StageBadge stage={row.stage_detail} /> },
+                { key: "amount", header: t("amount"), render: (row) => formatMoney(row.estimated_amount) },
+                { key: "close", header: t("expectedClose"), render: (row) => formatDate(row.expected_close_date) },
+              ]}
+            />
+          <PageNav page={page} pages={pageCount(data.count, LIST_PAGE_SIZE)} onPage={setPage} />
+          </>
         )
       }
     </QueryBoundary>
@@ -206,20 +214,42 @@ function TaskTable({ tasks, canAct }: { tasks: CrmTask[]; canAct: boolean }) {
 
 export function TasksSection({ accountId }: { accountId: number }) {
   const t = useTranslations("crm.accountDetail.tasks");
-  const open = useCrmTasks({ account: accountId, mine: "false", bucket: "open", page_size: 50 });
-  const done = useCrmTasks({ account: accountId, mine: "false", bucket: "done", page_size: 20 });
+  const [openPage, setOpenPage] = useState(1);
+  const [donePage, setDonePage] = useState(1);
+  const open = useCrmTasks({ account: accountId, mine: "false", bucket: "open", page: openPage, page_size: LIST_PAGE_SIZE });
+  const done = useCrmTasks({ account: accountId, mine: "false", bucket: "done", page: donePage, page_size: DONE_PAGE_SIZE });
+  useBackOnMissingPage(open, openPage, setOpenPage);
+  useBackOnMissingPage(done, donePage, setDonePage);
   return (
     <div className="flex flex-col gap-4">
       <section aria-labelledby="crm-tasks-open" className="flex flex-col gap-2">
         <h2 id="crm-tasks-open" className="text-base font-semibold text-text-base">{t("openTitle")}</h2>
         <QueryBoundary query={open}>
-          {(data) => (data.results.length ? <TaskTable tasks={data.results} canAct /> : <EmptyState title={t("emptyOpen")} />)}
+          {(data) =>
+            data.results.length || openPage > 1 ? (
+              <>
+                <TaskTable tasks={data.results} canAct />
+                <PageNav page={openPage} pages={pageCount(data.count, LIST_PAGE_SIZE)} onPage={setOpenPage} />
+              </>
+            ) : (
+              <EmptyState title={t("emptyOpen")} />
+            )
+          }
         </QueryBoundary>
       </section>
       <section aria-labelledby="crm-tasks-done" className="flex flex-col gap-2">
         <h2 id="crm-tasks-done" className="text-base font-semibold text-text-base">{t("doneTitle")}</h2>
         <QueryBoundary query={done}>
-          {(data) => (data.results.length ? <TaskTable tasks={data.results} canAct={false} /> : <EmptyState title={t("emptyDone")} />)}
+          {(data) =>
+            data.results.length || donePage > 1 ? (
+              <>
+                <TaskTable tasks={data.results} canAct={false} />
+                <PageNav page={donePage} pages={pageCount(data.count, DONE_PAGE_SIZE)} onPage={setDonePage} />
+              </>
+            ) : (
+              <EmptyState title={t("emptyDone")} />
+            )
+          }
         </QueryBoundary>
       </section>
     </div>
@@ -257,7 +287,9 @@ function VersionDialog({ document, onClose }: { document: CrmDocument; onClose: 
 export function DocumentsSection({ accountId }: { accountId: number }) {
   const t = useTranslations("crm.accountDetail.documents");
   const root = useTranslations();
-  const query = useCrmDocuments({ account: accountId, page_size: 50 });
+  const [page, setPage] = useState(1);
+  const query = useCrmDocuments({ account: accountId, page, page_size: LIST_PAGE_SIZE });
+  useBackOnMissingPage(query, page, setPage);
   const del = useDeleteDocument();
   const [versioning, setVersioning] = useState<CrmDocument | null>(null);
   const [deleting, setDeleting] = useState<CrmDocument | null>(null);
@@ -281,7 +313,7 @@ export function DocumentsSection({ accountId }: { accountId: number }) {
   return (
     <QueryBoundary query={query}>
       {(data) =>
-        data.results.length === 0 ? (
+        data.results.length === 0 && page === 1 ? (
           <EmptyState title={t("empty")} />
         ) : (
           <>
@@ -318,6 +350,7 @@ export function DocumentsSection({ accountId }: { accountId: number }) {
                 },
               ]}
             />
+            <PageNav page={page} pages={pageCount(data.count, LIST_PAGE_SIZE)} onPage={setPage} />
             {versioning ? <VersionDialog key={versioning.id} document={versioning} onClose={() => setVersioning(null)} /> : null}
             <ConfirmDialog
               open={!!deleting}

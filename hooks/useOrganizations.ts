@@ -111,15 +111,22 @@ export function useAllOrganizations(): UseQueryResult<OrganizationsPage, Organiz
       try {
         const results: Organization[] = [];
         let count = 0;
-        for (let page = 1; page <= MAX_ORGANIZATION_PAGES; page += 1) {
+        let hasNext = true;
+        for (let page = 1; hasNext && page <= MAX_ORGANIZATION_PAGES; page += 1) {
           const query = buildQuery({ page });
           const data = await apiFetch<PaginatedOrganizationList>(`${ORGANIZATIONS.LIST()}?${query}`);
           results.push(...(data.results ?? []));
           count = data.count ?? results.length;
-          if (!data.next) break;
+          hasNext = !!data.next;
+        }
+        // Con el tope alcanzado y más páginas, devolver lo cargado como un
+        // éxito dejaría fuera entidades válidas sin decirlo: se lanza.
+        if (hasNext) {
+          throw new OrganizationsError("Hay demasiadas entidades para cargarlas todas; contacta con Popyplan.");
         }
         return { count, next: null, previous: null, results };
-      } catch {
+      } catch (error) {
+        if (error instanceof OrganizationsError) throw error;
         throw new OrganizationsError("No se pudo cargar el listado de entidades.");
       }
     },

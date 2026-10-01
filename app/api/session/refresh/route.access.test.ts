@@ -74,22 +74,51 @@ describe("POST /api/session/refresh con el token de acceso en cookie", () => {
     expect(res.cookies.get(ACCESS_COOKIE_NAME)?.value).toBe(nuevo);
   });
 
-  it("si pedir el perfil con el token vivo falla por red, rota como siempre", async () => {
-    const nuevo = jwt(24 * 3600);
-    let intentosConElViejo = 0;
-    fetchMock.mockImplementation(async (url: string, init?: { headers?: Record<string, string> }) => {
-      if (url === REFRESH_URL) return response({ access: nuevo, refresh: "r2" }, 200);
-      const auth = init?.headers?.Authorization ?? "";
-      if (!auth.includes(nuevo)) {
-        intentosConElViejo += 1;
-        throw new TypeError("fetch failed");
-      }
-      return response(buildMe(), 200);
+  it("si pedir el perfil con el token vivo falla por red, responde 503 sin rotar ni tocar cookies", async () => {
+    fetchMock.mockImplementation(async () => {
+      throw new TypeError("fetch failed");
     });
 
     const res = await POST(req({ [SESSION_COOKIE_NAME]: "r1", [ACCESS_COOKIE_NAME]: jwt(3600) }));
 
-    expect(intentosConElViejo).toBe(2);
-    expect(res.cookies.get(SESSION_COOKIE_NAME)?.value).toBe("r2");
+    expect(res.status).toBe(503);
+    expect(fetchMock.mock.calls.filter((c) => c[0] === REFRESH_URL)).toHaveLength(0);
+    expect(res.cookies.get(SESSION_COOKIE_NAME)).toBeUndefined();
+    expect(res.cookies.get(ACCESS_COOKIE_NAME)).toBeUndefined();
+  });
+
+  it("si el perfil con el token vivo da 5xx o una respuesta ilegible, tampoco rota", async () => {
+    for (const status of [502, 200]) {
+      fetchMock.mockReset();
+      fetchMock.mockImplementation(async () =>
+        status === 200
+          ? ({ ok: true, status, json: async () => null, text: async () => "<html>" } as Response)
+          : response({ detail: "x" }, status),
+      );
+      const res = await POST(req({ [SESSION_COOKIE_NAME]: "r1", [ACCESS_COOKIE_NAME]: jwt(3600) }));
+      expect(res.status).toBe(503);
+      expect(fetchMock.mock.calls.filter((c) => c[0] === REFRESH_URL)).toHaveLength(0);
+    }
+  });
+
+  it("si una consulta del perfil rechaza con 401/403 y la otra falla (red o 5xx), rota igualmente", async () => {
+    const rechazo = [401, 403];
+    const fallo = [() => { throw new TypeError("fetch failed"); }, () => response({ detail: "x" }, 502)];
+    for (const status of rechazo) {
+      for (const fail of fallo) {
+        for (const rejectedUrl of ["users/me", "platform-roles/me"]) {
+          fetchMock.mockReset();
+          fetchMock.mockImplementation(async (url: string) => {
+            if (url === REFRESH_URL) return response({ detail: "no" }, 401);
+            return String(url).includes(rejectedUrl) ? response({ detail: "no" }, status) : fail();
+          });
+          const res = await POST(req({ [SESSION_COOKIE_NAME]: "r1", [ACCESS_COOKIE_NAME]: jwt(3600) }));
+          // La rotación decide: aquí el backend rechaza el refresh, así que 401 y cookies fuera.
+          expect(fetchMock.mock.calls.filter((c) => c[0] === REFRESH_URL)).toHaveLength(1);
+          expect(res.status).toBe(401);
+          clearRecentRotations();
+        }
+      }
+    }
   });
 });

@@ -421,9 +421,9 @@ export type ReportRow = components["schemas"]["Report"];
 
 /** `GET /api/safety/reports/{id}/` (§4): añade `target` sobre `Report`. */
 /**
- * `where` todavía no sale en el `target` de un reporte (el contrato no lo
- * añade): cuando el backend lo sirva lo usa el detalle; mientras, se
- * deduce de `community_display` (ver `ReporteDetail`).
+ * El esquema incluye `where` en el `target` de publicaciones y comentarios.
+ * Si una respuesta lo omite, el detalle usa `community_display` como
+ * alternativa (ver `ReporteDetail`).
  */
 export type ReportTarget = components["schemas"]["ReportTarget"] & { where?: PostWhere };
 export type ReportDetail = Omit<components["schemas"]["ReportDetail"], "target"> & { target: ReportTarget };
@@ -535,6 +535,11 @@ export interface PaginatedCommunityList {
  * `Attendee`.
  */
 export type OrgMembershipFull = components["schemas"]["OrgMembership"];
+/**
+ * Fila de `GET .../members/?role=referente`: lo justo para elegir un
+ * referente (`id` de la membresía, `user` de la cuenta), sin contacto.
+ */
+export type OrgReferent = Pick<OrgMembershipFull, "id" | "user" | "public_name" | "role">;
 /** Cuerpo de `POST /api/organizations/{id}/members/`. */
 export type OrgMembershipCreateRequest = components["schemas"]["OrgMembershipRequest"];
 

@@ -1,7 +1,10 @@
+import { QueryClientProvider } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
+import { NextIntlClientProvider } from "next-intl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { act, fireEvent, render, screen, waitFor, within } from "@/test-utils/render";
+import es from "@/messages/es.json";
+import { act, createTestQueryClient, fireEvent, render, screen, waitFor, within } from "@/test-utils/render";
 import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal, routerMock, setSearchParams } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
@@ -25,7 +28,14 @@ vi.mock("@/hooks/useInvitations", () => ({ useInvitations: useInvitationsMock })
 vi.mock("@/hooks/useResendInvitation", () => ({ useResendInvitation: useResendInvitationMock }));
 vi.mock("@/hooks/useRevokeInvitation", () => ({ useRevokeInvitation: useRevokeInvitationMock }));
 vi.mock("@/hooks/useEntityCommunities", () => ({ useEntityCommunities: useEntityCommunitiesMock }));
-vi.mock("@/hooks/useOrgMembers", () => ({ useOrgMembers: useOrgMembersMock }));
+vi.mock("@/hooks/useOrgMembers", () => ({
+  useOrgMembers: useOrgMembersMock,
+  // `?role=referente` en el backend: lo mismo que el equipo, solo referentes.
+  useOrgReferents: (...args: Parameters<typeof useOrgMembersMock>) => {
+    const result = useOrgMembersMock(...args);
+    return { ...result, data: result?.data?.filter((m: { role: string }) => m.role === "referente") };
+  },
+}));
 vi.mock("@/hooks/useInvite", () => ({ useInvite: useInviteMock }));
 vi.mock("@/hooks/useImportPeople", () => ({ useImportPeople: useImportPeopleMock }));
 
@@ -394,6 +404,131 @@ describe("EntidadPersonasPage", () => {
     await waitFor(() =>
       expect(routerMock.replace).toHaveBeenLastCalledWith("/?q=ana&invitadas=1", { scroll: false }),
     );
+  });
+
+  it("si la URL cambia por fuera (Atrás del navegador), la tabla recoge los filtros y la página nuevos", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useInvitationsMock.mockReturnValue({ data: [], isError: false, error: null });
+    setSearchParams("q=ana&pagina=3");
+    const { rerender } = await renderPage();
+    expect(screen.getByLabelText("Buscar")).toHaveValue("ana");
+
+    setSearchParams("q=luis");
+    const element = await EntidadPersonasPage({ params: Promise.resolve({ slug: "alfaville" }) });
+    rerender(
+      <QueryClientProvider client={createTestQueryClient()}>
+        <NextIntlClientProvider locale="es" messages={es}>
+          {element}
+        </NextIntlClientProvider>
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() => expect(screen.getByLabelText("Buscar")).toHaveValue("luis"));
+    await waitFor(() =>
+      expect(usePeopleMock.mock.calls.at(-1)?.[2]).toMatchObject({ search: "luis", page: 1 }),
+    );
+  });
+
+  it("un replace propio todavía pendiente no se toma por un cambio externo tras pulsar Atrás", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "comm-1", name: "Paseos" })],
+      isError: false,
+      error: null,
+    });
+    useInvitationsMock.mockReturnValue({ data: [], isError: false, error: null });
+    setSearchParams("q=ana");
+    const user = userEvent.setup();
+    const { rerender } = await renderPage();
+
+    async function urlIs(query: string) {
+      setSearchParams(query);
+      const element = await EntidadPersonasPage({ params: Promise.resolve({ slug: "alfaville" }) });
+      rerender(
+        <QueryClientProvider client={createTestQueryClient()}>
+          <NextIntlClientProvider locale="es" messages={es}>
+            {element}
+          </NextIntlClientProvider>
+        </QueryClientProvider>,
+      );
+    }
+
+    // La tabla escribe su filtro, pero el `replace` aún no ha llegado a la URL.
+    await user.selectOptions(screen.getByLabelText("Comunidad"), "comm-1");
+    await waitFor(() =>
+      expect(routerMock.replace).toHaveBeenLastCalledWith("/?q=ana&comunidad=comm-1", { scroll: false }),
+    );
+
+    // Atrás: la URL pasa a otra consulta y la tabla la recoge.
+    await urlIs("q=luis");
+    await waitFor(() => expect(screen.getByLabelText("Buscar")).toHaveValue("luis"));
+
+    // Llega por fin el `replace` propio: no es Adelante/Atrás, no revierte.
+    routerMock.replace.mockClear();
+    await urlIs("q=ana&comunidad=comm-1");
+
+    // La tabla sigue con el filtro de Atrás y la URL se devuelve a él.
+    expect(screen.getByLabelText("Buscar")).toHaveValue("luis");
+    expect(routerMock.replace).toHaveBeenLastCalledWith("/?q=luis", { scroll: false });
+    await urlIs("q=luis");
+    expect(screen.getByLabelText("Buscar")).toHaveValue("luis");
+    expect(routerMock.replace).toHaveBeenCalledTimes(1);
+  });
+
+  it("varios replace atrasados tras Atrás solo devuelven la URL una vez y no pisan un filtro posterior", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "comm-1", name: "Paseos" })],
+      isError: false,
+      error: null,
+    });
+    useInvitationsMock.mockReturnValue({ data: [], isError: false, error: null });
+    setSearchParams("q=ana");
+    const user = userEvent.setup();
+    const { rerender } = await renderPage();
+
+    async function urlIs(query: string) {
+      setSearchParams(query);
+      const element = await EntidadPersonasPage({ params: Promise.resolve({ slug: "alfaville" }) });
+      rerender(
+        <QueryClientProvider client={createTestQueryClient()}>
+          <NextIntlClientProvider locale="es" messages={es}>
+            {element}
+          </NextIntlClientProvider>
+        </QueryClientProvider>,
+      );
+    }
+
+    // Dos cambios de filtro cuyos `replace` aún no han llegado.
+    await user.selectOptions(screen.getByLabelText("Comunidad"), "comm-1");
+    await user.type(screen.getByLabelText("Buscar"), "x");
+    await waitFor(() =>
+      expect(routerMock.replace).toHaveBeenLastCalledWith("/?q=anax&comunidad=comm-1", { scroll: false }),
+    );
+
+    // Atrás, y después llegan los dos `replace` atrasados, en orden.
+    await urlIs("q=luis");
+    await waitFor(() => expect(screen.getByLabelText("Buscar")).toHaveValue("luis"));
+    routerMock.replace.mockClear();
+    await urlIs("q=ana&comunidad=comm-1");
+    expect(routerMock.replace).not.toHaveBeenCalled();
+    await urlIs("q=anax&comunidad=comm-1");
+    expect(routerMock.replace).toHaveBeenCalledTimes(1);
+    expect(routerMock.replace).toHaveBeenLastCalledWith("/?q=luis", { scroll: false });
+    await urlIs("q=luis");
+
+    // Un filtro nuevo después de todo eso manda: nadie lo devuelve a Atrás.
+    routerMock.replace.mockClear();
+    await user.selectOptions(screen.getByLabelText("Comunidad"), "comm-1");
+    await waitFor(() =>
+      expect(routerMock.replace).toHaveBeenLastCalledWith("/?q=luis&comunidad=comm-1", { scroll: false }),
+    );
+    await urlIs("q=luis&comunidad=comm-1");
+    expect(routerMock.replace).toHaveBeenCalledTimes(1);
+    expect(screen.getByLabelText("Comunidad")).toHaveValue("comm-1");
   });
 
   it("paginación: sin `previous`, «Anterior» está deshabilitado; con `next`, «Siguiente» no", async () => {

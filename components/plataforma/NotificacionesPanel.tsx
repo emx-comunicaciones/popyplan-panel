@@ -64,6 +64,7 @@ export const NOTIFICATION_TYPES: readonly NotificationTypeName[] = [
   "review_received",
   "report_resolved",
   "help_request",
+  "help_referent",
   "account_suspended",
   "survey",
   "support_help_request",
@@ -72,7 +73,7 @@ export const NOTIFICATION_TYPES: readonly NotificationTypeName[] = [
 
 /**
  * Lo que se puede mandar a mano desde «Enviar» (revisión 2026-09-28, N3):
- * con los 17 tipos, plataforma podía mandar «Cuenta suspendida» o simular
+ * con todos los tipos, plataforma podía mandar «Cuenta suspendida» o simular
  * una petición de ayuda, y la app los abre en su pantalla. El backend
  * rechaza el resto con 400; las plantillas siguen con todos los tipos.
  */

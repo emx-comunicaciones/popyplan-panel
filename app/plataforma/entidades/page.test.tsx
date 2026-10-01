@@ -179,6 +179,32 @@ describe("PlataformaEntidadesPage", () => {
     expect(screen.getByText(/Para crear la entidad falta: el municipio de la sede\./)).toBeInTheDocument();
   });
 
+  it("el slug acepta lo que acepta el backend y, si es largo, dice que es la longitud", async () => {
+    apiFetchMock.mockResolvedValue({ count: 0, next: null, previous: null, results: [] });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+    const user = userEvent.setup();
+    render(await PlataformaEntidadesPage());
+
+    await user.click(screen.getByRole("button", { name: "Nueva entidad" }));
+    await user.clear(screen.getByLabelText("Slug"));
+    await user.type(screen.getByLabelText("Slug"), "Asociacion_2026");
+    expect(screen.getByLabelText("Slug")).not.toHaveAttribute("aria-invalid", "true");
+    expect(screen.queryByText(/Solo letras sin tildes/)).not.toBeInTheDocument();
+
+    await user.clear(screen.getByLabelText("Slug"));
+    await user.type(screen.getByLabelText("Slug"), "irún");
+    expect(screen.getByText(/Solo letras sin tildes, números, guiones y guiones bajos/)).toBeInTheDocument();
+
+    await user.clear(screen.getByLabelText("Slug"));
+    await user.click(screen.getByLabelText("Slug"));
+    await user.paste("a".repeat(81));
+    expect(screen.getByText("Demasiado largo: como máximo 80 caracteres.")).toBeInTheDocument();
+  });
+
   it("avisa de las entidades sin sede", async () => {
     apiFetchMock.mockResolvedValue({
       count: 1,

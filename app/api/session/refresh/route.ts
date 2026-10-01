@@ -153,8 +153,22 @@ export async function POST(request: NextRequest) {
         platformRole: roleResult.data,
       });
     }
-    // Si el backend no lo acepta (p. ej. cuenta suspendida), se sigue por la
-    // rotación de siempre, que decide si la sesión vale.
+    // Un fallo transitorio (red caída, 5xx, respuesta ilegible) no dice que
+    // el acceso necesite renovarse: rotar aquí metería en lista negra un
+    // refresh sano y otra instancia que lo use se quedaría sin sesión. Se
+    // responde 503 sin tocar las cookies; quien reintente lo hará igual.
+    // (`status === 200` con `ok: false` es un cuerpo ilegible, p. ej. HTML de un proxy.)
+    const transient = (result: { ok: boolean; status: number } | null) =>
+      !result || (!result.ok && (result.status >= 500 || result.status === 200));
+    // Un rechazo definitivo de una consulta no lo tapa el fallo de la otra:
+    // va a la rotación, que decide si la sesión rechazada sigue valiendo.
+    const rejected = (result: { ok: boolean; status: number } | null) =>
+      !!result && !result.ok && (result.status === 401 || result.status === 403);
+    if ((transient(meResult) || transient(roleResult)) && !rejected(meResult) && !rejected(roleResult)) {
+      return NextResponse.json({ detail: "No se pudo completar el refresco." }, { status: 503 });
+    }
+    // Si el backend lo rechaza (401/403: p. ej. cuenta suspendida), se sigue
+    // por la rotación de siempre, que decide si la sesión vale.
   }
 
   let result = await singleFlight(inFlightByRefresh, refresh, () => rotate(refresh, request));

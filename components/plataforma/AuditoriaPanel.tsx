@@ -47,8 +47,10 @@ function actorText(entry: AuditLogEntry, hidden: string): string {
   return entry.actor.id === 0 ? hidden : `${entry.actor.public_name} (#${entry.actor.id})`;
 }
 
+const isHiddenTarget = (entry: AuditLogEntry): boolean => entry.target_id === "" && entry.target_type === "";
+
 function targetText(entry: AuditLogEntry, hidden: string): string {
-  return entry.target_id === "" && entry.target_type === "" ? hidden : `${entry.target_type} #${entry.target_id}`;
+  return isHiddenTarget(entry) ? hidden : `${entry.target_type} #${entry.target_id}`;
 }
 
 const AUDIT_LOG_ERROR_KEYS: Record<AuditLogErrorKind, string> = {
@@ -74,8 +76,10 @@ function downloadCsv(rows: AuditLogEntry[], header: string[], hidden: string): v
       row.id,
       actorText(row, hidden),
       row.action,
-      row.target_type,
-      row.target_id,
+      // Misma marca que en pantalla: un objetivo vacío en el CSV se leería
+      // como un dato que falta, no como privado.
+      isHiddenTarget(row) ? hidden : row.target_type,
+      isHiddenTarget(row) ? hidden : row.target_id,
       metadataText(row),
       row.created_at,
     ]),
