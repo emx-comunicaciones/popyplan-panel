@@ -17,6 +17,7 @@ import { ExportPanel } from "./ExportPanel";
 import { MetricsTable } from "./MetricsTable";
 import { PeriodSelector } from "./PeriodSelector";
 import { SeriesChart } from "./SeriesChart";
+import { HelpStats } from "./HelpStats";
 import { StatCard } from "./StatCard";
 
 type TableGroupBy = Extract<MetricsGroupBy, "place" | "organization">;
@@ -134,6 +135,8 @@ export function PlataformaMetricsDashboard() {
               value={formatCount(base.data.attendance.no_show, base.data.attendance.suppressed)}
             />
           </div>
+
+          <HelpStats help={base.data.help} />
 
           <fieldset className="flex flex-wrap items-center gap-3">
             <legend className="text-sm font-medium text-text-form">

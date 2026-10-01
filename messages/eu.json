@@ -2692,6 +2692,18 @@
       "communities": "Komunitateak",
       "organizationsBasedHere": "Hemen egoitza duten erakundeak",
       "noNamesNotice": "Fitxa honek datu agregatuak baino ez ditu erakusten: inoiz ez pertsonen izenak, ezta hemen egoitza duten erakundeenak ere."
+    },
+    "help": {
+      "heading": "Txandaren zerbitzuak",
+      "description": "Aldiko «gaur gaizki nago» abisuak eta haiekin egindakoa. 5 pertsonatik behera «<5» ageri da.",
+      "requests": "Jasotako abisuak",
+      "attended": "Artatuak",
+      "pending": "Artatu gabeak",
+      "medianResponse": "Erantzuteko denbora (mediana)",
+      "contacted": "Idatzi zaien pertsonak",
+      "referentNotified": "Abisatutako erreferenteak",
+      "networkResponded": "Laguntza-sareak erantzunak",
+      "people": "Laguntza eskatu duten pertsonak"
     }
   },
   "plataforma": {
@@ -3379,6 +3391,7 @@
         "reviewReceived": "Iritzia jasoa",
         "reportResolved": "Salaketa ebatzia",
         "helpRequest": "Laguntza eskaera",
+        "helpReferent": "Laguntza-abisua erreferenteari",
         "accountSuspended": "Kontua etena",
         "survey": "Inkesta",
         "supportHelpRequest": "Laguntza sarea: laguntza eskaera",

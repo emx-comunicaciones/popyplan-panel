@@ -2692,6 +2692,18 @@
       "communities": "Comunitats",
       "organizationsBasedHere": "Entitats amb seu aquí",
       "noNamesNotice": "Aquesta fitxa només mostra dades agregades: mai noms de persones ni de les entitats amb seu aquí."
+    },
+    "help": {
+      "heading": "Serveis de la guàrdia",
+      "description": "Avisos d'«avui ho porto malament» del període i què se n'ha fet. Per sota de 5 persones es mostren com a «<5».",
+      "requests": "Avisos rebuts",
+      "attended": "Atesos",
+      "pending": "Sense atendre",
+      "medianResponse": "Temps de resposta (mediana)",
+      "contacted": "Persones a qui s'ha escrit",
+      "referentNotified": "Referents avisats",
+      "networkResponded": "Responsos per la xarxa de suport",
+      "people": "Persones que han demanat ajuda"
     }
   },
   "plataforma": {
@@ -3379,6 +3391,7 @@
         "reviewReceived": "Ressenya rebuda",
         "reportResolved": "Denúncia resolta",
         "helpRequest": "Petició d'ajuda",
+        "helpReferent": "Avís d'ajuda al referent",
         "accountSuspended": "Compte suspès",
         "survey": "Enquesta",
         "supportHelpRequest": "Xarxa de suport: petició d'ajuda",

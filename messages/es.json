@@ -2692,6 +2692,18 @@
       "communities": "Comunidades",
       "organizationsBasedHere": "Entidades con sede aquí",
       "noNamesNotice": "Esta ficha solo muestra agregados: nunca nombres de personas ni de las entidades con sede aquí."
+    },
+    "help": {
+      "heading": "Servicios de la guardia",
+      "description": "Avisos de «hoy lo llevo mal» del periodo y qué se hizo con ellos. Por debajo de 5 personas se muestran como «<5».",
+      "requests": "Avisos recibidos",
+      "attended": "Atendidos",
+      "pending": "Sin atender",
+      "medianResponse": "Tiempo de respuesta (mediana)",
+      "contacted": "Personas a las que se escribió",
+      "referentNotified": "Referentes avisados",
+      "networkResponded": "Respondidos por la red de apoyo",
+      "people": "Personas que pidieron ayuda"
     }
   },
   "plataforma": {
@@ -3379,6 +3391,7 @@
         "reviewReceived": "Reseña recibida",
         "reportResolved": "Reporte resuelto",
         "helpRequest": "Petición de ayuda",
+        "helpReferent": "Aviso de ayuda al referente",
         "accountSuspended": "Cuenta suspendida",
         "survey": "Encuesta",
         "supportHelpRequest": "Red de apoyo: petición de ayuda",

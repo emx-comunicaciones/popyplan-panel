@@ -2692,6 +2692,18 @@
       "communities": "Communities",
       "organizationsBasedHere": "Entities based here",
       "noNamesNotice": "This sheet only shows aggregates: never the names of people or of the entities based here."
+    },
+    "help": {
+      "heading": "On-call services",
+      "description": "\"I'm having a bad day\" alerts in the period and what was done about them. Below 5 people they show as \"<5\".",
+      "requests": "Alerts received",
+      "attended": "Attended",
+      "pending": "Not attended",
+      "medianResponse": "Response time (median)",
+      "contacted": "People written to",
+      "referentNotified": "Referents notified",
+      "networkResponded": "Answered by the support network",
+      "people": "People who asked for help"
     }
   },
   "plataforma": {
@@ -3379,6 +3391,7 @@
         "reviewReceived": "Review received",
         "reportResolved": "Report resolved",
         "helpRequest": "Help request",
+        "helpReferent": "Help alert for a referent",
         "accountSuspended": "Account suspended",
         "survey": "Survey",
         "supportHelpRequest": "Support network: help request",

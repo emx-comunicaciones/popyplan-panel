@@ -45,6 +45,7 @@ import { MetricsTable } from "./MetricsTable";
 import { PeriodSelector } from "./PeriodSelector";
 import { PlaceSheetPanel } from "./PlaceSheetPanel";
 import { SeriesChart } from "./SeriesChart";
+import { HelpStats } from "./HelpStats";
 import { StatCard } from "./StatCard";
 import { TerritoryMap } from "./TerritoryMap";
 
@@ -150,6 +151,8 @@ export function TerritorioDashboard({ orgId }: TerritorioDashboardProps) {
               value={formatCount(base.data.communities.active, base.data.communities.suppressed)}
             />
           </div>
+
+          <HelpStats help={base.data.help} />
 
           <section aria-labelledby="territorio-mapa-heading">
             <h2 id="territorio-mapa-heading" className="mb-2 text-lg font-semibold text-text-base">

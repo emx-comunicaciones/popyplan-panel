@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { HelpStats } from "@/components/metrics/HelpStats";
 import { StatCard } from "@/components/metrics/StatCard";
 import { useEntityHome } from "@/hooks/useEntityHome";
 import { errorKindText } from "@/lib/i18n/errorKindText";
@@ -196,6 +197,11 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
             />
           </div>
         )}
+        {metrics.data ? (
+          <div className="mt-4">
+            <HelpStats help={metrics.data.help} />
+          </div>
+        ) : null}
       </section>
     </div>
   );
