@@ -55,6 +55,7 @@ import { AUTH, SAFETY, USERS } from "@/lib/api/endpoints";
 import { serverFetch } from "@/lib/api/serverFetch";
 import type { MeForArea, PlatformRoleMe } from "@/lib/api/types";
 import { forwardedForHeaders } from "@/lib/auth/clientIp";
+import { panelClientHeaders } from "@/lib/auth/panelClient";
 import {
   ACCESS_COOKIE_NAME,
   SESSION_COOKIE_NAME,
@@ -80,7 +81,8 @@ async function rotate(refresh: string, request: NextRequest): Promise<RefreshRes
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...forwardedForHeaders(request),
+        ...panelClientHeaders(),
+      ...forwardedForHeaders(request),
         ...requestLanguageHeader(request),
       },
       body: JSON.stringify({ refresh }),

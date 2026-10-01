@@ -15,7 +15,7 @@
 
 export const SESSION_COOKIE_NAME = "pp_session";
 
-/** Vida máxima del refresh token (`SIMPLE_JWT.REFRESH_TOKEN_LIFETIME` = 30 días). */
+/** Vida del refresh del panel (`REFRESH_LIFETIME_PANEL_DAYS` = 30 en el backend); cada rotación la cuenta de nuevo. */
 export const SESSION_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 
 /**

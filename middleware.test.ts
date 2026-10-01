@@ -157,6 +157,20 @@ describe("middleware", () => {
     expect(res.headers.get("x-middleware-request-" + ACCESS_TOKEN_HEADER)).toBe("access-nuevo");
   });
 
+  it("el refresco manda la marca de panel y renueva la cookie con los 30 días enteros", async () => {
+    fetchMock.mockResolvedValueOnce(response({ access: "a-n", refresh: "r-n" }, 200));
+
+    const res = await middleware(requestWithCookie("r-desliza"));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://api.test/api/auth/token/refresh/",
+      expect.objectContaining({
+        headers: expect.objectContaining({ "X-Popyplan-Client": "panel" }),
+      }),
+    );
+    expect(res.cookies.get(SESSION_COOKIE_NAME)?.maxAge).toBe(60 * 60 * 24 * 30);
+  });
+
   it("reenvía al backend la IP real del cliente (rate limit por IP compartido con el login)", async () => {
     fetchMock.mockResolvedValueOnce(
       response({ access: "access-nuevo", refresh: "refresh-nuevo" }, 200),

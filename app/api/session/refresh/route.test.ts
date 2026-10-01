@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { buildMe } from "@/test-utils/fixtures/me";
 import { buildPlatformRole } from "@/test-utils/fixtures/platformRole";
-import { SESSION_COOKIE_NAME } from "@/lib/auth/cookie";
+import { SESSION_COOKIE_MAX_AGE_SECONDS, SESSION_COOKIE_NAME } from "@/lib/auth/cookie";
 import { LANG_COOKIE_NAME } from "@/lib/i18n/cookie";
 import { clearRecentRotations, ROTATION_REPLAY_TTL_MS } from "@/lib/auth/rotationCache";
 
@@ -176,6 +176,24 @@ describe("POST /api/session/refresh", () => {
         headers: expect.objectContaining({ "X-Forwarded-For": "203.0.113.7" }),
       }),
     );
+  });
+
+  it("sesión deslizante: manda la marca de panel y renueva la cookie con los 30 días enteros", async () => {
+    fetchMock
+      .mockResolvedValueOnce(response({ access: "a", refresh: "r-nuevo" }, 200))
+      .mockResolvedValueOnce(response(buildMe(), 200))
+      .mockResolvedValueOnce(response(buildPlatformRole(null), 200));
+
+    const res = await POST(requestWithCookie("r-desliza"));
+
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      REFRESH_URL,
+      expect.objectContaining({
+        headers: expect.objectContaining({ "X-Popyplan-Client": "panel" }),
+      }),
+    );
+    expect(res.cookies.get(SESSION_COOKIE_NAME)?.maxAge).toBe(SESSION_COOKIE_MAX_AGE_SECONDS);
   });
 
   it("reenvía la cookie pp_lang de quien refresca como Accept-Language", async () => {

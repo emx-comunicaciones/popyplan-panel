@@ -139,6 +139,24 @@ describe("POST /api/session", () => {
     );
   });
 
+  it("el login manda la marca de panel (refresh de 30 días) y fija la cookie con 30 días", async () => {
+    fetchMock
+      .mockResolvedValueOnce(response({ key: "access-123", refresh: "refresh-456", user: {} }, 200))
+      .mockResolvedValueOnce(response(buildMe(), 200))
+      .mockResolvedValueOnce(response(buildPlatformRole(null), 200));
+
+    const res = await POST(loginRequest({ username_or_email: "x", password: "y" }));
+
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "http://api.test/api/auth/login/",
+      expect.objectContaining({
+        headers: expect.objectContaining({ "X-Popyplan-Client": "panel" }),
+      }),
+    );
+    expect(res.cookies.get("pp_session")?.maxAge).toBe(60 * 60 * 24 * 30);
+  });
+
   it("reenvía al backend la IP real del cliente (el rate limit por IP del login es compartido)", async () => {
     fetchMock
       .mockResolvedValueOnce(response({ key: "access-123", refresh: "refresh-456", user: {} }, 200))
