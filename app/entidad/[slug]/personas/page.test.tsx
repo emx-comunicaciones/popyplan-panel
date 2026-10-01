@@ -477,6 +477,60 @@ describe("EntidadPersonasPage", () => {
     expect(routerMock.replace).toHaveBeenCalledTimes(1);
   });
 
+  it("varios replace atrasados tras Atrás solo devuelven la URL una vez y no pisan un filtro posterior", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useEntityCommunitiesMock.mockReturnValue({
+      data: [buildEntityCommunityRow({ id: "comm-1", name: "Paseos" })],
+      isError: false,
+      error: null,
+    });
+    useInvitationsMock.mockReturnValue({ data: [], isError: false, error: null });
+    setSearchParams("q=ana");
+    const user = userEvent.setup();
+    const { rerender } = await renderPage();
+
+    async function urlIs(query: string) {
+      setSearchParams(query);
+      const element = await EntidadPersonasPage({ params: Promise.resolve({ slug: "alfaville" }) });
+      rerender(
+        <QueryClientProvider client={createTestQueryClient()}>
+          <NextIntlClientProvider locale="es" messages={es}>
+            {element}
+          </NextIntlClientProvider>
+        </QueryClientProvider>,
+      );
+    }
+
+    // Dos cambios de filtro cuyos `replace` aún no han llegado.
+    await user.selectOptions(screen.getByLabelText("Comunidad"), "comm-1");
+    await user.type(screen.getByLabelText("Buscar"), "x");
+    await waitFor(() =>
+      expect(routerMock.replace).toHaveBeenLastCalledWith("/?q=anax&comunidad=comm-1", { scroll: false }),
+    );
+
+    // Atrás, y después llegan los dos `replace` atrasados, en orden.
+    await urlIs("q=luis");
+    await waitFor(() => expect(screen.getByLabelText("Buscar")).toHaveValue("luis"));
+    routerMock.replace.mockClear();
+    await urlIs("q=ana&comunidad=comm-1");
+    expect(routerMock.replace).not.toHaveBeenCalled();
+    await urlIs("q=anax&comunidad=comm-1");
+    expect(routerMock.replace).toHaveBeenCalledTimes(1);
+    expect(routerMock.replace).toHaveBeenLastCalledWith("/?q=luis", { scroll: false });
+    await urlIs("q=luis");
+
+    // Un filtro nuevo después de todo eso manda: nadie lo devuelve a Atrás.
+    routerMock.replace.mockClear();
+    await user.selectOptions(screen.getByLabelText("Comunidad"), "comm-1");
+    await waitFor(() =>
+      expect(routerMock.replace).toHaveBeenLastCalledWith("/?q=luis&comunidad=comm-1", { scroll: false }),
+    );
+    await urlIs("q=luis&comunidad=comm-1");
+    expect(routerMock.replace).toHaveBeenCalledTimes(1);
+    expect(screen.getByLabelText("Comunidad")).toHaveValue("comm-1");
+  });
+
   it("paginación: sin `previous`, «Anterior» está deshabilitado; con `next`, «Siguiente» no", async () => {
     mockDefaults();
     usePeopleMock.mockReturnValue({

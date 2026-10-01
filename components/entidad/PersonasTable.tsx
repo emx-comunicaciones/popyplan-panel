@@ -115,37 +115,47 @@ export function PersonasTable(props: PersonasTableProps) {
   // Consultas que la propia tabla ha escrito en la URL y aún no han llegado
   // por `useSearchParams` (el `replace` es asíncrono).
   const pending = useRef<string[]>([]);
-  // Última consulta que llegó por fuera (Atrás/Adelante): manda sobre
-  // cualquier `replace` propio que llegue después.
-  const external = useRef<string | null>(null);
+  // `replace` propios que seguían en vuelo cuando la URL cambió por fuera
+  // (Atrás/Adelante): van a llegar igual, en orden, y ninguno es una
+  // elección nueva.
+  const stale = useRef<string[]>([]);
+  // Lo último que se quiere ver: lo que eligió Atrás o el último filtro
+  // tocado después. Cuando llega el último `replace` atrasado, la URL se
+  // vuelve a dejar aquí una sola vez.
+  const intended = useRef<string | null>(null);
   const [epoch, setEpoch] = useState(0);
   const lastQuery = useRef(query);
   useEffect(() => {
     if (query === lastQuery.current) return;
     lastQuery.current = query;
+    const late = stale.current.indexOf(query);
+    if (late >= 0) {
+      stale.current = stale.current.slice(late + 1);
+      const wanted = intended.current;
+      if (stale.current.length === 0 && wanted !== null && wanted !== query) {
+        pending.current.push(wanted);
+        router.replace(wanted ? `${pathname}?${wanted}` : pathname, { scroll: false });
+      }
+      return;
+    }
     const own = pending.current.indexOf(query);
     if (own >= 0) {
       pending.current = pending.current.slice(own + 1);
-      if (external.current !== null && external.current !== query) {
-        // Un `replace` propio atrasado ha pisado lo que eligió Atrás: se
-        // vuelve a escribir esa URL para que URL y tabla coincidan.
-        const wanted = external.current;
-        pending.current.push(wanted);
-        router.replace(wanted ? `${pathname}?${wanted}` : pathname, { scroll: false });
-      } else if (pending.current.length === 0) {
-        external.current = null;
-      }
       return;
     }
     // La URL cambió por fuera (Atrás/Adelante del navegador): la tabla se
     // vuelve a montar con los filtros y la página que dice ahora. Solo se
     // lee la URL al montar, así que no hay que sincronizar campo a campo.
-    // `pending` se conserva: un `replace` propio que aún no ha llegado
-    // seguirá llegando, y no es otro cambio externo que deba deshacer esto.
-    external.current = pending.current.length > 0 ? query : null;
+    stale.current = [...stale.current, ...pending.current];
+    pending.current = [];
+    intended.current = query;
     setEpoch((value) => value + 1);
   }, [query, router, pathname]);
-  return <PersonasTableContent key={epoch} {...props} onPush={(value) => pending.current.push(value)} />;
+  const onPush = (value: string) => {
+    pending.current.push(value);
+    intended.current = value;
+  };
+  return <PersonasTableContent key={epoch} {...props} onPush={onPush} />;
 }
 
 function PersonasTableContent({
