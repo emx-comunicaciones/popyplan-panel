@@ -4650,6 +4650,230 @@
         "notes": "Oharrak",
         "confirm": "Kontratua erregistratu"
       }
+    },
+    "period": {
+      "label": "Aldia",
+      "today": "Gaur",
+      "week": "Aste hau",
+      "month": "Hilabete hau",
+      "quarter": "Hiruhileko hau",
+      "year": "Urte hau",
+      "custom": "Pertsonalizatua",
+      "since": "Noiztik",
+      "until": "Noiz arte",
+      "invalid": "Datak ez dira baliozkoak: «Noiztik» ezin da «Noiz arte» baino geroagokoa izan. Azken aldi baliozkoa erakusten jarraitzen da.",
+      "filters": {
+        "group": "Iragazkiak",
+        "all": "Guztiak",
+        "owner": "Saltzailea",
+        "region": "Autonomia erkidegoa",
+        "province": "Probintzia",
+        "kind": "Erakunde mota",
+        "product": "Produktua",
+        "stage": "Egoera",
+        "interest": "Interesa",
+        "optionsError": "Iragazkien aukera batzuk ezin izan dira kargatu."
+      }
+    },
+    "dashboard": {
+      "error": "Ez dago eskuragarri: ezin izan dira zifrak kargatu. Saiatu berriro.",
+      "change": "{value} % aurreko aldiarekin alderatuta",
+      "range": "Aldia: {since} - {until}. Aurreko aldiarekin alderatzen da: {previousSince} - {previousUntil}.",
+      "attentionLink": "Arreta behar dutenak ({count})",
+      "overdueLink": "Ikusi epez kanpoko zereginak ({count})",
+      "activityHeading": "Jarduera eta kartera",
+      "moneyHeading": "Ekonomia",
+      "funnelHeading": "Salmenta-inbutua",
+      "kpi": {
+        "accounts": "Erakunde guztiak",
+        "newAccounts": "Erakunde berriak",
+        "contacted": "Kontaktatuak",
+        "neverContacted": "Kontaktatu gabeak",
+        "contacts": "Egindako kontaktuak",
+        "visits": "Bisitak",
+        "meetings": "Bilerak",
+        "videoCalls": "Bideodeiak",
+        "calls": "Deiak",
+        "demos": "Demoak",
+        "proposalsSent": "Bidalitako proposamenak",
+        "pilots": "Pilotuak",
+        "openOpportunities": "Aukera irekiak",
+        "won": "Kontratazioak",
+        "lost": "Galduak",
+        "pendingTasks": "Egiteke dauden zereginak",
+        "overdueTasks": "Epez kanpoko zereginak",
+        "withoutFollowUp": "Jarraipenik gabe"
+      },
+      "money": {
+        "pipelineValue": "Pipeline-aren balio osoa",
+        "weightedPipeline": "Balio haztatua",
+        "proposalsAmount": "Bidalitako proposamenen zenbatekoa",
+        "wonAmount": "Kontratatutako zenbatekoa",
+        "averageTicket": "Batez besteko tiketa",
+        "note": "Balio haztatuak aukera irekiak bakoitzaren faseko probabilitatearekin biderkatzen ditu. Proposamenak eta kontratatutako zenbatekoa hautatutako aldikoak dira."
+      },
+      "funnel": {
+        "caption": "Inbutua: aukerak fasearen arabera, zenbatekoarekin, aurreko fasetik bihurtzearekin eta fasean emandako batez besteko egunekin",
+        "asideCaption": "Galdutako eta pausatutako aukerak",
+        "stage": "Fasea",
+        "count": "Aukerak",
+        "amount": "Zenbatekoa",
+        "reached": "Iritsi direnak",
+        "conversion": "Aurreko fasetik bihurtzea",
+        "averageDays": "Fasean emandako batez besteko egunak",
+        "days": "{count, plural, one {# egun} other {# egun}}"
+      }
+    },
+    "reports": {
+      "error": "Ez dago eskuragarri: ezin izan da txostena kargatu. Saiatu berriro.",
+      "range": "Aldia: {since} - {until}.",
+      "export": {
+        "heading": "Esportatu",
+        "note": "Deskargatu CSV formatuan oraingo iragazkiekin ikusten duzuna (erakundeak, aukerak edo jarduerak).",
+        "accounts": "Esportatu erakundeak (CSV)",
+        "opportunities": "Esportatu aukerak (CSV)",
+        "activities": "Esportatu jarduerak (CSV)",
+        "exporting": "Esportatzen…",
+        "error": "Ezin izan da esportatu. Saiatu berriro."
+      },
+      "activity": {
+        "heading": "Jardueraren laburpena",
+        "contacts": "Egindako kontaktuak",
+        "visits": "Bisitak",
+        "meetings": "Bilerak",
+        "videoCalls": "Bideodeiak",
+        "calls": "Deiak",
+        "demos": "Demoak",
+        "pilots": "Pilotuak",
+        "averageDays": "Kontaktuen arteko batez besteko egunak",
+        "withoutFollowUp": "Jarraipenik gabeko erakundeak",
+        "wonAmount": "Kontratatutako zenbatekoa",
+        "byKindCaption": "Aldiko jarduerak motaren arabera",
+        "kind": "Jarduera mota",
+        "count": "Jarduerak"
+      },
+      "funnelHeading": "Inbutua",
+      "team": {
+        "heading": "Jarduera saltzaileka",
+        "note": "Ez da sailkapena: jarduera (bisitak, deiak…) eta emaitzak (pipeline-a, kontratuak, bihurtzea) elkarrekin irakurtzen dira, eta errenkadak alfabetikoki daude ordenatuta. Bisita gehiago ez dira salmenta gehiago.",
+        "caption": "Aldiko jarduera eta emaitzak saltzaileka",
+        "name": "Saltzailea",
+        "accounts": "Erakundeak",
+        "contacts": "Kontaktuak",
+        "visits": "Bisitak",
+        "meetings": "Bilerak",
+        "videoCalls": "Bideodeiak",
+        "calls": "Deiak",
+        "demos": "Demoak",
+        "proposals": "Proposamenak",
+        "openOpportunities": "Aukera irekiak",
+        "pipelineValue": "Pipeline-aren balioa",
+        "contracts": "Kontratuak",
+        "wonAmount": "Kontratatutako zenbatekoa",
+        "pendingTasks": "Egiteke dauden zereginak",
+        "overdueTasks": "Epez kanpoko zereginak",
+        "winRate": "Arrakasta-tasa"
+      },
+      "lost": {
+        "heading": "Galtzeko arrazoiak",
+        "empty": "Ez dago galdutako aukerarik aldi honetan.",
+        "caption": "Galdutako aukerak arrazoiaren arabera",
+        "reason": "Arrazoia",
+        "count": "Aukerak"
+      }
+    },
+    "map": {
+      "filters": {
+        "minPopulation": "Gutxieneko biztanleria"
+      },
+      "error": "Ez dago eskuragarri: ezin izan da mapa kargatu. Saiatu berriro.",
+      "empty": "Kokapena duen erakunderik ez dator iragazki hauekin bat.",
+      "mapLabel": "{count, plural, one {Espainiako mapa: # erakunde; beheko zerrendak datu berberak ditu} other {Espainiako mapa: # erakunde; beheko zerrendak datu berberak ditu}}",
+      "legend": {
+        "heading": "Legenda",
+        "item": "{status} ({count})",
+        "note": "Egoera bakoitzak bere forma eta letra ditu, kolorearekin batera."
+      },
+      "status": {
+        "sin_contactar": "Kontaktatu gabea",
+        "contactado": "Kontaktatua",
+        "interesado": "Interesatua",
+        "negociacion": "Negoziazioa",
+        "cliente": "Bezeroa",
+        "perdido": "Galdua"
+      },
+      "popup": {
+        "municipality": "Udalerria: {value}",
+        "population": "Biztanleria: {value}",
+        "stage": "Fasea: {value}",
+        "owner": "Saltzailea: {value}",
+        "lastActivity": "Azken jarduera: {value}",
+        "nextActivity": "Hurrengo jarduera: {value}",
+        "openValue": "Balio irekia: {value}",
+        "viewAccount": "Ikusi fitxa"
+      },
+      "list": {
+        "heading": "Erakundeen zerrenda",
+        "show": "{count, plural, one {Erakutsi zerrenda (# erakunde)} other {Erakutsi zerrenda (# erakunde)}}",
+        "hide": "Ezkutatu zerrenda",
+        "caption": "Mapako erakundeak, haien egoera, saltzailea eta balio irekia",
+        "name": "Erakundea",
+        "municipality": "Udalerria",
+        "province": "Probintzia",
+        "status": "Egoera mapan",
+        "stage": "Fasea",
+        "owner": "Saltzailea",
+        "population": "Biztanleria",
+        "lastActivity": "Azken jarduera",
+        "openValue": "Balio irekia",
+        "showMore": "Erakutsi gehiago ({shown} / {total})"
+      },
+      "coverage": {
+        "heading": "Lurralde-estaldura",
+        "note": "Udalak soilik zenbatzen ditu: zenbat dauden erregistratuta, zenbat kontaktatu diren, zenbat dauden negoziazioan eta zenbat diren bezero.",
+        "levelGroup": "Lurralde-maila",
+        "province": "Probintzia",
+        "region": "Erkidegoa",
+        "error": "Ez dago eskuragarri: ezin izan da estaldura kargatu. Saiatu berriro.",
+        "empty": "Oraindik ez dago udalik erregistratuta.",
+        "caption": "Lurralde-estaldura {level} mailan: erregistratutako, kontaktatutako, negoziazioan dauden eta bezero diren udalak",
+        "registered": "Erregistratutako udalerriak",
+        "contacted": "Kontaktatuak",
+        "negotiating": "Negoziazioan",
+        "clients": "Bezeroak",
+        "coverage": "% estaldura",
+        "totals": "Guztira"
+      }
+    },
+    "attention": {
+      "intro": "Azkenaldian kontakturik gabeko erakundeak, jarduerarik gabe denbora gehien daramatenetik gutxien daramatenera. Abisu-mailak kontakturik gabeko {levels} egunekoak dira.",
+      "error": "Ez dago eskuragarri: ezin izan da zerrenda kargatu. Saiatu berriro.",
+      "empty": "Une honetan ez dago arreta behar duen erakunderik.",
+      "count": "{count, plural, one {# erakundek behar du arreta} other {# erakundek behar dute arreta}}",
+      "caption": "Arreta behar duten erakundeak, saltzailea, fasea, azken kontaktua, abisu-maila eta hurrengo zeregina dituztela",
+      "never": "Inoiz ez",
+      "days": "{count, plural, one {# egun} other {# egun}}",
+      "level": "{level}+ egun",
+      "nextTask": "{title} · {date}",
+      "register": "Erregistratu jarduera",
+      "registerFor": "Erregistratu jarduera: {name}",
+      "columns": {
+        "account": "Erakundea",
+        "owner": "Saltzailea",
+        "stage": "Fasea",
+        "lastActivity": "Azken jarduera",
+        "days": "Kontakturik gabeko egunak",
+        "level": "Abisu-maila",
+        "potential": "Zenbateko potentziala",
+        "nextTask": "Hurrengo zeregina",
+        "actions": "Ekintzak"
+      },
+      "pagination": {
+        "label": "Orrikapena",
+        "previous": "Aurrekoa",
+        "next": "Hurrengoa",
+        "page": "{page}. orria"
+      }
     }
   }
 }

@@ -4650,6 +4650,230 @@
         "notes": "Notas",
         "confirm": "Registrar contrato"
       }
+    },
+    "period": {
+      "label": "Periodo",
+      "today": "Hoy",
+      "week": "Esta semana",
+      "month": "Este mes",
+      "quarter": "Este trimestre",
+      "year": "Este año",
+      "custom": "Personalizado",
+      "since": "Desde",
+      "until": "Hasta",
+      "invalid": "Las fechas no son válidas: «Desde» no puede ser posterior a «Hasta». Se sigue mostrando el último periodo válido.",
+      "filters": {
+        "group": "Filtros",
+        "all": "Todos",
+        "owner": "Comercial",
+        "region": "Comunidad autónoma",
+        "province": "Provincia",
+        "kind": "Tipo de entidad",
+        "product": "Producto",
+        "stage": "Estado",
+        "interest": "Interés",
+        "optionsError": "No se pudieron cargar algunas opciones de los filtros."
+      }
+    },
+    "dashboard": {
+      "error": "No disponible: no se pudieron cargar las cifras. Inténtalo de nuevo.",
+      "change": "{value} % respecto al periodo anterior",
+      "range": "Periodo: del {since} al {until}. Se compara con el periodo anterior: del {previousSince} al {previousUntil}.",
+      "attentionLink": "Necesitan atención ({count})",
+      "overdueLink": "Ver tareas vencidas ({count})",
+      "activityHeading": "Actividad y cartera",
+      "moneyHeading": "Economía",
+      "funnelHeading": "Embudo comercial",
+      "kpi": {
+        "accounts": "Entidades totales",
+        "newAccounts": "Entidades nuevas",
+        "contacted": "Contactadas",
+        "neverContacted": "Sin contactar",
+        "contacts": "Contactos realizados",
+        "visits": "Visitas",
+        "meetings": "Reuniones",
+        "videoCalls": "Videollamadas",
+        "calls": "Llamadas",
+        "demos": "Demos",
+        "proposalsSent": "Propuestas enviadas",
+        "pilots": "Pilotos",
+        "openOpportunities": "Oportunidades abiertas",
+        "won": "Contrataciones",
+        "lost": "Perdidas",
+        "pendingTasks": "Tareas pendientes",
+        "overdueTasks": "Tareas vencidas",
+        "withoutFollowUp": "Sin seguimiento"
+      },
+      "money": {
+        "pipelineValue": "Valor total del pipeline",
+        "weightedPipeline": "Valor ponderado",
+        "proposalsAmount": "Importe de propuestas enviadas",
+        "wonAmount": "Importe contratado",
+        "averageTicket": "Ticket medio",
+        "note": "El valor ponderado multiplica cada oportunidad abierta por la probabilidad de su fase. Propuestas e importe contratado son del periodo elegido."
+      },
+      "funnel": {
+        "caption": "Embudo: oportunidades por fase, con importe, conversión desde la fase anterior y días medios en la fase",
+        "asideCaption": "Oportunidades perdidas y en pausa",
+        "stage": "Fase",
+        "count": "Oportunidades",
+        "amount": "Importe",
+        "reached": "Han llegado",
+        "conversion": "Conversión desde la fase anterior",
+        "averageDays": "Días medios en la fase",
+        "days": "{count, plural, one {# día} other {# días}}"
+      }
+    },
+    "reports": {
+      "error": "No disponible: no se pudo cargar el informe. Inténtalo de nuevo.",
+      "range": "Periodo: del {since} al {until}.",
+      "export": {
+        "heading": "Exportar",
+        "note": "Descarga en CSV lo que ves con los filtros actuales (entidades, oportunidades o actividades).",
+        "accounts": "Exportar entidades (CSV)",
+        "opportunities": "Exportar oportunidades (CSV)",
+        "activities": "Exportar actividades (CSV)",
+        "exporting": "Exportando…",
+        "error": "No se pudo exportar. Inténtalo de nuevo."
+      },
+      "activity": {
+        "heading": "Resumen de actividad",
+        "contacts": "Contactos realizados",
+        "visits": "Visitas",
+        "meetings": "Reuniones",
+        "videoCalls": "Videollamadas",
+        "calls": "Llamadas",
+        "demos": "Demos",
+        "pilots": "Pilotos",
+        "averageDays": "Días medios entre contactos",
+        "withoutFollowUp": "Entidades sin seguimiento",
+        "wonAmount": "Importe contratado",
+        "byKindCaption": "Actividades del periodo por tipo",
+        "kind": "Tipo de actividad",
+        "count": "Actividades"
+      },
+      "funnelHeading": "Embudo",
+      "team": {
+        "heading": "Actividad por comercial",
+        "note": "No es un ranking: la actividad (visitas, llamadas…) y los resultados (pipeline, contratos, conversión) se leen juntos, y las filas van por orden alfabético. Más visitas no significa más ventas.",
+        "caption": "Actividad y resultados por comercial en el periodo",
+        "name": "Comercial",
+        "accounts": "Entidades",
+        "contacts": "Contactos",
+        "visits": "Visitas",
+        "meetings": "Reuniones",
+        "videoCalls": "Videollamadas",
+        "calls": "Llamadas",
+        "demos": "Demos",
+        "proposals": "Propuestas",
+        "openOpportunities": "Oportunidades abiertas",
+        "pipelineValue": "Valor del pipeline",
+        "contracts": "Contratos",
+        "wonAmount": "Importe contratado",
+        "pendingTasks": "Tareas pendientes",
+        "overdueTasks": "Tareas vencidas",
+        "winRate": "Tasa de éxito"
+      },
+      "lost": {
+        "heading": "Motivos de pérdida",
+        "empty": "No hay oportunidades perdidas en este periodo.",
+        "caption": "Oportunidades perdidas por motivo",
+        "reason": "Motivo",
+        "count": "Oportunidades"
+      }
+    },
+    "map": {
+      "filters": {
+        "minPopulation": "Población mínima"
+      },
+      "error": "No disponible: no se pudo cargar el mapa. Inténtalo de nuevo.",
+      "empty": "Ninguna entidad con ubicación cumple estos filtros.",
+      "mapLabel": "{count, plural, one {Mapa de España con # entidad; la lista de debajo tiene los mismos datos} other {Mapa de España con # entidades; la lista de debajo tiene los mismos datos}}",
+      "legend": {
+        "heading": "Leyenda",
+        "item": "{status} ({count})",
+        "note": "Cada estado tiene su propia forma y su letra, además del color."
+      },
+      "status": {
+        "sin_contactar": "Sin contactar",
+        "contactado": "Contactado",
+        "interesado": "Interesado",
+        "negociacion": "Negociación",
+        "cliente": "Cliente",
+        "perdido": "Perdido"
+      },
+      "popup": {
+        "municipality": "Municipio: {value}",
+        "population": "Población: {value}",
+        "stage": "Fase: {value}",
+        "owner": "Comercial: {value}",
+        "lastActivity": "Última actividad: {value}",
+        "nextActivity": "Próxima actividad: {value}",
+        "openValue": "Valor abierto: {value}",
+        "viewAccount": "Ver ficha"
+      },
+      "list": {
+        "heading": "Lista de entidades",
+        "show": "{count, plural, one {Ver la lista (# entidad)} other {Ver la lista (# entidades)}}",
+        "hide": "Ocultar la lista",
+        "caption": "Entidades del mapa con su estado, comercial y valor abierto",
+        "name": "Entidad",
+        "municipality": "Municipio",
+        "province": "Provincia",
+        "status": "Estado en el mapa",
+        "stage": "Fase",
+        "owner": "Comercial",
+        "population": "Población",
+        "lastActivity": "Última actividad",
+        "openValue": "Valor abierto",
+        "showMore": "Mostrar más ({shown} de {total})"
+      },
+      "coverage": {
+        "heading": "Cobertura territorial",
+        "note": "Cuenta solo ayuntamientos: cuántos hay registrados, cuántos se han contactado, cuántos están en negociación y cuántos son clientes.",
+        "levelGroup": "Nivel territorial",
+        "province": "Provincia",
+        "region": "Comunidad",
+        "error": "No disponible: no se pudo cargar la cobertura. Inténtalo de nuevo.",
+        "empty": "Todavía no hay ayuntamientos registrados.",
+        "caption": "Cobertura territorial por {level}: ayuntamientos registrados, contactados, en negociación y clientes",
+        "registered": "Municipios registrados",
+        "contacted": "Contactados",
+        "negotiating": "En negociación",
+        "clients": "Clientes",
+        "coverage": "% cobertura",
+        "totals": "Total"
+      }
+    },
+    "attention": {
+      "intro": "Entidades sin contacto reciente, de más a menos tiempo sin actividad. Los niveles de aviso son {levels} días sin contacto.",
+      "error": "No disponible: no se pudo cargar la lista. Inténtalo de nuevo.",
+      "empty": "Ninguna entidad necesita atención ahora mismo.",
+      "count": "{count, plural, one {# entidad necesita atención} other {# entidades necesitan atención}}",
+      "caption": "Entidades que necesitan atención, con comercial, fase, último contacto, nivel de aviso y siguiente tarea",
+      "never": "Nunca",
+      "days": "{count, plural, one {# día} other {# días}}",
+      "level": "{level}+ días",
+      "nextTask": "{title} · {date}",
+      "register": "Registrar actividad",
+      "registerFor": "Registrar actividad: {name}",
+      "columns": {
+        "account": "Entidad",
+        "owner": "Comercial",
+        "stage": "Fase",
+        "lastActivity": "Última actividad",
+        "days": "Días sin contacto",
+        "level": "Nivel de aviso",
+        "potential": "Importe potencial",
+        "nextTask": "Siguiente tarea",
+        "actions": "Acciones"
+      },
+      "pagination": {
+        "label": "Paginación",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "page": "Página {page}"
+      }
     }
   }
 }
