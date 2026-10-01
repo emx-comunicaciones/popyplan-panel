@@ -3,9 +3,9 @@
 /**
  * «Nueva entidad» (tarea W5, `docs/SEGURIDAD_Y_MODERACION.md` §8):
  * `POST /api/organizations/ {name, slug, org_type, cif, parent?,
- * description?}`, `verifier`/`superadmin`. Nace sin verificar
- * (`is_verified=false`): verificar es un paso aparte, desde la ficha de
- * la entidad.
+ * description?}`, `verifier`/`superadmin`. Nace ya verificada (la
+ * plataforma es quien da de alta, error 2 de la QA de Jhoan); el botón
+ * «Verificar» de la ficha queda para las que sigan sin verificar.
  */
 import { useId, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";

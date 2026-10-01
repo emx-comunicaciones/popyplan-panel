@@ -2188,14 +2188,14 @@
       "entidades": {
         "title": "Entidades",
         "summary": "Todas las entidades dadas de alta, verificadas o no, con búsqueda y filtros. Dar de alta y verificar son tareas del verificador y del superadmin.",
-        "details": "El directorio completo de entidades, verificadas o no. La lista está paginada y filtra por estado de verificación y búsqueda de texto; la búsqueda se aplica poco después de que dejes de teclear. Dar de alta una entidad nueva es acción del verificador o el superadmin, y una entidad nueva nace sin verificar hasta que alguien la verifica desde su ficha. Abre una ficha para gestionar su paraguas, su ámbito, su equipo, sus métricas y su contrato.",
+        "details": "El directorio completo de entidades, verificadas o no. La lista está paginada y filtra por estado de verificación y búsqueda de texto; la búsqueda se aplica poco después de que dejes de teclear. Dar de alta una entidad nueva es acción del verificador o el superadmin, y una entidad dada de alta aquí nace ya verificada (el botón «Verificar» de la ficha queda para las que sigan sin verificar). Abre una ficha para gestionar su paraguas, su ámbito, su equipo, sus métricas y su contrato.",
         "actions": [
           "Buscar y filtrar por verificación",
           "Dar de alta una entidad nueva (verificador y superadmin)",
           "Abrir su ficha"
         ],
         "tips": [
-          "Las entidades nuevas siguen sin verificar hasta que un verificador o el superadmin las verifica.",
+          "Las entidades que das de alta aquí nacen verificadas: pueden crear comunidades y actividades desde el primer momento.",
           "El cuadro de búsqueda se aplica tras una breve pausa mientras tecleas."
         ],
         "related": [
@@ -3187,7 +3187,7 @@
       "parentIdLabel": "Entidad paraguas (opcional)",
       "descriptionLabel": "Descripción",
       "createAction": "Crear entidad",
-      "created": "Entidad «{name}» creada, sin verificar.",
+      "created": "Entidad «{name}» creada y verificada.",
       "slugHint": "Se saca del nombre y va en la dirección web. Puedes cambiarlo.",
       "slugInvalid": "Solo letras sin tildes, números, guiones y guiones bajos.",
       "slugTooLong": "Demasiado largo: como máximo {max} caracteres.",
