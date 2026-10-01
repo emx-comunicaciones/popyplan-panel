@@ -1188,7 +1188,7 @@
       "analista": "Numbers only: sees the panel home, programmes and reports, and can export them. Never sees people's names or publishes activities.",
       "referente": "Supports the people the entity assigns to them. In the panel they only see those people: their record, their activities and their support network. If they are in the follow-up programme, they see what each person chooses to share and can suggest goals. Can also publish activities.",
       "voluntario": "Helps out with activities from the app: can publish them under the entity's seal. Has no panel access.",
-      "onCall": "Regardless of role, anyone on the team can be the on-call person (chosen in Settings): they receive \"I'm having a hard day\" requests and see the On-call section."
+      "onCall": "Regardless of role, anyone on the team can be the on-call person (chosen in Settings) and receives the \"I'm having a hard day\" requests. They see the On-call section unless their role is Volunteer, because volunteers have no panel access."
     }
   },
   "people": {

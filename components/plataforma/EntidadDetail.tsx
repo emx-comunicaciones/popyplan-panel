@@ -636,7 +636,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
             </Button>
           </form>
         ) : null}
-        {canManage ? <RolesHelp /> : null}
+        <RolesHelp />
         {/* Dentro de `canManage`: sin el formulario no hay manera de
             disparar la mutación, así que fuera era una rama muerta. */}
         {canManage && addMember.isError ? (

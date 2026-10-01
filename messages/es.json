@@ -1188,7 +1188,7 @@
       "analista": "Solo cifras: ve el inicio del panel, los programas y los informes, y puede exportarlos. Nunca ve nombres de personas ni publica actividades.",
       "referente": "Acompaña a las personas que la entidad le asigna. En el panel solo ve a esas personas: su ficha, sus actividades y su red de apoyo. Si están en el programa de seguimiento, ve lo que cada una decide compartir y puede proponerle objetivos. También puede publicar actividades.",
       "voluntario": "Echa una mano en las actividades desde la app: puede publicarlas con el sello de la entidad. No entra en el panel.",
-      "onCall": "Aparte del rol, cualquier persona del equipo puede ser la persona de guardia (se elige en Configuración): recibe los avisos de «hoy lo llevo mal» y ve la sección Guardia."
+      "onCall": "Aparte del rol, cualquier persona del equipo puede ser la persona de guardia (se elige en Configuración) y recibe los avisos de «hoy lo llevo mal». Ve la sección Guardia salvo que su rol sea Voluntario/a, porque los voluntarios no entran en el panel."
     }
   },
   "people": {

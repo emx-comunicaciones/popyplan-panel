@@ -1188,7 +1188,7 @@
       "analista": "Zifrak bakarrik: panelaren hasiera, programak eta txostenak ikusten ditu, eta esporta ditzake. Ez ditu inoiz pertsonen izenak ikusten ez jarduerak argitaratzen.",
       "referente": "Erakundeak esleitzen dizkion pertsonak laguntzen ditu. Panelean pertsona horiek bakarrik ikusten ditu: haien fitxa, jarduerak eta laguntza-sarea. Jarraipen-programan badaude, bakoitzak partekatzea erabakitzen duena ikusten du eta helburuak proposa diezazkieke. Jarduerak ere argitara ditzake.",
       "voluntario": "Aplikaziotik jardueretan laguntzen du: erakundearen zigiluarekin argitara ditzake. Ez da panelean sartzen.",
-      "onCall": "Rolaz aparte, taldeko edozein pertsona izan daiteke guardiako pertsona (Konfigurazioan aukeratzen da): «gaur gaizki nago» abisuak jasotzen ditu eta Txanda atala ikusten du."
+      "onCall": "Rolaz aparte, taldeko edozein pertsona izan daiteke guardiako pertsona (Konfigurazioan aukeratzen da) eta «gaur gaizki nago» abisuak jasotzen ditu. Txanda atala ikusten du, bere rola Boluntarioa ez bada, boluntarioek ez baitute panelean sartzerik."
     }
   },
   "people": {

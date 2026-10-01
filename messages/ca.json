@@ -1188,7 +1188,7 @@
       "analista": "Només xifres: veu l'inici del tauler, els programes i els informes, i els pot exportar. Mai veu noms de persones ni publica activitats.",
       "referente": "Acompanya les persones que l'entitat li assigna. Al tauler només veu aquestes persones: la seva fitxa, les seves activitats i la seva xarxa de suport. Si són al programa de seguiment, veu el que cadascuna decideix compartir i li pot proposar objectius. També pot publicar activitats.",
       "voluntario": "Dona un cop de mà a les activitats des de l'app: les pot publicar amb el segell de l'entitat. No entra al tauler.",
-      "onCall": "A part del rol, qualsevol persona de l'equip pot ser la persona de guàrdia (s'escull a Configuració): rep els avisos de «avui ho porto malament» i veu la secció Guàrdia."
+      "onCall": "A part del rol, qualsevol persona de l'equip pot ser la persona de guàrdia (s'escull a Configuració) i rep els avisos de «avui ho porto malament». Veu la secció Guàrdia tret que el seu rol sigui Voluntari/ària, perquè els voluntaris no entren al tauler."
     }
   },
   "people": {
