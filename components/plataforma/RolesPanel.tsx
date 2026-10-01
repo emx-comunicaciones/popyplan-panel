@@ -71,7 +71,7 @@ function GrantRoleForm() {
   const t = useTranslations();
   const grant = useGrantPlatformRole();
   const currentRoles = usePlatformRoles();
-  const [replacing, setReplacing] = useState<{ user: number; current: PlatformRoleName } | null>(null);
+  const [replacing, setReplacing] = useState<{ account: string; current: PlatformRoleName } | null>(null);
   const [account, setAccount] = useState<PickerOption | null>(null);
   const [role, setRole] = useState<PlatformRoleName>("moderator");
 
@@ -109,7 +109,7 @@ function GrantRoleForm() {
           const current = currentRoles.data?.find((entry) => entry.user === account.id)?.role;
           if (current && current !== role) {
             grant.reset();
-            setReplacing({ user: account.id, current });
+            setReplacing({ account: account.label, current });
             return;
           }
           doGrant();
@@ -150,7 +150,7 @@ function GrantRoleForm() {
           replacing ? (
             <>
               {t("plataforma.roles.replaceConfirmDescription", {
-                user: replacing.user,
+                user: replacing.account,
                 current: t(ROLE_LABEL_KEYS[replacing.current]),
                 next: t(ROLE_LABEL_KEYS[role]),
               })}

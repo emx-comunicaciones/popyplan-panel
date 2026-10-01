@@ -324,6 +324,30 @@ describe("PlataformaEntidadDetailPage", () => {
     expect(await screen.findByText(/Titular asignado/)).toBeInTheDocument();
   });
 
+  it("Equipo: si el backend cierra el equipo a la plataforma (403), no dice que se pueda cambiar ni ofrece formularios (error 15)", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") return buildOrganization({ id: 9, name: "Entidad Con Titular" });
+      if (path.includes("/members/") || path.includes("/references/")) {
+        throw new ApiError(403, { detail: "Solo el titular gestiona el equipo." });
+      }
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const user = userEvent.setup();
+    render(await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) }));
+    await user.click(screen.getByRole("button", { name: "Equipo" }));
+
+    expect(await screen.findByText(/Esta entidad ya tiene titular: el equipo y las referencias los gestiona su titular/)).toBeInTheDocument();
+    expect(screen.queryByText(/también puedes cambiarlos tú/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Añadir" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Asignar" })).not.toBeInTheDocument();
+  });
+
   it("Equipo: con titular el superadmin ve todos los roles y no el aviso del primer titular", async () => {
     apiFetchMock.mockImplementation(async (path: string) => {
       if (path === "/api/organizations/9/") return buildOrganization({ id: 9, name: "Entidad Con Titular" });
@@ -386,6 +410,38 @@ describe("PlataformaEntidadDetailPage", () => {
       ),
     );
     expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+  });
+
+  it("Equipo: la referencia dice el nombre del referente, nunca su id interno (error 13)", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") return buildOrganization({ id: 9, name: "Entidad" });
+      if (path.includes("/members/")) {
+        return [
+          buildOrgMembershipFull({ id: 31, user: 5, role: "titular", public_name: "Ane" }),
+          buildOrgMembershipFull({ id: 77, user: 6, role: "referente", public_name: "Rosa" }),
+        ];
+      }
+      if (path.includes("/references/")) {
+        return [
+          { id: 1, user: 8, public_name: "Iker", referent: 77 },
+          { id: 2, user: 9, public_name: "Maite", referent: 999 },
+        ];
+      }
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const user = userEvent.setup();
+    render(await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) }));
+    await user.click(screen.getByRole("button", { name: "Equipo" }));
+
+    expect(await screen.findByText("Iker — Referente: Rosa")).toBeInTheDocument();
+    expect(screen.getByText("Maite — Referente sin nombre")).toBeInTheDocument();
+    expect(screen.queryByText(/#77|#999/)).not.toBeInTheDocument();
   });
 
   it("no enseña rutas de documentación interna en los avisos de la ficha", async () => {
