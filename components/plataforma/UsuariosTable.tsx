@@ -44,6 +44,8 @@ export const PLATFORM_ROLE_LABEL_KEYS: Record<PlatformRoleName, string> = {
   verifier: "plataforma.roles.roleVerifier",
   moderator: "plataforma.roles.roleModerator",
   support: "plataforma.roles.roleSupport",
+  sales_lead: "plataforma.roles.roleSalesLead",
+  sales: "plataforma.roles.roleSales",
 };
 
 export function accountDisplayName(account: PlatformAccount): string {
