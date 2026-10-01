@@ -3239,7 +3239,7 @@
       "referentIdLabel": "Referent",
       "assignAction": "Assign",
       "referencesEmpty": "No references yet",
-      "referenceRow": "{name} — referent #{referentId}",
+      "referenceRow": "{name} — {referent}",
       "removeMemberConfirmTitle": "Remove from team",
       "removeMemberConfirmDescription": "Remove “{name}” from the entity's team? They will lose their role in the panel.",
       "removeReferenceConfirmTitle": "Remove the reference",
@@ -3336,7 +3336,7 @@
       "revokeConfirmDescription": "This person will lose access to the platform panel.",
       "revokeSelfWarning": "This is your own role: you will lose access to this section.",
       "replaceConfirmTitle": "Replace the platform role",
-      "replaceConfirmDescription": "Account #{user} already has the role “{current}”. An account can only have one platform role: granting “{next}” will remove “{current}”.",
+      "replaceConfirmDescription": "Account “{user}” already has the role “{current}”. An account can only have one platform role: granting “{next}” will remove “{current}”.",
       "replaceConfirmAction": "Replace role",
       "roleSalesLead": "Sales director",
       "roleSales": "Sales"

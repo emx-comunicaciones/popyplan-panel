@@ -412,6 +412,38 @@ describe("PlataformaEntidadDetailPage", () => {
     expect(screen.getByRole("alertdialog")).toBeInTheDocument();
   });
 
+  it("Equipo: la referencia dice el nombre del referente, nunca su id interno (error 13)", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") return buildOrganization({ id: 9, name: "Entidad" });
+      if (path.includes("/members/")) {
+        return [
+          buildOrgMembershipFull({ id: 31, user: 5, role: "titular", public_name: "Ane" }),
+          buildOrgMembershipFull({ id: 77, user: 6, role: "referente", public_name: "Rosa" }),
+        ];
+      }
+      if (path.includes("/references/")) {
+        return [
+          { id: 1, user: 8, public_name: "Iker", referent: 77 },
+          { id: 2, user: 9, public_name: "Maite", referent: 999 },
+        ];
+      }
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const user = userEvent.setup();
+    render(await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) }));
+    await user.click(screen.getByRole("button", { name: "Equipo" }));
+
+    expect(await screen.findByText("Iker — Referente: Rosa")).toBeInTheDocument();
+    expect(screen.getByText("Maite — Referente sin nombre")).toBeInTheDocument();
+    expect(screen.queryByText(/#77|#999/)).not.toBeInTheDocument();
+  });
+
   it("no enseña rutas de documentación interna en los avisos de la ficha", async () => {
     apiFetchMock.mockImplementation(async (path: string) => {
       if (path === "/api/organizations/9/") {

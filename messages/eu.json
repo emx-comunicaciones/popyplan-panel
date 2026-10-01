@@ -3239,7 +3239,7 @@
       "referentIdLabel": "Erreferentea",
       "assignAction": "Esleitu",
       "referencesEmpty": "Oraindik ez dago erreferentziarik",
-      "referenceRow": "{name} — erreferentea #{referentId}",
+      "referenceRow": "{name} — {referent}",
       "removeMemberConfirmTitle": "Taldetik kendu",
       "removeMemberConfirmDescription": "«{name}» erakundearen taldetik kendu nahi duzu? Panelean rola izateari utziko dio.",
       "removeReferenceConfirmTitle": "Erreferentzia kendu",
@@ -3336,7 +3336,7 @@
       "revokeConfirmDescription": "Pertsona honek plataformaren panelerako sarbidea galduko du.",
       "revokeSelfWarning": "Zure rola da: atal honetarako sarbidea galduko duzu.",
       "replaceConfirmTitle": "Plataformako rola ordezkatu",
-      "replaceConfirmDescription": "#{user} kontuak badu jada «{current}» rola. Kontu batek plataformako rol bakarra izan dezake: «{next}» emanez gero, «{current}» galduko du.",
+      "replaceConfirmDescription": "«{user}» kontuak badu jada «{current}» rola. Kontu batek plataformako rol bakarra izan dezake: «{next}» emanez gero, «{current}» galduko du.",
       "replaceConfirmAction": "Rola ordezkatu",
       "roleSalesLead": "Merkataritza-zuzendaria",
       "roleSales": "Komertziala"

@@ -3239,7 +3239,7 @@
       "referentIdLabel": "Referente",
       "assignAction": "Asignar",
       "referencesEmpty": "Sin referencias todavía",
-      "referenceRow": "{name} — referente #{referentId}",
+      "referenceRow": "{name} — {referent}",
       "removeMemberConfirmTitle": "Quitar del equipo",
       "removeMemberConfirmDescription": "¿Quitar a «{name}» del equipo de la entidad? Dejará de tener rol en el panel.",
       "removeReferenceConfirmTitle": "Quitar la referencia",
@@ -3336,7 +3336,7 @@
       "revokeConfirmDescription": "Esta persona perderá el acceso al panel de plataforma.",
       "revokeSelfWarning": "Es tu propio rol: perderás el acceso a esta sección.",
       "replaceConfirmTitle": "Sustituir el rol de plataforma",
-      "replaceConfirmDescription": "La cuenta #{user} ya tiene el rol «{current}». Una cuenta solo puede tener un rol de plataforma: al conceder «{next}» perderá «{current}».",
+      "replaceConfirmDescription": "La cuenta «{user}» ya tiene el rol «{current}». Una cuenta solo puede tener un rol de plataforma: al conceder «{next}» perderá «{current}».",
       "replaceConfirmAction": "Sustituir rol",
       "roleSalesLead": "Director/a comercial",
       "roleSales": "Comercial"

@@ -177,7 +177,7 @@ describe("PlataformaRolesPage", () => {
     await userEvent.click(screen.getByRole("button", { name: "Conceder" }));
 
     const dialog = screen.getByRole("alertdialog");
-    expect(dialog).toHaveTextContent("La cuenta #7 ya tiene el rol «Moderador»");
+    expect(dialog).toHaveTextContent("La cuenta «ana (ana@example.com)» ya tiene el rol «Moderador»");
     expect(dialog).toHaveTextContent("al conceder «Verificador» perderá «Moderador»");
     expect(apiFetchMock).not.toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ method: "POST" }));
 
