@@ -748,3 +748,79 @@ export const TRAINING = {
   /** `PATCH` (`items`, si viene, reemplaza la lista entera) y `DELETE`. */
   TEMPLATE: (id: number) => `/api/training/templates/${id}/`,
 } as const;
+
+/**
+ * CRM comercial (2026-10-01): `/api/crm/*`, contrato en `docs/CRM.md` del
+ * backend. Solo `superadmin`, `sales_lead` y `sales`; un comercial solo
+ * recibe lo de sus cuentas (404 para el resto). Listados paginados
+ * `{count, next, previous, results}` salvo los marcados «plano».
+ */
+export const CRM = {
+  /** `GET` → `{role, is_manager, unread_notifications}`. */
+  ME: "/api/crm/me/",
+  /** `GET` plano: personas con rol de CRM (para asignar). */
+  USERS: "/api/crm/users/",
+  /** Configuración: `GET` plano, `POST`/`PATCH` solo dirección. */
+  STAGES: "/api/crm/stages/",
+  STAGE: (id: number | string) => `/api/crm/stages/${id}/`,
+  CATALOG: "/api/crm/catalog/",
+  CATALOG_ITEM: (id: number | string) => `/api/crm/catalog/${id}/`,
+  TAGS: "/api/crm/tags/",
+  SETTINGS: "/api/crm/settings/",
+  /** Cuentas (las «entidades» del CRM). `POST` con duplicados → 409 `{duplicates}`. */
+  ACCOUNTS: "/api/crm/accounts/",
+  ACCOUNT: (id: number | string) => `/api/crm/accounts/${id}/`,
+  ACCOUNT_DUPLICATES: "/api/crm/accounts/duplicates/",
+  ACCOUNT_SUMMARY: (id: number | string) => `/api/crm/accounts/${id}/summary/`,
+  ACCOUNT_TIMELINE: (id: number | string) => `/api/crm/accounts/${id}/timeline/`,
+  ACCOUNT_OWNER_HISTORY: (id: number | string) => `/api/crm/accounts/${id}/owner-history/`,
+  ACCOUNT_CONTACTS: (id: number | string) => `/api/crm/accounts/${id}/contacts/`,
+  ACCOUNT_RELATIONS: (id: number | string) => `/api/crm/accounts/${id}/relations/`,
+  ACCOUNT_NOTES: (id: number | string) => `/api/crm/accounts/${id}/notes/`,
+  RELATION: (id: number | string) => `/api/crm/relations/${id}/`,
+  NOTE: (id: number | string) => `/api/crm/notes/${id}/`,
+  CONTACTS: "/api/crm/contacts/",
+  CONTACT: (id: number | string) => `/api/crm/contacts/${id}/`,
+  CONTACT_DUPLICATES: "/api/crm/contacts/duplicates/",
+  OPPORTUNITIES: "/api/crm/opportunities/",
+  OPPORTUNITY: (id: number | string) => `/api/crm/opportunities/${id}/`,
+  OPPORTUNITY_MOVE: (id: number | string) => `/api/crm/opportunities/${id}/move/`,
+  OPPORTUNITY_WIN: (id: number | string) => `/api/crm/opportunities/${id}/win/`,
+  OPPORTUNITY_PROPOSALS: (id: number | string) => `/api/crm/opportunities/${id}/proposals/`,
+  PROPOSAL: (id: number | string) => `/api/crm/proposals/${id}/`,
+  CONTRACT: (id: number | string) => `/api/crm/contracts/${id}/`,
+  /** `GET` plano: contratos que se renuevan en `?days=`. */
+  RENEWALS: "/api/crm/renewals/",
+  ACTIVITIES: "/api/crm/activities/",
+  ACTIVITY: (id: number | string) => `/api/crm/activities/${id}/`,
+  TASKS: "/api/crm/tasks/",
+  TASK: (id: number | string) => `/api/crm/tasks/${id}/`,
+  TASK_COUNTS: "/api/crm/tasks/counts/",
+  DOCUMENTS: "/api/crm/documents/",
+  DOCUMENT: (id: number | string) => `/api/crm/documents/${id}/`,
+  DOCUMENT_VERSIONS: (id: number | string) => `/api/crm/documents/${id}/versions/`,
+  DOCUMENT_DOWNLOAD: (id: number | string, versionId: number | string) =>
+    `/api/crm/documents/${id}/versions/${versionId}/download/`,
+  PIPELINE: "/api/crm/pipeline/",
+  DASHBOARD: "/api/crm/dashboard/",
+  /** `GET` plano. */
+  FUNNEL: "/api/crm/funnel/",
+  REPORTS: "/api/crm/reports/",
+  /** `GET` plano: actividad por comercial. */
+  TEAM: "/api/crm/team/",
+  /** `GET` plano. */
+  COVERAGE: "/api/crm/coverage/",
+  ATTENTION: "/api/crm/attention/",
+  /** `GET` plano, `?since&until` (≤ 62 días). */
+  CALENDAR: "/api/crm/calendar/",
+  /** `GET` plano. */
+  MAP: "/api/crm/map/",
+  SEARCH: "/api/crm/search/",
+  NOTIFICATIONS: "/api/crm/notifications/",
+  NOTIFICATION_READ: (id: number | string) => `/api/crm/notifications/${id}/read/`,
+  NOTIFICATIONS_READ_ALL: "/api/crm/notifications/read-all/",
+  IMPORT_PREVIEW: "/api/crm/import/preview/",
+  IMPORT_COMMIT: "/api/crm/import/commit/",
+  EXPORT: (resource: "accounts" | "contacts" | "opportunities" | "activities") =>
+    `/api/crm/export/${resource}/`,
+} as const;

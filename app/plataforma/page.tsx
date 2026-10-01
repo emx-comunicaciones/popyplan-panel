@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { PlataformaHomeDashboard } from "@/components/plataforma/PlataformaHomeDashboard";
-import { isPlatformRole } from "@/lib/auth/plataformaMenu";
+import { isPlatformRole, isSalesOnly } from "@/lib/auth/plataformaMenu";
 import { getServerSession } from "@/lib/auth/session";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,6 +18,10 @@ export default async function PlataformaInicioPage() {
   }
   if (!isPlatformRole(session.platformRole.role)) {
     redirect("/");
+  }
+  // Comerciales: su panel es el CRM (no tienen Inicio de plataforma).
+  if (isSalesOnly(session.platformRole.role)) {
+    redirect("/plataforma/comercial");
   }
 
   const t = await getTranslations();

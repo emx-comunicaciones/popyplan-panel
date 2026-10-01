@@ -298,4 +298,16 @@ describe("PlataformaInicioPage", () => {
       expect.objectContaining({ url: "/" } satisfies Partial<NextRedirectSignal>),
     );
   });
+
+  it.each(["sales", "sales_lead"])("un rol comercial (%s) va directo al CRM", async (role) => {
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole(role as never),
+    });
+
+    await expect(PlataformaInicioPage()).rejects.toEqual(
+      expect.objectContaining({ url: "/plataforma/comercial" } satisfies Partial<NextRedirectSignal>),
+    );
+  });
 });

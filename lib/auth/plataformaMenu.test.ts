@@ -5,13 +5,13 @@ import {
   TEAM_MANAGER_ROLES,
   canManageTeamFromPlatform,
   isPlatformRole,
-  plataformaMenuFor,
-} from "./plataformaMenu";
+  plataformaMenuFor, isCrmManager, isCrmRole, isSalesOnly } from "./plataformaMenu";
 
 describe("plataformaMenuFor", () => {
   it("superadmin ve todo", () => {
     expect(plataformaMenuFor("superadmin")).toEqual([
       "inicio",
+      "comercial",
       "entidades",
       "usuarios",
       "comunidades",
@@ -66,12 +66,38 @@ describe("plataformaMenuFor", () => {
     expect(canManageTeamFromPlatform(undefined)).toBe(false);
   });
 
-  it("PLATFORM_ROLES lista los cuatro roles conocidos y isPlatformRole los reconoce", () => {
-    expect([...PLATFORM_ROLES]).toEqual(["superadmin", "verifier", "moderator", "support"]);
+  it("PLATFORM_ROLES lista los seis roles conocidos y isPlatformRole los reconoce", () => {
+    expect([...PLATFORM_ROLES]).toEqual([
+      "superadmin",
+      "verifier",
+      "moderator",
+      "support",
+      "sales_lead",
+      "sales",
+    ]);
     for (const role of PLATFORM_ROLES) {
       expect(isPlatformRole(role)).toBe(true);
     }
     expect(isPlatformRole("rol-que-el-backend-inventa")).toBe(false);
     expect(isPlatformRole(null)).toBe(false);
+  });
+
+  it("los roles comerciales solo tienen la pestaña Comercial (CRM)", () => {
+    expect(plataformaMenuFor("sales_lead")).toEqual(["comercial"]);
+    expect(plataformaMenuFor("sales")).toEqual(["comercial"]);
+    expect(plataformaMenuFor("moderator")).not.toContain("comercial");
+  });
+
+  it("quién entra en el CRM, quién lo dirige y quién solo tiene el CRM", () => {
+    expect(isCrmRole("superadmin")).toBe(true);
+    expect(isCrmRole("sales")).toBe(true);
+    expect(isCrmRole("support")).toBe(false);
+    expect(isCrmRole(null)).toBe(false);
+    expect(isCrmManager("sales_lead")).toBe(true);
+    expect(isCrmManager("sales")).toBe(false);
+    expect(isCrmManager(undefined)).toBe(false);
+    expect(isSalesOnly("sales")).toBe(true);
+    expect(isSalesOnly("superadmin")).toBe(false);
+    expect(isSalesOnly(null)).toBe(false);
   });
 });

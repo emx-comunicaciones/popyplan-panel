@@ -135,7 +135,8 @@
       "metricas": "Metrikak",
       "suscripciones": "Harpidetzak",
       "nomencladores": "Katalogoak",
-      "buscaDelTesoro": "Altxorraren bila"
+      "buscaDelTesoro": "Altxorraren bila",
+      "comercial": "Merkataritza"
     }
   },
   "layout": {
@@ -334,6 +335,51 @@
       },
       "tesoroFicha": {
         "title": "Jokoaren fitxa"
+      },
+      "comercial": {
+        "title": "Merkataritza"
+      },
+      "comercialEntidades": {
+        "title": "Erakundeak"
+      },
+      "comercialEntidadFicha": {
+        "title": "Erakundearen fitxa"
+      },
+      "comercialContactos": {
+        "title": "Kontaktuak"
+      },
+      "comercialPipeline": {
+        "title": "Pipeline"
+      },
+      "comercialActividades": {
+        "title": "Jarduerak"
+      },
+      "comercialTareas": {
+        "title": "Zereginak eta gogorarazpenak"
+      },
+      "comercialCalendario": {
+        "title": "Egutegia"
+      },
+      "comercialMapa": {
+        "title": "Merkataritza-mapa"
+      },
+      "comercialOportunidades": {
+        "title": "Aukerak"
+      },
+      "comercialOportunidadFicha": {
+        "title": "Aukera"
+      },
+      "comercialDocumentos": {
+        "title": "Dokumentuak"
+      },
+      "comercialInformes": {
+        "title": "Txostenak"
+      },
+      "comercialAtencion": {
+        "title": "Arreta behar dutenak"
+      },
+      "comercialConfiguracion": {
+        "title": "Konfigurazioa"
       }
     }
   },
@@ -1632,6 +1678,13 @@
       "invalido": "Erakunde honek ezin du jarraipen-programa izan.",
       "sinPermiso": "Superadminek bakarrik alda dezake jarraipen-programa.",
       "desconocido": "Ezin izan da jarraipen-programa aldatu."
+    },
+    "crm": {
+      "sinAcceso": "Ez duzu honetarako baimenik.",
+      "invalido": "Berrikusi datuak: baten bat ez da baliozkoa.",
+      "duplicado": "Antzeko zerbait badago jada.",
+      "noEncontrado": "Ez da existitzen edo ez da zurea.",
+      "desconocido": "Ezin izan da osatu. Saiatu berriro."
     }
   },
   "reports": {
@@ -2572,6 +2625,294 @@
           "plataforma.actividades"
         ],
         "audience": "Superadminak bakarrik."
+      },
+      "comercial": {
+        "title": "Merkataritza",
+        "summary": "Merkataritza-egoeraren ikuspegi orokorra: aldiko jarduera, inbutua, pipelinearen balioa eta arreta behar duena.",
+        "details": "Arbelak aukeratutako aldiko zifrak biltzen ditu (gaur, astea, hilabetea, hiruhilekoa, urtea edo pertsonalizatua) eta aurreko aldiarekin alderatzen ditu. Komertzial batek bere erakundeak soilik ikusten ditu; merkataritza-zuzendaritzak eta administrazioak talde osoarenak ikusten dituzte, eta komertzialaren, autonomia-erkidegoaren, probintziaren, erakunde-motaren, produktuaren edo egoeraren arabera iragazi dezakete.",
+        "audience": "Merkataritza-talde osoa; komertzial bakoitzak bere erakundeak ikusten ditu.",
+        "actions": [
+          "Aldia eta iragazkiak aldatu",
+          "Inbutua ikusi, faseen arteko bihurketarekin",
+          "Arreta behar duten erakundeetara jauzi egin"
+        ],
+        "tips": [
+          "Aldaketaren % hori aurreko aldian daturik izan bada soilik agertzen da.",
+          "Balio haztatuak irekita dagoen aukera bakoitza bere faseko probabilitatearekin biderkatzen du."
+        ],
+        "related": [
+          "plataforma.comercialPipeline",
+          "plataforma.comercialAtencion",
+          "plataforma.comercialInformes"
+        ]
+      },
+      "comercialEntidades": {
+        "title": "Erakundeak",
+        "summary": "Saltzen dizkiegun udalak, foru aldundiak, cabildoak eta gainerako erakundeak, beren komertzial, egoera eta interesarekin.",
+        "details": "Zerrendak bilaketa, iragazkiak (erkidegoa, probintzia, mota, egoera, interesa, etiketa, biztanleria, kontakturik gabeko egunak, bezeroa) eta ordenazioa ditu. Erakunde bat sortzean, antzeko beste bat badagoen egiaztatzen da (IFK bera edo izen bera udalerrian). Hemendik erakundeak multzoka inportatzen dira (CSV edo Excel) eta zerrenda esportatzen da.",
+        "audience": "Merkataritza-talde osoa; baja eman eta berriz esleitzea, merkataritza-zuzendaritzak soilik.",
+        "actions": [
+          "Erakunde bat sortu",
+          "Udalak CSV edo Excel fitxategitik inportatu",
+          "Zerrenda CSV formatuan esportatu",
+          "Erakunde baten fitxa ireki"
+        ],
+        "tips": [
+          "Komertzial batek berak daramatzan edo laguntzen dituen erakundeak soilik ikusten ditu.",
+          "Erakundeak ez dira inoiz benetan ezabatzen: zerrendetatik kanpo geratzen dira, baina historia gordetzen da."
+        ],
+        "related": [
+          "plataforma.comercialContactos",
+          "plataforma.comercialPipeline",
+          "plataforma.comercialMapa"
+        ]
+      },
+      "comercialEntidadFicha": {
+        "title": "Erakundearen fitxa",
+        "summary": "Erakunde baten gaia osorik: nork daraman, norekin hitz egiten dugun, zer egin dugun, non gauden eta orain zer dagokion.",
+        "details": "Goiburuak egoera, interesa, komertziala, azken jarduera eta hurrengoa erakusten ditu. Fitxak: laburpena, historia (gertatu den guztia, inoiz gainidazten ez dena), kontaktuak, aukerak, zereginak, dokumentuak, datuak eta kontratazioa. Goiburuko botoiek jarduera erregistratzen dute, zereginak, kontaktuak, aukerak, dokumentuak eta oharrak sortzen dituzte, edo bilera bat programatzen dute.",
+        "audience": "Erakundea daramana, bere kolaboratzaileak eta merkataritza-zuzendaritza.",
+        "actions": [
+          "Bisita, deia edo bilera bat erregistratu, hurrengo urratsarekin",
+          "Kontaktuak, aukerak, dokumentuak eta oharrak gehitu",
+          "Egoera, interesa edo komertzial arduraduna aldatu"
+        ],
+        "tips": [
+          "Finkatutako oharrak beti agertzen dira laburpenean.",
+          "Jarduera bat editatzeak ez du aldatzen historian dagoeneko jasota dagoena: aldatu denaren oharra gehitzen da."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialTareas"
+        ]
+      },
+      "comercialContactos": {
+        "title": "Kontaktuak",
+        "summary": "Erakunde bakoitzean hitz egiten dugun pertsonak: kargua, saila, telefonoa, helbide elektronikoa eta azken kontaktua.",
+        "details": "Zure erakundeen kontaktuen zerrenda, izenaren, kargua, telefonoaren edo helbide elektronikoaren arabera bilatzeko aukerarekin eta sailaren araberako iragazkiarekin. Kontaktu bat gehitzean, helbide elektroniko edo telefono bera duen beste bat badago, abisua ematen da. Kontaktu batetik, ukitu batekin deitu edo idazten da.",
+        "audience": "Merkataritza-talde osoa; komertzial bakoitzak bere erakundeen kontaktuak ikusten ditu.",
+        "actions": [
+          "Kontaktu bat izenaren, telefonoaren edo helbide elektronikoaren arabera bilatu",
+          "Zerrendatik deitu edo idatzi",
+          "Kontaktuak CSV formatuan esportatu"
+        ],
+        "tips": [
+          "Azken kontaktua automatikoki eguneratzen da pertsona horrekin jarduera bat erregistratzean.",
+          "Markatu kontaktu bat nagusi gisa, fitxan lehenengo agertzeko."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialActividades"
+        ]
+      },
+      "comercialPipeline": {
+        "title": "Pipeline",
+        "summary": "Aukerak (edo erakundeak) faseka, zutabetan: arrastatu txartel bat fasez aldatzeko.",
+        "details": "Zutabe bakoitza merkataritza-fase bat da, bere txartel-kopuruarekin eta zenbatekoarekin. Txartel bakoitzak erakundea, udalerria, probintzia, biztanleria, komertziala, zenbatekoa, interesa, kontakturik gabeko egunak eta hurrengo jarduera erakusten ditu. Txartel bat beste fase batean uztean, aldaketa historian geratzen da, nork eta noiz egin duen adierazita; galtzeak arrazoia eskatzen du eta irabazteak kontratuaren datuak.",
+        "audience": "Merkataritza-talde osoa.",
+        "actions": [
+          "Aukera bat fasez aldatu, arrastatuz",
+          "Pipelinea aukeren edo erakundeen arabera ikusi",
+          "Kontratua erregistratu irabaztean"
+        ],
+        "tips": [
+          "Teklatuarekin: ireki txartela eta aukeratu fasea bere menuan.",
+          "Erakunde bat bere aukerarik aurreratuenarekin aurreratzen da; horregatik ez da inoiz atzera egiten."
+        ],
+        "related": [
+          "plataforma.comercialOportunidades",
+          "plataforma.comercial"
+        ]
+      },
+      "comercialActividades": {
+        "title": "Jarduerak",
+        "summary": "Erakundeekin egindako guztia: bisitak, bilerak, deiak, mezu elektronikoak, demoak, proposamenak…",
+        "details": "Jardueren zerrenda, motaren, komertzialaren, datuen eta testuaren araberako iragazkiarekin. Jarduera bakoitzak kontaktuak, laburpena, emaitza eta ondorengo interesa gordetzen ditu; erregistratzean, bere hurrengo urratsa zeregin gisa sor daiteke. «+ Jarduera erregistratu» botoia beti goian dago.",
+        "audience": "Merkataritza-talde osoa.",
+        "actions": [
+          "Jarduera bat erregistratu, hurrengo urratsarekin",
+          "Mota, komertziala edo datuen arabera iragazi",
+          "Jarduerak CSV formatuan esportatu"
+        ],
+        "tips": [
+          "Etorkizuneko data duen jarduera hitzordu bat da: egutegian eta hurrengo jarduera gisa agertzen da.",
+          "Bisita bat erregistratzeak erakundea «Kontaktatu gabe» egoeratik «Kontaktatua» egoerara pasatzen du."
+        ],
+        "related": [
+          "plataforma.comercialCalendario",
+          "plataforma.comercialTareas"
+        ]
+      },
+      "comercialTareas": {
+        "title": "Zereginak eta gogorarazpenak",
+        "summary": "Zure jarraipen zainak: gaur, hurrengoak, atzeratuak eta osatuak.",
+        "details": "Zeregin bakoitzak erakundea, kontaktua, aukera, mota, arduraduna, data, lehentasuna, egoera eta gogorarazpena ditu. Gogorarazpena panelaren abisu gisa iristen da aukeratutako orduan, eta epea gainditutako zereginak ere abisua ematen du. Merkataritza-zuzendaritzak talde osoaren zereginak ikus ditzake.",
+        "audience": "Merkataritza-talde osoa.",
+        "actions": [
+          "Zeregin bat sortu, bere gogorarazpenarekin",
+          "Zeregin bat osatu edo bertan behera utzi",
+          "Atzeratutako zereginak ikusi"
+        ],
+        "tips": [
+          "Jarduera bat erregistratzean, bere hurrengo urratsa hemen sor dezakezu pantaila aldatu gabe.",
+          "Abisuak minutu gutxiro sortzen dira: gogorarazpenak apur bat berandu iritsi daiteke."
+        ],
+        "related": [
+          "plataforma.comercialCalendario",
+          "plataforma.comercialActividades"
+        ]
+      },
+      "comercialCalendario": {
+        "title": "Egutegia",
+        "summary": "Bisitak, bilerak, deiak, demoak, jarraipenak, zereginak eta berritzeak egunez, astez edo hilabetez.",
+        "details": "Aldiko jarduerak, zereginak eta kontratuen berritzeak erakusten ditu. Komertzialaren, probintziaren eta jarduera-motaren arabera iragazten da, eta egun batetik jarduera bat erregistratzen edo zeregin bat sortzen da.",
+        "audience": "Merkataritza-talde osoa.",
+        "actions": [
+          "Egun, aste eta hilabetearen artean aldatu",
+          "Egun batean jarduera edo zeregin bat sortu",
+          "Komertzialaren, probintziaren edo motaren arabera iragazi"
+        ],
+        "tips": [
+          "Jada gertatutakoa marratuta agertzen da; zain dagoena, lodiz.",
+          "Kontratuen berritzeak berritze-datako egunean agertzen dira."
+        ],
+        "related": [
+          "plataforma.comercialTareas",
+          "plataforma.comercialActividades"
+        ]
+      },
+      "comercialMapa": {
+        "title": "Merkataritza-mapa",
+        "summary": "Erakundeak mapan, beren merkataritza-egoerarekin, eta estaldura erkidego eta probintziaka.",
+        "details": "Koordenatuak dituen erakunde bakoitza puntu gisa agertzen da, egoeraren araberako forma eta ikonoarekin (kontaktatu gabe, kontaktatua, interesduna, negoziazioa, bezeroa, galduta), legendarekin: inoiz ez kolorearen bidez soilik. Puntu bat sakatzean udalerria, biztanleria, egoera, komertziala, azken eta hurrengo jarduera eta balioa ikusten dira, fitxarako estekarekin. Azpian, estaldura: erregistratutako udalak, kontaktatuak, negoziazioan daudenak eta bezeroak.",
+        "audience": "Merkataritza-talde osoa.",
+        "actions": [
+          "Mapa iragazi",
+          "Fitxa puntu batetik ireki",
+          "Estaldura probintziaka edo erkidegoka ikusi"
+        ],
+        "tips": [
+          "Udalerririk edo koordenaturik ez duen erakundea ez da mapan agertzen: osatu ezazu bere fitxan.",
+          "Estaldurak udalak soilik zenbatzen ditu."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialInformes"
+        ]
+      },
+      "comercialOportunidades": {
+        "title": "Aukerak",
+        "summary": "Erakunde bakoitzaren balizko salmentak, produktuarekin, zenbatekoarekin, fasearekin, ustezko datarekin eta kontratazio publikoarekin.",
+        "details": "Erakunde batek hainbat aukera izan ditzake (elkarteak, gazteria, prebentzioa…). Bakoitzak zenbatekoak (kalkulatua, proposamenarena eta behin betikoa), datak, tamaina (elkarteak, erabiltzaileak, profesionalak), administrazioak jakinarazten duen kontratazio publikoaren informazioa, bertsioekin dituen proposamenak eta, irabazten denean, bere kontratua eta berritzea gordetzen ditu.",
+        "audience": "Merkataritza-talde osoa.",
+        "actions": [
+          "Aukera bat sortu",
+          "Egoeraren, fasearen edo espedientearen arabera iragazi",
+          "Laster berritzen diren kontratuak ikusi"
+        ],
+        "tips": [
+          "Aukera bat galtzeak arrazoia eskatzen du eta ez du inoiz ezabatzen.",
+          "CRMak administrazioak prozedurari buruz jakinarazten duena soilik gordetzen du: ez du interpretatzen."
+        ],
+        "related": [
+          "plataforma.comercialPipeline",
+          "plataforma.comercialDocumentos"
+        ]
+      },
+      "comercialOportunidadFicha": {
+        "title": "Aukera",
+        "summary": "Aukera bat osorik: zenbatekoak, fasea, kontratazio publikoa, bertsioekin dauden proposamenak eta kontratua.",
+        "details": "Hemendik fasea aldatzen da (galtzeak arrazoia eskatzen du), proposamenak (v1, v2…) eta beren egoera erregistratzen dira, kontratazio publikoaren informazioa osatzen da eta, irabazten denean, kontratua erregistratzen da, bere berritze-datarekin.",
+        "audience": "Erakundea daramana eta merkataritza-zuzendaritza.",
+        "actions": [
+          "Proposamen bat edo bertsio berri bat gehitu",
+          "Fasea aldatu edo galdutzat markatu",
+          "Kontratua erregistratu irabaztean"
+        ],
+        "tips": [
+          "Proposamen bat bidaltzeak aukera «Proposamena bidalita» fasera pasatzen du.",
+          "Kontratuaren berritze-datak 90, 60 eta 30 egun lehenago abisuak sortzen ditu."
+        ],
+        "related": [
+          "plataforma.comercialOportunidades",
+          "plataforma.comercialPipeline"
+        ]
+      },
+      "comercialDocumentos": {
+        "title": "Dokumentuak",
+        "summary": "Zure erakunde guztien aurkezpenak, dosierrak, proposamenak, aurrekontuak, kontratuak, baldintza-agiriak, aktak…",
+        "details": "Dokumentu bakoitzak kategoria, erakundea, aukera, jarduera, bertsioa, data, nork igo duen eta deskribapena gordetzen ditu, baita guk bidali dugun edo jaso dugun ere. Nabigatzailean ikus daiteke, deskargatu edo bertsio berri bat igo: aurrekoak ez dira inoiz ezabatzen.",
+        "audience": "Merkataritza-talde osoa.",
+        "actions": [
+          "Dokumentu bat igo",
+          "Ikusi, deskargatu edo bertsio berri bat igo",
+          "Kategoriaren edo erakundearen arabera iragazi"
+        ],
+        "tips": [
+          "Fitxategiak baimenarekin soilik deskargatzen dira: ez dute inoiz esteka publikorik.",
+          "Gehienez 25 MB fitxategi bakoitzeko."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialOportunidades"
+        ]
+      },
+      "comercialInformes": {
+        "title": "Txostenak",
+        "summary": "Jarduera, inbutua, bihurketa, pipelinea, kontratuak, galerak eta komertzialeko jarduera, aldiko.",
+        "details": "Aldiko txostena, komertzialaren, erkidegoaren, probintziaren, produktuaren eta egoeraren araberako iragazkiekin: merkataritza-jarduera, bihurketarekin eta faseko batez besteko denborarekin inbutua, pipelinearen balioa, kontratatutako zenbatekoa, galdutako aukerak eta beren arrazoiak, jarraipenik gabeko erakundeak eta kontaktuen arteko batez besteko denbora. Komertzialeko jarduerak jarduera eta emaitzak batzen ditu, inoiz ez bisiten sailkapena.",
+        "audience": "Merkataritza-zuzendaritzak eta administrazioak talde osoa ikusten dute; komertzial bakoitzak, berea.",
+        "actions": [
+          "Aldia eta iragazkiak aukeratu",
+          "Taldearen jarduera alderatu",
+          "Datuak CSV formatuan esportatu"
+        ],
+        "tips": [
+          "Komertzial batek bere errenkada soilik ikusten du komertzialeko jardueran.",
+          "Bihurketak zenbatzen du aurreko fasera iritsi direnen artean zenbatek iritsi duten fase batera."
+        ],
+        "related": [
+          "plataforma.comercial",
+          "plataforma.comercialMapa"
+        ]
+      },
+      "comercialAtencion": {
+        "title": "Arreta behar dutenak",
+        "summary": "Egun batzuk kontakturik gabe daramaten erakundeak, ahaztuenetik gutxien ahaztura, hurrengo zereginarekin.",
+        "details": "Konfiguratutako lehen mugak (lehenespenez 7 egun) gutxienez jarduerarik gabe daramaten erakundeak zerrendatzen ditu, 7, 15, 30 eta 60+ egunetan nabarmenduta. Komertziala, egoera, azken jarduera, kontakturik gabeko egunak, ustezko zenbatekoa eta hurrengo zeregina erakusten ditu.",
+        "audience": "Merkataritza-talde osoa.",
+        "actions": [
+          "Zein erakunde daramaten denbora gehien kontakturik gabe ikusi",
+          "Jarduera bat erregistratu errenkadatik",
+          "Komertzialaren edo probintziaren arabera iragazi"
+        ],
+        "tips": [
+          "Mugak Konfigurazioan aldatzen dira.",
+          "Galdutako erakundeak ez dira hemen agertzen."
+        ],
+        "related": [
+          "plataforma.comercial",
+          "plataforma.comercialTareas"
+        ]
+      },
+      "comercialConfiguracion": {
+        "title": "Konfigurazioa",
+        "summary": "Pipelineko faseak, kontaktuaren jatorriak, sailak, produktuak, etiketak eta abisuen mugak.",
+        "details": "Faseak (izena, ordena, kolorea, probabilitatea, mota) eta zerrendak editatu eta desaktibatu egiten dira, inoiz ez ezabatu: dagoeneko erabiltzen dutenak irakurgarri jarraitzen dute. Mugek abisua noiz eman erabakitzen dute: aukera baten jarduerarik gabeko egunak, erantzunik gabeko proposamena, kontratazio-data hurbila, berritzeak eta «Arreta behar dutenak» atalaren egunak.",
+        "audience": "Merkataritza-zuzendaritza eta administrazioa soilik.",
+        "actions": [
+          "Pipelineko faseak editatu edo gehitu",
+          "Jatorriak, sailak eta produktuak editatu",
+          "Abisuen mugak aldatu"
+        ],
+        "tips": [
+          "«Galdua» fase batek arrazoia eskatzen du eta «irabazia» batek kontratua: aukeratu ondo mota.",
+          "Fase bat desaktibatzeak pipelinetik kentzen du, bertan zegoena ukitu gabe."
+        ],
+        "related": [
+          "plataforma.comercial",
+          "plataforma.comercialPipeline"
+        ]
       }
     }
   },
@@ -2991,7 +3332,9 @@
       "revokeSelfWarning": "Zure rola da: atal honetarako sarbidea galduko duzu.",
       "replaceConfirmTitle": "Plataformako rola ordezkatu",
       "replaceConfirmDescription": "#{user} kontuak badu jada «{current}» rola. Kontu batek plataformako rol bakarra izan dezake: «{next}» emanez gero, «{current}» galduko du.",
-      "replaceConfirmAction": "Rola ordezkatu"
+      "replaceConfirmAction": "Rola ordezkatu",
+      "roleSalesLead": "Merkataritza-zuzendaria",
+      "roleSales": "Komertziala"
     },
     "auditoria": {
       "heading": "Auditoria",
@@ -3881,6 +4224,1442 @@
       "routine": "Bere errutinari eutsi zion",
       "therapyMeeting": "Terapia edo bilera",
       "feelGood": "Ondo sentitu zen"
+    }
+  },
+  "crm": {
+    "enums": {
+      "accountKind": {
+        "city_council": "Udala",
+        "provincial_council": "Foru aldundia",
+        "cabildo": "Cabildoa",
+        "island_council": "Uharte-kontseilua",
+        "region": "Autonomia-erkidegoa",
+        "mancomunidad": "Mankomunitatea",
+        "public_body": "Erakunde publikoa",
+        "public_company": "Enpresa publikoa",
+        "association": "Elkartea",
+        "foundation": "Fundazioa",
+        "other": "Bestelakoa"
+      },
+      "interest": {
+        "unrated": "Baloratu gabe",
+        "very_low": "Oso baxua",
+        "low": "Baxua",
+        "medium": "Ertaina",
+        "high": "Altua",
+        "very_high": "Oso altua"
+      },
+      "activityKind": {
+        "visit": "Aurrez aurreko bisita",
+        "meeting": "Bilera",
+        "video_call": "Bideodeia",
+        "call": "Deia",
+        "email": "Posta elektronikoa",
+        "whatsapp": "WhatsApp",
+        "demo": "Demoa",
+        "presentation": "Aurkezpena",
+        "proposal_sent": "Proposamena bidalita",
+        "proposal_received": "Proposamena jasota",
+        "pilot": "Proba pilotua",
+        "event": "Ekitaldia",
+        "note": "Oharra",
+        "contract": "Kontratua",
+        "internal_meeting": "Barne-bilera",
+        "other": "Bestelakoa"
+      },
+      "result": {
+        "very_positive": "Oso positiboa",
+        "positive": "Positiboa",
+        "neutral": "Neutroa",
+        "negative": "Negatiboa",
+        "very_negative": "Oso negatiboa",
+        "pending": "Zain",
+        "none": "Emaitzarik gabe"
+      },
+      "priority": {
+        "low": "Baxua",
+        "normal": "Normala",
+        "high": "Altua",
+        "urgent": "Larria"
+      },
+      "taskStatus": {
+        "pending": "Zain",
+        "in_progress": "Martxan",
+        "done": "Eginda",
+        "cancelled": "Bertan behera"
+      },
+      "proposalStatus": {
+        "draft": "Zirriborroa",
+        "sent": "Bidalita",
+        "seen": "Ikusita/berretsita",
+        "negotiating": "Negoziatzen",
+        "accepted": "Onartuta",
+        "rejected": "Baztertuta",
+        "expired": "Iraungita"
+      },
+      "lostReason": {
+        "price": "Prezioa",
+        "no_budget": "Aurrekonturik gabe",
+        "no_interest": "Interesik gabe",
+        "competitor": "Lehiakidea",
+        "not_priority": "Ez da lehentasuna",
+        "technical": "Arazo teknikoa",
+        "procurement": "Kontratazio publikoa",
+        "postponed": "Proiektua atzeratuta",
+        "no_response": "Ez du erantzuten",
+        "people_changed": "Arduradunak aldatu dira",
+        "other": "Bestelakoa"
+      },
+      "documentCategory": {
+        "presentation": "Aurkezpenak",
+        "dossier": "Dosierrak",
+        "proposal": "Proposamenak",
+        "budget": "Aurrekontuak",
+        "contract": "Kontratuak",
+        "tender": "Baldintza-agiriak",
+        "report": "Txostenak",
+        "technical": "Dokumentazio teknikoa",
+        "email": "Mezu elektronikoak",
+        "minutes": "Aktak",
+        "administrative": "Administrazio-dokumentazioa",
+        "photo": "Argazkiak",
+        "other": "Bestelakoak"
+      },
+      "relationKind": {
+        "parent": "Honen mende dago",
+        "partner": "Honekin lan egiten du",
+        "member": "Honen kidea",
+        "other": "Lotuta"
+      },
+      "notificationKind": {
+        "task_reminder": "Zereginaren gogorarazpena",
+        "task_overdue": "Zeregin iraungia",
+        "assigned": "Esleitu dizute",
+        "opportunity_idle": "Jarraipenik gabeko aukera",
+        "proposal_followup": "Erantzunik gabeko proposamena",
+        "meeting_no_followup": "Jarraipenik gabeko bilera",
+        "close_date": "Kontratazio-data hurbil",
+        "renewal": "Kontratua berritzea",
+        "document": "Dokumentu berria"
+      },
+      "catalogKind": {
+        "source": "Kontaktuaren jatorria",
+        "department": "Saila",
+        "product": "Produktua"
+      },
+      "stageKind": {
+        "open": "Irekita",
+        "won": "Irabazita",
+        "lost": "Galduta",
+        "paused": "Etenda"
+      }
+    },
+    "nav": {
+      "dashboard": "Arbela",
+      "entidades": "Erakundeak",
+      "contactos": "Kontaktuak",
+      "pipeline": "Pipelinea",
+      "actividades": "Jarduerak",
+      "tareas": "Zereginak eta gogorarazpenak",
+      "calendario": "Egutegia",
+      "mapa": "Merkataritza-mapa",
+      "oportunidades": "Aukerak",
+      "documentos": "Dokumentuak",
+      "informes": "Txostenak",
+      "configuracion": "Konfigurazioa"
+    },
+    "shell": {
+      "noAccess": "Merkataritza-CRMa merkataritza-zuzendaritzarentzat, komertzialentzat eta plataformaren administraziorako baino ez da.",
+      "navLabel": "Merkataritza-CRMaren atalak",
+      "registerActivity": "+ Erregistratu jarduera"
+    },
+    "search": {
+      "label": "Bilatu CRMan",
+      "placeholder": "Erakundea, udalerria, kontaktua, telefonoa, posta, espedientea…",
+      "loading": "Bilatzen…",
+      "error": "Ezin izan da bilatu. Saiatu berriro.",
+      "empty": "Ez dago bat datorrenik.",
+      "accounts": "Erakundeak",
+      "contacts": "Kontaktuak",
+      "opportunities": "Aukerak",
+      "documents": "Dokumentuak"
+    },
+    "notifications": {
+      "button": "Abisuak ({count} irakurri gabe)",
+      "short": "Abisuak",
+      "title": "Abisuak",
+      "readAll": "Markatu dena irakurrita",
+      "markRead": "Markatu irakurrita",
+      "empty": "Ez dago abisurik.",
+      "error": "Ezin izan dira abisuak kargatu."
+    },
+    "common": {
+      "none": "—",
+      "nobody": "Inor ez",
+      "usersError": "Ezin izan da taldea kargatu.",
+      "loading": "Kargatzen…",
+      "save": "Gorde",
+      "saving": "Gordetzen…"
+    },
+    "quick": {
+      "title": "Erregistratu jarduera",
+      "account": "Erakundea",
+      "kind": "Mota",
+      "contact": "Kontaktua",
+      "result": "Emaitza",
+      "interest": "Interes-maila ondoren",
+      "interestUnchanged": "Aldaketarik gabe",
+      "summary": "Laburpena",
+      "dictate": "Diktatu",
+      "stopDictation": "Gelditu diktaketa",
+      "attachments": "Eranskinak (argazkiak, dokumentuak)",
+      "nextStep": "Zein da hurrengo urratsa?",
+      "createFollowUp": "Sortu jarraipena",
+      "noFollowUp": "Ez du jarraipenik behar",
+      "followKind": "Ekintza mota",
+      "followAt": "Data eta ordua",
+      "followTitle": "Zer egin behar den",
+      "followPriority": "Lehentasuna",
+      "reminder": "Gogorarazpena",
+      "assignee": "Arduraduna",
+      "uploadFailed": "Jarduera gorde da, baina fitxategi hauek ezin izan dira igo: {files}",
+      "when": "Noiz"
+    },
+    "reminders": {
+      "m0": "Unean bertan",
+      "m15": "15 minutu lehenago",
+      "m60": "Ordu bat lehenago",
+      "m1440": "Egun bat lehenago",
+      "m2880": "2 egun lehenago"
+    },
+    "settings": {
+      "noAccess": "Merkataritza-zuzendaritzak eta plataformaren administrazioak bakarrik alda dezakete CRMaren konfigurazioa.",
+      "sectionsLabel": "Konfigurazio-atalak",
+      "sections": {
+        "stages": "Pipelinearen faseak",
+        "catalog": "Zerrendak",
+        "tags": "Etiketak",
+        "thresholds": "Atalaseak"
+      },
+      "loadError": "Ezin izan da konfigurazioa kargatu",
+      "edit": "Editatu",
+      "activate": "Aktibatu",
+      "deactivate": "Desaktibatu",
+      "stages": {
+        "title": "Pipelinearen faseak",
+        "new": "+ Fase berria",
+        "warning": "«Galduta» motako faseak arrazoia eskatzen du eta «Irabazita» motakoak kontratuaren datuak. Faseak ez dira ezabatzen: desaktibatu egiten dira eta ez dira gehiago eskainiko, baina erregistratutakoa gordetzen da.",
+        "caption": "Pipelinearen faseak",
+        "columns": {
+          "name": "Izena",
+          "key": "Gakoa",
+          "order": "Ordena",
+          "kind": "Mota",
+          "probability": "Probabilitatea",
+          "color": "Kolorea",
+          "status": "Egoera"
+        },
+        "active": "Aktiboa",
+        "inactive": "Inaktiboa",
+        "percent": "% {value}",
+        "nameOf": "{name} fasearen izena",
+        "orderOf": "{name} fasearen ordena",
+        "kindOf": "{name} fasearen mota",
+        "probabilityOf": "{name} fasearen probabilitatea",
+        "colorOf": "{name} fasearen kolorea",
+        "newTitle": "Fase berria",
+        "key": "Gakoa",
+        "keyHint": "Letra xeheak, zenbakiak eta azpimarra soilik (adibidez bilera_adostua). Gero ezin da aldatu.",
+        "name": "Izena",
+        "order": "Ordena",
+        "kind": "Mota",
+        "probability": "Probabilitatea (%)",
+        "color": "Kolorea",
+        "create": "Sortu fasea"
+      },
+      "catalog": {
+        "title": "Zerrenda konfiguragarriak",
+        "hint": "Kontaktuaren jatorriak, sailak eta produktuak. Ordena-zenbakiaren arabera ordenatzen dira eta ezabatu beharrean desaktibatu egiten dira.",
+        "kindLabel": "Zerrenda",
+        "newName": "Elementu berria",
+        "newOrder": "Ordena",
+        "add": "Gehitu",
+        "empty": "Zerrenda honek ez du elementurik oraindik.",
+        "caption": "Zerrendako elementuak: {kind}",
+        "columns": {
+          "name": "Izena",
+          "order": "Ordena",
+          "status": "Egoera"
+        },
+        "active": "Aktiboa",
+        "inactive": "Inaktiboa",
+        "nameOf": "{name} elementuaren izena",
+        "orderOf": "{name} elementuaren ordena"
+      },
+      "tags": {
+        "title": "Etiketak",
+        "hint": "Etiketak erakundeei izenaren bidez esleitzen zaizkie.",
+        "name": "Etiketa berria",
+        "color": "Kolorea",
+        "add": "Sortu etiketa",
+        "empty": "Oraindik ez dago etiketarik.",
+        "listLabel": "Dauden etiketak"
+      },
+      "thresholds": {
+        "title": "Atalaseak eta abisuak",
+        "hint": "Noiz behar du erakunde batek arreta eta noiz ematen du abisua CRMak. Balio guztiak egunetan daude.",
+        "attentionDays": "«Arreta behar dute» zerrendarako kontakturik gabeko egunak",
+        "attentionDaysHint": "Komaz bereizitako zerrenda, larritasun txikienetik handienera (adibidez 15, 30, 60).",
+        "opportunityIdleDays": "Aukera batean jarduerarik gabeko egunak",
+        "opportunityIdleDaysHint": "Epe hori igarotakoan, CRMak arduradunari abisua ematen dio.",
+        "proposalFollowupDays": "Proposamen bati erantzunik gabeko egunak",
+        "proposalFollowupDaysHint": "Bidalitako proposamenari jarraipena egiteko abisua ematen da.",
+        "closeDateWarningDays": "Kontratazio-dataren aurreko abisu-egunak",
+        "closeDateWarningDaysHint": "Aukera baten kontratazio-data estimatuaren aurretik.",
+        "renewalAlertDays": "Berritze-abisuak",
+        "renewalAlertDaysHint": "Kontratua berritu aurreko egunak, komaz bereiztuta (adibidez 90, 60, 30).",
+        "listInvalid": "Idatzi zenbaki oso positiboak, komaz bereizita.",
+        "numberInvalid": "Idatzi zenbaki oso positibo bat.",
+        "saved": "Atalaseak gorde dira."
+      }
+    },
+    "pipeline": {
+      "moveAria": "Eraman «{name}» beste fase batera",
+      "moveTo": "Eraman…",
+      "registerActivity": "+ Jarduera erregistratu",
+      "neverContacted": "Oraindik harremanik gabe",
+      "lastContact": "{count, plural, =0 {Azken harremana: gaur} one {Azken harremana: duela # egun} other {Azken harremana: duela # egun}}",
+      "nextActivity": "Hurrengo jarduera: {date}",
+      "noNextActivity": "Hurrengo jarduerarik ez",
+      "population": "{count, number} biztanle",
+      "owner": "Arduraduna: {name}",
+      "openValue": "Irekia: {amount}",
+      "modeLabel": "Taulak zer erakusten duen",
+      "modeOpportunities": "Aukerak",
+      "modeAccounts": "Erakundeak",
+      "filters": "Pipelinearen iragazkiak",
+      "ownerFilter": "Arduraduna",
+      "allOwners": "Talde osoa",
+      "province": "Probintzia",
+      "product": "Produktua",
+      "allProducts": "Produktu guztiak",
+      "dragHint": "Arrastatu txartel bat beste zutabe batera fasea aldatzeko, edo erabili txartel bakoitzeko «Eraman…».",
+      "moved": "«{name}» «{stage}» fasera pasa da.",
+      "loadError": "Ezin izan da pipelinea kargatu.",
+      "noStages": "Ez dago konfiguratutako faserik.",
+      "columnSummary": "{count, plural, one {# elementu} other {# elementu}} · {amount}",
+      "emptyColumn": "Ez dago ezer fase honetan."
+    },
+    "opportunities": {
+      "newButton": "+ Aukera berria",
+      "filters": "Aukeren iragazkiak",
+      "search": "Bilatu (izena, erakundea edo espedientea)",
+      "status": "Egoera",
+      "allStatuses": "Guztiak",
+      "stage": "Fasea",
+      "allStages": "Fase guztiak",
+      "owner": "Arduraduna",
+      "allOwners": "Talde osoa",
+      "product": "Produktua",
+      "allProducts": "Produktu guztiak",
+      "ordering": "Ordenatu honen arabera",
+      "orderCreated": "Berrienak",
+      "orderAmountDesc": "Zenbatekoa, handienetik txikienera",
+      "orderAmountAsc": "Zenbatekoa, txikienetik handienera",
+      "orderClose": "Itxiera-data aurreikusia",
+      "loadError": "Ezin izan dira aukerak kargatu.",
+      "empty": "Ez dago aukerarik iragazki hauekin.",
+      "caption": "Merkataritza-aukerak",
+      "colName": "Aukera",
+      "colAccount": "Erakundea",
+      "colProduct": "Produktua",
+      "colStage": "Fasea",
+      "colEstimated": "Zenbatetsia",
+      "colProposal": "Proposamena",
+      "colFinal": "Behin betikoa",
+      "colClose": "Aurreikusitako itxiera",
+      "colOwner": "Arduraduna",
+      "colDays": "Fasean",
+      "days": "{count, plural, one {# egun} other {# egun}}",
+      "pagination": "Aukeren orrialdekatzea",
+      "total": "{count, plural, one {# aukera} other {# aukera}}",
+      "previous": "Aurrekoa",
+      "next": "Hurrengoa",
+      "page": "{page}. orrialdea",
+      "new": {
+        "title": "Aukera berria",
+        "account": "Erakundea",
+        "name": "Aukeraren izena",
+        "product": "Produktua",
+        "amount": "Zenbateko zenbatetsia (€)",
+        "closeDate": "Aurreikusitako itxiera-data",
+        "owner": "Arduraduna",
+        "ownerDefault": "Erakundearena",
+        "submit": "Aukera sortu"
+      },
+      "renewals": {
+        "title": "Berritzeko hurbil dauden kontratuak",
+        "loading": "Berritzeak kargatzen…",
+        "error": "Ezin izan dira berritzeak kargatu.",
+        "empty": "Ez dago berritzeko hurbil dagoen kontraturik.",
+        "caption": "Berritzeko hurbil dauden kontratuak",
+        "account": "Erakundea",
+        "opportunity": "Aukera",
+        "renewalDate": "Berritzea",
+        "daysLeft": "Geratzen dira",
+        "days": "{count, plural, one {# egun} other {# egun}}",
+        "finalAmount": "Behin betiko zenbatekoa"
+      }
+    },
+    "opportunityDetail": {
+      "backToList": "← Aukerak",
+      "header": {
+        "account": "Erakundea",
+        "owner": "Arduraduna",
+        "estimated": "Zenbateko zenbatetsia",
+        "proposal": "Proposamenaren zenbatekoa",
+        "final": "Behin betiko zenbatekoa",
+        "expectedClose": "Aurreikusitako itxiera",
+        "daysInStage": "Fasean emandako denbora",
+        "days": "{count, plural, one {# egun} other {# egun}}",
+        "interest": "Interesa"
+      },
+      "lost": {
+        "title": "Aukera galdua: {reason}"
+      },
+      "stageChange": "Fasea aldatu",
+      "registerActivity": "+ Jarduera erregistratu",
+      "moved": "Aukera «{stage}» fasera eraman da.",
+      "formLabel": "Aukeraren datuak",
+      "groups": {
+        "general": "Orokorra",
+        "procurement": "Herri-kontratazioa"
+      },
+      "fields": {
+        "name": "Izena",
+        "product": "Produktua",
+        "description": "Deskribapena",
+        "interest": "Interes-maila",
+        "estimatedAmount": "Zenbateko zenbatetsia (€)",
+        "expectedClose": "Aurreikusitako itxiera-data",
+        "durationMonths": "Kontratuaren iraupena (hilabeteak)",
+        "associations": "Elkarteen kopurua",
+        "users": "Erabiltzaile kopurua",
+        "professionals": "Profesionalen kopurua",
+        "owner": "Arduraduna",
+        "notes": "Oharrak",
+        "availableBudget": "Aurrekontu erabilgarria (€)",
+        "budgetLine": "Aurrekontu-partida",
+        "funding": "Finantzaketa",
+        "hasSubsidy": "Diru-laguntzarekin",
+        "euFunds": "Europar funtsak",
+        "regionalFunds": "Autonomia-funtsak",
+        "stateFunds": "Estatuko funtsak",
+        "fileNumber": "Espediente zenbakia",
+        "fileUrl": "Espedientearen esteka",
+        "procedureNotes": "Administrazioak jakinarazitako prozedura",
+        "tenderDate": "Lizitazioaren data aurreikusia",
+        "deadline": "Epe-muga",
+        "procurementManager": "Kontratazio-arduraduna",
+        "technicalContact": "Harreman teknikoa",
+        "administrativeContact": "Administrazio-harremana",
+        "requiredDocuments": "Beharrezko dokumentazioa",
+        "procurementNotes": "Kontratazioaren oharrak"
+      },
+      "procedureNote": "CRMak administrazioak prozedurari buruz jakinarazten duena soilik gordetzen du; ez du inoiz interpretatzen, ez eta haren ordez erabakitzen ere.",
+      "saved": "Aldaketak gorde dira.",
+      "proposals": {
+        "title": "Proposamenak",
+        "new": "Proposamen berria",
+        "newVersion": "Bertsio berria",
+        "newTitle": "Proposamen berria",
+        "newVersionTitle": "Proposamenaren bertsio berria",
+        "number": "Proposamen zenbakia",
+        "date": "Data",
+        "amount": "Zenbatekoa (€)",
+        "duration": "Iraupena (hilabeteak)",
+        "status": "Egoera",
+        "notes": "Oharrak",
+        "version": "Bertsioa",
+        "versionLabel": "v{version}",
+        "months": "{count, plural, one {# hilabete} other {# hilabete}}",
+        "statusAria": "{version}. bertsioaren egoera",
+        "caption": "Proposamenaren bertsioak",
+        "empty": "Oraindik ez dago proposamenik.",
+        "error": "Ezin izan dira proposamenak kargatu."
+      },
+      "contract": {
+        "title": "Kontratua",
+        "finalAmount": "Behin betiko zenbatekoa (€)",
+        "awardedAt": "Esleipen-data",
+        "duration": "Iraupena (hilabeteak)",
+        "startDate": "Hasiera",
+        "endDate": "Amaiera",
+        "renewalDate": "Berritze-data",
+        "fileNumber": "Espediente zenbakia",
+        "notes": "Oharrak",
+        "saved": "Kontratua gorde da."
+      },
+      "activities": {
+        "title": "Aukera honen jarduerak",
+        "error": "Ezin izan dira jarduerak kargatu.",
+        "empty": "Oraindik ez dago jarduerarik.",
+        "caption": "Aukeraren jarduerak",
+        "date": "Data",
+        "kind": "Mota",
+        "summary": "Laburpena",
+        "owner": "Arduraduna"
+      },
+      "delete": {
+        "button": "Aukera ezabatu",
+        "title": "«{name}» ezabatu?",
+        "description": "Ezabatze logikoa da: aukera zerrendetatik eta pipelinetik desagertzen da, baina datu-basean eta erakundearen historialean gordetzen da.",
+        "confirm": "Ezabatu"
+      }
+    },
+    "dialogs": {
+      "lost": {
+        "title": "«{name}» galdu gisa markatu",
+        "intro": "Adierazi zergatik galtzen den aukera. Ez da inoiz ezabatzen: historialean geratzen da.",
+        "reason": "Arrazoia",
+        "choose": "Aukeratu arrazoi bat…",
+        "detail": "Xehetasunak (aukerakoa)",
+        "confirm": "Galdu gisa markatu"
+      },
+      "win": {
+        "title": "«{name}» aukeraren kontratua erregistratu",
+        "intro": "Aukera bat irabazteak kontratua erregistratzen du eta erakundea bezero bihurtzen du.",
+        "finalAmount": "Behin betiko zenbatekoa (€)",
+        "awardedAt": "Esleipen-data",
+        "startDate": "Hasiera-data",
+        "endDate": "Amaiera-data",
+        "duration": "Iraupena (hilabeteak)",
+        "renewalDate": "Berritze-data",
+        "fileNumber": "Espediente zenbakia",
+        "notes": "Oharrak",
+        "confirm": "Kontratua erregistratu"
+      }
+    },
+    "period": {
+      "label": "Aldia",
+      "today": "Gaur",
+      "week": "Aste hau",
+      "month": "Hilabete hau",
+      "quarter": "Hiruhileko hau",
+      "year": "Urte hau",
+      "custom": "Pertsonalizatua",
+      "since": "Noiztik",
+      "until": "Noiz arte",
+      "invalid": "Datak ez dira baliozkoak: «Noiztik» ezin da «Noiz arte» baino geroagokoa izan. Azken aldi baliozkoa erakusten jarraitzen da.",
+      "filters": {
+        "group": "Iragazkiak",
+        "all": "Guztiak",
+        "owner": "Saltzailea",
+        "region": "Autonomia erkidegoa",
+        "province": "Probintzia",
+        "kind": "Erakunde mota",
+        "product": "Produktua",
+        "stage": "Egoera",
+        "interest": "Interesa",
+        "optionsError": "Iragazkien aukera batzuk ezin izan dira kargatu."
+      }
+    },
+    "dashboard": {
+      "error": "Ez dago eskuragarri: ezin izan dira zifrak kargatu. Saiatu berriro.",
+      "change": "{value} % aurreko aldiarekin alderatuta",
+      "range": "Aldia: {since} - {until}. Aurreko aldiarekin alderatzen da: {previousSince} - {previousUntil}.",
+      "attentionLink": "Arreta behar dutenak ({count})",
+      "overdueLink": "Ikusi epez kanpoko zereginak ({count})",
+      "activityHeading": "Jarduera eta kartera",
+      "moneyHeading": "Ekonomia",
+      "funnelHeading": "Salmenta-inbutua",
+      "kpi": {
+        "accounts": "Erakunde guztiak",
+        "newAccounts": "Erakunde berriak",
+        "contacted": "Kontaktatuak",
+        "neverContacted": "Kontaktatu gabeak",
+        "contacts": "Egindako kontaktuak",
+        "visits": "Bisitak",
+        "meetings": "Bilerak",
+        "videoCalls": "Bideodeiak",
+        "calls": "Deiak",
+        "demos": "Demoak",
+        "proposalsSent": "Bidalitako proposamenak",
+        "pilots": "Pilotuak",
+        "openOpportunities": "Aukera irekiak",
+        "won": "Kontratazioak",
+        "lost": "Galduak",
+        "pendingTasks": "Egiteke dauden zereginak",
+        "overdueTasks": "Epez kanpoko zereginak",
+        "withoutFollowUp": "Jarraipenik gabe"
+      },
+      "money": {
+        "pipelineValue": "Pipeline-aren balio osoa",
+        "weightedPipeline": "Balio haztatua",
+        "proposalsAmount": "Bidalitako proposamenen zenbatekoa",
+        "wonAmount": "Kontratatutako zenbatekoa",
+        "averageTicket": "Batez besteko tiketa",
+        "note": "Balio haztatuak aukera irekiak bakoitzaren faseko probabilitatearekin biderkatzen ditu. Proposamenak eta kontratatutako zenbatekoa hautatutako aldikoak dira."
+      },
+      "funnel": {
+        "caption": "Inbutua: aukerak fasearen arabera, zenbatekoarekin, aurreko fasetik bihurtzearekin eta fasean emandako batez besteko egunekin",
+        "asideCaption": "Galdutako eta pausatutako aukerak",
+        "stage": "Fasea",
+        "count": "Aukerak",
+        "amount": "Zenbatekoa",
+        "reached": "Iritsi direnak",
+        "conversion": "Aurreko fasetik bihurtzea",
+        "averageDays": "Fasean emandako batez besteko egunak",
+        "days": "{count, plural, one {# egun} other {# egun}}"
+      }
+    },
+    "reports": {
+      "error": "Ez dago eskuragarri: ezin izan da txostena kargatu. Saiatu berriro.",
+      "range": "Aldia: {since} - {until}.",
+      "export": {
+        "heading": "Esportatu",
+        "note": "Deskargatu CSV formatuan oraingo iragazkiekin ikusten duzuna (erakundeak, aukerak edo jarduerak).",
+        "accounts": "Esportatu erakundeak (CSV)",
+        "opportunities": "Esportatu aukerak (CSV)",
+        "activities": "Esportatu jarduerak (CSV)",
+        "exporting": "Esportatzen…",
+        "error": "Ezin izan da esportatu. Saiatu berriro."
+      },
+      "activity": {
+        "heading": "Jardueraren laburpena",
+        "contacts": "Egindako kontaktuak",
+        "visits": "Bisitak",
+        "meetings": "Bilerak",
+        "videoCalls": "Bideodeiak",
+        "calls": "Deiak",
+        "demos": "Demoak",
+        "pilots": "Pilotuak",
+        "averageDays": "Kontaktuen arteko batez besteko egunak",
+        "withoutFollowUp": "Jarraipenik gabeko erakundeak",
+        "wonAmount": "Kontratatutako zenbatekoa",
+        "byKindCaption": "Aldiko jarduerak motaren arabera",
+        "kind": "Jarduera mota",
+        "count": "Jarduerak"
+      },
+      "funnelHeading": "Inbutua",
+      "team": {
+        "heading": "Jarduera saltzaileka",
+        "note": "Ez da sailkapena: jarduera (bisitak, deiak…) eta emaitzak (pipeline-a, kontratuak, bihurtzea) elkarrekin irakurtzen dira, eta errenkadak alfabetikoki daude ordenatuta. Bisita gehiago ez dira salmenta gehiago.",
+        "caption": "Aldiko jarduera eta emaitzak saltzaileka",
+        "name": "Saltzailea",
+        "accounts": "Erakundeak",
+        "contacts": "Kontaktuak",
+        "visits": "Bisitak",
+        "meetings": "Bilerak",
+        "videoCalls": "Bideodeiak",
+        "calls": "Deiak",
+        "demos": "Demoak",
+        "proposals": "Proposamenak",
+        "openOpportunities": "Aukera irekiak",
+        "pipelineValue": "Pipeline-aren balioa",
+        "contracts": "Kontratuak",
+        "wonAmount": "Kontratatutako zenbatekoa",
+        "pendingTasks": "Egiteke dauden zereginak",
+        "overdueTasks": "Epez kanpoko zereginak",
+        "winRate": "Arrakasta-tasa"
+      },
+      "lost": {
+        "heading": "Galtzeko arrazoiak",
+        "empty": "Ez dago galdutako aukerarik aldi honetan.",
+        "caption": "Galdutako aukerak arrazoiaren arabera",
+        "reason": "Arrazoia",
+        "count": "Aukerak"
+      }
+    },
+    "map": {
+      "filters": {
+        "minPopulation": "Gutxieneko biztanleria"
+      },
+      "error": "Ez dago eskuragarri: ezin izan da mapa kargatu. Saiatu berriro.",
+      "empty": "Kokapena duen erakunderik ez dator iragazki hauekin bat.",
+      "mapLabel": "{count, plural, one {Espainiako mapa: # erakunde; beheko zerrendak datu berberak ditu} other {Espainiako mapa: # erakunde; beheko zerrendak datu berberak ditu}}",
+      "legend": {
+        "heading": "Legenda",
+        "item": "{status} ({count})",
+        "note": "Egoera bakoitzak bere forma eta letra ditu, kolorearekin batera."
+      },
+      "status": {
+        "sin_contactar": "Kontaktatu gabea",
+        "contactado": "Kontaktatua",
+        "interesado": "Interesatua",
+        "negociacion": "Negoziazioa",
+        "cliente": "Bezeroa",
+        "perdido": "Galdua"
+      },
+      "popup": {
+        "municipality": "Udalerria: {value}",
+        "population": "Biztanleria: {value}",
+        "stage": "Fasea: {value}",
+        "owner": "Saltzailea: {value}",
+        "lastActivity": "Azken jarduera: {value}",
+        "nextActivity": "Hurrengo jarduera: {value}",
+        "openValue": "Balio irekia: {value}",
+        "viewAccount": "Ikusi fitxa"
+      },
+      "list": {
+        "heading": "Erakundeen zerrenda",
+        "show": "{count, plural, one {Erakutsi zerrenda (# erakunde)} other {Erakutsi zerrenda (# erakunde)}}",
+        "hide": "Ezkutatu zerrenda",
+        "caption": "Mapako erakundeak, haien egoera, saltzailea eta balio irekia",
+        "name": "Erakundea",
+        "municipality": "Udalerria",
+        "province": "Probintzia",
+        "status": "Egoera mapan",
+        "stage": "Fasea",
+        "owner": "Saltzailea",
+        "population": "Biztanleria",
+        "lastActivity": "Azken jarduera",
+        "openValue": "Balio irekia",
+        "showMore": "Erakutsi gehiago ({shown} / {total})"
+      },
+      "coverage": {
+        "heading": "Lurralde-estaldura",
+        "note": "Udalak soilik zenbatzen ditu: zenbat dauden erregistratuta, zenbat kontaktatu diren, zenbat dauden negoziazioan eta zenbat diren bezero.",
+        "levelGroup": "Lurralde-maila",
+        "province": "Probintzia",
+        "region": "Erkidegoa",
+        "error": "Ez dago eskuragarri: ezin izan da estaldura kargatu. Saiatu berriro.",
+        "empty": "Oraindik ez dago udalik erregistratuta.",
+        "caption": "Lurralde-estaldura {level} mailan: erregistratutako, kontaktatutako, negoziazioan dauden eta bezero diren udalak",
+        "registered": "Erregistratutako udalerriak",
+        "contacted": "Kontaktatuak",
+        "negotiating": "Negoziazioan",
+        "clients": "Bezeroak",
+        "coverage": "% estaldura",
+        "totals": "Guztira"
+      }
+    },
+    "attention": {
+      "intro": "Azkenaldian kontakturik gabeko erakundeak, jarduerarik gabe denbora gehien daramatenetik gutxien daramatenera. Abisu-mailak kontakturik gabeko {levels} egunekoak dira.",
+      "error": "Ez dago eskuragarri: ezin izan da zerrenda kargatu. Saiatu berriro.",
+      "empty": "Une honetan ez dago arreta behar duen erakunderik.",
+      "count": "{count, plural, one {# erakundek behar du arreta} other {# erakundek behar dute arreta}}",
+      "caption": "Arreta behar duten erakundeak, saltzailea, fasea, azken kontaktua, abisu-maila eta hurrengo zeregina dituztela",
+      "never": "Inoiz ez",
+      "days": "{count, plural, one {# egun} other {# egun}}",
+      "level": "{level}+ egun",
+      "nextTask": "{title} · {date}",
+      "register": "Erregistratu jarduera",
+      "registerFor": "Erregistratu jarduera: {name}",
+      "columns": {
+        "account": "Erakundea",
+        "owner": "Saltzailea",
+        "stage": "Fasea",
+        "lastActivity": "Azken jarduera",
+        "days": "Kontakturik gabeko egunak",
+        "level": "Abisu-maila",
+        "potential": "Zenbateko potentziala",
+        "nextTask": "Hurrengo zeregina",
+        "actions": "Ekintzak"
+      },
+      "pagination": {
+        "label": "Orrikapena",
+        "previous": "Aurrekoa",
+        "next": "Hurrengoa",
+        "page": "{page}. orria"
+      }
+    },
+    "activities": {
+      "caption": "Erregistratutako jarduerak",
+      "columns": {
+        "when": "Data",
+        "kind": "Mota",
+        "account": "Erakundea",
+        "summary": "Izenburua edo laburpena",
+        "result": "Emaitza",
+        "contacts": "Kontaktuak",
+        "owner": "Merkataria",
+        "followUp": "Jarraipena"
+      },
+      "hasFollowUp": "Jarraipenarekin",
+      "noFollowUp": "Jarraipenik gabe",
+      "open": "Ikusi eta editatu",
+      "delete": "Ezabatu",
+      "deleteTitle": "Ezabatu jarduera",
+      "deleteBody": "{name} erakundearen jardueratik kenduko da. Ezabaketa logikoa da: historialean geratzen da.",
+      "deleteConfirm": "Ezabatu jarduera",
+      "export": "Esportatu CSVa",
+      "register": "+ Erregistratu jarduera",
+      "empty": "Iragazki hauekin ez dago jarduerarik",
+      "emptyHint": "Aldatu iragazkiak edo erregistratu jarduera berri bat.",
+      "loadError": "Ezin izan dira jarduerak kargatu",
+      "filters": {
+        "kind": "Mota",
+        "allKinds": "Mota guztiak",
+        "owner": "Merkataria",
+        "allOwners": "Talde osoa",
+        "since": "Noiztik",
+        "until": "Noiz arte",
+        "search": "Bilatu"
+      },
+      "pager": {
+        "previous": "Aurrekoa",
+        "next": "Hurrengoa",
+        "summary": "{page}. orria, guztira {pages} · {count, plural, one {# jarduera} other {# jarduera}}"
+      },
+      "dialog": {
+        "title": "Jarduera",
+        "account": "Erakundea",
+        "kind": "Mota",
+        "when": "Data eta ordua",
+        "activityTitle": "Izenburua",
+        "contacts": "Kontaktuak",
+        "owner": "Merkataria",
+        "historyNote": "Hemen egiten dituzun aldaketek ez dute jatorrizko erregistroa berridazten: erakundearen historialean «jarduera editatua» gisa geratzen dira.",
+        "summary": "Laburpena",
+        "description": "Deskribapena",
+        "result": "Emaitza",
+        "interest": "Interes-maila ondoren",
+        "resultText": "Emaitzaren xehetasuna",
+        "duration": "Iraupena (minutu)",
+        "comments": "Barneko iruzkinak"
+      }
+    },
+    "tasks": {
+      "new": "+ Zeregin berria",
+      "bucketsLabel": "Zereginak dataren arabera",
+      "buckets": {
+        "today": "Gaur",
+        "upcoming": "Hurrengoak",
+        "overdue": "Atzeratuak",
+        "done": "Burututakoak"
+      },
+      "bucketWithCount": "{label} ({count})",
+      "wholeTeam": "Talde osoa",
+      "assigneeFilter": "Arduraduna",
+      "allAssignees": "Denak",
+      "listLabel": "Zeregin-zerrenda",
+      "loadError": "Ezin izan dira zereginak kargatu",
+      "empty": "Ez dago zereginik zerrenda honetan",
+      "emptyHint": "Sortu zeregin berri bat edo aldatu zerrenda.",
+      "untitled": "Izenbururik gabeko zeregina",
+      "noAccount": "Erakunderik gabe",
+      "overdue": "Atzeratua",
+      "priorityBadge": "Lehentasuna: {priority}",
+      "due": "Epea: {when}",
+      "reminderLine": "Gogorarazpena: {reminder}",
+      "noReminder": "gogorarazpenik gabe",
+      "reminderMinutes": "{minutes} minutu lehenago",
+      "complete": "Bete",
+      "start": "Martxan jarri",
+      "cancel": "Utzi zeregina",
+      "edit": "Editatu",
+      "registerActivity": "Erregistratu jarduera",
+      "cancelTitle": "Utzi zeregina",
+      "cancelBody": "«{title}» zeregina bertan behera geratuko da eta ez du gehiago abisurik emango. Editatuta berrireki dezakezu.",
+      "cancelConfirm": "Utzi zeregina",
+      "cancelKeep": "Mantendu",
+      "pager": {
+        "previous": "Aurrekoa",
+        "next": "Hurrengoa",
+        "summary": "{page}. orria, guztira {pages} · {count, plural, one {# zeregin} other {# zeregin}}"
+      },
+      "dialog": {
+        "newTitle": "Zeregin berria",
+        "editTitle": "Editatu zeregina",
+        "accountOptional": "Erakundea (aukerakoa)",
+        "accountFixed": "Erakundea: {name}",
+        "title": "Zer egin behar den",
+        "kind": "Ekintza mota",
+        "dueAt": "Data eta ordua",
+        "priority": "Lehentasuna",
+        "reminder": "Gogorarazpena",
+        "noReminder": "Gogorarazpenik gabe",
+        "status": "Egoera",
+        "assignee": "Arduraduna",
+        "description": "Deskribapena"
+      }
+    },
+    "calendar": {
+      "viewLabel": "Egutegiaren ikuspegia",
+      "views": {
+        "day": "Eguna",
+        "week": "Astea",
+        "month": "Hilabetea"
+      },
+      "previous": "Aurrekoa",
+      "next": "Hurrengoa",
+      "today": "Gaur",
+      "filters": {
+        "owner": "Merkataria",
+        "allOwners": "Talde osoa",
+        "province": "Probintzia",
+        "kind": "Jarduera mota",
+        "allKinds": "Mota guztiak"
+      },
+      "loadError": "Ezin izan da egutegia kargatu",
+      "emptyDay": "Ez dago ezer aurreikusita",
+      "emptyRange": "Ez dago ezer epe honetan",
+      "openDay": "Ireki {day}",
+      "addActivity": "+ Jarduera",
+      "addTask": "+ Zeregina",
+      "types": {
+        "activity": "Jarduera",
+        "task": "Zeregina",
+        "renewal": "Berritzea"
+      },
+      "doneActivity": "egina",
+      "doneTask": "burutua"
+    },
+    "documents": {
+      "uploadButton": "+ Igo dokumentua",
+      "maxSize": "Gehieneko tamaina: 25 MB fitxategiko.",
+      "tooBig": "Fitxategiak 25 MB gainditzen ditu.",
+      "openError": "Ezin izan da dokumentua ireki. Saiatu berriro.",
+      "caption": "CRMaren dokumentuak",
+      "loadError": "Ezin izan dira dokumentuak kargatu",
+      "empty": "Iragazki hauekin ez dago dokumenturik",
+      "emptyHint": "Igo lehena «+ Igo dokumentua» botoiarekin.",
+      "filters": {
+        "category": "Kategoria",
+        "allCategories": "Kategoria guztiak",
+        "account": "Erakundea",
+        "search": "Bilatu"
+      },
+      "columns": {
+        "name": "Izena",
+        "category": "Kategoria",
+        "account": "Erakundea",
+        "opportunity": "Aukera",
+        "version": "Bertsioa",
+        "date": "Data",
+        "uploadedBy": "Igotzailea",
+        "direction": "Jasoa edo bidalia"
+      },
+      "version": "{n}. bertsioa",
+      "received": "Jasoa",
+      "sent": "Bidalia",
+      "view": "Ikusi",
+      "download": "Deskargatu",
+      "addVersion": "Bertsio berria",
+      "history": "Bertsioak",
+      "delete": "Ezabatu",
+      "deleteTitle": "Ezabatu dokumentua",
+      "deleteBody": "«{name}» ez da gehiago agertuko biltegian. Ezabaketa logikoa da: bertsioak gordetzen dira.",
+      "deleteConfirm": "Ezabatu dokumentua",
+      "pager": {
+        "previous": "Aurrekoa",
+        "next": "Hurrengoa",
+        "summary": "{page}. orria, guztira {pages} · {count, plural, one {# dokumentu} other {# dokumentu}}"
+      },
+      "upload": {
+        "title": "Igo dokumentua",
+        "account": "Erakundea",
+        "file": "Fitxategia",
+        "name": "Izena (aukerakoa)",
+        "category": "Kategoria",
+        "description": "Deskribapena",
+        "received": "Erakundeak bidalitako dokumentua (gure aldetik bidali gabea)",
+        "submit": "Igo",
+        "uploading": "Igotzen…"
+      },
+      "newVersion": {
+        "title": "«{name}» dokumentuaren bertsio berria",
+        "hint": "Aurreko bertsioa gordetzen da: bertsioak ez dira inoiz ezabatzen.",
+        "file": "Fitxategia",
+        "submit": "Igo bertsioa"
+      },
+      "versions": {
+        "title": "«{name}» dokumentuaren bertsioak",
+        "note": "Aurreko bertsioak ez dira inoiz ezabatzen; azkenekoa da lehenespenez ikusten eta deskargatzen dena.",
+        "meta": "{date} · {by} · {size} KB",
+        "download": "Deskargatu {n}. bertsioa"
+      }
+    },
+    "accounts": {
+      "title": "Erakundeak",
+      "needAttention": "Arreta behar dutenak",
+      "export": "Esportatu CSV",
+      "loadError": "Ezin izan dira erakundeak kargatu.",
+      "empty": "Oraindik ez dago erakunderik. Sortu lehenengoa edo inportatu fitxategi bat.",
+      "emptyFiltered": "Ez dago iragazki hauekin bat datorren erakunderik.",
+      "count": "{count, plural, one {# erakunde} other {# erakunde}}",
+      "caption": "CRM komertzialeko erakundeak",
+      "never": "Kontakturik gabe",
+      "daysAgo": "{count, plural, =0 {gaur} one {duela egun 1} other {duela # egun}}",
+      "ordering": {
+        "name": "Izena (A-Z)",
+        "lastActivity": "Azken jarduera (berriena)",
+        "nextActivity": "Hurrengo jarduera (hurbilena)",
+        "population": "Biztanleria (handiena)",
+        "openValue": "Balio irekia (handiena)"
+      },
+      "filters": {
+        "all": "Denak",
+        "search": "Bilatu izenez, udalerriz edo IFZz",
+        "toggle": "Iragazkiak",
+        "region": "Autonomia erkidegoa",
+        "province": "Probintzia",
+        "kind": "Mota",
+        "stage": "Fasea",
+        "interest": "Interesa",
+        "tag": "Etiketa",
+        "owner": "Arduraduna",
+        "client": "Bezeroa",
+        "clientYes": "Bezeroak soilik",
+        "clientNo": "Bezero ez direnak",
+        "days": "Kontakturik gabeko egunak (gutxienez)",
+        "never": "Inoiz kontaktatu gabeak",
+        "ordering": "Ordenatu honen arabera",
+        "clear": "Kendu iragazkiak"
+      },
+      "columns": {
+        "name": "Izena",
+        "place": "Udalerria · probintzia",
+        "population": "Biztanleria",
+        "owner": "Arduraduna",
+        "stage": "Fasea",
+        "interest": "Interesa",
+        "lastActivity": "Azken jarduera",
+        "nextActivity": "Hurrengo jarduera",
+        "openValue": "Balio irekia",
+        "tags": "Etiketak"
+      },
+      "pagination": {
+        "label": "Erakundeen orriak",
+        "previous": "Aurrekoa",
+        "next": "Hurrengoa",
+        "page": "{page}. orria, {pages} orritatik"
+      },
+      "create": {
+        "open": "+ Erakunde berria",
+        "title": "Erakunde berria",
+        "submit": "Sortu erakundea",
+        "saving": "Sortzen…",
+        "force": "Sortu hala ere",
+        "conflict": "Badago antzeko erakunde bat."
+      },
+      "duplicates": {
+        "title": "Erakunde hauek badaude jada",
+        "liveTitle": "Bikoiztu litezkeenak",
+        "owner": "Arduraduna: {name}",
+        "open": "Ireki lehendik dagoena"
+      },
+      "fields": {
+        "name": "Izena",
+        "shortName": "Izen laburra",
+        "kind": "Mota",
+        "place": "Udalerria",
+        "placeHint": "Utzi hutsik udalerri ez bada eta adierazi probintzia eta erkidegoa.",
+        "province": "Probintzia",
+        "region": "Autonomia erkidegoa",
+        "population": "Biztanleria",
+        "taxId": "IFZ",
+        "phone": "Telefonoa",
+        "email": "Posta elektronikoa",
+        "website": "Webgunea",
+        "postalCode": "Posta-kodea",
+        "address": "Helbidea",
+        "source": "Jatorria",
+        "interest": "Interesa",
+        "stage": "Fasea",
+        "stageDefault": "Lehen fasea (lehenetsia)",
+        "tags": "Etiketak",
+        "tagsHint": "Banatu komaz.",
+        "owner": "Arduraduna",
+        "collaborators": "Laguntzaileak",
+        "notes": "Oharrak"
+      },
+      "import": {
+        "open": "Inportatu",
+        "title": "Inportatu erakundeak",
+        "file": "CSV edo XLSX fitxategia",
+        "hint": "Lehen lerroak zutabeen izenak izan behar ditu (izena, mota, IFZ, udalerria, probintzia…). Ez da ezer gordetzen berretsi arte.",
+        "caption": "Inportazioaren aurreikuspena",
+        "row": "Errenkada",
+        "name": "Izena",
+        "municipality": "Udalerria",
+        "errors": "Erroreak",
+        "duplicates": "Bikoiztu litezkeenak",
+        "summary": "{count, plural, one {# errenkada} other {# errenkada}}: {errors} errorerekin, {duplicates} bikoiztu litezke.",
+        "includeDuplicates": "Inportatu lehendik dauden erakundeen antzeko errenkadak ere",
+        "owner": "Esleitu honi",
+        "submit": "Inportatu",
+        "importing": "Inportatzen…",
+        "result": "{created, plural, one {# erakunde sortu da} other {# erakunde sortu dira}}, {skipped} baztertu dira."
+      }
+    },
+    "contacts": {
+      "title": "Kontaktuak",
+      "export": "Esportatu CSV",
+      "search": "Bilatu izenez, kargu, posta elektroniko edo telefonoz",
+      "department": "Saila",
+      "allDepartments": "Sail guztiak",
+      "loadError": "Ezin izan dira kontaktuak kargatu.",
+      "empty": "Ez dago bat datorren kontakturik.",
+      "count": "{count, plural, one {# kontaktu} other {# kontaktu}}",
+      "caption": "CRM komertzialeko kontaktuak",
+      "columns": {
+        "name": "Izena",
+        "position": "Kargua",
+        "department": "Saila",
+        "account": "Erakundea",
+        "phone": "Telefonoa",
+        "email": "Posta elektronikoa",
+        "lastContact": "Azken kontaktua",
+        "activities": "Jarduerak"
+      },
+      "pagination": {
+        "label": "Kontaktuen orriak",
+        "previous": "Aurrekoa",
+        "next": "Hurrengoa",
+        "page": "{page}. orria, {pages} orritatik"
+      }
+    },
+    "accountDetail": {
+      "loadError": "Ezin izan da erakundea kargatu.",
+      "sectionsLabel": "Erakundearen atalak",
+      "sections": {
+        "summary": "Laburpena",
+        "timeline": "Historia",
+        "contacts": "Kontaktuak",
+        "opportunities": "Aukerak",
+        "tasks": "Zereginak",
+        "documents": "Dokumentuak",
+        "data": "Datuak",
+        "procurement": "Kontratazioa"
+      },
+      "header": {
+        "population": "{count, number} biztanle",
+        "client": "Bezeroa",
+        "owner": "Arduraduna:",
+        "noOwner": "Esleitu gabe",
+        "lastActivity": "Azken jarduera:",
+        "neverContacted": "inoiz kontaktatu gabe",
+        "nextActivity": "Hurrengo jarduera:",
+        "nextValue": "{kind} – {date}",
+        "noNext": "Ezer ez planifikatuta",
+        "newActivity": "+ Jarduera berria",
+        "scheduleMeeting": "+ Programatu bilera",
+        "createTask": "+ Sortu zeregina",
+        "addContact": "+ Gehitu kontaktua",
+        "createOpportunity": "+ Sortu aukera",
+        "uploadDocument": "+ Igo dokumentua",
+        "addNote": "+ Gehitu oharra"
+      },
+      "task": {
+        "title": "Sortu zeregina",
+        "what": "Zer egin behar den",
+        "kind": "Ekintza mota",
+        "dueAt": "Data eta ordua",
+        "priority": "Lehentasuna",
+        "assignee": "Arduraduna",
+        "description": "Xehetasunak"
+      },
+      "contact": {
+        "title": "Gehitu kontaktua",
+        "editTitle": "Editatu kontaktua",
+        "firstName": "Izena",
+        "lastName": "Abizenak",
+        "position": "Kargua",
+        "department": "Saila",
+        "email": "Posta elektronikoa",
+        "phone": "Telefonoa",
+        "mobile": "Mugikorra",
+        "linkedin": "LinkedIn",
+        "notes": "Oharrak",
+        "primary": "Kontaktu nagusia",
+        "force": "Gehitu hala ere",
+        "conflict": "Badago posta elektroniko edo telefono horrekin kontaktu bat."
+      },
+      "opportunity": {
+        "title": "Sortu aukera",
+        "created": "Aukera sortu da.",
+        "open": "Ireki aukera",
+        "name": "Izena",
+        "product": "Produktua",
+        "amount": "Zenbatetsitako zenbatekoa (€)",
+        "closeDate": "Itxierako data aurreikusia"
+      },
+      "document": {
+        "title": "Igo dokumentua",
+        "file": "Fitxategia",
+        "name": "Izena",
+        "category": "Kategoria",
+        "received": "Erakundeak bidalia",
+        "upload": "Igo"
+      },
+      "note": {
+        "title": "Gehitu oharra",
+        "body": "Oharra",
+        "important": "Garrantzitsua",
+        "pinned": "Finkatu laburpenean"
+      },
+      "meeting": {
+        "title": "Programatu bilera",
+        "kind": "Mota",
+        "at": "Data eta ordua",
+        "meetingTitle": "Izenburua",
+        "contacts": "Nor datorren",
+        "schedule": "Programatu",
+        "pastError": "Data etorkizunekoa izan behar da. Jada gertatutako zerbait idazteko, erabili Jarduera berria."
+      },
+      "summary": {
+        "status": "Egoera",
+        "stage": "Fasea",
+        "interest": "Interesa",
+        "owner": "Arduraduna",
+        "lastContact": "Azken kontaktua",
+        "nextFollowUp": "Hurrengo jarraipena",
+        "nextValue": "{title} – {date} ({owner})",
+        "noNext": "Ezer ez planifikatuta: zehaztu hurrengo urratsa",
+        "openValue": "Balio irekia",
+        "proposalsSent": "Bidalitako proposamenak",
+        "lastActivity": "Azken jarduera",
+        "with": "Honekin: {names}",
+        "result": "Emaitza: {result}",
+        "noActivity": "Oraindik ez dago jarduerarik erregistratuta.",
+        "mainContacts": "Kontaktu nagusiak",
+        "noContacts": "Oraindik ez dago kontakturik.",
+        "openOpportunities": "Aukera irekiak",
+        "totalValue": "Balio osoa: {amount}",
+        "noOpportunities": "Ez dago aukera irekirik.",
+        "pendingTasks": "Zain dauden zereginak",
+        "overdue": "Atzeratuta ({date})",
+        "completeTask": "Osatu zeregina: {title}",
+        "complete": "Osatu",
+        "noTasks": "Ez dago zain dagoen zereginik.",
+        "notes": "Finkatutako eta garrantzitsuak diren oharrak",
+        "important": "Garrantzitsua:",
+        "noNotes": "Ez dago finkatutako oharrik.",
+        "recentDocuments": "Azken dokumentuak",
+        "noDocuments": "Oraindik ez dago dokumenturik."
+      },
+      "timeline": {
+        "filter": "Erakutsi",
+        "more": "Kargatu gehiago",
+        "empty": "Oraindik ez dago gertaerarik.",
+        "by": "{name}(r)en eskutik",
+        "filters": {
+          "all": "Dena",
+          "activities": "Jarduerak",
+          "changes": "Aldaketak (fasea, interesa, arduraduna, datuak)",
+          "contacts": "Kontaktuak",
+          "opportunities": "Aukerak, proposamenak eta kontratuak",
+          "tasks": "Zereginak",
+          "documents": "Dokumentuak",
+          "notes": "Oharrak"
+        },
+        "kinds": {
+          "activity": "{kind}",
+          "activity_edited": "Jarduera editatu da: {kind}",
+          "stage": "Fase-aldaketa",
+          "interest": "Interes-aldaketa",
+          "owner": "Arduradun-aldaketa",
+          "contactCreated": "Kontaktua gehitu da",
+          "contactUpdated": "Kontaktua eguneratu da",
+          "contactRemoved": "Kontaktua ezabatu da",
+          "opportunity": "Aukera sortu da",
+          "amount": "Zenbateko-aldaketa",
+          "proposal": "Proposamena",
+          "contract": "Kontratua irabazi da",
+          "contractUpdated": "Kontratua eguneratu da",
+          "document": "Dokumentua",
+          "note": "Oharra",
+          "task": "Zeregina",
+          "taskCreated": "Zeregina sortu da",
+          "taskDone": "Zeregina osatu da",
+          "taskCancelled": "Zeregina bertan behera utzi da",
+          "created": "Erakundea sortu da",
+          "updated": "Datuak aldatu dira",
+          "deleted": "Ezabatuta",
+          "other": "Gertaera"
+        },
+        "lines": {
+          "opportunity": "Aukera: {name}",
+          "nobody": "inor ez",
+          "contacts": "Honekin: {names}",
+          "duration": "Iraupena: {minutes} min",
+          "result": "Emaitza: {result}",
+          "interestAfter": "Ondorengo interesa: {interest}",
+          "nextAction": "Hurrengo urratsa: {title}, {date} ({owner})",
+          "edited": "Aldatu da: {fields}",
+          "stageChange": "{from} → {to}",
+          "lostReason": "Arrazoia: {reason}",
+          "interestChange": "Interesa: {from} → {to}",
+          "ownerChange": "Arduraduna: {from} → {to}",
+          "contact": "{name}",
+          "opportunityCreated": "{name} · {stage} fasea · {amount}",
+          "amountChange": "{field}: {from} → {to}",
+          "proposal": "{number} proposamena v{version} · {amount} · {status}",
+          "previousStatus": "Lehen: {status}",
+          "contractUpdated": "Aldatu da: {fields}",
+          "contractWon": "Zenbatekoa {amount}, {date}(e)an adjudikatua",
+          "document": "{name} · {category} · {version}. bertsioa",
+          "received": "Erakundeak bidalia",
+          "important": "Garrantzitsua",
+          "pinned": "Finkatua",
+          "taskDue": "{date}rako · {owner}",
+          "created": "{stage} fasea, arduraduna {owner}",
+          "related": "{name}(r)ekiko erlazioa",
+          "updatedFields": "Aldatu da: {fields}",
+          "deleted": "{what} ezabatu da: {name}",
+          "what": {
+            "account": "Erakundea",
+            "opportunity": "Aukera",
+            "activity": "Jarduera",
+            "note": "Oharra",
+            "document": "Dokumentua"
+          }
+        },
+        "fields": {
+          "name": "izena",
+          "short_name": "izen laburra",
+          "kind": "mota",
+          "tax_id": "IFZ",
+          "address": "helbidea",
+          "postal_code": "posta-kodea",
+          "place": "udalerria",
+          "province_name": "probintzia",
+          "region_name": "autonomia erkidegoa",
+          "population": "biztanleria",
+          "phone": "telefonoa",
+          "email": "posta elektronikoa",
+          "website": "webgunea",
+          "source": "jatorria",
+          "notes": "oharrak",
+          "organization": "lotutako erakundea",
+          "first_contact_at": "lehen kontaktua",
+          "relations": "erlazioak",
+          "estimated_amount": "zenbatetsitako zenbatekoa",
+          "proposal_amount": "proposamenaren zenbatekoa",
+          "final_amount": "azken zenbatekoa",
+          "title": "izenburua",
+          "description": "deskribapena",
+          "summary": "laburpena",
+          "result": "emaitza",
+          "occurred_at": "data",
+          "duration_minutes": "iraupena"
+        }
+      },
+      "contacts": {
+        "empty": "Erakunde honek ez du oraindik kontakturik.",
+        "caption": "Erakundearen kontaktuak",
+        "name": "Izena",
+        "primary": "(nagusia)",
+        "position": "Kargua eta saila",
+        "phone": "Telefonoa",
+        "email": "Posta elektronikoa",
+        "lastContact": "Azken kontaktua",
+        "actions": "Ekintzak",
+        "editLabel": "Editatu {name} kontaktua",
+        "edit": "Editatu",
+        "deleteLabel": "Ezabatu {name} kontaktua",
+        "delete": "Ezabatu",
+        "deleteTitle": "Ezabatu kontaktua",
+        "deleteDescription": "{name} ez da agertuko erakunde honetan. Historiak jasota uzten du."
+      },
+      "opportunities": {
+        "empty": "Erakunde honek ez du oraindik aukerarik.",
+        "caption": "Erakundearen aukerak",
+        "name": "Aukera",
+        "product": "Produktua",
+        "stage": "Fasea",
+        "amount": "Zenbatetsitako zenbatekoa",
+        "expectedClose": "Aurreikusitako itxiera"
+      },
+      "tasks": {
+        "openTitle": "Zeregin irekiak",
+        "doneTitle": "Osatutako zereginak",
+        "emptyOpen": "Ez dago zeregin irekirik.",
+        "emptyDone": "Ez dago osatutako zereginik.",
+        "openCaption": "Erakundearen zeregin irekiak",
+        "doneCaption": "Erakundearen osatutako zereginak",
+        "task": "Zeregina",
+        "kind": "Mota",
+        "due": "Epea",
+        "completed": "Osatua",
+        "priority": "Lehentasuna",
+        "assignee": "Arduraduna",
+        "status": "Egoera",
+        "actions": "Ekintzak",
+        "completeLabel": "Osatu zeregina: {title}",
+        "complete": "Osatu",
+        "cancelLabel": "Utzi bertan behera zeregina: {title}",
+        "cancel": "Utzi bertan behera"
+      },
+      "documents": {
+        "versionTitle": "{name} dokumentuaren bertsio berria",
+        "upload": "Igo",
+        "file": "Fitxategia",
+        "empty": "Erakunde honek ez du oraindik dokumenturik.",
+        "caption": "Erakundearen dokumentuak",
+        "name": "Izena",
+        "category": "Kategoria",
+        "version": "Bertsioa",
+        "date": "Data",
+        "uploadedBy": "Igotzailea",
+        "actions": "Ekintzak",
+        "viewLabel": "Ikusi {name}",
+        "view": "Ikusi",
+        "downloadLabel": "Deskargatu {name}",
+        "download": "Deskargatu",
+        "newVersionLabel": "{name} dokumentuaren bertsio berria",
+        "newVersion": "Bertsio berria",
+        "deleteLabel": "Ezabatu {name}",
+        "delete": "Ezabatu",
+        "deleteTitle": "Ezabatu dokumentua",
+        "deleteDescription": "{name} erakundetik kenduko da."
+      },
+      "data": {
+        "saved": "Aldaketak gorde dira.",
+        "relations": {
+          "title": "Beste erakundeekiko erlazioak",
+          "incoming": "{kind} (alderantzizkoa)",
+          "removeLabel": "Kendu {name}(r)ekiko erlazioa",
+          "remove": "Kendu",
+          "empty": "Oraindik ez dago erlaziorik.",
+          "target": "Erlazionatutako erakundea",
+          "kind": "Erlazioa",
+          "add": "Gehitu erlazioa",
+          "removeTitle": "Kendu erlazioa",
+          "removeDescription": "{name}(r)ekiko erlazioa kenduko da. Ez da erakunderik ezabatzen."
+        },
+        "owners": {
+          "title": "Arduradunen historia",
+          "change": "{from} → {to} ({by}, {date})",
+          "nobody": "inor ez",
+          "empty": "Arduraduna ez da inoiz aldatu."
+        },
+        "delete": {
+          "title": "Ezabatu erakundea",
+          "description": "Erakundea zerrendetatik desagertzen da. Historia auditoretzarako gordetzen da.",
+          "button": "Ezabatu erakundea",
+          "confirmTitle": "Erakunde hau ezabatu?",
+          "confirmDescription": "{name} eta zain duen lana ez dira ikusiko."
+        }
+      },
+      "procurement": {
+        "empty": "Erakunde honek ez du aukerarik, beraz ez dago kontratazio-informaziorik.",
+        "budget": "Eskuragarri dagoen aurrekontua",
+        "budgetLine": "Aurrekontu-partida",
+        "funding": "Finantzaketa",
+        "funds": "Funtsak",
+        "fileNumber": "Espediente zenbakia",
+        "fileUrl": "Espedientearen esteka",
+        "procedure": "Administrazioak jakinarazitako prozedura",
+        "tenderDate": "Lizitazio-data",
+        "deadline": "Epea",
+        "manager": "Kontratazio arduraduna",
+        "requiredDocuments": "Eskatutako dokumentazioa",
+        "notes": "Kontratazio-oharrak",
+        "contract": "Kontratua",
+        "contractAmount": "Azken zenbatekoa {amount}, {date}(e)an adjudikatua",
+        "renewal": "Berritzeko data: {date}",
+        "edit": "Editatu aukeran",
+        "flags": {
+          "subsidy": "Diru-laguntza",
+          "eu": "Europako funtsak",
+          "regional": "Autonomia-funtsak",
+          "state": "Estatuko funtsak",
+          "none": "Ez da inork jakinarazi"
+        }
+      }
     }
   }
 }

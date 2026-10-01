@@ -1996,6 +1996,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/communities/join-by-code/preview/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Vista previa de un código de invitación
+         * @description A qué comunidad lleva `?code=` y su código de conducta, **sin dar de alta a nadie**: la app lo enseña antes de «Unirme» para que las normas se puedan leer y aceptar. `membership_status` es el estado de quien pregunta (`active`, `pending`…) o `null`. Código que no existe o bloqueo con quien gestiona: mismo 404, sin confirmar nada.
+         */
+        get: operations["communities_join_by_code_preview_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/communities/my/": {
         parameters: {
             query?: never;
@@ -2290,6 +2310,950 @@ export interface paths {
          *     Filtro opcional por `?category=<uuid>` para sólo traer las de una categoría.
          */
         patch: operations["community_subcategories_partial_update"];
+        trace?: never;
+    };
+    "/api/crm/accounts/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_accounts_list"];
+        put?: never;
+        post: operations["crm_accounts_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/accounts/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_accounts_retrieve"];
+        put?: never;
+        post?: never;
+        delete: operations["crm_accounts_destroy"];
+        options?: never;
+        head?: never;
+        patch: operations["crm_accounts_partial_update"];
+        trace?: never;
+    };
+    "/api/crm/accounts/{id}/contacts/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_accounts_contacts_list"];
+        put?: never;
+        post: operations["crm_accounts_contacts_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/accounts/{id}/notes/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_accounts_notes_list"];
+        put?: never;
+        post: operations["crm_accounts_notes_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/accounts/{id}/owner-history/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_accounts_owner_history_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/accounts/{id}/relations/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_accounts_relations_list"];
+        put?: never;
+        post: operations["crm_accounts_relations_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/accounts/{id}/summary/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description La visión rápida de la ficha (punto 8): las preguntas del punto 55
+         *     respondidas sin abrir ninguna pestaña.
+         */
+        get: operations["crm_accounts_summary_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/accounts/{id}/timeline/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Historial (punto 10), paginado y del más nuevo al más viejo.
+         *     `?kind=` filtra (p. ej. solo actividades).
+         */
+        get: operations["crm_accounts_timeline_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/accounts/duplicates/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Posibles duplicados antes de crear (punto 49). */
+        get: operations["crm_accounts_duplicates_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/activities/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_activities_list"];
+        put?: never;
+        /**
+         * @description Registrar actividad, también en modo rápido «Registrar visita»
+         *     (punto 37): basta cuenta y tipo; `follow_up` crea la tarea del
+         *     siguiente paso.
+         */
+        post: operations["crm_activities_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/activities/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_activities_retrieve"];
+        put?: never;
+        post?: never;
+        delete: operations["crm_activities_destroy"];
+        options?: never;
+        head?: never;
+        patch: operations["crm_activities_partial_update"];
+        trace?: never;
+    };
+    "/api/crm/attention/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description «Necesitan atención» (punto 29). */
+        get: operations["crm_attention_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/calendar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_calendar_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/catalog/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Lectura para todo el CRM; escritura solo dirección/administración.
+         *     Sin borrado: se desactiva (`is_active`).
+         */
+        get: operations["crm_catalog_list"];
+        put?: never;
+        /**
+         * @description Lectura para todo el CRM; escritura solo dirección/administración.
+         *     Sin borrado: se desactiva (`is_active`).
+         */
+        post: operations["crm_catalog_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/catalog/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * @description Lectura para todo el CRM; escritura solo dirección/administración.
+         *     Sin borrado: se desactiva (`is_active`).
+         */
+        patch: operations["crm_catalog_partial_update"];
+        trace?: never;
+    };
+    "/api/crm/contacts/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_contacts_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/contacts/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_contacts_retrieve"];
+        put?: never;
+        post?: never;
+        delete: operations["crm_contacts_destroy"];
+        options?: never;
+        head?: never;
+        patch: operations["crm_contacts_partial_update"];
+        trace?: never;
+    };
+    "/api/crm/contacts/duplicates/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_contacts_duplicates_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/contracts/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["crm_contracts_partial_update"];
+        trace?: never;
+    };
+    "/api/crm/coverage/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_coverage_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/dashboard/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_dashboard_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/documents/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_documents_list"];
+        put?: never;
+        post: operations["crm_documents_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/documents/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_documents_retrieve"];
+        put?: never;
+        post?: never;
+        delete: operations["crm_documents_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/documents/{id}/versions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Nueva versión: las anteriores nunca se borran. */
+        post: operations["crm_documents_versions_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/documents/{id}/versions/{version_id}/download/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Descarga (y vista previa con `?inline=1`) con permiso: el fichero
+         *     nunca se sirve por su URL del almacenamiento.
+         */
+        get: operations["crm_documents_versions_download_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/export/{resource}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description CSV (UTF-8 con BOM y `;`, Excel en español) de lo que quien pide
+         *     puede ver, con los mismos filtros que los listados. Audita cada
+         *     exportación (`crm.export`).
+         */
+        get: operations["crm_export_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/funnel/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_funnel_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/import/commit/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["crm_import_commit_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/import/preview/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["crm_import_preview_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/map/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_map_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/me/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/crm/me/`: mi rol en el CRM (o `null` sin acceso). */
+        get: operations["crm_me_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/notes/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["crm_notes_destroy"];
+        options?: never;
+        head?: never;
+        patch: operations["crm_notes_partial_update"];
+        trace?: never;
+    };
+    "/api/crm/notifications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_notifications_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/notifications/{id}/read/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["crm_notifications_read_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/notifications/read-all/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["crm_notifications_read_all_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/opportunities/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_opportunities_list"];
+        put?: never;
+        post: operations["crm_opportunities_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/opportunities/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_opportunities_retrieve"];
+        put?: never;
+        post?: never;
+        delete: operations["crm_opportunities_destroy"];
+        options?: never;
+        head?: never;
+        patch: operations["crm_opportunities_partial_update"];
+        trace?: never;
+    };
+    "/api/crm/opportunities/{id}/move/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Cambio de fase (Kanban): perder exige `lost_reason`; ganar va por
+         *     `win/`.
+         */
+        post: operations["crm_opportunities_move_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/opportunities/{id}/proposals/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_opportunities_proposals_list"];
+        put?: never;
+        post: operations["crm_opportunities_proposals_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/opportunities/{id}/win/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["crm_opportunities_win_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/pipeline/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Kanban (punto 17): una columna por fase. `?of=accounts` (estado
+         *     comercial de la cuenta) u `opportunities` (por defecto). Hasta
+         *     `?per_column=` tarjetas por columna (50), con el total.
+         */
+        get: operations["crm_pipeline_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/proposals/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["crm_proposals_partial_update"];
+        trace?: never;
+    };
+    "/api/crm/relations/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["crm_relations_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/renewals/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Contratos próximos a renovar (punto 47). */
+        get: operations["crm_renewals_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/reports/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_reports_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/search/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Búsqueda global (punto 44). */
+        get: operations["crm_search_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/settings/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_settings_retrieve"];
+        put: operations["crm_settings_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/stages/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Lectura para todo el CRM; escritura solo dirección/administración.
+         *     Sin borrado: se desactiva (`is_active`).
+         */
+        get: operations["crm_stages_list"];
+        put?: never;
+        /**
+         * @description Lectura para todo el CRM; escritura solo dirección/administración.
+         *     Sin borrado: se desactiva (`is_active`).
+         */
+        post: operations["crm_stages_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/stages/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * @description Lectura para todo el CRM; escritura solo dirección/administración.
+         *     Sin borrado: se desactiva (`is_active`).
+         */
+        patch: operations["crm_stages_partial_update"];
+        trace?: never;
+    };
+    "/api/crm/tags/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_tags_list"];
+        put?: never;
+        post: operations["crm_tags_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/tasks/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crm_tasks_list"];
+        put?: never;
+        post: operations["crm_tasks_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/tasks/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["crm_tasks_partial_update"];
+        trace?: never;
+    };
+    "/api/crm/tasks/counts/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Cuántas hay en cada pestaña de «Mis tareas». */
+        get: operations["crm_tasks_counts_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/team/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Actividad por comercial (punto 27). */
+        get: operations["crm_team_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crm/users/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Las personas con rol de CRM (para asignar cuentas y tareas). */
+        get: operations["crm_users_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/event-categories/": {
@@ -8980,6 +9944,1310 @@ export interface components {
             price_id: string;
             payment_method: string;
         };
+        /** @description Fila del listado y tarjeta del Kanban (punto 17). */
+        CrmAccountDetail: {
+            readonly id: number;
+            /** Nombre */
+            name: string;
+            /** Nombre corto */
+            short_name?: string;
+            /** Tipo */
+            kind?: components["schemas"]["CrmAccountKindEnum"];
+            place: components["schemas"]["CrmPlaceRef"] | null;
+            province: string;
+            region: string;
+            /**
+             * Población
+             * Format: int64
+             */
+            population?: number | null;
+            owner: components["schemas"]["CrmUserRef"] | null;
+            stage: components["schemas"]["CrmStage"] | null;
+            /** Interés */
+            interest?: components["schemas"]["CrmInterestEnum"];
+            /** Cliente */
+            is_client?: boolean;
+            tags: components["schemas"]["CrmTag"][];
+            /**
+             * Última actividad
+             * Format: date-time
+             */
+            last_activity_at?: string | null;
+            /**
+             * Próxima actividad
+             * Format: date-time
+             */
+            next_activity_at?: string | null;
+            readonly days_without_contact: number | null;
+            readonly open_value: string | null;
+            /** Teléfono */
+            phone?: string;
+            /**
+             * Correo
+             * Format: email
+             */
+            email?: string;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** NIF/CIF */
+            tax_id?: string;
+            /** Dirección */
+            address?: string;
+            /** Código postal */
+            postal_code?: string;
+            /** Provincia */
+            province_name?: string;
+            /** Comunidad autónoma */
+            region_name?: string;
+            /** País */
+            country?: string;
+            /**
+             * Web
+             * Format: uri
+             */
+            website?: string;
+            /**
+             * Latitud
+             * Format: decimal
+             */
+            latitude?: string | null;
+            /**
+             * Longitud
+             * Format: decimal
+             */
+            longitude?: string | null;
+            collaborators: components["schemas"]["CrmUserRef"][];
+            source: components["schemas"]["CrmCatalogItem"] | null;
+            /** Notas internas */
+            notes?: string;
+            /**
+             * Primer contacto
+             * Format: date-time
+             */
+            first_contact_at?: string | null;
+            readonly organization: {
+                [key: string]: unknown;
+            } | null;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        /**
+         * @description * `city_council` - Ayuntamiento
+         *     * `provincial_council` - Diputación
+         *     * `cabildo` - Cabildo
+         *     * `island_council` - Consejo insular
+         *     * `region` - Comunidad autónoma
+         *     * `mancomunidad` - Mancomunidad
+         *     * `public_body` - Organismo público
+         *     * `public_company` - Empresa pública
+         *     * `association` - Asociación
+         *     * `foundation` - Fundación
+         *     * `other` - Otro
+         * @enum {string}
+         */
+        CrmAccountKindEnum: "city_council" | "provincial_council" | "cabildo" | "island_council" | "region" | "mancomunidad" | "public_body" | "public_company" | "association" | "foundation" | "other";
+        /** @description Fila del listado y tarjeta del Kanban (punto 17). */
+        CrmAccountList: {
+            readonly id: number;
+            /** Nombre */
+            name: string;
+            /** Nombre corto */
+            short_name?: string;
+            /** Tipo */
+            kind?: components["schemas"]["CrmAccountKindEnum"];
+            place: components["schemas"]["CrmPlaceRef"] | null;
+            province: string;
+            region: string;
+            /**
+             * Población
+             * Format: int64
+             */
+            population?: number | null;
+            owner: components["schemas"]["CrmUserRef"] | null;
+            stage: components["schemas"]["CrmStage"] | null;
+            /** Interés */
+            interest?: components["schemas"]["CrmInterestEnum"];
+            /** Cliente */
+            is_client?: boolean;
+            tags: components["schemas"]["CrmTag"][];
+            /**
+             * Última actividad
+             * Format: date-time
+             */
+            last_activity_at?: string | null;
+            /**
+             * Próxima actividad
+             * Format: date-time
+             */
+            next_activity_at?: string | null;
+            readonly days_without_contact: number | null;
+            readonly open_value: string | null;
+            /** Teléfono */
+            phone?: string;
+            /**
+             * Correo
+             * Format: email
+             */
+            email?: string;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        CrmAccountRelation: {
+            readonly id: number;
+            readonly source: number;
+            readonly source_name: string;
+            target: number;
+            readonly target_name: string;
+            /** Tipo */
+            kind?: components["schemas"]["CrmAccountRelationKindEnum"];
+            /** Notas */
+            notes?: string;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description * `parent` - Depende de
+         *     * `partner` - Trabaja con
+         *     * `member` - Miembro de
+         *     * `other` - Relacionada
+         * @enum {string}
+         */
+        CrmAccountRelationKindEnum: "parent" | "partner" | "member" | "other";
+        CrmAccountRelationRequest: {
+            target: number;
+            /** Tipo */
+            kind?: components["schemas"]["CrmAccountRelationKindEnum"];
+            /** Notas */
+            notes?: string;
+        };
+        CrmAccountWriteRequest: {
+            /** Nombre */
+            name: string;
+            /** Nombre corto */
+            short_name?: string;
+            /** Tipo */
+            kind?: components["schemas"]["CrmAccountKindEnum"];
+            /** NIF/CIF */
+            tax_id?: string;
+            /** Dirección */
+            address?: string;
+            /** Código postal */
+            postal_code?: string;
+            /** Código INE */
+            place?: string | null;
+            /** Provincia */
+            province_name?: string;
+            /** Comunidad autónoma */
+            region_name?: string;
+            /** País */
+            country?: string;
+            /**
+             * Población
+             * Format: int64
+             */
+            population?: number | null;
+            /** Teléfono */
+            phone?: string;
+            /**
+             * Correo
+             * Format: email
+             */
+            email?: string;
+            /**
+             * Web
+             * Format: uri
+             */
+            website?: string;
+            /**
+             * Latitud
+             * Format: decimal
+             */
+            latitude?: string | null;
+            /**
+             * Longitud
+             * Format: decimal
+             */
+            longitude?: string | null;
+            owner?: number | null;
+            collaborators?: number[];
+            stage?: number | null;
+            /** Interés */
+            interest?: components["schemas"]["CrmInterestEnum"];
+            source?: number | null;
+            tags?: string[];
+            /** Notas internas */
+            notes?: string;
+            /** Entidad de Popyplan */
+            organization?: number | null;
+            /**
+             * Primer contacto
+             * Format: date-time
+             */
+            first_contact_at?: string | null;
+            /** @default false */
+            force: boolean;
+        };
+        CrmActivity: {
+            readonly id: number;
+            account: number;
+            readonly account_name: string;
+            opportunity?: number | null;
+            /** @default  */
+            readonly opportunity_name: string;
+            /** Tipo */
+            kind: components["schemas"]["CrmActivityKindEnum"];
+            /**
+             * Fecha
+             * Format: date-time
+             */
+            occurred_at?: string;
+            /** Duración (minutos) */
+            duration_minutes?: number | null;
+            owner?: number | null;
+            readonly owner_detail: components["schemas"]["CrmUserRef"] | null;
+            team?: number[];
+            readonly team_detail: components["schemas"]["CrmUserRef"][];
+            contacts?: number[];
+            readonly contacts_detail: components["schemas"]["CrmContactRef"][];
+            /** Título */
+            title?: string;
+            /** Descripción */
+            description?: string;
+            /** Resumen */
+            summary?: string;
+            /** Resultado */
+            result?: components["schemas"]["CrmActivityResultEnum"] | components["schemas"]["BlankEnum"];
+            /** Detalle del resultado */
+            result_text?: string;
+            /** Interés posterior */
+            interest_after?: components["schemas"]["CrmInterestEnum"] | components["schemas"]["BlankEnum"];
+            /** Comentarios internos */
+            internal_comments?: string;
+            readonly has_follow_up: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        /**
+         * @description * `visit` - Visita presencial
+         *     * `meeting` - Reunión
+         *     * `video_call` - Videollamada
+         *     * `call` - Llamada telefónica
+         *     * `email` - Email
+         *     * `whatsapp` - WhatsApp
+         *     * `demo` - Demo
+         *     * `presentation` - Presentación
+         *     * `proposal_sent` - Propuesta enviada
+         *     * `proposal_received` - Propuesta recibida
+         *     * `pilot` - Piloto
+         *     * `event` - Evento
+         *     * `note` - Nota
+         *     * `contract` - Contrato
+         *     * `internal_meeting` - Reunión interna
+         *     * `other` - Otro
+         * @enum {string}
+         */
+        CrmActivityKindEnum: "visit" | "meeting" | "video_call" | "call" | "email" | "whatsapp" | "demo" | "presentation" | "proposal_sent" | "proposal_received" | "pilot" | "event" | "note" | "contract" | "internal_meeting" | "other";
+        CrmActivityRequest: {
+            account: number;
+            opportunity?: number | null;
+            /** Tipo */
+            kind: components["schemas"]["CrmActivityKindEnum"];
+            /**
+             * Fecha
+             * Format: date-time
+             */
+            occurred_at?: string;
+            /** Duración (minutos) */
+            duration_minutes?: number | null;
+            owner?: number | null;
+            team?: number[];
+            contacts?: number[];
+            /** Título */
+            title?: string;
+            /** Descripción */
+            description?: string;
+            /** Resumen */
+            summary?: string;
+            /** Resultado */
+            result?: components["schemas"]["CrmActivityResultEnum"] | components["schemas"]["BlankEnum"];
+            /** Detalle del resultado */
+            result_text?: string;
+            /** Interés posterior */
+            interest_after?: components["schemas"]["CrmInterestEnum"] | components["schemas"]["BlankEnum"];
+            /** Comentarios internos */
+            internal_comments?: string;
+            follow_up?: components["schemas"]["CrmFollowUpRequest"] | null;
+        };
+        /**
+         * @description * `very_positive` - Muy positivo
+         *     * `positive` - Positivo
+         *     * `neutral` - Neutro
+         *     * `negative` - Negativo
+         *     * `very_negative` - Muy negativo
+         *     * `pending` - Pendiente
+         *     * `none` - Sin resultado
+         * @enum {string}
+         */
+        CrmActivityResultEnum: "very_positive" | "positive" | "neutral" | "negative" | "very_negative" | "pending" | "none";
+        CrmCatalogItem: {
+            readonly id: number;
+            /** Tipo */
+            kind: components["schemas"]["CrmCatalogItemKindEnum"];
+            /** Nombre */
+            name: string;
+            /** Orden */
+            order?: number;
+            /** Activo */
+            is_active?: boolean;
+        };
+        /**
+         * @description * `source` - Origen del contacto
+         *     * `department` - Departamento
+         *     * `product` - Producto
+         * @enum {string}
+         */
+        CrmCatalogItemKindEnum: "source" | "department" | "product";
+        CrmCatalogItemRequest: {
+            /** Tipo */
+            kind: components["schemas"]["CrmCatalogItemKindEnum"];
+            /** Nombre */
+            name: string;
+            /** Orden */
+            order?: number;
+            /** Activo */
+            is_active?: boolean;
+        };
+        CrmContact: {
+            readonly id: number;
+            account?: number;
+            readonly account_name: string;
+            /** Nombre */
+            first_name: string;
+            /** Apellidos */
+            last_name?: string;
+            /** Cargo */
+            position?: string;
+            /** Departamento */
+            department?: number | null;
+            /** @default  */
+            readonly department_name: string;
+            /**
+             * Correo
+             * Format: email
+             */
+            email?: string;
+            /** Teléfono */
+            phone?: string;
+            /** Móvil */
+            mobile?: string;
+            /** Format: uri */
+            linkedin?: string;
+            /** Notas */
+            notes?: string;
+            /** Contacto principal */
+            is_primary?: boolean;
+            /**
+             * Último contacto
+             * Format: date-time
+             */
+            readonly last_contact_at: string | null;
+            /**
+             * Próxima acción
+             * Format: date-time
+             */
+            next_action_at?: string | null;
+            /** @default 0 */
+            readonly activities_count: number;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        CrmContactRef: {
+            readonly id: number;
+            name: string;
+            /** Cargo */
+            position?: string;
+        };
+        CrmContactRefRequest: {
+            name: string;
+            /** Cargo */
+            position?: string;
+        };
+        CrmContactRequest: {
+            account?: number;
+            /** Nombre */
+            first_name: string;
+            /** Apellidos */
+            last_name?: string;
+            /** Cargo */
+            position?: string;
+            /** Departamento */
+            department?: number | null;
+            /**
+             * Correo
+             * Format: email
+             */
+            email?: string;
+            /** Teléfono */
+            phone?: string;
+            /** Móvil */
+            mobile?: string;
+            /** Format: uri */
+            linkedin?: string;
+            /** Notas */
+            notes?: string;
+            /** Contacto principal */
+            is_primary?: boolean;
+            /**
+             * Próxima acción
+             * Format: date-time
+             */
+            next_action_at?: string | null;
+            /** @default false */
+            force: boolean;
+        };
+        CrmContract: {
+            readonly id: number;
+            readonly opportunity: number;
+            /**
+             * Importe final
+             * Format: decimal
+             */
+            final_amount: string;
+            /**
+             * Fecha de adjudicación
+             * Format: date
+             */
+            awarded_at: string;
+            /**
+             * Fecha de inicio
+             * Format: date
+             */
+            start_date?: string | null;
+            /**
+             * Fecha de fin
+             * Format: date
+             */
+            end_date?: string | null;
+            /** Duración (meses) */
+            duration_months?: number | null;
+            product?: number | null;
+            /**
+             * Usuarios
+             * Format: int64
+             */
+            users_count?: number | null;
+            /**
+             * Asociaciones
+             * Format: int64
+             */
+            associations_count?: number | null;
+            /** Número de expediente */
+            file_number?: string;
+            document?: number | null;
+            /**
+             * Fecha de renovación
+             * Format: date
+             */
+            renewal_date?: string | null;
+            /** Notas */
+            notes?: string;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        CrmContractRequest: {
+            /**
+             * Importe final
+             * Format: decimal
+             */
+            final_amount: string;
+            /**
+             * Fecha de adjudicación
+             * Format: date
+             */
+            awarded_at: string;
+            /**
+             * Fecha de inicio
+             * Format: date
+             */
+            start_date?: string | null;
+            /**
+             * Fecha de fin
+             * Format: date
+             */
+            end_date?: string | null;
+            /** Duración (meses) */
+            duration_months?: number | null;
+            product?: number | null;
+            /**
+             * Usuarios
+             * Format: int64
+             */
+            users_count?: number | null;
+            /**
+             * Asociaciones
+             * Format: int64
+             */
+            associations_count?: number | null;
+            /** Número de expediente */
+            file_number?: string;
+            document?: number | null;
+            /**
+             * Fecha de renovación
+             * Format: date
+             */
+            renewal_date?: string | null;
+            /** Notas */
+            notes?: string;
+        };
+        CrmDocument: {
+            readonly id: number;
+            account?: number | null;
+            /** @default  */
+            readonly account_name: string;
+            opportunity?: number | null;
+            /** @default  */
+            readonly opportunity_name: string;
+            activity?: number | null;
+            /** Nombre */
+            name: string;
+            /** Categoría */
+            category?: components["schemas"]["CrmDocumentCategoryEnum"];
+            /** Descripción */
+            description?: string;
+            /** Recibido */
+            received?: boolean;
+            readonly created_by_name: string;
+            readonly latest: {
+                [key: string]: unknown;
+            } | null;
+            readonly versions: components["schemas"]["CrmDocumentVersion"][];
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        /**
+         * @description * `presentation` - Presentaciones
+         *     * `dossier` - Dosieres
+         *     * `proposal` - Propuestas
+         *     * `budget` - Presupuestos
+         *     * `contract` - Contratos
+         *     * `tender` - Pliegos
+         *     * `report` - Informes
+         *     * `technical` - Documentación técnica
+         *     * `email` - Correos electrónicos
+         *     * `minutes` - Actas
+         *     * `administrative` - Documentación administrativa
+         *     * `photo` - Fotos
+         *     * `other` - Otro
+         * @enum {string}
+         */
+        CrmDocumentCategoryEnum: "presentation" | "dossier" | "proposal" | "budget" | "contract" | "tender" | "report" | "technical" | "email" | "minutes" | "administrative" | "photo" | "other";
+        CrmDocumentCreateRequest: {
+            account?: number | null;
+            opportunity?: number | null;
+            activity?: number | null;
+            /** Nombre */
+            name?: string;
+            /** Categoría */
+            category?: components["schemas"]["CrmDocumentCategoryEnum"];
+            /** Descripción */
+            description?: string;
+            /** Recibido */
+            received?: boolean;
+            /** Format: binary */
+            file: string;
+        };
+        CrmDocumentVersion: {
+            readonly id: number;
+            /** Versión */
+            version: number;
+            /** Nombre del archivo */
+            filename: string;
+            content_type?: string;
+            /** Format: int64 */
+            size?: number;
+            readonly uploaded_by_name: string;
+            /** Format: date-time */
+            readonly created_at: string;
+            readonly download_url: string;
+        };
+        CrmFileRequest: {
+            /** Format: binary */
+            file: string;
+        };
+        /** @description El siguiente paso tras una actividad (punto 13): crea una tarea. */
+        CrmFollowUp: {
+            /** @default call */
+            kind: components["schemas"]["CrmActivityKindEnum"];
+            title?: string;
+            description?: string;
+            /** Format: date-time */
+            due_at: string;
+            assignee?: number | null;
+            /** @default normal */
+            priority: components["schemas"]["CrmTaskPriorityEnum"];
+            reminder_minutes?: number | null;
+            contact?: number | null;
+        };
+        /** @description El siguiente paso tras una actividad (punto 13): crea una tarea. */
+        CrmFollowUpRequest: {
+            /** @default call */
+            kind: components["schemas"]["CrmActivityKindEnum"];
+            title?: string;
+            description?: string;
+            /** Format: date-time */
+            due_at: string;
+            assignee?: number | null;
+            /** @default normal */
+            priority: components["schemas"]["CrmTaskPriorityEnum"];
+            reminder_minutes?: number | null;
+            contact?: number | null;
+        };
+        CrmImportCommitRequest: {
+            rows: components["schemas"]["CrmImportRowRequest"][];
+            owner?: number | null;
+            /** @default false */
+            include_duplicates: boolean;
+        };
+        CrmImportRow: {
+            row: number;
+            data: {
+                [key: string]: unknown;
+            };
+            place: string | null;
+            place_name: string;
+            errors: string[];
+            duplicates: {
+                [key: string]: unknown;
+            }[];
+        };
+        CrmImportRowRequest: {
+            row: number;
+            data: {
+                [key: string]: unknown;
+            };
+            place: string | null;
+            place_name: string;
+            errors: string[];
+            duplicates: {
+                [key: string]: unknown;
+            }[];
+        };
+        /**
+         * @description * `unrated` - Sin valorar
+         *     * `very_low` - Muy bajo
+         *     * `low` - Baja
+         *     * `medium` - Media
+         *     * `high` - Alta
+         *     * `very_high` - Muy alto
+         * @enum {string}
+         */
+        CrmInterestEnum: "unrated" | "very_low" | "low" | "medium" | "high" | "very_high";
+        /**
+         * @description * `price` - Precio
+         *     * `no_budget` - Sin presupuesto
+         *     * `no_interest` - Sin interés
+         *     * `competitor` - Competencia
+         *     * `not_priority` - No es prioritario
+         *     * `technical` - Problema técnico
+         *     * `procurement` - Contratación pública
+         *     * `postponed` - Proyecto aplazado
+         *     * `no_response` - Sin respuesta
+         *     * `people_changed` - Cambio de responsables
+         *     * `other` - Otro
+         * @enum {string}
+         */
+        CrmLostReasonEnum: "price" | "no_budget" | "no_interest" | "competitor" | "not_priority" | "technical" | "procurement" | "postponed" | "no_response" | "people_changed" | "other";
+        CrmMe: {
+            role: string | null;
+            is_manager: boolean;
+            unread_notifications: number;
+        };
+        /** @description Arrastre del Kanban. */
+        CrmMoveRequest: {
+            stage: number;
+            lost_reason?: components["schemas"]["CrmLostReasonEnum"] | components["schemas"]["BlankEnum"];
+            lost_detail?: string;
+        };
+        CrmNote: {
+            readonly id: number;
+            readonly account: number;
+            opportunity?: number | null;
+            /** Texto */
+            body: string;
+            /** Importante */
+            important?: boolean;
+            /** Fijada */
+            pinned?: boolean;
+            readonly author_name: string;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        CrmNoteRequest: {
+            opportunity?: number | null;
+            /** Texto */
+            body: string;
+            /** Importante */
+            important?: boolean;
+            /** Fijada */
+            pinned?: boolean;
+        };
+        CrmNotification: {
+            readonly id: number;
+            /** Tipo */
+            kind: components["schemas"]["CrmNotificationKindEnum"];
+            /** Título */
+            title: string;
+            /** Texto */
+            body?: string;
+            account?: number | null;
+            /** @default  */
+            readonly account_name: string;
+            opportunity?: number | null;
+            task?: number | null;
+            /** Format: date-time */
+            read_at?: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description * `task_reminder` - Recordatorio de tarea
+         *     * `task_overdue` - Tarea vencida
+         *     * `assigned` - Entidad asignada
+         *     * `opportunity_idle` - Oportunidad sin seguimiento
+         *     * `proposal_followup` - Propuesta sin respuesta
+         *     * `meeting_no_followup` - Reunión sin seguimiento
+         *     * `close_date` - Se acerca la fecha prevista de contrato
+         *     * `renewal` - Renovación de contrato
+         *     * `document` - Nuevo documento
+         * @enum {string}
+         */
+        CrmNotificationKindEnum: "task_reminder" | "task_overdue" | "assigned" | "opportunity_idle" | "proposal_followup" | "meeting_no_followup" | "close_date" | "renewal" | "document";
+        CrmNotificationRequest: {
+            /** Tipo */
+            kind: components["schemas"]["CrmNotificationKindEnum"];
+            /** Título */
+            title: string;
+            /** Texto */
+            body?: string;
+            account?: number | null;
+            opportunity?: number | null;
+            task?: number | null;
+            /** Format: date-time */
+            read_at?: string | null;
+        };
+        CrmOpportunity: {
+            readonly id: number;
+            account?: number;
+            readonly account_name: string;
+            /** Nombre */
+            name: string;
+            /** Producto */
+            product?: number | null;
+            /** @default  */
+            readonly product_name: string;
+            /** Descripción */
+            description?: string;
+            owner?: number | null;
+            readonly owner_detail: components["schemas"]["CrmUserRef"] | null;
+            stage?: number;
+            readonly stage_detail: components["schemas"]["CrmStage"];
+            /**
+             * En la fase desde
+             * Format: date-time
+             */
+            readonly stage_entered_at: string | null;
+            readonly days_in_stage: number | null;
+            /** Interés */
+            interest?: components["schemas"]["CrmInterestEnum"];
+            /**
+             * Importe estimado
+             * Format: decimal
+             */
+            estimated_amount?: string | null;
+            /**
+             * Importe de la propuesta
+             * Format: decimal
+             */
+            proposal_amount?: string | null;
+            /**
+             * Importe final
+             * Format: decimal
+             */
+            readonly final_amount: string | null;
+            /**
+             * Fecha prevista de contrato
+             * Format: date
+             */
+            expected_close_date?: string | null;
+            /** Duración prevista (meses) */
+            contract_duration_months?: number | null;
+            /**
+             * Asociaciones
+             * Format: int64
+             */
+            associations_count?: number | null;
+            /**
+             * Usuarios
+             * Format: int64
+             */
+            users_count?: number | null;
+            /**
+             * Profesionales
+             * Format: int64
+             */
+            professionals_count?: number | null;
+            /** Notas */
+            notes?: string;
+            /**
+             * Presupuesto disponible
+             * Format: decimal
+             */
+            available_budget?: string | null;
+            /** Partida presupuestaria */
+            budget_line?: string;
+            /** Financiación */
+            funding?: string;
+            /** Subvención */
+            has_subsidy?: boolean;
+            /** Fondos europeos */
+            eu_funds?: boolean;
+            /** Fondos autonómicos */
+            regional_funds?: boolean;
+            /** Fondos estatales */
+            state_funds?: boolean;
+            /** Número de expediente */
+            file_number?: string;
+            /**
+             * Enlace al expediente
+             * Format: uri
+             */
+            file_url?: string;
+            /** Procedimiento comunicado por la administración */
+            procedure_notes?: string;
+            /**
+             * Fecha prevista de licitación
+             * Format: date
+             */
+            tender_date?: string | null;
+            /**
+             * Fecha límite
+             * Format: date
+             */
+            deadline?: string | null;
+            /** Responsable de contratación */
+            procurement_manager?: string;
+            /** Contacto técnico */
+            technical_contact?: number | null;
+            /** Contacto administrativo */
+            administrative_contact?: number | null;
+            /** Documentos requeridos */
+            required_documents?: string;
+            /** Notas de contratación */
+            procurement_notes?: string;
+            /** Motivo de pérdida */
+            lost_reason?: components["schemas"]["CrmLostReasonEnum"] | components["schemas"]["BlankEnum"];
+            /** Detalle de la pérdida */
+            lost_detail?: string;
+            /**
+             * Cerrada el
+             * Format: date-time
+             */
+            readonly closed_at: string | null;
+            /**
+             * Última actividad
+             * Format: date-time
+             */
+            readonly last_activity_at: string | null;
+            readonly contract: components["schemas"]["CrmContract"] | null;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        CrmOpportunityRequest: {
+            account?: number;
+            /** Nombre */
+            name: string;
+            /** Producto */
+            product?: number | null;
+            /** Descripción */
+            description?: string;
+            owner?: number | null;
+            stage?: number;
+            /** Interés */
+            interest?: components["schemas"]["CrmInterestEnum"];
+            /**
+             * Importe estimado
+             * Format: decimal
+             */
+            estimated_amount?: string | null;
+            /**
+             * Importe de la propuesta
+             * Format: decimal
+             */
+            proposal_amount?: string | null;
+            /**
+             * Fecha prevista de contrato
+             * Format: date
+             */
+            expected_close_date?: string | null;
+            /** Duración prevista (meses) */
+            contract_duration_months?: number | null;
+            /**
+             * Asociaciones
+             * Format: int64
+             */
+            associations_count?: number | null;
+            /**
+             * Usuarios
+             * Format: int64
+             */
+            users_count?: number | null;
+            /**
+             * Profesionales
+             * Format: int64
+             */
+            professionals_count?: number | null;
+            /** Notas */
+            notes?: string;
+            /**
+             * Presupuesto disponible
+             * Format: decimal
+             */
+            available_budget?: string | null;
+            /** Partida presupuestaria */
+            budget_line?: string;
+            /** Financiación */
+            funding?: string;
+            /** Subvención */
+            has_subsidy?: boolean;
+            /** Fondos europeos */
+            eu_funds?: boolean;
+            /** Fondos autonómicos */
+            regional_funds?: boolean;
+            /** Fondos estatales */
+            state_funds?: boolean;
+            /** Número de expediente */
+            file_number?: string;
+            /**
+             * Enlace al expediente
+             * Format: uri
+             */
+            file_url?: string;
+            /** Procedimiento comunicado por la administración */
+            procedure_notes?: string;
+            /**
+             * Fecha prevista de licitación
+             * Format: date
+             */
+            tender_date?: string | null;
+            /**
+             * Fecha límite
+             * Format: date
+             */
+            deadline?: string | null;
+            /** Responsable de contratación */
+            procurement_manager?: string;
+            /** Contacto técnico */
+            technical_contact?: number | null;
+            /** Contacto administrativo */
+            administrative_contact?: number | null;
+            /** Documentos requeridos */
+            required_documents?: string;
+            /** Notas de contratación */
+            procurement_notes?: string;
+            /** Motivo de pérdida */
+            lost_reason?: components["schemas"]["CrmLostReasonEnum"] | components["schemas"]["BlankEnum"];
+            /** Detalle de la pérdida */
+            lost_detail?: string;
+        };
+        CrmPlaceRef: {
+            /** Código INE */
+            ine_code: string;
+            /** Nombre */
+            name: string;
+            /** Provincia */
+            prov_name: string;
+            /** Comunidad autónoma */
+            ccaa_name: string;
+        };
+        CrmProposal: {
+            readonly id: number;
+            readonly opportunity: number;
+            /** Número */
+            number?: string;
+            /** Versión */
+            readonly version: number;
+            /**
+             * Fecha
+             * Format: date
+             */
+            date: string;
+            /**
+             * Importe
+             * Format: decimal
+             */
+            amount: string;
+            /** Duración (meses) */
+            duration_months?: number | null;
+            product?: number | null;
+            document?: number | null;
+            /** @default  */
+            readonly document_name: string;
+            /** Estado */
+            status?: components["schemas"]["CrmProposalStatusEnum"];
+            /** Format: date-time */
+            readonly sent_at: string | null;
+            /** Notas */
+            notes?: string;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        CrmProposalRequest: {
+            /** Número */
+            number?: string;
+            /**
+             * Fecha
+             * Format: date
+             */
+            date: string;
+            /**
+             * Importe
+             * Format: decimal
+             */
+            amount: string;
+            /** Duración (meses) */
+            duration_months?: number | null;
+            product?: number | null;
+            document?: number | null;
+            /** Estado */
+            status?: components["schemas"]["CrmProposalStatusEnum"];
+            /** Notas */
+            notes?: string;
+        };
+        /**
+         * @description * `draft` - Borrador
+         *     * `sent` - Enviada
+         *     * `seen` - Vista/confirmada
+         *     * `negotiating` - En negociación
+         *     * `accepted` - Aceptada
+         *     * `rejected` - Rechazada
+         *     * `expired` - Caducada
+         * @enum {string}
+         */
+        CrmProposalStatusEnum: "draft" | "sent" | "seen" | "negotiating" | "accepted" | "rejected" | "expired";
+        CrmSettings: {
+            attention_days: number[];
+            /** Días de oportunidad sin actividad */
+            opportunity_idle_days?: number;
+            /** Días para el seguimiento de propuestas */
+            proposal_followup_days?: number;
+            /** Días de aviso del cierre previsto */
+            close_date_warning_days?: number;
+            renewal_alert_days: number[];
+        };
+        CrmSettingsRequest: {
+            attention_days: number[];
+            /** Días de oportunidad sin actividad */
+            opportunity_idle_days?: number;
+            /** Días para el seguimiento de propuestas */
+            proposal_followup_days?: number;
+            /** Días de aviso del cierre previsto */
+            close_date_warning_days?: number;
+            renewal_alert_days: number[];
+        };
+        CrmStage: {
+            readonly id: number;
+            /** Clave */
+            key: string;
+            /** Nombre */
+            name: string;
+            /** Orden */
+            order?: number;
+            /** Tipo */
+            kind?: components["schemas"]["CrmStageKindEnum"];
+            /** Probabilidad */
+            probability?: number;
+            color?: string;
+            /** Activo */
+            is_active?: boolean;
+        };
+        /**
+         * @description * `open` - Abierta
+         *     * `won` - Ganada
+         *     * `lost` - Perdida
+         *     * `paused` - Pausada
+         * @enum {string}
+         */
+        CrmStageKindEnum: "open" | "won" | "lost" | "paused";
+        CrmStageRequest: {
+            /** Clave */
+            key: string;
+            /** Nombre */
+            name: string;
+            /** Orden */
+            order?: number;
+            /** Tipo */
+            kind?: components["schemas"]["CrmStageKindEnum"];
+            /** Probabilidad */
+            probability?: number;
+            color?: string;
+            /** Activo */
+            is_active?: boolean;
+        };
+        CrmTag: {
+            readonly id: number;
+            /** Nombre */
+            name: string;
+            color?: string;
+        };
+        CrmTagRequest: {
+            /** Nombre */
+            name: string;
+            color?: string;
+        };
+        CrmTask: {
+            readonly id: number;
+            account?: number | null;
+            /** @default  */
+            readonly account_name: string;
+            contact?: number | null;
+            /** @default  */
+            readonly contact_name: string;
+            opportunity?: number | null;
+            /** @default  */
+            readonly opportunity_name: string;
+            readonly origin_activity: number | null;
+            /** Tipo */
+            kind?: components["schemas"]["CrmActivityKindEnum"];
+            /** Título */
+            title?: string;
+            /** Descripción */
+            description?: string;
+            assignee?: number | null;
+            readonly assignee_detail: components["schemas"]["CrmUserRef"] | null;
+            /**
+             * Vence
+             * Format: date-time
+             */
+            due_at: string;
+            /** Prioridad */
+            priority?: components["schemas"]["CrmTaskPriorityEnum"];
+            /** Estado */
+            status?: components["schemas"]["CrmTaskStatusEnum"];
+            /**
+             * Recordatorio (minutos antes)
+             * Format: int64
+             */
+            reminder_minutes?: number | null;
+            readonly is_overdue: boolean;
+            /** Format: date-time */
+            readonly completed_at: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description * `low` - Baja
+         *     * `normal` - Normal
+         *     * `high` - Alta
+         *     * `urgent` - Urgente
+         * @enum {string}
+         */
+        CrmTaskPriorityEnum: "low" | "normal" | "high" | "urgent";
+        CrmTaskRequest: {
+            account?: number | null;
+            contact?: number | null;
+            opportunity?: number | null;
+            /** Tipo */
+            kind?: components["schemas"]["CrmActivityKindEnum"];
+            /** Título */
+            title?: string;
+            /** Descripción */
+            description?: string;
+            assignee?: number | null;
+            /**
+             * Vence
+             * Format: date-time
+             */
+            due_at: string;
+            /** Prioridad */
+            priority?: components["schemas"]["CrmTaskPriorityEnum"];
+            /** Estado */
+            status?: components["schemas"]["CrmTaskStatusEnum"];
+            /**
+             * Recordatorio (minutos antes)
+             * Format: int64
+             */
+            reminder_minutes?: number | null;
+        };
+        /**
+         * @description * `pending` - Pendiente
+         *     * `in_progress` - En curso
+         *     * `done` - Finalizada
+         *     * `cancelled` - Cancelada
+         * @enum {string}
+         */
+        CrmTaskStatusEnum: "pending" | "in_progress" | "done" | "cancelled";
+        CrmUserRef: {
+            id: number;
+            readonly name: string;
+            /** Format: email */
+            email: string;
+        };
+        CrmUserRefRequest: {
+            id: number;
+            /** Format: email */
+            email: string;
+        };
+        CrmWinRequest: {
+            /**
+             * Importe final
+             * Format: decimal
+             */
+            final_amount: string;
+            /**
+             * Fecha de adjudicación
+             * Format: date
+             */
+            awarded_at: string;
+            /**
+             * Fecha de inicio
+             * Format: date
+             */
+            start_date?: string | null;
+            /**
+             * Fecha de fin
+             * Format: date
+             */
+            end_date?: string | null;
+            /** Duración (meses) */
+            duration_months?: number | null;
+            product?: number | null;
+            /**
+             * Usuarios
+             * Format: int64
+             */
+            users_count?: number | null;
+            /**
+             * Asociaciones
+             * Format: int64
+             */
+            associations_count?: number | null;
+            /** Número de expediente */
+            file_number?: string;
+            document?: number | null;
+            /**
+             * Fecha de renovación
+             * Format: date
+             */
+            renewal_date?: string | null;
+            /** Notas */
+            notes?: string;
+        };
         /** @description Serializer personalizado para login que acepta username o email */
         CustomLogin: {
             username_or_email: string;
@@ -10565,6 +12833,15 @@ export interface components {
             paid_on: string;
         };
         /**
+         * @description `GET /api/communities/join-by-code/preview/?code=`: a dónde lleva el
+         *     código y qué normas hay que aceptar, antes de entrar.
+         */
+        JoinByCodePreview: {
+            community: components["schemas"]["CommunityList"];
+            code_of_conduct: string;
+            membership_status: string | null;
+        };
+        /**
          * @description Cuerpo de `POST /api/communities/join-by-code/`.
          *
          *     Solo el código: quien entra así no conoce el id de la comunidad —de
@@ -11393,6 +13670,156 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["CommunityPostComment"][];
         };
+        PaginatedCrmAccountListList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["CrmAccountList"][];
+        };
+        PaginatedCrmAccountRelationList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["CrmAccountRelation"][];
+        };
+        PaginatedCrmActivityList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["CrmActivity"][];
+        };
+        PaginatedCrmContactList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["CrmContact"][];
+        };
+        PaginatedCrmDocumentList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["CrmDocument"][];
+        };
+        PaginatedCrmNoteList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["CrmNote"][];
+        };
+        PaginatedCrmNotificationList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["CrmNotification"][];
+        };
+        PaginatedCrmOpportunityList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["CrmOpportunity"][];
+        };
+        PaginatedCrmProposalList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["CrmProposal"][];
+        };
+        PaginatedCrmTaskList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["CrmTask"][];
+        };
         PaginatedDisciplineList: {
             /** @example 123 */
             count: number;
@@ -11777,6 +14204,361 @@ export interface components {
             /** Format: date */
             ends_on?: string;
             notes?: string;
+        };
+        PatchedCrmAccountWriteRequest: {
+            /** Nombre */
+            name?: string;
+            /** Nombre corto */
+            short_name?: string;
+            /** Tipo */
+            kind?: components["schemas"]["CrmAccountKindEnum"];
+            /** NIF/CIF */
+            tax_id?: string;
+            /** Dirección */
+            address?: string;
+            /** Código postal */
+            postal_code?: string;
+            /** Código INE */
+            place?: string | null;
+            /** Provincia */
+            province_name?: string;
+            /** Comunidad autónoma */
+            region_name?: string;
+            /** País */
+            country?: string;
+            /**
+             * Población
+             * Format: int64
+             */
+            population?: number | null;
+            /** Teléfono */
+            phone?: string;
+            /**
+             * Correo
+             * Format: email
+             */
+            email?: string;
+            /**
+             * Web
+             * Format: uri
+             */
+            website?: string;
+            /**
+             * Latitud
+             * Format: decimal
+             */
+            latitude?: string | null;
+            /**
+             * Longitud
+             * Format: decimal
+             */
+            longitude?: string | null;
+            owner?: number | null;
+            collaborators?: number[];
+            stage?: number | null;
+            /** Interés */
+            interest?: components["schemas"]["CrmInterestEnum"];
+            source?: number | null;
+            tags?: string[];
+            /** Notas internas */
+            notes?: string;
+            /** Entidad de Popyplan */
+            organization?: number | null;
+            /**
+             * Primer contacto
+             * Format: date-time
+             */
+            first_contact_at?: string | null;
+            /** @default false */
+            force: boolean;
+        };
+        PatchedCrmActivityRequest: {
+            account?: number;
+            opportunity?: number | null;
+            /** Tipo */
+            kind?: components["schemas"]["CrmActivityKindEnum"];
+            /**
+             * Fecha
+             * Format: date-time
+             */
+            occurred_at?: string;
+            /** Duración (minutos) */
+            duration_minutes?: number | null;
+            owner?: number | null;
+            team?: number[];
+            contacts?: number[];
+            /** Título */
+            title?: string;
+            /** Descripción */
+            description?: string;
+            /** Resumen */
+            summary?: string;
+            /** Resultado */
+            result?: components["schemas"]["CrmActivityResultEnum"] | components["schemas"]["BlankEnum"];
+            /** Detalle del resultado */
+            result_text?: string;
+            /** Interés posterior */
+            interest_after?: components["schemas"]["CrmInterestEnum"] | components["schemas"]["BlankEnum"];
+            /** Comentarios internos */
+            internal_comments?: string;
+            follow_up?: components["schemas"]["CrmFollowUpRequest"] | null;
+        };
+        PatchedCrmCatalogItemRequest: {
+            /** Tipo */
+            kind?: components["schemas"]["CrmCatalogItemKindEnum"];
+            /** Nombre */
+            name?: string;
+            /** Orden */
+            order?: number;
+            /** Activo */
+            is_active?: boolean;
+        };
+        PatchedCrmContactRequest: {
+            account?: number;
+            /** Nombre */
+            first_name?: string;
+            /** Apellidos */
+            last_name?: string;
+            /** Cargo */
+            position?: string;
+            /** Departamento */
+            department?: number | null;
+            /**
+             * Correo
+             * Format: email
+             */
+            email?: string;
+            /** Teléfono */
+            phone?: string;
+            /** Móvil */
+            mobile?: string;
+            /** Format: uri */
+            linkedin?: string;
+            /** Notas */
+            notes?: string;
+            /** Contacto principal */
+            is_primary?: boolean;
+            /**
+             * Próxima acción
+             * Format: date-time
+             */
+            next_action_at?: string | null;
+            /** @default false */
+            force: boolean;
+        };
+        PatchedCrmContractRequest: {
+            /**
+             * Importe final
+             * Format: decimal
+             */
+            final_amount?: string;
+            /**
+             * Fecha de adjudicación
+             * Format: date
+             */
+            awarded_at?: string;
+            /**
+             * Fecha de inicio
+             * Format: date
+             */
+            start_date?: string | null;
+            /**
+             * Fecha de fin
+             * Format: date
+             */
+            end_date?: string | null;
+            /** Duración (meses) */
+            duration_months?: number | null;
+            product?: number | null;
+            /**
+             * Usuarios
+             * Format: int64
+             */
+            users_count?: number | null;
+            /**
+             * Asociaciones
+             * Format: int64
+             */
+            associations_count?: number | null;
+            /** Número de expediente */
+            file_number?: string;
+            document?: number | null;
+            /**
+             * Fecha de renovación
+             * Format: date
+             */
+            renewal_date?: string | null;
+            /** Notas */
+            notes?: string;
+        };
+        PatchedCrmNoteRequest: {
+            opportunity?: number | null;
+            /** Texto */
+            body?: string;
+            /** Importante */
+            important?: boolean;
+            /** Fijada */
+            pinned?: boolean;
+        };
+        PatchedCrmOpportunityRequest: {
+            account?: number;
+            /** Nombre */
+            name?: string;
+            /** Producto */
+            product?: number | null;
+            /** Descripción */
+            description?: string;
+            owner?: number | null;
+            stage?: number;
+            /** Interés */
+            interest?: components["schemas"]["CrmInterestEnum"];
+            /**
+             * Importe estimado
+             * Format: decimal
+             */
+            estimated_amount?: string | null;
+            /**
+             * Importe de la propuesta
+             * Format: decimal
+             */
+            proposal_amount?: string | null;
+            /**
+             * Fecha prevista de contrato
+             * Format: date
+             */
+            expected_close_date?: string | null;
+            /** Duración prevista (meses) */
+            contract_duration_months?: number | null;
+            /**
+             * Asociaciones
+             * Format: int64
+             */
+            associations_count?: number | null;
+            /**
+             * Usuarios
+             * Format: int64
+             */
+            users_count?: number | null;
+            /**
+             * Profesionales
+             * Format: int64
+             */
+            professionals_count?: number | null;
+            /** Notas */
+            notes?: string;
+            /**
+             * Presupuesto disponible
+             * Format: decimal
+             */
+            available_budget?: string | null;
+            /** Partida presupuestaria */
+            budget_line?: string;
+            /** Financiación */
+            funding?: string;
+            /** Subvención */
+            has_subsidy?: boolean;
+            /** Fondos europeos */
+            eu_funds?: boolean;
+            /** Fondos autonómicos */
+            regional_funds?: boolean;
+            /** Fondos estatales */
+            state_funds?: boolean;
+            /** Número de expediente */
+            file_number?: string;
+            /**
+             * Enlace al expediente
+             * Format: uri
+             */
+            file_url?: string;
+            /** Procedimiento comunicado por la administración */
+            procedure_notes?: string;
+            /**
+             * Fecha prevista de licitación
+             * Format: date
+             */
+            tender_date?: string | null;
+            /**
+             * Fecha límite
+             * Format: date
+             */
+            deadline?: string | null;
+            /** Responsable de contratación */
+            procurement_manager?: string;
+            /** Contacto técnico */
+            technical_contact?: number | null;
+            /** Contacto administrativo */
+            administrative_contact?: number | null;
+            /** Documentos requeridos */
+            required_documents?: string;
+            /** Notas de contratación */
+            procurement_notes?: string;
+            /** Motivo de pérdida */
+            lost_reason?: components["schemas"]["CrmLostReasonEnum"] | components["schemas"]["BlankEnum"];
+            /** Detalle de la pérdida */
+            lost_detail?: string;
+        };
+        PatchedCrmProposalRequest: {
+            /** Número */
+            number?: string;
+            /**
+             * Fecha
+             * Format: date
+             */
+            date?: string;
+            /**
+             * Importe
+             * Format: decimal
+             */
+            amount?: string;
+            /** Duración (meses) */
+            duration_months?: number | null;
+            product?: number | null;
+            document?: number | null;
+            /** Estado */
+            status?: components["schemas"]["CrmProposalStatusEnum"];
+            /** Notas */
+            notes?: string;
+        };
+        PatchedCrmStageRequest: {
+            /** Clave */
+            key?: string;
+            /** Nombre */
+            name?: string;
+            /** Orden */
+            order?: number;
+            /** Tipo */
+            kind?: components["schemas"]["CrmStageKindEnum"];
+            /** Probabilidad */
+            probability?: number;
+            color?: string;
+            /** Activo */
+            is_active?: boolean;
+        };
+        PatchedCrmTaskRequest: {
+            account?: number | null;
+            contact?: number | null;
+            opportunity?: number | null;
+            /** Tipo */
+            kind?: components["schemas"]["CrmActivityKindEnum"];
+            /** Título */
+            title?: string;
+            /** Descripción */
+            description?: string;
+            assignee?: number | null;
+            /**
+             * Vence
+             * Format: date-time
+             */
+            due_at?: string;
+            /** Prioridad */
+            priority?: components["schemas"]["CrmTaskPriorityEnum"];
+            /** Estado */
+            status?: components["schemas"]["CrmTaskStatusEnum"];
+            /**
+             * Recordatorio (minutos antes)
+             * Format: int64
+             */
+            reminder_minutes?: number | null;
         };
         /** @description Serializer personalizado para login que acepta username o email */
         PatchedCustomLoginRequest: {
@@ -13476,9 +16258,11 @@ export interface components {
          *     * `verifier` - Verificador
          *     * `moderator` - Moderador de plataforma
          *     * `support` - Soporte
+         *     * `sales_lead` - Director/a comercial
+         *     * `sales` - Comercial
          * @enum {string}
          */
-        Role636Enum: "superadmin" | "verifier" | "moderator" | "support";
+        Role636Enum: "superadmin" | "verifier" | "moderator" | "support" | "sales_lead" | "sales";
         SaveAsTemplateRequest: {
             name?: string;
         };
@@ -13712,6 +16496,14 @@ export interface components {
             /** Format: date-time */
             responded_at: string | null;
         };
+        /**
+         * @description Cuerpo opcional de `POST /api/support/invitations/`: con `email`,
+         *     Popyplan manda la invitación a ese correo (que no se guarda).
+         */
+        SupportInvitationCreateRequest: {
+            /** Format: email */
+            email?: string;
+        };
         /** @description Única respuesta que lleva el secreto (token y código de un solo uso). */
         SupportInvitationCreated: {
             /** Format: uuid */
@@ -13721,6 +16513,8 @@ export interface components {
             /** Format: date-time */
             expires_at: string;
             deeplink: string;
+            share_url: string;
+            email_sent: boolean;
         };
         /**
          * @description Lo que ve quien abre la invitación antes de decidir: de quién es y qué
@@ -18765,6 +21559,41 @@ export interface operations {
             };
         };
     };
+    communities_join_by_code_preview_retrieve: {
+        parameters: {
+            query: {
+                code: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinByCodePreview"];
+                };
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     communities_my_retrieve: {
         parameters: {
             query?: never;
@@ -19286,6 +22115,2046 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CommunitySubCategory"];
+                };
+            };
+        };
+    };
+    crm_accounts_list: {
+        parameters: {
+            query?: {
+                ordering?: string;
+                owner?: number;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                province?: string;
+                q?: string;
+                region?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+                stage?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCrmAccountListList"];
+                };
+            };
+        };
+    };
+    crm_accounts_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmAccountWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmAccountWriteRequest"];
+                "multipart/form-data": components["schemas"]["CrmAccountWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmAccountDetail"];
+                };
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crm_accounts_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este entidad comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmAccountDetail"];
+                };
+            };
+        };
+    };
+    crm_accounts_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este entidad comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crm_accounts_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este entidad comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCrmAccountWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCrmAccountWriteRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCrmAccountWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmAccountDetail"];
+                };
+            };
+        };
+    };
+    crm_accounts_contacts_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este entidad comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCrmContactList"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmContact"];
+                };
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crm_accounts_contacts_create: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este entidad comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmContactRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmContactRequest"];
+                "multipart/form-data": components["schemas"]["CrmContactRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCrmContactList"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmContact"];
+                };
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crm_accounts_notes_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este entidad comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCrmNoteList"];
+                };
+            };
+        };
+    };
+    crm_accounts_notes_create: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este entidad comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmNoteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmNoteRequest"];
+                "multipart/form-data": components["schemas"]["CrmNoteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCrmNoteList"];
+                };
+            };
+        };
+    };
+    crm_accounts_owner_history_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este entidad comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmAccountList"];
+                };
+            };
+        };
+    };
+    crm_accounts_relations_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este entidad comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCrmAccountRelationList"];
+                };
+            };
+        };
+    };
+    crm_accounts_relations_create: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este entidad comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmAccountRelationRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmAccountRelationRequest"];
+                "multipart/form-data": components["schemas"]["CrmAccountRelationRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCrmAccountRelationList"];
+                };
+            };
+        };
+    };
+    crm_accounts_summary_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este entidad comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmAccountList"];
+                };
+            };
+        };
+    };
+    crm_accounts_timeline_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este entidad comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmAccountList"];
+                };
+            };
+        };
+    };
+    crm_accounts_duplicates_retrieve: {
+        parameters: {
+            query?: {
+                name?: string;
+                place?: string;
+                tax_id?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmAccountList"];
+                };
+            };
+        };
+    };
+    crm_activities_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCrmActivityList"];
+                };
+            };
+        };
+    };
+    crm_activities_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmActivityRequest"];
+                "multipart/form-data": components["schemas"]["CrmActivityRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmActivityRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmActivity"];
+                };
+            };
+        };
+    };
+    crm_activities_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este actividad comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmActivity"];
+                };
+            };
+        };
+    };
+    crm_activities_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este actividad comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crm_activities_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este actividad comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCrmActivityRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCrmActivityRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCrmActivityRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmActivity"];
+                };
+            };
+        };
+    };
+    crm_attention_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    crm_calendar_retrieve: {
+        parameters: {
+            query: {
+                since: string;
+                until: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    crm_catalog_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmCatalogItem"][];
+                };
+            };
+        };
+    };
+    crm_catalog_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmCatalogItemRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmCatalogItemRequest"];
+                "multipart/form-data": components["schemas"]["CrmCatalogItemRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmCatalogItem"];
+                };
+            };
+        };
+    };
+    crm_catalog_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este elemento del catálogo comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCrmCatalogItemRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCrmCatalogItemRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCrmCatalogItemRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmCatalogItem"];
+                };
+            };
+        };
+    };
+    crm_contacts_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCrmContactList"];
+                };
+            };
+        };
+    };
+    crm_contacts_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este contacto comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmContact"];
+                };
+            };
+        };
+    };
+    crm_contacts_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este contacto comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crm_contacts_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este contacto comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCrmContactRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCrmContactRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCrmContactRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmContact"];
+                };
+            };
+        };
+    };
+    crm_contacts_duplicates_retrieve: {
+        parameters: {
+            query?: {
+                email?: string;
+                phone?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmContact"];
+                };
+            };
+        };
+    };
+    crm_contracts_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCrmContractRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCrmContractRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCrmContractRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmContract"];
+                };
+            };
+        };
+    };
+    crm_coverage_retrieve: {
+        parameters: {
+            query?: {
+                level?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    crm_dashboard_retrieve: {
+        parameters: {
+            query?: {
+                period?: string;
+                since?: string;
+                until?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    crm_documents_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCrmDocumentList"];
+                };
+            };
+        };
+    };
+    crm_documents_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["CrmDocumentCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmDocumentCreateRequest"];
+                "application/json": components["schemas"]["CrmDocumentCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmDocument"];
+                };
+            };
+        };
+    };
+    crm_documents_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este documento comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmDocument"];
+                };
+            };
+        };
+    };
+    crm_documents_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este documento comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crm_documents_versions_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este documento comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["CrmFileRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmFileRequest"];
+                "application/json": components["schemas"]["CrmFileRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmDocumentVersion"];
+                };
+            };
+        };
+    };
+    crm_documents_versions_download_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+                version_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crm_export_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resource: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crm_funnel_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    crm_import_commit_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmImportCommitRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmImportCommitRequest"];
+                "multipart/form-data": components["schemas"]["CrmImportCommitRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    crm_import_preview_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["CrmFileRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmFileRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmImportRow"][];
+                };
+            };
+        };
+    };
+    crm_map_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    crm_me_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmMe"];
+                };
+            };
+        };
+    };
+    crm_notes_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crm_notes_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCrmNoteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCrmNoteRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCrmNoteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmNote"];
+                };
+            };
+        };
+    };
+    crm_notifications_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCrmNotificationList"];
+                };
+            };
+        };
+    };
+    crm_notifications_read_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este notification. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmNotificationRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmNotificationRequest"];
+                "multipart/form-data": components["schemas"]["CrmNotificationRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmNotification"];
+                };
+            };
+        };
+    };
+    crm_notifications_read_all_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmNotificationRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmNotificationRequest"];
+                "multipart/form-data": components["schemas"]["CrmNotificationRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmNotification"];
+                };
+            };
+        };
+    };
+    crm_opportunities_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCrmOpportunityList"];
+                };
+            };
+        };
+    };
+    crm_opportunities_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmOpportunityRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmOpportunityRequest"];
+                "multipart/form-data": components["schemas"]["CrmOpportunityRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmOpportunity"];
+                };
+            };
+        };
+    };
+    crm_opportunities_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este oportunidad. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmOpportunity"];
+                };
+            };
+        };
+    };
+    crm_opportunities_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este oportunidad. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crm_opportunities_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este oportunidad. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCrmOpportunityRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCrmOpportunityRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCrmOpportunityRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmOpportunity"];
+                };
+            };
+        };
+    };
+    crm_opportunities_move_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este oportunidad. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmMoveRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmMoveRequest"];
+                "multipart/form-data": components["schemas"]["CrmMoveRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmOpportunity"];
+                };
+            };
+        };
+    };
+    crm_opportunities_proposals_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este oportunidad. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCrmProposalList"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmProposal"];
+                };
+            };
+        };
+    };
+    crm_opportunities_proposals_create: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este oportunidad. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmProposalRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmProposalRequest"];
+                "multipart/form-data": components["schemas"]["CrmProposalRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCrmProposalList"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmProposal"];
+                };
+            };
+        };
+    };
+    crm_opportunities_win_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este oportunidad. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmWinRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmWinRequest"];
+                "multipart/form-data": components["schemas"]["CrmWinRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmContract"];
+                };
+            };
+        };
+    };
+    crm_pipeline_retrieve: {
+        parameters: {
+            query?: {
+                of?: string;
+                per_column?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    crm_proposals_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCrmProposalRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCrmProposalRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCrmProposalRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmProposal"];
+                };
+            };
+        };
+    };
+    crm_relations_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crm_renewals_retrieve: {
+        parameters: {
+            query?: {
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    crm_reports_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    crm_search_retrieve: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    crm_settings_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmSettings"];
+                };
+            };
+        };
+    };
+    crm_settings_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmSettingsRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmSettingsRequest"];
+                "multipart/form-data": components["schemas"]["CrmSettingsRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmSettings"];
+                };
+            };
+        };
+    };
+    crm_stages_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmStage"][];
+                };
+            };
+        };
+    };
+    crm_stages_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmStageRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmStageRequest"];
+                "multipart/form-data": components["schemas"]["CrmStageRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmStage"];
+                };
+            };
+        };
+    };
+    crm_stages_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este fase comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCrmStageRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCrmStageRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCrmStageRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmStage"];
+                };
+            };
+        };
+    };
+    crm_tags_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmTag"][];
+                };
+            };
+        };
+    };
+    crm_tags_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmTagRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmTagRequest"];
+                "multipart/form-data": components["schemas"]["CrmTagRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmTag"];
+                };
+            };
+        };
+    };
+    crm_tasks_list: {
+        parameters: {
+            query?: {
+                bucket?: string;
+                mine?: string;
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCrmTaskList"];
+                };
+            };
+        };
+    };
+    crm_tasks_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmTaskRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrmTaskRequest"];
+                "multipart/form-data": components["schemas"]["CrmTaskRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmTask"];
+                };
+            };
+        };
+    };
+    crm_tasks_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este tarea comercial. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCrmTaskRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCrmTaskRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCrmTaskRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmTask"];
+                };
+            };
+        };
+    };
+    crm_tasks_counts_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmTask"];
+                };
+            };
+        };
+    };
+    crm_team_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    crm_users_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmUserRef"][];
                 };
             };
         };
@@ -27401,7 +32270,13 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["SupportInvitationCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SupportInvitationCreateRequest"];
+                "multipart/form-data": components["schemas"]["SupportInvitationCreateRequest"];
+            };
+        };
         responses: {
             201: {
                 headers: {
