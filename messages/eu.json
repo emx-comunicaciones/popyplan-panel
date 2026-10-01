@@ -3063,6 +3063,7 @@
       "heading": "Harpidetzak",
       "noAccessDescription": "Superadminek eta laguntzak bakarrik ikusten dute plataformaren kontratazioa eta fakturazioa.",
       "chooseOrganization": "Aukeratu erakunde bat…",
+      "organizationsLoadError": "Ezin izan dira erakundeak kargatu. Berrabiarazi orria edo jarri harremanetan Popyplanekin.",
       "tierLabel": "Tartea",
       "chooseTier": "Aukeratu tarte bat…",
       "startsOnLabel": "Hasiera",

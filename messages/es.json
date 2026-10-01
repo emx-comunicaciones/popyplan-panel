@@ -3063,6 +3063,7 @@
       "heading": "Suscripciones",
       "noAccessDescription": "Solo superadmin y support ven la contratación y facturación de plataforma.",
       "chooseOrganization": "Elige una entidad…",
+      "organizationsLoadError": "No se pudieron cargar las entidades. Recarga la página o contacta con Popyplan.",
       "tierLabel": "Tramo",
       "chooseTier": "Elige un tramo…",
       "startsOnLabel": "Inicio",

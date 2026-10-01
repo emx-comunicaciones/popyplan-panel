@@ -3063,6 +3063,7 @@
       "heading": "Subscriptions",
       "noAccessDescription": "Only superadmin and support see platform contracts and billing.",
       "chooseOrganization": "Choose an entity…",
+      "organizationsLoadError": "The entities could not be loaded. Reload the page or contact Popyplan.",
       "tierLabel": "Tier",
       "chooseTier": "Choose a tier…",
       "startsOnLabel": "Start",

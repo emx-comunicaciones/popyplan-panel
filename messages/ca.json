@@ -3063,6 +3063,7 @@
       "heading": "Subscripcions",
       "noAccessDescription": "Només superadmin i suport veuen la contractació i facturació de plataforma.",
       "chooseOrganization": "Tria una entitat…",
+      "organizationsLoadError": "No s'han pogut carregar les entitats. Recarrega la pàgina o contacta amb Popyplan.",
       "tierLabel": "Tram",
       "chooseTier": "Tria un tram…",
       "startsOnLabel": "Inici",
