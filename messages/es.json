@@ -3186,7 +3186,8 @@
       "createAction": "Crear entidad",
       "created": "Entidad «{name}» creada, sin verificar.",
       "slugHint": "Se saca del nombre y va en la dirección web. Puedes cambiarlo.",
-      "slugInvalid": "Solo letras minúsculas sin tildes, números y guiones.",
+      "slugInvalid": "Solo letras sin tildes, números, guiones y guiones bajos.",
+      "slugTooLong": "Demasiado largo: como máximo {max} caracteres.",
       "missing": {
         "intro": "Para crear la entidad falta: {fields}.",
         "name": "el nombre",

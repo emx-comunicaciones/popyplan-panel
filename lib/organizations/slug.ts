@@ -18,7 +18,12 @@ export function slugify(name: string): string {
     .replace(/-+$/g, "");
 }
 
-/** ¿Vale como slug? Letras minúsculas, números y guiones, sin espacios. */
+/**
+ * ¿Vale como slug? Lo mismo que acepta el `SlugField` de Django: letras
+ * (también mayúsculas), números, guiones y guiones bajos, sin espacios.
+ * `slugify` genera la forma canónica, pero a mano el backend admite más y el
+ * panel no debe rechazar lo que él da por bueno.
+ */
 export function isValidSlug(value: string): boolean {
-  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value) && value.length <= SLUG_MAX_LENGTH;
+  return /^[-a-zA-Z0-9_]+$/.test(value) && value.length <= SLUG_MAX_LENGTH;
 }

@@ -3186,7 +3186,8 @@
       "createAction": "Create entity",
       "created": "Entity “{name}” created, not verified.",
       "slugHint": "Taken from the name and used in the web address. You can change it.",
-      "slugInvalid": "Only lowercase letters without accents, numbers and hyphens.",
+      "slugInvalid": "Only letters without accents, numbers, hyphens and underscores.",
+      "slugTooLong": "Too long: at most {max} characters.",
       "missing": {
         "intro": "To create the entity you still need: {fields}.",
         "name": "the name",

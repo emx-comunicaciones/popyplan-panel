@@ -3186,7 +3186,8 @@
       "createAction": "Crear entitat",
       "created": "Entitat «{name}» creada, sense verificar.",
       "slugHint": "Es treu del nom i va a l'adreça web. El pots canviar.",
-      "slugInvalid": "Només lletres minúscules sense accents, números i guionets.",
+      "slugInvalid": "Només lletres sense accents, números, guionets i guions baixos.",
+      "slugTooLong": "Massa llarg: com a màxim {max} caràcters.",
       "missing": {
         "intro": "Per crear l'entitat falta: {fields}.",
         "name": "el nom",

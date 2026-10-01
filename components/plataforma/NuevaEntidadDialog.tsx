@@ -17,7 +17,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { useCreateOrganization, type OrganizationsErrorKind } from "@/hooks/useOrganizations";
 import type { OrgTypeEnum } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
-import { isValidSlug, slugify } from "@/lib/organizations/slug";
+import { SLUG_MAX_LENGTH, isValidSlug, slugify } from "@/lib/organizations/slug";
 
 import { SedeSelector } from "./SedeSelector";
 
@@ -137,9 +137,11 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
             className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           />
           <p id="nueva-entidad-slug-hint" className="mt-1 text-xs text-text-secondary">
-            {slugValue.length > 0 && !slugOk
-              ? t("plataforma.entidades.slugInvalid")
-              : t("plataforma.entidades.slugHint")}
+            {slugValue.length > SLUG_MAX_LENGTH
+              ? t("plataforma.entidades.slugTooLong", { max: SLUG_MAX_LENGTH })
+              : slugValue.length > 0 && !slugOk
+                ? t("plataforma.entidades.slugInvalid")
+                : t("plataforma.entidades.slugHint")}
           </p>
         </div>
         <div>

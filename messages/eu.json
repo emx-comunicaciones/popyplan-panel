@@ -3186,7 +3186,8 @@
       "createAction": "Erakundea sortu",
       "created": "«{name}» erakundea sortuta, egiaztatu gabe.",
       "slugHint": "Izenetik ateratzen da eta web helbidean doa. Alda dezakezu.",
-      "slugInvalid": "Letra xehe azentu gabeak, zenbakiak eta marratxoak bakarrik.",
+      "slugInvalid": "Letra azentu gabeak, zenbakiak, marratxoak eta azpimarrak bakarrik.",
+      "slugTooLong": "Luzeegia: gehienez {max} karaktere.",
       "missing": {
         "intro": "Erakundea sortzeko falta da: {fields}.",
         "name": "izena",
