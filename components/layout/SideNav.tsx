@@ -34,6 +34,9 @@ import { useTranslations } from "next-intl";
 
 import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
 
+/** El corte de `md:` en el CSS (Tailwind: 48rem = 768px). */
+const DESKTOP_QUERY = "(min-width: 48rem)";
+
 export interface SideNavItem {
   href: string;
   label: string;
@@ -62,6 +65,18 @@ export function SideNav({ ariaLabel, items }: SideNavProps) {
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
+  // Al ampliar la ventana a escritorio con el cajón abierto, el CSS ya
+  // muestra la navegación de siempre y esconde el fondo: sin esto `open`
+  // seguía activo y la trampa de foco retenía Tab dentro del menú.
+  useEffect(() => {
+    if (!open || typeof window.matchMedia !== "function") return;
+    const desktop = window.matchMedia(DESKTOP_QUERY);
+    const onChange = (event: { matches: boolean }) => {
+      if (event.matches) setOpen(false);
+    };
+    desktop.addEventListener("change", onChange);
+    return () => desktop.removeEventListener("change", onChange);
+  }, [open]);
 
   return (
     <>
