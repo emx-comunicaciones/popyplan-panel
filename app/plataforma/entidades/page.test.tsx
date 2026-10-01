@@ -113,7 +113,7 @@ describe("PlataformaEntidadesPage", () => {
     await user.click(screen.getByRole("button", { name: "Crear entidad" }));
 
     await waitFor(() =>
-      expect(screen.getByText("Entidad «Asociación Bidasoa» creada, sin verificar.")).toBeInTheDocument(),
+      expect(screen.getByText("Entidad «Asociación Bidasoa» creada y verificada.")).toBeInTheDocument(),
     );
 
     // Segundo intento, que falla: el aviso de la primera alta no puede
@@ -132,8 +132,42 @@ describe("PlataformaEntidadesPage", () => {
 
     await waitFor(() => expect(screen.getByRole("alert")).toBeInTheDocument());
     expect(
-      screen.queryByText("Entidad «Asociación Bidasoa» creada, sin verificar."),
+      screen.queryByText("Entidad «Asociación Bidasoa» creada y verificada."),
     ).not.toBeInTheDocument();
+  });
+
+  it("si el backend devolviera la entidad sin verificar, el aviso no dice «verificada»", async () => {
+    const created = buildOrganization({ id: 13, name: "Asociación Txingudi", is_verified: false });
+    apiFetchMock.mockImplementation(async (path: string, options?: { method?: string }) => {
+      if (path.startsWith("/api/places/")) {
+        return { count: 1, next: null, previous: null, results: [buildPlaceRow()] };
+      }
+      if (options?.method === "POST") return created;
+      return { count: 0, next: null, previous: null, results: [] };
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+    const user = userEvent.setup();
+    const element = await PlataformaEntidadesPage();
+    render(element);
+
+    await user.click(screen.getByRole("button", { name: "Nueva entidad" }));
+    await user.type(screen.getByLabelText("Nombre"), "Asociación Txingudi");
+    await user.type(screen.getByLabelText("CIF"), "G12345679");
+    await user.type(screen.getByLabelText("Buscar un municipio"), "irun");
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Irun (Gipuzkoa) · 20069" })).toBeInTheDocument(),
+    );
+    await user.selectOptions(screen.getByLabelText("Municipio de la sede"), "20069");
+    await user.click(screen.getByRole("button", { name: "Crear entidad" }));
+
+    await waitFor(() =>
+      expect(screen.getByText("Entidad «Asociación Txingudi» creada, pendiente de verificar.")).toBeInTheDocument(),
+    );
+    expect(screen.queryByText(/creada y verificada/)).not.toBeInTheDocument();
   });
 
   it("no deja crear una entidad sin sede", async () => {

@@ -3,9 +3,9 @@
 /**
  * «Nueva entidad» (tarea W5, `docs/SEGURIDAD_Y_MODERACION.md` §8):
  * `POST /api/organizations/ {name, slug, org_type, cif, parent?,
- * description?}`, `verifier`/`superadmin`. Nace sin verificar
- * (`is_verified=false`): verificar es un paso aparte, desde la ficha de
- * la entidad.
+ * description?}`, `verifier`/`superadmin`. Nace ya verificada (la
+ * plataforma es quien da de alta, error 2 de la QA de Jhoan); el botón
+ * «Verificar» de la ficha queda para las que sigan sin verificar.
  */
 import { useId, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
@@ -52,7 +52,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
   const [parent, setParent] = useState<PickerOption | null>(null);
   const [description, setDescription] = useState("");
   const [place, setPlace] = useState<string | null>(null);
-  const [created, setCreated] = useState<string | null>(null);
+  const [created, setCreated] = useState<{ name: string; verified: boolean } | null>(null);
 
   // Sede obligatoria (spec §4.3, «Alta de entidad: sede obligatoria»):
   // `OrganizationCreateInput.place` no es opcional, así que el botón se
@@ -92,7 +92,9 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
       },
       {
         onSuccess: (org) => {
-          setCreated(org.name);
+          // El aviso dice lo que ha devuelto el backend: hoy el alta de
+          // plataforma nace verificada, pero no se da por hecho.
+          setCreated({ name: org.name, verified: org.is_verified });
           setName("");
           setSlug("");
           setSlugEdited(false);
@@ -223,7 +225,9 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
           </p>
         ) : null}
         {created ? (
-          <p className="text-sm text-success">{t("plataforma.entidades.created", { name: created })}</p>
+          <p className="text-sm text-success">{t(created.verified ? "plataforma.entidades.created" : "plataforma.entidades.created_unverified", {
+              name: created.name,
+            })}</p>
         ) : null}
       </form>
     </Dialog>

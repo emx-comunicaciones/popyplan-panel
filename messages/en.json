@@ -2188,14 +2188,14 @@
       "entidades": {
         "title": "Entities",
         "summary": "Every entity that has signed up, verified or not, with search and filters. Signing up and verifying are verifier and superadmin tasks.",
-        "details": "The full directory of entities, verified or not. The list is paginated and filters by verification status and free-text search; the search applies shortly after you stop typing. Signing up a new entity is a verifier/superadmin action, and a new entity is born unverified until someone verifies it from its profile. Open a profile to manage its umbrella, scope, team, metrics and contract.",
+        "details": "The full directory of entities, verified or not. The list is paginated and filters by verification status and free-text search; the search applies shortly after you stop typing. Signing up a new entity is a verifier/superadmin action, and an entity signed up here is born verified (the profile's «Verify» button is for any that are still unverified). Open a profile to manage its umbrella, scope, team, metrics and contract.",
         "actions": [
           "Search and filter by verification",
           "Sign up a new entity (verifier and superadmin)",
           "Open its profile"
         ],
         "tips": [
-          "New entities stay unverified until a verifier or superadmin verifies them.",
+          "Entities you sign up here are born verified: as soon as they have a titleholder, they can create communities and activities.",
           "The search box applies after a short pause while typing."
         ],
         "related": [
@@ -3187,7 +3187,8 @@
       "parentIdLabel": "Umbrella entity (optional)",
       "descriptionLabel": "Description",
       "createAction": "Create entity",
-      "created": "Entity “{name}” created, not verified.",
+      "created": "Entity “{name}” created and verified.",
+      "created_unverified": "Entity “{name}” created, pending verification.",
       "slugHint": "Taken from the name and used in the web address. You can change it.",
       "slugInvalid": "Only letters without accents, numbers, hyphens and underscores.",
       "slugTooLong": "Too long: at most {max} characters.",
