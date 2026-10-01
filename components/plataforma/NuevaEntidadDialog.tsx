@@ -52,7 +52,7 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
   const [parent, setParent] = useState<PickerOption | null>(null);
   const [description, setDescription] = useState("");
   const [place, setPlace] = useState<string | null>(null);
-  const [created, setCreated] = useState<string | null>(null);
+  const [created, setCreated] = useState<{ name: string; verified: boolean } | null>(null);
 
   // Sede obligatoria (spec §4.3, «Alta de entidad: sede obligatoria»):
   // `OrganizationCreateInput.place` no es opcional, así que el botón se
@@ -92,7 +92,9 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
       },
       {
         onSuccess: (org) => {
-          setCreated(org.name);
+          // El aviso dice lo que ha devuelto el backend: hoy el alta de
+          // plataforma nace verificada, pero no se da por hecho.
+          setCreated({ name: org.name, verified: org.is_verified });
           setName("");
           setSlug("");
           setSlugEdited(false);
@@ -223,7 +225,9 @@ export function NuevaEntidadDialog({ onClose }: NuevaEntidadDialogProps) {
           </p>
         ) : null}
         {created ? (
-          <p className="text-sm text-success">{t("plataforma.entidades.created", { name: created })}</p>
+          <p className="text-sm text-success">{t(created.verified ? "plataforma.entidades.created" : "plataforma.entidades.created_unverified", {
+              name: created.name,
+            })}</p>
         ) : null}
       </form>
     </Dialog>

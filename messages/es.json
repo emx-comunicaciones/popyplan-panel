@@ -2195,7 +2195,7 @@
           "Abrir su ficha"
         ],
         "tips": [
-          "Las entidades que das de alta aquí nacen verificadas: pueden crear comunidades y actividades desde el primer momento.",
+          "Las entidades que das de alta aquí nacen verificadas: en cuanto tengan titular, pueden crear comunidades y actividades.",
           "El cuadro de búsqueda se aplica tras una breve pausa mientras tecleas."
         ],
         "related": [
@@ -3188,6 +3188,7 @@
       "descriptionLabel": "Descripción",
       "createAction": "Crear entidad",
       "created": "Entidad «{name}» creada y verificada.",
+      "created_unverified": "Entidad «{name}» creada, pendiente de verificar.",
       "slugHint": "Se saca del nombre y va en la dirección web. Puedes cambiarlo.",
       "slugInvalid": "Solo letras sin tildes, números, guiones y guiones bajos.",
       "slugTooLong": "Demasiado largo: como máximo {max} caracteres.",

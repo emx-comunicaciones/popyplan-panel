@@ -2195,7 +2195,7 @@
           "Open its profile"
         ],
         "tips": [
-          "Entities you sign up here are born verified: they can create communities and activities right away.",
+          "Entities you sign up here are born verified: as soon as they have a titleholder, they can create communities and activities.",
           "The search box applies after a short pause while typing."
         ],
         "related": [
@@ -3188,6 +3188,7 @@
       "descriptionLabel": "Description",
       "createAction": "Create entity",
       "created": "Entity “{name}” created and verified.",
+      "created_unverified": "Entity “{name}” created, pending verification.",
       "slugHint": "Taken from the name and used in the web address. You can change it.",
       "slugInvalid": "Only letters without accents, numbers, hyphens and underscores.",
       "slugTooLong": "Too long: at most {max} characters.",
