@@ -225,6 +225,32 @@ describe("PlataformaMetricasPage", () => {
     expect(screen.getByRole("button", { name: "Exportar CSV" })).toBeEnabled();
   });
 
+  it("pulsar el periodo ya aplicado en el selector del panel no borra el rango inválido del de arriba", async () => {
+    const mutate = vi.fn();
+    useExportMock.mockReturnValue({ mutate, isPending: false, error: null });
+    mockMetricsByGroup({
+      base: buildMetricsResponse(),
+      place: buildMetricsResponse({ by_place: buildByPlaceRows() }),
+      organization: buildMetricsResponse({ by_place: [] }),
+      month: buildMetricsResponse({ series: [] }),
+      year: buildMetricsResponse({ series: [] }),
+    });
+    mockCompare();
+    const user = userEvent.setup();
+
+    await renderPage();
+
+    fireEvent.change(screen.getAllByLabelText("Desde")[0], { target: { value: "2999-01-01" } });
+    expect(screen.getByRole("button", { name: "Exportar CSV" })).toBeDisabled();
+
+    // «Mes» ya es el preset aplicado: en el selector de abajo no cambia
+    // nada, y el de arriba sigue mostrando fechas sin aplicar.
+    await user.click(screen.getAllByRole("button", { name: "Este mes" })[1]);
+
+    expect(screen.getByRole("button", { name: "Exportar CSV" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Exportar PDF" })).toBeDisabled();
+  });
+
   it("el «Personalizado» del panel de exportación no devuelve el dashboard al periodo viejo", async () => {
     const mutate = vi.fn();
     useExportMock.mockReturnValue({ mutate, isPending: false, error: null });

@@ -57,8 +57,9 @@ interface ControlledPeriodProps {
    * Fechas sin aplicar (rango invertido, demasiado largo…) en **cualquiera**
    * de los selectores que comparten el periodo: con el del dashboard en ese
    * estado el periodo aplicado es el anterior y exportar bajaría un rango
-   * distinto del que se ve. Si el dashboard lo lleva, manda sobre el del
-   * propio panel; `onPeriodPendingChange` le avisa de lo que pase aquí.
+   * distinto del que se ve. El del dashboard se suma al del propio panel
+   * (basta que uno lo lleve); `onPeriodPendingChange` es opcional, para
+   * quien quiera enterarse de lo que pase aquí.
    */
   periodPending?: boolean;
   onPeriodPendingChange?: (pending: boolean) => void;
@@ -115,7 +116,7 @@ export function ExportPanel({
   const showScopeSelect = (scopeChoices?.length ?? 0) > 1;
   const effectiveScope = showScopeSelect ? chosenScope : scope;
 
-  const periodPending = sharedPending ?? ownPending;
+  const periodPending = (sharedPending ?? false) || ownPending;
   function handlePendingChange(pending: boolean) {
     setOwnPending(pending);
     onPeriodPendingChange?.(pending);

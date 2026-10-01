@@ -68,8 +68,9 @@ export function PlataformaMetricsDashboard() {
   const t = useTranslations();
   const [preset, setPreset] = useState<PeriodPreset>("mes");
   const [period, setPeriod] = useState<Period>(() => presetPeriod("mes"));
-  // Fechas sin aplicar en el selector de arriba o en el del panel de
-  // exportación (comparten periodo): con cualquiera así, no se exporta.
+  // Fechas sin aplicar en el selector de arriba. El del panel de
+  // exportación lleva el suyo (`ExportPanel` lo suma a este): un solo
+  // estado compartido lo pisaba el selector que se tocara el último.
   const [periodPending, setPeriodPending] = useState(false);
   const [groupBy, setGroupBy] = useState<TableGroupBy>("place");
   const [compareGroupBy, setCompareGroupBy] = useState<PlataformaCompareGroupBy>("province");
@@ -254,7 +255,6 @@ export function PlataformaMetricsDashboard() {
             preset={preset}
             onPeriodChange={handlePeriodChange}
             periodPending={periodPending}
-            onPeriodPendingChange={setPeriodPending}
           />
         </>
       )}
