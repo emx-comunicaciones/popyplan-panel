@@ -38,7 +38,7 @@ import { crmOpportunityHref } from "@/lib/crm/nav";
 
 import { StageBadge } from "../../common";
 import { ContactDialog } from "./AccountDialogs";
-import { EmailLink, FormDialog, MutationError, PageNav, PhoneLink, QueryBoundary, contactFullName, pageCount } from "../shared";
+import { EmailLink, FormDialog, MutationError, PageNav, PhoneLink, QueryBoundary, contactFullName, pageCount, useBackOnMissingPage } from "../shared";
 
 const LIST_PAGE_SIZE = 50;
 const DONE_PAGE_SIZE = 20;
@@ -126,6 +126,7 @@ export function OpportunitiesSection({ accountId }: { accountId: number }) {
   const t = useTranslations("crm.accountDetail.opportunities");
   const [page, setPage] = useState(1);
   const query = useCrmOpportunities({ account: accountId, page, page_size: LIST_PAGE_SIZE });
+  useBackOnMissingPage(query, page, setPage);
   return (
     <QueryBoundary query={query}>
       {(data) =>
@@ -217,6 +218,8 @@ export function TasksSection({ accountId }: { accountId: number }) {
   const [donePage, setDonePage] = useState(1);
   const open = useCrmTasks({ account: accountId, mine: "false", bucket: "open", page: openPage, page_size: LIST_PAGE_SIZE });
   const done = useCrmTasks({ account: accountId, mine: "false", bucket: "done", page: donePage, page_size: DONE_PAGE_SIZE });
+  useBackOnMissingPage(open, openPage, setOpenPage);
+  useBackOnMissingPage(done, donePage, setDonePage);
   return (
     <div className="flex flex-col gap-4">
       <section aria-labelledby="crm-tasks-open" className="flex flex-col gap-2">
@@ -286,6 +289,7 @@ export function DocumentsSection({ accountId }: { accountId: number }) {
   const root = useTranslations();
   const [page, setPage] = useState(1);
   const query = useCrmDocuments({ account: accountId, page, page_size: LIST_PAGE_SIZE });
+  useBackOnMissingPage(query, page, setPage);
   const del = useDeleteDocument();
   const [versioning, setVersioning] = useState<CrmDocument | null>(null);
   const [deleting, setDeleting] = useState<CrmDocument | null>(null);

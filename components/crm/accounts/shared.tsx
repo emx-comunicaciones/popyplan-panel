@@ -6,7 +6,7 @@
  * aviso de duplicados.
  */
 import Link from "next/link";
-import { useId, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useId, useState, type FormEvent, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
@@ -227,6 +227,24 @@ export function QueryBoundary<T>({
     );
   }
   return <>{children(query.data)}</>;
+}
+
+/**
+ * El paginador de DRF responde 404 cuando la página pedida ya no existe
+ * (se borra lo último de la página 2 y la lista encoge): sin esto la
+ * lista se quedaba en el error de `QueryBoundary`, con el paginador
+ * oculto y un «Reintentar» que pide la misma página. Vuelve a la
+ * anterior; si tampoco existe, el error de esa consulta la baja otra.
+ */
+export function useBackOnMissingPage(
+  query: { error: CrmError | null },
+  page: number,
+  setPage: (page: number) => void,
+): void {
+  const missing = page > 1 && query.error?.kind === "no_encontrado";
+  useEffect(() => {
+    if (missing) setPage(page - 1);
+  }, [missing, page, setPage]);
 }
 
 /** Páginas necesarias para `count` filas de `size` en `size`. */
