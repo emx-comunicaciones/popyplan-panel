@@ -1018,6 +1018,8 @@
       "settingsOnlyTitular": "Titularrak bakarrik alda ditzake laguntza-telefonoa eta txandako pertsona.",
       "onCallLabel": "Txandako pertsona",
       "onCallUnassigned": "Esleitu gabe",
+      "onCallVolunteerOption": "{name} (boluntarioa: aplikaziotik soilik)",
+      "onCallVolunteerNotice": "Pertsona hau boluntarioa da eta ezin da panelean sartu: guardia aplikaziotik beteko du, «Txandaren jakinarazpenak» atalean.",
       "onCallLoading": "Erakundearen taldea kargatzen…",
       "onCallOnlyTitular": "Titularrak bakarrik ikus eta alda dezake txandako pertsona.",
       "onCallStale": "Txandan zegoen pertsonak jada ez du rolik erakunde honetan. Gorde esleitu gabe uzteko, edo hautatu beste bat.",

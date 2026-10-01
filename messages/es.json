@@ -1018,6 +1018,8 @@
       "settingsOnlyTitular": "Solo el titular puede cambiar el teléfono de ayuda y la persona de guardia.",
       "onCallLabel": "Persona de guardia",
       "onCallUnassigned": "Sin asignar",
+      "onCallVolunteerOption": "{name} (voluntario/a: solo desde la app)",
+      "onCallVolunteerNotice": "Esta persona es voluntaria y no puede entrar en el panel: atenderá la guardia desde la app, en «Avisos de guardia».",
       "onCallLoading": "Cargando el equipo de la entidad…",
       "onCallOnlyTitular": "Solo el titular puede ver y cambiar la persona de guardia.",
       "onCallStale": "La persona que estaba de guardia ya no tiene rol en esta entidad. Guarda para dejarla sin asignar, o elige a otra.",

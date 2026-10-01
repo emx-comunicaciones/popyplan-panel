@@ -1018,6 +1018,8 @@
       "settingsOnlyTitular": "Només el titular pot canviar el telèfon d'ajuda i la persona de guàrdia.",
       "onCallLabel": "Persona de guàrdia",
       "onCallUnassigned": "Sense assignar",
+      "onCallVolunteerOption": "{name} (voluntari/ària: només des de l'app)",
+      "onCallVolunteerNotice": "Aquesta persona és voluntària i no pot entrar al tauler: atendrà la guàrdia des de l'app, a «Avisos de guàrdia».",
       "onCallLoading": "Carregant l'equip de l'entitat…",
       "onCallOnlyTitular": "Només el titular pot veure i canviar la persona de guàrdia.",
       "onCallStale": "La persona que estava de guàrdia ja no té cap rol en aquesta entitat. Desa per deixar-la sense assignar, o tria'n una altra.",

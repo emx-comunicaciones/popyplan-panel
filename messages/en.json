@@ -1018,6 +1018,8 @@
       "settingsOnlyTitular": "Only the titleholder can change the help phone number and the on-call person.",
       "onCallLabel": "On-call person",
       "onCallUnassigned": "Unassigned",
+      "onCallVolunteerOption": "{name} (volunteer: app only)",
+      "onCallVolunteerNotice": "This person is a volunteer and cannot sign in to the panel: they will handle on-call duty from the app, under “Help requests”.",
       "onCallLoading": "Loading the entity team…",
       "onCallOnlyTitular": "Only the titleholder can see and change the on-call person.",
       "onCallStale": "The person who was on call no longer has a role in this entity. Save to leave it unassigned, or pick someone else.",
