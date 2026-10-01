@@ -99,4 +99,25 @@ describe("SideNav plegable en pantallas pequeñas (error 39)", () => {
     await user.click(screen.getByRole("button", { name: "Cerrar menú" }));
     expect(screen.getByRole("navigation").className).toContain("hidden");
   });
+
+  it("el botón queda por encima del cajón para poder pulsarlo", () => {
+    setPathname("/entidad/bidasoa");
+    render(<SideNav ariaLabel="Menú de la entidad" items={ITEMS} />);
+    // El cajón lleva `z-40` y va después en el DOM: con el mismo nivel lo tapaba.
+    expect(screen.getByRole("button", { name: "Abrir menú" }).className).toContain("z-50");
+  });
+
+  it("abierto, el foco entra en el menú, Escape lo cierra y el foco vuelve al botón", async () => {
+    const { default: userEvent } = await import("@testing-library/user-event");
+    setPathname("/entidad/bidasoa");
+    render(<SideNav ariaLabel="Menú de la entidad" items={ITEMS} />);
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: "Abrir menú" }));
+    expect(screen.getByRole("link", { name: "Inicio" })).toHaveFocus();
+
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("navigation").className).toContain("hidden");
+    expect(screen.getByRole("button", { name: "Abrir menú" })).toHaveFocus();
+  });
 });
