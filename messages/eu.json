@@ -2195,7 +2195,7 @@
           "Bere fitxa ireki"
         ],
         "tips": [
-          "Hemen alta ematen dituzun erakundeak egiaztatuta jaiotzen dira: hasieratik sor ditzakete komunitateak eta jarduerak.",
+          "Hemen alta ematen dituzun erakundeak egiaztatuta jaiotzen dira: titularra dutenean, komunitateak eta jarduerak sor ditzakete.",
           "Bilaketa-kaxak idazten duzun bitartean pausa labur baten ondoren aplikatzen du."
         ],
         "related": [
@@ -3188,6 +3188,7 @@
       "descriptionLabel": "Deskribapena",
       "createAction": "Erakundea sortu",
       "created": "«{name}» erakundea sortuta eta egiaztatuta.",
+      "created_unverified": "«{name}» erakundea sortuta, egiaztatzeko zain.",
       "slugHint": "Izenetik ateratzen da eta web helbidean doa. Alda dezakezu.",
       "slugInvalid": "Letra azentu gabeak, zenbakiak, marratxoak eta azpimarrak bakarrik.",
       "slugTooLong": "Luzeegia: gehienez {max} karaktere.",

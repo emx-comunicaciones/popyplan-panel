@@ -2195,7 +2195,7 @@
           "Obrir la seva fitxa"
         ],
         "tips": [
-          "Les entitats que dones d'alta aquí neixen verificades: poden crear comunitats i activitats des del primer moment.",
+          "Les entitats que dones d'alta aquí neixen verificades: tan aviat com tinguin titular, poden crear comunitats i activitats.",
           "El quadre de cerca s'aplica al cap d'una breu pausa mentre tecleges."
         ],
         "related": [
@@ -3188,6 +3188,7 @@
       "descriptionLabel": "Descripció",
       "createAction": "Crear entitat",
       "created": "Entitat «{name}» creada i verificada.",
+      "created_unverified": "Entitat «{name}» creada, pendent de verificar.",
       "slugHint": "Es treu del nom i va a l'adreça web. El pots canviar.",
       "slugInvalid": "Només lletres sense accents, números, guionets i guions baixos.",
       "slugTooLong": "Massa llarg: com a màxim {max} caràcters.",
