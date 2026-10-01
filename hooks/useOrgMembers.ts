@@ -64,7 +64,10 @@ export function useOrgReferents(
     enabled: options.enabled ?? true,
     queryFn: async () => {
       try {
-        return await apiFetch<OrgReferent[]>(ORGANIZATIONS.MEMBERS_REFERENTS(orgId));
+        const rows = await apiFetch<OrgReferent[]>(ORGANIZATIONS.MEMBERS_REFERENTS(orgId));
+        // Un backend sin el filtro `?role=referente` lo ignora y devuelve el
+        // equipo entero (al titular): se vuelve a filtrar aquí.
+        return rows.filter((row) => row.role === "referente");
       } catch (error) {
         if (error instanceof ApiError && error.status === 403) {
           throw new OrgMembersError("sin_acceso", "Solo titular y moderador pueden ver los referentes.");

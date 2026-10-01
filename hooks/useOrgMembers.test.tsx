@@ -79,6 +79,16 @@ describe("useOrgReferents", () => {
     expect(broken.result.current.error?.message).toBe("No se pudieron cargar los referentes.");
   });
 
+  it("con un backend que ignora ?role=referente, se queda solo con los referentes", async () => {
+    const referent = { id: 3, user: 9, public_name: "Iker R.", role: "referente" as const };
+    apiFetchMock.mockResolvedValueOnce([referent, { id: 4, user: 10, public_name: "Ana T.", role: "titular" }]);
+
+    const { result } = renderHook(() => useOrgReferents(7), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toEqual([referent]);
+  });
+
   it("no pide nada si no está habilitado", () => {
     renderHook(() => useOrgReferents(7, { enabled: false }), { wrapper });
     expect(apiFetchMock).not.toHaveBeenCalled();
