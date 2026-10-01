@@ -181,6 +181,17 @@ entidades normales, `/elegir-entidad`.
 - Access token **solo en memoria** (`lib/auth/tokenStore.ts`, nunca
   localStorage). La cookie httpOnly `pp_session` guarda **el refresh**
   (30 días, rotado y en lista negra en cada uso).
+- **Sesión deslizante de 30 días** (la app móvil, 90): el servidor de Next
+  manda `X-Popyplan-Client: panel` (`lib/auth/panelClient.ts`) en el login
+  (`app/api/session/route.ts`) y en cada refresco (route handler y
+  `middleware.ts`); el backend marca el refresh como `panel` (claim `cl`,
+  30 días) y la rotación lo hereda. Cada rotación devuelve un refresh nuevo
+  con el plazo contado desde ahora, y el `Set-Cookie` de `pp_session` lleva
+  `SESSION_COOKIE_MAX_AGE_SECONDS` (30 días) entero otra vez: si se usa, no
+  caduca; sin uso, 30 días. La cabecera solo la pone el servidor, nunca el
+  navegador. Si cambia el plazo del panel en el backend
+  (`REFRESH_LIFETIME_PANEL_DAYS`), hay que cambiar también la constante de
+  `lib/auth/cookie.ts`.
 - Route handlers: `POST /api/session` (login; también fija `pp_lang` desde
   `preferred_language`), `POST /api/session/refresh` (rota y devuelve
   `/me/` + rol), `DELETE /api/session` (logout best-effort con timeout de
