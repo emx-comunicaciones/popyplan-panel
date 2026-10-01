@@ -38,6 +38,8 @@ export interface QuickActivityPreset {
   account?: { id: number; name: string };
   opportunity?: number | null;
   kind?: string;
+  /** ISO: para apuntar algo de otro día (p. ej. desde el calendario). */
+  occurredAt?: string;
 }
 
 const DRAFT_KEY = "crm-activity-draft";
@@ -49,7 +51,7 @@ export const CRM_REMINDER_LABELS: Record<number, string> = {
   1440: "crm.reminders.m1440",
   2880: "crm.reminders.m2880",
 };
-const REMINDERS = [0, 15, 60, 1440, 2880];
+export const CRM_REMINDERS = [0, 15, 60, 1440, 2880];
 export const CRM_ERROR_KEYS = {
   sin_acceso: "errors.crm.sinAcceso",
   invalido: "errors.crm.invalido",
@@ -107,6 +109,7 @@ export function QuickActivityDialog({
     preset.account ? { id: preset.account.id, label: preset.account.name } : null,
   );
   const [kind, setKind] = useState(preset.kind ?? "visit");
+  const [occurredAt, setOccurredAt] = useState(() => toLocalInput(preset.occurredAt ?? new Date().toISOString()));
   const [contact, setContact] = useState<number | "">("");
   const [result, setResult] = useState("");
   const [summary, setSummary] = useState(() => readDraft());
@@ -163,6 +166,7 @@ export function QuickActivityDialog({
         account: account.id,
         opportunity: preset.opportunity ?? null,
         kind: kind as never,
+        occurred_at: fromLocalInput(occurredAt) ?? undefined,
         contacts: contact ? [contact] : [],
         result: (result || undefined) as never,
         summary,
@@ -240,6 +244,18 @@ export function QuickActivityDialog({
                 </option>
               ))}
             </select>
+          </div>
+          <div>
+            <label htmlFor="crm-quick-when" className={crmLabelClass}>
+              {t("crm.quick.when")}
+            </label>
+            <input
+              id="crm-quick-when"
+              type="datetime-local"
+              value={occurredAt}
+              onChange={(e) => setOccurredAt(e.target.value)}
+              className={crmInputClass}
+            />
           </div>
           <div>
             <label htmlFor="crm-quick-contact" className={crmLabelClass}>
@@ -376,7 +392,7 @@ export function QuickActivityDialog({
                   {t("crm.quick.reminder")}
                 </label>
                 <select id="crm-follow-reminder" value={reminder} onChange={(e) => setReminder(Number(e.target.value))} className={crmInputClass}>
-                  {REMINDERS.map((m) => (
+                  {CRM_REMINDERS.map((m) => (
                     <option key={m} value={m}>
                       {t(CRM_REMINDER_LABELS[m])}
                     </option>

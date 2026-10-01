@@ -4422,7 +4422,8 @@
       "followPriority": "Priority",
       "reminder": "Reminder",
       "assignee": "Responsible",
-      "uploadFailed": "The activity was saved, but these files could not be uploaded: {files}"
+      "uploadFailed": "The activity was saved, but these files could not be uploaded: {files}",
+      "when": "When"
     },
     "reminders": {
       "m0": "At the time",

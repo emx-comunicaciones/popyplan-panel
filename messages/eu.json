@@ -4422,7 +4422,8 @@
       "followPriority": "Lehentasuna",
       "reminder": "Gogorarazpena",
       "assignee": "Arduraduna",
-      "uploadFailed": "Jarduera gorde da, baina fitxategi hauek ezin izan dira igo: {files}"
+      "uploadFailed": "Jarduera gorde da, baina fitxategi hauek ezin izan dira igo: {files}",
+      "when": "Noiz"
     },
     "reminders": {
       "m0": "Unean bertan",

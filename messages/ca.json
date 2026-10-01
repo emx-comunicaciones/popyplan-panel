@@ -4422,7 +4422,8 @@
       "followPriority": "Prioritat",
       "reminder": "Recordatori",
       "assignee": "Responsable",
-      "uploadFailed": "L'activitat s'ha desat, però no s'han pogut pujar aquests fitxers: {files}"
+      "uploadFailed": "L'activitat s'ha desat, però no s'han pogut pujar aquests fitxers: {files}",
+      "when": "Quan"
     },
     "reminders": {
       "m0": "En el moment",

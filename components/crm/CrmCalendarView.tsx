@@ -255,7 +255,7 @@ export function CrmCalendarView({ isManager, userId }: CrmCalendarViewProps) {
           ) : (
             <p className="text-sm text-text-secondary">{t("crm.calendar.emptyDay")}</p>
           )}
-          <DayActions onActivity={() => openActivity()} onTask={() => setTaskDate(ymd(days[0]))} />
+          <DayActions onActivity={() => openActivity({ occurredAt: `${ymd(days[0])}T09:00:00` })} onTask={() => setTaskDate(ymd(days[0]))} />
         </div>
       ) : (
         <>
@@ -292,7 +292,7 @@ export function CrmCalendarView({ isManager, userId }: CrmCalendarViewProps) {
                       ))}
                     </ul>
                   ) : null}
-                  {view === "week" ? <DayActions onActivity={() => openActivity()} onTask={() => setTaskDate(key)} /> : null}
+                  {view === "week" ? <DayActions onActivity={() => openActivity({ occurredAt: `${key}T09:00:00` })} onTask={() => setTaskDate(key)} /> : null}
                 </div>
               );
             })}

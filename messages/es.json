@@ -4422,7 +4422,8 @@
       "followPriority": "Prioridad",
       "reminder": "Recordatorio",
       "assignee": "Responsable",
-      "uploadFailed": "La actividad se ha guardado, pero no se pudieron subir estos ficheros: {files}"
+      "uploadFailed": "La actividad se ha guardado, pero no se pudieron subir estos ficheros: {files}",
+      "when": "Cuándo"
     },
     "reminders": {
       "m0": "En el momento",

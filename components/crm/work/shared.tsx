@@ -17,7 +17,7 @@ import { crmInputClass, crmLabelClass } from "../common";
 export const CRM_PAGE_SIZE = 25;
 export const CRM_MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 /** Recordatorios disponibles (minutos antes), en el orden del desplegable. */
-export const CRM_REMINDER_MINUTES = [0, 15, 60, 1440, 2880];
+export { CRM_REMINDERS as CRM_REMINDER_MINUTES } from "../QuickActivityDialog";
 
 /** Texto de error de una mutación o consulta del CRM (el `detail` del backend manda). */
 export function useCrmErrorText(): (error: CrmError | null | undefined) => string {
