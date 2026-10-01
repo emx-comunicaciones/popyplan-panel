@@ -421,9 +421,9 @@ export type ReportRow = components["schemas"]["Report"];
 
 /** `GET /api/safety/reports/{id}/` (§4): añade `target` sobre `Report`. */
 /**
- * `where` todavía no sale en el `target` de un reporte (el contrato no lo
- * añade): cuando el backend lo sirva lo usa el detalle; mientras, se
- * deduce de `community_display` (ver `ReporteDetail`).
+ * El esquema incluye `where` en el `target` de publicaciones y comentarios.
+ * Si una respuesta lo omite, el detalle usa `community_display` como
+ * alternativa (ver `ReporteDetail`).
  */
 export type ReportTarget = components["schemas"]["ReportTarget"] & { where?: PostWhere };
 export type ReportDetail = Omit<components["schemas"]["ReportDetail"], "target"> & { target: ReportTarget };
