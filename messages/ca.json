@@ -30,7 +30,8 @@
       "moderador": "Moderador/a",
       "dinamizador": "Dinamitzador/a",
       "analista": "Analista",
-      "referente": "Referent"
+      "referente": "Referent",
+      "voluntario": "Voluntari/ària"
     },
     "communityRole": {
       "owner": "Propietari/ària",
@@ -1132,6 +1133,16 @@
       "proposeSubmit": "Proposar",
       "proposing": "Proposant…",
       "proposed": "Objectiu proposat."
+    },
+    "rolesHelp": {
+      "summary": "Què pot fer cada rol?",
+      "titular": "Responsable de l'entitat. Ho pot fer tot: a més del que fa la moderació, és l'únic rol que gestiona l'equip (donar i treure rols) i la facturació.",
+      "moderador": "Porta el dia a dia: tot el tauler, crear comunitats amb el segell de l'entitat, moderar informes de denúncia, atendre avisos d'ajuda, enviar comunicacions, gestionar programes i el programa de seguiment, i exportar informes. No gestiona l'equip ni la facturació.",
+      "dinamizador": "Organitza activitats i dinamitza les comunitats: publica activitats, passa llista i porta enquestes i biblioteca. No veu la llista de persones ni les seves fitxes, ni denúncies, comunicacions, informes o configuració.",
+      "analista": "Només xifres: veu l'inici del tauler, els programes i els informes, i els pot exportar. Mai veu noms de persones ni publica activitats.",
+      "referente": "Acompanya les persones que l'entitat li assigna. Al tauler només veu aquestes persones: la seva fitxa, les seves activitats i la seva xarxa de suport. Si són al programa de seguiment, veu el que cadascuna decideix compartir i li pot proposar objectius. També pot publicar activitats.",
+      "voluntario": "Dona un cop de mà a les activitats des de l'app: les pot publicar amb el segell de l'entitat. No entra al tauler.",
+      "onCall": "A part del rol, qualsevol persona de l'equip pot ser la persona de guàrdia (s'escull a Configuració): rep els avisos de «avui ho porto malament» i veu la secció Guàrdia."
     }
   },
   "people": {

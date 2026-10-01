@@ -59,6 +59,7 @@ import {
 } from "@/hooks/useUpdateOrganization";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 import { ORG_ROLE_LABEL_KEYS, ORG_TYPE_LABEL_KEYS, enumLabel } from "@/lib/i18n/enumLabels";
+import { RolesHelp } from "@/components/entidad/RolesHelp";
 import { localeForUseLocale } from "@/lib/i18n/locale";
 import { formatCount, formatPct } from "@/lib/metrics/format";
 import { presetPeriod } from "@/lib/metrics/period";
@@ -635,6 +636,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
             </Button>
           </form>
         ) : null}
+        {canManage ? <RolesHelp /> : null}
         {/* Dentro de `canManage`: sin el formulario no hay manera de
             disparar la mutación, así que fuera era una rama muerta. */}
         {canManage && addMember.isError ? (
