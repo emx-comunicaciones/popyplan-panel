@@ -21,6 +21,11 @@ export function buildMetricsResponse(overrides: Partial<MetricsResponse> = {}): 
       suppressed: false,
     },
     communities: { active: 2, members: 4, suppressed: false },
+    help: {
+      requests: 5, people: 5, attended: 3, pending: 2, contacted: 2,
+      referent_notified: 1, network_responded: 1, median_response_minutes: 10,
+      suppressed: false,
+    },
     by_place: [],
     by_weekday_hour: [],
     series: [],

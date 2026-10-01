@@ -30,7 +30,8 @@
       "moderador": "Moderator",
       "dinamizador": "Facilitator",
       "analista": "Analyst",
-      "referente": "Referent"
+      "referente": "Referent",
+      "voluntario": "Volunteer"
     },
     "communityRole": {
       "owner": "Owner",
@@ -1132,6 +1133,16 @@
       "proposeSubmit": "Propose",
       "proposing": "Proposing…",
       "proposed": "Goal proposed."
+    },
+    "rolesHelp": {
+      "summary": "What can each role do?",
+      "titular": "Person responsible for the entity. Can do everything: on top of what moderators do, it is the only role that manages the team (granting and removing roles) and billing.",
+      "moderador": "Runs the day-to-day: the whole panel, creating communities under the entity's seal, moderating reports, handling help requests, sending announcements, managing programmes and the follow-up programme, and exporting reports. Does not manage the team or billing.",
+      "dinamizador": "Organises activities and keeps communities going: publishes activities, takes attendance and handles surveys and the library. Does not see the people list or their records, reports, announcements, exports or settings.",
+      "analista": "Numbers only: sees the panel home, programmes and reports, and can export them. Never sees people's names or publishes activities.",
+      "referente": "Supports the people the entity assigns to them. In the panel they only see those people: their record, their activities and their support network. If they are in the follow-up programme, they see what each person chooses to share and can suggest goals. Can also publish activities.",
+      "voluntario": "Helps out with activities from the app: can publish them under the entity's seal. Has no panel access.",
+      "onCall": "Regardless of role, anyone on the team can be the on-call person (chosen in Settings): they receive \"I'm having a hard day\" requests and see the On-call section."
     }
   },
   "people": {
@@ -2681,6 +2692,18 @@
       "communities": "Communities",
       "organizationsBasedHere": "Entities based here",
       "noNamesNotice": "This sheet only shows aggregates: never the names of people or of the entities based here."
+    },
+    "help": {
+      "heading": "On-call services",
+      "description": "\"I'm having a bad day\" alerts in the period and what was done about them. Below 5 people they show as \"<5\".",
+      "requests": "Alerts received",
+      "attended": "Attended",
+      "pending": "Not attended",
+      "medianResponse": "Response time (median)",
+      "contacted": "People written to",
+      "referentNotified": "Referents notified",
+      "networkResponded": "Answered by the support network",
+      "people": "People who asked for help"
     }
   },
   "plataforma": {
@@ -3368,6 +3391,7 @@
         "reviewReceived": "Review received",
         "reportResolved": "Report resolved",
         "helpRequest": "Help request",
+        "helpReferent": "Help alert for a referent",
         "accountSuspended": "Account suspended",
         "survey": "Survey",
         "supportHelpRequest": "Support network: help request",

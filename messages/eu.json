@@ -30,7 +30,8 @@
       "moderador": "Moderatzailea",
       "dinamizador": "Dinamizatzailea",
       "analista": "Analista",
-      "referente": "Erreferentea"
+      "referente": "Erreferentea",
+      "voluntario": "Boluntarioa"
     },
     "communityRole": {
       "owner": "Jabea",
@@ -1132,6 +1133,16 @@
       "proposeSubmit": "Proposatu",
       "proposing": "Proposatzen…",
       "proposed": "Helburua proposatuta."
+    },
+    "rolesHelp": {
+      "summary": "Zer egin dezake rol bakoitzak?",
+      "titular": "Erakundearen arduraduna. Dena egin dezake: moderazioak egiten duenaz gain, taldea (rolak eman eta kendu) eta fakturazioa kudeatzen dituen rol bakarra da.",
+      "moderador": "Eguneroko lana darama: panel osoa, erakundearen zigiluarekin komunitateak sortu, salaketak moderatu, laguntza-abisuei erantzun, komunikazioak bidali, programak eta jarraipen-programa kudeatu, eta txostenak esportatu. Ez ditu taldea ez fakturazioa kudeatzen.",
+      "dinamizador": "Jarduerak antolatu eta komunitateak dinamizatzen ditu: jarduerak argitaratu, asistentzia pasatu eta inkestak eta liburutegia eraman. Ez ditu pertsonen zerrenda ez fitxak ikusten, ezta salaketak, komunikazioak, txostenak edo ezarpenak ere.",
+      "analista": "Zifrak bakarrik: panelaren hasiera, programak eta txostenak ikusten ditu, eta esporta ditzake. Ez ditu inoiz pertsonen izenak ikusten ez jarduerak argitaratzen.",
+      "referente": "Erakundeak esleitzen dizkion pertsonak laguntzen ditu. Panelean pertsona horiek bakarrik ikusten ditu: haien fitxa, jarduerak eta laguntza-sarea. Jarraipen-programan badaude, bakoitzak partekatzea erabakitzen duena ikusten du eta helburuak proposa diezazkieke. Jarduerak ere argitara ditzake.",
+      "voluntario": "Aplikaziotik jardueretan laguntzen du: erakundearen zigiluarekin argitara ditzake. Ez da panelean sartzen.",
+      "onCall": "Rolaz aparte, taldeko edozein pertsona izan daiteke guardiako pertsona (Konfigurazioan aukeratzen da): «gaur gaizki nago» abisuak jasotzen ditu eta Txanda atala ikusten du."
     }
   },
   "people": {
@@ -2681,6 +2692,18 @@
       "communities": "Komunitateak",
       "organizationsBasedHere": "Hemen egoitza duten erakundeak",
       "noNamesNotice": "Fitxa honek datu agregatuak baino ez ditu erakusten: inoiz ez pertsonen izenak, ezta hemen egoitza duten erakundeenak ere."
+    },
+    "help": {
+      "heading": "Txandaren zerbitzuak",
+      "description": "Aldiko «gaur gaizki nago» abisuak eta haiekin egindakoa. 5 pertsonatik behera «<5» ageri da.",
+      "requests": "Jasotako abisuak",
+      "attended": "Artatuak",
+      "pending": "Artatu gabeak",
+      "medianResponse": "Erantzuteko denbora (mediana)",
+      "contacted": "Idatzi zaien pertsonak",
+      "referentNotified": "Abisatutako erreferenteak",
+      "networkResponded": "Laguntza-sareak erantzunak",
+      "people": "Laguntza eskatu duten pertsonak"
     }
   },
   "plataforma": {
@@ -3368,6 +3391,7 @@
         "reviewReceived": "Iritzia jasoa",
         "reportResolved": "Salaketa ebatzia",
         "helpRequest": "Laguntza eskaera",
+        "helpReferent": "Laguntza-abisua erreferenteari",
         "accountSuspended": "Kontua etena",
         "survey": "Inkesta",
         "supportHelpRequest": "Laguntza sarea: laguntza eskaera",

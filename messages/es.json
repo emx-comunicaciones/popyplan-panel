@@ -30,7 +30,8 @@
       "moderador": "Moderador/a",
       "dinamizador": "Dinamizador/a",
       "analista": "Analista",
-      "referente": "Referente"
+      "referente": "Referente",
+      "voluntario": "Voluntario/a"
     },
     "communityRole": {
       "owner": "Propietario/a",
@@ -1132,6 +1133,16 @@
       "proposeSubmit": "Proponer",
       "proposing": "Proponiendo…",
       "proposed": "Objetivo propuesto."
+    },
+    "rolesHelp": {
+      "summary": "¿Qué puede hacer cada rol?",
+      "titular": "Responsable de la entidad. Puede hacerlo todo: además de lo que hace moderación, es el único rol que gestiona el equipo (dar y quitar roles) y la facturación.",
+      "moderador": "Lleva el día a día: todo el panel, crear comunidades con el sello de la entidad, moderar reportes, atender avisos de ayuda, enviar comunicaciones, gestionar programas y el programa de seguimiento, y exportar informes. No gestiona el equipo ni la facturación.",
+      "dinamizador": "Organiza actividades y anima las comunidades: publica actividades, pasa asistencia y lleva encuestas y biblioteca. No ve la lista de personas ni sus fichas, ni reportes, comunicaciones, informes o configuración.",
+      "analista": "Solo cifras: ve el inicio del panel, los programas y los informes, y puede exportarlos. Nunca ve nombres de personas ni publica actividades.",
+      "referente": "Acompaña a las personas que la entidad le asigna. En el panel solo ve a esas personas: su ficha, sus actividades y su red de apoyo. Si están en el programa de seguimiento, ve lo que cada una decide compartir y puede proponerle objetivos. También puede publicar actividades.",
+      "voluntario": "Echa una mano en las actividades desde la app: puede publicarlas con el sello de la entidad. No entra en el panel.",
+      "onCall": "Aparte del rol, cualquier persona del equipo puede ser la persona de guardia (se elige en Configuración): recibe los avisos de «hoy lo llevo mal» y ve la sección Guardia."
     }
   },
   "people": {
@@ -2681,6 +2692,18 @@
       "communities": "Comunidades",
       "organizationsBasedHere": "Entidades con sede aquí",
       "noNamesNotice": "Esta ficha solo muestra agregados: nunca nombres de personas ni de las entidades con sede aquí."
+    },
+    "help": {
+      "heading": "Servicios de la guardia",
+      "description": "Avisos de «hoy lo llevo mal» del periodo y qué se hizo con ellos. Por debajo de 5 personas se muestran como «<5».",
+      "requests": "Avisos recibidos",
+      "attended": "Atendidos",
+      "pending": "Sin atender",
+      "medianResponse": "Tiempo de respuesta (mediana)",
+      "contacted": "Personas a las que se escribió",
+      "referentNotified": "Referentes avisados",
+      "networkResponded": "Respondidos por la red de apoyo",
+      "people": "Personas que pidieron ayuda"
     }
   },
   "plataforma": {
@@ -3368,6 +3391,7 @@
         "reviewReceived": "Reseña recibida",
         "reportResolved": "Reporte resuelto",
         "helpRequest": "Petición de ayuda",
+        "helpReferent": "Aviso de ayuda al referente",
         "accountSuspended": "Cuenta suspendida",
         "survey": "Encuesta",
         "supportHelpRequest": "Red de apoyo: petición de ayuda",

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 
-import { formatCount, formatPct } from "./format";
+import { formatCount, formatMinutes, formatPct } from "./format";
 
 const originalHtmlLang = document.documentElement.lang;
 afterEach(() => {
@@ -65,4 +65,18 @@ describe("formatPct", () => {
       expect(formatPct(0.75)).toBe("75,0 %");
     },
   );
+});
+
+describe("formatMinutes", () => {
+  it("minutos, horas y horas con minutos", () => {
+    expect(formatMinutes(10)).toBe("10 min");
+    expect(formatMinutes(9.6)).toBe("10 min");
+    expect(formatMinutes(120)).toBe("2 h");
+    expect(formatMinutes(95)).toBe("1 h 35 min");
+  });
+
+  it("suprimido «<5»; sin atendidos «—»", () => {
+    expect(formatMinutes(null, true)).toBe("<5");
+    expect(formatMinutes(null)).toBe("—");
+  });
 });

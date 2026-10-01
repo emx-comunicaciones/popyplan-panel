@@ -26,6 +26,7 @@ import { useUpdateOrganization } from "@/hooks/useUpdateOrganization";
 import type { OrgMembershipFull, OrgMembershipRole, Reference } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 import { ORG_ROLE_LABEL_KEYS, enumLabel } from "@/lib/i18n/enumLabels";
+import { RolesHelp } from "./RolesHelp";
 import { isValidPhone } from "@/lib/organizations/phone";
 import {
   LOGO_ALLOWED_EXTENSIONS,
@@ -381,6 +382,7 @@ function Equipo({ orgId, currentUserId }: { orgId: number | string; currentUserI
           {t("entidad.configuracion.addButton")}
         </Button>
       </form>
+      <RolesHelp />
       {addMember.isError ? (
         <p role="alert" className="mb-2 text-sm text-error">
           {errorKindText(addMember.error, ADD_ORG_MEMBER_ERROR_KEYS, t, "errors.addOrgMember.desconocido")}
