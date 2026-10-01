@@ -562,8 +562,12 @@ function AmbitoTab({ orgId, role }: { orgId: number | string; role: string | nul
  */
 function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role: string | null }) {
   const t = useTranslations();
-  const canManage = canManageTeamFromPlatform(platformRole);
   const members = useOrgMembers(orgId);
+  // Con titular puesto, el backend cierra el equipo (y las referencias) a la
+  // plataforma con un 403: decir «también puedes cambiarlos tú» y ofrecer
+  // formularios que no pueden funcionar era el error 15 del informe.
+  const teamClosed = members.isError;
+  const canManage = canManageTeamFromPlatform(platformRole) && !teamClosed;
   const addMember = useAddOrgMember(orgId);
   const removeMember = useRemoveOrgMember(orgId);
   const references = useOrgReferences(orgId);
@@ -586,9 +590,11 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
   return (
     <div className="flex flex-col gap-4">
       <p className="text-xs text-text-secondary">
-        {canManage
-          ? t("plataforma.entidadFicha.teamManageableNotice")
-          : t("plataforma.entidadFicha.teamReadOnlyNotice")}
+        {teamClosed
+          ? t("plataforma.entidadFicha.teamClosedNotice")
+          : canManage
+            ? t("plataforma.entidadFicha.teamManageableNotice")
+            : t("plataforma.entidadFicha.teamReadOnlyNotice")}
       </p>
 
       <Card title={t("plataforma.entidadFicha.teamCardTitle")}>

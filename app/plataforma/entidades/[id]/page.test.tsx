@@ -324,6 +324,30 @@ describe("PlataformaEntidadDetailPage", () => {
     expect(await screen.findByText(/Titular asignado/)).toBeInTheDocument();
   });
 
+  it("Equipo: si el backend cierra el equipo a la plataforma (403), no dice que se pueda cambiar ni ofrece formularios (error 15)", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") return buildOrganization({ id: 9, name: "Entidad Con Titular" });
+      if (path.includes("/members/") || path.includes("/references/")) {
+        throw new ApiError(403, { detail: "Solo el titular gestiona el equipo." });
+      }
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const user = userEvent.setup();
+    render(await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) }));
+    await user.click(screen.getByRole("button", { name: "Equipo" }));
+
+    expect(await screen.findByText(/Esta entidad ya tiene titular: el equipo y las referencias los gestiona su titular/)).toBeInTheDocument();
+    expect(screen.queryByText(/también puedes cambiarlos tú/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Añadir" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Asignar" })).not.toBeInTheDocument();
+  });
+
   it("Equipo: con titular el superadmin ve todos los roles y no el aviso del primer titular", async () => {
     apiFetchMock.mockImplementation(async (path: string) => {
       if (path === "/api/organizations/9/") return buildOrganization({ id: 9, name: "Entidad Con Titular" });

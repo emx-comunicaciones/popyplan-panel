@@ -3227,6 +3227,7 @@
       "scopeSuccess": "Afegits {added} municipis (àmbit total: {total}).",
       "teamManageableNotice": "L'equip i les referències els gestiona normalment el titular de l'entitat; des de plataforma també els pots canviar tu.",
       "teamReadOnlyNotice": "L'equip i les referències els gestiona el titular de l'entitat. El teu rol de plataforma no gestiona l'equip des d'aquí: el pots consultar, no canviar.",
+      "teamClosedNotice": "Aquesta entitat ja té titular: l'equip i les referències les gestiona el seu titular; des de la plataforma no es veuen ni es canvien.",
       "teamCardTitle": "Equip",
       "addAction": "Afegir",
       "teamEmpty": "Encara no hi ha equip",
