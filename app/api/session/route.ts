@@ -147,7 +147,7 @@ export async function DELETE(request: NextRequest) {
       headers: {
         "Content-Type": "application/json",
         ...panelClientHeaders(),
-      ...forwardedForHeaders(request),
+        ...forwardedForHeaders(request),
         ...requestLanguageHeader(request),
       },
       body: JSON.stringify({ refresh }),

@@ -82,7 +82,7 @@ async function rotate(refresh: string, request: NextRequest): Promise<RefreshRes
       headers: {
         "Content-Type": "application/json",
         ...panelClientHeaders(),
-      ...forwardedForHeaders(request),
+        ...forwardedForHeaders(request),
         ...requestLanguageHeader(request),
       },
       body: JSON.stringify({ refresh }),
