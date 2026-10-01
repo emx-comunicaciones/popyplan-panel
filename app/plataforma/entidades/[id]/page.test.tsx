@@ -346,6 +346,31 @@ describe("PlataformaEntidadDetailPage", () => {
     expect(screen.queryByText(/también puedes cambiarlos tú/)).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Añadir" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Asignar" })).not.toBeInTheDocument();
+    // Y no pinta debajo las tarjetas vacías con «Sin acceso» (pasada del 01-10):
+    // el aviso de arriba ya dice que el equipo no se ve desde plataforma.
+    expect(screen.queryByText("Sin acceso")).not.toBeInTheDocument();
+    expect(screen.queryByText("Solo el titular gestiona el equipo.")).not.toBeInTheDocument();
+    expect(screen.queryByText(/No se pudieron cargar los referentes/)).not.toBeInTheDocument();
+  });
+
+  it("Ámbito: una administración no tiene la pestaña, su territorio va en Datos (pasada del 01-10)", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") {
+        return buildOrganization({ id: 9, name: "Ayuntamiento de Irun", org_type: "administracion" });
+      }
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    render(await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) }));
+
+    expect(await screen.findByText("Territorio declarado")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Equipo" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Ámbito" })).not.toBeInTheDocument();
   });
 
   it("Equipo: con titular el superadmin ve todos los roles y no el aviso del primer titular", async () => {

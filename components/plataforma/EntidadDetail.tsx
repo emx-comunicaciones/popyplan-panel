@@ -140,12 +140,6 @@ const REMOVE_ORG_MEMBER_ERROR_KEYS: Record<OrgMembersErrorKind, string> = {
   desconocido: "errors.removeOrgMember.desconocido",
 };
 
-const ORG_MEMBERS_QUERY_ERROR_KEYS: Record<OrgMembersErrorKind, string> = {
-  invalido: "errors.orgMembers.desconocido",
-  sin_acceso: "errors.orgMembers.sinAcceso",
-  desconocido: "errors.orgMembers.desconocido",
-};
-
 const CREATE_ORG_REFERENCE_ERROR_KEYS: Record<OrgReferencesErrorKind, string> = {
   invalido: "errors.createOrgReference.invalido",
   desconocido: "errors.createOrgReference.desconocido",
@@ -596,14 +590,28 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
       : t("entidad.configuracion.referentNoName");
   }
 
+  // Equipo cerrado (ya tiene titular): el aviso lo explica y no se pintan
+  // debajo dos tarjetas vacías con «Sin acceso» (pasada del 01-10). Solo
+  // queda el «Titular asignado» de quien acaba de dar el primero.
+  if (teamClosed) {
+    return (
+      <div className="flex flex-col gap-4">
+        <p className="text-xs text-text-secondary">{t("plataforma.entidadFicha.teamClosedNotice")}</p>
+        {addMember.isSuccess ? (
+          <p role="status" className="text-sm text-success">
+            {t("plataforma.entidadFicha.firstTitularAssigned")}
+          </p>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <p className="text-xs text-text-secondary">
-        {teamClosed
-          ? t("plataforma.entidadFicha.teamClosedNotice")
-          : canManage
-            ? t("plataforma.entidadFicha.teamManageableNotice")
-            : t("plataforma.entidadFicha.teamReadOnlyNotice")}
+        {canManage
+          ? t("plataforma.entidadFicha.teamManageableNotice")
+          : t("plataforma.entidadFicha.teamReadOnlyNotice")}
       </p>
 
       <Card title={t("plataforma.entidadFicha.teamCardTitle")}>
@@ -660,19 +668,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
           </p>
         ) : null}
 
-        {members.isError && addMember.isSuccess ? (
-          // Recién asignado el primer titular, el superadmin deja de poder
-          // ver el equipo (lo gestiona ya el titular): se dice, en vez de un
-          // «sin acceso» que parece un fallo.
-          <p role="status" className="text-sm text-success">
-            {t("plataforma.entidadFicha.firstTitularAssigned")}
-          </p>
-        ) : members.isError ? (
-          <EmptyState
-            title={t("common.noAccess")}
-            description={errorKindText(members.error, ORG_MEMBERS_QUERY_ERROR_KEYS, t, "errors.orgMembers.desconocido")}
-          />
-        ) : !members.data ? (
+        {!members.data ? (
           <p className="text-sm text-text-secondary">{t("common.loading")}</p>
         ) : members.data.length === 0 ? (
           <EmptyState title={t("plataforma.entidadFicha.teamEmpty")} />
@@ -1061,12 +1057,20 @@ function ContratoTab({ orgId }: { orgId: number | string }) {
 export function EntidadDetail({ orgId, role }: EntidadDetailProps) {
   const t = useTranslations();
   const [section, setSection] = useState<Section>("datos");
+  // Misma consulta que «Datos» (caché compartida, sin petición extra).
+  const organization = useOrganization(orgId);
+  // El ámbito de actuación (`POST /scope/`) es de asociaciones y ONG: a una
+  // administración el backend le responde 403, porque su territorio se
+  // declara en «Datos» (pasada del 01-10).
+  const sections = SECTIONS.filter(
+    (value) => value !== "ambito" || organization.data?.org_type !== "administracion",
+  );
 
   return (
     <div className="flex flex-col gap-4">
       <fieldset className="flex flex-wrap items-center gap-2">
         <legend className="sr-only">{t("plataforma.entidadFicha.sectionsLegend")}</legend>
-        {SECTIONS.map((value) => (
+        {sections.map((value) => (
           <Button
             key={value}
             type="button"
@@ -1081,7 +1085,7 @@ export function EntidadDetail({ orgId, role }: EntidadDetailProps) {
 
       {section === "datos" ? <DatosTab orgId={orgId} role={role} /> : null}
       {section === "paraguas" ? <ParaguasTab orgId={orgId} role={role} /> : null}
-      {section === "ambito" ? <AmbitoTab orgId={orgId} role={role} /> : null}
+      {section === "ambito" && sections.includes("ambito") ? <AmbitoTab orgId={orgId} role={role} /> : null}
       {section === "equipo" ? <EquipoTab orgId={orgId} role={role} /> : null}
       {section === "metricas" ? <MetricasTab orgId={orgId} /> : null}
       {section === "comunidades" ? <ComunidadesTab orgId={orgId} /> : null}
