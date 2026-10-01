@@ -160,7 +160,11 @@ export async function POST(request: NextRequest) {
     // (`status === 200` con `ok: false` es un cuerpo ilegible, p. ej. HTML de un proxy.)
     const transient = (result: { ok: boolean; status: number } | null) =>
       !result || (!result.ok && (result.status >= 500 || result.status === 200));
-    if (transient(meResult) || transient(roleResult)) {
+    // Un rechazo definitivo de una consulta no lo tapa el fallo de la otra:
+    // va a la rotación, que decide si la sesión rechazada sigue valiendo.
+    const rejected = (result: { ok: boolean; status: number } | null) =>
+      !!result && !result.ok && (result.status === 401 || result.status === 403);
+    if ((transient(meResult) || transient(roleResult)) && !rejected(meResult) && !rejected(roleResult)) {
       return NextResponse.json({ detail: "No se pudo completar el refresco." }, { status: 503 });
     }
     // Si el backend lo rechaza (401/403: p. ej. cuenta suspendida), se sigue
