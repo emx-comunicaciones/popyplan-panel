@@ -31,6 +31,7 @@ export function buildHelpRequest(overrides: Partial<HelpRequestRow> = {}): HelpR
     organization_display: { id: 7, name: "Asociación Vecinal Alfaville" },
     acknowledged_by: null,
     acknowledged_at: null,
+    referent_notified_at: null,
     created_at: "2026-09-01T18:30:00Z",
     // `docs/PANEL.md` §14.4 (tarea 1 del plan de red de apoyo): solo los
     // apoyos que ya respondieron «me encargo»; vacío por defecto, como el

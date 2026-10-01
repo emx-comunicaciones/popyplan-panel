@@ -16,11 +16,14 @@ describe("slugify", () => {
 });
 
 describe("isValidSlug", () => {
-  it("acepta minúsculas, números y guiones sueltos", () => {
-    expect(isValidSlug("ayto-irun-2")).toBe(true);
-  });
+  it.each(["ayto-irun-2", "asociacion_2026", "Ayto-Irun", "a".repeat(SLUG_MAX_LENGTH)])(
+    "acepta lo que acepta el SlugField del backend: %s",
+    (valor) => {
+      expect(isValidSlug(valor)).toBe(true);
+    },
+  );
 
-  it.each(["", "Ayto", "ayto irun", "-ayto", "ayto--irun", "a".repeat(SLUG_MAX_LENGTH + 1)])("rechaza %s", (valor) => {
+  it.each(["", "ayto irun", "ayto/irun", "irún", "a".repeat(SLUG_MAX_LENGTH + 1)])("rechaza %s", (valor) => {
     expect(isValidSlug(valor)).toBe(false);
   });
 });

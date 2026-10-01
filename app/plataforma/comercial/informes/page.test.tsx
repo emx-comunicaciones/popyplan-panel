@@ -119,6 +119,14 @@ describe("Informes del CRM", () => {
     expect(downloadMock.mock.calls[0][1]).toMatchObject({ owner: 43 });
   });
 
+  it("la exportación lleva el mismo periodo que el informe en pantalla", async () => {
+    downloadMock.mockResolvedValue(undefined);
+    await renderPage();
+    await screen.findByText("Resumen de actividad");
+    await userEvent.click(screen.getByRole("button", { name: "Exportar actividades (CSV)" }));
+    expect(downloadMock.mock.calls[0][1]).toMatchObject({ period: "month" });
+  });
+
   it("si la exportación falla avisa", async () => {
     downloadMock.mockRejectedValue(new Error("x"));
     await renderPage();

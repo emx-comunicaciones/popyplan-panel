@@ -11,6 +11,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import {
   useAddOrgMember,
   useOrgMembers,
+  useOrgReferents,
   useRemoveOrgMember,
   type OrgMembersErrorKind,
 } from "@/hooks/useOrgMembers";
@@ -507,7 +508,7 @@ function ReferentName({
   referentMembershipId: number;
 }) {
   const t = useTranslations();
-  const members = useOrgMembers(orgId);
+  const members = useOrgReferents(orgId);
   // Los tres estados se distinguen: mientras el equipo carga, «sin
   // nombre» sería mentira (todavía puede aparecer), y si la consulta
   // falla, la referencia sí tiene referente pero no se ha podido
@@ -527,7 +528,7 @@ function ReferentName({
 
 /**
  * Referente de una referencia: alguien del equipo con rol `referente`.
- * Solo el titular puede leer el equipo (`Referencias` no lo monta si no).
+ * Sale de `?role=referente`, que pueden leer titular y moderador.
  */
 function ReferentSelect({
   orgId,
@@ -539,7 +540,7 @@ function ReferentSelect({
   onChange: (value: string) => void;
 }) {
   const t = useTranslations();
-  const team = useOrgMembers(orgId);
+  const team = useOrgReferents(orgId);
   return (
     <div>
       <label htmlFor="referencia-referent-id" className="mb-1 block text-sm font-medium text-text-form">
@@ -552,9 +553,7 @@ function ReferentSelect({
         className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
       >
         <option value="">{t("entidad.configuracion.chooseReferent")}</option>
-        {team.data
-          ?.filter((member) => member.role === "referente")
-          .map((member) => (
+        {team.data?.map((member) => (
             <option key={member.user} value={String(member.user)}>
               {member.public_name}
             </option>
@@ -767,20 +766,16 @@ function Ambito({ orgId }: { orgId: number | string }) {
  * `entities/permissions.py:14`, `'equipo': {'titular'}`): GET de miembros
  * del equipo exige rol `titular`, así que un `moderador` vería la sección
  * siempre en error (403) — Equipo se pinta solo con rol `titular`.
- * `moderador` sigue viendo el resto (Datos, Referencias y Ámbito). Hueco
- * relacionado, no resuelto aquí: los selects de referente de
- * `AddPersonDialog.tsx`/`PersonSheet.tsx::AssignReferentForm` usan
- * `useOrgMembers` (que exige el mismo permiso de equipo), así que un
- * `moderador` los verá vacíos salvo «Sin referente» —con el aviso «No se
- * pudieron cargar los referentes.» debajo, que al menos distingue el
- * fallo de una entidad sin referentes.
+ * `moderador` sigue viendo el resto (Datos, Referencias y Ámbito). Los
+ * selects de referente (aquí, `AddPersonDialog` y la ficha) salen de
+ * `useOrgReferents` (`?role=referente`), que titular y moderador sí leen.
  */
 export function ConfiguracionPanel({ orgId, role, currentUserId }: ConfiguracionPanelProps) {
   return (
     <div className="flex flex-col gap-4">
       <DatosEntidad orgId={orgId} />
       {role === "titular" ? <Equipo orgId={orgId} currentUserId={currentUserId} /> : null}
-      <Referencias orgId={orgId} canSeeTeam={role === "titular"} />
+      <Referencias orgId={orgId} canSeeTeam={role === "titular" || role === "moderador"} />
       <Ambito orgId={orgId} />
     </div>
   );

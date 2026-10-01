@@ -8,7 +8,7 @@
  * paso—. Lo demás se completa luego desde la actividad.
  *
  * El resumen se guarda como borrador en el navegador mientras se escribe
- * (`sessionStorage`, por si se cierra el diálogo sin querer) y se borra al
+ * (`sessionStorage`, una clave por cuenta, por si se cierra el diálogo sin querer) y se borra al
  * guardar. Los adjuntos se suben después de crear la actividad, ligados a
  * ella; si alguno falla, la actividad ya está guardada y se dice cuál.
  */
@@ -42,7 +42,8 @@ export interface QuickActivityPreset {
   occurredAt?: string;
 }
 
-const DRAFT_KEY = "crm-activity-draft";
+/** El borrador es de cada cuenta: otra persona en la misma pestaña no lo ve. */
+const draftKey = (userId: number) => `crm-activity-draft:${userId}`;
 /** Recordatorio (punto 15): minutos antes → clave de su texto. */
 export const CRM_REMINDER_LABELS: Record<number, string> = {
   0: "crm.reminders.m0",
@@ -60,18 +61,20 @@ export const CRM_ERROR_KEYS = {
   desconocido: "errors.crm.desconocido",
 } as const;
 
-function readDraft(): string {
+function readDraft(userId: number): string {
   try {
-    return window.sessionStorage.getItem(DRAFT_KEY) ?? "";
+    // Clave antigua (sin cuenta): se borra para que no quede texto ajeno.
+    window.sessionStorage.removeItem("crm-activity-draft");
+    return window.sessionStorage.getItem(draftKey(userId)) ?? "";
   } catch {
     return "";
   }
 }
 
-function writeDraft(value: string) {
+function writeDraft(userId: number, value: string) {
   try {
-    if (value) window.sessionStorage.setItem(DRAFT_KEY, value);
-    else window.sessionStorage.removeItem(DRAFT_KEY);
+    if (value) window.sessionStorage.setItem(draftKey(userId), value);
+    else window.sessionStorage.removeItem(draftKey(userId));
   } catch {
     // Sin almacenamiento (modo privado): el borrador simplemente no se guarda.
   }
@@ -112,7 +115,7 @@ export function QuickActivityDialog({
   const [occurredAt, setOccurredAt] = useState(() => toLocalInput(preset.occurredAt ?? new Date().toISOString()));
   const [contact, setContact] = useState<number | "">("");
   const [result, setResult] = useState("");
-  const [summary, setSummary] = useState(() => readDraft());
+  const [summary, setSummary] = useState(() => readDraft(userId));
   const [interest, setInterest] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [followUp, setFollowUp] = useState(true);
@@ -135,7 +138,7 @@ export function QuickActivityDialog({
   const upload = useUploadDocument();
   const Recognition = speechRecognition();
 
-  useEffect(() => writeDraft(summary), [summary]);
+  useEffect(() => writeDraft(userId, summary), [userId, summary]);
   useEffect(() => () => recognitionRef.current?.stop(), []);
 
   function toggleDictation() {
@@ -200,7 +203,7 @@ export function QuickActivityDialog({
         failed.push(file.name);
       }
     }
-    writeDraft("");
+    writeDraft(userId, "");
     if (failed.length) {
       setUploadFailed(failed);
       return;

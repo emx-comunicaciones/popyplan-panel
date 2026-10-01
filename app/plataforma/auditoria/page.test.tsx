@@ -83,7 +83,8 @@ describe("PlataformaAuditoriaPage", () => {
     expect(screen.queryByText(/#0/)).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Exportar CSV de esta página" }));
     const [blob] = triggerDownloadMock.mock.calls[0];
-    expect(await (blob as Blob).text()).toContain("Oculto (privado)");
+    // Actor, tipo de objetivo e id llevan la marca también en el CSV.
+    expect(((await (blob as Blob).text()).match(/Oculto \(privado\)/g) ?? []).length).toBe(3);
   });
 
   it("la exportación CSV neutraliza las celdas que parecen una fórmula", async () => {

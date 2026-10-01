@@ -26,6 +26,13 @@ vi.mock("@/hooks/useOrganization", () => ({ useOrganization: useOrganizationMock
 vi.mock("@/hooks/useUpdateOrganization", () => ({ useUpdateOrganization: useUpdateOrganizationMock }));
 vi.mock("@/hooks/useOrgMembers", () => ({
   useOrgMembers: useOrgMembersMock,
+  // `?role=referente` en el backend: lo mismo que el equipo, solo referentes.
+  useOrgReferents: (...args: Parameters<typeof useOrgMembersMock>) => {
+    // La implementación, no el mock: así `useOrgMembersMock` solo cuenta
+    // las lecturas del equipo completo.
+    const result = useOrgMembersMock.getMockImplementation()?.(...args);
+    return { ...result, data: result?.data?.filter((m: { role: string }) => m.role === "referente") };
+  },
   useAddOrgMember: useAddOrgMemberMock,
   useRemoveOrgMember: useRemoveOrgMemberMock,
 }));
@@ -619,7 +626,7 @@ describe("EntidadConfiguracionPage", () => {
     expect(scopeMutate).toHaveBeenCalledWith({ comarca: "vega-alta" });
   });
 
-  it("moderador no ve la sección Equipo (GET de equipo solo titular) pero sí el resto", async () => {
+  it("moderador no ve la sección Equipo (GET de equipo solo titular) pero sí el resto, referentes incluidos", async () => {
     setDefaultMocks();
 
     await renderPage("moderador");
@@ -627,9 +634,9 @@ describe("EntidadConfiguracionPage", () => {
     expect(screen.queryByRole("button", { name: "Añadir" })).not.toBeInTheDocument();
     expect(useOrgMembersMock).not.toHaveBeenCalled();
     expect(screen.getAllByLabelText("Persona").length).toBeGreaterThan(0);
-    // Sin poder leer el equipo no hay a quién elegir de referente: se dice.
-    expect(screen.queryByLabelText("Referente")).not.toBeInTheDocument();
-    expect(screen.getByText(/Solo el titular puede ver el equipo/)).toBeInTheDocument();
+    // Los referentes salen de `?role=referente`, que el moderador sí lee.
+    expect(screen.getByLabelText("Referente")).toBeInTheDocument();
+    expect(screen.queryByText(/Solo el titular puede ver el equipo/)).not.toBeInTheDocument();
     expect(screen.getByLabelText("Códigos INE, separados por coma")).toBeInTheDocument();
   });
 

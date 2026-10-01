@@ -196,6 +196,11 @@ function ContratosTab({ canManage, onViewInvoices }: ContratosTabProps) {
               </option>
             ))}
           </select>
+          {organizations.isError ? (
+            <p role="alert" className="mt-1 text-sm text-error">
+              {t("plataforma.contratos.organizationsLoadError")}
+            </p>
+          ) : null}
         </div>
         <div>
           <label htmlFor="contratos-filter-status" className="mb-1 block text-sm font-medium text-text-form">

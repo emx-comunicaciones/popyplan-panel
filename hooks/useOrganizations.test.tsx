@@ -211,6 +211,15 @@ describe("useAllOrganizations", () => {
     expect(result.current.data?.count).toBe(3);
   });
 
+  it("con el tope de páginas alcanzado y más por delante, falla en vez de truncar", async () => {
+    apiFetchMock.mockResolvedValue({ count: 2000, next: "x?page=n", previous: null, results: [ORG] });
+    const { result } = renderHook(() => useAllOrganizations(), { wrapper });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error).toBeInstanceOf(OrganizationsError);
+    expect(result.current.error?.message).toMatch(/demasiadas entidades/);
+    expect(apiFetchMock).toHaveBeenCalledTimes(50);
+  });
+
   it("si una página falla, el error es el del listado", async () => {
     apiFetchMock.mockRejectedValueOnce(new Error("boom"));
     const { result } = renderHook(() => useAllOrganizations(), { wrapper });

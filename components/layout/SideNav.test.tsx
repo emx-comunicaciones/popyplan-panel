@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { act } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { render, screen } from "@/test-utils/render";
 import { setPathname } from "@/test-utils/nextNavigationMock";
@@ -98,5 +99,78 @@ describe("SideNav plegable en pantallas pequeñas (error 39)", () => {
 
     await user.click(screen.getByRole("button", { name: "Cerrar menú" }));
     expect(screen.getByRole("navigation").className).toContain("hidden");
+  });
+
+  it("el botón queda por encima del cajón para poder pulsarlo", () => {
+    setPathname("/entidad/bidasoa");
+    render(<SideNav ariaLabel="Menú de la entidad" items={ITEMS} />);
+    // El cajón lleva `z-40` y va después en el DOM: con el mismo nivel lo tapaba.
+    expect(screen.getByRole("button", { name: "Abrir menú" }).className).toContain("z-50");
+  });
+
+  it("abierto, el foco entra en el menú, Escape lo cierra y el foco vuelve al botón", async () => {
+    const { default: userEvent } = await import("@testing-library/user-event");
+    setPathname("/entidad/bidasoa");
+    render(<SideNav ariaLabel="Menú de la entidad" items={ITEMS} />);
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: "Abrir menú" }));
+    expect(screen.getByRole("link", { name: "Inicio" })).toHaveFocus();
+
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("navigation").className).toContain("hidden");
+    expect(screen.getByRole("button", { name: "Abrir menú" })).toHaveFocus();
+  });
+
+  describe("al pasar a escritorio con el cajón abierto", () => {
+    afterEach(() => {
+      Reflect.deleteProperty(window, "matchMedia");
+    });
+
+    /** `matchMedia` falso: guarda los oyentes para disparar el cambio a mano. */
+    function stubMatchMedia() {
+      const listeners = new Set<(event: { matches: boolean }) => void>();
+      const queries: string[] = [];
+      window.matchMedia = ((query: string) => {
+        queries.push(query);
+        return {
+          matches: false,
+          media: query,
+          addEventListener: (_: string, listener: (event: { matches: boolean }) => void) => listeners.add(listener),
+          removeEventListener: (_: string, listener: (event: { matches: boolean }) => void) =>
+            listeners.delete(listener),
+        };
+      }) as unknown as typeof window.matchMedia;
+      return {
+        queries,
+        resize: (matches: boolean) => act(() => listeners.forEach((listener) => listener({ matches }))),
+      };
+    }
+
+    it("se cierra el cajón y se libera el foco (Tab ya no queda atrapado)", async () => {
+      const { default: userEvent } = await import("@testing-library/user-event");
+      const media = stubMatchMedia();
+      setPathname("/entidad/bidasoa");
+      render(<SideNav ariaLabel="Menú de la entidad" items={ITEMS} />);
+      const user = userEvent.setup();
+
+      await user.click(screen.getByRole("button", { name: "Abrir menú" }));
+      expect(screen.getByRole("button", { name: "Cerrar menú" })).toHaveAttribute("aria-expanded", "true");
+      // El mismo corte que `md:` en el CSS (768px).
+      expect(media.queries).toContain("(min-width: 48rem)");
+
+      // Todavía en móvil: nada cambia.
+      media.resize(false);
+      expect(screen.getByRole("button", { name: "Cerrar menú" })).toBeInTheDocument();
+
+      media.resize(true);
+
+      expect(screen.getByRole("button", { name: "Abrir menú" })).toHaveAttribute("aria-expanded", "false");
+      expect(screen.getByRole("navigation").className).toContain("hidden");
+      // Sin trampa: Tab desde el último enlace sale del menú en vez de volver al primero.
+      screen.getByRole("link", { name: "Comunidades" }).focus();
+      await user.tab();
+      expect(screen.getByRole("navigation")).not.toContainElement(document.activeElement as HTMLElement);
+    });
   });
 });

@@ -1188,7 +1188,7 @@
       "analista": "Només xifres: veu l'inici del tauler, els programes i els informes, i els pot exportar. Mai veu noms de persones ni publica activitats.",
       "referente": "Acompanya les persones que l'entitat li assigna. Al tauler només veu aquestes persones: la seva fitxa, les seves activitats i la seva xarxa de suport. Si són al programa de seguiment, veu el que cadascuna decideix compartir i li pot proposar objectius. També pot publicar activitats.",
       "voluntario": "Dona un cop de mà a les activitats des de l'app: les pot publicar amb el segell de l'entitat. No entra al tauler.",
-      "onCall": "A part del rol, qualsevol persona de l'equip pot ser la persona de guàrdia (s'escull a Configuració): rep els avisos de «avui ho porto malament» i veu la secció Guàrdia."
+      "onCall": "A part del rol, qualsevol persona de l'equip pot ser la persona de guàrdia (s'escull a Configuració) i rep els avisos de «avui ho porto malament». Veu la secció Guàrdia tret que el seu rol sigui Voluntari/ària, perquè els voluntaris no entren al tauler."
     }
   },
   "people": {
@@ -3063,6 +3063,7 @@
       "heading": "Subscripcions",
       "noAccessDescription": "Només superadmin i suport veuen la contractació i facturació de plataforma.",
       "chooseOrganization": "Tria una entitat…",
+      "organizationsLoadError": "No s'han pogut carregar les entitats. Recarrega la pàgina o contacta amb Popyplan.",
       "tierLabel": "Tram",
       "chooseTier": "Tria un tram…",
       "startsOnLabel": "Inici",
@@ -3186,7 +3187,8 @@
       "createAction": "Crear entitat",
       "created": "Entitat «{name}» creada, sense verificar.",
       "slugHint": "Es treu del nom i va a l'adreça web. El pots canviar.",
-      "slugInvalid": "Només lletres minúscules sense accents, números i guionets.",
+      "slugInvalid": "Només lletres sense accents, números, guionets i guions baixos.",
+      "slugTooLong": "Massa llarg: com a màxim {max} caràcters.",
       "missing": {
         "intro": "Per crear l'entitat falta: {fields}.",
         "name": "el nom",
@@ -5659,6 +5661,12 @@
           "state": "Fons estatals",
           "none": "Cap comunicat"
         }
+      },
+      "pagination": {
+        "label": "Pàgines",
+        "previous": "Anterior",
+        "next": "Següent",
+        "page": "Pàgina {page} de {pages}"
       }
     }
   }

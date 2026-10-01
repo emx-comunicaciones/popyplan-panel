@@ -344,7 +344,8 @@ describe("PlataformaComercialEntidadFichaPage", () => {
   it("documentos: «Ver» abre la última versión en línea", async () => {
     route();
     fetchWithAuthMock.mockResolvedValue({ blob: async () => new Blob(["x"]), headers: new Headers() });
-    const open = vi.spyOn(window, "open").mockReturnValue(null);
+    const tab = { opener: {} as unknown, location: { href: "" }, close: vi.fn() };
+    const open = vi.spyOn(window, "open").mockReturnValue(tab as unknown as Window);
     URL.createObjectURL = vi.fn(() => "blob:x");
     const user = userEvent.setup();
     await renderPage();
@@ -353,7 +354,43 @@ describe("PlataformaComercialEntidadFichaPage", () => {
     await user.click(screen.getByRole("button", { name: "Ver Propuesta Popyplan" }));
     await waitFor(() => expect(open).toHaveBeenCalled());
     expect(fetchWithAuthMock).toHaveBeenCalledWith("/api/crm/documents/500/versions/501/download/?inline=1");
+    await waitFor(() => expect(tab.location.href).toBe("blob:x"));
     open.mockRestore();
+  });
+
+  it("documentos: si el navegador bloquea la pestaña, lo dice", async () => {
+    route();
+    const open = vi.spyOn(window, "open").mockReturnValue(null);
+    const user = userEvent.setup();
+    await renderPage();
+    await user.click(await screen.findByRole("button", { name: "Documentos" }));
+    await user.click(await screen.findByRole("button", { name: "Ver Propuesta Popyplan" }));
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(fetchWithAuthMock).not.toHaveBeenCalled();
+    open.mockRestore();
+  });
+
+  it("las listas con más de una página dejan llegar al resto (documentos, tareas, oportunidades)", async () => {
+    const many = <T,>(items: T[], total: number) => (path: string) => {
+      const page = Number(new URL(path, "http://x").searchParams.get("page") ?? "1");
+      return { count: total, next: null, previous: null, results: page === 1 ? items : [] };
+    };
+    route({
+      "/api/crm/documents/": many([buildCrmDocument()], 120),
+      "/api/crm/tasks/": (path) => (path.includes("bucket=done") ? paginated([]) : many([buildCrmTask()], 70)(path)),
+      "/api/crm/opportunities/": many([buildCrmOpportunity()], 51),
+    });
+    const user = userEvent.setup();
+    await renderPage();
+    await user.click(await screen.findByRole("button", { name: "Documentos" }));
+    expect(await screen.findByText("Página 1 de 3")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Siguiente" }));
+    expect(await screen.findByText("Página 2 de 3")).toBeInTheDocument();
+    expect(calls().some((p) => p.startsWith("/api/crm/documents/") && p.includes("page=2"))).toBe(true);
+    await user.click(screen.getByRole("button", { name: "Tareas" }));
+    expect(await screen.findByText("Página 1 de 2")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Oportunidades" }));
+    expect(await screen.findByText("Página 1 de 2")).toBeInTheDocument();
   });
 
   it("tareas: separa abiertas y completadas y permite cancelar", async () => {

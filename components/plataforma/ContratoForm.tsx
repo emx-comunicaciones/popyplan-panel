@@ -122,6 +122,11 @@ export function ContratoForm({ editing, onDone }: ContratoFormProps) {
             {editing.organization.name}
           </p>
         )}
+        {editing === "new" && organizations.isError ? (
+          <p role="alert" className="mt-1 text-sm text-error">
+            {t("plataforma.contratos.organizationsLoadError")}
+          </p>
+        ) : null}
       </div>
 
       <div>

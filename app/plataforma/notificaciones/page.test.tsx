@@ -157,7 +157,8 @@ describe("PlataformaNotificacionesPage", () => {
     await screen.findByText("Aviso de reporte");
     await userEvent.click(screen.getByRole("button", { name: "Nueva plantilla" }));
     const tipos = within(within(screen.getByRole("dialog")).getByLabelText("Tipo")).getAllByRole("option");
-    expect(tipos).toHaveLength(17);
+    expect(tipos).toHaveLength(18);
+    expect(within(within(screen.getByRole("dialog")).getByLabelText("Tipo")).getByRole("option", { name: "Aviso de ayuda al referente" })).toBeInTheDocument();
   });
 
   it("a todas: avisa de que incluye al personal y, encolado, lo dice", async () => {

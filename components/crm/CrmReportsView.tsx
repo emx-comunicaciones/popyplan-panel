@@ -49,7 +49,7 @@ export function CrmReportsView({ isManager }: CrmReportsViewProps) {
     setExporting(resource);
     setExportError(false);
     try {
-      await downloadCrmExport(resource, filterParams(filters));
+      await downloadCrmExport(resource, { ...periodParams(period.applied), ...filterParams(filters) });
     } catch {
       setExportError(true);
     } finally {

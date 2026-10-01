@@ -302,10 +302,12 @@ describe("apiFetch: escrituras idénticas en vuelo (informe, error 13)", () => {
   it("agrupa también FormData idénticos y no agrupa lecturas", async () => {
     setAccessToken("token-vivo");
     fetchMock.mockResolvedValue(response({ id: 1 }, 201));
+    // El doble clic reenvía el mismo `File` del `<input>`.
+    const file = new File(["x"], "a.pdf", { lastModified: 1 });
     const form = () => {
       const f = new FormData();
       f.append("title", "t");
-      f.append("file", new File(["x"], "a.pdf", { lastModified: 1 }));
+      f.append("file", file);
       return f;
     };
     await Promise.all([
@@ -316,6 +318,35 @@ describe("apiFetch: escrituras idénticas en vuelo (informe, error 13)", () => {
 
     fetchMock.mockClear();
     await Promise.all([apiFetch("/api/r/"), apiFetch("/api/r/")]);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("dos ficheros distintos con el mismo nombre, tamaño y fecha no se confunden", async () => {
+    setAccessToken("token-vivo");
+    fetchMock.mockResolvedValue(response({ id: 1 }, 201));
+    const form = (content: string) => {
+      const f = new FormData();
+      f.append("file", new File([content], "a.pdf", { lastModified: 1 }));
+      return f;
+    };
+    await Promise.all([
+      apiFetch("/api/r/", { method: "POST", body: form("x") }),
+      apiFetch("/api/r/", { method: "POST", body: form("y") }),
+    ]);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("una escritura idéntica de otra cuenta no reutiliza la promesa de la anterior", async () => {
+    setAccessToken("token-ana");
+    fetchMock.mockImplementation(async (_url: string, init: { headers: Record<string, string> }) =>
+      response({ as: init.headers.Authorization }, 201),
+    );
+    const first = apiFetch("/api/x/", { method: "POST", body: { name: "A" } });
+    setAccessToken("token-bea");
+    const second = apiFetch("/api/x/", { method: "POST", body: { name: "A" } });
+
+    expect(await first).toEqual({ as: "Bearer token-ana" });
+    expect(await second).toEqual({ as: "Bearer token-bea" });
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 

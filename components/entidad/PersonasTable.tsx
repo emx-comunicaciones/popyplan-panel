@@ -16,7 +16,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useInvitations } from "@/hooks/useInvitations";
 import { usePeople } from "@/hooks/usePeople";
 import { useEntityCommunities } from "@/hooks/useEntityCommunities";
-import { useOrgMembers } from "@/hooks/useOrgMembers";
+import { useOrgReferents } from "@/hooks/useOrgMembers";
 import { useResendInvitation } from "@/hooks/useResendInvitation";
 import { useRevokeInvitation } from "@/hooks/useRevokeInvitation";
 import type { InvitedPersonRow } from "@/lib/api/types";
@@ -107,7 +107,63 @@ function PendingInvitationsHint({ orgId }: { orgId: number | string }) {
  * («Invitada (pendiente)») al final de la página, con «Reenviar»/
  * «Revocar» (solo `canManage`).
  */
-export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
+export function PersonasTable(props: PersonasTableProps) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const query = buildPersonasQuery(parsePersonasQuery(searchParams));
+  // Consultas que la propia tabla ha escrito en la URL y aún no han llegado
+  // por `useSearchParams` (el `replace` es asíncrono).
+  const pending = useRef<string[]>([]);
+  // `replace` propios que seguían en vuelo cuando la URL cambió por fuera
+  // (Atrás/Adelante): van a llegar igual, en orden, y ninguno es una
+  // elección nueva.
+  const stale = useRef<string[]>([]);
+  // Lo último que se quiere ver: lo que eligió Atrás o el último filtro
+  // tocado después. Cuando llega el último `replace` atrasado, la URL se
+  // vuelve a dejar aquí una sola vez.
+  const intended = useRef<string | null>(null);
+  const [epoch, setEpoch] = useState(0);
+  const lastQuery = useRef(query);
+  useEffect(() => {
+    if (query === lastQuery.current) return;
+    lastQuery.current = query;
+    const late = stale.current.indexOf(query);
+    if (late >= 0) {
+      stale.current = stale.current.slice(late + 1);
+      const wanted = intended.current;
+      if (stale.current.length === 0 && wanted !== null && wanted !== query) {
+        pending.current.push(wanted);
+        router.replace(wanted ? `${pathname}?${wanted}` : pathname, { scroll: false });
+      }
+      return;
+    }
+    const own = pending.current.indexOf(query);
+    if (own >= 0) {
+      pending.current = pending.current.slice(own + 1);
+      return;
+    }
+    // La URL cambió por fuera (Atrás/Adelante del navegador): la tabla se
+    // vuelve a montar con los filtros y la página que dice ahora. Solo se
+    // lee la URL al montar, así que no hay que sincronizar campo a campo.
+    stale.current = [...stale.current, ...pending.current];
+    pending.current = [];
+    intended.current = query;
+    setEpoch((value) => value + 1);
+  }, [query, router, pathname]);
+  const onPush = (value: string) => {
+    pending.current.push(value);
+    intended.current = value;
+  };
+  return <PersonasTableContent key={epoch} {...props} onPush={onPush} />;
+}
+
+function PersonasTableContent({
+  orgId,
+  slug,
+  canManage,
+  onPush,
+}: PersonasTableProps & { onPush: (query: string) => void }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -131,8 +187,8 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
   const communities = useEntityCommunities(orgId);
   // El referente ve solo a sus personas: para él el filtro no tiene sentido
   // y el equipo (solo titular) ni se pide.
-  const members = useOrgMembers(orgId, { enabled: canManage });
-  const referentes = (members.data ?? []).filter((member) => member.role === "referente");
+  const members = useOrgReferents(orgId, { enabled: canManage });
+  const referentes = members.data ?? [];
   const communityOptions = (communities.data ?? []).filter((community) => community.space !== "families");
   const t = useTranslations("entidad.personas");
   const tAll = useTranslations();
@@ -209,6 +265,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
   });
   useEffect(() => {
     if (appliedQuery === buildPersonasQuery(parsePersonasQuery(searchParams))) return;
+    onPush(appliedQuery);
     router.replace(appliedQuery ? `${pathname}?${appliedQuery}` : pathname, { scroll: false });
     // `searchParams` no entra: cambia como consecuencia de este `replace`.
     // eslint-disable-next-line react-hooks/exhaustive-deps

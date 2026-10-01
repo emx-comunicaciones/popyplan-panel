@@ -23,13 +23,19 @@
  *
  * Tableta y móvil (informe del panel, error 39): por debajo de `md`
  * (768px) el menú se pliega y un botón flotante lo abre como cajón sobre
- * el contenido (se cierra al elegir una sección, con el fondo o con el
- * botón). Desde `md` es la columna fija de siempre.
+ * el contenido (se cierra al elegir una sección, con el fondo, con el
+ * botón o con Escape; el botón queda por encima del cajón y el foco se
+ * gestiona con `useFocusTrap`). Desde `md` es la columna fija de siempre.
  */
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+
+import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
+
+/** El corte de `md:` en el CSS (Tailwind: 48rem = 768px). */
+const DESKTOP_QUERY = "(min-width: 48rem)";
 
 export interface SideNavItem {
   href: string;
@@ -51,10 +57,26 @@ export function SideNav({ ariaLabel, items }: SideNavProps) {
 
   const t = useTranslations("common");
   const [open, setOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+  // Abierto como cajón: el foco entra en el menú, Tab no sale a la página
+  // de detrás, Escape lo cierra y el foco vuelve al botón que lo abrió.
+  useFocusTrap(navRef, open, () => setOpen(false));
   // Al navegar a otra sección el cajón se cierra.
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
+  // Al ampliar la ventana a escritorio con el cajón abierto, el CSS ya
+  // muestra la navegación de siempre y esconde el fondo: sin esto `open`
+  // seguía activo y la trampa de foco retenía Tab dentro del menú.
+  useEffect(() => {
+    if (!open || typeof window.matchMedia !== "function") return;
+    const desktop = window.matchMedia(DESKTOP_QUERY);
+    const onChange = (event: { matches: boolean }) => {
+      if (event.matches) setOpen(false);
+    };
+    desktop.addEventListener("change", onChange);
+    return () => desktop.removeEventListener("change", onChange);
+  }, [open]);
 
   return (
     <>
@@ -63,7 +85,7 @@ export function SideNav({ ariaLabel, items }: SideNavProps) {
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-label={open ? t("menuClose") : t("menuOpen")}
-        className="fixed bottom-4 left-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-primary-700 text-lg text-text-inverse shadow-lg md:hidden"
+        className="fixed bottom-4 left-4 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-primary-700 text-lg text-text-inverse shadow-lg md:hidden"
       >
         <span aria-hidden="true">{open ? "×" : "☰"}</span>
       </button>
@@ -75,6 +97,7 @@ export function SideNav({ ariaLabel, items }: SideNavProps) {
         />
       ) : null}
       <nav
+        ref={navRef}
         aria-label={ariaLabel}
         className={`${
           open
