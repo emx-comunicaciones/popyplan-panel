@@ -238,12 +238,30 @@ describe("descargas", () => {
     await H.openCrmDocument(500, 501);
     expect(fetchWithAuthMock).toHaveBeenCalledWith(CRM.DOCUMENT_DOWNLOAD(500, 501));
     expect(triggerDownloadMock).toHaveBeenCalled();
-    const open = vi.spyOn(window, "open").mockReturnValue(null);
+    const tab = { opener: {} as unknown, location: { href: "" }, close: vi.fn() };
+    const open = vi.spyOn(window, "open").mockReturnValue(tab as unknown as Window);
     const create = vi.fn(() => "blob:x");
     Object.defineProperty(URL, "createObjectURL", { value: create, configurable: true });
     await H.openCrmDocument(500, 501, true);
     expect(fetchWithAuthMock).toHaveBeenLastCalledWith(`${CRM.DOCUMENT_DOWNLOAD(500, 501)}?inline=1`);
-    expect(open).toHaveBeenCalledWith("blob:x", "_blank", "noopener");
+    expect(open).toHaveBeenCalledWith("", "_blank");
+    expect(tab.opener).toBeNull();
+    expect(tab.location.href).toBe("blob:x");
+  });
+
+  it("si el navegador bloquea la pestaña de vista previa, falla sin pedir el fichero", async () => {
+    fetchWithAuthMock.mockClear();
+    vi.spyOn(window, "open").mockReturnValue(null);
+    await expect(H.openCrmDocument(500, 501, true)).rejects.toThrow();
+    expect(fetchWithAuthMock).not.toHaveBeenCalled();
+  });
+
+  it("si la descarga de la vista previa falla, cierra la pestaña ya abierta", async () => {
+    const tab = { opener: {} as unknown, location: { href: "" }, close: vi.fn() };
+    vi.spyOn(window, "open").mockReturnValue(tab as unknown as Window);
+    fetchWithAuthMock.mockRejectedValue(new Error("boom"));
+    await expect(H.openCrmDocument(500, 501, true)).rejects.toThrow("boom");
+    expect(tab.close).toHaveBeenCalled();
   });
 });
 
