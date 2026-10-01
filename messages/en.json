@@ -4432,7 +4432,302 @@
       "m2880": "2 days before"
     },
     "settings": {
-      "noAccess": "Only sales management and platform administration can change the CRM settings."
+      "noAccess": "Only sales management and platform administration can change the CRM settings.",
+      "sectionsLabel": "Settings sections",
+      "sections": {
+        "stages": "Pipeline stages",
+        "catalog": "Lists",
+        "tags": "Tags",
+        "thresholds": "Thresholds"
+      },
+      "loadError": "Settings could not be loaded",
+      "edit": "Edit",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "stages": {
+        "title": "Pipeline stages",
+        "new": "+ New stage",
+        "warning": "A \"Lost\" stage requires a reason and a \"Won\" stage requires the contract details. Stages are never deleted: they are deactivated and no longer offered, but what is already recorded is kept.",
+        "caption": "Pipeline stages",
+        "columns": {
+          "name": "Name",
+          "key": "Key",
+          "order": "Order",
+          "kind": "Type",
+          "probability": "Probability",
+          "color": "Colour",
+          "status": "Status"
+        },
+        "active": "Active",
+        "inactive": "Inactive",
+        "percent": "{value}%",
+        "nameOf": "Name of stage {name}",
+        "orderOf": "Order of stage {name}",
+        "kindOf": "Type of stage {name}",
+        "probabilityOf": "Probability of stage {name}",
+        "colorOf": "Colour of stage {name}",
+        "newTitle": "New stage",
+        "key": "Key",
+        "keyHint": "Lowercase letters, numbers and underscores only (for example scheduled_meeting). It cannot be changed afterwards.",
+        "name": "Name",
+        "order": "Order",
+        "kind": "Type",
+        "probability": "Probability (%)",
+        "color": "Colour",
+        "create": "Create stage"
+      },
+      "catalog": {
+        "title": "Configurable lists",
+        "hint": "Contact origins, departments and products. They are sorted by order number and deactivated rather than deleted.",
+        "kindLabel": "List",
+        "newName": "New item",
+        "newOrder": "Order",
+        "add": "Add",
+        "empty": "This list has no items yet.",
+        "caption": "List items: {kind}",
+        "columns": {
+          "name": "Name",
+          "order": "Order",
+          "status": "Status"
+        },
+        "active": "Active",
+        "inactive": "Inactive",
+        "nameOf": "Name of {name}",
+        "orderOf": "Order of {name}"
+      },
+      "tags": {
+        "title": "Tags",
+        "hint": "Tags are assigned to organisations by name.",
+        "name": "New tag",
+        "color": "Colour",
+        "add": "Create tag",
+        "empty": "There are no tags yet.",
+        "listLabel": "Existing tags"
+      },
+      "thresholds": {
+        "title": "Thresholds and alerts",
+        "hint": "When an organisation needs attention and when the CRM sends alerts. All values are in days.",
+        "attentionDays": "Days without contact for \"Needs attention\"",
+        "attentionDaysHint": "Comma-separated list, from lowest to highest severity (for example 15, 30, 60).",
+        "opportunityIdleDays": "Days without activity on an opportunity",
+        "opportunityIdleDaysHint": "After this period the CRM alerts the owner.",
+        "proposalFollowupDays": "Days without a reply to a proposal",
+        "proposalFollowupDaysHint": "An alert is sent to follow up the proposal that was sent.",
+        "closeDateWarningDays": "Warning days before the contracting date",
+        "closeDateWarningDaysHint": "Before the estimated contracting date of an opportunity.",
+        "renewalAlertDays": "Renewal alerts",
+        "renewalAlertDaysHint": "Days before the contract renewal, comma-separated (for example 90, 60, 30).",
+        "listInvalid": "Enter positive whole numbers separated by commas.",
+        "numberInvalid": "Enter a positive whole number.",
+        "saved": "Thresholds saved."
+      }
+    },
+    "activities": {
+      "caption": "Recorded activities",
+      "columns": {
+        "when": "Date",
+        "kind": "Type",
+        "account": "Organisation",
+        "summary": "Title or summary",
+        "result": "Result",
+        "contacts": "Contacts",
+        "owner": "Salesperson",
+        "followUp": "Follow-up"
+      },
+      "hasFollowUp": "Has follow-up",
+      "noFollowUp": "No follow-up",
+      "open": "View and edit",
+      "delete": "Delete",
+      "deleteTitle": "Delete activity",
+      "deleteBody": "It will be removed from the activity of {name}. Deletion is logical: it remains recorded in the history.",
+      "deleteConfirm": "Delete activity",
+      "export": "Export CSV",
+      "register": "+ Record activity",
+      "empty": "No activities match these filters",
+      "emptyHint": "Change the filters or record a new activity.",
+      "loadError": "Activities could not be loaded",
+      "filters": {
+        "kind": "Type",
+        "allKinds": "All types",
+        "owner": "Salesperson",
+        "allOwners": "Whole team",
+        "since": "From",
+        "until": "To",
+        "search": "Search"
+      },
+      "pager": {
+        "previous": "Previous",
+        "next": "Next",
+        "summary": "Page {page} of {pages} · {count, plural, one {# activity} other {# activities}}"
+      },
+      "dialog": {
+        "title": "Activity",
+        "account": "Organisation",
+        "kind": "Type",
+        "when": "Date and time",
+        "activityTitle": "Title",
+        "contacts": "Contacts",
+        "owner": "Salesperson",
+        "historyNote": "Changes made here do not rewrite the original record: they are added to the organisation history as \"activity edited\".",
+        "summary": "Summary",
+        "description": "Description",
+        "result": "Result",
+        "interest": "Interest level afterwards",
+        "resultText": "Result detail",
+        "duration": "Duration (minutes)",
+        "comments": "Internal comments"
+      }
+    },
+    "tasks": {
+      "new": "+ New task",
+      "bucketsLabel": "Tasks by date",
+      "buckets": {
+        "today": "Today",
+        "upcoming": "Upcoming",
+        "overdue": "Overdue",
+        "done": "Completed"
+      },
+      "bucketWithCount": "{label} ({count})",
+      "wholeTeam": "Whole team",
+      "assigneeFilter": "Assignee",
+      "allAssignees": "Everyone",
+      "listLabel": "Task list",
+      "loadError": "Tasks could not be loaded",
+      "empty": "There are no tasks in this list",
+      "emptyHint": "Create a new task or switch list.",
+      "untitled": "Untitled task",
+      "noAccount": "No organisation",
+      "overdue": "Overdue",
+      "priorityBadge": "Priority: {priority}",
+      "due": "Due: {when}",
+      "reminderLine": "Reminder: {reminder}",
+      "noReminder": "no reminder",
+      "reminderMinutes": "{minutes} minutes before",
+      "complete": "Complete",
+      "start": "In progress",
+      "cancel": "Cancel task",
+      "edit": "Edit",
+      "registerActivity": "Record activity",
+      "cancelTitle": "Cancel task",
+      "cancelBody": "The task \"{title}\" will be cancelled and stop sending reminders. You can reopen it by editing it.",
+      "cancelConfirm": "Cancel task",
+      "cancelKeep": "Keep it",
+      "pager": {
+        "previous": "Previous",
+        "next": "Next",
+        "summary": "Page {page} of {pages} · {count, plural, one {# task} other {# tasks}}"
+      },
+      "dialog": {
+        "newTitle": "New task",
+        "editTitle": "Edit task",
+        "accountOptional": "Organisation (optional)",
+        "accountFixed": "Organisation: {name}",
+        "title": "What needs to be done",
+        "kind": "Action type",
+        "dueAt": "Date and time",
+        "priority": "Priority",
+        "reminder": "Reminder",
+        "noReminder": "No reminder",
+        "status": "Status",
+        "assignee": "Assignee",
+        "description": "Description"
+      }
+    },
+    "calendar": {
+      "viewLabel": "Calendar view",
+      "views": {
+        "day": "Day",
+        "week": "Week",
+        "month": "Month"
+      },
+      "previous": "Previous",
+      "next": "Next",
+      "today": "Today",
+      "filters": {
+        "owner": "Salesperson",
+        "allOwners": "Whole team",
+        "province": "Province",
+        "kind": "Activity type",
+        "allKinds": "All types"
+      },
+      "loadError": "The calendar could not be loaded",
+      "emptyDay": "Nothing scheduled",
+      "emptyRange": "Nothing in this period",
+      "openDay": "Open {day}",
+      "addActivity": "+ Activity",
+      "addTask": "+ Task",
+      "types": {
+        "activity": "Activity",
+        "task": "Task",
+        "renewal": "Renewal"
+      },
+      "doneActivity": "done",
+      "doneTask": "completed"
+    },
+    "documents": {
+      "uploadButton": "+ Upload document",
+      "maxSize": "Maximum size: 25 MB per file.",
+      "tooBig": "The file exceeds 25 MB.",
+      "openError": "The document could not be opened. Try again.",
+      "caption": "CRM documents",
+      "loadError": "Documents could not be loaded",
+      "empty": "No documents match these filters",
+      "emptyHint": "Upload the first one with \"+ Upload document\".",
+      "filters": {
+        "category": "Category",
+        "allCategories": "All categories",
+        "account": "Organisation",
+        "search": "Search"
+      },
+      "columns": {
+        "name": "Name",
+        "category": "Category",
+        "account": "Organisation",
+        "opportunity": "Opportunity",
+        "version": "Version",
+        "date": "Date",
+        "uploadedBy": "Uploaded by",
+        "direction": "Received or sent"
+      },
+      "version": "v{n}",
+      "received": "Received",
+      "sent": "Sent",
+      "view": "View",
+      "download": "Download",
+      "addVersion": "New version",
+      "history": "Versions",
+      "delete": "Delete",
+      "deleteTitle": "Delete document",
+      "deleteBody": "\"{name}\" will no longer appear in the repository. Deletion is logical: the versions are kept.",
+      "deleteConfirm": "Delete document",
+      "pager": {
+        "previous": "Previous",
+        "next": "Next",
+        "summary": "Page {page} of {pages} · {count, plural, one {# document} other {# documents}}"
+      },
+      "upload": {
+        "title": "Upload document",
+        "account": "Organisation",
+        "file": "File",
+        "name": "Name (optional)",
+        "category": "Category",
+        "description": "Description",
+        "received": "Document received from the organisation (not sent by us)",
+        "submit": "Upload",
+        "uploading": "Uploading…"
+      },
+      "newVersion": {
+        "title": "New version of \"{name}\"",
+        "hint": "The previous version is kept: versions are never deleted.",
+        "file": "File",
+        "submit": "Upload version"
+      },
+      "versions": {
+        "title": "Versions of \"{name}\"",
+        "note": "Older versions are never deleted; the most recent one is what is shown and downloaded by default.",
+        "meta": "{date} · {by} · {size} KB",
+        "download": "Download version {n}"
+      }
     }
   }
 }

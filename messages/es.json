@@ -4432,7 +4432,302 @@
       "m2880": "2 días antes"
     },
     "settings": {
-      "noAccess": "Solo dirección comercial y administración de la plataforma pueden cambiar la configuración del CRM."
+      "noAccess": "Solo dirección comercial y administración de la plataforma pueden cambiar la configuración del CRM.",
+      "sectionsLabel": "Secciones de configuración",
+      "sections": {
+        "stages": "Fases del pipeline",
+        "catalog": "Listas",
+        "tags": "Etiquetas",
+        "thresholds": "Umbrales"
+      },
+      "loadError": "No se pudo cargar la configuración",
+      "edit": "Editar",
+      "activate": "Activar",
+      "deactivate": "Desactivar",
+      "stages": {
+        "title": "Fases del pipeline",
+        "new": "+ Nueva fase",
+        "warning": "Una fase de tipo «Perdido» exige indicar el motivo y una de tipo «Ganado» exige los datos del contrato. Las fases no se borran: se desactivan y dejan de ofrecerse, pero lo ya registrado se conserva.",
+        "caption": "Fases del pipeline",
+        "columns": {
+          "name": "Nombre",
+          "key": "Clave",
+          "order": "Orden",
+          "kind": "Tipo",
+          "probability": "Probabilidad",
+          "color": "Color",
+          "status": "Estado"
+        },
+        "active": "Activa",
+        "inactive": "Inactiva",
+        "percent": "{value} %",
+        "nameOf": "Nombre de la fase {name}",
+        "orderOf": "Orden de la fase {name}",
+        "kindOf": "Tipo de la fase {name}",
+        "probabilityOf": "Probabilidad de la fase {name}",
+        "colorOf": "Color de la fase {name}",
+        "newTitle": "Nueva fase",
+        "key": "Clave",
+        "keyHint": "Solo minúsculas, números y guion bajo (por ejemplo reunion_agendada). No se puede cambiar después.",
+        "name": "Nombre",
+        "order": "Orden",
+        "kind": "Tipo",
+        "probability": "Probabilidad (%)",
+        "color": "Color",
+        "create": "Crear fase"
+      },
+      "catalog": {
+        "title": "Listas configurables",
+        "hint": "Orígenes del contacto, departamentos y productos. Se ordenan por el número de orden y se desactivan en vez de borrarse.",
+        "kindLabel": "Lista",
+        "newName": "Nuevo elemento",
+        "newOrder": "Orden",
+        "add": "Añadir",
+        "empty": "Esta lista todavía no tiene elementos.",
+        "caption": "Elementos de la lista: {kind}",
+        "columns": {
+          "name": "Nombre",
+          "order": "Orden",
+          "status": "Estado"
+        },
+        "active": "Activo",
+        "inactive": "Inactivo",
+        "nameOf": "Nombre de {name}",
+        "orderOf": "Orden de {name}"
+      },
+      "tags": {
+        "title": "Etiquetas",
+        "hint": "Las etiquetas se asignan a las entidades por su nombre.",
+        "name": "Nueva etiqueta",
+        "color": "Color",
+        "add": "Crear etiqueta",
+        "empty": "Todavía no hay etiquetas.",
+        "listLabel": "Etiquetas existentes"
+      },
+      "thresholds": {
+        "title": "Umbrales y avisos",
+        "hint": "Cuándo una entidad necesita atención y cuándo avisa el CRM. Todos los valores son días.",
+        "attentionDays": "Días sin contacto para «Necesitan atención»",
+        "attentionDaysHint": "Lista separada por comas, de menor a mayor gravedad (por ejemplo 15, 30, 60).",
+        "opportunityIdleDays": "Días sin actividad en una oportunidad",
+        "opportunityIdleDaysHint": "Pasado este plazo, el CRM avisa al responsable.",
+        "proposalFollowupDays": "Días sin respuesta a una propuesta",
+        "proposalFollowupDaysHint": "Se avisa para hacer seguimiento de la propuesta enviada.",
+        "closeDateWarningDays": "Días de aviso antes de la fecha de contratación",
+        "closeDateWarningDaysHint": "Antes de la fecha estimada de contratación de una oportunidad.",
+        "renewalAlertDays": "Avisos de renovación",
+        "renewalAlertDaysHint": "Días antes de la renovación del contrato, separados por comas (por ejemplo 90, 60, 30).",
+        "listInvalid": "Escribe números enteros positivos separados por comas.",
+        "numberInvalid": "Escribe un número entero positivo.",
+        "saved": "Umbrales guardados."
+      }
+    },
+    "activities": {
+      "caption": "Actividades registradas",
+      "columns": {
+        "when": "Fecha",
+        "kind": "Tipo",
+        "account": "Entidad",
+        "summary": "Título o resumen",
+        "result": "Resultado",
+        "contacts": "Contactos",
+        "owner": "Comercial",
+        "followUp": "Seguimiento"
+      },
+      "hasFollowUp": "Con seguimiento",
+      "noFollowUp": "Sin seguimiento",
+      "open": "Ver y editar",
+      "delete": "Borrar",
+      "deleteTitle": "Borrar actividad",
+      "deleteBody": "Se quitará de la actividad de {name}. El borrado es lógico: queda constancia en el historial.",
+      "deleteConfirm": "Borrar actividad",
+      "export": "Exportar CSV",
+      "register": "+ Registrar actividad",
+      "empty": "No hay actividades con estos filtros",
+      "emptyHint": "Cambia los filtros o registra una actividad nueva.",
+      "loadError": "No se pudieron cargar las actividades",
+      "filters": {
+        "kind": "Tipo",
+        "allKinds": "Todos los tipos",
+        "owner": "Comercial",
+        "allOwners": "Todo el equipo",
+        "since": "Desde",
+        "until": "Hasta",
+        "search": "Buscar"
+      },
+      "pager": {
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "summary": "Página {page} de {pages} · {count, plural, one {# actividad} other {# actividades}}"
+      },
+      "dialog": {
+        "title": "Actividad",
+        "account": "Entidad",
+        "kind": "Tipo",
+        "when": "Fecha y hora",
+        "activityTitle": "Título",
+        "contacts": "Contactos",
+        "owner": "Comercial",
+        "historyNote": "Los cambios que hagas aquí no reescriben el registro original: quedan anotados en el historial de la entidad como «actividad editada».",
+        "summary": "Resumen",
+        "description": "Descripción",
+        "result": "Resultado",
+        "interest": "Nivel de interés después",
+        "resultText": "Detalle del resultado",
+        "duration": "Duración (minutos)",
+        "comments": "Comentarios internos"
+      }
+    },
+    "tasks": {
+      "new": "+ Nueva tarea",
+      "bucketsLabel": "Tareas por fecha",
+      "buckets": {
+        "today": "Hoy",
+        "upcoming": "Próximas",
+        "overdue": "Atrasadas",
+        "done": "Completadas"
+      },
+      "bucketWithCount": "{label} ({count})",
+      "wholeTeam": "Todo el equipo",
+      "assigneeFilter": "Responsable",
+      "allAssignees": "Todos",
+      "listLabel": "Lista de tareas",
+      "loadError": "No se pudieron cargar las tareas",
+      "empty": "No hay tareas en esta lista",
+      "emptyHint": "Crea una tarea nueva o cambia de pestaña.",
+      "untitled": "Tarea sin título",
+      "noAccount": "Sin entidad",
+      "overdue": "Atrasada",
+      "priorityBadge": "Prioridad: {priority}",
+      "due": "Vence: {when}",
+      "reminderLine": "Recordatorio: {reminder}",
+      "noReminder": "sin recordatorio",
+      "reminderMinutes": "{minutes} minutos antes",
+      "complete": "Completar",
+      "start": "En curso",
+      "cancel": "Cancelar tarea",
+      "edit": "Editar",
+      "registerActivity": "Registrar actividad",
+      "cancelTitle": "Cancelar tarea",
+      "cancelBody": "La tarea «{title}» pasará a cancelada y dejará de avisar. Podrás reabrirla desde su edición.",
+      "cancelConfirm": "Cancelar tarea",
+      "cancelKeep": "Mantener",
+      "pager": {
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "summary": "Página {page} de {pages} · {count, plural, one {# tarea} other {# tareas}}"
+      },
+      "dialog": {
+        "newTitle": "Nueva tarea",
+        "editTitle": "Editar tarea",
+        "accountOptional": "Entidad (opcional)",
+        "accountFixed": "Entidad: {name}",
+        "title": "Qué hay que hacer",
+        "kind": "Tipo de acción",
+        "dueAt": "Fecha y hora",
+        "priority": "Prioridad",
+        "reminder": "Recordatorio",
+        "noReminder": "Sin recordatorio",
+        "status": "Estado",
+        "assignee": "Responsable",
+        "description": "Descripción"
+      }
+    },
+    "calendar": {
+      "viewLabel": "Vista del calendario",
+      "views": {
+        "day": "Día",
+        "week": "Semana",
+        "month": "Mes"
+      },
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "today": "Hoy",
+      "filters": {
+        "owner": "Comercial",
+        "allOwners": "Todo el equipo",
+        "province": "Provincia",
+        "kind": "Tipo de actividad",
+        "allKinds": "Todos los tipos"
+      },
+      "loadError": "No se pudo cargar el calendario",
+      "emptyDay": "Nada previsto",
+      "emptyRange": "No hay nada en este periodo",
+      "openDay": "Abrir {day}",
+      "addActivity": "+ Actividad",
+      "addTask": "+ Tarea",
+      "types": {
+        "activity": "Actividad",
+        "task": "Tarea",
+        "renewal": "Renovación"
+      },
+      "doneActivity": "hecha",
+      "doneTask": "completada"
+    },
+    "documents": {
+      "uploadButton": "+ Subir documento",
+      "maxSize": "Tamaño máximo: 25 MB por fichero.",
+      "tooBig": "El fichero supera los 25 MB.",
+      "openError": "No se pudo abrir el documento. Inténtalo de nuevo.",
+      "caption": "Documentos del CRM",
+      "loadError": "No se pudieron cargar los documentos",
+      "empty": "No hay documentos con estos filtros",
+      "emptyHint": "Sube el primero con «+ Subir documento».",
+      "filters": {
+        "category": "Categoría",
+        "allCategories": "Todas las categorías",
+        "account": "Entidad",
+        "search": "Buscar"
+      },
+      "columns": {
+        "name": "Nombre",
+        "category": "Categoría",
+        "account": "Entidad",
+        "opportunity": "Oportunidad",
+        "version": "Versión",
+        "date": "Fecha",
+        "uploadedBy": "Subido por",
+        "direction": "Recibido o enviado"
+      },
+      "version": "v{n}",
+      "received": "Recibido",
+      "sent": "Enviado",
+      "view": "Ver",
+      "download": "Descargar",
+      "addVersion": "Nueva versión",
+      "history": "Versiones",
+      "delete": "Borrar",
+      "deleteTitle": "Borrar documento",
+      "deleteBody": "«{name}» dejará de verse en el repositorio. El borrado es lógico: las versiones se conservan.",
+      "deleteConfirm": "Borrar documento",
+      "pager": {
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "summary": "Página {page} de {pages} · {count, plural, one {# documento} other {# documentos}}"
+      },
+      "upload": {
+        "title": "Subir documento",
+        "account": "Entidad",
+        "file": "Fichero",
+        "name": "Nombre (opcional)",
+        "category": "Categoría",
+        "description": "Descripción",
+        "received": "Documento recibido de la entidad (no enviado por nosotros)",
+        "submit": "Subir",
+        "uploading": "Subiendo…"
+      },
+      "newVersion": {
+        "title": "Nueva versión de «{name}»",
+        "hint": "La versión anterior se conserva: las versiones nunca se borran.",
+        "file": "Fichero",
+        "submit": "Subir versión"
+      },
+      "versions": {
+        "title": "Versiones de «{name}»",
+        "note": "Las versiones anteriores nunca se borran; la más reciente es la que se ve y se descarga por defecto.",
+        "meta": "{date} · {by} · {size} KB",
+        "download": "Descargar versión {n}"
+      }
     }
   }
 }

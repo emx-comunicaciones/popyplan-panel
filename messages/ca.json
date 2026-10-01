@@ -4432,7 +4432,302 @@
       "m2880": "2 dies abans"
     },
     "settings": {
-      "noAccess": "Només direcció comercial i administració de la plataforma poden canviar la configuració del CRM."
+      "noAccess": "Només direcció comercial i administració de la plataforma poden canviar la configuració del CRM.",
+      "sectionsLabel": "Seccions de configuració",
+      "sections": {
+        "stages": "Fases del pipeline",
+        "catalog": "Llistes",
+        "tags": "Etiquetes",
+        "thresholds": "Llindars"
+      },
+      "loadError": "No s'ha pogut carregar la configuració",
+      "edit": "Edita",
+      "activate": "Activa",
+      "deactivate": "Desactiva",
+      "stages": {
+        "title": "Fases del pipeline",
+        "new": "+ Nova fase",
+        "warning": "Una fase de tipus «Perduda» exigeix indicar el motiu i una de tipus «Guanyada» exigeix les dades del contracte. Les fases no s'esborren: es desactiven i deixen d'oferir-se, però el que ja s'ha registrat es conserva.",
+        "caption": "Fases del pipeline",
+        "columns": {
+          "name": "Nom",
+          "key": "Clau",
+          "order": "Ordre",
+          "kind": "Tipus",
+          "probability": "Probabilitat",
+          "color": "Color",
+          "status": "Estat"
+        },
+        "active": "Activa",
+        "inactive": "Inactiva",
+        "percent": "{value} %",
+        "nameOf": "Nom de la fase {name}",
+        "orderOf": "Ordre de la fase {name}",
+        "kindOf": "Tipus de la fase {name}",
+        "probabilityOf": "Probabilitat de la fase {name}",
+        "colorOf": "Color de la fase {name}",
+        "newTitle": "Nova fase",
+        "key": "Clau",
+        "keyHint": "Només minúscules, números i guió baix (per exemple reunio_agendada). No es pot canviar després.",
+        "name": "Nom",
+        "order": "Ordre",
+        "kind": "Tipus",
+        "probability": "Probabilitat (%)",
+        "color": "Color",
+        "create": "Crea la fase"
+      },
+      "catalog": {
+        "title": "Llistes configurables",
+        "hint": "Orígens del contacte, departaments i productes. S'ordenen pel número d'ordre i es desactiven en lloc d'esborrar-se.",
+        "kindLabel": "Llista",
+        "newName": "Element nou",
+        "newOrder": "Ordre",
+        "add": "Afegeix",
+        "empty": "Aquesta llista encara no té elements.",
+        "caption": "Elements de la llista: {kind}",
+        "columns": {
+          "name": "Nom",
+          "order": "Ordre",
+          "status": "Estat"
+        },
+        "active": "Actiu",
+        "inactive": "Inactiu",
+        "nameOf": "Nom de {name}",
+        "orderOf": "Ordre de {name}"
+      },
+      "tags": {
+        "title": "Etiquetes",
+        "hint": "Les etiquetes s'assignen a les entitats pel seu nom.",
+        "name": "Etiqueta nova",
+        "color": "Color",
+        "add": "Crea l'etiqueta",
+        "empty": "Encara no hi ha etiquetes.",
+        "listLabel": "Etiquetes existents"
+      },
+      "thresholds": {
+        "title": "Llindars i avisos",
+        "hint": "Quan una entitat necessita atenció i quan avisa el CRM. Tots els valors són en dies.",
+        "attentionDays": "Dies sense contacte per a «Necessiten atenció»",
+        "attentionDaysHint": "Llista separada per comes, de menor a major gravetat (per exemple 15, 30, 60).",
+        "opportunityIdleDays": "Dies sense activitat en una oportunitat",
+        "opportunityIdleDaysHint": "Passat aquest termini, el CRM avisa el responsable.",
+        "proposalFollowupDays": "Dies sense resposta a una proposta",
+        "proposalFollowupDaysHint": "S'avisa per fer el seguiment de la proposta enviada.",
+        "closeDateWarningDays": "Dies d'avís abans de la data de contractació",
+        "closeDateWarningDaysHint": "Abans de la data estimada de contractació d'una oportunitat.",
+        "renewalAlertDays": "Avisos de renovació",
+        "renewalAlertDaysHint": "Dies abans de la renovació del contracte, separats per comes (per exemple 90, 60, 30).",
+        "listInvalid": "Escriu nombres enters positius separats per comes.",
+        "numberInvalid": "Escriu un nombre enter positiu.",
+        "saved": "Llindars desats."
+      }
+    },
+    "activities": {
+      "caption": "Activitats registrades",
+      "columns": {
+        "when": "Data",
+        "kind": "Tipus",
+        "account": "Entitat",
+        "summary": "Títol o resum",
+        "result": "Resultat",
+        "contacts": "Contactes",
+        "owner": "Comercial",
+        "followUp": "Seguiment"
+      },
+      "hasFollowUp": "Amb seguiment",
+      "noFollowUp": "Sense seguiment",
+      "open": "Veure i editar",
+      "delete": "Esborra",
+      "deleteTitle": "Esborra l'activitat",
+      "deleteBody": "S'esborrarà de l'activitat de {name}. L'esborrat és lògic: en queda constància a l'historial.",
+      "deleteConfirm": "Esborra l'activitat",
+      "export": "Exporta CSV",
+      "register": "+ Registra activitat",
+      "empty": "No hi ha activitats amb aquests filtres",
+      "emptyHint": "Canvia els filtres o registra una activitat nova.",
+      "loadError": "No s'han pogut carregar les activitats",
+      "filters": {
+        "kind": "Tipus",
+        "allKinds": "Tots els tipus",
+        "owner": "Comercial",
+        "allOwners": "Tot l'equip",
+        "since": "Des de",
+        "until": "Fins a",
+        "search": "Cerca"
+      },
+      "pager": {
+        "previous": "Anterior",
+        "next": "Següent",
+        "summary": "Pàgina {page} de {pages} · {count, plural, one {# activitat} other {# activitats}}"
+      },
+      "dialog": {
+        "title": "Activitat",
+        "account": "Entitat",
+        "kind": "Tipus",
+        "when": "Data i hora",
+        "activityTitle": "Títol",
+        "contacts": "Contactes",
+        "owner": "Comercial",
+        "historyNote": "Els canvis que facis aquí no reescriuen el registre original: queden anotats a l'historial de l'entitat com a «activitat editada».",
+        "summary": "Resum",
+        "description": "Descripció",
+        "result": "Resultat",
+        "interest": "Nivell d'interès després",
+        "resultText": "Detall del resultat",
+        "duration": "Durada (minuts)",
+        "comments": "Comentaris interns"
+      }
+    },
+    "tasks": {
+      "new": "+ Nova tasca",
+      "bucketsLabel": "Tasques per data",
+      "buckets": {
+        "today": "Avui",
+        "upcoming": "Properes",
+        "overdue": "Endarrerides",
+        "done": "Completades"
+      },
+      "bucketWithCount": "{label} ({count})",
+      "wholeTeam": "Tot l'equip",
+      "assigneeFilter": "Responsable",
+      "allAssignees": "Tots",
+      "listLabel": "Llista de tasques",
+      "loadError": "No s'han pogut carregar les tasques",
+      "empty": "No hi ha tasques en aquesta llista",
+      "emptyHint": "Crea una tasca nova o canvia de llista.",
+      "untitled": "Tasca sense títol",
+      "noAccount": "Sense entitat",
+      "overdue": "Endarrerida",
+      "priorityBadge": "Prioritat: {priority}",
+      "due": "Venç: {when}",
+      "reminderLine": "Recordatori: {reminder}",
+      "noReminder": "sense recordatori",
+      "reminderMinutes": "{minutes} minuts abans",
+      "complete": "Completa",
+      "start": "En curs",
+      "cancel": "Cancel·la la tasca",
+      "edit": "Edita",
+      "registerActivity": "Registra activitat",
+      "cancelTitle": "Cancel·la la tasca",
+      "cancelBody": "La tasca «{title}» passarà a cancel·lada i deixarà d'avisar. Podràs reobrir-la editant-la.",
+      "cancelConfirm": "Cancel·la la tasca",
+      "cancelKeep": "Mantén-la",
+      "pager": {
+        "previous": "Anterior",
+        "next": "Següent",
+        "summary": "Pàgina {page} de {pages} · {count, plural, one {# tasca} other {# tasques}}"
+      },
+      "dialog": {
+        "newTitle": "Nova tasca",
+        "editTitle": "Edita la tasca",
+        "accountOptional": "Entitat (opcional)",
+        "accountFixed": "Entitat: {name}",
+        "title": "Què cal fer",
+        "kind": "Tipus d'acció",
+        "dueAt": "Data i hora",
+        "priority": "Prioritat",
+        "reminder": "Recordatori",
+        "noReminder": "Sense recordatori",
+        "status": "Estat",
+        "assignee": "Responsable",
+        "description": "Descripció"
+      }
+    },
+    "calendar": {
+      "viewLabel": "Vista del calendari",
+      "views": {
+        "day": "Dia",
+        "week": "Setmana",
+        "month": "Mes"
+      },
+      "previous": "Anterior",
+      "next": "Següent",
+      "today": "Avui",
+      "filters": {
+        "owner": "Comercial",
+        "allOwners": "Tot l'equip",
+        "province": "Província",
+        "kind": "Tipus d'activitat",
+        "allKinds": "Tots els tipus"
+      },
+      "loadError": "No s'ha pogut carregar el calendari",
+      "emptyDay": "Res previst",
+      "emptyRange": "No hi ha res en aquest període",
+      "openDay": "Obre {day}",
+      "addActivity": "+ Activitat",
+      "addTask": "+ Tasca",
+      "types": {
+        "activity": "Activitat",
+        "task": "Tasca",
+        "renewal": "Renovació"
+      },
+      "doneActivity": "feta",
+      "doneTask": "completada"
+    },
+    "documents": {
+      "uploadButton": "+ Puja un document",
+      "maxSize": "Mida màxima: 25 MB per fitxer.",
+      "tooBig": "El fitxer supera els 25 MB.",
+      "openError": "No s'ha pogut obrir el document. Torna-ho a provar.",
+      "caption": "Documents del CRM",
+      "loadError": "No s'han pogut carregar els documents",
+      "empty": "No hi ha documents amb aquests filtres",
+      "emptyHint": "Puja el primer amb «+ Puja un document».",
+      "filters": {
+        "category": "Categoria",
+        "allCategories": "Totes les categories",
+        "account": "Entitat",
+        "search": "Cerca"
+      },
+      "columns": {
+        "name": "Nom",
+        "category": "Categoria",
+        "account": "Entitat",
+        "opportunity": "Oportunitat",
+        "version": "Versió",
+        "date": "Data",
+        "uploadedBy": "Pujat per",
+        "direction": "Rebut o enviat"
+      },
+      "version": "v{n}",
+      "received": "Rebut",
+      "sent": "Enviat",
+      "view": "Veure",
+      "download": "Descarrega",
+      "addVersion": "Nova versió",
+      "history": "Versions",
+      "delete": "Esborra",
+      "deleteTitle": "Esborra el document",
+      "deleteBody": "«{name}» deixarà de veure's al repositori. L'esborrat és lògic: les versions es conserven.",
+      "deleteConfirm": "Esborra el document",
+      "pager": {
+        "previous": "Anterior",
+        "next": "Següent",
+        "summary": "Pàgina {page} de {pages} · {count, plural, one {# document} other {# documents}}"
+      },
+      "upload": {
+        "title": "Puja un document",
+        "account": "Entitat",
+        "file": "Fitxer",
+        "name": "Nom (opcional)",
+        "category": "Categoria",
+        "description": "Descripció",
+        "received": "Document rebut de l'entitat (no enviat per nosaltres)",
+        "submit": "Puja",
+        "uploading": "Pujant…"
+      },
+      "newVersion": {
+        "title": "Nova versió de «{name}»",
+        "hint": "La versió anterior es conserva: les versions no s'esborren mai.",
+        "file": "Fitxer",
+        "submit": "Puja la versió"
+      },
+      "versions": {
+        "title": "Versions de «{name}»",
+        "note": "Les versions anteriors no s'esborren mai; la més recent és la que es veu i es descarrega per defecte.",
+        "meta": "{date} · {by} · {size} KB",
+        "download": "Descarrega la versió {n}"
+      }
     }
   }
 }
