@@ -107,7 +107,37 @@ function PendingInvitationsHint({ orgId }: { orgId: number | string }) {
  * («Invitada (pendiente)») al final de la página, con «Reenviar»/
  * «Revocar» (solo `canManage`).
  */
-export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
+export function PersonasTable(props: PersonasTableProps) {
+  const searchParams = useSearchParams();
+  const query = buildPersonasQuery(parsePersonasQuery(searchParams));
+  // Consultas que la propia tabla ha escrito en la URL y aún no han llegado
+  // por `useSearchParams` (el `replace` es asíncrono).
+  const pending = useRef<string[]>([]);
+  const [epoch, setEpoch] = useState(0);
+  const lastQuery = useRef(query);
+  useEffect(() => {
+    if (query === lastQuery.current) return;
+    lastQuery.current = query;
+    const own = pending.current.indexOf(query);
+    if (own >= 0) {
+      pending.current = pending.current.slice(own + 1);
+      return;
+    }
+    // La URL cambió por fuera (Atrás/Adelante del navegador): la tabla se
+    // vuelve a montar con los filtros y la página que dice ahora. Solo se
+    // lee la URL al montar, así que no hay que sincronizar campo a campo.
+    pending.current = [];
+    setEpoch((value) => value + 1);
+  }, [query]);
+  return <PersonasTableContent key={epoch} {...props} onPush={(value) => pending.current.push(value)} />;
+}
+
+function PersonasTableContent({
+  orgId,
+  slug,
+  canManage,
+  onPush,
+}: PersonasTableProps & { onPush: (query: string) => void }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -209,6 +239,7 @@ export function PersonasTable({ orgId, slug, canManage }: PersonasTableProps) {
   });
   useEffect(() => {
     if (appliedQuery === buildPersonasQuery(parsePersonasQuery(searchParams))) return;
+    onPush(appliedQuery);
     router.replace(appliedQuery ? `${pathname}?${appliedQuery}` : pathname, { scroll: false });
     // `searchParams` no entra: cambia como consecuencia de este `replace`.
     // eslint-disable-next-line react-hooks/exhaustive-deps

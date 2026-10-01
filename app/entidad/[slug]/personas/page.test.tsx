@@ -1,7 +1,10 @@
+import { QueryClientProvider } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
+import { NextIntlClientProvider } from "next-intl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { act, fireEvent, render, screen, waitFor, within } from "@/test-utils/render";
+import es from "@/messages/es.json";
+import { act, createTestQueryClient, fireEvent, render, screen, waitFor, within } from "@/test-utils/render";
 import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal, routerMock, setSearchParams } from "@/test-utils/nextNavigationMock";
 import { buildMe, buildOrgMembership } from "@/test-utils/fixtures/me";
@@ -393,6 +396,30 @@ describe("EntidadPersonasPage", () => {
     await user.selectOptions(screen.getByLabelText("Comunidad"), "");
     await waitFor(() =>
       expect(routerMock.replace).toHaveBeenLastCalledWith("/?q=ana&invitadas=1", { scroll: false }),
+    );
+  });
+
+  it("si la URL cambia por fuera (Atrás del navegador), la tabla recoge los filtros y la página nuevos", async () => {
+    mockDefaults();
+    usePeopleMock.mockReturnValue({ data: pageData(), isError: false, error: null });
+    useInvitationsMock.mockReturnValue({ data: [], isError: false, error: null });
+    setSearchParams("q=ana&pagina=3");
+    const { rerender } = await renderPage();
+    expect(screen.getByLabelText("Buscar")).toHaveValue("ana");
+
+    setSearchParams("q=luis");
+    const element = await EntidadPersonasPage({ params: Promise.resolve({ slug: "alfaville" }) });
+    rerender(
+      <QueryClientProvider client={createTestQueryClient()}>
+        <NextIntlClientProvider locale="es" messages={es}>
+          {element}
+        </NextIntlClientProvider>
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() => expect(screen.getByLabelText("Buscar")).toHaveValue("luis"));
+    await waitFor(() =>
+      expect(usePeopleMock.mock.calls.at(-1)?.[2]).toMatchObject({ search: "luis", page: 1 }),
     );
   });
 
