@@ -88,12 +88,15 @@ export function CrmUserSelect({
   value,
   onChange,
   allowEmpty = false,
+  emptyLabel,
 }: {
   id: string;
   label: string;
   value: number | null;
   onChange: (value: number | null) => void;
   allowEmpty?: boolean;
+  /** Texto de la opción vacía: «Nadie» en un formulario; en un filtro, «Todos». */
+  emptyLabel?: string;
 }) {
   const t = useTranslations("crm.common");
   const users = useCrmUsers();
@@ -108,7 +111,7 @@ export function CrmUserSelect({
         onChange={(event) => onChange(event.target.value ? Number(event.target.value) : null)}
         className="w-full rounded-md border border-border bg-white px-2 py-1.5 text-sm"
       >
-        {allowEmpty ? <option value="">{t("nobody")}</option> : null}
+        {allowEmpty ? <option value="">{emptyLabel ?? t("nobody")}</option> : null}
         {users.data?.map((user) => (
           <option key={user.id} value={user.id}>
             {user.name}
