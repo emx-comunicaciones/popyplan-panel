@@ -303,6 +303,34 @@ describe("GuardiaPanel", () => {
     expect(mutate).toHaveBeenCalledWith({ help_phone: "", on_call_user: null });
   });
 
+  it("una persona voluntaria de guardia se marca y se avisa de que atiende desde la app (error 9)", async () => {
+    mockOrganizationHooks();
+    useOrganizationMock.mockReturnValue({ data: buildOrganization({ id: 7, on_call_user: null }) });
+    useOrgMembersMock.mockReturnValue({
+      data: [
+        buildOrgMembershipFull({ id: 1, user: 42, role: "titular", public_name: "Ana" }),
+        buildOrgMembershipFull({ id: 2, user: 43, role: "voluntario", public_name: "Eli" }),
+      ],
+      isError: false,
+      error: null,
+    });
+    usePendingHelpRequestsMock.mockReturnValue({ data: [], isError: false, error: null });
+    useAcknowledgeHelpRequestMock.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
+    const user = userEvent.setup();
+
+    render(<GuardiaPanel orgId={7} slug={SLUG} canOpenPersonSheet canManage canAcknowledge />);
+
+    expect(screen.getByRole("option", { name: "Eli (voluntario/a: solo desde la app)" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Ana" })).toBeInTheDocument();
+    expect(screen.queryByText(/no puede entrar en el panel/)).not.toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText("Persona de guardia"), "43");
+    expect(screen.getByText(/no puede entrar en el panel/)).toHaveTextContent("Avisos de guardia");
+
+    await user.selectOptions(screen.getByLabelText("Persona de guardia"), "42");
+    expect(screen.queryByText(/no puede entrar en el panel/)).not.toBeInTheDocument();
+  });
+
   it("guardar con un 403 (dinamizador sin permiso) muestra el texto traducido de ese kind", async () => {
     const { UpdateOrganizationError } = await import("@/hooks/useUpdateOrganization");
     mockOrganizationHooks();

@@ -58,4 +58,16 @@ describe("errorKindText", () => {
       );
     }
   });
+
+  it("un `detail` que es un código interno (snake_case, con punto…) no se pinta: se traduce por `kind` (error 13)", () => {
+    for (const code of ["sin_territorio", "not_authenticated", "entities.organization_not_found", "en_uso"]) {
+      expect(errorKindText({ kind: "invalido", detail: code }, KEYS, fakeT, "errors.example.desconocido")).toBe(
+        "t(errors.example.invalido)",
+      );
+    }
+    // Una frase sigue pintándose tal cual, aunque lleve guiones bajos o sea corta.
+    expect(errorKindText({ kind: "invalido", detail: "Falta el campo." }, KEYS, fakeT, "errors.example.desconocido")).toBe(
+      "Falta el campo.",
+    );
+  });
 });

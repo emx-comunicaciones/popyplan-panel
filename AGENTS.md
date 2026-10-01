@@ -247,6 +247,10 @@ entidades normales, `/elegir-entidad`.
   al teléfono en un solo `PATCH` (solo titular); vaciarla manda `null`,
   el teléfono vacío manda `""` (no nullable). Una guardia que ya no está
   en el equipo se avisa y se manda `null`.
+  Un `voluntario` puede ser la guardia pero no entra en el panel: el selector
+  lo marca y avisa de que atiende desde la app («Avisos de guardia»).
+- **Reportes**: «Todos» pide los tres estados (`useReportsQueue` con
+  `status: "all"`), porque el backend sin `status` omite los resueltos.
 - **Asistencia/check-in**: marcar exige actividad empezada; check-in en
   ventana `-2h..+12h` (409 con el mensaje literal); `already: true` es
   aviso, no error. El QR admite token o `popyplan://checkin/<token>`.

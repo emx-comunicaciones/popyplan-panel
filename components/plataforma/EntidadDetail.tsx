@@ -562,8 +562,12 @@ function AmbitoTab({ orgId, role }: { orgId: number | string; role: string | nul
  */
 function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role: string | null }) {
   const t = useTranslations();
-  const canManage = canManageTeamFromPlatform(platformRole);
   const members = useOrgMembers(orgId);
+  // Con titular puesto, el backend cierra el equipo (y las referencias) a la
+  // plataforma con un 403: decir «también puedes cambiarlos tú» y ofrecer
+  // formularios que no pueden funcionar era el error 15 del informe.
+  const teamClosed = members.isError;
+  const canManage = canManageTeamFromPlatform(platformRole) && !teamClosed;
   const addMember = useAddOrgMember(orgId);
   const removeMember = useRemoveOrgMember(orgId);
   const references = useOrgReferences(orgId);
@@ -583,12 +587,23 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
   const [removingMember, setRemovingMember] = useState<OrgMembershipFull | null>(null);
   const [removingReference, setRemovingReference] = useState<Reference | null>(null);
 
+  // `Reference.referent` es el id de la membresía, no de la cuenta: se
+  // resuelve con el equipo y nunca se pinta el número.
+  function referentText(membershipId: number): string {
+    const member = members.data?.find((m) => m.id === membershipId);
+    return member
+      ? t("entidad.configuracion.referentWithName", { name: member.public_name })
+      : t("entidad.configuracion.referentNoName");
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <p className="text-xs text-text-secondary">
-        {canManage
-          ? t("plataforma.entidadFicha.teamManageableNotice")
-          : t("plataforma.entidadFicha.teamReadOnlyNotice")}
+        {teamClosed
+          ? t("plataforma.entidadFicha.teamClosedNotice")
+          : canManage
+            ? t("plataforma.entidadFicha.teamManageableNotice")
+            : t("plataforma.entidadFicha.teamReadOnlyNotice")}
       </p>
 
       <Card title={t("plataforma.entidadFicha.teamCardTitle")}>
@@ -758,7 +773,7 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
                 <span>
                   {t("plataforma.entidadFicha.referenceRow", {
                     name: reference.public_name,
-                    referentId: reference.referent,
+                    referent: referentText(reference.referent),
                   })}
                 </span>
                 {canManage ? (

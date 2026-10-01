@@ -47,8 +47,17 @@ const TECHNICAL_DETAIL = new RegExp(
   "i",
 );
 
+/**
+ * Un código interno (`sin_territorio`, `not_authenticated`,
+ * `entities.organization_not_found`): una sola palabra en minúsculas unida
+ * por `_`, `.` o `:`, sin espacios. No es prosa y no se le pinta a nadie
+ * (informe del panel, error 13: «mensajes de error en código»).
+ */
+const CODE_LIKE_DETAIL = /^[a-z][a-z0-9]*(?:[_.:][a-z0-9]+)+$/;
+
 export function isTechnicalDetail(detail: string): boolean {
-  return TECHNICAL_DETAIL.test(detail);
+  const trimmed = detail.trim();
+  return TECHNICAL_DETAIL.test(trimmed) || CODE_LIKE_DETAIL.test(trimmed);
 }
 
 export function errorKindText<Kind extends string>(

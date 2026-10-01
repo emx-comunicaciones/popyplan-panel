@@ -289,6 +289,11 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
   const currentOnCall =
     onCall ?? (savedOnCall != null && !staleOnCall ? String(savedOnCall) : "");
 
+  // Error 9: un voluntario puede ser la guardia (el backend lo admite) pero
+  // no entra en el panel: atiende los avisos desde la app.
+  const onCallIsVolunteer =
+    !!currentOnCall && !!members.data?.some((member) => String(member.user) === currentOnCall && member.role === "voluntario");
+
   // Error 40: el backend rechaza lo que no parece un teléfono; se avisa antes.
   const helpPhoneInvalid = !isValidPhone(currentHelpPhone);
 
@@ -343,7 +348,9 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
               <option value="">{t("entidad.guardia.onCallUnassigned")}</option>
               {members.data.map((member) => (
                 <option key={member.id} value={member.user}>
-                  {member.public_name}
+                  {member.role === "voluntario"
+                    ? t("entidad.guardia.onCallVolunteerOption", { name: member.public_name })
+                    : member.public_name}
                 </option>
               ))}
             </select>
@@ -357,6 +364,11 @@ function GuardiaSettings({ orgId }: { orgId: number | string }) {
           resolver el nombre de quien está de guardia — y el id crudo no
           se pinta nunca (invariante 1/9). Se dice qué pasa, que es lo que
           hace el resto del panel con una consulta auxiliar caída (B15). */}
+      {onCallIsVolunteer ? (
+        <p role="status" className="mt-2 text-sm text-text-secondary">
+          {t("entidad.guardia.onCallVolunteerNotice")}
+        </p>
+      ) : null}
       {staleOnCall ? (
         <p role="alert" className="mt-2 text-sm text-error">
           {t("entidad.guardia.onCallStale")}

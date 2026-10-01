@@ -25,7 +25,7 @@ import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Table } from "@/components/ui/Table";
-import { useReportsQueue, type ReportsQueueErrorKind, type ReportsQueueFilters } from "@/hooks/useReportsQueue";
+import { useReportsQueue, type ReportsQueueErrorKind, type ReportStatusFilter } from "@/hooks/useReportsQueue";
 import type { ReportRow } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 import { REPORT_TARGET_LABEL_KEYS, enumLabel } from "@/lib/i18n/enumLabels";
@@ -45,9 +45,9 @@ const REPORTS_QUEUE_ERROR_KEYS: Record<ReportsQueueErrorKind, string> = {
 
 export function ReportesQueuePlataforma() {
   const t = useTranslations();
-  const [status, setStatus] = useState<ReportsQueueFilters["status"] | "">("pending");
+  const [status, setStatus] = useState<ReportStatusFilter | "">("pending");
 
-  const reports = useReportsQueue(undefined, { status: status || undefined });
+  const reports = useReportsQueue(undefined, { status: status || "all" });
 
   function reasonText(reason: string): string {
     const key = reasonLabelKey(reason);
@@ -69,7 +69,7 @@ export function ReportesQueuePlataforma() {
           id="plataforma-reportes-status"
           value={status}
           onChange={(event) => {
-            setStatus(event.target.value as ReportsQueueFilters["status"] | "");
+            setStatus(event.target.value as ReportStatusFilter | "");
           }}
           className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         >

@@ -46,14 +46,24 @@ export class ReportsQueueError extends Error {
   }
 }
 
+export type ReportStatusFilter = "pending" | "in_review" | "resolved";
+
 export interface ReportsQueueFilters {
-  status?: "pending" | "in_review" | "resolved";
+  /**
+   * `"all"` = los tres estados. Sin `status` el backend devuelve solo lo
+   * que sigue en curso (pendiente y en revisión) y no admite «todos», así
+   * que el hook pide los tres estados y los junta (error 11 del informe:
+   * «Todos» no incluía los resueltos).
+   */
+  status?: ReportStatusFilter | "all";
 }
 
-function buildQuery(orgId: number | string | undefined, filters: ReportsQueueFilters): string {
+const ALL_STATUSES: ReportStatusFilter[] = ["pending", "in_review", "resolved"];
+
+function buildQuery(orgId: number | string | undefined, status: ReportStatusFilter | undefined): string {
   const params = new URLSearchParams();
   if (orgId !== undefined) params.set("organization", String(orgId));
-  if (filters.status) params.set("status", filters.status);
+  if (status) params.set("status", status);
   return params.toString();
 }
 
@@ -61,13 +71,17 @@ export function useReportsQueue(
   orgId?: number | string,
   filters: ReportsQueueFilters = {},
 ): UseQueryResult<ReportRow[], ReportsQueueError> {
-  const query = buildQuery(orgId, filters);
+  const statusKey = filters.status ?? "";
 
   return useQuery<ReportRow[], ReportsQueueError>({
-    queryKey: ["panel-reports-queue", orgId ?? "plataforma", query],
+    queryKey: ["panel-reports-queue", orgId ?? "plataforma", statusKey],
     queryFn: async () => {
       try {
-        return await apiFetch<ReportRow[]>(`${SAFETY.REPORTS_QUEUE()}?${query}`);
+        const fetchStatus = (status: ReportStatusFilter | undefined) =>
+          apiFetch<ReportRow[]>(`${SAFETY.REPORTS_QUEUE()}?${buildQuery(orgId, status)}`);
+        if (filters.status !== "all") return await fetchStatus(filters.status);
+        const groups = await Promise.all(ALL_STATUSES.map(fetchStatus));
+        return groups.flat().sort((a, b) => b.created_at.localeCompare(a.created_at));
       } catch (error) {
         if (error instanceof ApiError && error.status === 403) {
           throw new ReportsQueueError("sin_acceso", "No tienes acceso a la cola de reportes.");
