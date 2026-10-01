@@ -109,10 +109,15 @@ function PendingInvitationsHint({ orgId }: { orgId: number | string }) {
  */
 export function PersonasTable(props: PersonasTableProps) {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const query = buildPersonasQuery(parsePersonasQuery(searchParams));
   // Consultas que la propia tabla ha escrito en la URL y aún no han llegado
   // por `useSearchParams` (el `replace` es asíncrono).
   const pending = useRef<string[]>([]);
+  // Última consulta que llegó por fuera (Atrás/Adelante): manda sobre
+  // cualquier `replace` propio que llegue después.
+  const external = useRef<string | null>(null);
   const [epoch, setEpoch] = useState(0);
   const lastQuery = useRef(query);
   useEffect(() => {
@@ -121,14 +126,25 @@ export function PersonasTable(props: PersonasTableProps) {
     const own = pending.current.indexOf(query);
     if (own >= 0) {
       pending.current = pending.current.slice(own + 1);
+      if (external.current !== null && external.current !== query) {
+        // Un `replace` propio atrasado ha pisado lo que eligió Atrás: se
+        // vuelve a escribir esa URL para que URL y tabla coincidan.
+        const wanted = external.current;
+        pending.current.push(wanted);
+        router.replace(wanted ? `${pathname}?${wanted}` : pathname, { scroll: false });
+      } else if (pending.current.length === 0) {
+        external.current = null;
+      }
       return;
     }
     // La URL cambió por fuera (Atrás/Adelante del navegador): la tabla se
     // vuelve a montar con los filtros y la página que dice ahora. Solo se
     // lee la URL al montar, así que no hay que sincronizar campo a campo.
-    pending.current = [];
+    // `pending` se conserva: un `replace` propio que aún no ha llegado
+    // seguirá llegando, y no es otro cambio externo que deba deshacer esto.
+    external.current = pending.current.length > 0 ? query : null;
     setEpoch((value) => value + 1);
-  }, [query]);
+  }, [query, router, pathname]);
   return <PersonasTableContent key={epoch} {...props} onPush={(value) => pending.current.push(value)} />;
 }
 
