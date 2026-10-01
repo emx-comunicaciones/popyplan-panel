@@ -5659,6 +5659,12 @@
           "state": "Fons estatals",
           "none": "Cap comunicat"
         }
+      },
+      "pagination": {
+        "label": "Pàgines",
+        "previous": "Anterior",
+        "next": "Següent",
+        "page": "Pàgina {page} de {pages}"
       }
     }
   }

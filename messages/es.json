@@ -5659,6 +5659,12 @@
           "state": "Fondos estatales",
           "none": "Ninguno comunicado"
         }
+      },
+      "pagination": {
+        "label": "Páginas",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "page": "Página {page} de {pages}"
       }
     }
   }

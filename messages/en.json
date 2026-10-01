@@ -5659,6 +5659,12 @@
           "state": "State funds",
           "none": "None reported"
         }
+      },
+      "pagination": {
+        "label": "Pages",
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {page} of {pages}"
       }
     }
   }

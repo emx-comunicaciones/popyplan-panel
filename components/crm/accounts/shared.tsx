@@ -228,3 +228,23 @@ export function QueryBoundary<T>({
   }
   return <>{children(query.data)}</>;
 }
+
+/** Páginas necesarias para `count` filas de `size` en `size`. */
+export const pageCount = (count: number, size: number): number => Math.max(1, Math.ceil(count / size));
+
+/** Anterior/Siguiente de las listas de la ficha; sin más de una página no pinta nada. */
+export function PageNav({ page, pages, onPage }: { page: number; pages: number; onPage: (page: number) => void }) {
+  const t = useTranslations("crm.accountDetail.pagination");
+  if (pages <= 1 && page <= 1) return null;
+  return (
+    <nav aria-label={t("label")} className="flex items-center justify-between gap-2">
+      <Button type="button" variant="secondary" disabled={page <= 1} onClick={() => onPage(page - 1)}>
+        {t("previous")}
+      </Button>
+      <span className="text-sm text-text-secondary">{t("page", { page, pages })}</span>
+      <Button type="button" variant="secondary" disabled={page >= pages} onClick={() => onPage(page + 1)}>
+        {t("next")}
+      </Button>
+    </nav>
+  );
+}

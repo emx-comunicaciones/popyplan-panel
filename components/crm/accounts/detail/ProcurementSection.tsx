@@ -8,7 +8,7 @@
  * recoge. Se edita en la ficha de la oportunidad.
  */
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
 import { Card } from "@/components/ui/Card";
@@ -19,7 +19,9 @@ import { formatDate, formatMoney } from "@/lib/crm/format";
 import { crmOpportunityHref } from "@/lib/crm/nav";
 
 import { StageBadge } from "../../common";
-import { QueryBoundary } from "../shared";
+import { PageNav, QueryBoundary, pageCount } from "../shared";
+
+const PAGE_SIZE = 50;
 
 function OpportunityProcurement({ opp }: { opp: CrmOpportunity }) {
   const t = useTranslations("crm.accountDetail.procurement");
@@ -91,17 +93,19 @@ function OpportunityProcurement({ opp }: { opp: CrmOpportunity }) {
 
 export function ProcurementSection({ accountId }: { accountId: number }) {
   const t = useTranslations("crm.accountDetail.procurement");
-  const query = useCrmOpportunities({ account: accountId, page_size: 50 });
+  const [page, setPage] = useState(1);
+  const query = useCrmOpportunities({ account: accountId, page, page_size: PAGE_SIZE });
   return (
     <QueryBoundary query={query}>
       {(data) =>
-        data.results.length === 0 ? (
+        data.results.length === 0 && page === 1 ? (
           <EmptyState title={t("empty")} />
         ) : (
           <div className="flex flex-col gap-3">
             {data.results.map((opp) => (
               <OpportunityProcurement key={opp.id} opp={opp} />
             ))}
+            <PageNav page={page} pages={pageCount(data.count, PAGE_SIZE)} onPage={setPage} />
           </div>
         )
       }

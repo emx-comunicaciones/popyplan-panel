@@ -5659,6 +5659,12 @@
           "state": "Estatuko funtsak",
           "none": "Ez da inork jakinarazi"
         }
+      },
+      "pagination": {
+        "label": "Orriak",
+        "previous": "Aurrekoa",
+        "next": "Hurrengoa",
+        "page": "{page}. orria, {pages} orritatik"
       }
     }
   }
