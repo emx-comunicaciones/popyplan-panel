@@ -4433,6 +4433,230 @@
     },
     "settings": {
       "noAccess": "Només direcció comercial i administració de la plataforma poden canviar la configuració del CRM."
+    },
+    "period": {
+      "label": "Període",
+      "today": "Avui",
+      "week": "Aquesta setmana",
+      "month": "Aquest mes",
+      "quarter": "Aquest trimestre",
+      "year": "Aquest any",
+      "custom": "Personalitzat",
+      "since": "Des de",
+      "until": "Fins a",
+      "invalid": "Les dates no són vàlides: «Des de» no pot ser posterior a «Fins a». Se segueix mostrant l'últim període vàlid.",
+      "filters": {
+        "group": "Filtres",
+        "all": "Tots",
+        "owner": "Comercial",
+        "region": "Comunitat autònoma",
+        "province": "Província",
+        "kind": "Tipus d'entitat",
+        "product": "Producte",
+        "stage": "Estat",
+        "interest": "Interès",
+        "optionsError": "No s'han pogut carregar algunes opcions dels filtres."
+      }
+    },
+    "dashboard": {
+      "error": "No disponible: no s'han pogut carregar les xifres. Torna-ho a provar.",
+      "change": "{value} % respecte al període anterior",
+      "range": "Període: del {since} al {until}. Es compara amb el període anterior: del {previousSince} al {previousUntil}.",
+      "attentionLink": "Necessiten atenció ({count})",
+      "overdueLink": "Veure tasques vençudes ({count})",
+      "activityHeading": "Activitat i cartera",
+      "moneyHeading": "Economia",
+      "funnelHeading": "Embut comercial",
+      "kpi": {
+        "accounts": "Entitats totals",
+        "newAccounts": "Entitats noves",
+        "contacted": "Contactades",
+        "neverContacted": "Sense contactar",
+        "contacts": "Contactes fets",
+        "visits": "Visites",
+        "meetings": "Reunions",
+        "videoCalls": "Videotrucades",
+        "calls": "Trucades",
+        "demos": "Demos",
+        "proposalsSent": "Propostes enviades",
+        "pilots": "Pilots",
+        "openOpportunities": "Oportunitats obertes",
+        "won": "Contractacions",
+        "lost": "Perdudes",
+        "pendingTasks": "Tasques pendents",
+        "overdueTasks": "Tasques vençudes",
+        "withoutFollowUp": "Sense seguiment"
+      },
+      "money": {
+        "pipelineValue": "Valor total del pipeline",
+        "weightedPipeline": "Valor ponderat",
+        "proposalsAmount": "Import de propostes enviades",
+        "wonAmount": "Import contractat",
+        "averageTicket": "Tiquet mitjà",
+        "note": "El valor ponderat multiplica cada oportunitat oberta per la probabilitat de la seva fase. Propostes i import contractat són del període triat."
+      },
+      "funnel": {
+        "caption": "Embut: oportunitats per fase, amb import, conversió des de la fase anterior i dies mitjans a la fase",
+        "asideCaption": "Oportunitats perdudes i en pausa",
+        "stage": "Fase",
+        "count": "Oportunitats",
+        "amount": "Import",
+        "reached": "Hi han arribat",
+        "conversion": "Conversió des de la fase anterior",
+        "averageDays": "Dies mitjans a la fase",
+        "days": "{count, plural, one {# dia} other {# dies}}"
+      }
+    },
+    "reports": {
+      "error": "No disponible: no s'ha pogut carregar l'informe. Torna-ho a provar.",
+      "range": "Període: del {since} al {until}.",
+      "export": {
+        "heading": "Exportar",
+        "note": "Descarrega en CSV el que veus amb els filtres actuals (entitats, oportunitats o activitats).",
+        "accounts": "Exportar entitats (CSV)",
+        "opportunities": "Exportar oportunitats (CSV)",
+        "activities": "Exportar activitats (CSV)",
+        "exporting": "Exportant…",
+        "error": "No s'ha pogut exportar. Torna-ho a provar."
+      },
+      "activity": {
+        "heading": "Resum d'activitat",
+        "contacts": "Contactes fets",
+        "visits": "Visites",
+        "meetings": "Reunions",
+        "videoCalls": "Videotrucades",
+        "calls": "Trucades",
+        "demos": "Demos",
+        "pilots": "Pilots",
+        "averageDays": "Dies mitjans entre contactes",
+        "withoutFollowUp": "Entitats sense seguiment",
+        "wonAmount": "Import contractat",
+        "byKindCaption": "Activitats del període per tipus",
+        "kind": "Tipus d'activitat",
+        "count": "Activitats"
+      },
+      "funnelHeading": "Embut",
+      "team": {
+        "heading": "Activitat per comercial",
+        "note": "No és un rànquing: l'activitat (visites, trucades…) i els resultats (pipeline, contractes, conversió) es llegeixen junts, i les files van per ordre alfabètic. Més visites no vol dir més vendes.",
+        "caption": "Activitat i resultats per comercial en el període",
+        "name": "Comercial",
+        "accounts": "Entitats",
+        "contacts": "Contactes",
+        "visits": "Visites",
+        "meetings": "Reunions",
+        "videoCalls": "Videotrucades",
+        "calls": "Trucades",
+        "demos": "Demos",
+        "proposals": "Propostes",
+        "openOpportunities": "Oportunitats obertes",
+        "pipelineValue": "Valor del pipeline",
+        "contracts": "Contractes",
+        "wonAmount": "Import contractat",
+        "pendingTasks": "Tasques pendents",
+        "overdueTasks": "Tasques vençudes",
+        "winRate": "Taxa d'èxit"
+      },
+      "lost": {
+        "heading": "Motius de pèrdua",
+        "empty": "No hi ha oportunitats perdudes en aquest període.",
+        "caption": "Oportunitats perdudes per motiu",
+        "reason": "Motiu",
+        "count": "Oportunitats"
+      }
+    },
+    "map": {
+      "filters": {
+        "minPopulation": "Població mínima"
+      },
+      "error": "No disponible: no s'ha pogut carregar el mapa. Torna-ho a provar.",
+      "empty": "Cap entitat amb ubicació compleix aquests filtres.",
+      "mapLabel": "{count, plural, one {Mapa d'Espanya amb # entitat; la llista de sota té les mateixes dades} other {Mapa d'Espanya amb # entitats; la llista de sota té les mateixes dades}}",
+      "legend": {
+        "heading": "Llegenda",
+        "item": "{status} ({count})",
+        "note": "Cada estat té la seva pròpia forma i lletra, a més del color."
+      },
+      "status": {
+        "sin_contactar": "Sense contactar",
+        "contactado": "Contactat",
+        "interesado": "Interessat",
+        "negociacion": "Negociació",
+        "cliente": "Client",
+        "perdido": "Perdut"
+      },
+      "popup": {
+        "municipality": "Municipi: {value}",
+        "population": "Població: {value}",
+        "stage": "Fase: {value}",
+        "owner": "Comercial: {value}",
+        "lastActivity": "Última activitat: {value}",
+        "nextActivity": "Pròxima activitat: {value}",
+        "openValue": "Valor obert: {value}",
+        "viewAccount": "Veure fitxa"
+      },
+      "list": {
+        "heading": "Llista d'entitats",
+        "show": "{count, plural, one {Veure la llista (# entitat)} other {Veure la llista (# entitats)}}",
+        "hide": "Amagar la llista",
+        "caption": "Entitats del mapa amb el seu estat, comercial i valor obert",
+        "name": "Entitat",
+        "municipality": "Municipi",
+        "province": "Província",
+        "status": "Estat al mapa",
+        "stage": "Fase",
+        "owner": "Comercial",
+        "population": "Població",
+        "lastActivity": "Última activitat",
+        "openValue": "Valor obert",
+        "showMore": "Mostrar-ne més ({shown} de {total})"
+      },
+      "coverage": {
+        "heading": "Cobertura territorial",
+        "note": "Compta només ajuntaments: quants n'hi ha registrats, quants s'han contactat, quants estan en negociació i quants són clients.",
+        "levelGroup": "Nivell territorial",
+        "province": "Província",
+        "region": "Comunitat",
+        "error": "No disponible: no s'ha pogut carregar la cobertura. Torna-ho a provar.",
+        "empty": "Encara no hi ha ajuntaments registrats.",
+        "caption": "Cobertura territorial per {level}: ajuntaments registrats, contactats, en negociació i clients",
+        "registered": "Municipis registrats",
+        "contacted": "Contactats",
+        "negotiating": "En negociació",
+        "clients": "Clients",
+        "coverage": "% cobertura",
+        "totals": "Total"
+      }
+    },
+    "attention": {
+      "intro": "Entitats sense contacte recent, de més a menys temps sense activitat. Els nivells d'avís són {levels} dies sense contacte.",
+      "error": "No disponible: no s'ha pogut carregar la llista. Torna-ho a provar.",
+      "empty": "Cap entitat necessita atenció ara mateix.",
+      "count": "{count, plural, one {# entitat necessita atenció} other {# entitats necessiten atenció}}",
+      "caption": "Entitats que necessiten atenció, amb comercial, fase, últim contacte, nivell d'avís i següent tasca",
+      "never": "Mai",
+      "days": "{count, plural, one {# dia} other {# dies}}",
+      "level": "{level}+ dies",
+      "nextTask": "{title} · {date}",
+      "register": "Registrar activitat",
+      "registerFor": "Registrar activitat: {name}",
+      "columns": {
+        "account": "Entitat",
+        "owner": "Comercial",
+        "stage": "Fase",
+        "lastActivity": "Última activitat",
+        "days": "Dies sense contacte",
+        "level": "Nivell d'avís",
+        "potential": "Import potencial",
+        "nextTask": "Següent tasca",
+        "actions": "Accions"
+      },
+      "pagination": {
+        "label": "Paginació",
+        "previous": "Anterior",
+        "next": "Següent",
+        "page": "Pàgina {page}"
+      }
     }
   }
 }

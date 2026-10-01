@@ -4433,6 +4433,230 @@
     },
     "settings": {
       "noAccess": "Only sales management and platform administration can change the CRM settings."
+    },
+    "period": {
+      "label": "Period",
+      "today": "Today",
+      "week": "This week",
+      "month": "This month",
+      "quarter": "This quarter",
+      "year": "This year",
+      "custom": "Custom",
+      "since": "From",
+      "until": "To",
+      "invalid": "The dates are not valid: “From” cannot be after “To”. The last valid period is still shown.",
+      "filters": {
+        "group": "Filters",
+        "all": "All",
+        "owner": "Salesperson",
+        "region": "Autonomous community",
+        "province": "Province",
+        "kind": "Entity type",
+        "product": "Product",
+        "stage": "Status",
+        "interest": "Interest",
+        "optionsError": "Some filter options could not be loaded."
+      }
+    },
+    "dashboard": {
+      "error": "Not available: the figures could not be loaded. Try again.",
+      "change": "{value} % compared with the previous period",
+      "range": "Period: {since} to {until}. Compared with the previous period: {previousSince} to {previousUntil}.",
+      "attentionLink": "Need attention ({count})",
+      "overdueLink": "View overdue tasks ({count})",
+      "activityHeading": "Activity and portfolio",
+      "moneyHeading": "Economics",
+      "funnelHeading": "Sales funnel",
+      "kpi": {
+        "accounts": "Total entities",
+        "newAccounts": "New entities",
+        "contacted": "Contacted",
+        "neverContacted": "Not yet contacted",
+        "contacts": "Contacts made",
+        "visits": "Visits",
+        "meetings": "Meetings",
+        "videoCalls": "Video calls",
+        "calls": "Calls",
+        "demos": "Demos",
+        "proposalsSent": "Proposals sent",
+        "pilots": "Pilots",
+        "openOpportunities": "Open opportunities",
+        "won": "Contracts won",
+        "lost": "Lost",
+        "pendingTasks": "Pending tasks",
+        "overdueTasks": "Overdue tasks",
+        "withoutFollowUp": "Without follow-up"
+      },
+      "money": {
+        "pipelineValue": "Total pipeline value",
+        "weightedPipeline": "Weighted value",
+        "proposalsAmount": "Amount of proposals sent",
+        "wonAmount": "Contracted amount",
+        "averageTicket": "Average ticket",
+        "note": "The weighted value multiplies each open opportunity by the probability of its stage. Proposals and contracted amount are for the chosen period."
+      },
+      "funnel": {
+        "caption": "Funnel: opportunities by stage, with amount, conversion from the previous stage and average days in stage",
+        "asideCaption": "Lost and paused opportunities",
+        "stage": "Stage",
+        "count": "Opportunities",
+        "amount": "Amount",
+        "reached": "Reached",
+        "conversion": "Conversion from previous stage",
+        "averageDays": "Average days in stage",
+        "days": "{count, plural, one {# day} other {# days}}"
+      }
+    },
+    "reports": {
+      "error": "Not available: the report could not be loaded. Try again.",
+      "range": "Period: {since} to {until}.",
+      "export": {
+        "heading": "Export",
+        "note": "Download as CSV what you see with the current filters (entities, opportunities or activities).",
+        "accounts": "Export entities (CSV)",
+        "opportunities": "Export opportunities (CSV)",
+        "activities": "Export activities (CSV)",
+        "exporting": "Exporting…",
+        "error": "The export failed. Try again."
+      },
+      "activity": {
+        "heading": "Activity summary",
+        "contacts": "Contacts made",
+        "visits": "Visits",
+        "meetings": "Meetings",
+        "videoCalls": "Video calls",
+        "calls": "Calls",
+        "demos": "Demos",
+        "pilots": "Pilots",
+        "averageDays": "Average days between contacts",
+        "withoutFollowUp": "Entities without follow-up",
+        "wonAmount": "Contracted amount",
+        "byKindCaption": "Activities in the period by type",
+        "kind": "Activity type",
+        "count": "Activities"
+      },
+      "funnelHeading": "Funnel",
+      "team": {
+        "heading": "Activity by salesperson",
+        "note": "This is not a ranking: activity (visits, calls…) and results (pipeline, contracts, conversion) are read together, and rows are in alphabetical order. More visits does not mean more sales.",
+        "caption": "Activity and results by salesperson in the period",
+        "name": "Salesperson",
+        "accounts": "Entities",
+        "contacts": "Contacts",
+        "visits": "Visits",
+        "meetings": "Meetings",
+        "videoCalls": "Video calls",
+        "calls": "Calls",
+        "demos": "Demos",
+        "proposals": "Proposals",
+        "openOpportunities": "Open opportunities",
+        "pipelineValue": "Pipeline value",
+        "contracts": "Contracts",
+        "wonAmount": "Contracted amount",
+        "pendingTasks": "Pending tasks",
+        "overdueTasks": "Overdue tasks",
+        "winRate": "Win rate"
+      },
+      "lost": {
+        "heading": "Reasons for loss",
+        "empty": "There are no lost opportunities in this period.",
+        "caption": "Lost opportunities by reason",
+        "reason": "Reason",
+        "count": "Opportunities"
+      }
+    },
+    "map": {
+      "filters": {
+        "minPopulation": "Minimum population"
+      },
+      "error": "Not available: the map could not be loaded. Try again.",
+      "empty": "No located entity matches these filters.",
+      "mapLabel": "{count, plural, one {Map of Spain with # entity; the list below has the same data} other {Map of Spain with # entities; the list below has the same data}}",
+      "legend": {
+        "heading": "Legend",
+        "item": "{status} ({count})",
+        "note": "Each status has its own shape and letter, as well as its colour."
+      },
+      "status": {
+        "sin_contactar": "Not yet contacted",
+        "contactado": "Contacted",
+        "interesado": "Interested",
+        "negociacion": "Negotiation",
+        "cliente": "Client",
+        "perdido": "Lost"
+      },
+      "popup": {
+        "municipality": "Municipality: {value}",
+        "population": "Population: {value}",
+        "stage": "Stage: {value}",
+        "owner": "Salesperson: {value}",
+        "lastActivity": "Last activity: {value}",
+        "nextActivity": "Next activity: {value}",
+        "openValue": "Open value: {value}",
+        "viewAccount": "View record"
+      },
+      "list": {
+        "heading": "List of entities",
+        "show": "{count, plural, one {Show the list (# entity)} other {Show the list (# entities)}}",
+        "hide": "Hide the list",
+        "caption": "Entities on the map with their status, salesperson and open value",
+        "name": "Entity",
+        "municipality": "Municipality",
+        "province": "Province",
+        "status": "Map status",
+        "stage": "Stage",
+        "owner": "Salesperson",
+        "population": "Population",
+        "lastActivity": "Last activity",
+        "openValue": "Open value",
+        "showMore": "Show more ({shown} of {total})"
+      },
+      "coverage": {
+        "heading": "Territorial coverage",
+        "note": "Counts town councils only: how many are registered, how many have been contacted, how many are in negotiation and how many are clients.",
+        "levelGroup": "Territorial level",
+        "province": "Province",
+        "region": "Community",
+        "error": "Not available: coverage could not be loaded. Try again.",
+        "empty": "There are no registered town councils yet.",
+        "caption": "Territorial coverage by {level}: registered, contacted, in negotiation and client town councils",
+        "registered": "Registered municipalities",
+        "contacted": "Contacted",
+        "negotiating": "In negotiation",
+        "clients": "Clients",
+        "coverage": "% coverage",
+        "totals": "Total"
+      }
+    },
+    "attention": {
+      "intro": "Entities with no recent contact, from longest to shortest time without activity. The alert levels are {levels} days without contact.",
+      "error": "Not available: the list could not be loaded. Try again.",
+      "empty": "No entity needs attention right now.",
+      "count": "{count, plural, one {# entity needs attention} other {# entities need attention}}",
+      "caption": "Entities that need attention, with salesperson, stage, last contact, alert level and next task",
+      "never": "Never",
+      "days": "{count, plural, one {# day} other {# days}}",
+      "level": "{level}+ days",
+      "nextTask": "{title} · {date}",
+      "register": "Log activity",
+      "registerFor": "Log activity: {name}",
+      "columns": {
+        "account": "Entity",
+        "owner": "Salesperson",
+        "stage": "Stage",
+        "lastActivity": "Last activity",
+        "days": "Days without contact",
+        "level": "Alert level",
+        "potential": "Potential amount",
+        "nextTask": "Next task",
+        "actions": "Actions"
+      },
+      "pagination": {
+        "label": "Pagination",
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {page}"
+      }
     }
   }
 }
