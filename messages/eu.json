@@ -4432,7 +4432,95 @@
       "m2880": "2 egun lehenago"
     },
     "settings": {
-      "noAccess": "Merkataritza-zuzendaritzak eta plataformaren administrazioak bakarrik alda dezakete CRMaren konfigurazioa."
+      "noAccess": "Merkataritza-zuzendaritzak eta plataformaren administrazioak bakarrik alda dezakete CRMaren konfigurazioa.",
+      "sectionsLabel": "Konfigurazio-atalak",
+      "sections": {
+        "stages": "Pipelinearen faseak",
+        "catalog": "Zerrendak",
+        "tags": "Etiketak",
+        "thresholds": "Atalaseak"
+      },
+      "loadError": "Ezin izan da konfigurazioa kargatu",
+      "edit": "Editatu",
+      "activate": "Aktibatu",
+      "deactivate": "Desaktibatu",
+      "stages": {
+        "title": "Pipelinearen faseak",
+        "new": "+ Fase berria",
+        "warning": "«Galduta» motako faseak arrazoia eskatzen du eta «Irabazita» motakoak kontratuaren datuak. Faseak ez dira ezabatzen: desaktibatu egiten dira eta ez dira gehiago eskainiko, baina erregistratutakoa gordetzen da.",
+        "caption": "Pipelinearen faseak",
+        "columns": {
+          "name": "Izena",
+          "key": "Gakoa",
+          "order": "Ordena",
+          "kind": "Mota",
+          "probability": "Probabilitatea",
+          "color": "Kolorea",
+          "status": "Egoera"
+        },
+        "active": "Aktiboa",
+        "inactive": "Inaktiboa",
+        "percent": "% {value}",
+        "nameOf": "{name} fasearen izena",
+        "orderOf": "{name} fasearen ordena",
+        "kindOf": "{name} fasearen mota",
+        "probabilityOf": "{name} fasearen probabilitatea",
+        "colorOf": "{name} fasearen kolorea",
+        "newTitle": "Fase berria",
+        "key": "Gakoa",
+        "keyHint": "Letra xeheak, zenbakiak eta azpimarra soilik (adibidez bilera_adostua). Gero ezin da aldatu.",
+        "name": "Izena",
+        "order": "Ordena",
+        "kind": "Mota",
+        "probability": "Probabilitatea (%)",
+        "color": "Kolorea",
+        "create": "Sortu fasea"
+      },
+      "catalog": {
+        "title": "Zerrenda konfiguragarriak",
+        "hint": "Kontaktuaren jatorriak, sailak eta produktuak. Ordena-zenbakiaren arabera ordenatzen dira eta ezabatu beharrean desaktibatu egiten dira.",
+        "kindLabel": "Zerrenda",
+        "newName": "Elementu berria",
+        "newOrder": "Ordena",
+        "add": "Gehitu",
+        "empty": "Zerrenda honek ez du elementurik oraindik.",
+        "caption": "Zerrendako elementuak: {kind}",
+        "columns": {
+          "name": "Izena",
+          "order": "Ordena",
+          "status": "Egoera"
+        },
+        "active": "Aktiboa",
+        "inactive": "Inaktiboa",
+        "nameOf": "{name} elementuaren izena",
+        "orderOf": "{name} elementuaren ordena"
+      },
+      "tags": {
+        "title": "Etiketak",
+        "hint": "Etiketak erakundeei izenaren bidez esleitzen zaizkie.",
+        "name": "Etiketa berria",
+        "color": "Kolorea",
+        "add": "Sortu etiketa",
+        "empty": "Oraindik ez dago etiketarik.",
+        "listLabel": "Dauden etiketak"
+      },
+      "thresholds": {
+        "title": "Atalaseak eta abisuak",
+        "hint": "Noiz behar du erakunde batek arreta eta noiz ematen du abisua CRMak. Balio guztiak egunetan daude.",
+        "attentionDays": "«Arreta behar dute» zerrendarako kontakturik gabeko egunak",
+        "attentionDaysHint": "Komaz bereizitako zerrenda, larritasun txikienetik handienera (adibidez 15, 30, 60).",
+        "opportunityIdleDays": "Aukera batean jarduerarik gabeko egunak",
+        "opportunityIdleDaysHint": "Epe hori igarotakoan, CRMak arduradunari abisua ematen dio.",
+        "proposalFollowupDays": "Proposamen bati erantzunik gabeko egunak",
+        "proposalFollowupDaysHint": "Bidalitako proposamenari jarraipena egiteko abisua ematen da.",
+        "closeDateWarningDays": "Kontratazio-dataren aurreko abisu-egunak",
+        "closeDateWarningDaysHint": "Aukera baten kontratazio-data estimatuaren aurretik.",
+        "renewalAlertDays": "Berritze-abisuak",
+        "renewalAlertDaysHint": "Kontratua berritu aurreko egunak, komaz bereiztuta (adibidez 90, 60, 30).",
+        "listInvalid": "Idatzi zenbaki oso positiboak, komaz bereizita.",
+        "numberInvalid": "Idatzi zenbaki oso positibo bat.",
+        "saved": "Atalaseak gorde dira."
+      }
     },
     "pipeline": {
       "moveAria": "Eraman «{name}» beste fase batera",
@@ -4873,6 +4961,213 @@
         "previous": "Aurrekoa",
         "next": "Hurrengoa",
         "page": "{page}. orria"
+      }
+    },
+    "activities": {
+      "caption": "Erregistratutako jarduerak",
+      "columns": {
+        "when": "Data",
+        "kind": "Mota",
+        "account": "Erakundea",
+        "summary": "Izenburua edo laburpena",
+        "result": "Emaitza",
+        "contacts": "Kontaktuak",
+        "owner": "Merkataria",
+        "followUp": "Jarraipena"
+      },
+      "hasFollowUp": "Jarraipenarekin",
+      "noFollowUp": "Jarraipenik gabe",
+      "open": "Ikusi eta editatu",
+      "delete": "Ezabatu",
+      "deleteTitle": "Ezabatu jarduera",
+      "deleteBody": "{name} erakundearen jardueratik kenduko da. Ezabaketa logikoa da: historialean geratzen da.",
+      "deleteConfirm": "Ezabatu jarduera",
+      "export": "Esportatu CSVa",
+      "register": "+ Erregistratu jarduera",
+      "empty": "Iragazki hauekin ez dago jarduerarik",
+      "emptyHint": "Aldatu iragazkiak edo erregistratu jarduera berri bat.",
+      "loadError": "Ezin izan dira jarduerak kargatu",
+      "filters": {
+        "kind": "Mota",
+        "allKinds": "Mota guztiak",
+        "owner": "Merkataria",
+        "allOwners": "Talde osoa",
+        "since": "Noiztik",
+        "until": "Noiz arte",
+        "search": "Bilatu"
+      },
+      "pager": {
+        "previous": "Aurrekoa",
+        "next": "Hurrengoa",
+        "summary": "{page}. orria, guztira {pages} · {count, plural, one {# jarduera} other {# jarduera}}"
+      },
+      "dialog": {
+        "title": "Jarduera",
+        "account": "Erakundea",
+        "kind": "Mota",
+        "when": "Data eta ordua",
+        "activityTitle": "Izenburua",
+        "contacts": "Kontaktuak",
+        "owner": "Merkataria",
+        "historyNote": "Hemen egiten dituzun aldaketek ez dute jatorrizko erregistroa berridazten: erakundearen historialean «jarduera editatua» gisa geratzen dira.",
+        "summary": "Laburpena",
+        "description": "Deskribapena",
+        "result": "Emaitza",
+        "interest": "Interes-maila ondoren",
+        "resultText": "Emaitzaren xehetasuna",
+        "duration": "Iraupena (minutu)",
+        "comments": "Barneko iruzkinak"
+      }
+    },
+    "tasks": {
+      "new": "+ Zeregin berria",
+      "bucketsLabel": "Zereginak dataren arabera",
+      "buckets": {
+        "today": "Gaur",
+        "upcoming": "Hurrengoak",
+        "overdue": "Atzeratuak",
+        "done": "Burututakoak"
+      },
+      "bucketWithCount": "{label} ({count})",
+      "wholeTeam": "Talde osoa",
+      "assigneeFilter": "Arduraduna",
+      "allAssignees": "Denak",
+      "listLabel": "Zeregin-zerrenda",
+      "loadError": "Ezin izan dira zereginak kargatu",
+      "empty": "Ez dago zereginik zerrenda honetan",
+      "emptyHint": "Sortu zeregin berri bat edo aldatu zerrenda.",
+      "untitled": "Izenbururik gabeko zeregina",
+      "noAccount": "Erakunderik gabe",
+      "overdue": "Atzeratua",
+      "priorityBadge": "Lehentasuna: {priority}",
+      "due": "Epea: {when}",
+      "reminderLine": "Gogorarazpena: {reminder}",
+      "noReminder": "gogorarazpenik gabe",
+      "reminderMinutes": "{minutes} minutu lehenago",
+      "complete": "Bete",
+      "start": "Martxan jarri",
+      "cancel": "Utzi zeregina",
+      "edit": "Editatu",
+      "registerActivity": "Erregistratu jarduera",
+      "cancelTitle": "Utzi zeregina",
+      "cancelBody": "«{title}» zeregina bertan behera geratuko da eta ez du gehiago abisurik emango. Editatuta berrireki dezakezu.",
+      "cancelConfirm": "Utzi zeregina",
+      "cancelKeep": "Mantendu",
+      "pager": {
+        "previous": "Aurrekoa",
+        "next": "Hurrengoa",
+        "summary": "{page}. orria, guztira {pages} · {count, plural, one {# zeregin} other {# zeregin}}"
+      },
+      "dialog": {
+        "newTitle": "Zeregin berria",
+        "editTitle": "Editatu zeregina",
+        "accountOptional": "Erakundea (aukerakoa)",
+        "accountFixed": "Erakundea: {name}",
+        "title": "Zer egin behar den",
+        "kind": "Ekintza mota",
+        "dueAt": "Data eta ordua",
+        "priority": "Lehentasuna",
+        "reminder": "Gogorarazpena",
+        "noReminder": "Gogorarazpenik gabe",
+        "status": "Egoera",
+        "assignee": "Arduraduna",
+        "description": "Deskribapena"
+      }
+    },
+    "calendar": {
+      "viewLabel": "Egutegiaren ikuspegia",
+      "views": {
+        "day": "Eguna",
+        "week": "Astea",
+        "month": "Hilabetea"
+      },
+      "previous": "Aurrekoa",
+      "next": "Hurrengoa",
+      "today": "Gaur",
+      "filters": {
+        "owner": "Merkataria",
+        "allOwners": "Talde osoa",
+        "province": "Probintzia",
+        "kind": "Jarduera mota",
+        "allKinds": "Mota guztiak"
+      },
+      "loadError": "Ezin izan da egutegia kargatu",
+      "emptyDay": "Ez dago ezer aurreikusita",
+      "emptyRange": "Ez dago ezer epe honetan",
+      "openDay": "Ireki {day}",
+      "addActivity": "+ Jarduera",
+      "addTask": "+ Zeregina",
+      "types": {
+        "activity": "Jarduera",
+        "task": "Zeregina",
+        "renewal": "Berritzea"
+      },
+      "doneActivity": "egina",
+      "doneTask": "burutua"
+    },
+    "documents": {
+      "uploadButton": "+ Igo dokumentua",
+      "maxSize": "Gehieneko tamaina: 25 MB fitxategiko.",
+      "tooBig": "Fitxategiak 25 MB gainditzen ditu.",
+      "openError": "Ezin izan da dokumentua ireki. Saiatu berriro.",
+      "caption": "CRMaren dokumentuak",
+      "loadError": "Ezin izan dira dokumentuak kargatu",
+      "empty": "Iragazki hauekin ez dago dokumenturik",
+      "emptyHint": "Igo lehena «+ Igo dokumentua» botoiarekin.",
+      "filters": {
+        "category": "Kategoria",
+        "allCategories": "Kategoria guztiak",
+        "account": "Erakundea",
+        "search": "Bilatu"
+      },
+      "columns": {
+        "name": "Izena",
+        "category": "Kategoria",
+        "account": "Erakundea",
+        "opportunity": "Aukera",
+        "version": "Bertsioa",
+        "date": "Data",
+        "uploadedBy": "Igotzailea",
+        "direction": "Jasoa edo bidalia"
+      },
+      "version": "{n}. bertsioa",
+      "received": "Jasoa",
+      "sent": "Bidalia",
+      "view": "Ikusi",
+      "download": "Deskargatu",
+      "addVersion": "Bertsio berria",
+      "history": "Bertsioak",
+      "delete": "Ezabatu",
+      "deleteTitle": "Ezabatu dokumentua",
+      "deleteBody": "«{name}» ez da gehiago agertuko biltegian. Ezabaketa logikoa da: bertsioak gordetzen dira.",
+      "deleteConfirm": "Ezabatu dokumentua",
+      "pager": {
+        "previous": "Aurrekoa",
+        "next": "Hurrengoa",
+        "summary": "{page}. orria, guztira {pages} · {count, plural, one {# dokumentu} other {# dokumentu}}"
+      },
+      "upload": {
+        "title": "Igo dokumentua",
+        "account": "Erakundea",
+        "file": "Fitxategia",
+        "name": "Izena (aukerakoa)",
+        "category": "Kategoria",
+        "description": "Deskribapena",
+        "received": "Erakundeak bidalitako dokumentua (gure aldetik bidali gabea)",
+        "submit": "Igo",
+        "uploading": "Igotzen…"
+      },
+      "newVersion": {
+        "title": "«{name}» dokumentuaren bertsio berria",
+        "hint": "Aurreko bertsioa gordetzen da: bertsioak ez dira inoiz ezabatzen.",
+        "file": "Fitxategia",
+        "submit": "Igo bertsioa"
+      },
+      "versions": {
+        "title": "«{name}» dokumentuaren bertsioak",
+        "note": "Aurreko bertsioak ez dira inoiz ezabatzen; azkenekoa da lehenespenez ikusten eta deskargatzen dena.",
+        "meta": "{date} · {by} · {size} KB",
+        "download": "Deskargatu {n}. bertsioa"
       }
     }
   }
