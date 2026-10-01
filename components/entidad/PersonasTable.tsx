@@ -16,7 +16,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useInvitations } from "@/hooks/useInvitations";
 import { usePeople } from "@/hooks/usePeople";
 import { useEntityCommunities } from "@/hooks/useEntityCommunities";
-import { useOrgMembers } from "@/hooks/useOrgMembers";
+import { useOrgReferents } from "@/hooks/useOrgMembers";
 import { useResendInvitation } from "@/hooks/useResendInvitation";
 import { useRevokeInvitation } from "@/hooks/useRevokeInvitation";
 import type { InvitedPersonRow } from "@/lib/api/types";
@@ -161,8 +161,8 @@ function PersonasTableContent({
   const communities = useEntityCommunities(orgId);
   // El referente ve solo a sus personas: para él el filtro no tiene sentido
   // y el equipo (solo titular) ni se pide.
-  const members = useOrgMembers(orgId, { enabled: canManage });
-  const referentes = (members.data ?? []).filter((member) => member.role === "referente");
+  const members = useOrgReferents(orgId, { enabled: canManage });
+  const referentes = members.data ?? [];
   const communityOptions = (communities.data ?? []).filter((community) => community.space !== "families");
   const t = useTranslations("entidad.personas");
   const tAll = useTranslations();

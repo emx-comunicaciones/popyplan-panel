@@ -28,7 +28,14 @@ vi.mock("@/hooks/useInvitations", () => ({ useInvitations: useInvitationsMock })
 vi.mock("@/hooks/useResendInvitation", () => ({ useResendInvitation: useResendInvitationMock }));
 vi.mock("@/hooks/useRevokeInvitation", () => ({ useRevokeInvitation: useRevokeInvitationMock }));
 vi.mock("@/hooks/useEntityCommunities", () => ({ useEntityCommunities: useEntityCommunitiesMock }));
-vi.mock("@/hooks/useOrgMembers", () => ({ useOrgMembers: useOrgMembersMock }));
+vi.mock("@/hooks/useOrgMembers", () => ({
+  useOrgMembers: useOrgMembersMock,
+  // `?role=referente` en el backend: lo mismo que el equipo, solo referentes.
+  useOrgReferents: (...args: Parameters<typeof useOrgMembersMock>) => {
+    const result = useOrgMembersMock(...args);
+    return { ...result, data: result?.data?.filter((m: { role: string }) => m.role === "referente") };
+  },
+}));
 vi.mock("@/hooks/useInvite", () => ({ useInvite: useInviteMock }));
 vi.mock("@/hooks/useImportPeople", () => ({ useImportPeople: useImportPeopleMock }));
 

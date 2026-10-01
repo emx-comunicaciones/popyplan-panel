@@ -14,7 +14,7 @@ import { useMutation, useQuery, useQueryClient, type UseMutationResult, type Use
 import { ApiError, apiFetch } from "@/lib/api/client";
 import { detailOf } from "@/lib/api/drfError";
 import { ORGANIZATIONS } from "@/lib/api/endpoints";
-import type { OrgMembershipFull, OrgMembershipRole } from "@/lib/api/types";
+import type { OrgMembershipFull, OrgMembershipRole, OrgReferent } from "@/lib/api/types";
 
 export type OrgMembersErrorKind = "invalido" | "sin_acceso" | "desconocido";
 
@@ -45,6 +45,31 @@ export function useOrgMembers(
           throw new OrgMembersError("sin_acceso", "Solo el titular puede ver el equipo de la entidad.");
         }
         throw new OrgMembersError("desconocido", "No se pudo cargar el equipo de la entidad.");
+      }
+    },
+  });
+}
+
+/**
+ * Solo los referentes de la entidad (`?role=referente`): los piden
+ * titular y moderador para los selects de referente. Va bajo la misma
+ * clave que el equipo, así que cualquier cambio en el equipo la invalida.
+ */
+export function useOrgReferents(
+  orgId: number | string,
+  options: { enabled?: boolean } = {},
+): UseQueryResult<OrgReferent[], OrgMembersError> {
+  return useQuery<OrgReferent[], OrgMembersError>({
+    queryKey: ["panel-org-members", orgId, "referentes"],
+    enabled: options.enabled ?? true,
+    queryFn: async () => {
+      try {
+        return await apiFetch<OrgReferent[]>(ORGANIZATIONS.MEMBERS_REFERENTS(orgId));
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 403) {
+          throw new OrgMembersError("sin_acceso", "Solo titular y moderador pueden ver los referentes.");
+        }
+        throw new OrgMembersError("desconocido", "No se pudieron cargar los referentes.");
       }
     },
   });

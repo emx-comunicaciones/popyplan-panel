@@ -19,7 +19,14 @@ const useSharedTrackingMock = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/auth/session", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("@/hooks/usePerson", () => ({ usePerson: usePersonMock }));
 vi.mock("@/hooks/useAssignReferent", () => ({ useAssignReferent: useAssignReferentMock }));
-vi.mock("@/hooks/useOrgMembers", () => ({ useOrgMembers: useOrgMembersMock }));
+vi.mock("@/hooks/useOrgMembers", () => ({
+  useOrgMembers: useOrgMembersMock,
+  // `?role=referente` en el backend: lo mismo que el equipo, solo referentes.
+  useOrgReferents: (...args: Parameters<typeof useOrgMembersMock>) => {
+    const result = useOrgMembersMock(...args);
+    return { ...result, data: result?.data?.filter((m: { role: string }) => m.role === "referente") };
+  },
+}));
 vi.mock("@/hooks/usePersonSupport", () => ({ usePersonSupport: usePersonSupportMock }));
 vi.mock("@/lib/auth/organization", () => ({ isTrackingProgramEnabled: isTrackingProgramEnabledMock }));
 vi.mock("@/hooks/useProgramEnrollments", () => ({

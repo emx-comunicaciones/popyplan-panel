@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useAssignReferent } from "@/hooks/useAssignReferent";
-import { useOrgMembers } from "@/hooks/useOrgMembers";
+import { useOrgReferents } from "@/hooks/useOrgMembers";
 import { usePerson } from "@/hooks/usePerson";
 import { usePersonSupport } from "@/hooks/usePersonSupport";
 import { isAllowedImageSrc } from "@/lib/config/imagePatterns";
@@ -188,13 +188,13 @@ function AssignReferentForm({
   userId: number | string;
 }) {
   const [referentUserId, setReferentUserId] = useState("");
-  const members = useOrgMembers(orgId);
+  const members = useOrgReferents(orgId);
   const assignReferent = useAssignReferent(orgId);
   const t = useTranslations("entidad.personaFicha");
   const tPeople = useTranslations("people");
   const tAll = useTranslations();
 
-  const referentes = (members.data ?? []).filter((member) => member.role === "referente");
+  const referentes = members.data ?? [];
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

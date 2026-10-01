@@ -535,6 +535,11 @@ export interface PaginatedCommunityList {
  * `Attendee`.
  */
 export type OrgMembershipFull = components["schemas"]["OrgMembership"];
+/**
+ * Fila de `GET .../members/?role=referente`: lo justo para elegir un
+ * referente (`id` de la membresía, `user` de la cuenta), sin contacto.
+ */
+export type OrgReferent = Pick<OrgMembershipFull, "id" | "user" | "public_name" | "role">;
 /** Cuerpo de `POST /api/organizations/{id}/members/`. */
 export type OrgMembershipCreateRequest = components["schemas"]["OrgMembershipRequest"];
 

@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { useEntityCommunities } from "@/hooks/useEntityCommunities";
 import { useInvite } from "@/hooks/useInvite";
-import { useOrgMembers } from "@/hooks/useOrgMembers";
+import { useOrgReferents } from "@/hooks/useOrgMembers";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 
 export interface AddPersonDialogProps {
@@ -39,7 +39,7 @@ const INVITE_ERROR_KEYS = {
 
 export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
   const communities = useEntityCommunities(orgId);
-  const members = useOrgMembers(orgId);
+  const members = useOrgReferents(orgId);
   const invite = useInvite(orgId);
   const t = useTranslations("people.addDialog");
   const tPeople = useTranslations("people");
@@ -53,7 +53,7 @@ export function AddPersonDialog({ orgId, onClose }: AddPersonDialogProps) {
   const [emailTouched, setEmailTouched] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
 
-  const referentes = (members.data ?? []).filter((member) => member.role === "referente");
+  const referentes = members.data ?? [];
   const trimmedEmail = email.trim();
   const emailValid = trimmedEmail.length > 0 && EMAIL_PATTERN.test(trimmedEmail);
   const canSubmit = trimmedEmail.length > 0;
