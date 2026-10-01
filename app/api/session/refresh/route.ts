@@ -157,7 +157,9 @@ export async function POST(request: NextRequest) {
     // el acceso necesite renovarse: rotar aquí metería en lista negra un
     // refresh sano y otra instancia que lo use se quedaría sin sesión. Se
     // responde 503 sin tocar las cookies; quien reintente lo hará igual.
-    const transient = (result: typeof meResult) => !result || (!result.ok && (result.status >= 500 || result.status === 200));
+    // (`status === 200` con `ok: false` es un cuerpo ilegible, p. ej. HTML de un proxy.)
+    const transient = (result: { ok: boolean; status: number } | null) =>
+      !result || (!result.ok && (result.status >= 500 || result.status === 200));
     if (transient(meResult) || transient(roleResult)) {
       return NextResponse.json({ detail: "No se pudo completar el refresco." }, { status: 503 });
     }

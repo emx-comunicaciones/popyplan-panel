@@ -200,6 +200,7 @@ entidades normales, `/elegir-entidad`.
   refresh rechazado: navegación de documento → `/login?returnTo=` (salvo
   `/`, que pasa sin sesión: es la landing); prefetch/RSC → pasa sin
   sesión. Error de red → 503, nunca logout. 200 ilegible → 503.
+- `POST /api/session/refresh` con el acceso aún vivo devuelve el perfil sin rotar; si ese perfil falla de forma transitoria (red, 5xx, cuerpo ilegible) responde 503 **sin rotar** (rotar metería en lista negra un refresh sano). Solo un 4xx lo manda a la rotación.
 - `returnTo` validado por allowlist (`lib/auth/returnTo.ts`).
 - **Frontera de confianza `X-Forwarded-For`** (`lib/auth/clientIp.ts`): se
   reenvía la IP real en las cuatro llamadas de auth porque el límite de
