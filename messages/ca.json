@@ -135,7 +135,8 @@
       "metricas": "Mètriques",
       "suscripciones": "Subscripcions",
       "nomencladores": "Nomenclàtors",
-      "buscaDelTesoro": "Caça del tresor"
+      "buscaDelTesoro": "Caça del tresor",
+      "comercial": "Comercial"
     }
   },
   "layout": {
@@ -334,6 +335,51 @@
       },
       "tesoroFicha": {
         "title": "Fitxa del joc"
+      },
+      "comercial": {
+        "title": "Comercial"
+      },
+      "comercialEntidades": {
+        "title": "Entitats"
+      },
+      "comercialEntidadFicha": {
+        "title": "Fitxa d'entitat"
+      },
+      "comercialContactos": {
+        "title": "Contactes"
+      },
+      "comercialPipeline": {
+        "title": "Pipeline"
+      },
+      "comercialActividades": {
+        "title": "Activitats"
+      },
+      "comercialTareas": {
+        "title": "Tasques i recordatoris"
+      },
+      "comercialCalendario": {
+        "title": "Calendari"
+      },
+      "comercialMapa": {
+        "title": "Mapa comercial"
+      },
+      "comercialOportunidades": {
+        "title": "Oportunitats"
+      },
+      "comercialOportunidadFicha": {
+        "title": "Oportunitat"
+      },
+      "comercialDocumentos": {
+        "title": "Documents"
+      },
+      "comercialInformes": {
+        "title": "Informes"
+      },
+      "comercialAtencion": {
+        "title": "Necessiten atenció"
+      },
+      "comercialConfiguracion": {
+        "title": "Configuració"
       }
     }
   },
@@ -1632,6 +1678,13 @@
       "invalido": "Aquesta entitat no pot tenir el programa de seguiment.",
       "sinPermiso": "Només superadmin pot canviar el programa de seguiment.",
       "desconocido": "No s'ha pogut canviar el programa de seguiment."
+    },
+    "crm": {
+      "sinAcceso": "No tens permís per a això.",
+      "invalido": "Revisa les dades: alguna no és vàlida.",
+      "duplicado": "Ja existeix alguna cosa semblant.",
+      "noEncontrado": "No existeix o no la portes tu.",
+      "desconocido": "No s'ha pogut completar. Torna-ho a provar."
     }
   },
   "reports": {
@@ -2572,6 +2625,294 @@
           "plataforma.actividades"
         ],
         "audience": "Només superadmin."
+      },
+      "comercial": {
+        "title": "Comercial",
+        "summary": "Situació comercial d'un cop d'ull: activitat del període, embut, valor del pipeline i el que necessita atenció.",
+        "details": "El tauler reuneix les xifres del període triat (avui, setmana, mes, trimestre, any o personalitzat) i les compara amb el període anterior. Un comercial veu només les seves entitats; la direcció comercial i l'administració veuen les de tot l'equip i poden filtrar per comercial, comunitat autònoma, província, tipus d'entitat, producte o estat.",
+        "audience": "Tot l'equip comercial; cada comercial veu les seves entitats.",
+        "actions": [
+          "Canviar el període i els filtres",
+          "Veure l'embut amb la conversió entre fases",
+          "Saltar a les entitats que necessiten atenció"
+        ],
+        "tips": [
+          "La variació % només surt si hi va haver dades en el període anterior.",
+          "El valor ponderat multiplica cada oportunitat oberta per la probabilitat de la seva fase."
+        ],
+        "related": [
+          "plataforma.comercialPipeline",
+          "plataforma.comercialAtencion",
+          "plataforma.comercialInformes"
+        ]
+      },
+      "comercialEntidades": {
+        "title": "Entitats",
+        "summary": "Ajuntaments, diputacions, cabildos i altres entitats a les quals venem, amb el seu comercial, estat i interès.",
+        "details": "Llistat amb cerca, filtres (comunitat, província, tipus, estat, interès, etiqueta, població, dies sense contacte, client) i ordre. En crear una entitat es comprova si ja n'hi ha una de semblant (mateix CIF o mateix nom al municipi). Des d'aquí també s'importen entitats en bloc (CSV o Excel) i s'exporta el llistat.",
+        "audience": "Tot l'equip comercial; donar de baixa i reassignar, només direcció comercial.",
+        "actions": [
+          "Donar d'alta una entitat",
+          "Importar ajuntaments des de CSV o Excel",
+          "Exportar el llistat a CSV",
+          "Obrir la fitxa d'una entitat"
+        ],
+        "tips": [
+          "Un comercial només veu les entitats que porta o en les quals col·labora.",
+          "Les entitats mai s'esborren de debò: queden fora dels llistats però el seu historial es conserva."
+        ],
+        "related": [
+          "plataforma.comercialContactos",
+          "plataforma.comercialPipeline",
+          "plataforma.comercialMapa"
+        ]
+      },
+      "comercialEntidadFicha": {
+        "title": "Fitxa d'entitat",
+        "summary": "Tot el d'una entitat: qui la porta, amb qui parlem, què hem fet, en quin punt som i què toca ara.",
+        "details": "La capçalera indica estat, interès, comercial, última i pròxima activitat. Pestanyes: resum, historial (tot el que ha passat, que mai se sobreescriu), contactes, oportunitats, tasques, documents, dades i contractació. Els botons de la capçalera registren activitat, creen tasques, contactes, oportunitats, documents i notes, o programen una reunió.",
+        "audience": "Qui porta l'entitat, els seus col·laboradors i direcció comercial.",
+        "actions": [
+          "Registrar una visita, trucada o reunió amb el seu següent pas",
+          "Afegir contactes, oportunitats, documents i notes",
+          "Canviar estat, interès o comercial responsable"
+        ],
+        "tips": [
+          "Les notes fixades surten sempre al resum.",
+          "Editar una activitat no canvia el que ja consta a l'historial: afegeix un apunt amb el que ha canviat."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialTareas"
+        ]
+      },
+      "comercialContactos": {
+        "title": "Contactes",
+        "summary": "Les persones amb les quals parlem a cada entitat: càrrec, departament, telèfon, correu i últim contacte.",
+        "details": "Llistat dels contactes de les teves entitats, amb cerca per nom, càrrec, telèfon o correu i filtre per departament. En afegir un contacte s'avisa si ja n'hi ha un altre amb el mateix correu o telèfon. Des d'un contacte es truca o s'escriu amb un toc.",
+        "audience": "Tot l'equip comercial; cada comercial veu els contactes de les seves entitats.",
+        "actions": [
+          "Cercar un contacte per nom, telèfon o correu",
+          "Trucar o escriure des del llistat",
+          "Exportar els contactes a CSV"
+        ],
+        "tips": [
+          "L'últim contacte s'actualitza sol en registrar una activitat amb aquesta persona.",
+          "Marca un contacte com a principal perquè surti primer a la fitxa."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialActividades"
+        ]
+      },
+      "comercialPipeline": {
+        "title": "Pipeline",
+        "summary": "Les oportunitats (o les entitats) per fase, en columnes: arrossega una targeta per canviar-la de fase.",
+        "details": "Cada columna és una fase comercial amb el seu nombre de targetes i import. Cada targeta mostra entitat, municipi, província, població, comercial, import, interès, dies sense contacte i pròxima activitat. En deixar anar una targeta en una altra fase el canvi queda a l'historial amb qui i quan; perdre demana el motiu i guanyar demana les dades del contracte.",
+        "audience": "Tot l'equip comercial.",
+        "actions": [
+          "Moure una oportunitat de fase arrossegant-la",
+          "Veure el pipeline per oportunitats o per entitats",
+          "Registrar el contracte en guanyar"
+        ],
+        "tips": [
+          "Amb teclat: obre la targeta i tria la fase al seu menú.",
+          "Una entitat avança sola amb la seva oportunitat més avançada; mai retrocedeix per això."
+        ],
+        "related": [
+          "plataforma.comercialOportunidades",
+          "plataforma.comercial"
+        ]
+      },
+      "comercialActividades": {
+        "title": "Activitats",
+        "summary": "Tot el que s'ha fet amb les entitats: visites, reunions, trucades, correus, demos, propostes…",
+        "details": "Llistat d'activitats amb filtre per tipus, comercial, dates i text. Cada activitat desa contactes, resum, resultat i interès posterior; en registrar-la es pot crear el seu següent pas com a tasca. El botó «+ Registrar activitat» és sempre a dalt.",
+        "audience": "Tot l'equip comercial.",
+        "actions": [
+          "Registrar una activitat amb el seu següent pas",
+          "Filtrar per tipus, comercial o dates",
+          "Exportar les activitats a CSV"
+        ],
+        "tips": [
+          "Una activitat amb data futura és una cita: surt al calendari i com a pròxima activitat.",
+          "Registrar una visita mou l'entitat de «Sense contactar» a «Contactada»."
+        ],
+        "related": [
+          "plataforma.comercialCalendario",
+          "plataforma.comercialTareas"
+        ]
+      },
+      "comercialTareas": {
+        "title": "Tasques i recordatoris",
+        "summary": "Els teus seguiments pendents: avui, propers, endarrerits i completats.",
+        "details": "Cada tasca porta entitat, contacte, oportunitat, tipus, responsable, data, prioritat, estat i recordatori. El recordatori arriba com a avís del tauler a l'hora triada, i una tasca vençuda també avisa. La direcció comercial pot veure les tasques de tot l'equip.",
+        "audience": "Tot l'equip comercial.",
+        "actions": [
+          "Crear una tasca amb el seu recordatori",
+          "Completar o cancel·lar una tasca",
+          "Veure les tasques endarrerides"
+        ],
+        "tips": [
+          "En registrar una activitat pots crear aquí el seu següent pas sense canviar de pantalla.",
+          "Els avisos es generen cada pocs minuts: el recordatori pot trigar una mica a arribar."
+        ],
+        "related": [
+          "plataforma.comercialCalendario",
+          "plataforma.comercialActividades"
+        ]
+      },
+      "comercialCalendario": {
+        "title": "Calendari",
+        "summary": "Visites, reunions, trucades, demos, seguiments, tasques i renovacions per dia, setmana o mes.",
+        "details": "Mostra les activitats, les tasques i les renovacions de contractes del període. Es filtra per comercial, província i tipus d'activitat, i des d'un dia es registra una activitat o es crea una tasca.",
+        "audience": "Tot l'equip comercial.",
+        "actions": [
+          "Canviar entre dia, setmana i mes",
+          "Crear una activitat o una tasca en un dia",
+          "Filtrar per comercial, província o tipus"
+        ],
+        "tips": [
+          "El que ja ha passat surt ratllat; el pendent, en negreta.",
+          "Les renovacions de contracte apareixen el dia de la seva data de renovació."
+        ],
+        "related": [
+          "plataforma.comercialTareas",
+          "plataforma.comercialActividades"
+        ]
+      },
+      "comercialMapa": {
+        "title": "Mapa comercial",
+        "summary": "Les entitats sobre el mapa, amb el seu estat comercial, i la cobertura per comunitat i província.",
+        "details": "Cada entitat amb coordenades surt com un punt amb forma i icona segons el seu estat (sense contactar, contactada, interessada, negociació, client, perduda), amb llegenda: mai només per color. En prémer un punt es veuen municipi, població, estat, comercial, última i pròxima activitat i valor, amb enllaç a la fitxa. A sota, la cobertura: ajuntaments registrats, contactats, en negociació i clients.",
+        "audience": "Tot l'equip comercial.",
+        "actions": [
+          "Filtrar el mapa",
+          "Obrir la fitxa des d'un punt",
+          "Veure la cobertura per província o comunitat"
+        ],
+        "tips": [
+          "Una entitat sense municipi ni coordenades no surt al mapa: completa-ho a la seva fitxa.",
+          "La cobertura compta només ajuntaments."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialInformes"
+        ]
+      },
+      "comercialOportunidades": {
+        "title": "Oportunitats",
+        "summary": "Les vendes possibles de cada entitat, amb producte, import, fase, data estimada i contractació pública.",
+        "details": "Una entitat pot tenir diverses oportunitats (associacions, joventut, prevenció…). Cadascuna desa imports estimat, de proposta i final, dates, mida (associacions, usuaris, professionals), la informació de contractació pública que comunica l'administració, les seves propostes amb versions i, en guanyar-la, el seu contracte i la seva renovació.",
+        "audience": "Tot l'equip comercial.",
+        "actions": [
+          "Crear una oportunitat",
+          "Filtrar per estat, fase o expedient",
+          "Veure els contractes que es renoven aviat"
+        ],
+        "tips": [
+          "Perdre una oportunitat demana el motiu i mai l'esborra.",
+          "El CRM només desa el que comunica l'administració sobre el procediment: no l'interpreta."
+        ],
+        "related": [
+          "plataforma.comercialPipeline",
+          "plataforma.comercialDocumentos"
+        ]
+      },
+      "comercialOportunidadFicha": {
+        "title": "Oportunitat",
+        "summary": "Una oportunitat sencera: imports, fase, contractació pública, propostes amb versions i contracte.",
+        "details": "Des d'aquí es canvia la fase (perdre demana motiu), es registren propostes (v1, v2…) i el seu estat, es completa la informació de contractació pública i, en guanyar, es registra el contracte amb la seva data de renovació.",
+        "audience": "Qui porta l'entitat i direcció comercial.",
+        "actions": [
+          "Afegir una proposta o una nova versió",
+          "Canviar la fase o marcar-la com a perduda",
+          "Registrar el contracte en guanyar"
+        ],
+        "tips": [
+          "Enviar una proposta mou l'oportunitat a «Proposta enviada».",
+          "La data de renovació del contracte genera avisos 90, 60 i 30 dies abans."
+        ],
+        "related": [
+          "plataforma.comercialOportunidades",
+          "plataforma.comercialPipeline"
+        ]
+      },
+      "comercialDocumentos": {
+        "title": "Documents",
+        "summary": "Presentacions, dossiers, propostes, pressupostos, contractes, plecs, actes… de totes les teves entitats.",
+        "details": "Cada document desa categoria, entitat, oportunitat, activitat, versió, data, qui l'ha pujat i descripció, i si l'hem enviat o l'hem rebut. Es pot veure al navegador, descarregar o pujar-ne una versió nova: les anteriors mai s'esborren.",
+        "audience": "Tot l'equip comercial.",
+        "actions": [
+          "Pujar un document",
+          "Veure, descarregar o pujar una nova versió",
+          "Filtrar per categoria o entitat"
+        ],
+        "tips": [
+          "Els fitxers només es descarreguen amb permís: mai tenen un enllaç públic.",
+          "Fins a 25 MB per fitxer."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialOportunidades"
+        ]
+      },
+      "comercialInformes": {
+        "title": "Informes",
+        "summary": "Activitat, embut, conversió, pipeline, contractes, pèrdues i activitat per comercial, per període.",
+        "details": "Informe del període amb filtres per comercial, comunitat, província, producte i estat: activitat comercial, embut amb conversió i temps mitjà per fase, valor del pipeline, import contractat, oportunitats perdudes i els seus motius, entitats sense seguiment i temps mitjà entre contactes. L'activitat per comercial reuneix activitat i resultats, mai un rànquing de visites.",
+        "audience": "Direcció comercial i administració veuen tot l'equip; cada comercial, el que és seu.",
+        "actions": [
+          "Triar el període i els filtres",
+          "Comparar l'activitat de l'equip",
+          "Exportar les dades a CSV"
+        ],
+        "tips": [
+          "Un comercial només veu la seva pròpia fila a l'activitat per comercial.",
+          "La conversió compta quantes van arribar a una fase d'entre les que van arribar a l'anterior."
+        ],
+        "related": [
+          "plataforma.comercial",
+          "plataforma.comercialMapa"
+        ]
+      },
+      "comercialAtencion": {
+        "title": "Necessiten atenció",
+        "summary": "Entitats que porten dies sense contacte, de la més oblidada a la menys, amb la seva propera tasca.",
+        "details": "Llista les entitats sense activitat des de fa almenys el primer llindar configurat (per defecte 7 dies), ressaltades als 7, 15, 30 i 60+ dies. Mostra comercial, estat, última activitat, dies sense contacte, import potencial i propera tasca.",
+        "audience": "Tot l'equip comercial.",
+        "actions": [
+          "Veure quines entitats porten més temps sense contacte",
+          "Registrar una activitat des de la fila",
+          "Filtrar per comercial o província"
+        ],
+        "tips": [
+          "Els llindars es canvien a Configuració.",
+          "Les entitats perdudes no surten aquí."
+        ],
+        "related": [
+          "plataforma.comercial",
+          "plataforma.comercialTareas"
+        ]
+      },
+      "comercialConfiguracion": {
+        "title": "Configuració",
+        "summary": "Fases del pipeline, orígens de contacte, departaments, productes, etiquetes i llindars dels avisos.",
+        "details": "Les fases (nom, ordre, color, probabilitat, tipus) i les llistes s'editen i es desactiven, mai s'esborren: el que ja les fa servir continua llegint-se. Els llindars decideixen quan avisar: dies sense activitat d'una oportunitat, proposta sense resposta, data de contractació propera, renovacions i dies de «Necessiten atenció».",
+        "audience": "Només direcció comercial i administració.",
+        "actions": [
+          "Editar o afegir fases del pipeline",
+          "Editar orígens, departaments i productes",
+          "Canviar els llindars dels avisos"
+        ],
+        "tips": [
+          "Una fase «perduda» exigeix motiu i una de «guanyada» exigeix contracte: tria bé el tipus.",
+          "Desactivar una fase la treu del pipeline sense tocar el que ja hi havia."
+        ],
+        "related": [
+          "plataforma.comercial",
+          "plataforma.comercialPipeline"
+        ]
       }
     }
   },
@@ -2991,7 +3332,9 @@
       "revokeSelfWarning": "És el teu propi rol: perdràs l'accés a aquesta secció.",
       "replaceConfirmTitle": "Substituir el rol de plataforma",
       "replaceConfirmDescription": "El compte #{user} ja té el rol «{current}». Un compte només pot tenir un rol de plataforma: en concedir «{next}» perdrà «{current}».",
-      "replaceConfirmAction": "Substituir rol"
+      "replaceConfirmAction": "Substituir rol",
+      "roleSalesLead": "Director/a comercial",
+      "roleSales": "Comercial"
     },
     "auditoria": {
       "heading": "Auditoria",
@@ -3881,6 +4224,215 @@
       "routine": "Va seguir la seva rutina",
       "therapyMeeting": "Teràpia o reunió",
       "feelGood": "Es va sentir bé"
+    }
+  },
+  "crm": {
+    "enums": {
+      "accountKind": {
+        "city_council": "Ajuntament",
+        "provincial_council": "Diputació",
+        "cabildo": "Cabildo",
+        "island_council": "Consell insular",
+        "region": "Comunitat autònoma",
+        "mancomunidad": "Mancomunitat",
+        "public_body": "Organisme públic",
+        "public_company": "Empresa pública",
+        "association": "Associació",
+        "foundation": "Fundació",
+        "other": "Altres"
+      },
+      "interest": {
+        "unrated": "Sense valorar",
+        "very_low": "Molt baix",
+        "low": "Baix",
+        "medium": "Mitjà",
+        "high": "Alt",
+        "very_high": "Molt alt"
+      },
+      "activityKind": {
+        "visit": "Visita presencial",
+        "meeting": "Reunió",
+        "video_call": "Videotrucada",
+        "call": "Trucada",
+        "email": "Correu electrònic",
+        "whatsapp": "WhatsApp",
+        "demo": "Demo",
+        "presentation": "Presentació",
+        "proposal_sent": "Proposta enviada",
+        "proposal_received": "Proposta rebuda",
+        "pilot": "Pilot",
+        "event": "Esdeveniment",
+        "note": "Nota",
+        "contract": "Contracte",
+        "internal_meeting": "Reunió interna",
+        "other": "Altres"
+      },
+      "result": {
+        "very_positive": "Molt positiu",
+        "positive": "Positiu",
+        "neutral": "Neutral",
+        "negative": "Negatiu",
+        "very_negative": "Molt negatiu",
+        "pending": "Pendent",
+        "none": "Sense resultat"
+      },
+      "priority": {
+        "low": "Baixa",
+        "normal": "Normal",
+        "high": "Alta",
+        "urgent": "Urgent"
+      },
+      "taskStatus": {
+        "pending": "Pendent",
+        "in_progress": "En curs",
+        "done": "Completada",
+        "cancelled": "Cancel·lada"
+      },
+      "proposalStatus": {
+        "draft": "Esborrany",
+        "sent": "Enviada",
+        "seen": "Vista/confirmada",
+        "negotiating": "En negociació",
+        "accepted": "Acceptada",
+        "rejected": "Rebutjada",
+        "expired": "Caducada"
+      },
+      "lostReason": {
+        "price": "Preu",
+        "no_budget": "Sense pressupost",
+        "no_interest": "Sense interès",
+        "competitor": "Competidor",
+        "not_priority": "No és prioritat",
+        "technical": "Problema tècnic",
+        "procurement": "Contractació pública",
+        "postponed": "Projecte ajornat",
+        "no_response": "No respon",
+        "people_changed": "Canvi de responsables",
+        "other": "Altres"
+      },
+      "documentCategory": {
+        "presentation": "Presentacions",
+        "dossier": "Dossiers",
+        "proposal": "Propostes",
+        "budget": "Pressupostos",
+        "contract": "Contractes",
+        "tender": "Plecs",
+        "report": "Informes",
+        "technical": "Documentació tècnica",
+        "email": "Correus",
+        "minutes": "Actes",
+        "administrative": "Documentació administrativa",
+        "photo": "Fotografies",
+        "other": "Altres"
+      },
+      "relationKind": {
+        "parent": "Depèn de",
+        "partner": "Col·labora amb",
+        "member": "Membre de",
+        "other": "Relacionada"
+      },
+      "notificationKind": {
+        "task_reminder": "Recordatori de tasca",
+        "task_overdue": "Tasca vençuda",
+        "assigned": "T'han assignat",
+        "opportunity_idle": "Oportunitat sense seguiment",
+        "proposal_followup": "Proposta sense resposta",
+        "meeting_no_followup": "Reunió sense seguiment",
+        "close_date": "Data de contractació propera",
+        "renewal": "Renovació de contracte",
+        "document": "Document nou"
+      },
+      "catalogKind": {
+        "source": "Origen del contacte",
+        "department": "Departament",
+        "product": "Producte"
+      },
+      "stageKind": {
+        "open": "Oberta",
+        "won": "Guanyada",
+        "lost": "Perduda",
+        "paused": "Pausada"
+      }
+    },
+    "nav": {
+      "dashboard": "Tauler",
+      "entidades": "Entitats",
+      "contactos": "Contactes",
+      "pipeline": "Pipeline",
+      "actividades": "Activitats",
+      "tareas": "Tasques i recordatoris",
+      "calendario": "Calendari",
+      "mapa": "Mapa comercial",
+      "oportunidades": "Oportunitats",
+      "documentos": "Documents",
+      "informes": "Informes",
+      "configuracion": "Configuració"
+    },
+    "shell": {
+      "noAccess": "El CRM comercial és només per a direcció comercial, comercials i administració de la plataforma.",
+      "navLabel": "Seccions del CRM comercial",
+      "registerActivity": "+ Registrar activitat"
+    },
+    "search": {
+      "label": "Cerca al CRM",
+      "placeholder": "Entitat, municipi, contacte, telèfon, correu, expedient…",
+      "loading": "Cercant…",
+      "error": "No s'ha pogut cercar. Torna-ho a provar.",
+      "empty": "No hi ha coincidències.",
+      "accounts": "Entitats",
+      "contacts": "Contactes",
+      "opportunities": "Oportunitats",
+      "documents": "Documents"
+    },
+    "notifications": {
+      "button": "Avisos ({count} sense llegir)",
+      "short": "Avisos",
+      "title": "Avisos",
+      "readAll": "Marca-ho tot com a llegit",
+      "markRead": "Marca com a llegit",
+      "empty": "No hi ha avisos.",
+      "error": "No s'han pogut carregar els avisos."
+    },
+    "common": {
+      "none": "—",
+      "nobody": "Ningú",
+      "usersError": "No s'ha pogut carregar l'equip.",
+      "loading": "Carregant…",
+      "save": "Desa",
+      "saving": "Desant…"
+    },
+    "quick": {
+      "title": "Registrar activitat",
+      "account": "Entitat",
+      "kind": "Tipus",
+      "contact": "Contacte",
+      "result": "Resultat",
+      "interest": "Nivell d'interès després",
+      "interestUnchanged": "Sense canvis",
+      "summary": "Resum",
+      "dictate": "Dictar",
+      "stopDictation": "Atura el dictat",
+      "attachments": "Adjunts (fotos, documents)",
+      "nextStep": "Quin és el pas següent?",
+      "createFollowUp": "Crea un seguiment",
+      "noFollowUp": "No cal seguiment",
+      "followKind": "Tipus d'acció",
+      "followAt": "Data i hora",
+      "followTitle": "Què cal fer",
+      "followPriority": "Prioritat",
+      "reminder": "Recordatori",
+      "assignee": "Responsable",
+      "uploadFailed": "L'activitat s'ha desat, però no s'han pogut pujar aquests fitxers: {files}"
+    },
+    "reminders": {
+      "m0": "En el moment",
+      "m15": "15 minuts abans",
+      "m60": "1 hora abans",
+      "m1440": "1 dia abans",
+      "m2880": "2 dies abans"
+    },
+    "settings": {
+      "noAccess": "Només direcció comercial i administració de la plataforma poden canviar la configuració del CRM."
     }
   }
 }

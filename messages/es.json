@@ -135,7 +135,8 @@
       "metricas": "Métricas",
       "suscripciones": "Suscripciones",
       "nomencladores": "Nomencladores",
-      "buscaDelTesoro": "Búsqueda del tesoro"
+      "buscaDelTesoro": "Búsqueda del tesoro",
+      "comercial": "Comercial"
     }
   },
   "layout": {
@@ -334,6 +335,51 @@
       },
       "tesoroFicha": {
         "title": "Ficha del juego"
+      },
+      "comercial": {
+        "title": "Comercial"
+      },
+      "comercialEntidades": {
+        "title": "Entidades"
+      },
+      "comercialEntidadFicha": {
+        "title": "Ficha de entidad"
+      },
+      "comercialContactos": {
+        "title": "Contactos"
+      },
+      "comercialPipeline": {
+        "title": "Pipeline"
+      },
+      "comercialActividades": {
+        "title": "Actividades"
+      },
+      "comercialTareas": {
+        "title": "Tareas y recordatorios"
+      },
+      "comercialCalendario": {
+        "title": "Calendario"
+      },
+      "comercialMapa": {
+        "title": "Mapa comercial"
+      },
+      "comercialOportunidades": {
+        "title": "Oportunidades"
+      },
+      "comercialOportunidadFicha": {
+        "title": "Oportunidad"
+      },
+      "comercialDocumentos": {
+        "title": "Documentos"
+      },
+      "comercialInformes": {
+        "title": "Informes"
+      },
+      "comercialAtencion": {
+        "title": "Necesitan atención"
+      },
+      "comercialConfiguracion": {
+        "title": "Configuración"
       }
     }
   },
@@ -1632,6 +1678,13 @@
       "invalido": "Esta entidad no puede tener el programa de seguimiento.",
       "sinPermiso": "Solo superadmin puede cambiar el programa de seguimiento.",
       "desconocido": "No se pudo cambiar el programa de seguimiento."
+    },
+    "crm": {
+      "sinAcceso": "No tienes permiso para esto.",
+      "invalido": "Revisa los datos: alguno no es válido.",
+      "duplicado": "Ya existe algo parecido.",
+      "noEncontrado": "No existe o no la llevas tú.",
+      "desconocido": "No se pudo completar. Inténtalo de nuevo."
     }
   },
   "reports": {
@@ -2572,6 +2625,294 @@
           "plataforma.actividades"
         ],
         "audience": "Solo superadmin."
+      },
+      "comercial": {
+        "title": "Comercial",
+        "summary": "Situación comercial de un vistazo: actividad del periodo, embudo, valor del pipeline y lo que necesita atención.",
+        "details": "El dashboard junta las cifras del periodo elegido (hoy, semana, mes, trimestre, año o personalizado) y las compara con el periodo anterior. Un comercial ve solo sus entidades; dirección comercial y administración ven las de todo el equipo y pueden filtrar por comercial, comunidad autónoma, provincia, tipo de entidad, producto o estado.",
+        "actions": [
+          "Cambiar el periodo y los filtros",
+          "Ver el embudo con conversión entre fases",
+          "Saltar a las entidades que necesitan atención"
+        ],
+        "tips": [
+          "La variación % solo sale si hubo datos en el periodo anterior.",
+          "El valor ponderado multiplica cada oportunidad abierta por la probabilidad de su fase."
+        ],
+        "related": [
+          "plataforma.comercialPipeline",
+          "plataforma.comercialAtencion",
+          "plataforma.comercialInformes"
+        ],
+        "audience": "Todo el equipo comercial; cada comercial ve sus entidades."
+      },
+      "comercialEntidades": {
+        "title": "Entidades",
+        "summary": "Ayuntamientos, diputaciones, cabildos y demás entidades a las que vendemos, con su comercial, estado e interés.",
+        "details": "Listado con búsqueda, filtros (comunidad, provincia, tipo, estado, interés, etiqueta, población, días sin contacto, cliente) y orden. Al crear una entidad se comprueba si ya existe otra parecida (mismo CIF o mismo nombre en el municipio). Desde aquí también se importan entidades en bloque (CSV o Excel) y se exporta el listado.",
+        "actions": [
+          "Dar de alta una entidad",
+          "Importar ayuntamientos desde CSV o Excel",
+          "Exportar el listado a CSV",
+          "Abrir la ficha de una entidad"
+        ],
+        "tips": [
+          "Un comercial solo ve las entidades que lleva o en las que colabora.",
+          "Las entidades nunca se borran de verdad: quedan fuera de los listados pero su historial se conserva."
+        ],
+        "related": [
+          "plataforma.comercialContactos",
+          "plataforma.comercialPipeline",
+          "plataforma.comercialMapa"
+        ],
+        "audience": "Todo el equipo comercial; dar de baja y reasignar, solo dirección comercial."
+      },
+      "comercialEntidadFicha": {
+        "title": "Ficha de entidad",
+        "summary": "Todo lo de una entidad: quién la lleva, con quién hablamos, qué hemos hecho, en qué punto estamos y qué toca ahora.",
+        "details": "La cabecera dice estado, interés, comercial, última y próxima actividad. Pestañas: resumen, historial (todo lo ocurrido, que nunca se sobrescribe), contactos, oportunidades, tareas, documentos, datos y contratación. Los botones de la cabecera registran actividad, crean tareas, contactos, oportunidades, documentos y notas, o programan una reunión.",
+        "actions": [
+          "Registrar una visita, llamada o reunión con su siguiente paso",
+          "Añadir contactos, oportunidades, documentos y notas",
+          "Cambiar estado, interés o comercial responsable"
+        ],
+        "tips": [
+          "Las notas fijadas salen siempre en el resumen.",
+          "Editar una actividad no cambia lo que ya consta en el historial: añade un apunte con lo que cambió."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialTareas"
+        ],
+        "audience": "Quien lleva la entidad, sus colaboradores y dirección comercial."
+      },
+      "comercialContactos": {
+        "title": "Contactos",
+        "summary": "Las personas con las que hablamos en cada entidad: cargo, departamento, teléfono, email y último contacto.",
+        "details": "Listado de los contactos de tus entidades, con búsqueda por nombre, cargo, teléfono o email y filtro por departamento. Al añadir un contacto se avisa si ya existe otro con el mismo email o teléfono. Desde un contacto se llama o se escribe con un toque.",
+        "actions": [
+          "Buscar un contacto por nombre, teléfono o email",
+          "Llamar o escribir desde el listado",
+          "Exportar los contactos a CSV"
+        ],
+        "tips": [
+          "El último contacto se actualiza solo al registrar una actividad con esa persona.",
+          "Marca un contacto como principal para que salga primero en la ficha."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialActividades"
+        ],
+        "audience": "Todo el equipo comercial; cada comercial ve los contactos de sus entidades."
+      },
+      "comercialPipeline": {
+        "title": "Pipeline",
+        "summary": "Las oportunidades (o las entidades) por fase, en columnas: arrastra una tarjeta para cambiarla de fase.",
+        "details": "Cada columna es una fase comercial con su número de tarjetas e importe. Cada tarjeta enseña entidad, municipio, provincia, población, comercial, importe, interés, días sin contacto y próxima actividad. Al soltar una tarjeta en otra fase el cambio queda en el historial con quién y cuándo; perder pide el motivo y ganar pide los datos del contrato.",
+        "actions": [
+          "Mover una oportunidad de fase arrastrándola",
+          "Ver el pipeline por oportunidades o por entidades",
+          "Registrar el contrato al ganar"
+        ],
+        "tips": [
+          "Con teclado: abre la tarjeta y elige la fase en su menú.",
+          "Una entidad avanza sola con su oportunidad más avanzada; nunca retrocede por eso."
+        ],
+        "related": [
+          "plataforma.comercialOportunidades",
+          "plataforma.comercial"
+        ],
+        "audience": "Todo el equipo comercial."
+      },
+      "comercialActividades": {
+        "title": "Actividades",
+        "summary": "Todo lo hecho con las entidades: visitas, reuniones, llamadas, emails, demos, propuestas…",
+        "details": "Listado de actividades con filtro por tipo, comercial, fechas y texto. Cada actividad guarda contactos, resumen, resultado e interés después; al registrarla se puede crear su siguiente paso como tarea. El botón «+ Registrar actividad» está siempre arriba.",
+        "actions": [
+          "Registrar una actividad con su siguiente paso",
+          "Filtrar por tipo, comercial o fechas",
+          "Exportar las actividades a CSV"
+        ],
+        "tips": [
+          "Una actividad con fecha futura es una cita: sale en el calendario y como próxima actividad.",
+          "Registrar una visita mueve la entidad de «Sin contactar» a «Contactado»."
+        ],
+        "related": [
+          "plataforma.comercialCalendario",
+          "plataforma.comercialTareas"
+        ],
+        "audience": "Todo el equipo comercial."
+      },
+      "comercialTareas": {
+        "title": "Tareas y recordatorios",
+        "summary": "Tus seguimientos pendientes: hoy, próximos, atrasados y completados.",
+        "details": "Cada tarea lleva entidad, contacto, oportunidad, tipo, responsable, fecha, prioridad, estado y recordatorio. El recordatorio llega como aviso del panel a la hora elegida, y una tarea vencida también avisa. Dirección comercial puede ver las tareas de todo el equipo.",
+        "actions": [
+          "Crear una tarea con su recordatorio",
+          "Completar o cancelar una tarea",
+          "Ver las tareas atrasadas"
+        ],
+        "tips": [
+          "Al registrar una actividad puedes crear aquí su siguiente paso sin cambiar de pantalla.",
+          "Los avisos se generan cada pocos minutos: el recordatorio puede tardar un poco en llegar."
+        ],
+        "related": [
+          "plataforma.comercialCalendario",
+          "plataforma.comercialActividades"
+        ],
+        "audience": "Todo el equipo comercial."
+      },
+      "comercialCalendario": {
+        "title": "Calendario",
+        "summary": "Visitas, reuniones, llamadas, demos, seguimientos, tareas y renovaciones por día, semana o mes.",
+        "details": "Muestra las actividades, las tareas y las renovaciones de contratos del periodo. Se filtra por comercial, provincia y tipo de actividad, y desde un día se registra una actividad o se crea una tarea.",
+        "actions": [
+          "Cambiar entre día, semana y mes",
+          "Crear una actividad o una tarea en un día",
+          "Filtrar por comercial, provincia o tipo"
+        ],
+        "tips": [
+          "Lo ya ocurrido sale tachado; lo pendiente, en negrita.",
+          "Las renovaciones de contrato aparecen el día de su fecha de renovación."
+        ],
+        "related": [
+          "plataforma.comercialTareas",
+          "plataforma.comercialActividades"
+        ],
+        "audience": "Todo el equipo comercial."
+      },
+      "comercialMapa": {
+        "title": "Mapa comercial",
+        "summary": "Las entidades sobre el mapa, con su estado comercial, y la cobertura por comunidad y provincia.",
+        "details": "Cada entidad con coordenadas sale como un punto con forma e icono según su estado (sin contactar, contactado, interesado, negociación, cliente, perdido), con leyenda: nunca solo por color. Al pulsar un punto se ven municipio, población, estado, comercial, última y próxima actividad y valor, con enlace a la ficha. Debajo, la cobertura: ayuntamientos registrados, contactados, en negociación y clientes.",
+        "actions": [
+          "Filtrar el mapa",
+          "Abrir la ficha desde un punto",
+          "Ver la cobertura por provincia o comunidad"
+        ],
+        "tips": [
+          "Una entidad sin municipio ni coordenadas no sale en el mapa: complétalo en su ficha.",
+          "La cobertura cuenta solo ayuntamientos."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialInformes"
+        ],
+        "audience": "Todo el equipo comercial."
+      },
+      "comercialOportunidades": {
+        "title": "Oportunidades",
+        "summary": "Las ventas posibles de cada entidad, con producto, importe, fase, fecha estimada y contratación pública.",
+        "details": "Una entidad puede tener varias oportunidades (asociaciones, juventud, prevención…). Cada una guarda importes estimado, de propuesta y final, fechas, tamaño (asociaciones, usuarios, profesionales), la información de contratación pública que comunica la administración, sus propuestas con versiones y, al ganarla, su contrato y su renovación.",
+        "actions": [
+          "Crear una oportunidad",
+          "Filtrar por estado, fase o expediente",
+          "Ver los contratos que se renuevan pronto"
+        ],
+        "tips": [
+          "Perder una oportunidad pide el motivo y nunca la borra.",
+          "El CRM solo guarda lo que comunica la administración sobre el procedimiento: no lo interpreta."
+        ],
+        "related": [
+          "plataforma.comercialPipeline",
+          "plataforma.comercialDocumentos"
+        ],
+        "audience": "Todo el equipo comercial."
+      },
+      "comercialOportunidadFicha": {
+        "title": "Oportunidad",
+        "summary": "Una oportunidad entera: importes, fase, contratación pública, propuestas con versiones y contrato.",
+        "details": "Desde aquí se cambia la fase (perder pide motivo), se registran propuestas (v1, v2…) y su estado, se completa la información de contratación pública y, al ganar, se registra el contrato con su fecha de renovación.",
+        "actions": [
+          "Añadir una propuesta o una nueva versión",
+          "Cambiar la fase o marcarla como perdida",
+          "Registrar el contrato al ganar"
+        ],
+        "tips": [
+          "Enviar una propuesta mueve la oportunidad a «Propuesta enviada».",
+          "La fecha de renovación del contrato genera avisos 90, 60 y 30 días antes."
+        ],
+        "related": [
+          "plataforma.comercialOportunidades",
+          "plataforma.comercialPipeline"
+        ],
+        "audience": "Quien lleva la entidad y dirección comercial."
+      },
+      "comercialDocumentos": {
+        "title": "Documentos",
+        "summary": "Presentaciones, dossiers, propuestas, presupuestos, contratos, pliegos, actas… de todas tus entidades.",
+        "details": "Cada documento guarda categoría, entidad, oportunidad, actividad, versión, fecha, quién lo subió y descripción, y si lo enviamos o lo recibimos. Se puede ver en el navegador, descargar o subir una versión nueva: las anteriores nunca se borran.",
+        "actions": [
+          "Subir un documento",
+          "Ver, descargar o subir una nueva versión",
+          "Filtrar por categoría o entidad"
+        ],
+        "tips": [
+          "Los ficheros solo se descargan con permiso: nunca tienen un enlace público.",
+          "Hasta 25 MB por fichero."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialOportunidades"
+        ],
+        "audience": "Todo el equipo comercial."
+      },
+      "comercialInformes": {
+        "title": "Informes",
+        "summary": "Actividad, embudo, conversión, pipeline, contratos, pérdidas y actividad por comercial, por periodo.",
+        "details": "Informe del periodo con filtros por comercial, comunidad, provincia, producto y estado: actividad comercial, embudo con conversión y tiempo medio por fase, valor del pipeline, importe contratado, oportunidades perdidas y sus motivos, entidades sin seguimiento y tiempo medio entre contactos. La actividad por comercial junta actividad y resultados, nunca un ranking de visitas.",
+        "actions": [
+          "Elegir el periodo y los filtros",
+          "Comparar la actividad del equipo",
+          "Exportar los datos a CSV"
+        ],
+        "tips": [
+          "Un comercial solo ve su propia fila en la actividad por comercial.",
+          "La conversión cuenta cuántas llegaron a una fase entre las que llegaron a la anterior."
+        ],
+        "related": [
+          "plataforma.comercial",
+          "plataforma.comercialMapa"
+        ],
+        "audience": "Dirección comercial y administración ven todo el equipo; cada comercial, lo suyo."
+      },
+      "comercialAtencion": {
+        "title": "Necesitan atención",
+        "summary": "Entidades que llevan días sin contacto, de la más olvidada a la menos, con su próxima tarea.",
+        "details": "Lista las entidades sin actividad desde hace al menos el primer umbral configurado (por defecto 7 días), resaltadas a los 7, 15, 30 y 60+ días. Enseña comercial, estado, última actividad, días sin contacto, importe potencial y próxima tarea.",
+        "actions": [
+          "Ver qué entidades llevan más tiempo sin contacto",
+          "Registrar una actividad desde la fila",
+          "Filtrar por comercial o provincia"
+        ],
+        "tips": [
+          "Los umbrales se cambian en Configuración.",
+          "Las entidades perdidas no salen aquí."
+        ],
+        "related": [
+          "plataforma.comercial",
+          "plataforma.comercialTareas"
+        ],
+        "audience": "Todo el equipo comercial."
+      },
+      "comercialConfiguracion": {
+        "title": "Configuración",
+        "summary": "Fases del pipeline, orígenes de contacto, departamentos, productos, etiquetas y umbrales de los avisos.",
+        "details": "Las fases (nombre, orden, color, probabilidad, tipo) y las listas se editan y se desactivan, nunca se borran: lo que ya las usa sigue leyéndose. Los umbrales deciden cuándo avisar: días sin actividad de una oportunidad, propuesta sin respuesta, fecha de contratación cercana, renovaciones y días de «Necesitan atención».",
+        "actions": [
+          "Editar o añadir fases del pipeline",
+          "Editar orígenes, departamentos y productos",
+          "Cambiar los umbrales de los avisos"
+        ],
+        "tips": [
+          "Una fase «perdida» exige motivo y una «ganada» exige contrato: elige bien el tipo.",
+          "Desactivar una fase la quita del pipeline sin tocar lo que ya estaba en ella."
+        ],
+        "related": [
+          "plataforma.comercial",
+          "plataforma.comercialPipeline"
+        ],
+        "audience": "Solo dirección comercial y administración."
       }
     }
   },
@@ -2991,7 +3332,9 @@
       "revokeSelfWarning": "Es tu propio rol: perderás el acceso a esta sección.",
       "replaceConfirmTitle": "Sustituir el rol de plataforma",
       "replaceConfirmDescription": "La cuenta #{user} ya tiene el rol «{current}». Una cuenta solo puede tener un rol de plataforma: al conceder «{next}» perderá «{current}».",
-      "replaceConfirmAction": "Sustituir rol"
+      "replaceConfirmAction": "Sustituir rol",
+      "roleSalesLead": "Director/a comercial",
+      "roleSales": "Comercial"
     },
     "auditoria": {
       "heading": "Auditoría",
@@ -3881,6 +4224,215 @@
       "routine": "Siguió su rutina",
       "therapyMeeting": "Terapia o reunión",
       "feelGood": "Se sintió bien"
+    }
+  },
+  "crm": {
+    "enums": {
+      "accountKind": {
+        "city_council": "Ayuntamiento",
+        "provincial_council": "Diputación",
+        "cabildo": "Cabildo",
+        "island_council": "Consejo insular",
+        "region": "Comunidad autónoma",
+        "mancomunidad": "Mancomunidad",
+        "public_body": "Organismo público",
+        "public_company": "Empresa pública",
+        "association": "Asociación",
+        "foundation": "Fundación",
+        "other": "Otro"
+      },
+      "interest": {
+        "unrated": "Sin valorar",
+        "very_low": "Muy bajo",
+        "low": "Bajo",
+        "medium": "Medio",
+        "high": "Alto",
+        "very_high": "Muy alto"
+      },
+      "activityKind": {
+        "visit": "Visita presencial",
+        "meeting": "Reunión",
+        "video_call": "Videollamada",
+        "call": "Llamada",
+        "email": "Email",
+        "whatsapp": "WhatsApp",
+        "demo": "Demo",
+        "presentation": "Presentación",
+        "proposal_sent": "Propuesta enviada",
+        "proposal_received": "Propuesta recibida",
+        "pilot": "Piloto",
+        "event": "Evento",
+        "note": "Nota",
+        "contract": "Contrato",
+        "internal_meeting": "Reunión interna",
+        "other": "Otro"
+      },
+      "result": {
+        "very_positive": "Muy positivo",
+        "positive": "Positivo",
+        "neutral": "Neutral",
+        "negative": "Negativo",
+        "very_negative": "Muy negativo",
+        "pending": "Pendiente",
+        "none": "Sin resultado"
+      },
+      "priority": {
+        "low": "Baja",
+        "normal": "Normal",
+        "high": "Alta",
+        "urgent": "Urgente"
+      },
+      "taskStatus": {
+        "pending": "Pendiente",
+        "in_progress": "En curso",
+        "done": "Completada",
+        "cancelled": "Cancelada"
+      },
+      "proposalStatus": {
+        "draft": "Borrador",
+        "sent": "Enviada",
+        "seen": "Vista/confirmada",
+        "negotiating": "En negociación",
+        "accepted": "Aceptada",
+        "rejected": "Rechazada",
+        "expired": "Caducada"
+      },
+      "lostReason": {
+        "price": "Precio",
+        "no_budget": "Sin presupuesto",
+        "no_interest": "Sin interés",
+        "competitor": "Competidor",
+        "not_priority": "No es prioridad",
+        "technical": "Problema técnico",
+        "procurement": "Contratación pública",
+        "postponed": "Proyecto aplazado",
+        "no_response": "No responde",
+        "people_changed": "Cambio de responsables",
+        "other": "Otro"
+      },
+      "documentCategory": {
+        "presentation": "Presentaciones",
+        "dossier": "Dossiers",
+        "proposal": "Propuestas",
+        "budget": "Presupuestos",
+        "contract": "Contratos",
+        "tender": "Pliegos",
+        "report": "Informes",
+        "technical": "Documentación técnica",
+        "email": "Emails",
+        "minutes": "Actas",
+        "administrative": "Documentación administrativa",
+        "photo": "Fotografías",
+        "other": "Otros"
+      },
+      "relationKind": {
+        "parent": "Depende de",
+        "partner": "Colabora con",
+        "member": "Miembro de",
+        "other": "Relacionada"
+      },
+      "notificationKind": {
+        "task_reminder": "Recordatorio de tarea",
+        "task_overdue": "Tarea vencida",
+        "assigned": "Te han asignado",
+        "opportunity_idle": "Oportunidad sin seguimiento",
+        "proposal_followup": "Propuesta sin respuesta",
+        "meeting_no_followup": "Reunión sin seguimiento",
+        "close_date": "Fecha de contratación cercana",
+        "renewal": "Renovación de contrato",
+        "document": "Documento nuevo"
+      },
+      "catalogKind": {
+        "source": "Origen del contacto",
+        "department": "Departamento",
+        "product": "Producto"
+      },
+      "stageKind": {
+        "open": "Abierta",
+        "won": "Ganada",
+        "lost": "Perdida",
+        "paused": "Pausada"
+      }
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "entidades": "Entidades",
+      "contactos": "Contactos",
+      "pipeline": "Pipeline",
+      "actividades": "Actividades",
+      "tareas": "Tareas y recordatorios",
+      "calendario": "Calendario",
+      "mapa": "Mapa comercial",
+      "oportunidades": "Oportunidades",
+      "documentos": "Documentos",
+      "informes": "Informes",
+      "configuracion": "Configuración"
+    },
+    "shell": {
+      "noAccess": "El CRM comercial es solo para dirección comercial, comerciales y administración de la plataforma.",
+      "navLabel": "Secciones del CRM comercial",
+      "registerActivity": "+ Registrar actividad"
+    },
+    "search": {
+      "label": "Buscar en el CRM",
+      "placeholder": "Entidad, municipio, contacto, teléfono, email, expediente…",
+      "loading": "Buscando…",
+      "error": "No se pudo buscar. Inténtalo de nuevo.",
+      "empty": "Nada coincide.",
+      "accounts": "Entidades",
+      "contacts": "Contactos",
+      "opportunities": "Oportunidades",
+      "documents": "Documentos"
+    },
+    "notifications": {
+      "button": "Avisos ({count} sin leer)",
+      "short": "Avisos",
+      "title": "Avisos",
+      "readAll": "Marcar todo como leído",
+      "markRead": "Marcar como leído",
+      "empty": "No hay avisos.",
+      "error": "No se pudieron cargar los avisos."
+    },
+    "common": {
+      "none": "—",
+      "nobody": "Nadie",
+      "usersError": "No se pudo cargar el equipo.",
+      "loading": "Cargando…",
+      "save": "Guardar",
+      "saving": "Guardando…"
+    },
+    "quick": {
+      "title": "Registrar actividad",
+      "account": "Entidad",
+      "kind": "Tipo",
+      "contact": "Contacto",
+      "result": "Resultado",
+      "interest": "Nivel de interés después",
+      "interestUnchanged": "Sin cambios",
+      "summary": "Resumen",
+      "dictate": "Dictar",
+      "stopDictation": "Parar dictado",
+      "attachments": "Adjuntos (fotos, documentos)",
+      "nextStep": "¿Cuál es el siguiente paso?",
+      "createFollowUp": "Crear seguimiento",
+      "noFollowUp": "No requiere seguimiento",
+      "followKind": "Tipo de acción",
+      "followAt": "Fecha y hora",
+      "followTitle": "Qué hay que hacer",
+      "followPriority": "Prioridad",
+      "reminder": "Recordatorio",
+      "assignee": "Responsable",
+      "uploadFailed": "La actividad se ha guardado, pero no se pudieron subir estos ficheros: {files}"
+    },
+    "reminders": {
+      "m0": "En el momento",
+      "m15": "15 minutos antes",
+      "m60": "1 hora antes",
+      "m1440": "1 día antes",
+      "m2880": "2 días antes"
+    },
+    "settings": {
+      "noAccess": "Solo dirección comercial y administración de la plataforma pueden cambiar la configuración del CRM."
     }
   }
 }

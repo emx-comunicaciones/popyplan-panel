@@ -73,6 +73,7 @@
  */
 export const PLATAFORMA_MENU_ITEMS = [
   "inicio",
+  "comercial",
   "entidades",
   "usuarios",
   "comunidades",
@@ -104,6 +105,7 @@ export type PlataformaMenuItem = (typeof PLATAFORMA_MENU_ITEMS)[number];
  */
 export const PLATAFORMA_MENU_LABELS: Record<PlataformaMenuItem, string> = {
   inicio: "menu.plataforma.inicio",
+  comercial: "menu.plataforma.comercial",
   entidades: "menu.plataforma.entidades",
   usuarios: "menu.plataforma.usuarios",
   comunidades: "menu.plataforma.comunidades",
@@ -134,7 +136,14 @@ export const PLATAFORMA_MENU_LABELS: Record<PlataformaMenuItem, string> = {
  * layout de plataforma lo trata como «sin rol» y manda a la raíz, que ya
  * decide el área real.
  */
-export const PLATFORM_ROLES = ["superadmin", "verifier", "moderator", "support"] as const;
+export const PLATFORM_ROLES = [
+  "superadmin",
+  "verifier",
+  "moderator",
+  "support",
+  "sales_lead",
+  "sales",
+] as const;
 
 export type PlatformRole = (typeof PLATFORM_ROLES)[number];
 
@@ -157,6 +166,32 @@ export function canManageTeamFromPlatform(role: string | null | undefined): bool
   return !!role && (TEAM_MANAGER_ROLES as readonly string[]).includes(role);
 }
 
+/**
+ * CRM comercial (2026-10-01, `docs/CRM.md` del backend): `sales_lead`
+ * (dirección comercial) y `sales` (comercial) solo tienen la pestaña
+ * «Comercial»; `superadmin` la tiene además de todo lo demás (es la
+ * «administración» del CRM). Ningún otro rol de plataforma entra en el
+ * CRM: el backend les responde 403.
+ */
+export const CRM_ROLES = ["superadmin", "sales_lead", "sales"] as const;
+/** Ven todas las cuentas, reasignan y configuran. */
+export const CRM_MANAGER_ROLES = ["superadmin", "sales_lead"] as const;
+/** Solo tienen el CRM: al entrar al panel van directos a él. */
+export const SALES_ONLY_ROLES = ["sales_lead", "sales"] as const;
+
+export function isCrmRole(role: string | null | undefined): boolean {
+  return !!role && (CRM_ROLES as readonly string[]).includes(role);
+}
+
+export function isCrmManager(role: string | null | undefined): boolean {
+  return !!role && (CRM_MANAGER_ROLES as readonly string[]).includes(role);
+}
+
+export function isSalesOnly(role: string | null | undefined): boolean {
+  return !!role && (SALES_ONLY_ROLES as readonly string[]).includes(role);
+}
+
+const SALES_VISIBLE: readonly PlataformaMenuItem[] = ["comercial"];
 const VERIFIER_VISIBLE: readonly PlataformaMenuItem[] = ["inicio", "entidades", "verificaciones"];
 const MODERATOR_VISIBLE: readonly PlataformaMenuItem[] = ["inicio", "reportes", "ayuda", "metricas"];
 const SUPPORT_VISIBLE: readonly PlataformaMenuItem[] = [
@@ -177,6 +212,9 @@ export function plataformaMenuFor(role: string | null | undefined): PlataformaMe
       return [...MODERATOR_VISIBLE];
     case "support":
       return [...SUPPORT_VISIBLE];
+    case "sales_lead":
+    case "sales":
+      return [...SALES_VISIBLE];
     default:
       return [];
   }

@@ -135,7 +135,8 @@
       "metricas": "Metrics",
       "suscripciones": "Subscriptions",
       "nomencladores": "Catalogues",
-      "buscaDelTesoro": "Treasure hunt"
+      "buscaDelTesoro": "Treasure hunt",
+      "comercial": "Sales"
     }
   },
   "layout": {
@@ -334,6 +335,51 @@
       },
       "tesoroFicha": {
         "title": "Game details"
+      },
+      "comercial": {
+        "title": "Sales"
+      },
+      "comercialEntidades": {
+        "title": "Accounts"
+      },
+      "comercialEntidadFicha": {
+        "title": "Account record"
+      },
+      "comercialContactos": {
+        "title": "Contacts"
+      },
+      "comercialPipeline": {
+        "title": "Pipeline"
+      },
+      "comercialActividades": {
+        "title": "Activities"
+      },
+      "comercialTareas": {
+        "title": "Tasks and reminders"
+      },
+      "comercialCalendario": {
+        "title": "Calendar"
+      },
+      "comercialMapa": {
+        "title": "Sales map"
+      },
+      "comercialOportunidades": {
+        "title": "Opportunities"
+      },
+      "comercialOportunidadFicha": {
+        "title": "Opportunity"
+      },
+      "comercialDocumentos": {
+        "title": "Documents"
+      },
+      "comercialInformes": {
+        "title": "Reports"
+      },
+      "comercialAtencion": {
+        "title": "Needs attention"
+      },
+      "comercialConfiguracion": {
+        "title": "Settings"
       }
     }
   },
@@ -1632,6 +1678,13 @@
       "invalido": "This organisation cannot have the tracking programme.",
       "sinPermiso": "Only superadmin can change the tracking programme.",
       "desconocido": "The tracking programme could not be changed."
+    },
+    "crm": {
+      "sinAcceso": "You do not have permission for this.",
+      "invalido": "Check the data: something is not valid.",
+      "duplicado": "Something similar already exists.",
+      "noEncontrado": "It does not exist or it is not one of yours.",
+      "desconocido": "It could not be completed. Try again."
     }
   },
   "reports": {
@@ -2572,6 +2625,294 @@
           "plataforma.actividades"
         ],
         "audience": "Superadmin only."
+      },
+      "comercial": {
+        "title": "Sales",
+        "summary": "The sales situation at a glance: activity in the period, funnel, pipeline value and what needs attention.",
+        "details": "The dashboard gathers the figures of the chosen period (today, week, month, quarter, year or custom) and compares them with the previous period. A salesperson only sees their accounts; sales management and administration see the whole team and can filter by salesperson, region, province, account type, product or status.",
+        "actions": [
+          "Change the period and filters",
+          "See the funnel with conversion between stages",
+          "Jump to accounts that need attention"
+        ],
+        "tips": [
+          "The % change only shows if there was data in the previous period.",
+          "The weighted value multiplies each open opportunity by the probability of its stage."
+        ],
+        "related": [
+          "plataforma.comercialPipeline",
+          "plataforma.comercialAtencion",
+          "plataforma.comercialInformes"
+        ],
+        "audience": "The whole sales team; each salesperson sees their accounts."
+      },
+      "comercialEntidades": {
+        "title": "Accounts",
+        "summary": "City councils, provincial councils, cabildos and other accounts we sell to, with their salesperson, status and interest.",
+        "details": "List with search, filters (region, province, type, status, interest, tag, population, days without contact, client) and sorting. When creating an account the CRM checks whether a similar one exists (same tax id or same name in the town). Accounts can also be imported in bulk (CSV or Excel) and the list exported.",
+        "actions": [
+          "Create an account",
+          "Import city councils from CSV or Excel",
+          "Export the list to CSV",
+          "Open an account record"
+        ],
+        "tips": [
+          "A salesperson only sees the accounts they own or collaborate on.",
+          "Accounts are never really deleted: they leave the lists but their history is kept."
+        ],
+        "related": [
+          "plataforma.comercialContactos",
+          "plataforma.comercialPipeline",
+          "plataforma.comercialMapa"
+        ],
+        "audience": "The whole sales team; removing and reassigning, sales management only."
+      },
+      "comercialEntidadFicha": {
+        "title": "Account record",
+        "summary": "Everything about an account: who owns it, who we talk to, what we have done, where we are and what comes next.",
+        "details": "The header shows status, interest, salesperson, last and next activity. Tabs: summary, history (everything that happened, never overwritten), contacts, opportunities, tasks, documents, data and procurement. Header buttons log activity, create tasks, contacts, opportunities, documents and notes, or schedule a meeting.",
+        "actions": [
+          "Log a visit, call or meeting with its next step",
+          "Add contacts, opportunities, documents and notes",
+          "Change status, interest or owner"
+        ],
+        "tips": [
+          "Pinned notes always show in the summary.",
+          "Editing an activity does not change what is already in the history: it adds an entry with what changed."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialTareas"
+        ],
+        "audience": "The account owner, its collaborators and sales management."
+      },
+      "comercialContactos": {
+        "title": "Contacts",
+        "summary": "The people we talk to at each account: position, department, phone, email and last contact.",
+        "details": "List of the contacts of your accounts, searchable by name, position, phone or email and filterable by department. When adding a contact the CRM warns if another one has the same email or phone. Call or email a contact with one tap.",
+        "actions": [
+          "Find a contact by name, phone or email",
+          "Call or email from the list",
+          "Export contacts to CSV"
+        ],
+        "tips": [
+          "Last contact updates by itself when an activity with that person is logged.",
+          "Mark a contact as main so it shows first in the record."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialActividades"
+        ],
+        "audience": "The whole sales team; each salesperson sees the contacts of their accounts."
+      },
+      "comercialPipeline": {
+        "title": "Pipeline",
+        "summary": "Opportunities (or accounts) by stage, in columns: drag a card to change its stage.",
+        "details": "Each column is a sales stage with its card count and amount. Each card shows account, town, province, population, salesperson, amount, interest, days without contact and next activity. Dropping a card on another stage records who and when in the history; losing asks for the reason and winning asks for the contract details.",
+        "actions": [
+          "Move an opportunity by dragging it",
+          "View the pipeline by opportunities or by accounts",
+          "Register the contract when winning"
+        ],
+        "tips": [
+          "With the keyboard: open the card and choose the stage in its menu.",
+          "An account moves forward with its most advanced opportunity; it never moves back because of it."
+        ],
+        "related": [
+          "plataforma.comercialOportunidades",
+          "plataforma.comercial"
+        ],
+        "audience": "The whole sales team."
+      },
+      "comercialActividades": {
+        "title": "Activities",
+        "summary": "Everything done with accounts: visits, meetings, calls, emails, demos, proposals…",
+        "details": "List of activities filterable by type, salesperson, dates and text. Each activity keeps contacts, summary, result and interest afterwards; when logging it, its next step can be created as a task. The \"+ Log activity\" button is always at the top.",
+        "actions": [
+          "Log an activity with its next step",
+          "Filter by type, salesperson or dates",
+          "Export activities to CSV"
+        ],
+        "tips": [
+          "An activity in the future is an appointment: it shows in the calendar and as next activity.",
+          "Logging a visit moves the account from \"Not contacted\" to \"Contacted\"."
+        ],
+        "related": [
+          "plataforma.comercialCalendario",
+          "plataforma.comercialTareas"
+        ],
+        "audience": "The whole sales team."
+      },
+      "comercialTareas": {
+        "title": "Tasks and reminders",
+        "summary": "Your pending follow-ups: today, upcoming, overdue and completed.",
+        "details": "Each task has account, contact, opportunity, type, owner, date, priority, status and reminder. The reminder arrives as a panel notification at the chosen time, and an overdue task also notifies. Sales management can see the whole team's tasks.",
+        "actions": [
+          "Create a task with its reminder",
+          "Complete or cancel a task",
+          "See overdue tasks"
+        ],
+        "tips": [
+          "When logging an activity you can create its next step here without leaving the screen.",
+          "Notifications are generated every few minutes: a reminder may take a little to arrive."
+        ],
+        "related": [
+          "plataforma.comercialCalendario",
+          "plataforma.comercialActividades"
+        ],
+        "audience": "The whole sales team."
+      },
+      "comercialCalendario": {
+        "title": "Calendar",
+        "summary": "Visits, meetings, calls, demos, follow-ups, tasks and renewals by day, week or month.",
+        "details": "Shows the activities, tasks and contract renewals of the period. Filter by salesperson, province and activity type, and log an activity or create a task from a day.",
+        "actions": [
+          "Switch between day, week and month",
+          "Create an activity or task on a day",
+          "Filter by salesperson, province or type"
+        ],
+        "tips": [
+          "What already happened is struck through; what is pending, in bold.",
+          "Contract renewals appear on their renewal date."
+        ],
+        "related": [
+          "plataforma.comercialTareas",
+          "plataforma.comercialActividades"
+        ],
+        "audience": "The whole sales team."
+      },
+      "comercialMapa": {
+        "title": "Sales map",
+        "summary": "Accounts on the map, with their sales status, and coverage by region and province.",
+        "details": "Each account with coordinates shows as a marker whose shape and icon depend on its status (not contacted, contacted, interested, negotiating, client, lost), with a legend: never by colour alone. Clicking a marker shows town, population, status, salesperson, last and next activity and value, with a link to the record. Below, coverage: city councils registered, contacted, negotiating and clients.",
+        "actions": [
+          "Filter the map",
+          "Open the record from a marker",
+          "See coverage by province or region"
+        ],
+        "tips": [
+          "An account without town or coordinates is not on the map: complete it in its record.",
+          "Coverage only counts city councils."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialInformes"
+        ],
+        "audience": "The whole sales team."
+      },
+      "comercialOportunidades": {
+        "title": "Opportunities",
+        "summary": "Each account's possible sales, with product, amount, stage, expected date and public procurement.",
+        "details": "An account can have several opportunities (associations, youth, prevention…). Each keeps estimated, proposal and final amounts, dates, size (associations, users, professionals), the public procurement information given by the administration, its proposals with versions and, when won, its contract and renewal.",
+        "actions": [
+          "Create an opportunity",
+          "Filter by status, stage or file number",
+          "See contracts renewing soon"
+        ],
+        "tips": [
+          "Losing an opportunity asks for the reason and never deletes it.",
+          "The CRM only stores what the administration says about the procedure: it does not interpret it."
+        ],
+        "related": [
+          "plataforma.comercialPipeline",
+          "plataforma.comercialDocumentos"
+        ],
+        "audience": "The whole sales team."
+      },
+      "comercialOportunidadFicha": {
+        "title": "Opportunity",
+        "summary": "A whole opportunity: amounts, stage, public procurement, proposals with versions and contract.",
+        "details": "Change the stage here (losing asks for a reason), log proposals (v1, v2…) and their status, complete the public procurement information and, when won, register the contract with its renewal date.",
+        "actions": [
+          "Add a proposal or a new version",
+          "Change the stage or mark it lost",
+          "Register the contract when winning"
+        ],
+        "tips": [
+          "Sending a proposal moves the opportunity to \"Proposal sent\".",
+          "The contract renewal date triggers notifications 90, 60 and 30 days before."
+        ],
+        "related": [
+          "plataforma.comercialOportunidades",
+          "plataforma.comercialPipeline"
+        ],
+        "audience": "The account owner and sales management."
+      },
+      "comercialDocumentos": {
+        "title": "Documents",
+        "summary": "Presentations, dossiers, proposals, budgets, contracts, tender specifications, minutes… of all your accounts.",
+        "details": "Each document keeps category, account, opportunity, activity, version, date, who uploaded it and description, and whether we sent or received it. View it in the browser, download it or upload a new version: previous versions are never deleted.",
+        "actions": [
+          "Upload a document",
+          "View, download or upload a new version",
+          "Filter by category or account"
+        ],
+        "tips": [
+          "Files can only be downloaded with permission: they never have a public link.",
+          "Up to 25 MB per file."
+        ],
+        "related": [
+          "plataforma.comercialEntidades",
+          "plataforma.comercialOportunidades"
+        ],
+        "audience": "The whole sales team."
+      },
+      "comercialInformes": {
+        "title": "Reports",
+        "summary": "Activity, funnel, conversion, pipeline, contracts, losses and activity per salesperson, by period.",
+        "details": "Period report filterable by salesperson, region, province, product and status: sales activity, funnel with conversion and average time per stage, pipeline value, contracted amount, lost opportunities and their reasons, accounts without follow-up and average time between contacts. Activity per salesperson shows activity and results together, never a ranking of visits.",
+        "actions": [
+          "Choose the period and filters",
+          "Compare the team's activity",
+          "Export the data to CSV"
+        ],
+        "tips": [
+          "A salesperson only sees their own row in activity per salesperson.",
+          "Conversion counts how many reached a stage out of those that reached the previous one."
+        ],
+        "related": [
+          "plataforma.comercial",
+          "plataforma.comercialMapa"
+        ],
+        "audience": "Sales management and administration see the whole team; each salesperson, their own."
+      },
+      "comercialAtencion": {
+        "title": "Needs attention",
+        "summary": "Accounts that have gone days without contact, from the most forgotten to the least, with their next task.",
+        "details": "Lists accounts with no activity for at least the first configured threshold (7 days by default), highlighted at 7, 15, 30 and 60+ days. Shows salesperson, status, last activity, days without contact, potential amount and next task.",
+        "actions": [
+          "See which accounts have gone longest without contact",
+          "Log an activity from the row",
+          "Filter by salesperson or province"
+        ],
+        "tips": [
+          "Thresholds are changed in Settings.",
+          "Lost accounts are not listed here."
+        ],
+        "related": [
+          "plataforma.comercial",
+          "plataforma.comercialTareas"
+        ],
+        "audience": "The whole sales team."
+      },
+      "comercialConfiguracion": {
+        "title": "Settings",
+        "summary": "Pipeline stages, contact sources, departments, products, tags and notification thresholds.",
+        "details": "Stages (name, order, colour, probability, type) and lists are edited and deactivated, never deleted: whatever already uses them still reads. Thresholds decide when to notify: days without activity on an opportunity, proposal without response, expected contract date approaching, renewals and \"Needs attention\" days.",
+        "actions": [
+          "Edit or add pipeline stages",
+          "Edit sources, departments and products",
+          "Change notification thresholds"
+        ],
+        "tips": [
+          "A \"lost\" stage requires a reason and a \"won\" one requires a contract: choose the type carefully.",
+          "Deactivating a stage removes it from the pipeline without touching what was already in it."
+        ],
+        "related": [
+          "plataforma.comercial",
+          "plataforma.comercialPipeline"
+        ],
+        "audience": "Sales management and administration only."
       }
     }
   },
@@ -2991,7 +3332,9 @@
       "revokeSelfWarning": "This is your own role: you will lose access to this section.",
       "replaceConfirmTitle": "Replace the platform role",
       "replaceConfirmDescription": "Account #{user} already has the role “{current}”. An account can only have one platform role: granting “{next}” will remove “{current}”.",
-      "replaceConfirmAction": "Replace role"
+      "replaceConfirmAction": "Replace role",
+      "roleSalesLead": "Sales director",
+      "roleSales": "Sales"
     },
     "auditoria": {
       "heading": "Audit log",
@@ -3881,6 +4224,215 @@
       "routine": "Followed their routine",
       "therapyMeeting": "Therapy or meeting",
       "feelGood": "Felt good"
+    }
+  },
+  "crm": {
+    "enums": {
+      "accountKind": {
+        "city_council": "City council",
+        "provincial_council": "Provincial council",
+        "cabildo": "Cabildo",
+        "island_council": "Island council",
+        "region": "Autonomous community",
+        "mancomunidad": "Association of municipalities",
+        "public_body": "Public body",
+        "public_company": "Public company",
+        "association": "Association",
+        "foundation": "Foundation",
+        "other": "Other"
+      },
+      "interest": {
+        "unrated": "Not rated",
+        "very_low": "Very low",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "very_high": "Very high"
+      },
+      "activityKind": {
+        "visit": "In-person visit",
+        "meeting": "Meeting",
+        "video_call": "Video call",
+        "call": "Phone call",
+        "email": "Email",
+        "whatsapp": "WhatsApp",
+        "demo": "Demo",
+        "presentation": "Presentation",
+        "proposal_sent": "Proposal sent",
+        "proposal_received": "Proposal received",
+        "pilot": "Pilot",
+        "event": "Event",
+        "note": "Note",
+        "contract": "Contract",
+        "internal_meeting": "Internal meeting",
+        "other": "Other"
+      },
+      "result": {
+        "very_positive": "Very positive",
+        "positive": "Positive",
+        "neutral": "Neutral",
+        "negative": "Negative",
+        "very_negative": "Very negative",
+        "pending": "Pending",
+        "none": "No result"
+      },
+      "priority": {
+        "low": "Low",
+        "normal": "Normal",
+        "high": "High",
+        "urgent": "Urgent"
+      },
+      "taskStatus": {
+        "pending": "Pending",
+        "in_progress": "In progress",
+        "done": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "proposalStatus": {
+        "draft": "Draft",
+        "sent": "Sent",
+        "seen": "Seen/confirmed",
+        "negotiating": "In negotiation",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "expired": "Expired"
+      },
+      "lostReason": {
+        "price": "Price",
+        "no_budget": "No budget",
+        "no_interest": "No interest",
+        "competitor": "Competitor",
+        "not_priority": "Not a priority",
+        "technical": "Technical issue",
+        "procurement": "Public procurement",
+        "postponed": "Project postponed",
+        "no_response": "No response",
+        "people_changed": "People in charge changed",
+        "other": "Other"
+      },
+      "documentCategory": {
+        "presentation": "Presentations",
+        "dossier": "Dossiers",
+        "proposal": "Proposals",
+        "budget": "Budgets",
+        "contract": "Contracts",
+        "tender": "Tender specifications",
+        "report": "Reports",
+        "technical": "Technical documentation",
+        "email": "Emails",
+        "minutes": "Minutes",
+        "administrative": "Administrative documentation",
+        "photo": "Photos",
+        "other": "Other"
+      },
+      "relationKind": {
+        "parent": "Depends on",
+        "partner": "Works with",
+        "member": "Member of",
+        "other": "Related"
+      },
+      "notificationKind": {
+        "task_reminder": "Task reminder",
+        "task_overdue": "Overdue task",
+        "assigned": "Assigned to you",
+        "opportunity_idle": "Opportunity without follow-up",
+        "proposal_followup": "Proposal without response",
+        "meeting_no_followup": "Meeting without follow-up",
+        "close_date": "Contract date approaching",
+        "renewal": "Contract renewal",
+        "document": "New document"
+      },
+      "catalogKind": {
+        "source": "Contact source",
+        "department": "Department",
+        "product": "Product"
+      },
+      "stageKind": {
+        "open": "Open",
+        "won": "Won",
+        "lost": "Lost",
+        "paused": "Paused"
+      }
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "entidades": "Accounts",
+      "contactos": "Contacts",
+      "pipeline": "Pipeline",
+      "actividades": "Activities",
+      "tareas": "Tasks and reminders",
+      "calendario": "Calendar",
+      "mapa": "Sales map",
+      "oportunidades": "Opportunities",
+      "documentos": "Documents",
+      "informes": "Reports",
+      "configuracion": "Settings"
+    },
+    "shell": {
+      "noAccess": "The sales CRM is only for sales management, the sales team and platform administration.",
+      "navLabel": "Sales sections",
+      "registerActivity": "+ Log activity"
+    },
+    "search": {
+      "label": "Search the CRM",
+      "placeholder": "Account, town, contact, phone, email, file number…",
+      "loading": "Searching…",
+      "error": "The search failed. Try again.",
+      "empty": "Nothing matches.",
+      "accounts": "Accounts",
+      "contacts": "Contacts",
+      "opportunities": "Opportunities",
+      "documents": "Documents"
+    },
+    "notifications": {
+      "button": "Notifications ({count} unread)",
+      "short": "Notifications",
+      "title": "Notifications",
+      "readAll": "Mark all as read",
+      "markRead": "Mark as read",
+      "empty": "No notifications.",
+      "error": "Notifications could not be loaded."
+    },
+    "common": {
+      "none": "—",
+      "nobody": "Nobody",
+      "usersError": "The team could not be loaded.",
+      "loading": "Loading…",
+      "save": "Save",
+      "saving": "Saving…"
+    },
+    "quick": {
+      "title": "Log activity",
+      "account": "Account",
+      "kind": "Type",
+      "contact": "Contact",
+      "result": "Result",
+      "interest": "Interest after the activity",
+      "interestUnchanged": "No change",
+      "summary": "Summary",
+      "dictate": "Dictate",
+      "stopDictation": "Stop dictating",
+      "attachments": "Attachments (photos, documents)",
+      "nextStep": "What is the next step?",
+      "createFollowUp": "Schedule follow-up",
+      "noFollowUp": "No follow-up needed",
+      "followKind": "Action",
+      "followAt": "Date and time",
+      "followTitle": "What to do",
+      "followPriority": "Priority",
+      "reminder": "Reminder",
+      "assignee": "Responsible",
+      "uploadFailed": "The activity was saved, but these files could not be uploaded: {files}"
+    },
+    "reminders": {
+      "m0": "At the time",
+      "m15": "15 minutes before",
+      "m60": "1 hour before",
+      "m1440": "1 day before",
+      "m2880": "2 days before"
+    },
+    "settings": {
+      "noAccess": "Only sales management and platform administration can change the CRM settings."
     }
   }
 }

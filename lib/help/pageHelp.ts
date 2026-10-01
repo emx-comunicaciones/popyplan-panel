@@ -74,6 +74,22 @@ export const PAGE_HELP: readonly PageHelpEntry[] = [
 
   // Plataforma (`/plataforma/…`)
   { route: "/plataforma", key: "plataforma.inicio" },
+  // CRM comercial (`/plataforma/comercial/…`, `docs/CRM.md` del backend)
+  { route: "/plataforma/comercial", key: "plataforma.comercial" },
+  { route: "/plataforma/comercial/entidades", key: "plataforma.comercialEntidades" },
+  { route: "/plataforma/comercial/entidades/[id]", key: "plataforma.comercialEntidadFicha" },
+  { route: "/plataforma/comercial/contactos", key: "plataforma.comercialContactos" },
+  { route: "/plataforma/comercial/pipeline", key: "plataforma.comercialPipeline" },
+  { route: "/plataforma/comercial/actividades", key: "plataforma.comercialActividades" },
+  { route: "/plataforma/comercial/tareas", key: "plataforma.comercialTareas" },
+  { route: "/plataforma/comercial/calendario", key: "plataforma.comercialCalendario" },
+  { route: "/plataforma/comercial/mapa", key: "plataforma.comercialMapa" },
+  { route: "/plataforma/comercial/oportunidades", key: "plataforma.comercialOportunidades" },
+  { route: "/plataforma/comercial/oportunidades/[id]", key: "plataforma.comercialOportunidadFicha" },
+  { route: "/plataforma/comercial/documentos", key: "plataforma.comercialDocumentos" },
+  { route: "/plataforma/comercial/informes", key: "plataforma.comercialInformes" },
+  { route: "/plataforma/comercial/atencion", key: "plataforma.comercialAtencion" },
+  { route: "/plataforma/comercial/configuracion", key: "plataforma.comercialConfiguracion" },
   { route: "/plataforma/entidades", key: "plataforma.entidades" },
   { route: "/plataforma/entidades/[id]", key: "plataforma.entidadFicha" },
   { route: "/plataforma/usuarios", key: "plataforma.usuarios" },

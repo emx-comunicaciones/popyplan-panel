@@ -29,12 +29,21 @@ import {
 import type { PlatformRoleName } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
 
-const ROLE_OPTIONS: PlatformRoleName[] = ["superadmin", "verifier", "moderator", "support"];
+const ROLE_OPTIONS: PlatformRoleName[] = [
+  "superadmin",
+  "verifier",
+  "moderator",
+  "support",
+  "sales_lead",
+  "sales",
+];
 const ROLE_LABEL_KEYS: Record<PlatformRoleName, string> = {
   superadmin: "plataforma.roles.roleSuperadmin",
   verifier: "plataforma.roles.roleVerifier",
   moderator: "plataforma.roles.roleModerator",
   support: "plataforma.roles.roleSupport",
+  sales_lead: "plataforma.roles.roleSalesLead",
+  sales: "plataforma.roles.roleSales",
 };
 
 const ROLES_ERROR_KEYS: Record<PlatformRolesErrorKind, string> = {
