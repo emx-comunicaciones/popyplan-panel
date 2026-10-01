@@ -53,6 +53,15 @@ interface ControlledPeriodProps {
   period: Period;
   preset: PeriodPreset;
   onPeriodChange: (period: Period, preset: PeriodPreset) => void;
+  /**
+   * Fechas sin aplicar (rango invertido, demasiado largo…) en **cualquiera**
+   * de los selectores que comparten el periodo: con el del dashboard en ese
+   * estado el periodo aplicado es el anterior y exportar bajaría un rango
+   * distinto del que se ve. Si el dashboard lo lleva, manda sobre el del
+   * propio panel; `onPeriodPendingChange` le avisa de lo que pase aquí.
+   */
+  periodPending?: boolean;
+  onPeriodPendingChange?: (pending: boolean) => void;
 }
 
 /**
@@ -64,6 +73,8 @@ interface UncontrolledPeriodProps {
   period?: undefined;
   preset?: undefined;
   onPeriodChange?: undefined;
+  periodPending?: undefined;
+  onPeriodPendingChange?: undefined;
 }
 
 export type ExportPanelProps = ExportPanelOwnProps &
@@ -89,18 +100,26 @@ export function ExportPanel({
   period,
   preset,
   onPeriodChange,
+  periodPending: sharedPending,
+  onPeriodPendingChange,
 }: ExportPanelProps) {
   const t = useTranslations("metrics.export");
   const [ownPreset, setOwnPreset] = useState<PeriodPreset>("mes");
   const [ownPeriod, setOwnPeriod] = useState<Period>(() => presetPeriod("mes"));
   const [exportGroupBy, setExportGroupBy] = useState<ExportGroupByChoice>("habitual");
-  const [periodPending, setPeriodPending] = useState(false);
+  const [ownPending, setOwnPending] = useState(false);
   const [chosenScope, setChosenScope] = useState<MetricsScope>(scope);
   const selectId = useId();
   const scopeSelectId = useId();
 
   const showScopeSelect = (scopeChoices?.length ?? 0) > 1;
   const effectiveScope = showScopeSelect ? chosenScope : scope;
+
+  const periodPending = sharedPending ?? ownPending;
+  function handlePendingChange(pending: boolean) {
+    setOwnPending(pending);
+    onPeriodPendingChange?.(pending);
+  }
 
   const controlled = period !== undefined;
   const effectivePeriod = period ?? ownPeriod;
@@ -125,7 +144,7 @@ export function ExportPanel({
         value={effectivePeriod}
         preset={effectivePreset}
         onChange={handlePeriodChange}
-        onPendingChange={setPeriodPending}
+        onPendingChange={handlePendingChange}
       />
       {showScopeSelect ? (
         <div className="mt-4">

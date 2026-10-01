@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 
-import { render, screen } from "@/test-utils/render";
+import { fireEvent, render, screen } from "@/test-utils/render";
 import { axe } from "@/test-utils/axe";
 import { NextRedirectSignal } from "@/test-utils/nextNavigationMock";
 import { buildMe } from "@/test-utils/fixtures/me";
@@ -198,6 +198,31 @@ describe("PlataformaMetricasPage", () => {
     screen.getAllByRole("button", { name: "Año" }).forEach((button) => {
       expect(button).toHaveAttribute("aria-pressed", "true");
     });
+  });
+
+  it("un rango inválido en el selector de arriba también deshabilita la exportación", async () => {
+    const mutate = vi.fn();
+    useExportMock.mockReturnValue({ mutate, isPending: false, error: null });
+    mockMetricsByGroup({
+      base: buildMetricsResponse(),
+      place: buildMetricsResponse({ by_place: buildByPlaceRows() }),
+      organization: buildMetricsResponse({ by_place: [] }),
+      month: buildMetricsResponse({ series: [] }),
+      year: buildMetricsResponse({ series: [] }),
+    });
+    mockCompare();
+
+    await renderPage();
+    expect(screen.getByRole("button", { name: "Exportar CSV" })).toBeEnabled();
+
+    // Desde posterior a Hasta en el selector de arriba: sigue aplicado el mes.
+    fireEvent.change(screen.getAllByLabelText("Desde")[0], { target: { value: "2999-01-01" } });
+    expect(screen.getByRole("button", { name: "Exportar CSV" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Exportar PDF" })).toBeDisabled();
+
+    // Arreglarlo (en cualquiera de los dos) la devuelve.
+    fireEvent.change(screen.getAllByLabelText("Desde")[0], { target: { value: presetPeriod("mes").since } });
+    expect(screen.getByRole("button", { name: "Exportar CSV" })).toBeEnabled();
   });
 
   it("el «Personalizado» del panel de exportación no devuelve el dashboard al periodo viejo", async () => {

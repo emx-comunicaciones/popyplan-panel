@@ -68,6 +68,9 @@ export function PlataformaMetricsDashboard() {
   const t = useTranslations();
   const [preset, setPreset] = useState<PeriodPreset>("mes");
   const [period, setPeriod] = useState<Period>(() => presetPeriod("mes"));
+  // Fechas sin aplicar en el selector de arriba o en el del panel de
+  // exportación (comparten periodo): con cualquiera así, no se exporta.
+  const [periodPending, setPeriodPending] = useState(false);
   const [groupBy, setGroupBy] = useState<TableGroupBy>("place");
   const [compareGroupBy, setCompareGroupBy] = useState<PlataformaCompareGroupBy>("province");
   const compareSelectId = useId();
@@ -94,7 +97,12 @@ export function PlataformaMetricsDashboard() {
 
   return (
     <div className="flex flex-col gap-4">
-      <PeriodSelector value={period} preset={preset} onChange={handlePeriodChange} />
+      <PeriodSelector
+        value={period}
+        preset={preset}
+        onChange={handlePeriodChange}
+        onPendingChange={setPeriodPending}
+      />
 
       {base.isError ? (
         <ErrorState
@@ -245,6 +253,8 @@ export function PlataformaMetricsDashboard() {
             period={period}
             preset={preset}
             onPeriodChange={handlePeriodChange}
+            periodPending={periodPending}
+            onPeriodPendingChange={setPeriodPending}
           />
         </>
       )}
