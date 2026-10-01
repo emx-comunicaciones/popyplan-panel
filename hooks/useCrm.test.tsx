@@ -249,6 +249,18 @@ describe("descargas", () => {
     expect(tab.location.href).toBe("blob:x");
   });
 
+  it("la vista previa corta el opener nada más abrir la pestaña, sin esperar al fichero", async () => {
+    const tab = { opener: {} as unknown, location: { href: "" }, close: vi.fn() };
+    vi.spyOn(window, "open").mockReturnValue(tab as unknown as Window);
+    let openerWhilePending: unknown = "sin comprobar";
+    fetchWithAuthMock.mockImplementation(() => {
+      openerWhilePending = tab.opener;
+      return Promise.reject(new Error("boom"));
+    });
+    await expect(H.openCrmDocument(500, 501, true)).rejects.toThrow("boom");
+    expect(openerWhilePending).toBeNull();
+  });
+
   it("si el navegador bloquea la pestaña de vista previa, falla sin pedir el fichero", async () => {
     fetchWithAuthMock.mockClear();
     vi.spyOn(window, "open").mockReturnValue(null);

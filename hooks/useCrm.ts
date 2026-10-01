@@ -379,16 +379,17 @@ export async function openCrmDocument(documentId: number, versionId: number, inl
   // La pestaña de la vista previa se abre dentro del gesto del clic, antes
   // del fetch: abierta después, el navegador la bloquea (y `window.open`
   // devuelve `null` sin lanzar). Con `noopener` también devolvería `null`
-  // siempre, así que se corta el `opener` a mano.
+  // siempre, así que se corta el `opener` a mano, ya, para que la pestaña
+  // no conserve la página del panel mientras llegan la respuesta y el blob.
   const tab = inline ? window.open("", "_blank") : null;
   if (inline && !tab) throw new Error("popup_blocked");
+  if (tab) tab.opener = null;
   try {
     const response = await fetchWithAuth(
       `${CRM.DOCUMENT_DOWNLOAD(documentId, versionId)}${inline ? "?inline=1" : ""}`,
     );
     const blob = await response.blob();
     if (tab) {
-      tab.opener = null;
       tab.location.href = URL.createObjectURL(blob);
       return;
     }
