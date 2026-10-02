@@ -87,6 +87,14 @@ describe("PlataformaComercialEntidadesPage", () => {
     expect(await screen.findByLabelText("Responsable")).toBeInTheDocument();
   });
 
+  it("el filtro de responsable sin elegir dice «Todos», no «Nadie» (pasada del 01-10)", async () => {
+    route();
+    await renderPage("sales_lead");
+    const filtro = await screen.findByLabelText("Responsable");
+    expect(within(filtro).getAllByRole("option")[0]).toHaveTextContent("Todos");
+    expect(within(filtro).queryByRole("option", { name: "Nadie" })).not.toBeInTheDocument();
+  });
+
   it("los filtros cambian la URL que se pide", async () => {
     route();
     const user = userEvent.setup();
@@ -211,7 +219,7 @@ describe("PlataformaComercialEntidadesPage", () => {
     const file = new File(["nombre\nZarautz"], "entidades.csv", { type: "text/csv" });
     await user.upload(within(dialog).getByLabelText("Fichero CSV o XLSX"), file);
     expect(await within(dialog).findByText("Falta el nombre.")).toBeInTheDocument();
-    expect(within(dialog).getByText(/3 filas: 1 con errores, 1 posibles duplicados/)).toBeInTheDocument();
+    expect(within(dialog).getByText(/3 filas: 1 con errores, 1 posible duplicado./)).toBeInTheDocument();
     await user.click(within(dialog).getByRole("button", { name: "Importar" }));
     expect(await within(dialog).findByText(/1 entidad creada, 2 omitidas/)).toBeInTheDocument();
     const commit = apiFetchMock.mock.calls.find((c) => c[0] === "/api/crm/import/commit/");

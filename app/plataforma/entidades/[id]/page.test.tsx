@@ -196,7 +196,7 @@ describe("PlataformaEntidadDetailPage", () => {
     render(element);
 
     expect(screen.getByRole("button", { name: "Datos" })).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByRole("button", { name: "Ámbito" })).toHaveAttribute("aria-pressed", "false");
+    expect((await screen.findByRole("button", { name: "Ámbito" }))).toHaveAttribute("aria-pressed", "false");
 
     await user.click(screen.getByRole("button", { name: "Ámbito" }));
 
@@ -346,6 +346,93 @@ describe("PlataformaEntidadDetailPage", () => {
     expect(screen.queryByText(/también puedes cambiarlos tú/)).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Añadir" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Asignar" })).not.toBeInTheDocument();
+    // Y no pinta debajo las tarjetas vacías con «Sin acceso» (pasada del 01-10):
+    // el aviso de arriba ya dice que el equipo no se ve desde plataforma.
+    expect(screen.queryByText("Sin acceso")).not.toBeInTheDocument();
+    expect(screen.queryByText("Solo el titular gestiona el equipo.")).not.toBeInTheDocument();
+    expect(screen.queryByText(/No se pudieron cargar los referentes/)).not.toBeInTheDocument();
+  });
+
+  it("Equipo: un error de servidor o de red no se hace pasar por «ya hay titular»; avisa y deja reintentar", async () => {
+    let failing = true;
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") return buildOrganization({ id: 9, name: "Entidad Sin Suerte" });
+      if (path.includes("/members/")) {
+        if (failing) throw new ApiError(500, { detail: "boom" });
+        return [buildOrgMembershipFull({ role: "titular" })];
+      }
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    const user = userEvent.setup();
+    render(await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) }));
+    await user.click(screen.getByRole("button", { name: "Equipo" }));
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent("No se pudo cargar el equipo");
+    expect(screen.queryByText(/Esta entidad ya tiene titular/)).not.toBeInTheDocument();
+
+    failing = false;
+    await user.click(within(alert).getByRole("button", { name: "Reintentar" }));
+    await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
+    expect(screen.queryByText(/Esta entidad ya tiene titular/)).not.toBeInTheDocument();
+  });
+
+  it("Ámbito: no se ofrece mientras la ficha carga ni si la consulta falla, solo para asociaciones y ONG", async () => {
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    // Cargando: la ficha no ha respondido, el tipo se desconoce.
+    apiFetchMock.mockImplementation(() => new Promise(() => {}));
+    const cargando = render(await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) }));
+    expect(screen.getByRole("button", { name: "Equipo" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Ámbito" })).not.toBeInTheDocument();
+    cargando.unmount();
+
+    // Fallo: sin tipo tampoco.
+    apiFetchMock.mockImplementation(async () => {
+      throw new ApiError(500, { detail: "boom" });
+    });
+    const fallo = render(await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) }));
+    expect(await screen.findByText("No se pudo cargar la ficha")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Ámbito" })).not.toBeInTheDocument();
+    fallo.unmount();
+
+    // Una ONG sí lo admite.
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") return buildOrganization({ id: 9, org_type: "ong" });
+      return [];
+    });
+    render(await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) }));
+    expect(await screen.findByRole("button", { name: "Ámbito" })).toBeInTheDocument();
+  });
+
+  it("Ámbito: una administración no tiene la pestaña, su territorio va en Datos (pasada del 01-10)", async () => {
+    apiFetchMock.mockImplementation(async (path: string) => {
+      if (path === "/api/organizations/9/") {
+        return buildOrganization({ id: 9, name: "Ayuntamiento de Irun", org_type: "administracion" });
+      }
+      return [];
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    render(await PlataformaEntidadDetailPage({ params: Promise.resolve({ id: "9" }) }));
+
+    expect(await screen.findByText("Territorio declarado")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Equipo" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Ámbito" })).not.toBeInTheDocument();
   });
 
   it("Equipo: con titular el superadmin ve todos los roles y no el aviso del primer titular", async () => {

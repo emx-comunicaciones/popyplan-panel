@@ -20,6 +20,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useOrganizations } from "@/hooks/useOrganizations";
 import { usePlacesByIne } from "@/hooks/usePlaces";
 import type { Organization } from "@/lib/api/types";
+import { ORG_TYPE_LABEL_KEYS, enumLabel } from "@/lib/i18n/enumLabels";
 import { placeLabelState } from "@/lib/places/placeLabel";
 
 import { NuevaEntidadDialog } from "./NuevaEntidadDialog";
@@ -139,7 +140,11 @@ export function EntidadesTable({ canCreate }: EntidadesTableProps) {
                   </Link>
                 ),
               },
-              { key: "org_type", header: t("plataforma.entidades.typeHeader"), render: (org) => org.org_type },
+              {
+                key: "org_type",
+                header: t("plataforma.entidades.typeHeader"),
+                render: (org) => enumLabel(ORG_TYPE_LABEL_KEYS, org.org_type, t),
+              },
               {
                 key: "place",
                 header: t("plataforma.sede.header"),

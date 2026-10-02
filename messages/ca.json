@@ -1100,7 +1100,7 @@
       "scopeValuePlacesLabel": "Codis INE, separats per comes",
       "scopeValueCodeLabel": "Codi",
       "expandScope": "Ampliar àmbit",
-      "scopeSuccess": "Afegits {added} municipis (àmbit total: {total})."
+      "scopeSuccess": "{added, plural, one {Afegit # municipi} other {Afegits # municipis}} (àmbit total: {total})."
     },
     "seguimiento": {
       "heading": "Programa de seguiment",
@@ -3227,10 +3227,11 @@
       "scopeValuePlaces": "Codis INE, separats per comes",
       "scopeValueCode": "Codi",
       "expandScopeAction": "Ampliar àmbit",
-      "scopeSuccess": "Afegits {added} municipis (àmbit total: {total}).",
+      "scopeSuccess": "{added, plural, one {Afegit # municipi} other {Afegits # municipis}} (àmbit total: {total}).",
       "teamManageableNotice": "L'equip i les referències els gestiona normalment el titular de l'entitat; des de plataforma també els pots canviar tu.",
       "teamReadOnlyNotice": "L'equip i les referències els gestiona el titular de l'entitat. El teu rol de plataforma no gestiona l'equip des d'aquí: el pots consultar, no canviar.",
       "teamClosedNotice": "Aquesta entitat ja té titular: l'equip i les referències les gestiona el seu titular; des de la plataforma no es veuen ni es canvien.",
+      "teamLoadError": "No s'ha pogut carregar l'equip",
       "teamCardTitle": "Equip",
       "addAction": "Afegir",
       "teamEmpty": "Encara no hi ha equip",
@@ -5282,7 +5283,7 @@
         "municipality": "Municipi",
         "errors": "Errors",
         "duplicates": "Possibles duplicats",
-        "summary": "{count, plural, one {# fila} other {# files}}: {errors} amb errors, {duplicates} possibles duplicats.",
+        "summary": "{count, plural, one {# fila} other {# files}}: {errors} amb errors, {duplicates, plural, one {# possible duplicat} other {# possibles duplicats}}.",
         "includeDuplicates": "Importa també les files que s'assemblen a entitats existents",
         "owner": "Assigna a",
         "submit": "Importa",

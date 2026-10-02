@@ -1100,7 +1100,7 @@
       "scopeValuePlacesLabel": "Códigos INE, separados por coma",
       "scopeValueCodeLabel": "Código",
       "expandScope": "Ampliar ámbito",
-      "scopeSuccess": "Añadidos {added} municipios (ámbito total: {total})."
+      "scopeSuccess": "{added, plural, one {Añadido # municipio} other {Añadidos # municipios}} (ámbito total: {total})."
     },
     "seguimiento": {
       "heading": "Programa de seguimiento",
@@ -3227,10 +3227,11 @@
       "scopeValuePlaces": "Códigos INE, separados por coma",
       "scopeValueCode": "Código",
       "expandScopeAction": "Ampliar ámbito",
-      "scopeSuccess": "Añadidos {added} municipios (ámbito total: {total}).",
+      "scopeSuccess": "{added, plural, one {Añadido # municipio} other {Añadidos # municipios}} (ámbito total: {total}).",
       "teamManageableNotice": "El equipo y las referencias los gestiona normalmente el titular de la entidad; desde plataforma también puedes cambiarlos tú.",
       "teamReadOnlyNotice": "El equipo y las referencias los gestiona el titular de la entidad. Tu rol de plataforma no gestiona el equipo desde aquí: puedes consultarlo, no cambiarlo.",
       "teamClosedNotice": "Esta entidad ya tiene titular: el equipo y las referencias los gestiona su titular; desde plataforma no se ven ni se cambian.",
+      "teamLoadError": "No se pudo cargar el equipo",
       "teamCardTitle": "Equipo",
       "addAction": "Añadir",
       "teamEmpty": "Sin equipo todavía",
@@ -5282,7 +5283,7 @@
         "municipality": "Municipio",
         "errors": "Errores",
         "duplicates": "Posibles duplicados",
-        "summary": "{count, plural, one {# fila} other {# filas}}: {errors} con errores, {duplicates} posibles duplicados.",
+        "summary": "{count, plural, one {# fila} other {# filas}}: {errors} con errores, {duplicates, plural, one {# posible duplicado} other {# posibles duplicados}}.",
         "includeDuplicates": "Importar también las filas que se parecen a entidades existentes",
         "owner": "Asignar a",
         "submit": "Importar",

@@ -51,6 +51,9 @@ const METRICS_ERROR_KEYS = {
  */
 export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
   const { today, pendingReports, pendingHelpRequests, metrics, activePrograms } = useEntityHome(orgId);
+  const hasPendingAlerts = [pendingHelpRequests, pendingReports].some(
+    (query) => (query.data !== null && query.data !== undefined) || query.isError,
+  );
   const t = useTranslations("entidad.inicio");
   const tErrors = useTranslations();
   const locale = useLocale();
@@ -102,32 +105,37 @@ export function EntityHomeDashboard({ orgId, slug }: EntityHomeDashboardProps) {
         )}
       </section>
 
-      <section aria-labelledby="avisos-heading" className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <h2 id="avisos-heading" className="sr-only">
-          {t("pendingAlertsHeading")}
-        </h2>
-        {pendingHelpRequests.data !== null && pendingHelpRequests.data !== undefined ? (
-          <Card title={t("pendingHelpRequests")}>
-            <p className="text-2xl font-semibold text-text-base">{pendingHelpRequests.data}</p>
-            <Link href={`/entidad/${slug}/guardia`} className="text-sm font-medium text-primary-700 underline">
-              {t("goToGuardia")}
-            </Link>
-          </Card>
-        ) : pendingHelpRequests.isError ? (
-          <p className="text-sm text-error">{t("helpRequestsError")}</p>
-        ) : null}
+      {/* Sin tarjetas que enseñar (rol sin acceso a los contadores, `count:
+          null`) no se pinta la sección: un lector de pantalla anunciaba
+          «Avisos pendientes» sin nada debajo (pasada del 01-10). */}
+      {hasPendingAlerts ? (
+        <section aria-labelledby="avisos-heading" className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <h2 id="avisos-heading" className="sr-only">
+            {t("pendingAlertsHeading")}
+          </h2>
+          {pendingHelpRequests.data !== null && pendingHelpRequests.data !== undefined ? (
+            <Card title={t("pendingHelpRequests")}>
+              <p className="text-2xl font-semibold text-text-base">{pendingHelpRequests.data}</p>
+              <Link href={`/entidad/${slug}/guardia`} className="text-sm font-medium text-primary-700 underline">
+                {t("goToGuardia")}
+              </Link>
+            </Card>
+          ) : pendingHelpRequests.isError ? (
+            <p className="text-sm text-error">{t("helpRequestsError")}</p>
+          ) : null}
 
-        {pendingReports.data !== null && pendingReports.data !== undefined ? (
-          <Card title={t("pendingReports")}>
-            <p className="text-2xl font-semibold text-text-base">{pendingReports.data}</p>
-            <Link href={`/entidad/${slug}/reportes`} className="text-sm font-medium text-primary-700 underline">
-              {t("goToReportes")}
-            </Link>
-          </Card>
-        ) : pendingReports.isError ? (
-          <p className="text-sm text-error">{t("reportsError")}</p>
-        ) : null}
-      </section>
+          {pendingReports.data !== null && pendingReports.data !== undefined ? (
+            <Card title={t("pendingReports")}>
+              <p className="text-2xl font-semibold text-text-base">{pendingReports.data}</p>
+              <Link href={`/entidad/${slug}/reportes`} className="text-sm font-medium text-primary-700 underline">
+                {t("goToReportes")}
+              </Link>
+            </Card>
+          ) : pendingReports.isError ? (
+            <p className="text-sm text-error">{t("reportsError")}</p>
+          ) : null}
+        </section>
+      ) : null}
 
       <section aria-labelledby="programas-heading">
         <h2 id="programas-heading" className="sr-only">

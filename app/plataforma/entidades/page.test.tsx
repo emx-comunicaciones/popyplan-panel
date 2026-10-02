@@ -77,6 +77,30 @@ describe("PlataformaEntidadesPage", () => {
     expect(screen.getByRole("button", { name: "Nueva entidad" })).toBeInTheDocument();
   });
 
+  it("la columna «Tipo» sale traducida, no con el valor interno (pasada del 01-10)", async () => {
+    apiFetchMock.mockResolvedValue({
+      count: 2,
+      next: null,
+      previous: null,
+      results: [
+        buildOrganization({ id: 9, name: "Ayuntamiento de Irun", org_type: "administracion" }),
+        buildOrganization({ id: 10, name: "Asociación Bidasoa", org_type: "asociacion" }),
+      ],
+    });
+    getServerSessionMock.mockResolvedValue({
+      token: "t",
+      me: buildMe({ org_memberships: [] }),
+      platformRole: buildPlatformRole("superadmin"),
+    });
+
+    render(await PlataformaEntidadesPage());
+
+    await waitFor(() => expect(screen.getByText("Ayuntamiento de Irun")).toBeInTheDocument());
+    expect(screen.getByRole("cell", { name: "Administración" })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "Asociación" })).toBeInTheDocument();
+    expect(screen.queryByRole("cell", { name: "administracion" })).not.toBeInTheDocument();
+  });
+
   it("el aviso de «creada» desaparece al reintentar: no se queda de un alta anterior", async () => {
     const created = buildOrganization({ id: 12, name: "Asociación Bidasoa" });
     apiFetchMock.mockImplementation(async (path: string, options?: { method?: string }) => {
