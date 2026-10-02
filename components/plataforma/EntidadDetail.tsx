@@ -134,6 +134,12 @@ const ADD_ORG_MEMBER_ERROR_KEYS: Record<OrgMembersErrorKind, string> = {
   desconocido: "errors.addOrgMember.desconocido",
 };
 
+const LIST_ORG_MEMBERS_ERROR_KEYS: Record<OrgMembersErrorKind, string> = {
+  invalido: "errors.orgMembers.desconocido",
+  sin_acceso: "errors.orgMembers.sinAcceso",
+  desconocido: "errors.orgMembers.desconocido",
+};
+
 const REMOVE_ORG_MEMBER_ERROR_KEYS: Record<OrgMembersErrorKind, string> = {
   invalido: "errors.removeOrgMember.invalido",
   sin_acceso: "errors.removeOrgMember.sinAcceso",
@@ -559,8 +565,11 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
   const members = useOrgMembers(orgId);
   // Con titular puesto, el backend cierra el equipo (y las referencias) a la
   // plataforma con un 403: decir «también puedes cambiarlos tú» y ofrecer
-  // formularios que no pueden funcionar era el error 15 del informe.
-  const teamClosed = members.isError;
+  // formularios que no pueden funcionar era el error 15 del informe. Solo el
+  // 403 significa eso: un fallo de red o un 5xx no dice nada del titular y
+  // se pinta como error con reintento (más abajo).
+  const teamClosed = members.isError && members.error?.kind === "sin_acceso";
+  const teamLoadFailed = members.isError && !teamClosed;
   const canManage = canManageTeamFromPlatform(platformRole) && !teamClosed;
   const addMember = useAddOrgMember(orgId);
   const removeMember = useRemoveOrgMember(orgId);
@@ -593,6 +602,19 @@ function EquipoTab({ orgId, role: platformRole }: { orgId: number | string; role
   // Equipo cerrado (ya tiene titular): el aviso lo explica y no se pintan
   // debajo dos tarjetas vacías con «Sin acceso» (pasada del 01-10). Solo
   // queda el «Titular asignado» de quien acaba de dar el primero.
+  if (teamLoadFailed) {
+    return (
+      <ErrorState
+        title={t("plataforma.entidadFicha.teamLoadError")}
+        description={errorKindText(members.error, LIST_ORG_MEMBERS_ERROR_KEYS, t, "errors.orgMembers.desconocido")}
+        action={
+          <Button type="button" variant="secondary" onClick={() => members.refetch()}>
+            {t("common.retry")}
+          </Button>
+        }
+      />
+    );
+  }
   if (teamClosed) {
     return (
       <div className="flex flex-col gap-4">
@@ -1061,10 +1083,12 @@ export function EntidadDetail({ orgId, role }: EntidadDetailProps) {
   const organization = useOrganization(orgId);
   // El ámbito de actuación (`POST /scope/`) es de asociaciones y ONG: a una
   // administración el backend le responde 403, porque su territorio se
-  // declara en «Datos» (pasada del 01-10).
-  const sections = SECTIONS.filter(
-    (value) => value !== "ambito" || organization.data?.org_type !== "administracion",
-  );
+  // declara en «Datos» (pasada del 01-10). Mientras la ficha carga, o si
+  // falla, el tipo se desconoce: «Ámbito» no se ofrece hasta saber que el
+  // tipo lo admite.
+  const orgType = organization.data?.org_type;
+  const admitsScope = orgType === "asociacion" || orgType === "ong";
+  const sections = SECTIONS.filter((value) => value !== "ambito" || admitsScope);
 
   return (
     <div className="flex flex-col gap-4">

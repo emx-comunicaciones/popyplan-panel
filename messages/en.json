@@ -3231,6 +3231,7 @@
       "teamManageableNotice": "The team and references are usually managed by the entity's owner; from the platform you can also change them.",
       "teamReadOnlyNotice": "The team and references are managed by the entity's owner. Your platform role doesn't manage the team from here: you can view it, not change it.",
       "teamClosedNotice": "This entity already has a titleholder: the team and references are managed by the titleholder; from the platform they can be neither seen nor changed.",
+      "teamLoadError": "The team could not be loaded",
       "teamCardTitle": "Team",
       "addAction": "Add",
       "teamEmpty": "No team yet",

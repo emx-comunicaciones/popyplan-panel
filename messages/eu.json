@@ -3231,6 +3231,7 @@
       "teamManageableNotice": "Erakundearen titularrak kudeatzen ditu normalean taldea eta erreferentziak; plataformatik ere alda ditzakezu.",
       "teamReadOnlyNotice": "Erakundearen titularrak kudeatzen ditu taldea eta erreferentziak. Zure plataforma-rolak ez du taldea hemendik kudeatzen: kontsulta dezakezu, ez aldatu.",
       "teamClosedNotice": "Erakunde honek titularra du jada: taldea eta erreferentziak titularrak kudeatzen ditu; plataformatik ezin dira ikusi ez aldatu.",
+      "teamLoadError": "Ezin izan da taldea kargatu",
       "teamCardTitle": "Taldea",
       "addAction": "Gehitu",
       "teamEmpty": "Oraindik ez dago talderik",

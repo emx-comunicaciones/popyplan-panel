@@ -3231,6 +3231,7 @@
       "teamManageableNotice": "El equipo y las referencias los gestiona normalmente el titular de la entidad; desde plataforma también puedes cambiarlos tú.",
       "teamReadOnlyNotice": "El equipo y las referencias los gestiona el titular de la entidad. Tu rol de plataforma no gestiona el equipo desde aquí: puedes consultarlo, no cambiarlo.",
       "teamClosedNotice": "Esta entidad ya tiene titular: el equipo y las referencias los gestiona su titular; desde plataforma no se ven ni se cambian.",
+      "teamLoadError": "No se pudo cargar el equipo",
       "teamCardTitle": "Equipo",
       "addAction": "Añadir",
       "teamEmpty": "Sin equipo todavía",
