@@ -188,6 +188,9 @@ describe("EntidadInicioPage", () => {
 
     expect(screen.queryByText("Solicitudes de ayuda pendientes")).not.toBeInTheDocument();
     expect(screen.queryByText("Reportes pendientes")).not.toBeInTheDocument();
+    // Ni el encabezado «Avisos pendientes» de una sección vacía, que un
+    // lector de pantalla anunciaba sin nada debajo (pasada del 01-10).
+    expect(screen.queryByRole("heading", { name: "Avisos pendientes" })).not.toBeInTheDocument();
   });
 
   it("error real cargando las actividades pinta un ErrorState", async () => {

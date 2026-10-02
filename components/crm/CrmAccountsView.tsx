@@ -215,7 +215,14 @@ export function CrmAccountsView({ isManager }: CrmAccountsViewProps) {
         {select("crm-accounts-tag", ta("filters.tag"), filters.tag, (tag) => update({ tag }),
           (tags.data ?? []).map((tag) => ({ value: String(tag.id), label: tag.name })))}
         {isManager ? (
-          <CrmUserSelect id="crm-accounts-owner" label={ta("filters.owner")} value={filters.owner} onChange={(owner) => update({ owner })} allowEmpty />
+          <CrmUserSelect
+            id="crm-accounts-owner"
+            label={ta("filters.owner")}
+            value={filters.owner}
+            onChange={(owner) => update({ owner })}
+            allowEmpty
+            emptyLabel={ta("filters.all")}
+          />
         ) : null}
         {select("crm-accounts-client", ta("filters.client"), filters.client, (client) => update({ client }), [
           { value: "true", label: ta("filters.clientYes") },

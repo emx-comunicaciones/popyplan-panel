@@ -611,6 +611,22 @@ describe("EntidadConfiguracionPage", () => {
     expect(scopeMutate).toHaveBeenCalledWith({ places: ["30001", "30002"] });
   });
 
+  it("el aviso del ámbito concuerda en singular y en plural (pasada del 01-10)", async () => {
+    setDefaultMocks();
+    useOrgScopeMock.mockReturnValue({
+      mutate: vi.fn(), isPending: false, isError: false, isSuccess: true, data: { added: 1, total: 1 },
+    });
+    const { unmount } = await renderPage();
+    expect(screen.getByText("Añadido 1 municipio (ámbito total: 1).")).toBeInTheDocument();
+    unmount();
+
+    useOrgScopeMock.mockReturnValue({
+      mutate: vi.fn(), isPending: false, isError: false, isSuccess: true, data: { added: 3, total: 5 },
+    });
+    await renderPage();
+    expect(screen.getByText("Añadidos 3 municipios (ámbito total: 5).")).toBeInTheDocument();
+  });
+
   it("ampliar ámbito por comarca llama a la mutación con comarca", async () => {
     setDefaultMocks();
     const scopeMutate = vi.fn();
