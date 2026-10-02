@@ -81,6 +81,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { apiBaseUrl } from "@/lib/api/baseUrl";
 import { AUTH } from "@/lib/api/endpoints";
 import { forwardedForHeaders } from "@/lib/auth/clientIp";
+import { panelClientHeaders } from "@/lib/auth/panelClient";
 import {
   ACCESS_COOKIE_NAME,
   ACCESS_TOKEN_HEADER,
@@ -119,6 +120,7 @@ async function doRefreshToken(refresh: string, request: NextRequest): Promise<Re
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...panelClientHeaders(),
       ...forwardedForHeaders(request),
       ...requestLanguageHeader(request),
     },
