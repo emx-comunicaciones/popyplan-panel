@@ -82,11 +82,8 @@ function toEventMutationError(error: unknown, fallback: string): EventMutationEr
   return new EventMutationError("desconocido", fallback);
 }
 
-function invalidateEvents(queryClient: QueryClient, orgId: number | string, eventId?: string): void {
+function invalidateEvents(queryClient: QueryClient, orgId: number | string): void {
   queryClient.invalidateQueries({ queryKey: ["panel-entity-events", orgId] });
-  // El detalle también: sin esto, reabrir «Editar» justo después de guardar
-  // rellenaba el formulario con lo que había antes (`hooks/useEvent.ts`).
-  if (eventId) queryClient.invalidateQueries({ queryKey: ["panel-event", eventId] });
 }
 
 /** Cuerpo real de `POST /api/events/`: título/inicio/audiencia siempre, el resto solo si hay valor. */
@@ -179,7 +176,14 @@ export function useUpdateEvent(
         throw toEventMutationError(error, "No se pudo guardar la actividad.");
       }
     },
-    onSuccess: (_data, { eventId }) => invalidateEvents(queryClient, orgId, eventId),
+    onSuccess: (data, { eventId }) => {
+      // El PATCH devuelve el detalle completo: se guarda tal cual en la caché
+      // del detalle (`hooks/useEvent.ts`). Invalidarlo no bastaba: reabrir
+      // «Editar» antes de que llegara la recarga montaba el formulario con lo
+      // de antes, y guardar otra vez deshacía la edición.
+      queryClient.setQueryData(["panel-event", eventId], data);
+      invalidateEvents(queryClient, orgId);
+    },
   });
 }
 

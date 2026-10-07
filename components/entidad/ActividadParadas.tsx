@@ -6,7 +6,7 @@
  * no tiene buscador de direcciones, así que las coordenadas no se editan:
  * las que puso la app se conservan (`lib/events/activityExtras.ts::StopDraft`).
  */
-import { useId, useRef } from "react";
+import { useId } from "react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/Button";
@@ -17,20 +17,26 @@ export interface ActividadParadasProps {
   onChange: (stops: StopDraft[]) => void;
 }
 
+/**
+ * Contador del módulo, no del componente: al cambiar de categoría y volver a
+ * «Viajes» el componente se monta de nuevo pero las paradas siguen, y un
+ * contador propio volvía a empezar y repetía claves (`new-1` dos veces).
+ */
+let nextStopKey = 0;
+
 export function ActividadParadas({ stops, onChange }: ActividadParadasProps) {
   const t = useTranslations("entidad.actividadForm");
   const baseId = useId();
-  const nextKey = useRef(0);
 
   function update(index: number, patch: Partial<StopDraft>) {
     onChange(stops.map((stop, i) => (i === index ? { ...stop, ...patch } : stop)));
   }
 
   function add() {
-    nextKey.current += 1;
+    nextStopKey += 1;
     onChange([
       ...stops,
-      { key: `new-${nextKey.current}`, name: "", address: "", latitude: null, longitude: null },
+      { key: `new-${nextStopKey}`, name: "", address: "", latitude: null, longitude: null },
     ]);
   }
 

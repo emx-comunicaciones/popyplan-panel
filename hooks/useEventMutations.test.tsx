@@ -317,8 +317,9 @@ describe("useUpdateEvent", () => {
     });
   });
 
-  it("invalida también el detalle de esa actividad (al reabrir «Editar» no sale lo de antes)", async () => {
-    apiFetchMock.mockResolvedValueOnce(EVENT_DETAIL);
+  it("guarda la respuesta en el detalle de esa actividad (al reabrir «Editar» no sale lo de antes)", async () => {
+    const guardado = { ...EVENT_DETAIL, title: "X" } as EventDetail;
+    apiFetchMock.mockResolvedValueOnce(guardado);
     const queryClient = new QueryClient({ defaultOptions: { mutations: { retry: false } } });
     queryClient.setQueryData(["panel-event", "e1"], EVENT_DETAIL);
 
@@ -330,7 +331,7 @@ describe("useUpdateEvent", () => {
     result.current.mutate({ eventId: "e1", title: "X" });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(queryClient.getQueryState(["panel-event", "e1"])?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryData(["panel-event", "e1"])).toEqual(guardado);
   });
 
   it("capacity: null borra el aforo explícitamente", async () => {

@@ -39,6 +39,8 @@ describe("categoría", () => {
     expect(validateCustomCategory(OTHER_CATEGORY, "Parchís")).toBeNull();
     expect(validateCustomCategory("3", "")).toBeNull();
     expect(validateCustomCategory("", "")).toBeNull();
+    // Sin categoría el texto queda oculto y no se manda: no puede bloquear el guardado.
+    expect(validateCustomCategory("", "a".repeat(CUSTOM_CATEGORY_MAX_LENGTH + 1))).toBeNull();
   });
 
   it("no pasa de 60 caracteres (tras normalizar)", () => {

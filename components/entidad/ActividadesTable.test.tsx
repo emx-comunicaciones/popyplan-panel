@@ -554,6 +554,50 @@ describe("ActividadesTable — categoría, coste, edades y viajes (como en la ap
     expect(fields).not.toHaveProperty("stops");
   });
 
+  it("las fechas pasan de un modo a otro cada vez que se cambia entre viaje y no viaje", async () => {
+    setDefaults();
+    const { user, dialog } = await abrirNueva();
+    await user.type(within(dialog).getByLabelText("Empieza"), "2027-01-01T18:30");
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "5");
+    expect(within(dialog).getByLabelText("Día de inicio")).toHaveValue("2027-01-01");
+
+    await user.clear(within(dialog).getByLabelText("Día de inicio"));
+    await user.type(within(dialog).getByLabelText("Día de inicio"), "2027-01-05");
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "3");
+    expect(within(dialog).getByLabelText("Empieza")).toHaveValue("2027-01-05T18:30");
+
+    await user.clear(within(dialog).getByLabelText("Empieza"));
+    await user.type(within(dialog).getByLabelText("Empieza"), "2027-02-02T09:00");
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "5");
+    expect(within(dialog).getByLabelText("Día de inicio")).toHaveValue("2027-02-02");
+  });
+
+  it("las paradas no repiten clave al salir de «Viajes» y volver", async () => {
+    setDefaults();
+    const { user, dialog } = await abrirNueva();
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "5");
+    await user.click(within(dialog).getByRole("button", { name: "Añadir parada" }));
+    await user.type(within(dialog).getByLabelText("Nombre de la parada 1"), "Burgos");
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "3");
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "5");
+    await user.click(within(dialog).getByRole("button", { name: "Añadir parada" }));
+
+    await user.type(within(dialog).getByLabelText("Nombre de la parada 2"), "León");
+    expect(within(dialog).getByLabelText("Nombre de la parada 1")).toHaveValue("Burgos");
+    expect(within(dialog).getByLabelText("Nombre de la parada 2")).toHaveValue("León");
+  });
+
+  it("sin categoría, un texto escrito antes y ya oculto no bloquea el guardado", async () => {
+    setDefaults();
+    const { user, dialog } = await abrirNueva();
+    await user.type(within(dialog).getByLabelText("Empieza"), "2027-01-01T10:00");
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "other");
+    await user.type(within(dialog).getByLabelText("Actividad concreta"), "a".repeat(61));
+    expect(within(dialog).getByRole("button", { name: "Guardar" })).toBeDisabled();
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "");
+    expect(within(dialog).getByRole("button", { name: "Guardar" })).toBeEnabled();
+  });
+
   it("mientras carga el catálogo, la categoría no se puede elegir (solo habría «Otra»)", async () => {
     setDefaults();
     useCatalogMock.mockReturnValue({ data: undefined, isPending: true, isError: false, error: null });

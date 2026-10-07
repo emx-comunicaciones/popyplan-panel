@@ -48,6 +48,8 @@ export function normalizeCustomCategory(text: string): string {
  * opcional («Deporte» + «Pádel»). Nunca más de 60 caracteres.
  */
 export function validateCustomCategory(category: string, text: string): string | null {
+  // Sin categoría el campo ni se ve ni se manda (`custom_category: ""`).
+  if (!category) return null;
   const normalized = normalizeCustomCategory(text);
   if (category === OTHER_CATEGORY && !normalized) return EVENT_CUSTOM_CATEGORY_ERROR_KEY;
   return normalized.length > CUSTOM_CATEGORY_MAX_LENGTH ? EVENT_CUSTOM_CATEGORY_ERROR_KEY : null;

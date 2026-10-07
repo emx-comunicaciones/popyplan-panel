@@ -299,10 +299,17 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
   function handleCategoryChange(value: string) {
     setCategory(value);
     const item = categoryOptions.find((option) => option.id === value);
-    // Al pasar a viaje, los días salen de las fechas ya escritas.
-    if (item?.categoryType === TRAVEL_CATEGORY_TYPE && !startDay) {
-      setStartDay(startsAtLocal.slice(0, 10));
-      setEndDay(endsAtLocal.slice(0, 10));
+    const nextIsTrip = item?.categoryType === TRAVEL_CATEGORY_TYPE;
+    if (nextIsTrip === isTrip) return;
+    // Las fechas pasan de un modo al otro cada vez, para no enseñar unas
+    // vacías o las de la vez anterior: a viaje, el día de lo escrito; a
+    // actividad normal, ese día con la hora que hubiera (o las 10:00).
+    if (nextIsTrip) {
+      if (startsAtLocal) setStartDay(startsAtLocal.slice(0, 10));
+      if (endsAtLocal) setEndDay(endsAtLocal.slice(0, 10));
+    } else {
+      if (startDay) setStartsAtLocal(`${startDay}T${startsAtLocal.slice(11) || "10:00"}`);
+      if (endDay) setEndsAtLocal(`${endDay}T${endsAtLocal.slice(11) || startsAtLocal.slice(11) || "10:00"}`);
     }
   }
 
