@@ -554,6 +554,15 @@ describe("ActividadesTable — categoría, coste, edades y viajes (como en la ap
     expect(fields).not.toHaveProperty("stops");
   });
 
+  it("mientras carga el catálogo, la categoría no se puede elegir (solo habría «Otra»)", async () => {
+    setDefaults();
+    useCatalogMock.mockReturnValue({ data: undefined, isPending: true, isError: false, error: null });
+    const { dialog } = await abrirNueva();
+    const categoria = within(dialog).getByLabelText("Categoría");
+    expect(categoria).toBeDisabled();
+    expect(within(categoria).getAllByRole("option")[0]).toHaveTextContent("Cargando categorías…");
+  });
+
   it("si el catálogo de categorías falla, lo avisa", async () => {
     setDefaults();
     useCatalogMock.mockReturnValue({ data: undefined, isError: true, error: new Error("x") });

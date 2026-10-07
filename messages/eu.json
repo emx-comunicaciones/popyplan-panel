@@ -739,7 +739,8 @@
       "stopRemove": "Kendu",
       "stopUpA11y": "Igo {number}. geldialdia",
       "stopDownA11y": "Jaitsi {number}. geldialdia",
-      "stopRemoveA11y": "Kendu {number}. geldialdia"
+      "stopRemoveA11y": "Kendu {number}. geldialdia",
+      "categoriesLoading": "Kategoriak kargatzen…"
     },
     "asistencia": {
       "heading": "Bertaratzea",

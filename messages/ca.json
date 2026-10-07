@@ -739,7 +739,8 @@
       "stopRemove": "Treu",
       "stopUpA11y": "Puja la parada {number}",
       "stopDownA11y": "Baixa la parada {number}",
-      "stopRemoveA11y": "Treu la parada {number}"
+      "stopRemoveA11y": "Treu la parada {number}",
+      "categoriesLoading": "Carregant categories…"
     },
     "asistencia": {
       "heading": "Assistència",

@@ -739,7 +739,8 @@
       "stopRemove": "Quitar",
       "stopUpA11y": "Subir la parada {number}",
       "stopDownA11y": "Bajar la parada {number}",
-      "stopRemoveA11y": "Quitar la parada {number}"
+      "stopRemoveA11y": "Quitar la parada {number}",
+      "categoriesLoading": "Cargando categorías…"
     },
     "asistencia": {
       "heading": "Asistencia",

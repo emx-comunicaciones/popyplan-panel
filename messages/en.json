@@ -739,7 +739,8 @@
       "stopRemove": "Remove",
       "stopUpA11y": "Move stop {number} up",
       "stopDownA11y": "Move stop {number} down",
-      "stopRemoveA11y": "Remove stop {number}"
+      "stopRemoveA11y": "Remove stop {number}",
+      "categoriesLoading": "Loading categories…"
     },
     "asistencia": {
       "heading": "Attendance",

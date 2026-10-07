@@ -439,9 +439,17 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
           value={category}
           onChange={(event) => handleCategoryChange(event.target.value)}
           aria-describedby={categories.isError ? "actividad-category-error" : undefined}
+          // Mientras llega el catálogo solo estarían «Sin categoría» y «Otra»:
+          // no se deja elegir hasta tener la lista entera.
+          disabled={categories.isPending}
+          aria-busy={categories.isPending || undefined}
           className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         >
-          <option value="">{t("entidad.actividadForm.categoryNone")}</option>
+          <option value="">
+            {categories.isPending
+              ? t("entidad.actividadForm.categoriesLoading")
+              : t("entidad.actividadForm.categoryNone")}
+          </option>
           {categoryOptions.map((item) => (
             <option key={item.id} value={item.id}>
               {item.label}
