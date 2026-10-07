@@ -13,6 +13,7 @@ const useCancelEventMock = vi.hoisted(() => vi.fn());
 const useEntityCommunitiesMock = vi.hoisted(() => vi.fn());
 const useSearchPlacesMock = vi.hoisted(() => vi.fn());
 const useEventMock = vi.hoisted(() => vi.fn());
+const useCatalogMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/hooks/useEntityEvents", async () => {
   const actual = await vi.importActual<typeof import("@/hooks/useEntityEvents")>(
@@ -45,6 +46,10 @@ vi.mock("@/hooks/useEvent", async () => {
   const actual = await vi.importActual<typeof import("@/hooks/useEvent")>("@/hooks/useEvent");
   return { ...actual, useEvent: useEventMock };
 });
+vi.mock("@/hooks/useCatalogs", async () => {
+  const actual = await vi.importActual<typeof import("@/hooks/useCatalogs")>("@/hooks/useCatalogs");
+  return { ...actual, useCatalog: useCatalogMock };
+});
 
 import { ActividadesTable } from "./ActividadesTable";
 
@@ -76,7 +81,36 @@ const EVENT_DETAIL = {
   place: null,
   capacity: null,
   community: null,
+  category: null,
+  custom_category: "",
+  estimated_cost: null,
+  min_age: null,
+  max_age: null,
+  is_trip: false,
+  stops: [],
 };
+
+function catalogItem(id: string, label: string, categoryType: string, isActive = true) {
+  return {
+    id,
+    label,
+    code: null,
+    order: null,
+    emoji: null,
+    parent: null,
+    categoryType,
+    description: null,
+    icon: null,
+    count: null,
+    isActive,
+  };
+}
+
+const EVENT_CATEGORIES = [
+  catalogItem("3", "Deporte", "sports"),
+  catalogItem("5", "Viajes", "travel"),
+  catalogItem("9", "Antigua", "other", false),
+];
 
 function mutationDefaults(overrides: Record<string, unknown> = {}) {
   return { mutate: vi.fn(), isPending: false, isError: false, error: null, reset: vi.fn(), ...overrides };
@@ -90,6 +124,7 @@ afterEach(() => {
   useEntityCommunitiesMock.mockReset();
   useSearchPlacesMock.mockReset();
   useEventMock.mockReset();
+  useCatalogMock.mockReset();
 });
 
 function setDefaults() {
@@ -100,6 +135,7 @@ function setDefaults() {
   useEntityCommunitiesMock.mockReturnValue({ data: [], isError: false, error: null });
   useSearchPlacesMock.mockReturnValue({ data: [], isError: false, error: null });
   useEventMock.mockReturnValue({ data: EVENT_DETAIL, isError: false, error: null });
+  useCatalogMock.mockReturnValue({ data: EVENT_CATEGORIES, isError: false, error: null });
 }
 
 describe("ActividadesTable — gestión de actividades", () => {
@@ -335,6 +371,259 @@ describe("ActividadesTable — gestión de actividades", () => {
       <ActividadesTable orgId={7} slug="alfaville" canOpenAttendance canManage />,
     );
     await user.click(screen.getByRole("button", { name: "Nueva actividad" }));
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("ActividadesTable — categoría, coste, edades y viajes (como en la app)", () => {
+  async function abrirNueva() {
+    const user = userEvent.setup();
+    render(<ActividadesTable orgId={7} slug="alfaville" canOpenAttendance canManage />);
+    await user.click(screen.getByRole("button", { name: "Nueva actividad" }));
+    const dialog = screen.getByRole("dialog", { name: "Nueva actividad" });
+    await user.type(within(dialog).getByLabelText("Título"), "Quedada");
+    return { user, dialog };
+  }
+
+  it("la categoría ofrece las activas del catálogo y «Otra», que exige escribirla", async () => {
+    setDefaults();
+    const createMutate = vi.fn();
+    useCreateEventMock.mockReturnValue(mutationDefaults({ mutate: createMutate }));
+    const { user, dialog } = await abrirNueva();
+    await user.type(within(dialog).getByLabelText("Empieza"), "2027-01-01T10:00");
+
+    const categoria = within(dialog).getByLabelText("Categoría");
+    expect(within(categoria).getAllByRole("option").map((o) => o.textContent)).toEqual([
+      "Sin categoría",
+      "Deporte",
+      "Viajes",
+      "Otra (escríbela tú)",
+    ]);
+
+    await user.selectOptions(categoria, "other");
+    expect(within(dialog).getByRole("alert")).toHaveTextContent("Escribe la actividad (máx. 60 caracteres).");
+    expect(within(dialog).getByRole("button", { name: "Guardar" })).toBeDisabled();
+
+    await user.type(within(dialog).getByLabelText("Actividad concreta"), "  Juegos   de mesa ");
+    await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
+
+    const [fields] = createMutate.mock.calls[0];
+    expect(fields.category).toBeNull();
+    expect(fields.custom_category).toBe("Juegos de mesa");
+    expect(fields).not.toHaveProperty("stops");
+  });
+
+  it("coste y edades: se validan y viajan en el formato del backend", async () => {
+    setDefaults();
+    const createMutate = vi.fn();
+    useCreateEventMock.mockReturnValue(mutationDefaults({ mutate: createMutate }));
+    const { user, dialog } = await abrirNueva();
+    await user.type(within(dialog).getByLabelText("Empieza"), "2027-01-01T10:00");
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "3");
+
+    await user.click(within(dialog).getByLabelText("Tiene coste"));
+    await user.type(within(dialog).getByLabelText("Coste aproximado por persona (€)"), "12,5");
+    await user.type(within(dialog).getByLabelText("Edad mínima"), "40");
+    await user.type(within(dialog).getByLabelText("Edad máxima"), "30");
+    expect(within(dialog).getByRole("alert")).toHaveTextContent(
+      "La edad mínima no puede ser mayor que la máxima.",
+    );
+    expect(within(dialog).getByRole("button", { name: "Guardar" })).toBeDisabled();
+
+    await user.clear(within(dialog).getByLabelText("Edad máxima"));
+    await user.type(within(dialog).getByLabelText("Edad máxima"), "65");
+    await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
+
+    const [fields] = createMutate.mock.calls[0];
+    expect(fields).toMatchObject({
+      category: 3,
+      custom_category: "",
+      estimated_cost: "12.50",
+      min_age: 40,
+      max_age: 65,
+    });
+  });
+
+  it("un viaje va por días, exige el día final y manda sus paradas en orden", async () => {
+    setDefaults();
+    const createMutate = vi.fn();
+    useCreateEventMock.mockReturnValue(mutationDefaults({ mutate: createMutate }));
+    const { user, dialog } = await abrirNueva();
+
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "5");
+    expect(within(dialog).queryByLabelText("Empieza")).not.toBeInTheDocument();
+    await user.type(within(dialog).getByLabelText("Día de inicio"), "2027-03-10");
+    expect(within(dialog).getByRole("alert")).toHaveTextContent("Un viaje necesita un día final.");
+    await user.type(within(dialog).getByLabelText("Día final"), "2027-03-12");
+
+    expect(within(dialog).getByText("Todavía no hay paradas.")).toBeInTheDocument();
+    await user.click(within(dialog).getByRole("button", { name: "Añadir parada" }));
+    await user.click(within(dialog).getByRole("button", { name: "Añadir parada" }));
+    // Una parada sin nombre no deja guardar.
+    expect(within(dialog).getByRole("button", { name: "Guardar" })).toBeDisabled();
+    await user.type(within(dialog).getByLabelText("Nombre de la parada 1"), "Burgos");
+    await user.type(within(dialog).getByLabelText("Nombre de la parada 2"), "León");
+    await user.type(within(dialog).getByLabelText("Dirección de la parada 2 (opcional)"), "Plaza Mayor");
+    await user.click(within(dialog).getByRole("button", { name: "Subir la parada 2" }));
+    await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
+
+    const [fields] = createMutate.mock.calls[0];
+    expect(fields.category).toBe(5);
+    expect(new Date(fields.starts_at).getTime()).toBe(new Date(2027, 2, 10, 0, 0, 0).getTime());
+    expect(new Date(fields.ends_at).getTime()).toBe(new Date(2027, 2, 12, 23, 59, 59).getTime());
+    expect(fields.stops).toEqual([
+      { name: "León", address: "Plaza Mayor" },
+      { name: "Burgos", address: "" },
+    ]);
+  });
+
+  it("editar un viaje: precarga todo y conserva id y coordenadas de las paradas", async () => {
+    setDefaults();
+    const startsAt = new Date(2027, 2, 10, 0, 0, 0).toISOString();
+    const endsAt = new Date(2027, 2, 12, 23, 59, 59).toISOString();
+    useEventMock.mockReturnValue({
+      data: {
+        ...EVENT_DETAIL,
+        starts_at: startsAt,
+        ends_at: endsAt,
+        category: { id: "5", name: "Viajes" },
+        custom_category: "Ruta del Cid",
+        estimated_cost: "150.00",
+        min_age: 18,
+        max_age: null,
+        is_trip: true,
+        stops: [
+          { id: "s1", order: 0, name: "Burgos", latitude: "42.343000", longitude: "-3.696000", address: "" },
+        ],
+      },
+      isError: false,
+      error: null,
+    });
+    const updateMutate = vi.fn();
+    useUpdateEventMock.mockReturnValue(mutationDefaults({ mutate: updateMutate }));
+    const user = userEvent.setup();
+
+    render(<ActividadesTable orgId={7} slug="alfaville" canOpenAttendance canManage />);
+    await user.click(screen.getByRole("button", { name: "Editar" }));
+    const dialog = screen.getByRole("dialog", { name: "Editar actividad" });
+    expect(within(dialog).getByLabelText("Categoría")).toHaveValue("5");
+    expect(within(dialog).getByLabelText("Actividad concreta")).toHaveValue("Ruta del Cid");
+    expect(within(dialog).getByLabelText("Tiene coste")).toBeChecked();
+    expect(within(dialog).getByLabelText("Coste aproximado por persona (€)")).toHaveValue("150.00");
+    expect(within(dialog).getByLabelText("Edad mínima")).toHaveValue(18);
+    expect(within(dialog).getByLabelText("Día de inicio")).toHaveValue("2027-03-10");
+    expect(within(dialog).getByLabelText("Nombre de la parada 1")).toHaveValue("Burgos");
+
+    await user.click(within(dialog).getByLabelText("Tiene coste"));
+    await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
+
+    const [fields] = updateMutate.mock.calls[0];
+    // Los días no cambiaron: no se reenvía el inicio y el final sale igual.
+    expect(fields).not.toHaveProperty("starts_at");
+    expect(fields.ends_at).toBe(endsAt);
+    expect(fields).toMatchObject({
+      category: 5,
+      custom_category: "Ruta del Cid",
+      estimated_cost: null,
+      min_age: 18,
+      max_age: null,
+      stops: [{ id: "s1", name: "Burgos", address: "", latitude: "42.343000", longitude: "-3.696000" }],
+    });
+  });
+
+  it("editar algo que no es viaje: manda los campos vacíos para quitarlos y nunca paradas", async () => {
+    setDefaults();
+    const updateMutate = vi.fn();
+    useUpdateEventMock.mockReturnValue(mutationDefaults({ mutate: updateMutate }));
+    const user = userEvent.setup();
+
+    render(<ActividadesTable orgId={7} slug="alfaville" canOpenAttendance canManage />);
+    await user.click(screen.getByRole("button", { name: "Editar" }));
+    const dialog = screen.getByRole("dialog", { name: "Editar actividad" });
+    await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
+
+    const [fields] = updateMutate.mock.calls[0];
+    expect(fields).toMatchObject({
+      category: null,
+      custom_category: "",
+      estimated_cost: null,
+      min_age: null,
+      max_age: null,
+    });
+    expect(fields).not.toHaveProperty("stops");
+  });
+
+  it("las fechas pasan de un modo a otro cada vez que se cambia entre viaje y no viaje", async () => {
+    setDefaults();
+    const { user, dialog } = await abrirNueva();
+    await user.type(within(dialog).getByLabelText("Empieza"), "2027-01-01T18:30");
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "5");
+    expect(within(dialog).getByLabelText("Día de inicio")).toHaveValue("2027-01-01");
+
+    await user.clear(within(dialog).getByLabelText("Día de inicio"));
+    await user.type(within(dialog).getByLabelText("Día de inicio"), "2027-01-05");
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "3");
+    expect(within(dialog).getByLabelText("Empieza")).toHaveValue("2027-01-05T18:30");
+
+    await user.clear(within(dialog).getByLabelText("Empieza"));
+    await user.type(within(dialog).getByLabelText("Empieza"), "2027-02-02T09:00");
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "5");
+    expect(within(dialog).getByLabelText("Día de inicio")).toHaveValue("2027-02-02");
+  });
+
+  it("las paradas no repiten clave al salir de «Viajes» y volver", async () => {
+    setDefaults();
+    const { user, dialog } = await abrirNueva();
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "5");
+    await user.click(within(dialog).getByRole("button", { name: "Añadir parada" }));
+    await user.type(within(dialog).getByLabelText("Nombre de la parada 1"), "Burgos");
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "3");
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "5");
+    await user.click(within(dialog).getByRole("button", { name: "Añadir parada" }));
+
+    await user.type(within(dialog).getByLabelText("Nombre de la parada 2"), "León");
+    expect(within(dialog).getByLabelText("Nombre de la parada 1")).toHaveValue("Burgos");
+    expect(within(dialog).getByLabelText("Nombre de la parada 2")).toHaveValue("León");
+  });
+
+  it("sin categoría, un texto escrito antes y ya oculto no bloquea el guardado", async () => {
+    setDefaults();
+    const { user, dialog } = await abrirNueva();
+    await user.type(within(dialog).getByLabelText("Empieza"), "2027-01-01T10:00");
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "other");
+    await user.type(within(dialog).getByLabelText("Actividad concreta"), "a".repeat(61));
+    expect(within(dialog).getByRole("button", { name: "Guardar" })).toBeDisabled();
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "");
+    expect(within(dialog).getByRole("button", { name: "Guardar" })).toBeEnabled();
+  });
+
+  it("mientras carga el catálogo, la categoría no se puede elegir (solo habría «Otra»)", async () => {
+    setDefaults();
+    useCatalogMock.mockReturnValue({ data: undefined, isPending: true, isError: false, error: null });
+    const { dialog } = await abrirNueva();
+    const categoria = within(dialog).getByLabelText("Categoría");
+    expect(categoria).toBeDisabled();
+    expect(within(categoria).getAllByRole("option")[0]).toHaveTextContent("Cargando categorías…");
+  });
+
+  it("si el catálogo de categorías falla, lo avisa", async () => {
+    setDefaults();
+    useCatalogMock.mockReturnValue({ data: undefined, isError: true, error: new Error("x") });
+    const { dialog } = await abrirNueva();
+    expect(within(dialog).getByRole("alert")).toHaveTextContent("No se pudieron cargar las categorías.");
+  });
+
+  it("axe: sin violaciones con un viaje y sus paradas", async () => {
+    setDefaults();
+    const user = userEvent.setup();
+    const { container } = render(
+      <ActividadesTable orgId={7} slug="alfaville" canOpenAttendance canManage />,
+    );
+    await user.click(screen.getByRole("button", { name: "Nueva actividad" }));
+    const dialog = screen.getByRole("dialog", { name: "Nueva actividad" });
+    await user.selectOptions(within(dialog).getByLabelText("Categoría"), "5");
+    await user.click(within(dialog).getByRole("button", { name: "Añadir parada" }));
 
     expect(await axe(container)).toHaveNoViolations();
   });

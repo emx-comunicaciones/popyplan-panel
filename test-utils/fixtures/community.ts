@@ -8,6 +8,8 @@ export function buildEntityCommunityRow(
     name: "Paseos al atardecer",
     description: "Quedadas semanales para pasear por el barrio.",
     banner_image: null,
+    banner_image_thumb: null,
+    banner_image_medium: null,
     category: {
       id: "66666666-6666-6666-6666-666666666666",
       name: "Ocio y tiempo libre",
@@ -61,6 +63,8 @@ export function buildCommunityDetail(overrides: Partial<CommunityDetail> = {}): 
     name: "Paseos al atardecer",
     description: "Quedadas semanales para pasear por el barrio.",
     banner_image: null,
+    banner_image_thumb: null,
+    banner_image_medium: null,
     gallery_images: [],
     category: {
       id: "66666666-6666-6666-6666-666666666666",

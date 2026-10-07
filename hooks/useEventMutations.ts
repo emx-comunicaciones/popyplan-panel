@@ -99,6 +99,12 @@ function toCreateEventBody(orgId: number | string, fields: EventWriteFields): Re
   if (fields.capacity !== null) body.capacity = fields.capacity;
   if (fields.audience === "community" && fields.community) body.community = fields.community;
   if (fields.level) body.level = fields.level;
+  if (fields.category != null) body.category = fields.category;
+  if (fields.custom_category) body.custom_category = fields.custom_category;
+  if (fields.estimated_cost != null) body.estimated_cost = fields.estimated_cost;
+  if (fields.min_age != null) body.min_age = fields.min_age;
+  if (fields.max_age != null) body.max_age = fields.max_age;
+  if (fields.stops?.length) body.stops = fields.stops;
   if (fields.latitude !== null && fields.longitude !== null) {
     body.latitude = formatCoordinateForApi(fields.latitude);
     body.longitude = formatCoordinateForApi(fields.longitude);
@@ -115,6 +121,12 @@ function toUpdateEventBody(fields: EventUpdateFields): Record<string, unknown> {
   if (fields.ends_at !== undefined) body.ends_at = fields.ends_at;
   if (fields.capacity !== undefined) body.capacity = fields.capacity;
   if (fields.level !== undefined) body.level = fields.level;
+  if (fields.category !== undefined) body.category = fields.category;
+  if (fields.custom_category !== undefined) body.custom_category = fields.custom_category;
+  if (fields.estimated_cost !== undefined) body.estimated_cost = fields.estimated_cost;
+  if (fields.min_age !== undefined) body.min_age = fields.min_age;
+  if (fields.max_age !== undefined) body.max_age = fields.max_age;
+  if (fields.stops !== undefined) body.stops = fields.stops;
   if (fields.latitude !== undefined && fields.longitude !== undefined) {
     body.latitude = fields.latitude !== null ? formatCoordinateForApi(fields.latitude) : null;
     body.longitude = fields.longitude !== null ? formatCoordinateForApi(fields.longitude) : null;
@@ -164,7 +176,14 @@ export function useUpdateEvent(
         throw toEventMutationError(error, "No se pudo guardar la actividad.");
       }
     },
-    onSuccess: () => invalidateEvents(queryClient, orgId),
+    onSuccess: (data, { eventId }) => {
+      // El PATCH devuelve el detalle completo: se guarda tal cual en la caché
+      // del detalle (`hooks/useEvent.ts`). Invalidarlo no bastaba: reabrir
+      // «Editar» antes de que llegara la recarga montaba el formulario con lo
+      // de antes, y guardar otra vez deshacía la edición.
+      queryClient.setQueryData(["panel-event", eventId], data);
+      invalidateEvents(queryClient, orgId);
+    },
   });
 }
 
