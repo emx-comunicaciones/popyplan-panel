@@ -77,6 +77,46 @@ describe("useCreateEvent", () => {
     expect(withoutLevel.body).not.toHaveProperty("level");
   });
 
+  it("manda categoría, coste, edades y paradas solo si tienen valor", async () => {
+    apiFetchMock.mockResolvedValue(EVENT_DETAIL);
+
+    const { result } = renderHook(() => useCreateEvent(7), { wrapper });
+    result.current.mutate({
+      ...FULL_FIELDS,
+      category: 4,
+      custom_category: "Pádel",
+      estimated_cost: "12.50",
+      min_age: 18,
+      max_age: 65,
+      stops: [{ name: "Bilbao", address: "" }],
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    const full = apiFetchMock.mock.calls[0][1] as { body: Record<string, unknown> };
+    expect(full.body).toMatchObject({
+      category: 4,
+      custom_category: "Pádel",
+      estimated_cost: "12.50",
+      min_age: 18,
+      max_age: 65,
+      stops: [{ name: "Bilbao", address: "" }],
+    });
+
+    result.current.mutate({
+      ...FULL_FIELDS,
+      category: null,
+      custom_category: "",
+      estimated_cost: null,
+      min_age: null,
+      max_age: null,
+      stops: [],
+    });
+    await waitFor(() => expect(apiFetchMock).toHaveBeenCalledTimes(2));
+    const empty = apiFetchMock.mock.calls[1][1] as { body: Record<string, unknown> };
+    for (const key of ["category", "custom_category", "estimated_cost", "min_age", "max_age", "stops"]) {
+      expect(empty.body).not.toHaveProperty(key);
+    }
+  });
+
   it("con audience=community solo manda community si hay una elegida", async () => {
     apiFetchMock.mockResolvedValueOnce(EVENT_DETAIL);
 
@@ -248,6 +288,49 @@ describe("useUpdateEvent", () => {
         body: { level: "advanced" },
       }),
     );
+  });
+
+  it("categoría, coste, edades y paradas viajan si están presentes, también vacíos", async () => {
+    apiFetchMock.mockResolvedValue(EVENT_DETAIL);
+
+    const { result } = renderHook(() => useUpdateEvent(7), { wrapper });
+    result.current.mutate({
+      eventId: "e1",
+      category: null,
+      custom_category: "",
+      estimated_cost: null,
+      min_age: null,
+      max_age: null,
+      stops: [],
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(apiFetchMock).toHaveBeenLastCalledWith(EVENTS.DETAIL("e1"), {
+      method: "PATCH",
+      body: {
+        category: null,
+        custom_category: "",
+        estimated_cost: null,
+        min_age: null,
+        max_age: null,
+        stops: [],
+      },
+    });
+  });
+
+  it("invalida también el detalle de esa actividad (al reabrir «Editar» no sale lo de antes)", async () => {
+    apiFetchMock.mockResolvedValueOnce(EVENT_DETAIL);
+    const queryClient = new QueryClient({ defaultOptions: { mutations: { retry: false } } });
+    queryClient.setQueryData(["panel-event", "e1"], EVENT_DETAIL);
+
+    const { result } = renderHook(() => useUpdateEvent(7), {
+      wrapper: ({ children }: { children: ReactNode }) => (
+        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      ),
+    });
+    result.current.mutate({ eventId: "e1", title: "X" });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(queryClient.getQueryState(["panel-event", "e1"])?.isInvalidated).toBe(true);
   });
 
   it("capacity: null borra el aforo explícitamente", async () => {

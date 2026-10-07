@@ -82,8 +82,11 @@ function toEventMutationError(error: unknown, fallback: string): EventMutationEr
   return new EventMutationError("desconocido", fallback);
 }
 
-function invalidateEvents(queryClient: QueryClient, orgId: number | string): void {
+function invalidateEvents(queryClient: QueryClient, orgId: number | string, eventId?: string): void {
   queryClient.invalidateQueries({ queryKey: ["panel-entity-events", orgId] });
+  // El detalle también: sin esto, reabrir «Editar» justo después de guardar
+  // rellenaba el formulario con lo que había antes (`hooks/useEvent.ts`).
+  if (eventId) queryClient.invalidateQueries({ queryKey: ["panel-event", eventId] });
 }
 
 /** Cuerpo real de `POST /api/events/`: título/inicio/audiencia siempre, el resto solo si hay valor. */
@@ -99,6 +102,12 @@ function toCreateEventBody(orgId: number | string, fields: EventWriteFields): Re
   if (fields.capacity !== null) body.capacity = fields.capacity;
   if (fields.audience === "community" && fields.community) body.community = fields.community;
   if (fields.level) body.level = fields.level;
+  if (fields.category != null) body.category = fields.category;
+  if (fields.custom_category) body.custom_category = fields.custom_category;
+  if (fields.estimated_cost != null) body.estimated_cost = fields.estimated_cost;
+  if (fields.min_age != null) body.min_age = fields.min_age;
+  if (fields.max_age != null) body.max_age = fields.max_age;
+  if (fields.stops?.length) body.stops = fields.stops;
   if (fields.latitude !== null && fields.longitude !== null) {
     body.latitude = formatCoordinateForApi(fields.latitude);
     body.longitude = formatCoordinateForApi(fields.longitude);
@@ -115,6 +124,12 @@ function toUpdateEventBody(fields: EventUpdateFields): Record<string, unknown> {
   if (fields.ends_at !== undefined) body.ends_at = fields.ends_at;
   if (fields.capacity !== undefined) body.capacity = fields.capacity;
   if (fields.level !== undefined) body.level = fields.level;
+  if (fields.category !== undefined) body.category = fields.category;
+  if (fields.custom_category !== undefined) body.custom_category = fields.custom_category;
+  if (fields.estimated_cost !== undefined) body.estimated_cost = fields.estimated_cost;
+  if (fields.min_age !== undefined) body.min_age = fields.min_age;
+  if (fields.max_age !== undefined) body.max_age = fields.max_age;
+  if (fields.stops !== undefined) body.stops = fields.stops;
   if (fields.latitude !== undefined && fields.longitude !== undefined) {
     body.latitude = fields.latitude !== null ? formatCoordinateForApi(fields.latitude) : null;
     body.longitude = fields.longitude !== null ? formatCoordinateForApi(fields.longitude) : null;
@@ -164,7 +179,7 @@ export function useUpdateEvent(
         throw toEventMutationError(error, "No se pudo guardar la actividad.");
       }
     },
-    onSuccess: () => invalidateEvents(queryClient, orgId),
+    onSuccess: (_data, { eventId }) => invalidateEvents(queryClient, orgId, eventId),
   });
 }
 

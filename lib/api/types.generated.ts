@@ -3420,6 +3420,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/events/{id}/balances/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Cuentas de la actividad
+         * @description `GET /api/events/{id}/balances/` — totales, saldos y pagos (solo miembros).
+         */
+        get: operations["events_balances_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/events/{id}/cancel/": {
         parameters: {
             query?: never;
@@ -3476,6 +3496,68 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/events/{id}/expenses/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Gastos de la actividad
+         * @description `GET|POST /api/events/{id}/expenses/` — solo miembros.
+         */
+        get: operations["events_expenses_list"];
+        put?: never;
+        /**
+         * Añadir un gasto
+         * @description `GET|POST /api/events/{id}/expenses/` — solo miembros.
+         */
+        post: operations["events_expenses_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/events/{id}/expenses/{expense_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Borrar un gasto
+         * @description `PATCH|DELETE /api/events/{id}/expenses/{expense_id}/`.
+         *
+         *     Edita o borra quien añadió el gasto o quien organiza. Cualquier
+         *     miembro puede mandar exactamente `{"paid_by": <su id>}` sobre un gasto
+         *     previsto («Lo he pagado yo»); en ese caso `update_expense` vuelve a
+         *     comprobar con el candado puesto que el gasto sigue previsto. El
+         *     cuerpo se valida antes que el permiso: un cuerpo que no es un objeto
+         *     es 400 para cualquiera.
+         */
+        delete: operations["events_expenses_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * Editar un gasto (o «Lo he pagado yo»)
+         * @description `PATCH|DELETE /api/events/{id}/expenses/{expense_id}/`.
+         *
+         *     Edita o borra quien añadió el gasto o quien organiza. Cualquier
+         *     miembro puede mandar exactamente `{"paid_by": <su id>}` sobre un gasto
+         *     previsto («Lo he pagado yo»); en ese caso `update_expense` vuelve a
+         *     comprobar con el candado puesto que el gasto sigue previsto. El
+         *     cuerpo se valida antes que el permiso: un cuerpo que no es un objeto
+         *     es 400 para cualquiera.
+         */
+        patch: operations["events_expenses_partial_update"];
         trace?: never;
     };
     "/api/events/{id}/my-checkin/": {
@@ -3553,6 +3635,46 @@ export interface paths {
         patch: operations["events_register_partial_update"];
         trace?: never;
     };
+    "/api/events/{id}/settlements/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Marcar un pago entre dos personas
+         * @description `POST /api/events/{id}/settlements/` — lo marca una de las dos partes.
+         */
+        post: operations["events_settlements_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/events/{id}/settlements/{settlement_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Deshacer un pago
+         * @description `DELETE /api/events/{id}/settlements/{settlement_id}/` — quien lo marcó o una parte.
+         */
+        delete: operations["events_settlements_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/events/{id}/unregister/": {
         parameters: {
             query?: never;
@@ -3605,6 +3727,7 @@ export interface paths {
          *     Parte de `get_queryset()`: el bloqueo gana también aquí. Si me he
          *     bloqueado con quien organiza, su actividad desaparece de mi lista
          *     (antes seguía saliendo con su nombre y su foto, y el detalle daba 404).
+         *     `?upcoming=1` deja solo lo próximo (ver el `extend_schema`).
          */
         get: operations["events_mine_retrieve"];
         put?: never;
@@ -4238,6 +4361,286 @@ export interface paths {
         patch: operations["notifications_my_settings_update"];
         trace?: never;
     };
+    "/api/nutrition/days/{day}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/nutrition/days/{date}/` — el día entero. */
+        get: operations["nutrition_days_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/nutrition/foods/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Catálogo de alimentos (solo lectura), con `name` en el idioma de la petición. */
+        get: operations["nutrition_foods_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/nutrition/foods/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Catálogo de alimentos (solo lectura), con `name` en el idioma de la petición. */
+        get: operations["nutrition_foods_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/nutrition/hydration/{day}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET|PUT /api/nutrition/hydration/{date}/` — agua de un día. */
+        get: operations["nutrition_hydration_retrieve"];
+        /** @description Fija los ml bebidos ese día (sustituye). Tope de 10 000. */
+        put: operations["nutrition_hydration_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/nutrition/meals/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Mis comidas registradas. Nunca las de nadie más.
+         *
+         *     Admite JSON y multipart (`photo`, y `items` como texto JSON). La foto no
+         *     sale en el JSON: se descarga por `photo/`.
+         */
+        get: operations["nutrition_meals_list"];
+        put?: never;
+        /**
+         * @description Mis comidas registradas. Nunca las de nadie más.
+         *
+         *     Admite JSON y multipart (`photo`, y `items` como texto JSON). La foto no
+         *     sale en el JSON: se descarga por `photo/`.
+         */
+        post: operations["nutrition_meals_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/nutrition/meals/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Mis comidas registradas. Nunca las de nadie más.
+         *
+         *     Admite JSON y multipart (`photo`, y `items` como texto JSON). La foto no
+         *     sale en el JSON: se descarga por `photo/`.
+         */
+        get: operations["nutrition_meals_retrieve"];
+        /**
+         * @description Mis comidas registradas. Nunca las de nadie más.
+         *
+         *     Admite JSON y multipart (`photo`, y `items` como texto JSON). La foto no
+         *     sale en el JSON: se descarga por `photo/`.
+         */
+        put: operations["nutrition_meals_update"];
+        post?: never;
+        /**
+         * @description Mis comidas registradas. Nunca las de nadie más.
+         *
+         *     Admite JSON y multipart (`photo`, y `items` como texto JSON). La foto no
+         *     sale en el JSON: se descarga por `photo/`.
+         */
+        delete: operations["nutrition_meals_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description Mis comidas registradas. Nunca las de nadie más.
+         *
+         *     Admite JSON y multipart (`photo`, y `items` como texto JSON). La foto no
+         *     sale en el JSON: se descarga por `photo/`.
+         */
+        patch: operations["nutrition_meals_partial_update"];
+        trace?: never;
+    };
+    "/api/nutrition/meals/{id}/photo/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/nutrition/meals/{id}/photo/`: el fichero, con permiso (nunca por `/media/`). */
+        get: operations["nutrition_meals_photo_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/nutrition/meals/estimate/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Estima las calorías de una comida con IA (Claude). **No guarda nada**: la app enseña la estimación y la persona la confirma creando la comida con `source='ai'`. Errores: 400 sin datos, 403 sin consentimiento, 404 `meal_id` ajeno, 422 si no reconoce comida, 429 al pasar el tope diario, 503 sin clave o si falla. */
+        post: operations["nutrition_meals_estimate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/nutrition/profile/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET|PUT|PATCH /api/nutrition/profile/` — mis preferencias de alimentación. */
+        get: operations["nutrition_profile_retrieve"];
+        /** @description Crea o reemplaza entero. El primer guardado es el onboarding y siembra las comidas. */
+        put: operations["nutrition_profile_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description Cambia solo lo que llega (crea el perfil si no existe). */
+        patch: operations["nutrition_profile_partial_update"];
+        trace?: never;
+    };
+    "/api/nutrition/progress/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/nutrition/progress/?weeks=4|8|12` — serie semanal. */
+        get: operations["nutrition_progress_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/nutrition/restrictions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET|PUT /api/nutrition/restrictions/` — alergias e intolerancias (dato de salud). */
+        get: operations["nutrition_restrictions_list"];
+        /** @description Reemplaza la lista entera. */
+        put: operations["nutrition_restrictions_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/nutrition/slots/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Mis comidas del día (sin paginar, por `order`). */
+        get: operations["nutrition_slots_list"];
+        put?: never;
+        /** @description Mis comidas del día (sin paginar, por `order`). */
+        post: operations["nutrition_slots_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/nutrition/slots/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Mis comidas del día (sin paginar, por `order`). */
+        get: operations["nutrition_slots_retrieve"];
+        /** @description Mis comidas del día (sin paginar, por `order`). */
+        put: operations["nutrition_slots_update"];
+        post?: never;
+        /** @description Mis comidas del día (sin paginar, por `order`). */
+        delete: operations["nutrition_slots_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Mis comidas del día (sin paginar, por `order`). */
+        patch: operations["nutrition_slots_partial_update"];
+        trace?: never;
+    };
+    "/api/nutrition/week/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/nutrition/week/?week=YYYY-Www` — los siete días y el resumen. */
+        get: operations["nutrition_week_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/organizations/": {
         parameters: {
             query?: never;
@@ -4248,7 +4651,14 @@ export interface paths {
         /** @description `/api/organizations/{id}/` y acciones `scope`, `members`, `references`. */
         get: operations["organizations_list"];
         put?: never;
-        /** @description Alta de entidad: `verifier`/`superadmin`. Nace sin verificar. */
+        /**
+         * @description Alta de entidad: `verifier`/`superadmin`. **Nace verificada**: las
+         *     entidades las da de alta la plataforma (único camino de alta), así
+         *     que no tiene sentido una segunda comprobación (error 2 de la QA de
+         *     Jhoan: una asociación recién creada no podía sellar). Se audita
+         *     `organization.verified` igual que en `verify`. El requisito de
+         *     verificación al sellar sigue en pie como red de seguridad.
+         */
         post: operations["organizations_create"];
         delete?: never;
         options?: never;
@@ -8967,6 +9377,171 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/wellbeing/day/{day}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/wellbeing/day/{date}/` — sueño, ánimo, hábitos del día y preferencias. */
+        get: operations["wellbeing_day_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/wellbeing/habits/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Mis hábitos (sin paginar, por `order`). Máximo 20 activos. */
+        get: operations["wellbeing_habits_list"];
+        put?: never;
+        /** @description Mis hábitos (sin paginar, por `order`). Máximo 20 activos. */
+        post: operations["wellbeing_habits_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/wellbeing/habits/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Mis hábitos (sin paginar, por `order`). Máximo 20 activos. */
+        get: operations["wellbeing_habits_retrieve"];
+        /** @description Mis hábitos (sin paginar, por `order`). Máximo 20 activos. */
+        put: operations["wellbeing_habits_update"];
+        post?: never;
+        /** @description Mis hábitos (sin paginar, por `order`). Máximo 20 activos. */
+        delete: operations["wellbeing_habits_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Mis hábitos (sin paginar, por `order`). Máximo 20 activos. */
+        patch: operations["wellbeing_habits_partial_update"];
+        trace?: never;
+    };
+    "/api/wellbeing/habits/{id}/check/{day}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Marca el hábito como hecho ese día (201; 200 si ya lo estaba). No se puede en el futuro. */
+        post: operations["wellbeing_habits_check_create"];
+        /** @description `POST|DELETE /api/wellbeing/habits/{id}/check/{date}/` — marcar o desmarcar. */
+        delete: operations["wellbeing_habits_check_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/wellbeing/mood/{day}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET|PUT|DELETE /api/wellbeing/mood/{date}/` — cómo estoy ese día. */
+        get: operations["wellbeing_mood_retrieve"];
+        /** @description Crea (201) o cambia (200) el ánimo de ese día. No se puede en el futuro. */
+        put: operations["wellbeing_mood_update"];
+        post?: never;
+        /** @description `GET|PUT|DELETE /api/wellbeing/mood/{date}/` — cómo estoy ese día. */
+        delete: operations["wellbeing_mood_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/wellbeing/profile/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET|PATCH /api/wellbeing/profile/` — qué tarjetas veo y mis objetivos. */
+        get: operations["wellbeing_profile_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description Cambia solo lo que llega (crea las preferencias si no existen). */
+        patch: operations["wellbeing_profile_partial_update"];
+        trace?: never;
+    };
+    "/api/wellbeing/sleep/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Mi sueño. La ruta de una noche es su fecha (`sleep/{date}/`), no un id. */
+        get: operations["wellbeing_sleep_list"];
+        put?: never;
+        /** @description Mi sueño. La ruta de una noche es su fecha (`sleep/{date}/`), no un id. */
+        post: operations["wellbeing_sleep_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/wellbeing/sleep/{date}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Mi sueño. La ruta de una noche es su fecha (`sleep/{date}/`), no un id. */
+        get: operations["wellbeing_sleep_retrieve"];
+        /** @description Crea (201) o reemplaza (200) la noche de esa fecha. */
+        put: operations["wellbeing_sleep_update"];
+        post?: never;
+        /** @description Mi sueño. La ruta de una noche es su fecha (`sleep/{date}/`), no un id. */
+        delete: operations["wellbeing_sleep_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Mi sueño. La ruta de una noche es su fecha (`sleep/{date}/`), no un id. */
+        patch: operations["wellbeing_sleep_partial_update"];
+        trace?: never;
+    };
+    "/api/wellbeing/week/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `GET /api/wellbeing/week/?week=YYYY-Www` — los siete días y el resumen. */
+        get: operations["wellbeing_week_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -8994,6 +9569,10 @@ export interface components {
             content: string;
             /** Format: uri */
             image?: string | null;
+            /** Format: uri */
+            readonly image_thumb: string | null;
+            /** Format: uri */
+            readonly image_medium: string | null;
             readonly images: components["schemas"]["CommunityPostImage"][];
             readonly video_url: string | null;
             readonly hashtags: string[];
@@ -9492,6 +10071,10 @@ export interface components {
             description?: string;
             /** Format: uri */
             banner_image?: string | null;
+            /** Format: uri */
+            readonly banner_image_thumb: string | null;
+            /** Format: uri */
+            readonly banner_image_medium: string | null;
             readonly gallery_images: components["schemas"]["CommunityImage"][];
             readonly category: components["schemas"]["CommunityCategory"];
             readonly subcategories: components["schemas"]["CommunitySubCategory"][];
@@ -9579,6 +10162,10 @@ export interface components {
             /** Format: uri */
             image: string;
             /** Format: uri */
+            readonly image_thumb: string | null;
+            /** Format: uri */
+            readonly image_medium: string | null;
+            /** Format: uri */
             readonly image_url: string | null;
             role?: components["schemas"]["CommunityImageRoleEnum"];
             /** Format: int64 */
@@ -9612,6 +10199,10 @@ export interface components {
             readonly description: string;
             /** Format: uri */
             banner_image?: string | null;
+            /** Format: uri */
+            readonly banner_image_thumb: string | null;
+            /** Format: uri */
+            readonly banner_image_medium: string | null;
             readonly category: components["schemas"]["CommunityCategory"];
             readonly owner: {
                 [key: string]: unknown;
@@ -9726,6 +10317,10 @@ export interface components {
             readonly id: string;
             /** Format: uri */
             image?: string | null;
+            /** Format: uri */
+            readonly image_thumb: string | null;
+            /** Format: uri */
+            readonly image_medium: string | null;
             /** Format: uri */
             readonly image_url: string | null;
             /** Format: int64 */
@@ -9843,6 +10438,13 @@ export interface components {
             previous: components["schemas"]["CompareCelda"];
             delta: components["schemas"]["CompareDelta"];
         };
+        /**
+         * @description * `low` - low
+         *     * `medium` - medium
+         *     * `high` - high
+         * @enum {string}
+         */
+        ConfidenceEnum: "low" | "medium" | "high";
         ConfirmPaymentRequest: {
             payment_intent_id: string;
             payment_method: string;
@@ -11118,7 +11720,6 @@ export interface components {
             /** @default  */
             readonly account_name: string;
             contact?: number | null;
-            /** @default  */
             readonly contact_name: string;
             opportunity?: number | null;
             /** @default  */
@@ -11308,6 +11909,16 @@ export interface components {
             /** Icono */
             icon?: string;
             /**
+             * Usa distancia
+             * @description Si el entreno de esta disciplina registra una distancia.
+             */
+            uses_distance?: boolean;
+            /**
+             * Usa desnivel
+             * @description Si el entreno de esta disciplina registra un desnivel.
+             */
+            uses_elevation?: boolean;
+            /**
              * Orden
              * Format: int64
              */
@@ -11323,6 +11934,16 @@ export interface components {
             readonly name: string;
             /** Tipo */
             readonly kind: components["schemas"]["KindA97Enum"];
+            /**
+             * Usa distancia
+             * @description Si el entreno de esta disciplina registra una distancia.
+             */
+            readonly uses_distance: boolean;
+            /**
+             * Usa desnivel
+             * @description Si el entreno de esta disciplina registra un desnivel.
+             */
+            readonly uses_elevation: boolean;
         };
         /** @description `name` localizado al leer; `name_es` es el castellano crudo. */
         DisciplineRequest: {
@@ -11338,6 +11959,16 @@ export interface components {
             kind: components["schemas"]["KindA97Enum"];
             /** Icono */
             icon?: string;
+            /**
+             * Usa distancia
+             * @description Si el entreno de esta disciplina registra una distancia.
+             */
+            uses_distance?: boolean;
+            /**
+             * Usa desnivel
+             * @description Si el entreno de esta disciplina registra un desnivel.
+             */
+            uses_elevation?: boolean;
             /**
              * Orden
              * Format: int64
@@ -11646,6 +12277,7 @@ export interface components {
             /** Acompañantes por inscrito */
             max_guests_per_attendee?: number;
             category?: number | null;
+            custom_category?: string;
             subcategories?: string[];
             /** Format: uuid */
             vibe?: string | null;
@@ -11664,6 +12296,15 @@ export interface components {
              */
             estimated_cost?: string | null;
             /**
+             * Route distance (km)
+             * Format: decimal
+             */
+            route_distance_km?: string | null;
+            /** Positive elevation gain (m) */
+            route_elevation_m?: number | null;
+            /** Estimated duration (minutes) */
+            estimated_duration_minutes?: number | null;
+            /**
              * Regla de repetición (RRULE)
              * @description RFC 5545. Solo en la primera actividad de la serie.
              */
@@ -11673,6 +12314,9 @@ export interface components {
              * Format: uri
              */
             image?: string | null;
+            min_age?: number | null;
+            max_age?: number | null;
+            stops?: components["schemas"]["EventStopWrite"][];
         };
         /** @description Alta de actividad. Las reglas de espacio y permiso las pone el servicio. */
         EventCreateRequest: {
@@ -11721,6 +12365,7 @@ export interface components {
             /** Acompañantes por inscrito */
             max_guests_per_attendee?: number;
             category?: number | null;
+            custom_category?: string;
             subcategories?: string[];
             /** Format: uuid */
             vibe?: string | null;
@@ -11739,6 +12384,15 @@ export interface components {
              */
             estimated_cost?: string | null;
             /**
+             * Route distance (km)
+             * Format: decimal
+             */
+            route_distance_km?: string | null;
+            /** Positive elevation gain (m) */
+            route_elevation_m?: number | null;
+            /** Estimated duration (minutes) */
+            estimated_duration_minutes?: number | null;
+            /**
              * Regla de repetición (RRULE)
              * @description RFC 5545. Solo en la primera actividad de la serie.
              */
@@ -11748,6 +12402,9 @@ export interface components {
              * Format: binary
              */
             image?: string | null;
+            min_age?: number | null;
+            max_age?: number | null;
+            stops?: components["schemas"]["EventStopWriteRequest"][] | string;
         };
         /**
          * @description Detalle: añade lo que solo tiene sentido dentro de la ficha.
@@ -11785,6 +12442,10 @@ export interface components {
             /** Estado */
             readonly status: components["schemas"]["Status5bbEnum"];
             readonly image: string | null;
+            /** Format: uri */
+            readonly image_thumb: string | null;
+            /** Format: uri */
+            readonly image_medium: string | null;
             /** Format: decimal */
             readonly latitude: string | null;
             /** Format: decimal */
@@ -11805,6 +12466,8 @@ export interface components {
             };
             readonly community: components["schemas"]["_Nombrado"] | null;
             readonly category: components["schemas"]["_Nombrado"] | null;
+            /** Categoría personalizada */
+            readonly custom_category: string;
             readonly my_attendance: {
                 [key: string]: unknown;
             } | null;
@@ -11826,6 +12489,27 @@ export interface components {
              *     * `advanced` - Avanzado
              */
             readonly level: components["schemas"]["LevelCaaEnum"];
+            /**
+             * Route distance (km)
+             * Format: decimal
+             */
+            readonly route_distance_km: string | null;
+            /** Positive elevation gain (m) */
+            readonly route_elevation_m: number | null;
+            /** Estimated duration (minutes) */
+            readonly estimated_duration_minutes: number | null;
+            /**
+             * Edad mínima
+             * @description Vacío = sin límite.
+             */
+            readonly min_age: number | null;
+            /**
+             * Edad máxima
+             * @description Vacío = sin límite.
+             */
+            readonly max_age: number | null;
+            readonly age_eligible: boolean;
+            readonly is_trip: boolean;
             readonly address: string | null;
             readonly chat_room_id: string | null;
             readonly waitlist_count: number;
@@ -11844,6 +12528,7 @@ export interface components {
             /** Format: date-time */
             readonly created_at: string;
             readonly can_request_help: boolean;
+            readonly stops: components["schemas"]["EventStop"][];
         };
         /**
          * @description Tarjeta de actividad: agenda, listado de comunidad y «mis actividades».
@@ -11873,6 +12558,10 @@ export interface components {
             /** Estado */
             readonly status: components["schemas"]["Status5bbEnum"];
             readonly image: string | null;
+            /** Format: uri */
+            readonly image_thumb: string | null;
+            /** Format: uri */
+            readonly image_medium: string | null;
             /** Format: decimal */
             readonly latitude: string | null;
             /** Format: decimal */
@@ -11893,6 +12582,8 @@ export interface components {
             };
             readonly community: components["schemas"]["_Nombrado"] | null;
             readonly category: components["schemas"]["_Nombrado"] | null;
+            /** Categoría personalizada */
+            readonly custom_category: string;
             readonly my_attendance: {
                 [key: string]: unknown;
             } | null;
@@ -11914,6 +12605,27 @@ export interface components {
              *     * `advanced` - Avanzado
              */
             readonly level: components["schemas"]["LevelCaaEnum"];
+            /**
+             * Route distance (km)
+             * Format: decimal
+             */
+            readonly route_distance_km: string | null;
+            /** Positive elevation gain (m) */
+            readonly route_elevation_m: number | null;
+            /** Estimated duration (minutes) */
+            readonly estimated_duration_minutes: number | null;
+            /**
+             * Edad mínima
+             * @description Vacío = sin límite.
+             */
+            readonly min_age: number | null;
+            /**
+             * Edad máxima
+             * @description Vacío = sin límite.
+             */
+            readonly max_age: number | null;
+            readonly age_eligible: boolean;
+            readonly is_trip: boolean;
         };
         /** @description La actividad del aviso, con lo justo para pintar la lista. */
         EventRef: {
@@ -11922,6 +12634,43 @@ export interface components {
             title: string;
             /** Format: date-time */
             starts_at: string;
+        };
+        /**
+         * @description Parada de un viaje en el detalle (solo documenta el esquema: la monta
+         *     `EventDetailSerializer.get_stops`, que aplica quién sabe el sitio).
+         */
+        EventStop: {
+            /** Format: uuid */
+            id: string;
+            order: number;
+            name: string;
+            /** Format: decimal */
+            latitude: string | null;
+            /** Format: decimal */
+            longitude: string | null;
+            address: string;
+        };
+        /** @description Una parada tal como la manda la app al crear o editar un viaje. */
+        EventStopWrite: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            /** Format: decimal */
+            latitude?: string | null;
+            /** Format: decimal */
+            longitude?: string | null;
+            address?: string;
+        };
+        /** @description Una parada tal como la manda la app al crear o editar un viaje. */
+        EventStopWriteRequest: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            /** Format: decimal */
+            latitude?: string | null;
+            /** Format: decimal */
+            longitude?: string | null;
+            address?: string;
         };
         /**
          * @description Edición: el espacio (`audience`, `community`, `owner_org`) no se mueve.
@@ -11970,6 +12719,7 @@ export interface components {
             /** Acompañantes por inscrito */
             max_guests_per_attendee?: number;
             category?: number | null;
+            custom_category?: string;
             subcategories?: string[];
             /** Format: uuid */
             vibe?: string | null;
@@ -11988,10 +12738,22 @@ export interface components {
              */
             estimated_cost?: string | null;
             /**
+             * Route distance (km)
+             * Format: decimal
+             */
+            route_distance_km?: string | null;
+            /** Positive elevation gain (m) */
+            route_elevation_m?: number | null;
+            /** Estimated duration (minutes) */
+            estimated_duration_minutes?: number | null;
+            /**
              * Imagen
              * Format: uri
              */
             image?: string | null;
+            min_age?: number | null;
+            max_age?: number | null;
+            stops?: components["schemas"]["EventStopWrite"][];
         };
         /**
          * @description Edición: el espacio (`audience`, `community`, `owner_org`) no se mueve.
@@ -12040,6 +12802,7 @@ export interface components {
             /** Acompañantes por inscrito */
             max_guests_per_attendee?: number;
             category?: number | null;
+            custom_category?: string;
             subcategories?: string[];
             /** Format: uuid */
             vibe?: string | null;
@@ -12058,10 +12821,22 @@ export interface components {
              */
             estimated_cost?: string | null;
             /**
+             * Route distance (km)
+             * Format: decimal
+             */
+            route_distance_km?: string | null;
+            /** Positive elevation gain (m) */
+            route_elevation_m?: number | null;
+            /** Estimated duration (minutes) */
+            estimated_duration_minutes?: number | null;
+            /**
              * Imagen
              * Format: binary
              */
             image?: string | null;
+            min_age?: number | null;
+            max_age?: number | null;
+            stops?: components["schemas"]["EventStopWriteRequest"][] | string;
         };
         EventsByAudience: {
             anyone: number;
@@ -12120,6 +12895,109 @@ export interface components {
             order?: number;
             /** Activo */
             is_active?: boolean;
+        };
+        Expense: {
+            /** Format: uuid */
+            id: string;
+            description: string;
+            /** Format: decimal */
+            amount: string;
+            /** Format: date */
+            date: string;
+            is_planned: boolean;
+            paid_by: components["schemas"]["ExpensePerson"] | null;
+            shares: components["schemas"]["ExpenseShare"][];
+            stop: components["schemas"]["ExpenseStop"] | null;
+            can_edit: boolean;
+            can_mark_paid: boolean;
+            /** Format: date-time */
+            created_at: string;
+        };
+        ExpenseBalances: {
+            currency: string;
+            /** Format: decimal */
+            total: string;
+            /** Format: decimal */
+            planned_total: string;
+            /** Format: decimal */
+            paid_total: string;
+            members_count: number;
+            /** Format: decimal */
+            per_person: string;
+            /** Format: decimal */
+            my_share: string;
+            members: components["schemas"]["ExpenseMemberBalance"][];
+            suggested_payments: components["schemas"]["ExpenseSuggestedPayment"][];
+            settlements: components["schemas"]["ExpenseSettlement"][];
+        };
+        ExpenseMemberBalance: {
+            person: components["schemas"]["ExpensePerson"];
+            /** Format: decimal */
+            paid: string;
+            /** Format: decimal */
+            share: string;
+            /** Format: decimal */
+            net: string;
+            is_member: boolean;
+        };
+        /** @description Persona vista por quien pregunta: anónima si hay bloqueo, sin datos si se borró. */
+        ExpensePerson: {
+            user_id: number | null;
+            name: string | null;
+            /** Format: uri */
+            photo: string | null;
+            is_hidden: boolean;
+            is_deleted: boolean;
+        };
+        /** @description Añade `from` y `to` (`from` es palabra reservada: no puede ser atributo). */
+        ExpenseSettlement: {
+            from: components["schemas"]["ExpensePerson"];
+            to: components["schemas"]["ExpensePerson"];
+            /** Format: uuid */
+            id: string;
+            /** Format: decimal */
+            amount: string;
+            /** Format: date-time */
+            created_at: string;
+            can_delete: boolean;
+        };
+        /** @description Marcar un pago entre dos personas. */
+        ExpenseSettlementWriteRequest: {
+            from_user: number;
+            to_user: number;
+            /** Format: decimal */
+            amount: string;
+        };
+        ExpenseShare: {
+            person: components["schemas"]["ExpensePerson"];
+            /** Format: decimal */
+            amount: string;
+        };
+        /** @description Parada de un viaje a la que va asociado un gasto. */
+        ExpenseStop: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+        };
+        /** @description Añade `from` y `to` (`from` es palabra reservada: no puede ser atributo). */
+        ExpenseSuggestedPayment: {
+            from: components["schemas"]["ExpensePerson"];
+            to: components["schemas"]["ExpensePerson"];
+            /** Format: decimal */
+            amount: string;
+            can_mark_paid: boolean;
+        };
+        /** @description Crear o editar un gasto. Sin `split_between`, se reparte entre todos. */
+        ExpenseWriteRequest: {
+            description: string;
+            /** Format: decimal */
+            amount: string;
+            paid_by?: number | null;
+            /** Format: date */
+            date?: string;
+            /** Format: uuid */
+            stop?: string | null;
+            split_between?: number[];
         };
         /**
          * @description `GET /api/panel/entidad/{id}/families/` — resumen del espacio POP
@@ -13013,6 +13891,10 @@ export interface components {
             readonly content: string;
             /** Format: uri */
             image?: string | null;
+            /** Format: uri */
+            readonly image_thumb: string | null;
+            /** Format: uri */
+            readonly image_medium: string | null;
             readonly reply_to: components["schemas"]["MessageReplyPreview"];
             readonly metadata: unknown;
             readonly is_edited: boolean;
@@ -13041,6 +13923,10 @@ export interface components {
             message_type?: components["schemas"]["MessageTypeEnum"];
             /** Format: uri */
             image?: string | null;
+            /** Format: uri */
+            readonly image_thumb: string | null;
+            /** Format: uri */
+            readonly image_medium: string | null;
             is_deleted?: boolean;
         };
         /**
@@ -13242,6 +14128,489 @@ export interface components {
         NotificationTypeEnum: "dm_request" | "message" | "plan_invitation" | "plan_update" | "plan_reminder" | "plan_cancelled" | "plan_completed" | "review_received" | "warning" | "report_resolved" | "help_request" | "help_referent" | "account_suspended" | "announcement" | "survey" | "support_help_request" | "support_link" | "system";
         /** @enum {unknown} */
         NullEnum: null;
+        /**
+         * @description * `catalog` - catalog
+         *     * `ai` - ai
+         * @enum {string}
+         */
+        NutrientsFromEnum: "catalog" | "ai";
+        NutritionDay: {
+            /** Format: date */
+            date: string;
+            has_profile: boolean;
+            is_future: boolean;
+            registered: number;
+            expected: number;
+            complete: boolean;
+            slots: components["schemas"]["NutritionDaySlot"][];
+            water: components["schemas"]["NutritionWater"];
+            totals: components["schemas"]["NutritionTotals"] | null;
+        };
+        NutritionDaySlot: {
+            id: number | null;
+            code: string;
+            name: string;
+            label: string;
+            enabled: boolean;
+            order: number;
+            /** Format: time */
+            usual_time: string | null;
+            registered: boolean;
+            meals: components["schemas"]["NutritionMeal"][];
+        };
+        /**
+         * @description * `omnivore` - Omnívora
+         *     * `vegetarian` - Vegetariana
+         *     * `vegan` - Vegana
+         *     * `pescatarian` - Pescetariana
+         *     * `other` - Otro
+         * @enum {string}
+         */
+        NutritionDietEnum: "omnivore" | "vegetarian" | "vegan" | "pescatarian" | "other";
+        NutritionEstimate: {
+            estimate: components["schemas"]["NutritionEstimateBody"];
+            used_today: number;
+            daily_limit: number;
+        };
+        NutritionEstimateBody: {
+            items: components["schemas"]["NutritionEstimateItem"][];
+            totals: components["schemas"]["NutritionEstimateTotals"];
+            confidence: components["schemas"]["ConfidenceEnum"];
+            note: string;
+        };
+        NutritionEstimateItem: {
+            name: string;
+            /** Format: decimal */
+            quantity: string;
+            unit: components["schemas"]["NutritionUnitEnum"];
+            /** Format: decimal */
+            kcal: string;
+            /** Format: decimal */
+            protein_g: string;
+            /** Format: decimal */
+            carbs_g: string;
+            /** Format: decimal */
+            fat_g: string;
+            food_id: number | null;
+            nutrients_from: components["schemas"]["NutrientsFromEnum"];
+        };
+        /** @description Entrada de `meals/estimate/` (JSON o multipart). Hace falta al menos un dato. */
+        NutritionEstimateRequestRequest: {
+            description?: string;
+            /** Format: binary */
+            photo?: string | null;
+            /** @description Una comida mía de la que se usan su foto y su texto. */
+            meal_id?: number | null;
+        };
+        NutritionEstimateTotals: {
+            /** Format: decimal */
+            kcal: string;
+            /** Format: decimal */
+            protein_g: string;
+            /** Format: decimal */
+            carbs_g: string;
+            /** Format: decimal */
+            fat_g: string;
+        };
+        /**
+         * @description * `light` - Ligero
+         *     * `good` - Bien
+         *     * `very_full` - Muy lleno
+         *     * `hungry` - Con hambre
+         * @enum {string}
+         */
+        NutritionFeelingEnum: "light" | "good" | "very_full" | "hungry";
+        /** @description Un alimento del catálogo, con `name` en el idioma de la petición. */
+        NutritionFood: {
+            readonly id: number;
+            /** Código */
+            readonly code: string;
+            readonly name: string;
+            /** Categoría */
+            readonly category: components["schemas"]["NutritionFoodCategoryEnum"];
+            /**
+             * Kcal por 100 g
+             * Format: decimal
+             */
+            readonly kcal_100g: string;
+            /**
+             * Proteínas por 100 g
+             * Format: decimal
+             */
+            readonly protein_100g: string;
+            /**
+             * Hidratos de carbono por 100 g
+             * Format: decimal
+             */
+            readonly carbs_100g: string;
+            /**
+             * Grasa por 100 g
+             * Format: decimal
+             */
+            readonly fat_100g: string;
+            /** Origen */
+            readonly source: string;
+        };
+        /**
+         * @description * `protein` - Proteínas
+         *     * `carbs` - Hidratos de carbono
+         *     * `vegetables` - Verduras
+         *     * `fruit` - Fruta
+         *     * `dairy` - Lácteos
+         *     * `fats` - Grasas
+         *     * `drinks` - Bebidas
+         *     * `prepared` - Platos preparados
+         *     * `other` - Otro
+         * @enum {string}
+         */
+        NutritionFoodCategoryEnum: "protein" | "carbs" | "vegetables" | "fruit" | "dairy" | "fats" | "drinks" | "prepared" | "other";
+        /**
+         * @description * `healthier` - Comer de forma más saludable
+         *     * `habits` - Mejorar mis hábitos
+         *     * `lose_weight` - Perder peso
+         *     * `gain_muscle` - Ganar músculo
+         *     * `maintain` - Mantener
+         *     * `performance` - Rendimiento deportivo
+         *     * `just_log` - Solo llevar un registro
+         * @enum {string}
+         */
+        NutritionGoalEnum: "healthier" | "habits" | "lose_weight" | "gain_muscle" | "maintain" | "performance" | "just_log";
+        NutritionHydration: {
+            /** Format: date */
+            date: string;
+            ml: number;
+            goal_ml: number;
+            unit: components["schemas"]["NutritionWaterUnitEnum"];
+            glass_ml: number;
+            reached: boolean;
+        };
+        NutritionHydrationWriteRequest: {
+            ml: number;
+        };
+        /** @description Lectura de una comida. Nunca la URL de la foto: `has_photo` y su ruta propia. */
+        NutritionMeal: {
+            readonly id: number;
+            /**
+             * Fecha
+             * Format: date
+             */
+            readonly date: string;
+            readonly slot_id: number;
+            readonly slot_code: string;
+            readonly slot_name: string;
+            /** Format: time */
+            readonly eaten_at: string;
+            /** Descripción */
+            readonly description: string;
+            readonly has_photo: boolean;
+            /** Valoración */
+            readonly rating: components["schemas"]["NutritionRatingEnum"];
+            /** Sensación */
+            readonly feeling: components["schemas"]["NutritionFeelingEnum"];
+            /** Con fruta */
+            readonly with_fruit: boolean | null;
+            /** Con verdura */
+            readonly with_vegetables: boolean | null;
+            /** Nota */
+            readonly note: string;
+            /** Origen */
+            readonly source: components["schemas"]["NutritionSourceEnum"];
+            readonly items: components["schemas"]["NutritionMealItem"][];
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        /** @description Lectura de un alimento de una comida. */
+        NutritionMealItem: {
+            readonly id: number;
+            readonly food_id: number;
+            /** Nombre */
+            readonly name: string;
+            /**
+             * Cantidad
+             * Format: decimal
+             */
+            readonly quantity: string | null;
+            /** Unidad */
+            readonly unit: components["schemas"]["NutritionUnitEnum"];
+            /** Format: decimal */
+            readonly kcal: string | null;
+            /**
+             * Proteínas (g)
+             * Format: decimal
+             */
+            readonly protein_g: string | null;
+            /**
+             * Hidratos de carbono (g)
+             * Format: decimal
+             */
+            readonly carbs_g: string | null;
+            /**
+             * Grasa (g)
+             * Format: decimal
+             */
+            readonly fat_g: string | null;
+            /** Orden */
+            readonly order: number;
+        };
+        /** @description Un alimento al escribir: del catálogo (`food_id`) o a mano (`name`). */
+        NutritionMealItemWriteRequest: {
+            food_id?: number | null;
+            name?: string;
+            /** Format: decimal */
+            quantity?: string | null;
+            unit?: components["schemas"]["NutritionUnitEnum"] | components["schemas"]["BlankEnum"];
+            /** Format: decimal */
+            kcal?: string | null;
+            /** Format: decimal */
+            protein_g?: string | null;
+            /** Format: decimal */
+            carbs_g?: string | null;
+            /** Format: decimal */
+            fat_g?: string | null;
+        };
+        /**
+         * @description Escritura de una comida (JSON o multipart).
+         *
+         *     `photo`: un fichero la pone o la reemplaza; `null` o vacío la quita;
+         *     sin el campo no se toca. `items`, si viene, reemplaza la lista entera.
+         */
+        NutritionMealWriteRequest: {
+            source?: components["schemas"]["NutritionSourceEnum"];
+            /**
+             * Fecha
+             * Format: date
+             */
+            date: string;
+            slot_id?: number | null;
+            /** Format: time */
+            eaten_at?: string | null;
+            description?: string;
+            /** Format: binary */
+            photo?: string | null;
+            rating?: components["schemas"]["NutritionRatingEnum"] | components["schemas"]["BlankEnum"];
+            feeling?: components["schemas"]["NutritionFeelingEnum"] | components["schemas"]["BlankEnum"];
+            with_fruit?: boolean | null;
+            with_vegetables?: boolean | null;
+            note?: string;
+            items?: components["schemas"]["NutritionMealItemWriteRequest"][];
+        };
+        /** @description El perfil. `exists` dice si ya se hizo el onboarding. */
+        NutritionProfile: {
+            readonly exists: boolean;
+            goal?: components["schemas"]["NutritionGoalEnum"] | components["schemas"]["BlankEnum"];
+            diet?: components["schemas"]["NutritionDietEnum"] | components["schemas"]["BlankEnum"];
+            /** Otro tipo de alimentación */
+            diet_other?: string;
+            /** Mostrar información nutricional */
+            show_nutrition_info?: boolean;
+            /** Mostrar en Mi día */
+            show_in_my_day?: boolean;
+            /** Registrar el agua */
+            water_enabled?: boolean;
+            water_goal_ml?: number;
+            /** Unidad del agua */
+            water_unit?: components["schemas"]["NutritionWaterUnitEnum"];
+            glass_ml?: number;
+            /** @description Hay consentimiento para la IA. `true` lo da (`ai_consent_at = ahora`), `false` lo revoca. */
+            ai_enabled?: boolean;
+            readonly ai_available: boolean;
+            readonly ai_daily_limit: number;
+            readonly ai_used_today: number;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        /** @description El perfil. `exists` dice si ya se hizo el onboarding. */
+        NutritionProfileRequest: {
+            goal?: components["schemas"]["NutritionGoalEnum"] | components["schemas"]["BlankEnum"];
+            diet?: components["schemas"]["NutritionDietEnum"] | components["schemas"]["BlankEnum"];
+            /** Otro tipo de alimentación */
+            diet_other?: string;
+            /** Mostrar información nutricional */
+            show_nutrition_info?: boolean;
+            /** Mostrar en Mi día */
+            show_in_my_day?: boolean;
+            /** Registrar el agua */
+            water_enabled?: boolean;
+            water_goal_ml?: number;
+            /** Unidad del agua */
+            water_unit?: components["schemas"]["NutritionWaterUnitEnum"];
+            glass_ml?: number;
+            /** @description Hay consentimiento para la IA. `true` lo da (`ai_consent_at = ahora`), `false` lo revoca. */
+            ai_enabled?: boolean;
+        };
+        NutritionProgress: {
+            weeks: number;
+            /** Format: date */
+            since: string;
+            /** Format: date */
+            until: string;
+            series: components["schemas"]["NutritionProgressWeek"][];
+            totals: components["schemas"]["NutritionProgressTotals"];
+            daily_average: components["schemas"]["NutritionTotals"] | null;
+        };
+        NutritionProgressTotals: {
+            days_with_record: number;
+            meals_registered: number;
+            water_goal_days: number | null;
+            balanced_pct: number | null;
+        };
+        NutritionProgressWeek: {
+            week: string;
+            /** Format: date */
+            starts_on: string;
+            days_with_record: number;
+            meals_registered: number;
+            water_goal_days: number | null;
+            balanced_pct: number | null;
+        };
+        /**
+         * @description * `balanced` - Equilibrada
+         *     * `normal` - Normal
+         *     * `treat` - Capricho
+         * @enum {string}
+         */
+        NutritionRatingEnum: "balanced" | "normal" | "treat";
+        NutritionRestriction: {
+            /** Código */
+            code: components["schemas"]["NutritionRestrictionCodeEnum"];
+            /** @default  */
+            label: string;
+        };
+        /**
+         * @description * `gluten` - Gluten
+         *     * `lactose` - Lactosa
+         *     * `nuts` - Frutos secos
+         *     * `shellfish` - Marisco
+         *     * `egg` - Huevo
+         *     * `other` - Otro
+         * @enum {string}
+         */
+        NutritionRestrictionCodeEnum: "gluten" | "lactose" | "nuts" | "shellfish" | "egg" | "other";
+        NutritionRestrictionRequest: {
+            /** Código */
+            code: components["schemas"]["NutritionRestrictionCodeEnum"];
+            /** @default  */
+            label: string;
+        };
+        /** @description Una comida del día. `label` es el nombre que se muestra (traducido si `name` está vacío). */
+        NutritionSlot: {
+            readonly id: number;
+            code?: components["schemas"]["NutritionSlotCodeEnum"];
+            /** Nombre */
+            name?: string;
+            readonly label: string;
+            /** Activa */
+            enabled?: boolean;
+            /**
+             * Orden
+             * Format: int64
+             */
+            order?: number;
+            /** Format: time */
+            usual_time?: string | null;
+        };
+        /**
+         * @description * `breakfast` - Desayuno
+         *     * `mid_morning` - Media mañana
+         *     * `lunch` - Comida
+         *     * `afternoon_snack` - Merienda
+         *     * `dinner` - Cena
+         *     * `snack` - Snack
+         *     * `other` - Otra comida
+         *     * `custom` - Comida
+         * @enum {string}
+         */
+        NutritionSlotCodeEnum: "breakfast" | "mid_morning" | "lunch" | "afternoon_snack" | "dinner" | "snack" | "other" | "custom";
+        /** @description Una comida del día. `label` es el nombre que se muestra (traducido si `name` está vacío). */
+        NutritionSlotRequest: {
+            code?: components["schemas"]["NutritionSlotCodeEnum"];
+            /** Nombre */
+            name?: string;
+            /** Activa */
+            enabled?: boolean;
+            /**
+             * Orden
+             * Format: int64
+             */
+            order?: number;
+            /** Format: time */
+            usual_time?: string | null;
+        };
+        /**
+         * @description * `manual` - Manual
+         *     * `ai` - Sugerida y confirmada
+         * @enum {string}
+         */
+        NutritionSourceEnum: "manual" | "ai";
+        NutritionTotals: {
+            /** Format: double */
+            kcal: number;
+            /** Format: double */
+            protein_g: number;
+            /** Format: double */
+            carbs_g: number;
+            /** Format: double */
+            fat_g: number;
+        };
+        /**
+         * @description * `g` - Gramos
+         *     * `ml` - Mililitros
+         *     * `unit` - Unidades
+         *     * `portion` - Raciones
+         * @enum {string}
+         */
+        NutritionUnitEnum: "g" | "ml" | "unit" | "portion";
+        NutritionWater: {
+            enabled: boolean;
+            ml: number;
+            goal_ml: number;
+            unit: components["schemas"]["NutritionWaterUnitEnum"];
+            glass_ml: number;
+            reached: boolean;
+        };
+        /**
+         * @description * `glasses` - Vasos
+         *     * `ml` - Mililitros
+         *     * `liters` - Litros
+         * @enum {string}
+         */
+        NutritionWaterUnitEnum: "glasses" | "ml" | "liters";
+        NutritionWeek: {
+            week: string;
+            /** Format: date */
+            starts_on: string;
+            /** Format: date */
+            ends_on: string;
+            days: components["schemas"]["NutritionWeekDay"][];
+            summary: components["schemas"]["NutritionWeekSummary"];
+        };
+        NutritionWeekDay: {
+            /** Format: date */
+            date: string;
+            registered: number;
+            expected: number;
+            complete: boolean;
+            is_future: boolean;
+            water_ml: number;
+            water_reached: boolean;
+            has_fruit: boolean;
+            has_vegetables: boolean;
+            meals_count: number;
+        };
+        NutritionWeekSummary: {
+            meals_registered: number;
+            meals_expected: number;
+            days_with_record: number;
+            balanced_pct: number | null;
+            rated_meals: number;
+            water_goal_days: number | null;
+            fruit_days: number;
+            vegetable_days: number;
+        };
         OptimizedPhotoListItem: {
             id: number;
             user: number;
@@ -13421,9 +14790,11 @@ export interface components {
         /**
          * @description `POST /api/organizations/` — alta de entidad (verificador/superadmin).
          *
-         *     `is_verified` nace en `False`: la verificación es un paso aparte
-         *     (`organization-verify`). `place` (sede) es obligatorio desde la tarea 2
-         *     del plan de territorio (spec §2.1): toda entidad nace con un municipio.
+         *     `is_verified`/`verified_at` no se aceptan: el viewset los fija al dar
+         *     de alta, porque la plataforma es quien crea las entidades y nacen
+         *     verificadas (`organization-verify` sigue siendo idempotente). `place`
+         *     (sede) es obligatorio desde la tarea 2 del plan de territorio (spec
+         *     §2.1): toda entidad nace con un municipio.
          */
         OrganizationCreateRequest: {
             /** Nombre */
@@ -13917,6 +15288,36 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["NotificationTemplate"][];
         };
+        PaginatedNutritionFoodList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["NutritionFood"][];
+        };
+        PaginatedNutritionMealList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["NutritionMeal"][];
+        };
         PaginatedOrganizationList: {
             /** @example 123 */
             count: number;
@@ -14066,6 +15467,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["WallPost"][];
+        };
+        PaginatedWellbeingSleepList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["WellbeingSleep"][];
         };
         PaginatedWorkoutListList: {
             /** @example 123 */
@@ -14572,6 +15988,16 @@ export interface components {
             /** Icono */
             icon?: string;
             /**
+             * Usa distancia
+             * @description Si el entreno de esta disciplina registra una distancia.
+             */
+            uses_distance?: boolean;
+            /**
+             * Usa desnivel
+             * @description Si el entreno de esta disciplina registra un desnivel.
+             */
+            uses_elevation?: boolean;
+            /**
              * Orden
              * Format: int64
              */
@@ -14656,6 +16082,7 @@ export interface components {
             /** Acompañantes por inscrito */
             max_guests_per_attendee?: number;
             category?: number | null;
+            custom_category?: string;
             subcategories?: string[];
             /** Format: uuid */
             vibe?: string | null;
@@ -14674,10 +16101,22 @@ export interface components {
              */
             estimated_cost?: string | null;
             /**
+             * Route distance (km)
+             * Format: decimal
+             */
+            route_distance_km?: string | null;
+            /** Positive elevation gain (m) */
+            route_elevation_m?: number | null;
+            /** Estimated duration (minutes) */
+            estimated_duration_minutes?: number | null;
+            /**
              * Imagen
              * Format: binary
              */
             image?: string | null;
+            min_age?: number | null;
+            max_age?: number | null;
+            stops?: components["schemas"]["EventStopWriteRequest"][] | string;
         };
         /** @description `name` localizado al leer; `name_es` es el castellano crudo. */
         PatchedExerciseRequest: {
@@ -14701,6 +16140,18 @@ export interface components {
             order?: number;
             /** Activo */
             is_active?: boolean;
+        };
+        /** @description Crear o editar un gasto. Sin `split_between`, se reparte entre todos. */
+        PatchedExpenseWriteRequest: {
+            description?: string;
+            /** Format: decimal */
+            amount?: string;
+            paid_by?: number | null;
+            /** Format: date */
+            date?: string;
+            /** Format: uuid */
+            stop?: string | null;
+            split_between?: number[];
         };
         /**
          * @description Alta y edición de un juego (admin).
@@ -14899,6 +16350,66 @@ export interface components {
             email_body_template?: string;
             is_active?: boolean;
             priority?: components["schemas"]["PriorityEnum"];
+        };
+        /**
+         * @description Escritura de una comida (JSON o multipart).
+         *
+         *     `photo`: un fichero la pone o la reemplaza; `null` o vacío la quita;
+         *     sin el campo no se toca. `items`, si viene, reemplaza la lista entera.
+         */
+        PatchedNutritionMealWriteRequest: {
+            source?: components["schemas"]["NutritionSourceEnum"];
+            /**
+             * Fecha
+             * Format: date
+             */
+            date?: string;
+            slot_id?: number | null;
+            /** Format: time */
+            eaten_at?: string | null;
+            description?: string;
+            /** Format: binary */
+            photo?: string | null;
+            rating?: components["schemas"]["NutritionRatingEnum"] | components["schemas"]["BlankEnum"];
+            feeling?: components["schemas"]["NutritionFeelingEnum"] | components["schemas"]["BlankEnum"];
+            with_fruit?: boolean | null;
+            with_vegetables?: boolean | null;
+            note?: string;
+            items?: components["schemas"]["NutritionMealItemWriteRequest"][];
+        };
+        /** @description El perfil. `exists` dice si ya se hizo el onboarding. */
+        PatchedNutritionProfileRequest: {
+            goal?: components["schemas"]["NutritionGoalEnum"] | components["schemas"]["BlankEnum"];
+            diet?: components["schemas"]["NutritionDietEnum"] | components["schemas"]["BlankEnum"];
+            /** Otro tipo de alimentación */
+            diet_other?: string;
+            /** Mostrar información nutricional */
+            show_nutrition_info?: boolean;
+            /** Mostrar en Mi día */
+            show_in_my_day?: boolean;
+            /** Registrar el agua */
+            water_enabled?: boolean;
+            water_goal_ml?: number;
+            /** Unidad del agua */
+            water_unit?: components["schemas"]["NutritionWaterUnitEnum"];
+            glass_ml?: number;
+            /** @description Hay consentimiento para la IA. `true` lo da (`ai_consent_at = ahora`), `false` lo revoca. */
+            ai_enabled?: boolean;
+        };
+        /** @description Una comida del día. `label` es el nombre que se muestra (traducido si `name` está vacío). */
+        PatchedNutritionSlotRequest: {
+            code?: components["schemas"]["NutritionSlotCodeEnum"];
+            /** Nombre */
+            name?: string;
+            /** Activa */
+            enabled?: boolean;
+            /**
+             * Orden
+             * Format: int64
+             */
+            order?: number;
+            /** Format: time */
+            usual_time?: string | null;
         };
         /**
          * @description `GET`/`PATCH /api/organizations/{id}/`.
@@ -15102,6 +16613,39 @@ export interface components {
             title?: string;
             done?: boolean;
             order?: number;
+        };
+        /**
+         * @description Crear (`title` obligatorio) o cambiar un hábito.
+         *
+         *     `days`: días de la semana en que toca, de 0 (lunes) a 6 (domingo); por
+         *     defecto, todos. `icon`: un código corto (`a-z`, cifras, `_`, `-`).
+         *     `archived` archiva o recupera el hábito.
+         */
+        PatchedWellbeingHabitWriteRequest: {
+            title?: string;
+            icon?: string;
+            days?: number[];
+            order?: number;
+            archived?: boolean;
+        };
+        /** @description Preferencias de Mi día. `exists` dice si ya se guardaron alguna vez. */
+        PatchedWellbeingProfileRequest: {
+            /** @description Tarjetas que se ven, entre training, nutrition, water, steps, sleep, habits. */
+            visible_tiles?: components["schemas"]["WellbeingVisibleTileEnum"][];
+            steps_goal?: number;
+            sleep_goal_minutes?: number;
+        };
+        /** @description Escritura de una noche (`PUT`/`PATCH sleep/{date}/`, la fecha va en la ruta). */
+        PatchedWellbeingSleepWriteRequest: {
+            /** Format: time */
+            bed_time?: string;
+            /** Format: time */
+            wake_time?: string;
+            /** @description Nunca más que el tiempo en cama. */
+            asleep_minutes?: number | null;
+            quality?: components["schemas"]["WellbeingSleepQualityEnum"] | components["schemas"]["BlankEnum"];
+            source?: components["schemas"]["WellbeingSleepSourceEnum"];
+            note?: string;
         };
         /** @description Alta y edición. `system: true` (solo al crear) = plantilla de Popyplan. */
         PatchedWorkoutTemplateWriteRequest: {
@@ -15481,6 +17025,8 @@ export interface components {
             readonly surface: components["schemas"]["SurfaceEnum"];
             readonly content: string;
             readonly images: string[];
+            readonly images_thumb: (string | null)[];
+            readonly images_medium: (string | null)[];
             /** Format: uri */
             readonly video_url: string | null;
             readonly workout_card: unknown;
@@ -16272,6 +17818,14 @@ export interface components {
             people: number | null;
             suppressed: boolean;
         };
+        /**
+         * @description * `20_30` - 20-30 min
+         *     * `30_45` - 30-45 min
+         *     * `45_60` - 45-60 min
+         *     * `60_plus` - More than 60 min
+         * @enum {string}
+         */
+        SessionDurationEnum: "20_30" | "30_45" | "45_60" | "60_plus";
         SharedCheckin: {
             /** Format: date */
             date: string;
@@ -16343,6 +17897,7 @@ export interface components {
             disciplines: components["schemas"]["DisciplineRef"][];
             gym: string;
             level: string;
+            session_duration: string;
             goals: string[];
             usual_days: number[];
             /** Format: date-time */
@@ -16355,6 +17910,7 @@ export interface components {
             gym?: string;
             /** Nivel */
             level?: components["schemas"]["LevelCaaEnum"] | components["schemas"]["BlankEnum"];
+            session_duration?: components["schemas"]["SessionDurationEnum"] | components["schemas"]["BlankEnum"];
             goals?: components["schemas"]["GoalsEnum"][];
             usual_days?: number[];
         };
@@ -17373,6 +18929,10 @@ export interface components {
             content: string;
             /** Format: uri */
             image?: string | null;
+            /** Format: uri */
+            readonly image_thumb: string | null;
+            /** Format: uri */
+            readonly image_medium: string | null;
             readonly images: components["schemas"]["CommunityPostImage"][];
             readonly video_url: string | null;
             readonly hashtags: string[];
@@ -17421,6 +18981,201 @@ export interface components {
             title: string;
             /** @description YYYY-Www; default: this week. */
             week?: string;
+        };
+        WellbeingCheck: {
+            habit_id: number;
+            /** Format: date */
+            date: string;
+            done: boolean;
+        };
+        WellbeingDay: {
+            /** Format: date */
+            date: string;
+            is_future: boolean;
+            profile: components["schemas"]["WellbeingProfile"];
+            sleep: components["schemas"]["WellbeingSleep"] | null;
+            mood: components["schemas"]["WellbeingMood"] | null;
+            habits: components["schemas"]["WellbeingDayHabit"][];
+            habits_done: number;
+            habits_expected: number;
+        };
+        WellbeingDayHabit: {
+            id: number;
+            title: string;
+            icon: string;
+            days: number[];
+            order: number;
+            done: boolean;
+        };
+        WellbeingHabit: {
+            readonly id: number;
+            /** Título */
+            readonly title: string;
+            /** Icono */
+            readonly icon: string;
+            /** Días */
+            readonly days: unknown;
+            /** Orden */
+            readonly order: number;
+            readonly archived: boolean;
+            /**
+             * Archivado el
+             * Format: date-time
+             */
+            readonly archived_at: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description Crear (`title` obligatorio) o cambiar un hábito.
+         *
+         *     `days`: días de la semana en que toca, de 0 (lunes) a 6 (domingo); por
+         *     defecto, todos. `icon`: un código corto (`a-z`, cifras, `_`, `-`).
+         *     `archived` archiva o recupera el hábito.
+         */
+        WellbeingHabitWriteRequest: {
+            title: string;
+            icon?: string;
+            days?: number[];
+            order?: number;
+            archived?: boolean;
+        };
+        WellbeingMood: {
+            /**
+             * Fecha
+             * Format: date
+             */
+            readonly date: string;
+            /** Ánimo */
+            readonly mood: components["schemas"]["WellbeingMoodEnum"];
+            /** Nota */
+            readonly note: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        /**
+         * @description * `good` - Bien
+         *     * `ok` - Regular
+         *     * `hard` - Difícil
+         * @enum {string}
+         */
+        WellbeingMoodEnum: "good" | "ok" | "hard";
+        WellbeingMoodWriteRequest: {
+            mood: components["schemas"]["WellbeingMoodEnum"];
+            note?: string;
+        };
+        /** @description Preferencias de Mi día. `exists` dice si ya se guardaron alguna vez. */
+        WellbeingProfile: {
+            readonly exists: boolean;
+            /** @description Tarjetas que se ven, entre training, nutrition, water, steps, sleep, habits. */
+            visible_tiles?: components["schemas"]["WellbeingVisibleTileEnum"][];
+            steps_goal?: number;
+            sleep_goal_minutes?: number;
+            /** Format: date-time */
+            readonly updated_at: string | null;
+        };
+        /** @description Una noche. `date` es el día en que la persona se levanta. */
+        WellbeingSleep: {
+            readonly id: number;
+            /**
+             * Fecha
+             * Format: date
+             */
+            readonly date: string;
+            /** Format: time */
+            readonly bed_time: string;
+            /** Format: time */
+            readonly wake_time: string;
+            /** @description Minutos dormidos si hay (`asleep_minutes`); si no, el tiempo en cama. */
+            readonly duration_minutes: number;
+            readonly in_bed_minutes: number;
+            /** Asleep (minutes) */
+            readonly asleep_minutes: number | null;
+            /** Calidad */
+            readonly quality: components["schemas"]["WellbeingSleepQualityEnum"];
+            /** Origen */
+            readonly source: components["schemas"]["WellbeingSleepSourceEnum"];
+            /** Nota */
+            readonly note: string;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        /** @description `POST sleep/`: lo mismo, con la fecha en el cuerpo. */
+        WellbeingSleepCreateRequest: {
+            /** Format: time */
+            bed_time: string;
+            /** Format: time */
+            wake_time: string;
+            /** @description Nunca más que el tiempo en cama. */
+            asleep_minutes?: number | null;
+            quality?: components["schemas"]["WellbeingSleepQualityEnum"] | components["schemas"]["BlankEnum"];
+            source?: components["schemas"]["WellbeingSleepSourceEnum"];
+            note?: string;
+            /** Format: date */
+            date: string;
+        };
+        /**
+         * @description * `good` - Bien
+         *     * `ok` - Regular
+         *     * `bad` - Mala
+         * @enum {string}
+         */
+        WellbeingSleepQualityEnum: "good" | "ok" | "bad";
+        /**
+         * @description * `manual` - Manual
+         *     * `health` - App de Salud
+         * @enum {string}
+         */
+        WellbeingSleepSourceEnum: "manual" | "health";
+        /** @description Escritura de una noche (`PUT`/`PATCH sleep/{date}/`, la fecha va en la ruta). */
+        WellbeingSleepWriteRequest: {
+            /** Format: time */
+            bed_time: string;
+            /** Format: time */
+            wake_time: string;
+            /** @description Nunca más que el tiempo en cama. */
+            asleep_minutes?: number | null;
+            quality?: components["schemas"]["WellbeingSleepQualityEnum"] | components["schemas"]["BlankEnum"];
+            source?: components["schemas"]["WellbeingSleepSourceEnum"];
+            note?: string;
+        };
+        /**
+         * @description * `training` - training
+         *     * `nutrition` - nutrition
+         *     * `water` - water
+         *     * `steps` - steps
+         *     * `sleep` - sleep
+         *     * `habits` - habits
+         * @enum {string}
+         */
+        WellbeingVisibleTileEnum: "training" | "nutrition" | "water" | "steps" | "sleep" | "habits";
+        WellbeingWeek: {
+            week: string;
+            /** Format: date */
+            starts_on: string;
+            /** Format: date */
+            ends_on: string;
+            days: components["schemas"]["WellbeingWeekDay"][];
+            summary: components["schemas"]["WellbeingWeekSummary"];
+        };
+        WellbeingWeekDay: {
+            /** Format: date */
+            date: string;
+            is_future: boolean;
+            sleep_logged: boolean;
+            sleep_minutes: number | null;
+            mood: (components["schemas"]["WellbeingMoodEnum"] | components["schemas"]["NullEnum"]) | null;
+            habits_done: number;
+            habits_expected: number;
+        };
+        WellbeingWeekSummary: {
+            sleep_days: number;
+            sleep_avg_minutes: number | null;
+            habits_done: number;
+            habits_expected: number;
+            mood_days: number;
         };
         WorkoutDetail: {
             readonly id: number;
@@ -24676,6 +26431,28 @@ export interface operations {
             };
         };
     };
+    events_balances_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un Cadena UUID que identifique este Actividad. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpenseBalances"];
+                };
+            };
+        };
+    };
     events_cancel_create: {
         parameters: {
             query?: never;
@@ -24766,6 +26543,112 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EventDetail"];
+                };
+            };
+        };
+    };
+    events_expenses_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Un Cadena UUID que identifique este Actividad. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Expense"][];
+                };
+            };
+        };
+    };
+    events_expenses_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un Cadena UUID que identifique este Actividad. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExpenseWriteRequest"];
+                "multipart/form-data": components["schemas"]["ExpenseWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ExpenseWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Expense"];
+                };
+            };
+        };
+    };
+    events_expenses_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                expense_id: string;
+                /** @description Un Cadena UUID que identifique este Actividad. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    events_expenses_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                expense_id: string;
+                /** @description Un Cadena UUID que identifique este Actividad. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedExpenseWriteRequest"];
+                "multipart/form-data": components["schemas"]["PatchedExpenseWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedExpenseWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Expense"];
                 };
             };
         };
@@ -24884,6 +26767,56 @@ export interface operations {
             };
         };
     };
+    events_settlements_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un Cadena UUID que identifique este Actividad. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExpenseSettlementWriteRequest"];
+                "multipart/form-data": components["schemas"]["ExpenseSettlementWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ExpenseSettlementWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpenseSettlement"];
+                };
+            };
+        };
+    };
+    events_settlements_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un Cadena UUID que identifique este Actividad. */
+                id: string;
+                settlement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     events_unregister_create: {
         parameters: {
             query?: never;
@@ -24941,7 +26874,10 @@ export interface operations {
     };
     events_mine_retrieve: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description `1`/`true`: solo lo que aún cuenta como próximo. Deja fuera las canceladas, las finalizadas y las que ya terminaron (`ends_at` pasado; sin `ends_at`, las que empezaron antes del inicio de hoy en hora local). Sin el parámetro, la lista completa. */
+                upcoming?: boolean;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -26444,6 +28380,694 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["NotificationErrorResponse"];
+                };
+            };
+        };
+    };
+    nutrition_days_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                day: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionDay"];
+                };
+            };
+        };
+    };
+    nutrition_foods_list: {
+        parameters: {
+            query?: {
+                /** @description Categoría del alimento. */
+                category?: string;
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Busca en el nombre (es, eu, ca). */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedNutritionFoodList"];
+                };
+            };
+        };
+    };
+    nutrition_foods_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Categoría del alimento. */
+                category?: string;
+                /** @description Busca en el nombre (es, eu, ca). */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este Alimento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionFood"];
+                };
+            };
+        };
+    };
+    nutrition_hydration_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                day: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionHydration"];
+                };
+            };
+        };
+    };
+    nutrition_hydration_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                day: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NutritionHydrationWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["NutritionHydrationWriteRequest"];
+                "multipart/form-data": components["schemas"]["NutritionHydrationWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionHydration"];
+                };
+            };
+        };
+    };
+    nutrition_meals_list: {
+        parameters: {
+            query?: {
+                /** @description Solo ese día (de la hora a la última). Sin él, las más recientes primero. */
+                date?: string;
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedNutritionMealList"];
+                };
+            };
+        };
+    };
+    nutrition_meals_create: {
+        parameters: {
+            query?: {
+                /** @description Solo ese día (de la hora a la última). Sin él, las más recientes primero. */
+                date?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NutritionMealWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["NutritionMealWriteRequest"];
+                "multipart/form-data": components["schemas"]["NutritionMealWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionMeal"];
+                };
+            };
+        };
+    };
+    nutrition_meals_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Solo ese día (de la hora a la última). Sin él, las más recientes primero. */
+                date?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este Comida. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionMeal"];
+                };
+            };
+        };
+    };
+    nutrition_meals_update: {
+        parameters: {
+            query?: {
+                /** @description Solo ese día (de la hora a la última). Sin él, las más recientes primero. */
+                date?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este Comida. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NutritionMealWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["NutritionMealWriteRequest"];
+                "multipart/form-data": components["schemas"]["NutritionMealWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionMeal"];
+                };
+            };
+        };
+    };
+    nutrition_meals_destroy: {
+        parameters: {
+            query?: {
+                /** @description Solo ese día (de la hora a la última). Sin él, las más recientes primero. */
+                date?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este Comida. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    nutrition_meals_partial_update: {
+        parameters: {
+            query?: {
+                /** @description Solo ese día (de la hora a la última). Sin él, las más recientes primero. */
+                date?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este Comida. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedNutritionMealWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedNutritionMealWriteRequest"];
+                "multipart/form-data": components["schemas"]["PatchedNutritionMealWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionMeal"];
+                };
+            };
+        };
+    };
+    nutrition_meals_photo_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Solo ese día (de la hora a la última). Sin él, las más recientes primero. */
+                date?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este Comida. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/jpeg": string;
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    nutrition_meals_estimate_create: {
+        parameters: {
+            query?: {
+                /** @description Solo ese día (de la hora a la última). Sin él, las más recientes primero. */
+                date?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["NutritionEstimateRequestRequest"];
+                "multipart/form-data": components["schemas"]["NutritionEstimateRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["NutritionEstimateRequestRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionEstimate"];
+                };
+            };
+        };
+    };
+    nutrition_profile_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionProfile"];
+                };
+            };
+        };
+    };
+    nutrition_profile_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["NutritionProfileRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["NutritionProfileRequest"];
+                "multipart/form-data": components["schemas"]["NutritionProfileRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionProfile"];
+                };
+            };
+        };
+    };
+    nutrition_profile_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedNutritionProfileRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedNutritionProfileRequest"];
+                "multipart/form-data": components["schemas"]["PatchedNutritionProfileRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionProfile"];
+                };
+            };
+        };
+    };
+    nutrition_progress_retrieve: {
+        parameters: {
+            query?: {
+                /** @description 4, 8 o 12 (por defecto 4). */
+                weeks?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionProgress"];
+                };
+            };
+        };
+    };
+    nutrition_restrictions_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionRestriction"][];
+                };
+            };
+        };
+    };
+    nutrition_restrictions_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NutritionRestrictionRequest"][];
+                "application/x-www-form-urlencoded": components["schemas"]["NutritionRestrictionRequest"][];
+                "multipart/form-data": components["schemas"]["NutritionRestrictionRequest"][];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionRestriction"][];
+                };
+            };
+        };
+    };
+    nutrition_slots_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionSlot"][];
+                };
+            };
+        };
+    };
+    nutrition_slots_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["NutritionSlotRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["NutritionSlotRequest"];
+                "multipart/form-data": components["schemas"]["NutritionSlotRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionSlot"];
+                };
+            };
+        };
+    };
+    nutrition_slots_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este Comida del día. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionSlot"];
+                };
+            };
+        };
+    };
+    nutrition_slots_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este Comida del día. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["NutritionSlotRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["NutritionSlotRequest"];
+                "multipart/form-data": components["schemas"]["NutritionSlotRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionSlot"];
+                };
+            };
+        };
+    };
+    nutrition_slots_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este Comida del día. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    nutrition_slots_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este Comida del día. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedNutritionSlotRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedNutritionSlotRequest"];
+                "multipart/form-data": components["schemas"]["PatchedNutritionSlotRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionSlot"];
+                };
+            };
+        };
+    };
+    nutrition_week_retrieve: {
+        parameters: {
+            query?: {
+                /** @description `YYYY-Www`; por defecto, la actual. */
+                week?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionWeek"];
                 };
             };
         };
@@ -36689,6 +39313,575 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    wellbeing_day_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                day: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingDay"];
+                };
+            };
+        };
+    };
+    wellbeing_habits_list: {
+        parameters: {
+            query?: {
+                /** @description `true` incluye también los archivados (por defecto, solo los activos). */
+                include_archived?: boolean;
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingHabit"][];
+                };
+            };
+        };
+    };
+    wellbeing_habits_create: {
+        parameters: {
+            query?: {
+                /** @description `true` incluye también los archivados (por defecto, solo los activos). */
+                include_archived?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WellbeingHabitWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["WellbeingHabitWriteRequest"];
+                "multipart/form-data": components["schemas"]["WellbeingHabitWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingHabit"];
+                };
+            };
+        };
+    };
+    wellbeing_habits_retrieve: {
+        parameters: {
+            query?: {
+                /** @description `true` incluye también los archivados (por defecto, solo los activos). */
+                include_archived?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este Hábito. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingHabit"];
+                };
+            };
+        };
+    };
+    wellbeing_habits_update: {
+        parameters: {
+            query?: {
+                /** @description `true` incluye también los archivados (por defecto, solo los activos). */
+                include_archived?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este Hábito. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WellbeingHabitWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["WellbeingHabitWriteRequest"];
+                "multipart/form-data": components["schemas"]["WellbeingHabitWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingHabit"];
+                };
+            };
+        };
+    };
+    wellbeing_habits_destroy: {
+        parameters: {
+            query?: {
+                /** @description `true` incluye también los archivados (por defecto, solo los activos). */
+                include_archived?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este Hábito. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    wellbeing_habits_partial_update: {
+        parameters: {
+            query?: {
+                /** @description `true` incluye también los archivados (por defecto, solo los activos). */
+                include_archived?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este Hábito. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedWellbeingHabitWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedWellbeingHabitWriteRequest"];
+                "multipart/form-data": components["schemas"]["PatchedWellbeingHabitWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingHabit"];
+                };
+            };
+        };
+    };
+    wellbeing_habits_check_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                day: string;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingCheck"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingCheck"];
+                };
+            };
+        };
+    };
+    wellbeing_habits_check_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                day: string;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    wellbeing_mood_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                day: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingMood"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    wellbeing_mood_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                day: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WellbeingMoodWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["WellbeingMoodWriteRequest"];
+                "multipart/form-data": components["schemas"]["WellbeingMoodWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingMood"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingMood"];
+                };
+            };
+        };
+    };
+    wellbeing_mood_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                day: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    wellbeing_profile_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingProfile"];
+                };
+            };
+        };
+    };
+    wellbeing_profile_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedWellbeingProfileRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedWellbeingProfileRequest"];
+                "multipart/form-data": components["schemas"]["PatchedWellbeingProfileRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingProfile"];
+                };
+            };
+        };
+    };
+    wellbeing_sleep_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedWellbeingSleepList"];
+                };
+            };
+        };
+    };
+    wellbeing_sleep_create: {
+        parameters: {
+            query?: {
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WellbeingSleepCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["WellbeingSleepCreateRequest"];
+                "multipart/form-data": components["schemas"]["WellbeingSleepCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingSleep"];
+                };
+            };
+        };
+    };
+    wellbeing_sleep_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                date: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingSleep"];
+                };
+            };
+        };
+    };
+    wellbeing_sleep_update: {
+        parameters: {
+            query?: {
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                date: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WellbeingSleepWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["WellbeingSleepWriteRequest"];
+                "multipart/form-data": components["schemas"]["WellbeingSleepWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingSleep"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingSleep"];
+                };
+            };
+        };
+    };
+    wellbeing_sleep_destroy: {
+        parameters: {
+            query?: {
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                date: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    wellbeing_sleep_partial_update: {
+        parameters: {
+            query?: {
+                /** @description Desde esta fecha (incluida). */
+                since?: string;
+                /** @description Hasta esta fecha (incluida). */
+                until?: string;
+            };
+            header?: never;
+            path: {
+                date: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedWellbeingSleepWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedWellbeingSleepWriteRequest"];
+                "multipart/form-data": components["schemas"]["PatchedWellbeingSleepWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingSleep"];
+                };
+            };
+        };
+    };
+    wellbeing_week_retrieve: {
+        parameters: {
+            query?: {
+                /** @description `YYYY-Www`; por defecto, la actual. */
+                week?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WellbeingWeek"];
+                };
             };
         };
     };

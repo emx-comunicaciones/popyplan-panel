@@ -4,6 +4,7 @@
  * `../popyplan/docs/schema.yaml`). No reexportamos el fichero generado
  * entero para que cada import documente qué endpoint lo origina.
  */
+import type { StopToApi } from "@/lib/events/activityExtras";
 import type { components } from "./types.generated";
 
 /**
@@ -330,6 +331,21 @@ export interface EventWriteFields {
    * viaja si está presente, también `""` (para quitar el nivel).
    */
   level?: EventLevel;
+  /**
+   * Campos que antes solo ofrecía la app (`lib/events/activityExtras.ts`,
+   * `docs/PANEL.md` §17.6c-e del backend). Al crear solo viajan con valor;
+   * al editar viajan si están presentes, también vacíos (`null`/`""`/`[]`)
+   * para quitarlos. `category` es el id entero del catálogo
+   * (`null` = ninguna u «Otra»); `estimated_cost` la cadena decimal
+   * (`"12.50"`, `null` = gratis). `stops` solo en un viaje: la lista
+   * **sustituye** a la guardada.
+   */
+  category?: number | null;
+  custom_category?: string;
+  estimated_cost?: string | null;
+  min_age?: number | null;
+  max_age?: number | null;
+  stops?: StopToApi[];
 }
 
 /**

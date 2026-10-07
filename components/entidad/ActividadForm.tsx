@@ -21,12 +21,20 @@
  *   excluye a propósito, `lib/api/types.ts::EventUpdateFields`) porque
  *   cambiar el espacio a mitad de camino dejaría dentro a gente que ya
  *   no puede estar.
+ * - Categoría (del catálogo o «Otra», escrita a mano), coste, edades y, en
+ *   un viaje, fechas por días y paradas: lo mismo que ofrece la app
+ *   (petición del propietario, 2026-10-07). Reglas y envío en
+ *   `lib/events/activityExtras.ts`; las paradas, en `ActividadParadas.tsx`.
+ *   Al editar viajan siempre (vacías para quitarlas), y las paradas solo si
+ *   es un viaje.
  */
 import { useEffect, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 
+import { ActividadParadas } from "@/components/entidad/ActividadParadas";
 import { Button } from "@/components/ui/Button";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { useCatalog } from "@/hooks/useCatalogs";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useEntityCommunities } from "@/hooks/useEntityCommunities";
 import { useEvent, type EventErrorKind } from "@/hooks/useEvent";
@@ -37,6 +45,26 @@ import {
 } from "@/hooks/useEventMutations";
 import { useSearchPlaces } from "@/hooks/usePlaces";
 import type { EventAudience, EventDetail, EventLevel } from "@/lib/api/types";
+import {
+  OTHER_CATEGORY,
+  TRAVEL_CATEGORY_TYPE,
+  ageToApi,
+  categoryToApi,
+  costFromApi,
+  costToApi,
+  isoToDateInput,
+  normalizeCustomCategory,
+  stopsFromApi,
+  stopsToApi,
+  tripEndIso,
+  tripStartIso,
+  validateCustomCategory,
+  validateEventAges,
+  validateEventCost,
+  validateStops,
+  validateTripEnd,
+  type StopDraft,
+} from "@/lib/events/activityExtras";
 import { isoToLocalInput, localInputToIso } from "@/lib/events/datetimeLocal";
 import { EVENT_LEVELS, levelLabelKey, toEventLevel } from "@/lib/events/level";
 import {
@@ -152,11 +180,18 @@ function initialSelectedPlace(editing: "new" | EventDetail): SelectedPlace | nul
   };
 }
 
+function initialCategory(editing: "new" | EventDetail): string {
+  if (editing === "new") return "";
+  if (editing.category) return String(editing.category.id);
+  return editing.custom_category ? OTHER_CATEGORY : "";
+}
+
 function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: ActividadFormFieldsProps) {
   const t = useTranslations();
   const createEvent = useCreateEvent(orgId);
   const updateEvent = useUpdateEvent(orgId);
   const communities = useEntityCommunities(orgId);
+  const categories = useCatalog("eventCategories");
 
   const isEditing = editing !== "new";
   const originalStartsAtIso = isEditing ? editing.starts_at : undefined;
@@ -178,6 +213,24 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
   );
   const originalLevel = isEditing ? toEventLevel(editing.level) : "";
   const [level, setLevel] = useState<EventLevel>(originalLevel);
+  const originalCategory = initialCategory(editing);
+  const [category, setCategory] = useState(originalCategory);
+  const [customCategory, setCustomCategory] = useState(isEditing ? editing.custom_category : "");
+  const originalCost = costFromApi(isEditing ? editing.estimated_cost : null);
+  const [hasCost, setHasCost] = useState(originalCost.hasCost);
+  const [cost, setCost] = useState(originalCost.text);
+  const [minAge, setMinAge] = useState(
+    isEditing && editing.min_age !== null ? String(editing.min_age) : "",
+  );
+  const [maxAge, setMaxAge] = useState(
+    isEditing && editing.max_age !== null ? String(editing.max_age) : "",
+  );
+  const wasTrip = isEditing && editing.is_trip;
+  const originalStartDay = wasTrip ? isoToDateInput(editing.starts_at) : "";
+  const originalEndDay = wasTrip ? isoToDateInput(editing.ends_at) : "";
+  const [startDay, setStartDay] = useState(originalStartDay);
+  const [endDay, setEndDay] = useState(originalEndDay);
+  const [stops, setStops] = useState<StopDraft[]>(isEditing ? stopsFromApi(editing.stops) : []);
   const [placeSearch, setPlaceSearch] = useState("");
   const [selectedPlace, setSelectedPlace] = useState<SelectedPlace | null>(
     initialSelectedPlace(editing),
@@ -194,21 +247,75 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
     return () => onPendingChange?.(false);
   }, [isPending, onPendingChange]);
 
-  const startsAtIso = localInputToIso(startsAtLocal);
-  const endsAtIso = localInputToIso(endsAtLocal);
+  // Categorías activas, más la que ya tuviera la actividad aunque se desactivara.
+  const categoryOptions = (categories.data ?? []).filter(
+    (item) => item.isActive || item.id === originalCategory,
+  );
+  const selectedCategory = categoryOptions.find((item) => item.id === category);
+  // Es viaje si la categoría es de viaje; mientras el catálogo carga, lo que
+  // dijo el detalle (si no se ha tocado la categoría).
+  const isTrip = selectedCategory
+    ? selectedCategory.categoryType === TRAVEL_CATEGORY_TYPE
+    : category === originalCategory && wasTrip;
+
+  // Un viaje va por días (00:00 del primero, 23:59:59 del último). Si el
+  // día no se tocó se conserva el instante guardado, para no moverlo por la
+  // zona horaria de quien edita.
+  const startsAtIso = isTrip
+    ? wasTrip && startDay === originalStartDay && originalStartsAtIso
+      ? originalStartsAtIso
+      : tripStartIso(startDay)
+    : localInputToIso(startsAtLocal);
+  const endsAtIso = isTrip
+    ? wasTrip && endDay === originalEndDay && isEditing && editing.ends_at
+      ? editing.ends_at
+      : tripEndIso(endDay)
+    : localInputToIso(endsAtLocal);
 
   const startsAtError = validateEventStartsAt(startsAtIso, originalStartsAtIso);
   const endsAtError = validateEventEndsAt(startsAtIso, endsAtIso);
   const capacityError = validateEventCapacity(capacity);
   const communityError = isEditing ? null : validateEventCommunity(audience, community);
 
+  const customCategoryError = validateCustomCategory(category, customCategory);
+  const costError = validateEventCost(hasCost, cost);
+  const agesError = validateEventAges(minAge, maxAge);
+  const tripEndError = validateTripEnd(isTrip, endDay);
+  const stopsError = isTrip ? validateStops(stops) : null;
+
   const canSubmit =
     title.trim().length > 0 &&
-    startsAtLocal.length > 0 &&
+    (isTrip ? startDay.length > 0 : startsAtLocal.length > 0) &&
     !startsAtError &&
     !endsAtError &&
     !capacityError &&
-    !communityError;
+    !communityError &&
+    !customCategoryError &&
+    !costError &&
+    !agesError &&
+    !tripEndError &&
+    !stopsError;
+
+  function handleCategoryChange(value: string) {
+    setCategory(value);
+    const item = categoryOptions.find((option) => option.id === value);
+    // Al pasar a viaje, los días salen de las fechas ya escritas.
+    if (item?.categoryType === TRAVEL_CATEGORY_TYPE && !startDay) {
+      setStartDay(startsAtLocal.slice(0, 10));
+      setEndDay(endsAtLocal.slice(0, 10));
+    }
+  }
+
+  /** Lo que viaja igual al crear y al editar (al crear, `toCreateEventBody` quita lo vacío). */
+  function extraFields() {
+    return {
+      category: categoryToApi(category),
+      custom_category: category ? normalizeCustomCategory(customCategory) : "",
+      estimated_cost: costToApi(hasCost, cost),
+      min_age: ageToApi(minAge),
+      max_age: ageToApi(maxAge),
+    };
+  }
 
   function placeOptions(): SelectedPlace[] {
     const fromSearch: SelectedPlace[] = (places.data ?? []).map((place) => ({
@@ -259,6 +366,8 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
           latitude: selectedPlace?.latitude ?? null,
           longitude: selectedPlace?.longitude ?? null,
           level,
+          ...extraFields(),
+          ...(isTrip ? { stops: stopsToApi(stops) } : {}),
         },
         { onSuccess: () => onDone(startsAtIso) },
       );
@@ -272,7 +381,10 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
       capacity: capacity.trim() ? Number(capacity) : null,
       latitude: selectedPlace?.latitude ?? null,
       longitude: selectedPlace?.longitude ?? null,
+      ...extraFields(),
     };
+    // Las paradas solo en un viaje: la lista sustituye a la guardada.
+    if (isTrip) fields.stops = stopsToApi(stops);
     // Nunca reenviar `starts_at` si no cambió: el backend lo valida como
     // futuro también al editar (`lib/api/types.ts::EventUpdateFields`).
     // La comparación va **por minuto**: el input no rehidrata los
@@ -318,31 +430,115 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
         />
       </div>
 
+      <div>
+        <label htmlFor="actividad-category" className="mb-1 block text-sm font-medium text-text-form">
+          {t("entidad.actividadForm.categoryLabel")}
+        </label>
+        <select
+          id="actividad-category"
+          value={category}
+          onChange={(event) => handleCategoryChange(event.target.value)}
+          aria-describedby={categories.isError ? "actividad-category-error" : undefined}
+          className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
+        >
+          <option value="">{t("entidad.actividadForm.categoryNone")}</option>
+          {categoryOptions.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.label}
+            </option>
+          ))}
+          <option value={OTHER_CATEGORY}>{t("entidad.actividadForm.categoryOther")}</option>
+        </select>
+        {categories.isError ? (
+          <p id="actividad-category-error" role="alert" className="mt-1 text-xs text-error">
+            {t("entidad.actividadForm.categoriesError")}
+          </p>
+        ) : null}
+      </div>
+
+      {category ? (
+        <div>
+          <label htmlFor="actividad-custom-category" className="mb-1 block text-sm font-medium text-text-form">
+            {t("entidad.actividadForm.customCategoryLabel")}
+          </label>
+          <input
+            id="actividad-custom-category"
+            type="text"
+            value={customCategory}
+            onChange={(event) => setCustomCategory(event.target.value)}
+            placeholder={t("entidad.actividadForm.customCategoryPlaceholder")}
+            aria-describedby="actividad-custom-category-help"
+            className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
+          />
+          <p id="actividad-custom-category-help" className="mt-1 text-xs text-text-secondary">
+            {category === OTHER_CATEGORY
+              ? t("entidad.actividadForm.customCategoryHelpOther")
+              : t("entidad.actividadForm.customCategoryHelpExtra")}
+          </p>
+          {customCategoryError ? (
+            <p role="alert" className="mt-1 text-xs text-error">
+              {t(customCategoryError)}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
       <div className="flex flex-wrap gap-3">
-        <div>
-          <label htmlFor="actividad-starts-at" className="mb-1 block text-sm font-medium text-text-form">
-            {t("entidad.actividadForm.startsAtLabel")}
-          </label>
-          <input
-            id="actividad-starts-at"
-            type="datetime-local"
-            value={startsAtLocal}
-            onChange={(event) => setStartsAtLocal(event.target.value)}
-            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-          />
-        </div>
-        <div>
-          <label htmlFor="actividad-ends-at" className="mb-1 block text-sm font-medium text-text-form">
-            {t("entidad.actividadForm.endsAtLabel")}
-          </label>
-          <input
-            id="actividad-ends-at"
-            type="datetime-local"
-            value={endsAtLocal}
-            onChange={(event) => setEndsAtLocal(event.target.value)}
-            className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
-          />
-        </div>
+        {isTrip ? (
+          <>
+            <div>
+              <label htmlFor="actividad-trip-start" className="mb-1 block text-sm font-medium text-text-form">
+                {t("entidad.actividadForm.tripStartLabel")}
+              </label>
+              <input
+                id="actividad-trip-start"
+                type="date"
+                value={startDay}
+                onChange={(event) => setStartDay(event.target.value)}
+                className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
+              />
+            </div>
+            <div>
+              <label htmlFor="actividad-trip-end" className="mb-1 block text-sm font-medium text-text-form">
+                {t("entidad.actividadForm.tripEndLabel")}
+              </label>
+              <input
+                id="actividad-trip-end"
+                type="date"
+                value={endDay}
+                onChange={(event) => setEndDay(event.target.value)}
+                className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
+              <label htmlFor="actividad-starts-at" className="mb-1 block text-sm font-medium text-text-form">
+                {t("entidad.actividadForm.startsAtLabel")}
+              </label>
+              <input
+                id="actividad-starts-at"
+                type="datetime-local"
+                value={startsAtLocal}
+                onChange={(event) => setStartsAtLocal(event.target.value)}
+                className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
+              />
+            </div>
+            <div>
+              <label htmlFor="actividad-ends-at" className="mb-1 block text-sm font-medium text-text-form">
+                {t("entidad.actividadForm.endsAtLabel")}
+              </label>
+              <input
+                id="actividad-ends-at"
+                type="datetime-local"
+                value={endsAtLocal}
+                onChange={(event) => setEndsAtLocal(event.target.value)}
+                className="rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
+              />
+            </div>
+          </>
+        )}
         <div>
           <label htmlFor="actividad-capacity" className="mb-1 block text-sm font-medium text-text-form">
             {t("entidad.actividadForm.capacityLabel")}
@@ -376,6 +572,74 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
         </select>
       </div>
 
+      {isTrip ? (
+        <p className="text-xs text-text-secondary">{t("entidad.actividadForm.tripDatesHelp")}</p>
+      ) : null}
+
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="flex items-center gap-2 pb-1.5">
+          <input
+            id="actividad-has-cost"
+            type="checkbox"
+            checked={hasCost}
+            onChange={(event) => setHasCost(event.target.checked)}
+          />
+          <label htmlFor="actividad-has-cost" className="text-sm text-text-form">
+            {t("entidad.actividadForm.hasCostLabel")}
+          </label>
+        </div>
+        {hasCost ? (
+          <div>
+            <label htmlFor="actividad-cost" className="mb-1 block text-sm font-medium text-text-form">
+              {t("entidad.actividadForm.costLabel")}
+            </label>
+            <input
+              id="actividad-cost"
+              type="text"
+              inputMode="decimal"
+              value={cost}
+              onChange={(event) => setCost(event.target.value)}
+              className="w-32 rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
+            />
+          </div>
+        ) : null}
+      </div>
+
+      <fieldset>
+        <legend className="mb-1 text-sm font-medium text-text-form">{t("entidad.actividadForm.ageTitle")}</legend>
+        <div className="flex flex-wrap gap-3">
+          <div>
+            <label htmlFor="actividad-min-age" className="mb-1 block text-xs text-text-form">
+              {t("entidad.actividadForm.ageMinLabel")}
+            </label>
+            <input
+              id="actividad-min-age"
+              type="number"
+              min="18"
+              max="120"
+              value={minAge}
+              onChange={(event) => setMinAge(event.target.value)}
+              className="w-24 rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
+            />
+          </div>
+          <div>
+            <label htmlFor="actividad-max-age" className="mb-1 block text-xs text-text-form">
+              {t("entidad.actividadForm.ageMaxLabel")}
+            </label>
+            <input
+              id="actividad-max-age"
+              type="number"
+              min="18"
+              max="120"
+              value={maxAge}
+              onChange={(event) => setMaxAge(event.target.value)}
+              className="w-24 rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
+            />
+          </div>
+        </div>
+        <p className="mt-1 text-xs text-text-secondary">{t("entidad.actividadForm.ageHelp")}</p>
+      </fieldset>
+
       {startsAtError ? (
         <p role="alert" className="text-sm text-error">
           {t(startsAtError)}
@@ -391,6 +655,13 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
           {t(capacityError)}
         </p>
       ) : null}
+      {[tripEndError, costError, agesError].map((error) =>
+        error ? (
+          <p key={error} role="alert" className="text-sm text-error">
+            {t(error)}
+          </p>
+        ) : null,
+      )}
 
       {isEditing ? (
         <div className="text-sm text-text-secondary">
@@ -487,6 +758,17 @@ function ActividadFormFields({ orgId, editing, onDone, onPendingChange }: Activi
           </p>
         ) : null}
       </div>
+
+      {isTrip ? (
+        <div>
+          <ActividadParadas stops={stops} onChange={setStops} />
+          {stopsError ? (
+            <p role="alert" className="mt-1 text-xs text-error">
+              {t(stopsError)}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
 
       <div className="flex gap-2">
         <Button type="submit" disabled={!canSubmit || isPending}>
