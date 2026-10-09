@@ -879,6 +879,7 @@
       "visibilityOpen": "Oberta",
       "visibilityOnRequest": "Amb sol·licitud",
       "visibilityPrivate": "Privada",
+      "visibilityFamiliesHint": "A l'espai de famílies la comunitat és sempre privada: només s'hi entra per invitació de l'entitat.",
       "codeOfConductLabel": "Codi de conducta",
       "createCommunity": "Crear comunitat",
       "peopleCount": "{count} persones",

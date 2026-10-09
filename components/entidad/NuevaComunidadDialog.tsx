@@ -29,6 +29,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { useCreateCommunity, type CreateCommunityErrorKind } from "@/hooks/useCreateCommunity";
 import type { CreateCommunityRequest, EntityCommunityRow, CommunityVisibility } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { VISIBILITY_LABEL_KEY, visibilityOptions } from "@/lib/communities/visibility";
 
 export interface NuevaComunidadDialogProps {
   orgId: number | string;
@@ -58,6 +59,7 @@ export function NuevaComunidadDialog({ orgId, space, open, onClose, onCreated }:
   // formulario: es un valor por defecto, no un candado.
   const defaultVisibility: CommunityVisibility = space === "families" ? "private" : "open";
   const [visibility, setVisibility] = useState<CommunityVisibility>(defaultVisibility);
+  const opciones = visibilityOptions(space);
   const [codeOfConduct, setCodeOfConduct] = useState("");
 
   const canSubmit = name.trim().length > 0;
@@ -150,16 +152,24 @@ export function NuevaComunidadDialog({ orgId, space, open, onClose, onCreated }:
           <select
             id="nueva-comunidad-visibilidad"
             value={visibility}
+            disabled={opciones.length === 1}
+            aria-describedby={space === "families" ? "nueva-comunidad-visibilidad-nota" : undefined}
             onChange={(event) =>
               setVisibility(event.target.value as CommunityVisibility)
             }
             className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
           >
-            <option value="open">{t("entidad.familias.visibilityOpen")}</option>
-            <option value="on_request">{t("entidad.familias.visibilityOnRequest")}</option>
-            <option value="private_listed">{t("entidad.familias.visibilityPrivateListed")}</option>
-            <option value="private">{t("entidad.familias.visibilityPrivate")}</option>
+            {opciones.map((valor) => (
+              <option key={valor} value={valor}>
+                {t(VISIBILITY_LABEL_KEY[valor])}
+              </option>
+            ))}
           </select>
+          {space === "families" ? (
+            <p id="nueva-comunidad-visibilidad-nota" className="mt-1 text-xs text-text-secondary">
+              {t("entidad.familias.visibilityFamiliesHint")}
+            </p>
+          ) : null}
         </div>
         <div>
           <label htmlFor="nueva-comunidad-codigo" className="mb-1 block text-sm font-medium text-text-form">

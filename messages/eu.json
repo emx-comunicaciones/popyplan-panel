@@ -879,6 +879,7 @@
       "visibilityOpen": "Irekia",
       "visibilityOnRequest": "Eskaera bidez",
       "visibilityPrivate": "Pribatua",
+      "visibilityFamiliesHint": "Familien gunean komunitatea pribatua da beti: erakundearen gonbidapenez bakarrik sartzen da.",
       "codeOfConductLabel": "Jokabide-kodea",
       "createCommunity": "Komunitatea sortu",
       "peopleCount": "{count} pertsona",
