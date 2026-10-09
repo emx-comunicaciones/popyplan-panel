@@ -879,6 +879,7 @@
       "visibilityOpen": "Open",
       "visibilityOnRequest": "By request",
       "visibilityPrivate": "Private",
+      "visibilityFamiliesHint": "In the families space the community is always private: people only join by invitation from the entity.",
       "codeOfConductLabel": "Code of conduct",
       "createCommunity": "Create community",
       "peopleCount": "{count} people",

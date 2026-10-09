@@ -38,6 +38,7 @@ import { useCommunity } from "@/hooks/useCommunity";
 import { useUpdateCommunity, type UpdateCommunityErrorKind } from "@/hooks/useUpdateCommunity";
 import type { CommunityDetail, EntityCommunityRow, CommunityVisibility } from "@/lib/api/types";
 import { errorKindText } from "@/lib/i18n/errorKindText";
+import { VISIBILITY_LABEL_KEY, visibilityOptions } from "@/lib/communities/visibility";
 
 export interface EditarComunidadDialogProps {
   orgId: number | string;
@@ -85,6 +86,7 @@ function EditarComunidadForm({
   const [name, setName] = useState(initial.name);
   const [description, setDescription] = useState(initial.description);
   const [visibility, setVisibility] = useState<CommunityVisibility>(initial.visibility);
+  const opciones = visibilityOptions(space, initial.visibility);
   const [codeOfConduct, setCodeOfConduct] = useState(initial.codeOfConduct);
 
   useEffect(() => {
@@ -172,16 +174,24 @@ function EditarComunidadForm({
         <select
           id="editar-comunidad-visibilidad"
           value={visibility}
+          disabled={opciones.length === 1}
+          aria-describedby={space === "families" ? "editar-comunidad-visibilidad-nota" : undefined}
           onChange={(event) =>
             setVisibility(event.target.value as CommunityVisibility)
           }
           className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus-visible:outline-primary-700"
         >
-          <option value="open">{t("entidad.familias.visibilityOpen")}</option>
-          <option value="on_request">{t("entidad.familias.visibilityOnRequest")}</option>
-          <option value="private_listed">{t("entidad.familias.visibilityPrivateListed")}</option>
-          <option value="private">{t("entidad.familias.visibilityPrivate")}</option>
+          {opciones.map((valor) => (
+            <option key={valor} value={valor}>
+              {t(VISIBILITY_LABEL_KEY[valor])}
+            </option>
+          ))}
         </select>
+        {space === "families" ? (
+          <p id="editar-comunidad-visibilidad-nota" className="mt-1 text-xs text-text-secondary">
+            {t("entidad.familias.visibilityFamiliesHint")}
+          </p>
+        ) : null}
       </div>
       <div>
         <label htmlFor="editar-comunidad-codigo" className="mb-1 block text-sm font-medium text-text-form">

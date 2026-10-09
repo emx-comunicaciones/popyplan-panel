@@ -92,10 +92,8 @@ describe("NuevaComunidadDialog", () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it("space:'families' vuelve a «Privada» (no a «Abierta») al limpiar el formulario tras crear", async () => {
-    const mutate = vi.fn((_input, options?: { onSuccess?: (community: { id: string }) => void }) => {
-      options?.onSuccess?.({ id: "fam-1" });
-    });
+  it("space:'families' solo ofrece «Privada» y lo explica (decisión del 01-10: se entra por invitación)", async () => {
+    const mutate = vi.fn();
     useCreateCommunityMock.mockReturnValue(idleMutation({ mutate }));
 
     const user = userEvent.setup();
@@ -103,14 +101,21 @@ describe("NuevaComunidadDialog", () => {
 
     const visibility = screen.getByLabelText("Visibilidad");
     expect(visibility).toHaveValue("private");
-    await user.selectOptions(visibility, "on_request");
+    expect(visibility).toBeDisabled();
+    expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual(["Privada"]);
+    expect(visibility).toHaveAccessibleDescription(
+      "En el espacio de familias la comunidad es siempre privada: solo se entra por invitación de la entidad.",
+    );
     await user.type(screen.getByLabelText("Nombre"), "Familias");
     await user.click(screen.getByRole("button", { name: "Crear comunidad" }));
+    expect(mutate).toHaveBeenCalledWith(expect.objectContaining({ visibility: "private" }), expect.anything());
+  });
 
-    expect(mutate).toHaveBeenCalledWith(expect.objectContaining({ visibility: "on_request" }), expect.anything());
-    // El diálogo sigue montado (el padre controla `open`): el formulario
-    // limpio vuelve al valor por defecto del espacio de familias.
-    expect(screen.getByLabelText("Visibilidad")).toHaveValue("private");
+  it("space:'members' sigue ofreciendo las cuatro visibilidades", () => {
+    useCreateCommunityMock.mockReturnValue(idleMutation());
+    render(<NuevaComunidadDialog orgId={7} space="members" open onClose={vi.fn()} />);
+    expect(screen.getByLabelText("Visibilidad")).toBeEnabled();
+    expect(screen.getAllByRole("option")).toHaveLength(4);
   });
 
   it("con un error 400 sin detalle, pinta el mensaje genérico de creación de comunidad", () => {

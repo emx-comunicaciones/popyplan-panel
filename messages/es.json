@@ -879,6 +879,7 @@
       "visibilityOpen": "Abierta",
       "visibilityOnRequest": "Con solicitud",
       "visibilityPrivate": "Privada",
+      "visibilityFamiliesHint": "En el espacio de familias la comunidad es siempre privada: solo se entra por invitación de la entidad.",
       "codeOfConductLabel": "Código de conducta",
       "createCommunity": "Crear comunidad",
       "peopleCount": "{count} personas",

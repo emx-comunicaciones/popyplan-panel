@@ -87,6 +87,47 @@ describe("EditarComunidadDialog", () => {
     expect(screen.getByLabelText("Código de conducta")).toHaveValue("Sé puntual");
   });
 
+  it("una comunidad de familias antigua y abierta solo se puede pasar a «Privada»", () => {
+    useCommunityMock.mockReturnValue({
+      data: buildCommunityDetail({ name: "Familias", visibility: "open" }),
+      isError: false,
+      error: null,
+    });
+    useUpdateCommunityMock.mockReturnValue(idleMutation());
+
+    render(
+      <EditarComunidadDialog
+        orgId={7}
+        community={buildEntityCommunityRow({ id: "c1", space: "families" })}
+        onClose={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByLabelText("Visibilidad")).toHaveValue("open");
+    expect(screen.getAllByRole("option").map((o) => o.getAttribute("value"))).toEqual(["open", "private"]);
+    expect(screen.getByText(/siempre privada: solo se entra por invitación/)).toBeInTheDocument();
+  });
+
+  it("una comunidad de familias privada no deja cambiar la visibilidad", () => {
+    useCommunityMock.mockReturnValue({
+      data: buildCommunityDetail({ name: "Familias", visibility: "private" }),
+      isError: false,
+      error: null,
+    });
+    useUpdateCommunityMock.mockReturnValue(idleMutation());
+
+    render(
+      <EditarComunidadDialog
+        orgId={7}
+        community={buildEntityCommunityRow({ id: "c1", space: "families" })}
+        onClose={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByLabelText("Visibilidad")).toBeDisabled();
+    expect(screen.getAllByRole("option").map((o) => o.getAttribute("value"))).toEqual(["private"]);
+  });
+
   it("«Guardar cambios» está deshabilitado hasta que algo cambia", async () => {
     useCommunityMock.mockReturnValue({
       data: buildCommunityDetail({ name: "Corredores", description: "", code_of_conduct: "" }),

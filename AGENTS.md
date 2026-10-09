@@ -156,7 +156,9 @@ entidades normales, `/elegir-entidad`.
   nadie; banner literal «Las comunidades de familias están separadas de
   las de miembros; nadie declara ser familiar de nadie.». El espacio
   (`space`) de una comunidad nunca se edita tras crearla; el espacio de
-  familias nace `private`. La audiencia «Familias» de Comunicaciones/
+  familias nace `private` y nunca se abre (`lib/communities/visibility.ts`:
+  solo se ofrece «Privada», más la actual si una antigua estaba abierta;
+  el backend da 400 a otra). La audiencia «Familias» de Comunicaciones/
   Biblioteca solo se habilita si existe una comunidad `space === 'families'`.
 - **Red de apoyo**: el panel solo lee. La sección «Red de apoyo» de la
   ficha solo se monta (y solo se pide) para `role === 'referente'`; con
