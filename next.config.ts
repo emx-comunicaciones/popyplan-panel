@@ -24,8 +24,19 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
  * nonce es trabajo aparte).
  */
 const nextConfig: NextConfig = {
+  // Plan de rendimiento 2026-10-07 (2.10): AVIF antes que WebP para quien lo
+  // admite, y una semana de caché de las imágenes optimizadas (por defecto,
+  // 60 s: cada minuto se volvían a pedir y a recodificar). Las subidas del
+  // backend llevan nombre propio, así que una foto nueva nunca hereda la
+  // caché de la anterior. `recharts` solo se carga en dos gráficas:
+  // `optimizePackageImports` evita meter el paquete entero en su bundle.
   images: {
     remotePatterns: imageRemotePatterns(),
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 7 * 24 * 60 * 60,
+  },
+  experimental: {
+    optimizePackageImports: ["recharts"],
   },
   async headers() {
     return [

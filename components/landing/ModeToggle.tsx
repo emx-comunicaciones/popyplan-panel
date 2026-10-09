@@ -120,6 +120,7 @@ export function ModeToggle() {
               alt=""
               width={880}
               height={1561}
+              sizes="(min-width: 1024px) 280px, (min-width: 768px) 230px, 180px"
               className="z-0 hidden w-[180px] translate-y-8 sm:block md:w-[230px] lg:w-[280px] lg:translate-y-12"
             />
             <Image
@@ -127,6 +128,7 @@ export function ModeToggle() {
               alt={t("mockupAlt")}
               width={880}
               height={1561}
+              sizes="(min-width: 1024px) 360px, (min-width: 768px) 300px, 230px"
               className="relative z-10 -mx-8 w-[210px] sm:-mx-10 sm:w-[230px] md:-mx-16 md:w-[300px] lg:-mx-24 lg:w-[360px]"
             />
             <Image
@@ -134,6 +136,7 @@ export function ModeToggle() {
               alt=""
               width={880}
               height={1561}
+              sizes="(min-width: 1024px) 280px, (min-width: 768px) 230px, 180px"
               className="z-0 hidden w-[180px] translate-y-8 sm:block md:w-[230px] lg:w-[280px] lg:translate-y-12"
             />
           </div>

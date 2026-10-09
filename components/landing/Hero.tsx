@@ -37,6 +37,7 @@ export function Hero() {
         alt=""
         width={1300}
         height={770}
+        sizes="100vw"
         priority
         className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-40 mix-blend-lighten"
       />
@@ -60,6 +61,7 @@ export function Hero() {
               alt={t("mockupAlt")}
               width={880}
               height={1561}
+              sizes="(min-width: 1024px) 340px, 260px"
               priority
               className="relative z-10 w-full drop-shadow-2xl"
             />
@@ -68,6 +70,7 @@ export function Hero() {
               alt=""
               width={240}
               height={360}
+              sizes="140px"
               className="absolute left-[68%] top-[1%] z-20 hidden w-[31%] rounded-2xl object-cover shadow-xl lg:block"
             />
             <Image
@@ -75,6 +78,7 @@ export function Hero() {
               alt=""
               width={240}
               height={360}
+              sizes="140px"
               className="absolute left-[-19%] top-[48%] z-20 hidden w-[40%] rounded-2xl object-cover shadow-xl lg:block"
             />
             <Image
@@ -82,6 +86,7 @@ export function Hero() {
               alt=""
               width={360}
               height={235}
+              sizes="120px"
               className="absolute left-[74%] top-[71%] z-20 hidden w-[33%] rounded-2xl object-cover shadow-xl lg:block"
             />
           </div>
