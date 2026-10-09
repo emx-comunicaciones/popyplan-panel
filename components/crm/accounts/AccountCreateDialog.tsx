@@ -3,7 +3,8 @@
 /**
  * «Nueva entidad»: alta con aviso de duplicados mientras se escribe
  * (nombre, CIF y municipio) y, si el backend responde 409, la lista de lo
- * que ya existe con «Abrir existente» y «Crear igualmente» (`force`).
+ * que ya existe con «Abrir existente» y «Crear igualmente» (`force`). Si la
+ * cuenta ya la lleva otro comercial, solo el motivo, sin forzar.
  */
 import { useRouter } from "next/navigation";
 import { useId, useState, type FormEvent } from "react";
@@ -29,6 +30,9 @@ export function AccountCreateDialog({ isManager, onClose }: { isManager: boolean
   const taxId = useDebouncedValue(draft.tax_id, 300);
   const live = useCrmAccountDuplicates({ name, tax_id: taxId, place: draft.place?.ine ?? null });
   const conflict = create.error?.kind === "duplicado" ? create.error : null;
+  // Sin lista, el 409 es que la cuenta ya la lleva otro comercial (decisión
+  // del 2026-10-01): el backend no deja forzarla, así que no se ofrece.
+  const canForce = Boolean(conflict?.duplicates?.length);
 
   function submit(force: boolean) {
     create.mutate(
@@ -69,9 +73,11 @@ export function AccountCreateDialog({ isManager, onClose }: { isManager: boolean
             {tc("cancel")}
           </Button>
           {conflict ? (
-            <Button type="button" variant="danger" onClick={() => submit(true)} disabled={create.isPending}>
-              {t("create.force")}
-            </Button>
+            canForce ? (
+              <Button type="button" variant="danger" onClick={() => submit(true)} disabled={create.isPending}>
+                {t("create.force")}
+              </Button>
+            ) : null
           ) : (
             <Button type="submit" disabled={!draft.name.trim() || create.isPending}>
               {create.isPending ? t("create.saving") : t("create.submit")}
