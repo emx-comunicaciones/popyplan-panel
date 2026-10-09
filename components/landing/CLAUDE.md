@@ -27,6 +27,12 @@ Detalle e historia: `docs/historial/landing.md`.
 - Imágenes con `next/image` y medidas explícitas; SVG con `unoptimized`.
   Los mockups se sustituyen reemplazando el PNG de `public/landing/` con
   el mismo nombre.
+- **Peso** (plan de rendimiento 2026-10-07): toda `<Image>` lleva `sizes` con
+  el ancho real al que se pinta (sin él, Next sirve 1x/2x del `width`
+  declarado: 880 y 1920 px para un móvil de 340). Un PNG nuevo se recomprime
+  antes de subirlo (con `sharp`, ya instalado: `.png({ palette: true,
+  quality: 85, effort: 10 })`, mismas medidas y transparencia); la textura
+  del banner, sin transparencia, va en JPEG.
 - Textos en `landing.*` de los cuatro catálogos; el año del copyright va
   como cadena. Enlaces de tienda y legales en `lib/config/site.ts`.
 - El pie no usa `components/layout/Footer.tsx`: un cambio en el pie del

@@ -25,6 +25,7 @@ import { ApiError } from "@/lib/api/client";
 import {
   CATALOG_CONFIG,
   CATALOG_QUERY_KEY,
+  CATALOG_STALE_TIME_MS,
   MAX_PAGES,
   useCatalog,
   useDeleteCatalogItem,
@@ -87,6 +88,19 @@ describe("useCatalog", () => {
         isActive: false,
       },
     ]);
+  });
+
+  it("volver a una pantalla con el mismo catálogo no lo pide otra vez (plan de rendimiento 2.9)", async () => {
+    freshClient();
+    apiFetchMock.mockResolvedValue([{ id: 1, code: "es", label: "Español", order: 1, is_active: true }]);
+    const primera = renderHook(() => useCatalog("languages"), { wrapper });
+    await waitFor(() => expect(primera.result.current.isSuccess).toBe(true));
+    primera.unmount();
+    const segunda = renderHook(() => useCatalog("languages"), { wrapper });
+    expect(segunda.result.current.data).toHaveLength(1);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(apiFetchMock).toHaveBeenCalledTimes(1);
+    expect(CATALOG_STALE_TIME_MS).toBe(5 * 60_000);
   });
 
   it("aficiones y subcategorías de comunidad: padre desde `category`", async () => {

@@ -266,6 +266,14 @@ async function fetchRows(config: CatalogConfig): Promise<RawRow[]> {
 
 export const CATALOG_QUERY_KEY = "panel-catalog";
 
+/**
+ * Un nomenclador apenas cambia y lo leen varios formularios (categorías de
+ * actividad, idiomas…): cinco minutos sin volver a pedirlo al cambiar de
+ * pantalla (plan de rendimiento 2026-10-07, 2.9). Guardar o borrar uno
+ * invalida todo el prefijo, así que el cambio propio se ve al momento.
+ */
+export const CATALOG_STALE_TIME_MS = 5 * 60_000;
+
 export function useCatalog(key: CatalogKey | null): UseQueryResult<CatalogItem[], CatalogsError> {
   return useQuery<CatalogItem[], CatalogsError>({
     queryKey: [CATALOG_QUERY_KEY, key],
@@ -284,6 +292,7 @@ export function useCatalog(key: CatalogKey | null): UseQueryResult<CatalogItem[]
       }
     },
     enabled: key !== null,
+    staleTime: CATALOG_STALE_TIME_MS,
   });
 }
 

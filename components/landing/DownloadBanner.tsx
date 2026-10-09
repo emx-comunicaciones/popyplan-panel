@@ -58,10 +58,11 @@ export function DownloadBanner() {
           <div className="absolute inset-0 overflow-hidden rounded-[32px]">
             <div className="absolute inset-0 bg-gradient-to-br from-primary-600 to-primary-700" />
             <Image
-              src="/landing/banner-texture.png"
+              src="/landing/banner-texture.jpg"
               alt=""
               width={1100}
               height={616}
+              sizes="(min-width: 1280px) 1200px, 100vw"
               className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-10 mix-blend-screen"
             />
           </div>
@@ -78,6 +79,7 @@ export function DownloadBanner() {
                 alt=""
                 width={880}
                 height={1561}
+                sizes="190px"
                 className="absolute bottom-[-24px] right-[150px] z-0 w-[190px] drop-shadow-xl"
               />
               <Image
@@ -85,6 +87,7 @@ export function DownloadBanner() {
                 alt={t("phoneAlt")}
                 width={880}
                 height={1561}
+                sizes="220px"
                 className="absolute -top-16 right-0 z-10 w-[220px] drop-shadow-2xl"
               />
             </div>
